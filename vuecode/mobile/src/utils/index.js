@@ -170,6 +170,8 @@ export function generatePicture (dom) {
       height: dom.clientHeight,
       scrollY: 0,
       scrollX: 0,
+      dpi: window.devicePixelRatio * 4,
+      scale: 4,
       useCORS: true // 支持跨域
     })
       .then((canvas) => {

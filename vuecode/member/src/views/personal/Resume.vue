@@ -1477,7 +1477,7 @@
         if (this.moduleStore.img.is_display && this.imgList.length > 0) {
           percentNumber += this.moduleStore.img.score
         }
-        this.basic.complete_percent = percentNumber
+        this.basic.complete_percent = parseInt(percentNumber)
       },
       // 简历公开状态
       handleStatus (value) {
@@ -1502,7 +1502,17 @@
             this.resumePublic = !value
           })
         } else {
-          this.$message({ message: '简历已开启', type: 'success' })
+          http.post(api.resume_privates_set_display, {
+            display: value ? 1 : 0,
+          }).then(res => {
+            if (parseInt(res.code) === 200) {
+              this.$message({ message: res.message, type: 'success' })
+            } else {
+              this.resumePublic = !value
+            }
+          }).catch(() => {
+            this.resumePublic = !value
+          })
         }
       },
       // 选择当前求职状态

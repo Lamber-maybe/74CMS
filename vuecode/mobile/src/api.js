@@ -384,5 +384,7 @@ export default {
   // 网络招聘会简历列表
   jobfairol_resumelist: '/home/jobfairol/resumelist',
   // 网络招聘会参会
-  jobfairol_apply: '/home/jobfairol/apply'
+  jobfairol_apply: '/home/jobfairol/apply',
+  // 号码保护
+  secret_phone: '/member/index/secretPhone'
 }

@@ -166,6 +166,7 @@
                         </div>
                         <div v-else>
                             <div class="contact_title">联系方式</div>
+                            {#if condition="!$phone_protect_open"#}
                             <div class="contact_box clearfix">
                                 <div class="clearfix">
                                     <div class="contact_list_box clearfix">
@@ -191,6 +192,23 @@
                                     </div>
                                 </div>
                             </div>
+                            {#else/#}
+                            <div class="code_pro">
+                                <div class="scan_code" @mouseenter.stop="onMouseover" @mouseleave.stop="onMouseout">
+                                    <div class="scan_code_min_wrap">
+                                        <div></div>
+                                    </div>
+                                    <div class="scan_code_note">微信扫码拔打电话</div>
+                                    <div class="scan_code_show">
+                                        <div class="code" v-if="codeShow">
+                                            <img v-if="!hasGetCode" class="loading" :src="wx_code_url"/>
+                                            <img v-if="hasGetCode" class="qrcode" :src="wx_code_url"/>
+                                        </div>
+                                        <div class="scan_code_tip">专属隐私号码,通话安全放心<span v-if="!codeShow" class="common_arrow_gray_down"></span><span v-if="codeShow" class="common_arrow_gray_up"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {#/if#}
                         </div>
                     </div>
 
@@ -457,9 +475,13 @@
 <script>
     var id = parseInt("{#$return.base_info.id#}")
     var fullName = "{#$return.base_info.fullname#}"
+    var isWxOpen = !!parseInt("{#$global_config.wechat_open#}")
     var app = new Vue({
         el: '#app',
         data: {
+            wx_code_url:'/assets/images/loading.gif',
+            codeShow: false,
+            hasGetCode:false,
             showTipoff: false,
             tipoffForm: {
                 reason: '',
@@ -574,6 +596,31 @@
             }
         },
         methods: {
+            onMouseover:function(){
+                this.codeShow = true;
+                if(this.hasGetCode)return;
+                if(!isWxOpen)
+                {
+                    this.wx_code_url = encodeURI(qscms.apiUrl +  qscms.apiList.qrcode + '?url={#$return.share_url#}')
+                    this.hasGetCode = true;
+                }else{
+                    var that = this;
+                    httpget(qscms.apiList.qrcode, {type:'wechat',alias:'subscribe_resume', resumeid:id, getsrc:1}).then(function(res){
+                        if(res.code == 200){
+                            that.wx_code_url = res.data;
+                            that.hasGetCode = true;
+                        }else{
+                            that.$message({
+                                type: 'error',
+                                message: res.message
+                            })
+                        }
+                    });
+                }
+            },
+            onMouseout:function(){
+                this.codeShow = false;
+            },
             handlerInviteOpened: function () {
                 var that = this
                 httpget(qscms.apiList.company_published_jobslist, {})

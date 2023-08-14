@@ -679,14 +679,13 @@ class Index extends \app\index\controller\Base
      */
     protected function handlerA2($list,$all_company_arr,$all_job_arr){
         $job_list = [];
-        $counter = 0;
         foreach ($all_job_arr as $key => $value) {
-            if($counter>=4){
+            if(isset($job_list[$value['company_id']]) && count($job_list[$value['company_id']])>=4){
                 continue;
             }
             $job_list[$value['company_id']][] = $value;
-            $counter++;
         }
+        // var_dump($job_list);die;
         foreach ($list as $key => $value) {
             $list[$key]['companyname'] = isset($all_company_arr[$value['company_id']])?$all_company_arr[$value['company_id']]:$value['title'];
             $list[$key]['joblist'] = isset($job_list[$value['company_id']])?$job_list[$value['company_id']]:'';
@@ -712,13 +711,11 @@ class Index extends \app\index\controller\Base
      */
     protected function handlerA8($list,$all_job_arr){
         $job_list = [];
-        $counter = 0;
         foreach ($all_job_arr as $key => $value) {
-            if($counter>=3){
+            if(isset($job_list[$value['company_id']]) && count($job_list[$value['company_id']])>=3){
                 continue;
             }
             $job_list[$value['company_id']][] = $value;
-            $counter++;
         }
         foreach ($list as $key => $value) {
             $list[$key]['joblist'] = isset($job_list[$value['company_id']])?$job_list[$value['company_id']]:'';
@@ -730,13 +727,11 @@ class Index extends \app\index\controller\Base
      */
     protected function handlerA9($list,$all_job_arr){
         $job_list = [];
-        $counter = 0;
         foreach ($all_job_arr as $key => $value) {
-            if($counter>=3){
+            if(isset($job_list[$value['company_id']]) && count($job_list[$value['company_id']])>=3){
                 continue;
             }
             $job_list[$value['company_id']][] = $value;
-            $counter++;
         }
         foreach ($list as $key => $value) {
             $list[$key]['joblist'] = isset($job_list[$value['company_id']])?$job_list[$value['company_id']]:'';

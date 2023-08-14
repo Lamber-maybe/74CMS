@@ -10,6 +10,9 @@
       <el-tab-pane label="微信开放平台" :lazy="true">
         <weixinopen />
       </el-tab-pane>
+      <el-tab-pane label="号码隐私保护" :lazy="true">
+        <alicloudpro />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -18,11 +21,13 @@
 import qq from './components/qq.vue'
 import trtc from './components/trtc.vue'
 import weixinopen from './components/weixinopen.vue'
+import alicloudpro from './components/alicloudpro'
 export default {
   components: {
     qq,
     trtc,
-    weixinopen
+    weixinopen,
+    alicloudpro
   }
 }
 </script>

@@ -1,6 +1,8 @@
 <?php
 namespace app\v1_0\controller\member;
 
+use app\common\lib\AliCloud;
+
 class Index extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -349,4 +351,97 @@ class Index extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '邀请面试成功');
     }
+
+    public function secretPhone(){
+        $job_id = input('get.job_id/d', 0, 'intval');
+        $resume_id = input('get.resume_id/d', 0, 'intval');
+        $aliCloud = new AliCloud();
+        $timeout = 182;
+        if(!intval(config('global_config.alicloud_phone_protect_open'))){
+            $this->ajaxReturn(400, '非法请求');
+        }
+        $protect_targets = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
+        if(!$this->userinfo){
+            $this->ajaxReturn(4010, '非法请求!');
+        }
+        $a = $this->getFinalMobile(['uid'=>$this->userinfo->uid, 'utype'=>$this->userinfo->utype]);
+        if($job_id){
+            if(!in_array(1, $protect_targets)){
+                $this->ajaxReturn(401, '非法请求!');
+            }
+            $b = $this->getFinalMobile(['job_id'=>$job_id]);
+        }
+        if($resume_id){
+            if(!in_array(2, $protect_targets)){
+                $this->ajaxReturn(402, '非法请求!!');
+            }
+            $b = $this->getFinalMobile(['resume_id'=>$resume_id]);
+        }
+
+        if(intval(config('global_config.alicloud_phone_protect_type')) == 2){
+            $timeout = 122;
+            list($a, $b) = [$b, $a];
+            $data = [
+                'x' => $aliCloud->bindAxN($a, $b, $timeout),
+                'type' => 'axn',
+            ];
+        }else{
+            $data = [
+                'x' => $aliCloud->bindAxb2($a, $b, $timeout),
+                'type' => 'axb',
+            ];
+        }
+        $data['a'] = $a;
+        $data['time'] = time();
+        $data['timeout'] = $timeout-2;
+        if(config('app_debug')){
+            $data['b'] = $b;
+        }
+        if(!$aliCloud->getError()){
+            return $this->ajaxReturn(200, 'success', $data);
+        }else{
+            return $this->ajaxReturn(500, $aliCloud->getError(), $data);
+        }
+    }
+
+    protected function getFinalMobile($param){
+        if(isset($param['uid'])){
+            if($param['utype'] == 1){//企业
+                $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
+                if($company_contact){
+                    $a = $company_contact['mobile'];//企业联系人
+                }else{
+                    $memberInfo = model('Member')->where('uid', $this->userinfo->uid)->find();
+                    if($memberInfo){
+                        $a = $memberInfo['mobile'];
+                    }
+                }
+            }else{//个人
+                $memberInfo = model('Member')->where('uid', $this->userinfo->uid)->find();
+                if($memberInfo){
+                    $a = $memberInfo['mobile'];
+                }
+            }
+        }
+        if(isset($param['resume_id'])){
+            $resume_info = action('v1_0/home/resume/getDetail', ['id'=>$param['resume_id']]);
+            //简历联系人/联系人
+            if(isset($resume_info['contact_info']['mobile']) && !empty($resume_info['contact_info']['mobile'])){
+                $a = $resume_info['contact_info']['mobile'];
+            }else{
+                $memberInfo = model('Member')->where('uid', $resume_info['base_info']['uid'])->find();
+                if($memberInfo){
+                    $a = $memberInfo['mobile'];
+                }
+            }
+        }
+        if(isset($param['job_id'])){
+            $jobinfo = model('Job')->where('id', 'eq', $param['job_id'])->find();
+            $getJobContact = model('Job')->getContact($jobinfo,$this->userinfo);
+            $jobInfo = $getJobContact['contact_info'];
+            $a = $jobInfo['mobile'];
+        }
+        return $a;
+    }
+
 }

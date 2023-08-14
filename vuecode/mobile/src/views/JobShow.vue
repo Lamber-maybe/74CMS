@@ -174,8 +174,8 @@
       </div>
       <div class="form_split_10"></div>
       <div class="box_8">
-        <div class="put">联系方式</div>
-        <div class="contact_info" v-if="show_contact == 1">
+        <div class="put">联系方式<span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span class="phone" v-text="cur_user_mobile">}</span> 的手机号拔号</span></div>
+        <div class="contact_info" v-if="!phone_protect_open && show_contact == 1">
           <div class="info_line">
             联系人：
             <span>{{ contact_info.contact }}</span>
@@ -228,6 +228,10 @@
             联系QQ：
             <span>{{ contact_info.qq }}</span>
           </div>
+        </div>
+        <div class="code_pro_wrap" v-if="show_contact == 1 && phone_protect_open">
+          <img class="secret" src="../assets/images/318.jpg"/>
+          <div v-if="phone_protect_type==1" class="pro_tip">1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号</div>
         </div>
         <div
           class="contact_login"
@@ -425,14 +429,19 @@
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <van-popup v-model="showPoster">
-      <SharePoster @closePoster="closePoster" :type="'job'" :info="shareInfo"></SharePoster>
-    </van-popup>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'job'" :info="shareInfo"></SharePoster>
+    <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
               @handleForward="handleForward"
               @handlePoster="handlePoster"></Share>
     </van-popup>
+    <van-dialog v-model="codePro.show" show-cancel-button :confirm-button-text="codePro.btnCn" @confirm="callCodePro" confirm-button-color="#1989fa">
+      <div class="line18 m-top">拔打号码</div>
+      <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
+      <div class="line18 font12">(电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)</div>
+      <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号</div>
+    </van-dialog>
   </div>
 </template>
 
@@ -461,6 +470,13 @@ export default {
   },
   data () {
     return {
+      codePro: {
+        show: false,
+        x: '',
+        timeout: 0,
+        a: '',
+        btnCn: '立即拔打'
+      },
       showTipoff: false,
       pageTitle: '',
       mainLoading: true,
@@ -490,7 +506,11 @@ export default {
       showShare: false,
       showWxLayer: false,
       showLayer: false,
-      showPoster: false
+      showPoster: false,
+      cur_user_mobile: '',
+      phone_protect_open: false,
+      phone_protect_timeout: 0,
+      phone_protect_type: 0
     }
   },
   created () {
@@ -580,7 +600,11 @@ export default {
         com_info,
         similar,
         has_fav,
-        has_apply
+        has_apply,
+        cur_user_mobile,
+        phone_protect_open,
+        phone_protect_timeout,
+        phone_protect_type
       } = { ...res.data }
       this.field_rule = field_rule
       this.base_info = base_info
@@ -594,6 +618,10 @@ export default {
       this.contact_info = contact_info
       this.has_fav = has_fav
       this.has_apply = has_apply
+      this.phone_protect_open = phone_protect_open
+      this.cur_user_mobile = cur_user_mobile
+      this.phone_protect_timeout = phone_protect_timeout
+      this.phone_protect_type = phone_protect_type
       let wechatShareInfo = {
         jobname: base_info.jobname,
         wage: base_info.wage_text,
@@ -611,18 +639,48 @@ export default {
       this.pageTitle =
         this.base_info.jobname + ' - ' + this.$store.state.config.sitename
     },
-    doTel () {
+    callCodePro () {
+      location.href = `tel:${this.codePro.x}`
+    },
+    async doTel () {
       if (this.show_contact === 1) {
-        this.$dialog
-          .confirm({
-            title: '提示',
-            message: '即将拨打号码：' + this.contact_info.mobile,
-            confirmButtonText: '确定拨打'
-          })
-          .then(() => {
-            window.location.href = `tel:${this.contact_info.mobile}`
-          })
-          .catch(() => {})
+        if (this.phone_protect_open) {
+          let res = await http.get(api.secret_phone, {job_id: this.query_id})
+          const {code, message, data} = res
+          if (code == 200) {
+            this.codePro.x = data.x
+            this.codePro.timeout = data.timeout
+            this.codePro.a = data.a
+            this.codePro.show = true
+            let that = this
+            this.$nextTick(() => {
+              let tmh = null
+              let tm = function () {
+                if (that.codePro.show && that.codePro.timeout > 0) {
+                  that.codePro.timeout--
+                  tmh = setTimeout(tm, 1000)
+                } else {
+                  that.codePro.show = false
+                  clearTimeout(tmh)
+                }
+              }
+              setTimeout(tm, 1000)
+            })
+          } else {
+            this.$message.error(message)
+          }
+        } else {
+          this.$dialog
+            .confirm({
+              title: '提示',
+              message: '即将拨打号码：' + this.contact_info.mobile,
+              confirmButtonText: '确定拨打'
+            })
+            .then(() => {
+              window.location.href = `tel:${this.contact_info.mobile}`
+            })
+            .catch(() => {})
+        }
       } else if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
@@ -756,6 +814,7 @@ export default {
         logo: this.com_info.logo_src,
         companyname: this.com_info.companyname,
         jobname: this.base_info.jobname,
+        nature: this.base_info.nature_text,
         wage: this.base_info.wage_text,
         education: this.base_info.education_text,
         experience: this.base_info.experience_text,
@@ -1688,4 +1747,29 @@ export default {
   padding: 21px 16px 0;
   border-top: 1px solid #f3f3f3;
 }
+.phone_tip{
+  display:inline-block;position: absolute;right:0;top:50%;transform:translate(0, -50%);color:#666;font-size:12px;
+  .phone{color:#ff5d24;}
+}
+.code_pro_wrap{
+  .secret{width:100%;}
+  .pro_tip{margin-top: .08rem;color: #888;font-size:12px;}
+}
+.orange-phone{color:#ff5d24;font-weight:bold;}
+.font12{
+  font-size:12px;
+}
+.font15{
+  font-size:15px;
+}
+.line18{
+  line-height:25px;
+  text-align:center;
+}
+.color-orange{
+  color:#ff5d24
+}
+.m-top{margin-top:25px;}
+.m-btm{margin-bottom:20px;}
+.bold{font-weight:bold;}
 </style>

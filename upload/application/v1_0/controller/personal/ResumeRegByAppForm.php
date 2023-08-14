@@ -330,7 +330,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             model('Resume')->updateComplete(
                 [
                     'education' => 1,
-                    'specialty' => $input_data['specialty'] == '' ? 0 : 1
+                    'specialty' => $input_data['specialty'] == '' ? 0 : 1,
+                    'work' => isset($input_data['work']) ? 1 : 0
                 ],
                 0,
                 $this->userinfo->uid

@@ -42,7 +42,12 @@ class Qrcode extends \app\v1_0\controller\common\Base
             $class = new \app\common\lib\Wechat;
             $qrcode = $class->makeQrcode($params);
             if($qrcode){
+                if(input('get.getsrc/d', 0, 'intval')){
+                    $this->ajaxReturn(200, '', $qrcode);
+                }
                 $this->showImg($qrcode);
+            }else{
+                $this->ajaxReturn(501, 'server error');
             }
 		}
     }

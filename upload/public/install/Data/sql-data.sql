@@ -897,7 +897,14 @@ INSERT INTO `qs_config` VALUES
 (NULL,'job_search_login_num',0,'3','搜索职位登录限制显示条数',0),
 (NULL,'resume_search_login',0,'1','搜索简历登录限制',0),
 (NULL,'resume_search_login_num',0,'3','搜索简历登录限制显示条数',0),
-(NULL,'wechat_welcome_img_mediaid',0,'','微信公众号关注欢迎图片',0);
+(NULL,'wechat_welcome_img_mediaid',0,'','微信公众号关注欢迎图片',0),
+(NULL,'alicloud_phone_protect_open', 0, '0', '是否开启号码隐私保护', 0),
+(NULL,'alicloud_phone_protect_type', '0', '', '服务类型', '0'),
+(NULL,'alicloud_phone_protect_target', '0', '1,2', '保护对象', '0'),
+(NULL,'alicloud_app_key', '0', '', '阿里云appkey', '1'),
+(NULL,'alicloud_pool_key_axn', '0', '', 'axn号池key', '1'),
+(NULL,'alicloud_appsecret', '0', '', '阿里云appsecret', '1'),
+(NULL,'alicloud_pool_key', '0', '', '号池key', '1');
 
 
 INSERT INTO `qs_cron` VALUES

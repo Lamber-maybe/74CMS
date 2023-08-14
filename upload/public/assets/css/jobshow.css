@@ -666,3 +666,16 @@
 .pic_next{background:url(../images/newjobAll.png) -315px -36px no-repeat;right:0}
 .pic_prev:hover{background:url(../images/newjobAll.png) -294px -36px no-repeat;left:0}
 .pic_next:hover{background:url(../images/newjobAll.png) -336px -36px no-repeat;right:0}
+
+.code_pro{background:url(../images/code_pro_bg.jpg);width:860px;height:140px;font-family: "Microsoft YaHei", Arial,"PingFang SC","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;font-size:0px;}
+.code_pro .scan_code{width:270px;height:80px; float:right;margin-right:60px;margin-top:30px;cursor:pointer;box-shadow:0 2px 10px 0 rgba(0, 97, 67, 0.2)}
+.code_pro .scan_code .scan_code_min_wrap{width:60px;height:60px;background: #169f62;display:inline-block;}
+.code_pro .scan_code .scan_code_min_wrap div{background: url(../images/ewm_ico.png);width: 26px;height: 26px; margin: 17px;}
+.code_pro .scan_code .scan_code_note{ height: 60px;width: 210px;background: #22ba76;color: #FFF;line-height: 60px;font-size: 20px;float: right;text-align: center;font-weight: bold;}
+.code_pro .scan_code .scan_code_show{width: 100%;position: relative;z-index: 5;background: #FFF;box-shadow:0 2px 10px 0 rgba(0, 97, 67, 0.2);}
+.code_pro .scan_code .scan_code_show .scan_code_tip{width:100%;height:20px;text-align: center;background: #FFF;color:#999;font-size:12px;line-height:20px;}
+.code_pro .scan_code .scan_code_show .code{width:100%;height:250px;padding:30px 40px;}
+.code_pro .scan_code .scan_code_show .code .loading{width:50px;height:50px;margin:70px;background:#FFF;}
+.code_pro .scan_code .scan_code_show .code .qrcode{width:100%;height:100%;margin:0;background:#FFF;}
+.common_arrow_gray_up{width: 13px;height: 9px;background: url(../images/arrow_ico.png) no-repeat;display: inline-block;transform:rotate(180deg);position:relative;left:34px;}
+.common_arrow_gray_down{background: url(../images/arrow_ico.png) no-repeat;width:13px;height:9px;position:relative;left:46px;display:inline-block;}

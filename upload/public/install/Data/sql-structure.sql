@@ -72,6 +72,18 @@ CREATE TABLE `qs_admin_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin_role||-_-||
 
+DROP TABLE IF EXISTS `qs_ali_axb`;
+CREATE TABLE `qs_ali_axb` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `a` varchar(15) NOT NULL,
+  `b` varchar(15) NOT NULL,
+  `x` varchar(15) NOT NULL DEFAULT '',
+  `sub_id` varchar(20) NOT NULL DEFAULT '',
+  `addtime` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_ali_axb||-_-||
+
 DROP TABLE IF EXISTS `qs_article`;
 CREATE TABLE `qs_article` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

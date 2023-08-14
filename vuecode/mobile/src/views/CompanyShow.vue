@@ -156,9 +156,8 @@
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <van-popup v-model="showPoster">
-      <SharePoster @closePoster="closePoster" :type="'company'" :info="shareInfo"></SharePoster>
-    </van-popup>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'company'" :info="shareInfo"></SharePoster>
+    <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
               @handleForward="handleForward"
@@ -426,7 +425,9 @@ export default {
         nature: this.base_info.nature_text,
         scale: this.base_info.scale_text,
         district: this.base_info.district_text,
-        jobnum: this.base_info.jobnum
+        jobnum: this.base_info.jobnum,
+        joblist: this.joblist,
+        address: this.base_info.address
       }
       this.showPoster = true
     },

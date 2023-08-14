@@ -91,10 +91,10 @@ import Video from '../views/Video'
 import Microposte from '../views/company/Microposte'
 import ScanMicroposte from '../views/ScanMicroposte'
 import ScanUpload from '../views/ScanUpload'
-
 import JobfairolIndex from '../views/jobfairol/Index'
 import JobfairolShow from '../views/jobfairol/Show'
 import JobfairolReserve from '../views/jobfairol/Seserve'
+import JsapiPay from '../views/service/JsapiPay'
 Vue.use(VueRouter)
 
 /**
@@ -1095,7 +1095,6 @@ const routes = [
       utype: 0
     }
   },
-  
   {
     path: '/jobfairol',
     name: 'jobfairol',
@@ -1125,6 +1124,17 @@ const routes = [
       keepAlive: false,
       loginCheck: true,
       utype: 1
+    }
+  },
+  {
+    path: '/pay/jsapi',
+    name: 'JsapiPay',
+    component: JsapiPay,
+    meta: {
+      title: '微信支付',
+      keepAlive: false,
+      loginCheck: true,
+      utype: 0
     }
   },
   {

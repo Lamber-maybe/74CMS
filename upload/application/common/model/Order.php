@@ -778,6 +778,7 @@ class Order extends \app\common\model\BaseModel
                 $payment = 'free';
             }
         }
+        $points_log = '';
         $addToQueue = 0; //是否需要添加到计划任务队列，如简历的置顶、标签、职位的置顶等
         //简历置顶
         if ($order['utype'] == 2 && $order['service_type'] == 'stick') {
@@ -791,6 +792,7 @@ class Order extends \app\common\model\BaseModel
                 ->where('uid', 'eq', $order['uid'])
                 ->setField('stick', 1);
             $addToQueue = 1;
+            $points_log = '简历置顶';
         }
         //简历标签
         if ($order['utype'] == 2 && $order['service_type'] == 'tag') {
@@ -799,6 +801,7 @@ class Order extends \app\common\model\BaseModel
                 ->where('uid', 'eq', $order['uid'])
                 ->setField('service_tag', $extra['tag_text']);
             $addToQueue = 1;
+            $points_log = '简历标签';
         }
         //职位置顶
         if ($order['utype'] == 1 && $order['service_type'] == 'jobstick') {
@@ -813,6 +816,7 @@ class Order extends \app\common\model\BaseModel
                 ->where('id', 'eq', $extra['jobid'])
                 ->setField('stick', 1);
             $addToQueue = 1;
+            $points_log = '职位置顶';
         }
         //职位紧急
         if ($order['utype'] == 1 && $order['service_type'] == 'emergency') {
@@ -827,6 +831,7 @@ class Order extends \app\common\model\BaseModel
                 ->where('id', 'eq', $extra['jobid'])
                 ->setField('emergency', 1);
             $addToQueue = 1;
+            $points_log = '职位紧急';
         }
         //简历包
         if (
@@ -842,6 +847,7 @@ class Order extends \app\common\model\BaseModel
                         $extra['download_resume_point']
                     );
             }
+            $points_log = '简历包';
         }
         //职位智能刷新
         if (
@@ -867,6 +873,7 @@ class Order extends \app\common\model\BaseModel
                     model('RefreshjobQueue')->saveAll($queue);
                 }
             }
+            $points_log = '职位智能刷新';
         }
         //企业套餐
         if ($order['utype'] == 1 && $order['service_type'] == 'setmeal') {
@@ -876,6 +883,7 @@ class Order extends \app\common\model\BaseModel
                 'setmeal_id' => $extra['setmeal_id'],
                 'note' => '',
             ]);
+            $points_log = '企业套餐';
         }
         //企业充积分
         if ($order['utype'] == 1 && $order['service_type'] == 'points') {
@@ -890,11 +898,16 @@ class Order extends \app\common\model\BaseModel
         if ($order['utype'] == 1 && $order['service_type'] == 'single_job_refresh') {
             $extra = json_decode($order['extra'], true);
             model('Job')->refreshJob($extra['jobid'], $order['uid']);
+            $points_log = '刷新职位';
         }
         //快捷支付-下载简历
         if ($order['utype'] == 1 && $order['service_type'] == 'single_resume_down') {
             $extra = json_decode($order['extra'], true);
             model('CompanyDownResume')->downResumeAddSingleService($extra['resumeid'], $order['uid'], $order['add_platform']);
+            $points_log = '下载简历';
+        }
+        if($order['deduct_points']>0){
+            model('Member')->setMemberPoints(['uid'=>$order['uid'],'points'=>$order['deduct_points'],'note'=>config('global_config.points_byname').'抵扣-'.$points_log],2);
         }
         $order->payment = $payment;
         $order->status = 1;

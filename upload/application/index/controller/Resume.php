@@ -310,6 +310,13 @@ class Resume extends \app\index\controller\Base
                 abort(404,'页面不存在');
             }
         }
+        $this->assign('phone_protect_open', false);
+        if(intval(config('global_config.alicloud_phone_protect_open'))){
+            $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
+            if(in_array(2, $protectTarget)){
+                $this->assign('phone_protect_open', true);
+            }
+        }
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
         $return['share_url'] = config('global_config.mobile_domain').'resume/'.$return['base_info']['id'];

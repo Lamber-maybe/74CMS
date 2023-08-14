@@ -289,6 +289,13 @@ class Job extends \app\index\controller\Base
         $seoData['nature'] = $return['base_info']['nature_text'];
         $seoData['category'] = $return['base_info']['category_text'];
         $seoData['district'] = $return['base_info']['district_text'];
+        $this->assign('phone_protect_open', false);
+        if(intval(config('global_config.alicloud_phone_protect_open'))){
+            $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
+            if(in_array(1, $protectTarget)){
+                $this->assign('phone_protect_open', true);
+            }
+        }
         $this->initPageSeo('jobshow',$seoData);
         $this->assign('return',$return);
         $this->assign('pageHeader',$this->pageHeader);

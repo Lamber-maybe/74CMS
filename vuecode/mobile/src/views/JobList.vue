@@ -157,15 +157,8 @@
               {{ item.district_text }}
               <div class="time">{{ item.refreshtime }}</div>
             </div>
-            <div class="tag_wrapper" v-if="item.tag.length>0">
-              <van-tag
-                color="#e9f8ff"
-                text-color="#8096a3"
-                v-for="(t, key) in item.tag"
-                :key="key"
-              >
-                {{ t }}
-              </van-tag>
+            <div class="tag_wrapper clearfix" v-if="item.tag.length>0">
+              <div class="tag_cell" v-for="(t, key) in item.tag" :key="key">{{ t }}</div>
             </div>
             <div class="company">
               <div class="name">{{ item.companyname }}</div>
@@ -834,8 +827,16 @@ export default {
         margin-right: 5px;
         border-radius: 3px;
       }
+      .tag_cell {
+        float: left;
+        padding: 2px 5px;
+        margin: 0 5px 5px 0;
+        font-size: 10px;
+        background-color: #e9f8ff;
+        color: #8096a3;
+      }
       width: 100%;
-      padding-bottom: 13px;
+      padding-bottom: 8px;
     }
     .tx2 {
       .time {

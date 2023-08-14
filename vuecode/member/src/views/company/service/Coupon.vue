@@ -2,7 +2,7 @@
 	<div class="coupon">
 		<el-card>
 			<company-title>优惠券</company-title>
-			<div class="coupon_wrapper">
+			<div class="coupon_wrapper" v-if="dataset.length>0">
 				<div class="coupon_list" v-for="(item, index) in dataset" :key="index">
 					<div class="coupon_text">
 						<p>{{item.coupon_name}}</p>
@@ -22,7 +22,7 @@
 					</p>
 				</div>
 			</div>
-          <div class="list_empty">
+          <div class="list_empty" v-else>
             <div class="emp_text">没有可用的优惠券~</div>
           </div>
 		</el-card>

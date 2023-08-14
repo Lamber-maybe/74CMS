@@ -13,44 +13,13 @@ export default {
   props: ['payment', 'successUrl'],
   data () {
     return {
-      code: '',
-      jsApiParameters: {}
+      code: ''
     }
   },
   created () {
 
   },
   methods: {
-    jsApiCall () {
-      let that = this
-      window.WeixinJSBridge.invoke(
-        'getBrandWCPayRequest',
-        that.jsApiParameters,
-        function (res) {
-          // alert(res.err_code + res.err_desc + res.err_msg)
-          if (that.$route.path === that.successUrl) {
-            location.reload()
-          } else {
-            that.$router.push(that.successUrl)
-          }
-          // window.WeixinJSBridge.log(res.err_msg)
-        }
-      )
-    },
-
-    callpay () {
-      let that = this
-      if (typeof window.WeixinJSBridge == 'undefined') {
-        if (document.addEventListener) {
-          document.addEventListener('WeixinJSBridgeReady', that.jsApiCall, false)
-        } else if (document.attachEvent) {
-          document.attachEvent('WeixinJSBridgeReady', that.jsApiCall)
-          document.attachEvent('onWeixinJSBridgeReady', that.jsApiCall)
-        }
-      } else {
-        that.jsApiCall()
-      }
-    },
     handlerSubmit (url, data, callback) {
       let that = this
       data.openid = localStorage.getItem('weixinOpenid')
@@ -84,13 +53,14 @@ export default {
               that.$router.push(that.successUrl)
             }
           }, 1500)
-          })
+        })
     },
     handlerPay (data, callback) {
       if (this.payment == 'wxpay') {
         if (isWeiXin()) {
-          this.jsApiParameters = data.parameter.jsApiParameters
-          this.callpay()
+          // this.jsApiParameters = data.parameter.jsApiParameters
+          this.$router.push({name: 'JsapiPay', params: {jsApiParameters: data.parameter.jsApiParameters, successUrl: this.successUrl}})
+          // this.callpay()
         } else {
           window.location.href = data.parameter
         }

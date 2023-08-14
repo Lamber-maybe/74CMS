@@ -473,14 +473,14 @@ class Resume extends \app\v1_0\controller\common\Base
             $return['base_info']['intention_district_text'] = array_unique($return['base_info']['intention_district_text']);
             $return['base_info']['intention_district_text'] = implode(",",$return['base_info']['intention_district_text']);
         }
-        
+
         $return['intention_list'] = $intention_list;
         //联系方式
         $getResumeContact = model('Resume')->getContact($basic,$this->userinfo);
         $return['show_contact'] = $getResumeContact['show_contact'];
         $return['show_contact_note'] = $getResumeContact['show_contact_note'];
         $return['contact_info'] = $getResumeContact['contact_info'];
-        
+
         //工作经历
         $work_list = model('ResumeWork')
             ->field('id,rid,uid', true)
@@ -575,6 +575,15 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($info === false) {
             $this->ajaxReturn(500, '简历不存在');
         }
+        $info['cur_com_mobile'] = '';
+        if($info['show_contact']){
+            $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
+            if($company_contact){
+                $info['cur_com_mobile'] = $company_contact['mobile'];
+            }else{
+                $info['cur_com_mobile'] = $this->userinfo->mobile;
+            }
+        }
         $info['apply_num'] = model('JobApply')
             ->where([
                 'resume_id' => $info['base_info']['id'],
@@ -618,6 +627,19 @@ class Resume extends \app\v1_0\controller\common\Base
         );
         unset($info['base_info']['uid']);
         $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['base_info']['id'];
+        $info['phone_protect_open'] =  false;
+        $info['phone_protect_timeout'] = 180;
+        $info['phone_protect_type'] = '';
+        if(intval(config('global_config.alicloud_phone_protect_open'))){
+            $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
+            if(in_array(2, $protectTarget)){
+                $info['phone_protect_open'] =  true;
+            }
+            if(intval(config('global_config.alicloud_phone_protect_type'))==2){
+                $info['phone_protect_timeout'] = 120;
+            }
+            $info['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
+        }
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
     public function getContact(){

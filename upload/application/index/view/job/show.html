@@ -186,6 +186,7 @@
                             </div>
                             <div v-else>
                                 <div class="title box2_title_padding">联系方式</div>
+                                {#if condition="!$phone_protect_open"#}
                                 <div class="contact_list" v-cloak>
                                     <div class="contact_item">
                                         <span class="contact_width">联系手机：</span>
@@ -218,6 +219,23 @@
                                         <span class="contact_btn2" slot="reference">在线聊天</span>
                                     </el-popover>
                                 </div>
+                                {#else/#}
+                                <div class="code_pro" @mouseenter.stop="onMouseover" @mouseleave.stop="onMouseout">
+                                    <div class="scan_code">
+                                        <div class="scan_code_min_wrap">
+                                            <div></div>
+                                        </div>
+                                        <div class="scan_code_note">微信扫码拔打电话</div>
+                                        <div class="scan_code_show">
+                                            <div class="code" v-if="codeShow">
+                                                <img v-if="!hasGetCode" class="loading" :src="wx_code_url"/>
+                                                <img v-if="hasGetCode" class="qrcode" :src="wx_code_url"/>
+                                            </div>
+                                            <div class="scan_code_tip">专属隐私号码,通话安全放心<span v-if="!codeShow" class="common_arrow_gray_down"></span><span v-if="codeShow" class="common_arrow_gray_up"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {#/if#}
                             </div>
                         </div>
                         {#if condition="$return.field_rule.tag.is_display==1 && count($return.base_info.tag_text_arr) gt 0"#}
@@ -535,9 +553,13 @@
         map.addControl(top_left_navigation);
     }
     var id = parseInt("{#$return.base_info.id#}")
+    var isWxOpen = !!parseInt("{#$global_config.wechat_open#}")
     var app = new Vue({
         el: '#app',
         data: {
+            wx_code_url:'/assets/images/loading.gif',
+            codeShow: false,
+            hasGetCode:false,
             showTipoff: false,
             tipoffForm: {
                 reason: '',
@@ -604,6 +626,31 @@
             }
         },
         methods: {
+            onMouseover:function(){
+                this.codeShow = true;
+                if(this.hasGetCode)return;
+                if(!isWxOpen)
+                {
+                    this.wx_code_url = encodeURI(qscms.apiUrl +  qscms.apiList.qrcode + '?url={#$return.share_url#}')
+                    this.hasGetCode = true;
+                }else{
+                    var that = this;
+                    httpget(qscms.apiList.qrcode, {type:'wechat',alias:'subscribe_job', jobid:id, getsrc:1}).then(function(res){
+                        if(res.code == 200){
+                            that.wx_code_url = res.data;
+                            that.hasGetCode = true;
+                        }else{
+                            that.$message({
+                                type: 'error',
+                                message: res.message
+                            })
+                        }
+                    });
+                }
+            },
+            onMouseout:function(){
+                this.codeShow = false;
+            },
             getUserInfo: function () {
                 var that = this
                 httpget(qscms.apiList.userinfo).then(function (res) {

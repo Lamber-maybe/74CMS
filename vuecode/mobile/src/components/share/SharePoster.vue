@@ -1,13 +1,15 @@
 <template>
   <div id="app">
-    <div class="share_wrapper">
-      <div class="share_title">长按保存图片，分享给朋友</div>
-      <div class="content">
-        <ShareCompany v-if="type === 'company'" :info="info"></ShareCompany>
-        <ShareJob v-if="type === 'job'" :info="info"></ShareJob>
-        <ShareResume v-if="type === 'resume'" :info="info"></ShareResume>
+    <div class="job_popup">
+      <div class="job_popup_box">
+        <ShareCompany v-if="type === 'company'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareCompany>
+        <ShareJob v-if="type === 'job'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareJob>
+        <ShareResume v-if="type === 'resume'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareResume>
+        <div class="job_btns">
+          <div class="job_btn_1" @click="changeTpl">换一组</div>
+          <div class="job_btn_2">长按保存图片</div>
+        </div>
       </div>
-      <div class="share_bottom" @click="closePoster">知道了</div>
     </div>
   </div>
 </template>
@@ -24,7 +26,19 @@ export default {
     ShareJob,
     ShareResume
   },
+  data () {
+    return {
+      currentTplIndex: 0,
+      tplArr: ['one', 'two', 'three']
+    }
+  },
   methods: {
+    changeTpl () {
+      this.currentTplIndex++
+      if (this.tplArr[this.currentTplIndex] === undefined) {
+        this.currentTplIndex = 0
+      }
+    },
     // 关闭海报
     closePoster () {
       this.$emit('closePoster')
@@ -34,10 +48,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .share_wrapper {
-    width: 330px;background-color: #fff;border-radius: 6px;
-    .share_title {font-size: 14px;color: #999;padding: 16px 0; text-align: center;}
-    .content {}
-    .share_bottom {font-size: 14px;color: #333;padding: 16px 0; text-align: center;border-top: 1px solid #f3f3f3;}
+.job_popup_box{
+  position: fixed;
+  z-index:4;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+  .job_popup_box .job_btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top:18.5px;
+  }
+
+  .job_popup_box .job_btns .job_btn_1,
+  .job_popup_box .job_btns .job_btn_2 {
+    width: 145.5px;
+    height: 41px;
+    text-align: center;
+    line-height: 41px;
+    color: #fff;
+    font-size:14px;
+    border-radius: 5px;
+  }
+
+  .job_popup_box .job_btns .job_btn_1 {
+    background-color: #1787fb;
+  }
+
+  .job_popup_box .job_btns .job_btn_2 {
+    background-color: #00d77e;
   }
 </style>

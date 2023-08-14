@@ -274,7 +274,7 @@ class Job extends \app\v1_0\controller\common\Base
             }
             $jids = implode(',', $jobid_arr);
             $field =
-                'id,company_id,jobname,emergency,stick,minwage,maxwage,negotiable,education,experience,tag,district,addtime,refreshtime,map_lat,map_lng,setmeal_id';
+                'id,company_id,jobname,emergency,stick,minwage,maxwage,negotiable,education,experience,tag,district,addtime,refreshtime,map_lat,map_lng,setmeal_id,nature';
             $joblist = model('Job')
                 ->where('id', 'in', $jids)
                 ->orderRaw('field(id,' . $jids . ')')
@@ -289,6 +289,11 @@ class Job extends \app\v1_0\controller\common\Base
                 $tmp_arr['company_id'] = $val['company_id'];
                 $tmp_arr['emergency'] = $val['emergency'];
                 $tmp_arr['stick'] = $val['stick'];
+                $tmp_arr['nature_text'] = isset(
+                    model('Job')->map_nature[$val['nature']]
+                )
+                ? model('Job')->map_nature[$val['nature']]
+                : '全职';
                 if (isset($cominfo_arr[$val['company_id']])) {
                     $tmp_arr['companyname'] =
                         $cominfo_arr[$val['company_id']]['companyname'];
@@ -656,7 +661,23 @@ class Job extends \app\v1_0\controller\common\Base
             ? $this->userinfo->uid
             : 0
         );
-
+        $return['phone_protect_open'] =  false;
+        $return['phone_protect_timeout'] = 180;
+        $return['phone_protect_type'] = '';
+        if(intval(config('global_config.alicloud_phone_protect_open'))){
+            $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
+            if(in_array(1, $protectTarget)){
+                $return['phone_protect_open'] =  true;
+            }
+            if(intval(config('global_config.alicloud_phone_protect_type'))==2){
+                $return['phone_protect_timeout'] = 120;
+            }
+            $return['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
+        }
+        $return['cur_user_mobile'] = '';
+        if($return['show_contact']){
+            $return['cur_user_mobile'] = $this->userinfo->mobile;
+        }
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     /**
