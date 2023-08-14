@@ -66,6 +66,16 @@ class CollectionSetingLogic
                 ];
                 $logMsg = '账号设置';
                 break;
+            case 5://添加资讯才行参数验证
+                if (!isset($params['cid']) || intval($params['cid']) <=0)
+                {
+                    return callBack(false, '请选择资讯分类');
+                }
+                $updateData = [
+                    'article_seting' => json_encode($params),
+                ];
+                $logMsg = '资讯设置';
+                break;
             default:
                 return callBack(false, '规则来源有误');
         }
@@ -99,6 +109,7 @@ class CollectionSetingLogic
             $info['job_seting']     = !empty($info['job_seting']) ? json_decode($info['job_seting'], true) : [];
             $info['company_seting'] = !empty($info['company_seting']) ? json_decode($info['company_seting'], true) : [];
             $info['account_seting'] = !empty($info['account_seting']) ? json_decode($info['account_seting'], true) : [];
+            $info['article_seting'] = !empty($info['article_seting']) ? json_decode($info['article_seting'],true) : []; //添加资讯采集
         }
         return $info;
     }

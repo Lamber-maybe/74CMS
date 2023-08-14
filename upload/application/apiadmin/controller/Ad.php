@@ -38,11 +38,18 @@ class Ad extends \app\common\controller\Backend
         if ($settr == '0') {
             $where['a.deadline'] = [['neq', 0], ['lt', time()]];
         } elseif ($settr > 0) {
-            $where['a.deadline'] = [
-                ['neq', 0],
-                ['elt', strtotime('+' . $settr . ' day')],
-                ['gt', time()]
-            ];
+            //后台广告位到期筛选，逻辑混乱，数据不对 tapd:201
+            if ($settr == 1)
+            {
+                $where['a.deadline'] = [['neq', 0], ['lt', time()]];
+            }else
+            {
+                $where['a.deadline'] = [
+                    ['neq', 0],
+                    ['elt', strtotime('+' . $settr . ' day')],
+                    ['gt', time()]
+                ];
+            }
         }
 
         $total = model('Ad')->alias('a')->join(config('database.prefix').'ad_category b','a.cid=b.id','LEFT')

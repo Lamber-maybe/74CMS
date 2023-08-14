@@ -36,4 +36,5 @@ Route::rule('map','index/map/index');
 Route::rule('video/:id','index/video/main');
 Route::rule('jobfairol/details/:id$','index/jobfairol/details');//网络招聘会详情
 Route::rule('jobfairol','index/jobfairol/index');
-Route::rule('video_recruitment','index/video_recruitment/index');// 视频招聘
+//修改路由名称触屏PC保持一致
+Route::rule('shortvideo','index/video_recruitment/index');// 视频招聘

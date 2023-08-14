@@ -106,7 +106,225 @@ u { text-decoration: none; }
 .right_fixed_float .rff_cell.qq { background: url("../images/index_rf_ico_1.png") center no-repeat; }
 .right_fixed_float .rff_cell.wx { background: url("../images/index_rf_ico_2.png") center no-repeat; }
 .right_fixed_float .rff_cell.qr { border-bottom: 0;background: url("../images/index_rf_ico_3.png") center no-repeat; }
-.right_fixed_back_top { position: fixed;left: 50%;bottom: 160px;z-index: 9;margin-left: 627px;background: #ffffff url("../images/index_rf_ico_4.png") center 7px no-repeat;border-radius: 8px;width: 60px;height: 60px;text-align: center;line-height: 1;padding-top: 43px;font-size: 12px;color: #b0b0b0;cursor: pointer; pointer; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
+.right_fixed_back_top { position: fixed;left: 50%;bottom: 160px;z-index: 9;margin-left: 627px;background: #ffffff url("../images/index_rf_ico_4.png") center 7px no-repeat;border-radius: 8px;width: 60px;height: 60px;text-align: center;line-height: 1;padding-top: 43px;font-size: 12px;color: #b0b0b0;cursor: pointer; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
+.right_fixed_float .rff_cell .rff_cell_dia { position: absolute;right: 60px;top: 0;background: #ffffff;z-index: 10;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);display: none;padding: 10px 22px;width: max-content; }
+.right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line { line-height: 16px;font-size: 14px; color: #333333;padding: 10px 0; }
+.right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line .number { font-size: 16px;font-weight: bold; }
+.right_fixed_float .rff_cell.qq .rff_cell_dia { padding: 20px 24px; }
+.right_fixed_float .rff_cell.qq .rff_cell_dia .qq_line { display: block;width: 95px;height: 30px;line-height: 30px;padding-left: 35px;font-size: 13px;color: #1787fb;border: 1px solid #1787fb;border-radius: 30px;background: url("../images/index_rf_ico_5.png") 15px center no-repeat;margin-bottom: 12px; }
+.right_fixed_float .rff_cell.qq .rff_cell_dia .qq_line:last-child { margin-bottom: 0; }
+.right_fixed_float .rff_cell.wx .rff_cell_dia { padding: 17px 21px 2px 21px;max-width: 602px; }
+.right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item { float: left;width: 100px;margin-left: 15px;text-align: center;margin-bottom: 15px; }
+.right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item .img { display: block;width: 100px;height: 100px;border: 0;margin-bottom: 10px; }
+.right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item .img_name { line-height: 1;font-size: 14px;color: #555555; }
+.right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item:first-child, .right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item:nth-of-type(6) { margin-left: 0; }
+.right_fixed_float .rff_cell:hover .rff_cell_dia { display: block; }
+
+
+.selectjob.maincontent {
+	height: 380px;
+	overflow-y: auto;
+}
+
+.selectjob .li {
+	height: 90px;
+	line-height: 26px;
+	position: relative;
+	border-bottom: 1px solid #ededed;
+	margin-bottom: 14px;
+}
+
+.selectjob .jobname {
+	color: #333333;
+	font-size: 14px;
+}
+
+.selectjob .wage {
+	color: #FF5017;
+	font-size: 14px;
+}
+
+.selectjob .info {
+	color: #999999;
+	font-size: 14px;
+}
+
+.selectjob .btn {
+	width: 70px;
+	height: 30px;
+	line-height: 30px;
+	background: #409EFF;
+	border-radius: 15px;
+	position: absolute;
+	color: #FFFFFF;
+	text-align: center;
+	top: 24px;
+	right: 20px;
+	cursor: pointer;
+}
+
+
+
+.editor-content-view {
+	border: 0;
+	padding: 0 10px;
+	margin-top: 20px;
+	overflow-x: auto;
+}
+
+.editor-content-view p,
+.editor-content-view li {
+	white-space: pre-wrap; /* 保留空格 */
+}
+
+.editor-content-view blockquote {
+	border-left: 8px solid #d0e5f2;
+	padding: 10px 10px;
+	margin: 10px 0;
+	background-color: #f1f1f1;
+}
+
+.editor-content-view code {
+	font-family: monospace;
+	background-color: #eee;
+	padding: 3px;
+	border-radius: 3px;
+}
+.editor-content-view pre>code {
+	display: block;
+	padding: 10px;
+}
+
+.editor-content-view table {
+	border-collapse: collapse;
+}
+.editor-content-view td,
+.editor-content-view th {
+	border: 1px solid #ccc;
+	min-width: 50px;
+	height: 20px;
+}
+.editor-content-view th {
+	background-color: #f1f1f1;
+}
+
+.editor-content-view ul,
+.editor-content-view ol {
+	padding-left: 20px;
+}
+
+.editor-content-view input[type="checkbox"] {
+	margin-right: 5px;
+}
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; height: 100%; }
+
+body { margin: 0; padding: 0; color: #666666; background-color: #ffffff; -webkit-overflow-scrolling: touch;line-height: 1.15;
+	font-family: Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;font-size: 14px;
+}
+
+* { -webkit-box-sizing: border-box; box-sizing: border-box;touch-action: manipulation }
+image{
+	border:0;
+}
+h1, h2, h3, h4, h5, form, p, ul, input { margin: 0; padding: 0; }
+
+input[type=button], input[type=submit] { -webkit-appearance: none; outline: none; }
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+input[type="number"] { -moz-appearance: textfield; }
+
+li { padding: 0; margin: 0; line-height: 180%; list-style-type: none; }
+
+a { text-decoration: none; color: #666; }
+
+
+u { text-decoration: none; }
+
+:focus { outline: 0; }
+
+.substring { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.substring2 { overflow: hidden; text-overflow: ellipsis;  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.distic {
+	vertical-align: middle;
+	display: inline-block;
+	max-width:187px;
+}
+.nowrap { white-space: nowrap; }
+
+.clear { clear: both; height: 0; font-size: 0; line-height: 0; }
+
+.main_container { width: 100%; background-color: #fff; padding: 0 40px; border-radius: 5px; }
+
+.sp_20_f3 { width: 100%; height: 20px; background-color: #f3f3f3; }
+
+.clearfix:after,
+.clearfix:before {
+	content: "";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+.clearfix {
+	*zoom: 1;
+}
+.font_red {
+	color: #cc3300;
+}
+.btn_red {
+	display: block;
+	text-decoration: none;
+	text-align: center;
+	color: #ffffff;
+	background-color: #e33244;
+	font-size: 14px;
+	cursor: pointer;
+	border-radius: 4px;
+	width: 60px;
+	height: 32px;
+	line-height: 32px;
+	border: 0;
+}
+.btn_red:hover{background-color:#cf1d2f;text-decoration: none;}
+.btn_lightblue {
+	display: block;
+	text-decoration: none;
+	text-align: center;
+	color: #ffffff;
+	background-color: #128bed;
+	font-size: 14px;
+	cursor: pointer;
+	border-radius: 4px;
+	width: 60px;
+	height: 32px;
+	line-height: 32px;
+	border: 0;
+}
+.btn_lightblue:hover{background-color:#0f74c6;text-decoration: none;}
+.btn_inline {
+	display: inline;
+	margin-right: 18px;
+	padding: 6px 15px;
+}
+.left{
+	float: left;
+}
+.right{
+	float: right;
+}
+/*# sourceMappingURL=base.css.map */
+/*右侧固定漂浮栏*/
+.right_fixed_float { position: fixed;left: 50%;bottom: 223px;z-index: 9;margin-left: 627px;background: #ffffff;border-radius: 8px; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
+.right_fixed_float .rff_cell { width: 60px;height: 63px;cursor: pointer;border-bottom: 1px solid #f3f3f3;position: relative; }
+.right_fixed_float .rff_cell.tel { background: url("../images/index_rf_ico.png") center no-repeat; }
+.right_fixed_float .rff_cell.qq { background: url("../images/index_rf_ico_1.png") center no-repeat; }
+.right_fixed_float .rff_cell.wx { background: url("../images/index_rf_ico_2.png") center no-repeat; }
+.right_fixed_float .rff_cell.qr { border-bottom: 0;background: url("../images/index_rf_ico_3.png") center no-repeat; }
+.right_fixed_back_top { position: fixed;left: 50%;bottom: 160px;z-index: 9;margin-left: 627px;background: #ffffff url("../images/index_rf_ico_4.png") center 7px no-repeat;border-radius: 8px;width: 60px;height: 60px;text-align: center;line-height: 1;padding-top: 43px;font-size: 12px;color: #b0b0b0;cursor: pointer; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
 .right_fixed_float .rff_cell .rff_cell_dia { position: absolute;right: 60px;top: 0;background: #ffffff;z-index: 10;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);display: none;padding: 10px 22px;width: max-content; }
 .right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line { line-height: 16px;font-size: 14px; color: #333333;padding: 10px 0; }
 .right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line .number { font-size: 16px;font-weight: bold; }

@@ -2,6 +2,7 @@
 /**
  * 会员服务
  */
+
 namespace app\v1_0\controller\company;
 
 class Service extends \app\v1_0\controller\common\Base
@@ -13,22 +14,24 @@ class Service extends \app\v1_0\controller\common\Base
         $this->interceptCompanyProfile();
         $this->interceptCompanyAuth();
     }
+
     public function mysetmeal()
     {
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
         $company_info['companyname'] = $this->company_profile['companyname'];
         $company_info['logo_src'] =
-        $this->company_profile['logo'] > 0
-        ? model('Uploadfile')->getFileUrl(
-            $this->company_profile['logo']
-        )
-        : default_empty('logo');
+            $this->company_profile['logo'] > 0
+                ? model('Uploadfile')->getFileUrl(
+                $this->company_profile['logo']
+            )
+                : default_empty('logo');
         $this->ajaxReturn(200, '获取数据成功', [
             'info' => $member_setmeal,
             'company_info' => $company_info,
-            'points'=>model('Member')->getMemberPoints($this->userinfo->uid)
+            'points' => model('Member')->getMemberPoints($this->userinfo->uid)
         ]);
     }
+
     /**
      * 获取我的优惠券列表
      */
@@ -38,7 +41,7 @@ class Service extends \app\v1_0\controller\common\Base
         $map['usetime'] = 0;
         $map['deadline'] = ['gt', time()];
         $coupon_config = config('global_config.coupon_config');
-        if($coupon_config['is_open']==0){
+        if ($coupon_config['is_open'] == 0) {
             $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
         }
         $setmeal_list = model('Setmeal')->column('id,name');
@@ -51,15 +54,15 @@ class Service extends \app\v1_0\controller\common\Base
             $value['setmeal_name'] = isset(
                 $setmeal_list[$value['coupon_bind_setmeal_id']]
             )
-            ? $setmeal_list[$value['coupon_bind_setmeal_id']]
-            : '';
+                ? $setmeal_list[$value['coupon_bind_setmeal_id']]
+                : '';
             $value['number'] = str_pad($value['id'], 10, '0', STR_PAD_LEFT);
             if ($coupon_config['remind_days'] > 0) {
                 $value['overtime_soon'] =
-                $value['deadline'] - time() >
-                $coupon_config['remind_days'] * 86400
-                ? 0
-                : 1;
+                    $value['deadline'] - time() >
+                    $coupon_config['remind_days'] * 86400
+                        ? 0
+                        : 1;
             } else {
                 $value['overtime_soon'] = 0;
             }
@@ -67,6 +70,7 @@ class Service extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
     }
+
     /**
      * 获取套餐列表
      */
@@ -79,15 +83,15 @@ class Service extends \app\v1_0\controller\common\Base
             ->select();
         $timestamp = time();
         $coupon_config = config('global_config.coupon_config');
-        if($coupon_config['is_open']==0){
+        if ($coupon_config['is_open'] == 0) {
             $coupon_data = [];
-        }else{
+        } else {
             $coupon_data = model('Coupon')->enableList($this->userinfo->uid);
         }
         foreach ($list as $key => $value) {
             $value['couponList'] = isset($coupon_data[$value['id']])
-            ? $coupon_data[$value['id']]
-            : [];
+                ? $coupon_data[$value['id']]
+                : [];
             $value['original_expense'] = $value['expense'];
             if (
                 $value['preferential_open'] == 1 &&
@@ -105,6 +109,7 @@ class Service extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
     }
+
     /**
      * 获取积分套餐列表
      */
@@ -121,6 +126,7 @@ class Service extends \app\v1_0\controller\common\Base
             'member_points' => $member_points,
         ]);
     }
+
     public function serviceList()
     {
         $type = input('get.type/s', '', 'trim');
@@ -225,10 +231,10 @@ class Service extends \app\v1_0\controller\common\Base
                 $value['enable_points_deduct_expense'] = 0;
             }
             $value['after_deduct_expense'] =
-            $value['expense'] == 0
-            ? 0
-            : $value['expense'] -
-                $value['enable_points_deduct_expense'];
+                $value['expense'] == 0
+                    ? 0
+                    : $value['expense'] -
+                    $value['enable_points_deduct_expense'];
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -237,6 +243,7 @@ class Service extends \app\v1_0\controller\common\Base
             'member_points' => $member_points,
         ]);
     }
+
     public function pay()
     {
         $input_data = [
@@ -255,6 +262,21 @@ class Service extends \app\v1_0\controller\common\Base
             'code' => input('post.code/s', '', 'trim'),
             'openid' => input('post.openid/s', '', 'trim'),
         ];
+        //【bug】Edge浏览器下连续点击支付生成多条订单信息
+        $time = time() - 180;
+        $order_count = model('Order')
+            ->where([
+                'service_type' => $input_data['service_type'],
+                'service_id' => $input_data['service_id'],
+                'status' => 0,
+                'uid'=>$this->userinfo->uid,
+                'addtime' => ['gt', $time]
+            ])
+            ->count();
+
+        if ($order_count > 0) {
+            $this->ajaxReturn(500, '您已提交订单，请到我的订单进行支付');
+        }
         $validate = new \think\Validate([
             'service_type' => 'require|checkServiceType',
             'service_id' => 'require|number|gt:0',
@@ -279,21 +301,21 @@ class Service extends \app\v1_0\controller\common\Base
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        if (in_array($input_data['service_type'], ['jobstick','emergency','refresh_job_package',]) && $input_data['jobid'] <= 0) {
-            $this->ajaxReturn(500,'请选择职位');
+        if (in_array($input_data['service_type'], ['jobstick', 'emergency', 'refresh_job_package',]) && $input_data['jobid'] <= 0) {
+            $this->ajaxReturn(500, '请选择职位');
         }
         if ($input_data['service_type'] == 'refresh_job_package' && $input_data['timerange'] == 0) {
-            $this->ajaxReturn(500,'请选择刷新时间间隔');
+            $this->ajaxReturn(500, '请选择刷新时间间隔');
         }
         if ($input_data['service_type'] == 'refresh_job_package' && $input_data['starttime'] == '') {
-            $this->ajaxReturn(500,'请选择开始时间');
+            $this->ajaxReturn(500, '请选择开始时间');
         }
 
         if ($input_data['service_type'] == 'setmeal') {
             $result = model('Order')->addSetmealOrder($input_data);
         } elseif ($input_data['service_type'] == 'points') {
-            if(config('global_config.enable_com_buy_points')==0){
-                $this->ajaxReturn(500,'网站已关闭'.config('global_config.points_byname').'充值');
+            if (config('global_config.enable_com_buy_points') == 0) {
+                $this->ajaxReturn(500, '网站已关闭' . config('global_config.points_byname') . '充值');
             }
             $result = model('Order')->addPointsOrder($input_data);
         } else {
@@ -303,10 +325,12 @@ class Service extends \app\v1_0\controller\common\Base
         if (false === $result) {
             $this->ajaxReturn(500, model('Order')->getError());
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'下订单【订单号：'.$result['order_oid'].'】');
+
+        $this->writeMemberActionLog($this->userinfo->uid, '下订单【订单号：' . $result['order_oid'] . '】');
 
         $this->ajaxReturn(200, '下单成功', $result);
     }
+
     public function pay_direct_service()
     {
         $input_data = [
@@ -341,10 +365,10 @@ class Service extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $validate->getError());
         }
         if ($input_data['service_type'] == 'single_job_refresh' && $input_data['jobid'] <= 0) {
-            $this->ajaxReturn(500,'请选择职位');
+            $this->ajaxReturn(500, '请选择职位');
         }
         if ($input_data['service_type'] == 'single_resume_down' && $input_data['resumeid'] <= 0) {
-            $this->ajaxReturn(500,'请选择简历');
+            $this->ajaxReturn(500, '请选择简历');
         }
 
         $result = model('Order')->addOrderSingleServiceOrder($input_data);
@@ -352,10 +376,11 @@ class Service extends \app\v1_0\controller\common\Base
         if (false === $result) {
             $this->ajaxReturn(500, model('Order')->getError());
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'下订单【订单号：'.$result['order_oid'].'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '下订单【订单号：' . $result['order_oid'] . '】');
 
         $this->ajaxReturn(200, '下单成功', $result);
     }
+
     /**
      * 继续支付
      */
@@ -382,7 +407,7 @@ class Service extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '未找到订单');
         }
         $order = $order->toArray();
-        if($order['deadline']!=0 && $order['deadline']<time()){
+        if ($order['deadline'] != 0 && $order['deadline'] < time()) {
             model('Order')->orderClose($order['id'], $this->userinfo->uid);
             $this->ajaxReturn(500, '订单已失效，请重新下单');
         }
@@ -404,6 +429,7 @@ class Service extends \app\v1_0\controller\common\Base
         $return['parameter'] = $result;
         $this->ajaxReturn(200, '获取支付信息成功', $return);
     }
+
     public function orderList()
     {
         $where['uid'] = $this->userinfo->uid;
@@ -427,7 +453,7 @@ class Service extends \app\v1_0\controller\common\Base
             $list[$key]['service_type_text'] = model(
                 'Order'
             )->map_service_type_company[$value['service_type']];
-            $list[$key]['payment_name'] = isset(model('Order')->map_payment[$value['payment']])?model('Order')->map_payment[$value['payment']]:'';
+            $list[$key]['payment_name'] = isset(model('Order')->map_payment[$value['payment']]) ? model('Order')->map_payment[$value['payment']] : '';
         }
 
         $return['items'] = $list;
@@ -462,6 +488,7 @@ class Service extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
+
     public function orderDetail()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -473,18 +500,17 @@ class Service extends \app\v1_0\controller\common\Base
             ->where('id', $id)
             ->find();
 
-        $info['service_type_text'] = model('Order')->map_service_type_company[
-            $info['service_type']
-        ];
+        $info['service_type_text'] = model('Order')->map_service_type_company[$info['service_type']];
         $info['status_text'] = model('Order')->map_status[$info['status']];
         $info['payment_text'] =
-        $info['payment'] == ''
-        ? ''
-        : model('Order')->map_payment[$info['payment']];
+            $info['payment'] == ''
+                ? ''
+                : model('Order')->map_payment[$info['payment']];
         $info['extra'] = json_decode($info['extra'], true);
 
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
+
     public function orderCancel()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -495,9 +521,10 @@ class Service extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, model('Order')->getError());
         }
 
-        $this->writeMemberActionLog($this->userinfo->uid,'取消订单【订单ID：'.$id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '取消订单【订单ID：' . $id . '】');
         $this->ajaxReturn(200, '取消订单成功');
     }
+
     public function orderDel()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -515,7 +542,7 @@ class Service extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '只能删除已取消的订单');
         }
         $order->delete();
-        $this->writeMemberActionLog($this->userinfo->uid,'删除订单【订单ID：'.$id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '删除订单【订单ID：' . $id . '】');
         $this->ajaxReturn(200, '删除订单成功');
     }
 }

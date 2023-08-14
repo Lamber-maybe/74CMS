@@ -32,6 +32,11 @@ class CollectionValidate extends BaseValidate
         'company_scale'      => '', // 企业规模
         'company_content'    => '', // 企业介绍
         'company_short_desc' => '', // 企业简介
+        'title'              => '', // 文章标题
+        'category'           => '', // 文章分类
+        'click'              => '', // 点击量
+        'sort_id'            => '', // 排序
+        'source'             => '', //来源
     ];
 
     protected $interfaceParam  =   [
@@ -77,6 +82,19 @@ class CollectionValidate extends BaseValidate
                     ['field_name'=>'company_scale','name'=>'企业规模','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_content','name'=>'企业介绍','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_short_desc','name'=>'企业简介','type'=>'is_string','default'=>'','require'=>true],
+                ],
+            ],
+            // 保存资讯信息
+            'saveArticle'=>[
+                'validate'=>[
+                    ['field_name'=>'username','name'=>'用户名','type'=>'is_string','empty'=>false,'require'=>true],
+                    ['field_name'=>'password','name'=>'密码','type'=>'is_string','empty'=>false,'require'=>true],
+                    ['field_name'=>'title','name'=>'文章标题','type'=>'is_string','empty'=>false,'require'=>true],
+                    ['field_name'=>'content','name'=>'文章内容','type'=>'is_string','default'=>'','require'=>true],
+                    ['field_name'=>'category','name'=>'文章分类','type'=>'is_string','default'=>'','require'=>false],
+                    ['field_name'=>'click','name'=>'点击量','type'=>'is_numeric','default'=>0,'require'=>false],
+                    ['field_name'=>'sort_id','name'=>'排序','type'=>'is_numeric','default'=>0,'require'=>false],
+                    ['field_name'=>'source','name'=>'来源','type'=>'is_string','default'=>'','require'=>false],
                 ],
             ],
         ]

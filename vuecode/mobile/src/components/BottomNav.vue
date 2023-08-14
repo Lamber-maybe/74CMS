@@ -14,11 +14,15 @@
         </div>
       </div>
       <div class="d1">
+        <!-- <div :class="'bar_item ' + thirdClass " @click="handleImjump(thirdTo)">
+          {{ thirdText }}
+          <div class="information" v-if="$store.state.imUnreaded"></div>
+        </div> -->
         <router-link :class="'bar_item ' + thirdClass " :to="thirdTo">
           {{ thirdText }}
-          <div class="information" v-if="$store.state.imUnreaded">
-            <!--                {{NewList}}-->
-            <!--                30-->
+          <div class="information" v-if="$store.state.imUnreaded && $store.state.LoginOrNot">
+                           <!-- {{NewList}} -->
+                           <!-- 30 -->
           </div>
         </router-link>
         <router-link class="bar_item user" :to="mineTo">
@@ -32,11 +36,10 @@
 <script>
 import http from '@/utils/http'
 import api from '@/api'
-import {mapState} from 'vuex'
-
+import {mapState, mapMutations} from 'vuex'
 export default {
   name: 'BottomNav',
-  data() {
+  data () {
     return {
       NewList: 0,
       secondClass: 'job',
@@ -50,7 +53,17 @@ export default {
     }
   },
   methods: {
-    AplusSign() {
+    ...mapMutations(['setImToken']),
+    handleImjump(item){
+      if(this.thirdClass == 'im'){
+        this.$store.state.imUnreaded = false
+        this.$router.push(item)
+      } else {
+        this.$router.push(item)
+      }
+      // console.log(item,this.thirdClass)
+    },
+    AplusSign () {
       // 根据登录会员类型，处理导航显示
       if (this.$store.state.LoginOrNot) {
         if (parseInt(this.$store.state.LoginType) === 1) {
@@ -66,7 +79,7 @@ export default {
       // 没登陆 跳登录
       this.$router.push('/member/login')
     },
-    handlerJobadd() {
+    handlerJobadd () {
       http
         .get(api.company_check_jobadd_num, {})
         .then(res => {
@@ -98,17 +111,37 @@ export default {
     /***
      * 聊天用户列表
      */
-    getUserList() {
+    getUserList () {
       http.post(api.chatList, {token: this.imToken}).then((res) => {
         if (res.code == 200) {
-          for (const info of res.data.items) {
-            if (info.new > 0) {
-              this.NewList++
+        this.$store.state.imUnreaded = false
+          res.data.items.forEach(item => {
+            if (item.new > 0) {
+              this.$store.state.imUnreaded = true
             }
+          })
+        }
+      })
+    },
+    //全局检测
+    imWindowGlobal () {
+      http.post(api.im_window_global).then((res) => {
+        if (res.data.next == '') {
+          if(this.imToken == ''){
+            this.getImToken()
+          } else {
+            this.getUserList()
           }
         }
       })
-    }
+    },
+    //获取token
+    getImToken () {
+      http.get(api.imToken).then((res) => {
+        this.setImToken(res.data)
+        this.getUserList()
+      })
+    },
   },
   computed: {
     ...mapState({
@@ -116,10 +149,10 @@ export default {
       imToken: state => state.imToken
     })
   },
-  mounted() {
+  mounted () {
     // 根据登录会员类型，处理导航显示
     if (this.$store.state.LoginOrNot) {
-      //this.getUserList()
+        this.imWindowGlobal()
       if (parseInt(this.$store.state.LoginType) === 1) {
         // 企业
         this.secondClass = 'resume'

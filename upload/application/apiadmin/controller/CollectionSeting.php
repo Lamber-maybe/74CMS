@@ -135,4 +135,30 @@ class CollectionSeting extends \app\common\controller\Backend
         }
     }
 
+    /**
+     * 保存资讯采集设置
+     * @access public
+     * @author zhangchunhui
+     * @return array
+     * Date Time：2022年6月17日14:00:00
+     */
+    public function saveArticleSeting(){
+        try{
+            // 获取参数
+            $validate = new CollectionSetingValidate();
+            $params = $validate->getParamAll();
+
+            $logic = new CollectionSetingLogic();
+            $result = $logic->saveSeting($params, 5, $this->admininfo);
+            if ($result['status'] === false) {
+                responseJson(400, $result['msg']);
+            }
+
+            responseJson(200, '保存成功');
+        }catch(\Exception $e){
+            saveLog('保存失败-报错信息：'.json_encode(['Line' => $e->getLine(),'File' => $e->getFile(),'Message' => $e->getMessage()]));
+            responseJson(400, '保存失败');
+        }
+    }
+
 }

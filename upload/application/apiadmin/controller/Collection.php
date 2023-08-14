@@ -64,4 +64,30 @@ class Collection
         }
     }
 
+    /**
+     * 保存资讯信息
+     * @access public
+     * @author zhangchunhui
+     * @return array
+     * Date Time：2022年6月17日15:49:10
+     */
+    public function saveArticle(){
+        try{
+            // 获取参数
+            $validate = new CollectionValidate();
+            $params = $validate->getParamAll();
+
+            $logic = new CollectionLogic();
+            $result = $logic->saveArticle($params);
+            if ($result['status'] === false) {
+                responseJson(400, $result['msg']);
+            }
+
+            responseJson(200, $result);
+        }catch(\Exception $e){
+            saveLog('保存资讯失败-报错信息：'.json_encode(['Line' => $e->getLine(),'File' => $e->getFile(),'Message' => $e->getMessage()]));
+            responseJson(400, '保存资讯失败');
+        }
+    }
+
 }

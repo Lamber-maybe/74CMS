@@ -106,7 +106,7 @@
             </div>
           </div>
           <div class="tip_text">
-            填写相关信息后盖章扫描上传委托书
+            上传委托书需填写相关信息后盖章并扫描成图片后上传
             <el-button type="text" @click="download">[下载模板]</el-button>
           </div>
         </div>
@@ -163,11 +163,13 @@ export default {
 
       if (!isJPG && !isPng) {
         this.$message.error('图片只能是 JPG/PNG 格式!');
+        return false
       }
       if (!isLtsize) {
         this.$message.error('图片大小不能超过 '+size+'MB!');
+        return false
       }
-      return (isJPG || isPng) && isLtsize;
+
     },
     handlerUploadLisence(file) {
       http
@@ -259,6 +261,7 @@ export default {
     },
     download() {
       location.href = window.global.RequestBaseUrl + api.downloadproxy
+      this.$store.dispatch('getConfig')
     }
   }
 }

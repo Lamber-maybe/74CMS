@@ -190,7 +190,8 @@ class IndexController extends Controller {
         $dbprefix = I('post.dbprefix/s','','trim');
         $cover = I('post.cover/d',1,'intval');
         try{
-            $conn = mysqli_connect($host, $dbuser, $dbpwd);
+            //非3306端口安装修改 tapd:197
+            $conn = mysqli_connect($host, $dbuser, $dbpwd, $dbname, $port);
             if(!$conn){
                 throw new \Exception('连接数据库错误，请核对信息是否正确');
             }
@@ -233,7 +234,7 @@ class IndexController extends Controller {
 			$this->error('您两次输入的密码不一致');
         }
         try{
-            $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
+            $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport);
             if(!$conn){
                 throw new \Exception('连接数据库错误，请核对信息是否正确');
             }

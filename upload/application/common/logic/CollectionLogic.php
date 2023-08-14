@@ -24,6 +24,10 @@ class CollectionLogic
     protected $_jobSeting;
     // 企业采集设置
     protected $_companySeting;
+    // 资讯采集设置
+    protected $_articleSeting;
+    //资讯模型
+    protected $_articleModel;
     // 账号采集设置
     protected $_accountSeting;
 
@@ -1186,6 +1190,106 @@ class CollectionLogic
         $this->_jobSeting     = !empty($info['job_seting']) ? json_decode($info['job_seting'], true) : [];
         $this->_companySeting = !empty($info['company_seting']) ? json_decode($info['company_seting'], true) : [];
         $this->_accountSeting = !empty($info['account_seting']) ? json_decode($info['account_seting'], true) : [];
+        $this->_articleSeting = !empty($info['article_seting']) ? json_decode($info['article_seting'], true) : [];
     }
 
+    /**
+     * 保存资讯信息
+     * @access public
+     * @author zhangchunhui
+     * @param  array $params [请求参数]
+     * @return array
+     * Date Time：2022年6月17日16:17:53
+     */
+    public function saveArticle($params){
+        #################### 验证用户身份 ####################
+        $verifyResult = $this->_verifyUserIdentity($params);
+        if ($verifyResult['status'] === false) {
+            return callBack(false, $verifyResult['msg']);
+        }
+        $this->_currentTime = time();
+
+        $this->_articleModel = model('article');
+        // 开启事务
+        $this->_articleModel->startTrans();
+        try {
+            #################### 处理资讯信息 ####################
+            $handleResult = $this->_handleArticleData($params);
+
+            // 提交事务
+            $this->_articleModel->commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            echo $e->getMessage();die();
+
+            $this->_articleModel->rollback();
+            saveLog('保存资讯失败-报错信息：'.json_encode(['Line' => $e->getLine(),'File' => $e->getFile(),'Message' => $e->getMessage()]));
+            responseJson(400, '保存资讯失败');
+        }
+
+        return callBack(true, $handleResult['msg'], ['articleId' => $handleResult['articleId']]);
+    }
+
+    /**
+     * 处理资讯信息
+     * @access private
+     * @author zhangchunhui
+     * @param  array $params [请求参数]
+     * @return array
+     * Date Time：2022年6月17日16:17:53
+     */
+    private function _handleArticleData($params){
+        // 生成资讯信息
+        $article_category = model('ArticleCategory')->field('id,name')->select();
+
+        $result = $this->_compareSimilar($article_category, $params['category'], 'name', $this->_seting['matching_accuracy']);
+
+        // 查询资讯是否已存在
+        $condition = [
+            'cid'   =>  isset($result['id']) ? $result['id'] : (isset($this->_articleSeting['cid']) ? $this->_articleSeting['cid'] : 0),
+            'title' => isset($params['title']) ? $params['title'] : '',
+        ];
+        $source = [
+            '原创'=>0,
+            '转载'=>1
+        ];
+        $articleInfo = $this->_articleModel->where($condition)->field('id')->find();
+        $param = [
+            'cid' => $condition['cid'],//文章分类id
+            'title' => isset($params['title']) ? $params['title'] : '',//文章标题
+            'content' => isset($params['content']) ? $params['content'] : '',//文章内容
+            'click' => !empty($params['click']) ? $params['click'] : (isset($this->_articleSeting['click']) ? $this->_articleSeting['click'] : 0),//点击量
+            'addtime' => isset($params['addtime']) ? strtotime($params['addtime']) : time(),//添加时间
+            'sort_id' => !empty($params['sort_id']) ? intval($params['sort_id']) : 0,//排序
+            'source' => isset($source[$params['source']]) ? $source[$params['source']]  : (isset($this->_articleSeting['source']) ? $this->_articleSeting['source'] : 0),//来源
+            'link_url' => isset($params['link_url']) ? $params['link_url'] : '',//外部链接
+            'seo_keywords' => isset($params['seo_keywords']) ? $params['seo_keywords'] : '',//seo关键字
+            'seo_description' => isset($params['seo_description']) ? $params['seo_description'] : '',//seo描述
+            'attach' => json_encode(array())//附件
+        ];
+        if (empty($articleInfo) || $articleInfo === null) {
+            #################### 新增资讯 ####################
+            $articleId = $this->_articleModel->insertGetId($param);
+            if (empty($articleId)) {
+                throw new \Exception('新增资讯信息失败，请求SQL为：'.$this->_articleModel->getLastSql());
+            }
+
+            $msg = '新增资讯成功';
+        }else{
+            #################### 更新资讯 ####################
+            $updateResult = $this->_articleModel->where(['id' => $articleInfo['id']])->update($param);
+            if ($updateResult === false) {
+                throw new \Exception('更新资讯信息失败，请求SQL为：'.$this->_articleModel->getLastSql());
+            }
+
+            $msg   = '更新成功，资讯已存在';
+            $articleId = $articleInfo['id'];
+        }
+
+
+        return [
+            'msg'   => $msg,
+            'articleId' => $articleId
+        ];
+    }
 }

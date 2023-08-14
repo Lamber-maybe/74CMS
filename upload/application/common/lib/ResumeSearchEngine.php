@@ -351,16 +351,15 @@ class ResumeSearchEngine
      */
     protected function _set_shield_company_uid()
     {
+        //个人会员屏蔽多个企业无效 192
         if (intval($this->shield_company_uid) > 0) {
             $this->join = [
                 config('database.prefix') . 'shield b',
-                'a.uid=b.personal_uid',
+                'a.uid=b.personal_uid and b.company_uid='.$this->shield_company_uid,
                 'LEFT'
             ];
             $this->where .=
-                ' AND (b.company_uid<>' .
-                $this->shield_company_uid .
-                ' OR b.id is NULL)';
+                ' AND (b.id is NULL)';
         }
     }
     /**

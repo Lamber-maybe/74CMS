@@ -293,7 +293,7 @@ export default {
     SelectJob
   },
   methods: {
-    ...mapMutations(['setImShowParams', 'setimChatid', 'setBlackObj']),
+    ...mapMutations(['setImShowParams', 'setimChatid', 'setBlackObj','setImToken']),
     /**
      * 二维码图片
      */
@@ -314,6 +314,12 @@ export default {
             ? this.$router.go(-1)
             : this.$router.push('/')
         }
+      })
+    },
+    getImToken () {
+      http.get(api.imToken).then((res) => {
+        this.setImToken(res.data)
+        this.getUserList()
       })
     },
     /**
@@ -338,8 +344,11 @@ export default {
             // this.handleIsBlackList()
             // 获取简历信息
             // this.getResumeInfo()
-
-            this.getUserList()
+            if(this.imToken == ''){
+              this.getImToken()
+            } else {
+              this.getUserList()
+            }
           }
           if (res.data.next == 'bind_weixin') { // 绑定微信
             this.bindWeixinShow = true

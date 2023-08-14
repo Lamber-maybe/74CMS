@@ -47,10 +47,6 @@ CREATE TABLE `qs_admin` (
   `last_login_ipaddress` varchar(30) NOT NULL,
   `openid` varchar(50) NOT NULL DEFAULT '',
   `is_sc` tinyint(3) NOT NULL DEFAULT 0 COMMENT '是否是销售',
-  `qy_userid` varchar(50) NOT NULL DEFAULT '' COMMENT '企业微信成员UserID',
-  `qy_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '企业微信成员非企业成员的标识',
-  `bind_qywx` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否绑定企业微信[0:否;1:是;]',
-  `bind_qywx_time` int(10) NOT NULL DEFAULT '0' COMMENT '绑定企业微信时间',
   `mobile` char(11) NOT NULL DEFAULT '',
   `avatar` varchar(200) DEFAULT '',
   PRIMARY KEY (`id`)
@@ -2329,6 +2325,8 @@ CREATE TABLE `qs_poster` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_poster||-_-||
+
+
 DROP TABLE IF EXISTS `qs_collection_seting`;
 CREATE TABLE `qs_collection_seting` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2337,9 +2335,11 @@ CREATE TABLE `qs_collection_seting` (
     `job_seting` varchar(500) NOT NULL DEFAULT '' COMMENT '职位设置',
     `company_seting` varchar(500) NOT NULL DEFAULT '' COMMENT '企业设置',
     `account_seting` varchar(255) NOT NULL DEFAULT '' COMMENT '账号设置',
+    `article_seting` varchar(255) NOT NULL DEFAULT '' COMMENT '资讯设置',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集设置';
 ||-_-||qs_collection_seting||-_-||
+
 
 DROP TABLE IF EXISTS `qs_marketing_template`;
 CREATE TABLE `qs_marketing_template` (
@@ -2355,6 +2355,8 @@ CREATE TABLE `qs_marketing_template` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_marketing_template||-_-||
+
+
 DROP TABLE IF EXISTS `qs_jobfair_online_view_log`;
 CREATE TABLE `qs_jobfair_online_view_log` (
 id int(11) NOT NULL AUTO_INCREMENT,

@@ -40,6 +40,9 @@ class CollectionSetingValidate extends BaseValidate
         'name_rule'         => '', // 用户名规则:1|随机字符串,2|手机号
         'pwd_rule'          => '', // 密码规则:1|与用户名相同,2|指定密码
         'password'          => '', // 密码
+        'cid'               => '', //资讯分类
+        'source'            => '', //资讯来源
+        'click'             => '', //资讯点击量
     ];
 
     protected $interfaceParam  =   [
@@ -97,6 +100,14 @@ class CollectionSetingValidate extends BaseValidate
                     ['field_name'=>'name_rule','name'=>'用户名规则','type'=>'is_numeric','long'=>1,'require_value'=>[1,2],'default'=>1,'empty'=>false,'require'=>true],
                     ['field_name'=>'pwd_rule','name'=>'密码规则','type'=>'is_numeric','long'=>1,'require_value'=>[1,2],'default'=>1,'empty'=>false,'require'=>true],
                     ['field_name'=>'password','name'=>'密码','type'=>'is_string','long'=>15,'default'=>'','require'=>false],
+                ],
+            ],
+            //保存资讯设置
+            'saveArticleSeting'=>[
+                'validate'=>[
+                    ['field_name'=>'cid','name'=>'资讯分类','type'=>'is_numeric','long'=>10,'empty'=>false,'require'=>true],
+                    ['field_name'=>'source','name'=>'资讯来源','type'=>'is_numeric','long'=>1,'require'=>true],
+                    ['field_name'=>'click','name'=>'点击量','type'=>'is_numeric','long'=>10,'require'=>true],
                 ],
             ],
         ]

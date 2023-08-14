@@ -45,3 +45,12 @@ export function saveAccountSeting(data) {
     data
   })
 }
+
+// 保存资讯设置
+export function saveArticleSeting(data) {
+  return request({
+    url: apiArr.saveArticleSeting,
+    method: 'post',
+    data
+  })
+}
