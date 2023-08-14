@@ -40,10 +40,19 @@ class Job extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $count_total = input('get.count_total/d', 0, 'intval');
-
+        $minage = input('get.minage/d',0,'intval'); // 最低年龄
+        $maxage = input('get.maxage/d',0,'intval');  // 最高年龄
 
         if ($keyword != '') {
             $params['keyword'] = $keyword;
+        }
+        if ($minage > 0)
+        {
+            $params['minage'] = ['egt',$minage];
+        }
+        if ($maxage > 0)
+        {
+            $params['maxage'] = ['elt',$maxage];
         }
         $distanceData = [];
         if ($lat > 0 && $lng > 0) {
@@ -463,6 +472,21 @@ class Job extends \app\v1_0\controller\common\Base
         if ($jobinfo === null) {
             $this->ajaxReturn(500, '职位信息为空');
         }
+        $base_info['is_display'] = $jobinfo['is_display'];
+        if ($jobinfo['audit'] == 0) {
+            $base_info['job_status'] = 0;
+            $base_info['job_status_cn'] = '审核中';
+        } elseif ($jobinfo['is_display'] == 0) {
+            $base_info['job_status'] = 2;
+            $base_info['job_status_cn'] = '已关闭';
+        } elseif ($jobinfo['audit'] == 2) {
+            $base_info['job_status'] = 2;
+            $base_info['job_status_cn'] = '未通过';
+        } else {
+            $base_info['job_status'] = 1;
+            $base_info['job_status_cn'] = '发布中';
+        }
+
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();

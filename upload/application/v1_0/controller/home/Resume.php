@@ -179,8 +179,46 @@ class Resume extends \app\v1_0\controller\common\Base
                 }
                 $work_list[$value['rid']] = $value;
             }
+            $resume_tag = model('Category')->getCache('QS_resumetag');
+            $resume_work = model('ResumeWork')
+                ->field('rid,uid,starttime,endtime,todate,companyname,jobname,duty')
+                ->where('rid','in',$rids)
+                ->group('rid')
+                ->order('id','desc')
+                ->select();
             foreach ($resume as $key => $val) {
                 $tmp_arr = [];
+                $tmp_arr['tag'] = [];
+                foreach(explode(',',$val['tag']) as $k=>$v)
+                {
+                    $tag = isset($resume_tag[$v]) ? $resume_tag[$v] : '';
+                    if (!empty($tag))
+                    {
+                        $tmp_arr['tag'][] = $tag;
+                    }
+                }
+                // app增加字段
+                $tmp_arr['companyname'] = '';
+                $tmp_arr['jobname'] = '';
+                $tmp_arr['starttime'] = '';
+                $tmp_arr['endtime'] = '';
+                $tmp_arr['specialty'] = $val['specialty'];
+                foreach ($resume_work as $k=>$v)
+                {
+                    if ($val['id'] == $v['rid'])
+                    {
+                        $tmp_arr['companyname'] = $v['companyname'];
+                        $tmp_arr['jobname'] = $v['jobname'];
+                        $tmp_arr['starttime'] = date('Y',$v['starttime']);
+                        if ($v['todate'] == 1)
+                        {
+                            $tmp_arr['endtime'] = '至今';
+                        }else
+                        {
+                            $tmp_arr['endtime'] = date('Y',$v['endtime']);
+                        }
+                    }
+                }
                 $tmp_arr['id'] = $val['id'];
                 $tmp_arr['stick'] = $val['stick'];
                 $tmp_arr['high_quality'] = $val['high_quality'];

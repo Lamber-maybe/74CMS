@@ -64,6 +64,22 @@ class Index extends \app\v1_0\controller\common\Base
                 ->where('c.jobname','not null')
                 ->count(),
         ];
+
+        // 收藏职位统计
+        $return_manage['fav_job'] = [
+            'red_point' => 0,
+            'number' => model('FavJob')
+                ->alias('a')
+                ->join(config('database.prefix').'company b','a.company_uid=b.uid','LEFT')
+                ->join(config('database.prefix').'job c','a.jobid=c.id','LEFT')
+                ->field('a.*,b.id as company_id,b.companyname,b.audit as company_audit,c.jobname,c.education,c.experience,c.district,c.negotiable,c.minwage,c.maxwage,c.click')
+                ->where('a.personal_uid', $this->userinfo->uid)
+                ->where('b.companyname','not null')
+                ->where('c.jobname','not null')
+                ->order('a.id desc')
+                ->count()
+        ];
+
         $return['manage'] = $return_manage;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }

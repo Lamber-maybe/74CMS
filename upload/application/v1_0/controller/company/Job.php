@@ -649,10 +649,12 @@ class Job extends \app\v1_0\controller\common\Base
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $list = model('Job')
             ->field(
-                'id,jobname,emergency,stick,click,audit,is_display,refreshtime'
+                'id,jobname,emergency,stick,click,audit,is_display,refreshtime,district,education,experience,minwage,maxwage,negotiable' // app字段缺少 新增district,education,experience,minwage,maxwage字段 zch
             )
             ->where('uid', 'eq', $this->userinfo->uid);
         switch ($type) {
+            case 3: //全部
+                break;
             case 1: //审核中
                 $list = $list->where('audit', 0);
                 break;
@@ -717,7 +719,14 @@ class Job extends \app\v1_0\controller\common\Base
         } else {
             $service_refresh_jobid_arr = [];
         }
+        // app新增字段 zch
+        $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
+            $value['wage_text'] = model('BaseModel')->handle_wage(
+                $value['minwage'],
+                $value['maxwage'],
+                $value['negotiable']
+            );
             $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
             $value['resume_all'] = isset($apply_total_list[$value['id']])
             ? $apply_total_list[$value['id']]['all']
@@ -749,6 +758,18 @@ class Job extends \app\v1_0\controller\common\Base
             }
             $value['refreshtime'] = daterange(time(), $value['refreshtime']);
             $value['job_link_url_web'] = url('index/job/show',['id'=>$value['id']]);
+            // app新增字段 zch
+            $value['district'] = isset($category_district_data[$value['district']]) ? $category_district_data[$value['district']] : '';
+            $value['education_text'] = isset(
+                model('BaseModel')->map_education[$value['education']]
+            )
+                ? model('BaseModel')->map_education[$value['education']]
+                : '不限学历';
+            $value['experience_text'] = isset(
+                model('BaseModel')->map_experience[$value['experience']]
+            )
+                ? model('BaseModel')->map_experience[$value['experience']]
+                : '不限经验';
             $list[$key] = $value;
         }
 

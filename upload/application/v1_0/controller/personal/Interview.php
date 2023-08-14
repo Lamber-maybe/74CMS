@@ -29,7 +29,7 @@ class Interview extends \app\v1_0\controller\common\Base
         $list = model('CompanyInterview')
             ->alias('a')
             ->join(config('database.prefix') . 'job b', 'a.jobid=b.id', 'left')
-            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.interview_time,a.contact,a.address,a.tel,a.note,a.addtime,a.is_look,b.education,b.experience,b.nature')
+            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.interview_time,a.contact,a.address,a.tel,a.note,a.addtime,a.is_look,b.education,b.experience,b.nature,b.minwage,b.maxwage,b.negotiable,b.map_lat,b.map_lng')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -37,6 +37,11 @@ class Interview extends \app\v1_0\controller\common\Base
             ->select();
 
         foreach ($list as $key => $value) {
+            $value['wage_text'] = model('BaseModel')->handle_wage(
+                $value['minwage'],
+                $value['maxwage'],
+                $value['negotiable']
+            );
             $value['education_text'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )

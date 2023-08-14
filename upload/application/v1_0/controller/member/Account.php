@@ -277,59 +277,6 @@ class Account extends \app\v1_0\controller\common\Base
         $this->ajaxReturn(200, '修改成功');
     }
     /**
-     * 绑定qq
-     */
-    public function bindQq()
-    {
-        $input_data = [
-            'type' => 'qq',
-            'openid' => input('post.openid/s', '', 'trim'),
-            'unionid' => input('post.unionid/s', '', 'trim'),
-            'nickname' => input('post.nickname/s', '', 'trim'),
-            'avatar' => input('post.avatar/s', '', 'trim'),
-            'bindtime' => time(),
-        ];
-        $validate = new \think\Validate([
-            'openid' => 'require',
-            'unionid' => 'require',
-            'nickname' => 'require',
-            'avatar' => 'require',
-        ]);
-        if (!$validate->check($input_data)) {
-            $this->ajaxReturn(500, $validate->getError());
-        }
-
-        $bindinfo = model('MemberBind')->where([
-                'type' => $input_data['type'],
-                'openid' => ['eq', $input_data['openid']],
-                'unionid' => ['eq', $input_data['unionid']],
-            ])->find();
-        if ($bindinfo=== null) {
-            $sqlarr['uid'] = $this->userinfo->uid;
-            $sqlarr['type'] = $input_data['type'];
-            $sqlarr['openid'] = $input_data['openid'];
-            $sqlarr['unionid'] = $input_data['unionid'];
-            $sqlarr['nickname'] = $input_data['nickname'];
-            $sqlarr['avatar'] = $input_data['avatar'];
-            $sqlarr['bindtime'] = $input_data['bindtime'];
-            model('MemberBind')->save($sqlarr);
-            model('Task')->doTask(
-                $this->userinfo->uid,
-                $this->userinfo->utype,
-                'bind_qq'
-            );
-        }else{
-            $sqlarr['uid'] = $this->userinfo->uid;
-            $sqlarr['nickname'] = $input_data['nickname'];
-            $sqlarr['avatar'] = $input_data['avatar'];
-            $sqlarr['bindtime'] = $input_data['bindtime'];
-            model('MemberBind')->save($sqlarr,['id'=>$bindinfo['id']]);
-        }
-        $this->writeMemberActionLog($this->userinfo->uid,'绑定QQ');
-
-        $this->ajaxReturn(200, '绑定成功');
-    }
-    /**
      * 绑定新浪微博
      */
     public function bindSina()

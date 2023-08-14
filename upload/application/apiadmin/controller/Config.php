@@ -29,6 +29,16 @@ class Config extends \app\common\controller\Backend
                     $info[$key] = htmlspecialchars_decode($value,ENT_QUOTES);
                 }
             }
+
+            /**
+             * 【新增】
+             * app资质公示增加字段
+             * zch - 2022.09.14
+             */
+            $info['business_license_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_license_id']); //电子营业执照
+            $info['service_license_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['service_license_id']); // 人力资源服务许可证
+            $info['business_licenses_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_licenses_id']); // 增值电信业务经营许可证
+
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
             $inputdata = input('post.');
@@ -246,8 +256,8 @@ class Config extends \app\common\controller\Backend
                 $arr['id'] = $configlist[$value['alias']]['id'];
                 $arr['is_display'] = $value['is_display'];
                 $arr['plan_id'] = is_array($value['plan_id'])
-                ? implode(',', $value['plan_id'])
-                : $value['plan_id'];
+                    ? implode(',', $value['plan_id'])
+                    : $value['plan_id'];
                 $sqldata[] = $arr;
             }
             model('MobileIndexModule')

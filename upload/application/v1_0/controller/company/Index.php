@@ -14,15 +14,24 @@ class Index extends \app\v1_0\controller\common\Base
     public function index()
     {
         $companyinfo = model('Company')
-            ->field('id,logo,companyname,scale,nature,trade,audit,district1')
+            ->field('id,logo,companyname,scale,nature,trade,audit,district1,district2,district3,district')
             ->where('uid', $this->userinfo->uid)
             ->find();
         $auth = model('CompanyAuth')->where('uid', $this->userinfo->uid)->find();
         $return_companyinfo = [];
+        $category_district_data = model('CategoryDistrict')->getCache();
         if ($companyinfo !== null) {
             $return_companyinfo['id'] = $companyinfo['id'];
             $return_companyinfo['companyname'] = $companyinfo['companyname'];
             $return_companyinfo['district1'] = $companyinfo['district1'];
+            $return_companyinfo['district1_text'] = isset($category_district_data[$companyinfo['district1']])
+                ? $category_district_data[$companyinfo['district1']] : '';
+            $return_companyinfo['district2_text'] = isset($category_district_data[$companyinfo['district2']])
+                ? $category_district_data[$companyinfo['district2']] : '';
+            $return_companyinfo['district3_text'] = isset($category_district_data[$companyinfo['district3']])
+                ? $category_district_data[$companyinfo['district3']] : '';
+            $return_companyinfo['district_text'] = isset($category_district_data[$companyinfo['district']])
+                ? $category_district_data[$companyinfo['district']] : '';
             $return_companyinfo['company_audit'] = $companyinfo['audit'];
             if ($companyinfo['audit'] == 0) {
                 //待审核
@@ -156,6 +165,13 @@ class Index extends \app\v1_0\controller\common\Base
                 ->count(),
         ];
 
+        // 在线职位
+        $return_manage['job_count'] = [
+            'red_point' => 0,
+            'number' => model('job')
+                ->where(['uid'=>$this->userinfo->uid,'audit'=>1,'is_display'=>1])
+                ->count(),
+        ];
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
         $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
 

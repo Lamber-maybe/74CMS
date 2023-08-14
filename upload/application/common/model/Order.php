@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 class Order extends \app\common\model\BaseModel
@@ -27,12 +28,14 @@ class Order extends \app\common\model\BaseModel
         'stick' => '简历置顶',
         'tag' => '简历醒目标签',
     ];
+
     public function __construct($data = [])
     {
         parent::__construct($data);
         $this->map_payment['points'] = str_replace("积分", config('global_config.points_byname'), $this->map_payment['points']);
         $this->map_service_type_company['points'] = str_replace("积分", config('global_config.points_byname'), $this->map_service_type_company['points']);
     }
+
     /**
      * 添加套餐订单并返回支付信息
      */
@@ -59,8 +62,8 @@ class Order extends \app\common\model\BaseModel
                 ->where($coupon_map)
                 ->find();
         }
-        $order_arr['code'] = isset($data['code'])?$data['code']:'';
-        $order_arr['openid'] = isset($data['openid'])?$data['openid']:'';
+        $order_arr['code'] = isset($data['code']) ? $data['code'] : '';
+        $order_arr['openid'] = isset($data['openid']) ? $data['openid'] : '';
         $order_arr['return_url'] = $data['return_url'];
         $order_arr['payment'] = '';
         $order_arr['utype'] = 1;
@@ -77,7 +80,7 @@ class Order extends \app\common\model\BaseModel
         ) {
             $order_arr['service_amount_after_discount'] =
                 $service_info['preferential_expense'];
-            $order_arr['deadline'] = $order_arr['deadline']>$service_info['preferential_expense_end']?$service_info['preferential_expense_end']:$order_arr['deadline'];
+            $order_arr['deadline'] = $order_arr['deadline'] > $service_info['preferential_expense_end'] ? $service_info['preferential_expense_end'] : $order_arr['deadline'];
         } else {
             $order_arr['service_amount_after_discount'] =
                 $service_info['expense'];
@@ -110,9 +113,9 @@ class Order extends \app\common\model\BaseModel
 
         $order_arr['deduct_points'] = 0;
         $order_arr['oid'] =
-        date('Ymd') .
-        msectime() .
-        substr(md5($order_arr['uid']), rand(0, 27), 4);
+            date('Ymd') .
+            msectime() .
+            substr(md5($order_arr['uid']), rand(0, 27), 4);
 
         $order_arr['addtime'] = time();
         if ($order_arr['amount'] == 0) {
@@ -151,9 +154,9 @@ class Order extends \app\common\model\BaseModel
         );
 
         $return = [
-            'order_id'=>0,
-            'order_oid'=>$order_arr['oid'],
-            'order_amount'=>$order_arr['amount'],
+            'order_id' => 0,
+            'order_oid' => $order_arr['oid'],
+            'order_amount' => $order_arr['amount'],
             'pay_status' => 1,
             'parameter' => [],
         ];
@@ -201,6 +204,7 @@ class Order extends \app\common\model\BaseModel
 
         return $return;
     }
+
     /**
      * 添加积分订单并返回支付信息
      */
@@ -214,8 +218,8 @@ class Order extends \app\common\model\BaseModel
             $this->error = '未获取到服务信息';
             return false;
         }
-        $order_arr['code'] = isset($data['code'])?$data['code']:'';
-        $order_arr['openid'] = isset($data['openid'])?$data['openid']:'';
+        $order_arr['code'] = isset($data['code']) ? $data['code'] : '';
+        $order_arr['openid'] = isset($data['openid']) ? $data['openid'] : '';
         $order_arr['return_url'] = $data['return_url'];
         $order_arr['payment'] = '';
         $order_arr['utype'] = 1;
@@ -231,9 +235,9 @@ class Order extends \app\common\model\BaseModel
         }
         $order_arr['deduct_points'] = 0;
         $order_arr['oid'] =
-        date('Ymd') .
-        msectime() .
-        substr(md5($order_arr['uid']), rand(0, 27), 4);
+            date('Ymd') .
+            msectime() .
+            substr(md5($order_arr['uid']), rand(0, 27), 4);
 
         $order_arr['addtime'] = time();
         $order_arr['deadline'] = strtotime('+15day');
@@ -253,9 +257,9 @@ class Order extends \app\common\model\BaseModel
         );
 
         $return = [
-            'order_id'=>0,
-            'order_oid'=>$order_arr['oid'],
-            'order_amount'=>$order_arr['amount'],
+            'order_id' => 0,
+            'order_oid' => $order_arr['oid'],
+            'order_amount' => $order_arr['amount'],
             'pay_status' => 1,
             'parameter' => [],
         ];
@@ -349,7 +353,7 @@ class Order extends \app\common\model\BaseModel
                 }
             }
             $service_list['single_resume_down']['deduce_points'] = $need_points;
-	    // 快捷支付 zdq 2022.07.06
+            // 快捷支付 zdq 2022.07.06
             if ($resume_info['high_quality'] == 1) {
                 $need_expense = $global_config['single_resume_download_expense_talent'];
             } else {
@@ -382,8 +386,8 @@ class Order extends \app\common\model\BaseModel
         }
 
         $timestamp = time();
-        $order_arr['code'] = isset($data['code'])?$data['code']:'';
-        $order_arr['openid'] = isset($data['openid'])?$data['openid']:'';
+        $order_arr['code'] = isset($data['code']) ? $data['code'] : '';
+        $order_arr['openid'] = isset($data['openid']) ? $data['openid'] : '';
         $order_arr['return_url'] = $data['return_url'];
         $order_arr['payment'] = '';
         $order_arr['utype'] = 1;
@@ -396,9 +400,9 @@ class Order extends \app\common\model\BaseModel
         $order_arr['amount'] = $order_arr['service_amount_after_discount'];
         $order_arr['deduct_points'] = 0;
         $order_arr['oid'] =
-        date('Ymd') .
-        msectime() .
-        substr(md5($order_arr['uid']), rand(0, 27), 4);
+            date('Ymd') .
+            msectime() .
+            substr(md5($order_arr['uid']), rand(0, 27), 4);
 
         if ($data['deduct_points'] > 0) {
             if ($service_info['enable_points_deduct'] == 0) {
@@ -441,7 +445,7 @@ class Order extends \app\common\model\BaseModel
                 ->find();
             $order_arr['extra'] = [
                 'jobid' => $data['jobid'],
-                'jobname'=>$jobinfo['jobname']
+                'jobname' => $jobinfo['jobname']
             ];
         }
 
@@ -451,9 +455,9 @@ class Order extends \app\common\model\BaseModel
         );
 
         $return = [
-            'order_id'=>0,
-            'order_oid'=>$order_arr['oid'],
-            'order_amount'=>$order_arr['amount'],
+            'order_id' => 0,
+            'order_oid' => $order_arr['oid'],
+            'order_amount' => $order_arr['amount'],
             'pay_status' => 1,
             'parameter' => [],
         ];
@@ -494,6 +498,7 @@ class Order extends \app\common\model\BaseModel
 
         return $return;
     }
+
     /**
      * 添加订单并返回支付信息
      */
@@ -537,8 +542,8 @@ class Order extends \app\common\model\BaseModel
             $this->error = '未获取到服务信息';
             return false;
         }
-        $order_arr['code'] = isset($data['code'])?$data['code']:'';
-        $order_arr['openid'] = isset($data['openid'])?$data['openid']:'';
+        $order_arr['code'] = isset($data['code']) ? $data['code'] : '';
+        $order_arr['openid'] = isset($data['openid']) ? $data['openid'] : '';
         $order_arr['return_url'] = $data['return_url'];
         $order_arr['utype'] = $data['utype'];
         $order_arr['uid'] = $data['uid'];
@@ -550,9 +555,20 @@ class Order extends \app\common\model\BaseModel
         if ($data['utype'] == 1) {
             $member_setmeal = model('Member')->getMemberSetmeal($data['uid']);
             if ($member_setmeal['service_added_discount'] > 0) {
+//                $order_arr['service_amount_after_discount'] =
+//                    ($order_arr['service_amount'] / 10) *
+//                    $member_setmeal['service_added_discount'];
                 $order_arr['service_amount_after_discount'] =
-                    ($order_arr['service_amount'] / 10) *
-                    $member_setmeal['service_added_discount'];
+                    bcadd(
+                        bcmul(
+                            ($order_arr['service_amount'] / 10),
+                            $member_setmeal['service_added_discount'],
+                            2),
+                        0,
+                        2);
+                if ($order_arr['service_amount_after_discount'] < 0.01) {
+                    $order_arr['service_amount_after_discount'] = 0.01;
+                }
             } else {
                 $order_arr['service_amount_after_discount'] =
                     $order_arr['service_amount'];
@@ -570,9 +586,9 @@ class Order extends \app\common\model\BaseModel
         $order_arr['deduct_amount'] = 0;
         $order_arr['payment'] = '';
         $order_arr['oid'] =
-        date('Ymd') .
-        msectime() .
-        substr(md5($order_arr['uid']), rand(0, 27), 4);
+            date('Ymd') .
+            msectime() .
+            substr(md5($order_arr['uid']), rand(0, 27), 4);
         if ($order_arr['service_amount_after_discount'] == 0) {
             $order_arr['amount'] = 0;
             $order_arr['deduct_points'] = 0;
@@ -663,9 +679,9 @@ class Order extends \app\common\model\BaseModel
         );
 
         $return = [
-            'order_id'=>0,
-            'order_oid'=>$order_arr['oid'],
-            'order_amount'=>$order_arr['amount'],
+            'order_id' => 0,
+            'order_oid' => $order_arr['oid'],
+            'order_amount' => $order_arr['amount'],
             'pay_status' => 1,
             'parameter' => [],
         ];
@@ -711,6 +727,7 @@ class Order extends \app\common\model\BaseModel
 
         return $return;
     }
+
     /**
      * 请求支付参数
      */
@@ -724,6 +741,7 @@ class Order extends \app\common\model\BaseModel
         }
         return $rst;
     }
+
     /**
      * 关闭订单
      */
@@ -760,19 +778,20 @@ class Order extends \app\common\model\BaseModel
         }
         return true;
     }
+
     /**
      * 设置订单状态为已支付
      */
-    public function orderPaid($oid, $payment, $time, $note = '',$admin_id=0)
+    public function orderPaid($oid, $payment, $time, $note = '', $admin_id = 0)
     {
         $order = $this->where('oid', 'eq', $oid)->find();
         if ($order === null) {
             $order = model('OrderTmp')->where('oid', 'eq', $oid)->find();
         }
-        if($payment==''){
-            if($order['deduct_points']>0){
+        if ($payment == '') {
+            if ($order['deduct_points'] > 0) {
                 $payment = 'points';
-            }else{
+            } else {
                 $payment = 'free';
             }
         }
@@ -896,7 +915,7 @@ class Order extends \app\common\model\BaseModel
                 'uid' => $order['uid'],
                 'setmeal_id' => $extra['setmeal_id'],
                 'note' => '',
-            ],$order['id'],$admin_id);
+            ], $order['id'], $admin_id);
             $points_log = '企业套餐';
         }
         //企业充积分
@@ -905,7 +924,7 @@ class Order extends \app\common\model\BaseModel
             model('Member')->setMemberPoints([
                 'uid' => $order['uid'],
                 'points' => $extra['add_points'],
-                'note' => '充值'.config('global_config.points_byname'),
+                'note' => '充值' . config('global_config.points_byname'),
             ]);
         }
         //快捷支付-刷新职位
@@ -913,7 +932,7 @@ class Order extends \app\common\model\BaseModel
             $extra = json_decode($order['extra'], true);
             // 刷新职位信息 chenyang 2022年3月21日15:13:24
             $refreshParams = [
-                'id'          => $extra['jobid'],
+                'id' => $extra['jobid'],
                 'refresh_log' => true,
                 'platform' => $order['add_platform'],
             ];
@@ -926,8 +945,8 @@ class Order extends \app\common\model\BaseModel
             model('CompanyDownResume')->downResumeAddSingleService($extra['resumeid'], $order['uid'], $order['add_platform']);
             $points_log = '下载简历';
         }
-        if($order['deduct_points']>0){
-            model('Member')->setMemberPoints(['uid'=>$order['uid'],'points'=>$order['deduct_points'],'note'=>config('global_config.points_byname').'抵扣-'.$points_log],2);
+        if ($order['deduct_points'] > 0) {
+            model('Member')->setMemberPoints(['uid' => $order['uid'], 'points' => $order['deduct_points'], 'note' => config('global_config.points_byname') . '抵扣-' . $points_log], 2);
         }
         $order->payment = $payment;
         $order->status = 1;
@@ -957,12 +976,12 @@ class Order extends \app\common\model\BaseModel
                 '亲，您的订单已支付成功',
                 $order['oid'],
                 $order['service_name'],
-                $order['amount'].'元',
+                $order['amount'] . '元',
                 $this->map_payment[$payment],
-                date('Y年m月d日 H:i:s',$time),
+                date('Y年m月d日 H:i:s', $time),
                 '点击查看订单详情'
             ],
-            'member/order/'.$order->id
+            'member/order/' . $order->id
         );
 
         if ($order['service_type'] == 'single_resume_down' || $order['service_type'] == 'single_job_refresh') {
@@ -971,11 +990,12 @@ class Order extends \app\common\model\BaseModel
             unset($order['id']);
             model('Order')->save($order);
         }
-        if($payment=='wxpay'){
-            cache('wxpay_'.$order['oid'], 'ok', 60);
+        if ($payment == 'wxpay') {
+            cache('wxpay_' . $order['oid'], 'ok', 60);
         }
         return true;
     }
+
     /**
      * 订单完成时记录到服务队列
      */

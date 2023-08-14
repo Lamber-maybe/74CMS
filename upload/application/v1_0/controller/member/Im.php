@@ -411,6 +411,11 @@ class Im extends \app\v1_0\controller\common\Base
             $arr['stick'] = $value['stick'];
             $arr['addtime'] = date('Y年m月d日',$value['addtime']);
             $arr['updatetime'] = im_daterange(time(),$value['updatetime']);
+            /**
+             * 【新增】IM聊天聊表新增最近/最后一条消息
+             * 2022.08.31
+             */
+            $arr['last_message'] = $value['last_message'];
 
             if($this->userinfo->utype==1){
                 $companyinfo = isset($companyinfo_arr[$value['owner_uid']])?$companyinfo_arr[$value['owner_uid']]:null;

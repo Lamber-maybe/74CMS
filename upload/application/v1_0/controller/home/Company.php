@@ -109,19 +109,43 @@ class Company extends \app\v1_0\controller\common\Base
                         ->where('id', 'in', $setmeal_id_arr)
                         ->column('id,icon,name', 'id');
         }
+
         if (!empty($comid_arr)) {
+
+            $scale = model('Category')->getCache('QS_scale');
             $job_data = model('Job')
-                ->where('company_id', 'in', $comid_arr)
-                ->where('is_display', 1)
-                ->where('audit', 1)
-                ->column('id,company_id,jobname', 'id');
+                ->alias('j')
+                ->join('company c','c.id=j.company_id','left')
+                ->where('j.company_id', 'in', $comid_arr)
+                ->where('j.is_display', 1)
+                ->where('j.audit', 1)
+                ->field('j.id,j.jobname,j.district1,j.district2,j.district3,j.minwage,j.maxwage,c.scale,j.education,j.company_id,j.negotiable')
+                ->select();
+
+            $category_district_data = model('CategoryDistrict')->getCache();
+
             foreach ($job_data as $key => $value) {
-                $job_list[$value['company_id']][] = $value['jobname'];
+                $value['district1_text'] = isset($category_district_data[$value['district1']]) ? $category_district_data[$value['district1']] : '';
+                $value['district2_text'] = isset($category_district_data[$value['district2']]) ? $category_district_data[$value['district2']] : '';
+                $value['district3_text'] = isset($category_district_data[$value['district3']]) ? $category_district_data[$value['district3']] : '';
+                $value['education_text'] = isset(
+                    model('BaseModel')->map_education[$value['education']]
+                )
+                    ? model('BaseModel')->map_education[$value['education']]
+                    : '学历不限';
+                $value['wage_text'] = model('BaseModel')->handle_wage(
+                    $value['minwage'],
+                    $value['maxwage'],
+                    $value['negotiable']
+                );
+
+                $value['scale_text'] = isset($scale[$value['scale']]) ? $scale[$value['scale']] : '';
+
+                $job_list[$value['company_id']][] = $value->toArray();
             }
         }
 
         $category_data = model('Category')->getCache();
-        $category_district_data = model('CategoryDistrict')->getCache();
         $returnlist = [];
         foreach ($list as $key => $value) {
             $tmp_arr = [];
@@ -152,8 +176,10 @@ class Company extends \app\v1_0\controller\common\Base
                 ? count($job_list[$value['id']])
                 : 0;
             $tmp_arr['first_jobname'] = isset($job_list[$value['id']])
-                ? $job_list[$value['id']][0]
+                ? $job_list[$value['id']][0]['jobname']
                 : '';
+            $tmp_arr['job_list'] = isset($job_list[$value['id']])
+                ? $job_list[$value['id']] : [];
             $tmp_arr['logo_src'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$value['logo']]
                 : default_empty('logo');

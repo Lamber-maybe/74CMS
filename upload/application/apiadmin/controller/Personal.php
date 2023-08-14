@@ -53,7 +53,7 @@ class Personal extends Backend
      */
     public function index()
     {
-        $field = 'id, username, last_login_time, openid, qy_userid, bind_qywx, bind_qywx_time, mobile, avatar';
+        $field = 'id, username, last_login_time, openid, mobile, avatar';
         $info = model('Admin')
             ->field($field)
             ->find($this->adminId);

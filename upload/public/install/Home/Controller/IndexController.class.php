@@ -260,6 +260,21 @@ class IndexController extends Controller {
         }
 		session('admin_name',$admin_name);
 		session('admin_pwd',$admin_pwd);
+
+        /**
+         * 【新增】
+         * 安装JS
+         * yx - 2022.09.13
+         */
+        $version_file = MAIN_PROJECT_PATH . 'application/extra/version.php';
+        $version_config = require $version_file;
+        $version = !empty($version_config['version']) ? $version_config['version'] : 'se';
+        $this->assign("domain", $site_domain);
+        $this->assign("domaindir", $site_domain.$site_dir);
+        $this->assign("v", $version);
+        $this->assign("t", 2);
+        $this->assign("email", '706638737@qq.com');
+
     	$this->display();
         mysqli_query($conn,"START TRANSACTION");
         try{

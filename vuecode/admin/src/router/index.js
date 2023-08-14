@@ -55,6 +55,13 @@ export const constantRoutes = [
       name: 'welcome',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '管理中心', icon: 'dashboard' }
+    },
+    {
+      path: '/corpwechat/personal',
+      name: 'corpwechatPersonal',
+      hidden: true,
+      component: () => import('@/views/corpwechat/personal/index'),
+      meta: { title: '个人设置', access: 'corpwechatPersonal' }
     }]
   }
 ]

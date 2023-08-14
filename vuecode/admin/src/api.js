@@ -1,4 +1,14 @@
-import {saveJobSeting} from '@/api/datacollection'
+import { saveJobSeting } from '@/api/datacollection'
+import {
+  clueDelete,
+  clueExport,
+  clueReceive,
+  clueRelease, companyCrmAdd, companyCrmEdit, companyJob,
+  companyList, companyReceive, crmClueRelease, deletedCustomers, deleteImg,
+  exportList,
+  refreshCrmJob, setDisplay
+} from '@/api/company_crm'
+import {customerServiceEdit} from "@/api/personal";
 
 export default {
   // 首页仪表盘
@@ -792,5 +802,64 @@ export default {
   sceneQrcodeDeleteAll: '/scene_qrcode/deleteAll',
 
   // 详情模板
-  showTpl: '/tpl/showTpl'
+  showTpl: '/tpl/showTpl',
+  // 企业crm
+  crmCustomList: 'b2bcrm/crm_custom_list/index',
+  clueList: 'b2bcrm/Clue/index',
+  classify: 'classify/index',
+  clueAdminLists: 'b2bcrm/Clue/adminlists',
+  clueDetails: 'b2bcrm/Clue/details',
+  followUpList: 'b2bcrm/follow_up/index',
+  addVisit: 'b2bcrm/follow_up/addVisit',
+  exportList: 'b2bcrm/Clue/export',
+  clueEdit: 'b2bcrm/Clue/clueEdit',
+  clueExport: 'b2bcrm/Clue/export',
+  clueDelete: 'b2bcrm/Clue/delete',
+  clueReceive: 'b2bcrm/Clue/receive',
+  clueRelease: 'b2bcrm/Clue/release',
+  clueAdd: 'b2bcrm/Clue/clueAdd',
+  crmCompanyList: 'b2bcrm/Company/index',
+  lifeCycle: 'b2bcrm/Company/lifeCycle',
+  companyCrmAudit: '/company/setAudit',
+  refreshCrmJob: '/company/refreshJob',
+  exportCrmCompanyById: '/export/companyById',
+  companyDetails: 'b2bcrm/Company/companyDetail',
+  contactList: 'b2bcrm/Company_Contact/index',
+  updateCompany: 'b2bcrm/Company/updateCompany',
+  getAllCrmTags: 'b2bcrm/Setting/getAllCrmTags',
+  companyCrmEdit: 'b2bcrm/Company/edit',
+  deleteImg: 'b2bcrm/Profile/deleteImg',
+  delContact: 'b2bcrm/Company_Contact/delContact',
+  addContact: 'b2bcrm/Company_Contact/addContact',
+  editContact: 'b2bcrm/Company_Contact/editContact',
+  companyJob: 'b2bcrm/company_job/index',
+  setDisplay: 'b2bcrm/company_job/setDisplay',
+  jobApply: 'b2bcrm/Recruitment/jobApply',
+  downResume: '/b2bcrm/Recruitment/downResume',
+  viewResume: 'b2bcrm/Recruitment/viewResume',
+  viewed: 'b2bcrm/Recruitment/viewBeBrowsed',
+  pointsLog: 'b2bcrm/Points/pointsLog',
+  newConsumeLog: 'b2bcrm/Points/consumeLog',
+  crmOrderList: 'b2bcrm/company_order/orderList',
+  lifeCycleAll: 'b2bcrm/Setting/lifeCycleAll',
+  lifeCycleEdit: 'b2bcrm/Setting/lifeCycleEdit',
+  lifeCycleSwitch: 'b2bcrm/Setting/lifeCycleSwitch',
+  getSysConfigByCategory: 'b2bcrm/Setting/getSysConfigByCategory',
+  editCrmTag: 'b2bcrm/Setting/editCrmTag',
+  addCrmTag: 'b2bcrm/Setting/addCrmTag',
+  delCrmTag: 'b2bcrm/Setting/delCrmTag',
+  editConfig: 'b2bcrm/Setting/editConfig',
+  getisWeixinBind: 'b2bcrm/Company/getisWeixinBind',
+  qrcodeCrm: 'b2bcrm/Company/qrcode',
+  companyReceive: 'b2bcrm/Company/receive',
+  companyRelease: 'b2bcrm/Company/release',
+  companyCrmSetDisplay: 'b2bcrm/Company/setDisplay',
+  customerCrmServiceEdit: 'b2bcrm/customer_service/edit',
+  putRecycleBin: 'b2bcrm/recycle_bin/put',
+  recycleBinList: 'b2bcrm/recycle_bin/index',
+  recycleBinReturn: 'b2bcrm/recycle_bin/recover',
+  recycleBinDel: 'b2bcrm/recycle_bin/del',
+  toBeFollowedup: 'b2bcrm/follow_up/toBeFollowedup',
+  companyCrmAdd: 'b2bcrm/Company/add',
+  crmClueRelease: 'b2bcrm/Crm_Clue_Release/index'
 }

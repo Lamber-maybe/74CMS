@@ -36,6 +36,7 @@ class AttentionMe extends \app\v1_0\controller\common\Base
             $job_data = model('Job')
                 ->where('uid', 'in', $comuid_arr)
                 ->where('is_display', 1)
+                ->where('audit', 1)
                 ->column('id,uid,jobname', 'id');
             foreach ($job_data as $key => $value) {
                 $job_list[$value['uid']][] = $value['jobname'];

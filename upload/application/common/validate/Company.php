@@ -34,6 +34,18 @@ class Company extends BaseValidate
     protected $message = [
         'district1.gt' =>  '请选择所在地区'
     ];
+
+    protected $scene = [
+        'edit' => [
+            'uid',
+            'companyname',
+            'short_name',
+            'logo',
+            'nature',
+            'trade',
+            'scale'
+        ]
+    ];
     protected function uniqueCompanyname($value, $rule, $data)
     {
         if (config('global_config.company_repeat') == 1) {

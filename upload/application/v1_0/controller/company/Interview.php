@@ -30,7 +30,8 @@ class Interview extends \app\v1_0\controller\common\Base
         $list = model('CompanyInterview')
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
-            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.interview_time,a.contact,a.address,a.tel,a.note,a.addtime,a.is_look,b.high_quality,b.display_name,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img')
+            ->join('job j','j.id=a.jobid','left')
+            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.interview_time,a.contact,a.address,a.tel,a.note,a.addtime,a.is_look,b.high_quality,b.display_name,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,j.minwage,j.maxwage,j.negotiable,j.map_lat,j.map_lng')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -51,6 +52,11 @@ class Interview extends \app\v1_0\controller\common\Base
         $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
         foreach ($list as $key => $value) {
+            $value['wage_text'] = model('BaseModel')->handle_wage(
+                $value['minwage'],
+                $value['maxwage'],
+                $value['negotiable']
+            );
             $value['fullname'] = $fullname_arr[$value['resume_id']];
             $value['sex_text'] = model('Resume')->map_sex[
                 $value['sex']

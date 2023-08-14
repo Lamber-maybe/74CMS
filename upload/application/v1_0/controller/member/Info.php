@@ -132,30 +132,36 @@ class Info extends \app\v1_0\controller\common\Base
     }
     /**
      * 获取专属客服信息
+     * CRM客服修改
      */
     public function customerService()
     {
-        if ($this->company_profile['cs_id'] == 0) {
-            $info = [];
-        } else {
-            $info = model('CustomerService')
-                ->field('status', true)
-                ->where('id', $this->company_profile['cs_id'])
-                ->find();
-            if ($info === null) {
-                $info = [];
-            } else {
-                $info['photo'] =
-                $info['photo'] > 0
-                ? model('Uploadfile')->getFileUrl($info['photo'])
-                : default_empty('photo');
-                $info['wx_qrcode'] =
-                $info['wx_qrcode'] > 0
-                ? model('Uploadfile')->getFileUrl($info['wx_qrcode'])
-                : '';
-            }
+        $customer_service = model('b2bcrm.CrmCustomerService')->alias('s')
+            ->join('Company c','s.admin_id=c.admin_id','left')
+            ->where(['c.uid'=>$this->userinfo->uid])
+            ->field('s.id as id,s.photo,s.name,s.mobile,s.tel,s.wx_qrcode,s.qq')
+            ->find();
+        if (empty($customer_service))
+        {
+            $customer_service['name'] = '网站客服';
+            $customer_service['mobile'] = config('global_config.contact_tel');
+            $customer_service['photo'] = model('Uploadfile')
+                ->getFileUrl(config('global_config.square_logo'));
+        }else
+        {
+            $customer_service['photo'] = model('Uploadfile')
+                ->getFileUrl(!empty($customer_service['photo'])
+                    ? $customer_service['photo'] : config('global_config.square_logo'));
+
+            $customer_service['wx_qrcode'] = model('Uploadfile')
+                ->getFileUrl(!empty($customer_service['wx_qrcode']) ?
+                    $customer_service['wx_qrcode'] : 0);
         }
-        $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
+        $customer_service['weixin'] = '';
+
+
+
+        $this->ajaxReturn(200, '获取数据成功', ['info' => $customer_service]);
     }
     /**
      * 投诉客服
@@ -166,11 +172,11 @@ class Info extends \app\v1_0\controller\common\Base
             'uid' => $this->userinfo->uid,
             'addtime' => time(),
             'status' => 0,
-            'cs_id' => input('post.cs_id/d', 0, 'intval'),
+            'cs_id' => input('post.cs_id/d', 1, 'intval'),
             'content' => input('post.content/s', '', 'trim'),
         ];
         $validate = new \think\Validate([
-            'cs_id' => 'require|number|gt:0',
+            'cs_id' => 'require|number',
             'content' => 'require|max:200',
         ]);
         if (!$validate->check($input_data)) {

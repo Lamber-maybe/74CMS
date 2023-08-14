@@ -6,19 +6,19 @@
 </template>
 
 <script>
-import JobOne from "../components/job/JobOne";
-import JobTwo from "../components/job/JobTwo";
+import JobOne from '../components/job/JobOne'
+import JobTwo from '../components/job/JobTwo'
 export default {
-  name: "JobShow",
-  data() {
+  name: 'JobShow',
+  data () {
     return {
-      detail_id: 'def',
-    };
+      detail_id: 'def'
+    }
   },
   components: { JobOne, JobTwo },
-  created() {
-    this.detail_id = this.$store.state.config.mobile_job_show_tpl
+  created () {
+    this.detail_id = this.$store.state.config.mobile_job_show_tpl === undefined || !this.$store.state.config.mobile_job_show_tpl ? 'def' : this.$store.state.config.mobile_job_show_tpl
   },
-  methods: {},
-};
+  methods: {}
+}
 </script>

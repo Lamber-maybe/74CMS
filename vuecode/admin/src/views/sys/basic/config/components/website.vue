@@ -139,15 +139,6 @@
           class="middle"
         />
       </el-form-item>
-      <el-form-item
-        label="人力资源服务许可证"
-        prop="service_license"
-      >
-        <el-input
-          v-model="form.service_license"
-          class="middle"
-        />
-      </el-form-item>
       <el-form-item label="暂时关闭网站">
         <el-switch v-model="form.isclose" />
       </el-form-item>
@@ -204,7 +195,7 @@
           :action="apiUpload"
           :headers="headers"
           :show-file-list="false"
-          :on-success="handleSquareLogoSuccess"
+          :on-success="(res,file)=>{handleSquareLogoSuccess('squarelogo',res,file)}"
           :before-upload="beforeLogoUpload"
         >
           <img
@@ -221,6 +212,100 @@
           <i class="el-icon-info" />
           建议尺寸200*200
         </span>
+      </el-form-item>
+
+      <el-form-item
+        label="电子营业执照"
+        prop=""
+      >
+        <el-input
+          v-model="form.qualification_publicity.business_license"
+          class="middle"
+        />
+      </el-form-item>
+      <el-form-item
+        label="电子营业执照图片"
+      >
+        <el-upload
+          class="squarelogo-uploader"
+          :action="apiUpload"
+          :headers="headers"
+          :show-file-list="false"
+          :on-success="(res,file)=>{handleSquareLogoSuccess('business_license',res,file)}"
+          :before-upload="beforeLogoUpload"
+        >
+          <img
+            v-if="business_license_url"
+            :src="business_license_url"
+            class="squarelogo"
+          >
+          <i
+            v-else
+            class="el-icon-plus squarelogo-uploader-icon"
+          />
+        </el-upload>
+      </el-form-item>
+      <el-form-item
+        label="人力资源服务许可证"
+        prop="service_license"
+      >
+        <el-input
+          v-model="form.qualification_publicity.service_license"
+          class="middle"
+        />
+      </el-form-item>
+      <el-form-item
+        label="人力资源服务许可证图片"
+        prop="square_logo"
+      >
+        <el-upload
+          class="squarelogo-uploader"
+          :action="apiUpload"
+          :headers="headers"
+          :show-file-list="false"
+          :on-success="(res,file)=>{handleSquareLogoSuccess('service_license',res,file)}"
+          :before-upload="beforeLogoUpload"
+        >
+          <img
+            v-if="service_license_url"
+            :src="service_license_url"
+            class="squarelogo"
+          >
+          <i
+            v-else
+            class="el-icon-plus squarelogo-uploader-icon"
+          />
+        </el-upload>
+      </el-form-item>
+      <el-form-item
+        label="增值电信业务经营许可证"
+      >
+        <el-input
+          v-model="form.qualification_publicity.business_licenses"
+          class="middle"
+        />
+      </el-form-item>
+      <el-form-item
+        label="增值电信业务经营许可证图片"
+      >
+        <el-upload
+          class="squarelogo-uploader"
+          :action="apiUpload"
+          :headers="headers"
+          :show-file-list="false"
+          :on-success="(res,file)=>{handleSquareLogoSuccess('business_licenses',res,file)}"
+          :before-upload="beforeLogoUpload"
+        >
+          <img
+            v-if="business_licenses_url"
+            :src="business_licenses_url"
+            class="squarelogo"
+          >
+          <i
+            v-else
+            class="el-icon-plus squarelogo-uploader-icon"
+          />
+        </el-upload>
       </el-form-item>
       <el-form-item label="">
         <el-button
@@ -282,8 +367,20 @@ export default {
         close_reason: '',
         statistics: '',
         logo: '',
-        square_logo: ''
+        square_logo: '',
+        qualification_publicity: {
+          business_license: '', // 电子营业执照
+          business_license_id: 0, // 电子营业执照图片ID
+          business_licenses: '', // 增值电信业务经营许可证
+          business_licenses_id: 0, // 增值电信业务经营许可证图片ID
+          service_license_id: 0, // 人力资源服务许可证图片ID
+          service_license: ''
+        }
       },
+      business_license_url: '', // 电子营业执照图片
+      service_license_url: '', // 人力资源服务许可证图片
+      business_licenses_url: '', // 增值电信业务经营许可证图片
+
       logoUrl: '',
       squarelogoUrl: '',
       rules: {
@@ -339,7 +436,8 @@ export default {
             close_reason,
             statistics,
             logo,
-            square_logo
+            square_logo,
+            qualification_publicity
           } = { ...response.data }
           this.form = {
             sitename,
@@ -360,17 +458,24 @@ export default {
             close_reason,
             statistics,
             logo,
-            square_logo
+            square_logo,
+            qualification_publicity
           }
           this.form.isclose = this.form.isclose == 1
           this.logoUrl = response.data.logoUrl
           this.squarelogoUrl = response.data.squarelogoUrl
           this.infoLoading = false
+          this.business_license_url = response.data.business_license_url
+          this.service_license_url = response.data.service_license_url
+          this.business_licenses_url = response.data.business_licenses_url
         })
         .catch(() => {})
     },
     onSubmit(formName) {
+      this.form.service_license = this.form.qualification_publicity.service_license
+
       const insertData = { ...this.form }
+      console.log(insertData)
       this.$refs[formName].validate(valid => {
         if (valid) {
           insertData.isclose = insertData.isclose === true ? 1 : 0
@@ -395,10 +500,26 @@ export default {
         return false
       }
     },
-    handleSquareLogoSuccess(res, file) {
+    handleSquareLogoSuccess(item, res, file) {
       if (res.code === 200) {
-        this.squarelogoUrl = URL.createObjectURL(file.raw)
-        this.form.square_logo = res.data.file_id
+        switch (item) {
+          case 'squarelogo': // 网站方形logo
+            this.squarelogoUrl = URL.createObjectURL(file.raw)
+            this.form.square_logo = res.data.file_id
+            break
+          case 'business_license': // 电子营业执照
+            this.business_license_url = URL.createObjectURL(file.raw)
+            this.form.qualification_publicity.business_license_id = res.data.file_id
+            break
+          case 'service_license': // 人力资源服务许可证
+            this.service_license_url = URL.createObjectURL(file.raw)
+            this.form.qualification_publicity.service_license_id = res.data.file_id
+            break
+          case 'business_licenses':// 增值电信业务经营许可证
+            this.business_licenses_url = URL.createObjectURL(file.raw)
+            this.form.qualification_publicity.business_licenses_id = res.data.file_id
+            break
+        }
       } else {
         this.$message.error(res.message)
         return false

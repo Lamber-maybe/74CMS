@@ -21,7 +21,7 @@ const mutations = {
   }
 }
 
-function routeTree(list, accessArr) {
+function routeTree (list, accessArr) {
   const newlist = [...list]
   for (let i = 0; i < newlist.length; i++) {
     const res = Object.assign({}, newlist[i])
@@ -38,7 +38,7 @@ function routeTree(list, accessArr) {
   return newlist
 }
 const actions = {
-  GenerateRoutes({ commit }, data) {
+  GenerateRoutes ({ commit }, data) {
     return new Promise((resolve) => {
       let menuList = [
         {

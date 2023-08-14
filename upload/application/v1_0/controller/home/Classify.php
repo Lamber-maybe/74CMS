@@ -129,6 +129,11 @@ class Classify extends \app\v1_0\controller\common\Base
         $return = json_encode($return);
         $return = str_replace('id', 'value', $return);
         $return = json_decode($return, true);
+        // app 增加类型搜索 zch 2022/8/18
+        if (isset($params['name']) && !empty($params['name']))
+        {
+            $return = searchList($return,$params['name']);
+        }
         return $return;
     }
     private function trade($params = [])
@@ -262,5 +267,132 @@ class Classify extends \app\v1_0\controller\common\Base
             $return[] = $arr;
         }
         return $return;
+    }
+
+    public function searchJobCategory()
+    {
+        $keyword = input('get.keyword/s','','trim');
+        if (empty($keyword))
+        {
+            $this->ajaxReturn(500, '请输入搜索名称');
+        }
+        $category = model('CategoryJob')->where(['name'=>['like', '%' . $keyword . '%']])->field('pid,id,name,level')->select();
+        $arr = [];
+        foreach ($category as $k => $v)
+        {
+            $res = [];
+            switch ($v['level'])
+            {
+                case 1:
+                     $category = model('CategoryJob')
+                         ->where(['pid'=>$v['id']])
+                         ->find();
+
+                    if (empty($category))
+                    {
+                        $res = [
+                            'categoryOneId' => $v['id'],
+                            'categoryTwoId' => 0,
+                            'categoryThreeId' => 0,
+                            'categoryOneText' => $v['name'],
+                            'categoryTwoText' => '',
+                            'categoryThreeText' => '',
+                        ];
+                    }
+
+                    break;
+                case 2:
+                    $category = model('CategoryJob')
+                        ->where(['pid'=>$v['id']])
+                        ->find();
+                    if (empty($category)){
+                        $res = model('CategoryJob')
+                            ->where(['id'=>$v['pid']])
+                            ->field('id as categoryOneId,name as categoryOneText')
+                            ->find();
+                        $res['categoryTwoText'] = $v['name'];
+                        $res['categoryTwoId'] = $v['id'];
+                    }
+                    break;
+                case 3:
+                    $res = model('CategoryJob')->alias('a')
+                        ->join('category_job b','a.pid=b.id','left')
+                        ->where(['a.id'=>$v['pid']])
+                        ->field('a.id as categoryTwoId,b.id as categoryOneId,a.name as categoryTwoText, b.name as categoryOneText')
+                        ->find();
+                    $res['categoryThreeId'] = $v['id'];
+                    $res['categoryThreeText'] = $v['name'];
+                    break;
+            }
+            if (!empty($res))
+            {
+                $arr[] = $res;
+            }
+        }
+        $this->ajaxReturn(200, '获取数据成功',$arr);
+    }
+
+    public function districtCategory()
+    {
+        $keyword = input('get.keyword/s','','trim');
+        if (empty($keyword))
+        {
+            $this->ajaxReturn(500, '请输入搜索名称');
+        }
+        $category = model('CategoryDistrict')->where(['name'=>['like', '%' . $keyword . '%']])->field('pid,id,name,level')->select();
+        $arr = [];
+        foreach ($category as $k => $v)
+        {
+            $res = [];
+            switch ($v['level'])
+            {
+                case 1:
+                    $category = model('CategoryDistrict')
+                        ->where(['pid'=>$v['id']])
+                        ->find();
+                    if (empty($category))
+                    {
+                        $res = [
+                            'categoryOneId' => $v['id'],
+                            'categoryTwoId' => 0,
+                            'categoryThreeId' => 0,
+                            'categoryOneText' => $v['name'],
+                            'categoryTwoText' => '',
+                            'categoryThreeText' => '',
+                        ];
+                    }
+
+                    break;
+
+                case 2:
+                    $category = model('CategoryDistrict')
+                        ->where(['pid'=>$v['id']])
+                        ->find();
+                    if (empty($category)){
+                        $res = model('CategoryDistrict')
+                            ->where(['id'=>$v['pid']])
+                            ->field('id as categoryOneId,name as categoryOneText')
+                            ->find();
+                        $res['categoryTwoText'] = $v['name'];
+                        $res['categoryTwoId'] = $v['id'];
+                    }
+                    break;
+
+                case 3:
+                    $res = model('CategoryDistrict')->alias('a')
+                        ->join('category_district b','a.pid=b.id','left')
+                        ->where(['a.id'=>$v['pid']])
+                        ->field('a.id as categoryTwoId,b.id as categoryOneId,a.name as categoryTwoText, b.name as categoryOneText')
+                        ->find();
+                    $res['categoryThreeId'] = $v['id'];
+                    $res['categoryThreeText'] = $v['name'];
+                    break;
+            }
+            if (!empty($res))
+            {
+                $arr[] = $res;
+            }
+        }
+        $this->ajaxReturn(200, '获取数据成功',$arr);
     }
 }

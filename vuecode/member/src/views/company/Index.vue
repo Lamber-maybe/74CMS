@@ -21,8 +21,8 @@
 
 
             <div class="right_box">
-              <a class="QQ_btn" @click="wakeupQq(serviceInfo.qq)">QQ联系</a>
-              <a class="Wx_btn" @click="showServicerQrcode=true">微信联系</a>
+              <a v-if="serviceInfo.qq" class="QQ_btn" @click="wakeupQq(serviceInfo.qq)">QQ联系</a>
+              <a v-if="serviceInfo.wx_qrcode" class="Wx_btn" @click="showServicerQrcode=true">微信联系</a>
             </div>
           </div>
             <!-- 内容头部 -->

@@ -20,6 +20,7 @@
       <el-form-item
         label="手机号"
         prop="member.mobile"
+        auto-complete="new-mobile"
       >
         <el-input v-model="form.member.mobile" />
       </el-form-item>
@@ -30,8 +31,15 @@
       >
         <el-input
           v-model="form.member.password"
+          auto-complete="new-password"
           show-password
         />
+      </el-form-item>
+      <el-form-item label="所属销售">
+        <el-radio-group v-model="form.member.sale">
+          <el-radio label="1">我的客户</el-radio>
+          <el-radio label="0">公共客户</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-divider content-position="left">
         企业信息
@@ -310,9 +318,9 @@
         >
           保存
         </el-button>
-        <el-button @click="goto('/user/company/list')">
-          返回
-        </el-button>
+        <!--        <el-button @click="goto('/user/company/list')">-->
+        <!--          返回-->
+        <!--        </el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -321,7 +329,8 @@
 <script>
 import { getFieldRule } from '@/api/configuration'
 import { memberCheckUnique } from '@/api/member'
-import { companyAdd } from '@/api/company'
+// import { companyAdd } from '@/api/company'
+import { companyCrmAdd } from '@/api/company_crm'
 import {
   validMobile,
   validUsername,
@@ -331,6 +340,7 @@ import {
 import { getToken } from '@/utils/auth'
 import { getClassify } from '@/api/classify'
 import apiArr from '@/api'
+import { clueDetails } from '@/api/company_crm'
 
 export default {
   data() {
@@ -443,14 +453,15 @@ export default {
         member: {
           username: '',
           password: '',
-          mobile: ''
+          mobile: '',
+          sale: '1'
         },
         companyname: '',
         short_name: '',
         nature: '',
         trade: '',
         logo: '',
-        citycategory_arr: '',
+        citycategory_arr: [],
         scale: '',
         registered: '',
         currency: '0',
@@ -695,6 +706,27 @@ export default {
     }
   },
   created() {
+    if (this.$route.query.id){
+      clueDetails({ 'clue_id': this.$route.query.id }).then(res => {
+        this.form.contact.weixin = res.data.weixin
+        this.form.contact.mobile = res.data.mobile
+        this.form.contact.contact = res.data.contacts
+        this.form.companyname = res.data.name
+        this.form.scale = res.data.scale
+        this.form.info.address = res.data.address
+        this.form.trade = res.data.trade
+        if (res.data.district1 != 0){
+          this.form.citycategory_arr.push(res.data.district1)
+        }
+        if (res.data.district2 != 0){
+          this.form.citycategory_arr.push(res.data.district2)
+        }
+        if (res.data.district3 != 0){
+          this.form.citycategory_arr.push(res.data.district3)
+        }
+      }).catch(() => {
+      })
+    }
     this.fileupload_size = this.config.fileupload_size
     this.fileupload_ext = this.config.fileupload_ext
     this.fetchData()
@@ -817,12 +849,20 @@ export default {
           insertData.district3 =
             tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0
           insertData.contact = { ...this.form.contact }
-          companyAdd(insertData)
+          insertData.clue_id = this.$route.query.id
+          // companyAdd(insertData)  之前的
+          companyCrmAdd(insertData)
             .then(response => {
               this.$message.success(response.message)
-              setTimeout(function() {
-                that.$router.push('/user/company/list')
-              }, 1500)
+              if (this.form.sale == '0'){
+                setTimeout(function() {
+                  that.$router.push('/user/company/crm/pubilceClient')
+                }, 1500)
+              } else {
+                setTimeout(function() {
+                  that.$router.push('/user/company/crm/myClient')
+                }, 1500)
+              }
               return true
             })
             .catch(() => {

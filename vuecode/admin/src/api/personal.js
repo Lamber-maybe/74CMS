@@ -43,12 +43,18 @@ export function personalBindingMobile(data) {
     data
   })
 }
-export function authorizeCode(data) {
+export function customerServiceMod(params) {
   return request({
-    url: apiArr.authorizeCode,
+    url: apiArr.customerCrmServiceEdit,
+    method: 'get',
+    params
+  })
+}
+export function customerServiceEdit(data) {
+  return request({
+    url: apiArr.customerCrmServiceEdit,
     method: 'post',
     data
   })
 }
-
 

@@ -357,17 +357,17 @@ const systemRouter = {
         title: '任务配置',
         access: 'companyTask'
       }
-    },
-    {
-      path: '/sys/company/customer_service',
-      name: 'sysCompanyCustomerService',
-      component: () =>
-        import('@/views/sys/company/customer_service'),
-      meta: {
-        title: '客服配置',
-        access: 'sysCompanyCustomerService'
-      }
     }
+    // {
+    //   path: '/sys/company/customer_service',
+    //   name: 'sysCompanyCustomerService',
+    //   component: () =>
+    //     import('@/views/sys/company/customer_service'),
+    //   meta: {
+    //     title: '客服配置',
+    //     access: 'sysCompanyCustomerService'
+    //   }
+    // }
     ]
   },
   {

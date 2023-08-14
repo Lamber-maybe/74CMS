@@ -233,6 +233,13 @@ CREATE TABLE `qs_company` (
   `platform` varchar(30) NOT NULL DEFAULT '',
   `setmeal_id` int(10) unsigned NOT NULL DEFAULT '0',
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `life_cycle_id` int(10) NOT NULL DEFAULT '1' COMMENT 'CRM客户等级（生命周期）',
+  `admin_id` int(10) NOT NULL DEFAULT '0' COMMENT '所属销售',
+  `last_visit_time` int(10) NOT NULL DEFAULT '0' COMMENT '最后跟进时间',
+  `last_visit_admin` int(10) NOT NULL DEFAULT '0' COMMENT '最后跟进人',
+  `labels` varchar(30) NOT NULL DEFAULT '' COMMENT '客户标签',
+  `remark` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `clue_id` int(10) NOT NULL DEFAULT '0' COMMENT '线索id',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -2387,3 +2394,236 @@ CREATE TABLE `qs_im_unread_remind` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_im_unread_remind||-_-||
+
+
+
+DROP TABLE IF EXISTS `qs_crm_clue`;
+CREATE TABLE `qs_crm_clue` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '线索名称',
+`admin_id` int(10) NOT NULL DEFAULT '0' COMMENT '所属销售',
+`mobile` varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系电话',
+`contacts` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人',
+`weixin` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '微信',
+`district1` int(10) NOT NULL DEFAULT '0' COMMENT '地区分类1级',
+`district2` int(10) NOT NULL DEFAULT '0' COMMENT '地区分类2级',
+`district3` int(10) NOT NULL DEFAULT '0' COMMENT '地区分类3级',
+`district` int(10) NOT NULL DEFAULT '0' COMMENT '地区分类最后一级',
+`address` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '详细地址',
+`updatetime` int(10) NOT NULL COMMENT '更新时间',
+`createtime` int(10) NOT NULL COMMENT '创建时间',
+`creat_id` int(10) NOT NULL COMMENT '创建人id',
+`remark` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '备注',
+`uid` int(10) NOT NULL DEFAULT '0',
+`utype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '用户类型【0:线索;1:企业客户;2:个人客户;】',
+`trade` int(10) NOT NULL COMMENT '客户行业',
+`last_visit_time` int(10) NOT NULL DEFAULT '0' COMMENT '最后跟进时间',
+`last_visit_admin` int(10) NOT NULL DEFAULT '0' COMMENT '最后跟进人',
+`is_customer` enum('1','0') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '是否转为客户 0-否 1-是',
+`scale` int(10) NOT NULL DEFAULT '0' COMMENT '公司规模',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm线索表';
+||-_-||qs_crm_clue||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_clue_release`;
+CREATE TABLE `qs_crm_clue_release` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`clue_id` int(10) NOT NULL DEFAULT '0' COMMENT '线索id',
+`create_time` int(10) NOT NULL COMMENT '操作时间',
+`operation_type` tinyint(1) NOT NULL COMMENT '操作类型 1-领取 2-释放',
+`admin_id` int(10) NOT NULL DEFAULT '0' COMMENT '所属销售人id',
+`operator` tinyint(1) NOT NULL COMMENT '操作人员  1-系统 2-销售',
+`utype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '跟进用户【0:线索;1:企业客户;2:个人客户;】',
+`uid` int(10) NOT NULL DEFAULT '0' COMMENT 'UID',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm线索释放记录表';
+||-_-||qs_crm_clue_release||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_follow_up`;
+CREATE TABLE `qs_crm_follow_up` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '跟进记录id',
+`type` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '跟进类型【1:线索跟进;2:客户跟进;3:客勤跟进;】',
+`clue_id` int(10) NOT NULL DEFAULT '0' COMMENT '线索ID',
+`uid` int(10) NOT NULL DEFAULT '0' COMMENT 'UID',
+`relation_id` int(10) DEFAULT '0' COMMENT '关联ID【企业:cid;个人:rid】',
+`admin_id` int(10) NOT NULL COMMENT '跟进人ID',
+`utype` tinyint(1) NOT NULL DEFAULT '0' COMMENT '跟进用户【0:线索;1:企业客户;2:个人客户;】',
+`mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '跟进方式【0:其他;1:当面拜访;2:电话拜访;3:网络拜访;】',
+`next_time` int(10) NOT NULL COMMENT '下次跟进时间',
+`result` varchar(255) NOT NULL COMMENT '跟进结果',
+`enclosure` text COMMENT '附件',
+`create_time` int(10) NOT NULL COMMENT '跟进时间',
+`link_man` varchar(10) NOT NULL COMMENT '联系人',
+`link_mobile` char(11) NOT NULL COMMENT '联系人电话',
+`linkman_id` int(10) NOT NULL DEFAULT '0' COMMENT '联系人ID',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM跟进记录';
+||-_-||qs_crm_follow_up||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_company_contact`;
+CREATE TABLE `qs_crm_company_contact` (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+`comid` int(10) unsigned NOT NULL COMMENT '企业id',
+`uid` int(10) unsigned NOT NULL COMMENT '企业uid',
+`contact` varchar(30) NOT NULL COMMENT '企业联系人',
+`mobile` varchar(11) NOT NULL COMMENT '联系电话',
+`weixin` varchar(15) NOT NULL COMMENT '联系微信',
+`telephone` varchar(20) NOT NULL COMMENT '联系固话',
+`qq` varchar(15) NOT NULL COMMENT '联系QQ',
+`email` varchar(30) NOT NULL COMMENT '电子邮箱',
+`sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别 0-男 1-女',
+`addtime` int(10) NOT NULL COMMENT '添加时间',
+`updatetime` int(10) NOT NULL COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业联系方式表';
+||-_-||qs_crm_company_contact||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_custom_list`;
+CREATE TABLE `qs_crm_custom_list` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`menu` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1-全部 2-公海 3-我的',
+`type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型 1-线索  2-企业',
+`value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '自定义列表',
+`admin_id` int(10) NOT NULL COMMENT '操作人',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm自定义列表';
+||-_-||qs_crm_custom_list||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_life_cycle`;
+CREATE TABLE `qs_crm_life_cycle` (
+`id` tinyint(10) NOT NULL AUTO_INCREMENT COMMENT '主键(生命周期)ID',
+`name` varchar(255) NOT NULL DEFAULT '' COMMENT '生命周期阶段名',
+`is_open` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启[0:否;1:是]',
+`is_system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统内置不可编辑项[0:否;1:是]',
+`update_time` int(10) NOT NULL DEFAULT '0' COMMENT '最后编辑时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM客户等级（生命周期）';
+||-_-||qs_crm_life_cycle||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_sys_config`;
+CREATE TABLE `qs_crm_sys_config` (
+`id` tinyint(10) NOT NULL AUTO_INCREMENT COMMENT '主键(配置项ID)ID',
+`category` varchar(20) NOT NULL COMMENT '配置项所属类型',
+`name` varchar(255) NOT NULL DEFAULT '' COMMENT '配置项名称',
+`key` varchar(100) NOT NULL DEFAULT '' COMMENT '配置项键',
+`value` varchar(255) NOT NULL DEFAULT '' COMMENT '配置项值',
+`is_open` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启[0:否;1:是]',
+`is_system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统内置不可编辑项[0:否;1:是]',
+`update_time` int(10) NOT NULL DEFAULT '0' COMMENT '最后编辑时间',
+`remark` varchar(255) NOT NULL DEFAULT '' COMMENT '注释',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM系统配置';
+||-_-||qs_crm_sys_config||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_tag`;
+CREATE TABLE `qs_crm_tag` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '标签ID',
+`name` varchar(45) NOT NULL COMMENT '标签名称',
+`order` int(10) NOT NULL COMMENT '排序',
+`create_time` int(10) NOT NULL COMMENT '创建时间',
+`update_time` int(10) NOT NULL COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM客户标签';
+||-_-||qs_crm_tag||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_auto_assign`;
+CREATE TABLE `qs_crm_auto_assign` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '线索/客户自动分配ID',
+`type` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '类型【1:线索自动分配;2:客户自动分配;】',
+`admin_id` int(10) NOT NULL COMMENT '后台管理员ID',
+`assign_num` int(10) NOT NULL DEFAULT '0' COMMENT '已分配数量',
+`create_time` int(10) NOT NULL COMMENT '创建时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM线索/客户自动分配规则（管理员）表';
+||-_-||qs_crm_auto_assign||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_recycle_bin`;
+CREATE TABLE `qs_crm_recycle_bin` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '回收站ID',
+`cid` int(10) NOT NULL COMMENT 'company_id',
+`uid` int(10) NOT NULL COMMENT 'uid',
+`mobile` char(11) NOT NULL COMMENT '会员联系方式',
+`companyname` varchar(60) NOT NULL COMMENT '企业名称',
+`contact` varchar(30) NOT NULL COMMENT '企业联系人',
+`contact_mobile` char(11) NOT NULL COMMENT '企业联系人电话',
+`life_cycle_id` int(10) NOT NULL COMMENT '客户等级ID',
+`life_cycle_name` varchar(30) NOT NULL COMMENT '客户等级阶段名',
+`admin_id` int(10) NOT NULL COMMENT '所属销售ID',
+`last_visit_time` int(10) NOT NULL COMMENT '最后跟进',
+`refreshtime` int(11) NOT NULL COMMENT '刷新时间',
+`addtime` int(11) NOT NULL COMMENT '企业添加时间',
+`reg_time` int(10) NOT NULL COMMENT '注册时间',
+`last_login_time` int(10) NOT NULL COMMENT '最后登录时间',
+`setmeal_id` int(10) NOT NULL COMMENT '套餐ID',
+`setmeal_name` varchar(30) NOT NULL COMMENT '套餐名称',
+`setmeal_deadline` int(10) NOT NULL COMMENT '套餐到期时间',
+`jobs_num` int(10) NOT NULL COMMENT '在招职位',
+`job_apply_count` int(10) NOT NULL COMMENT '收到简历',
+`create_time` int(10) NOT NULL COMMENT '放入回收站时间',
+`status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态【1:放入回收站;2:已恢复;3:已删除;】',
+`update_time` int(10) NOT NULL COMMENT '操作时间',
+`operate_id` int(10) NOT NULL COMMENT '操作管理员id',
+`operate_admin` varchar(30) NOT NULL COMMENT '操作管理员',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM回收站表';
+||-_-||qs_crm_recycle_bin||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_back_up`;
+CREATE TABLE `qs_crm_back_up` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '备份ID',
+`model` varchar(255) NOT NULL COMMENT '模型',
+`value` longtext COMMENT '数据',
+`recycle_bin_id` int(10) NOT NULL COMMENT '回收站ID',
+`create_time` int(10) DEFAULT NULL COMMENT '备份时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CRM备份表';
+||-_-||qs_crm_back_up||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_customer_service`;
+CREATE TABLE `qs_crm_customer_service` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`photo` int(10) NOT NULL COMMENT '头像id',
+`name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '姓名',
+`mobile` varchar(11) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+`tel` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '固话',
+`wx_qrcode` int(10) NOT NULL COMMENT '微信id',
+`qq` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'qq',
+`admin_id` int(10) NOT NULL COMMENT '管理员id',
+`addtime` int(10) NOT NULL COMMENT '添加时间',
+`updatetime` int(10) NOT NULL COMMENT '修改时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm个人中心客服(客服名片)';
+||-_-||qs_crm_customer_service||-_-||

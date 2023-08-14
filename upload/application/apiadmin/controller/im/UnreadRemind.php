@@ -203,20 +203,18 @@ class UnreadRemind extends Backend
          */
         if ($unread_reminder && !empty($to_member_info['mobile'])) {
             $sms_message = "您有【{$from_member_name}】的留言，点击查看{$url}";
-
             $type_name = config('global_config.sendsms_type');
+
             $smsClass = new Sms();
-            if (
-                false ===
-                $smsClass->send(
-                    '15235140841',
-                    'SMS_14',
-                    [
-                        'membername' => $from_member_name,
-                        'url' => $url
-                    ]
-                )
-            ) {
+            $sms_send_result = $smsClass->send(
+                $to_member_info['mobile'],
+                'SMS_14',
+                [
+                    'membername' => $from_member_name,
+                    'url' => $url
+                ]
+            );
+            if (false === $sms_send_result) {
                 $this->ajaxReturn(500, '短信提醒失败' . $smsClass->getError());
             }
 

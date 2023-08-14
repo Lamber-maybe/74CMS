@@ -15,14 +15,14 @@ class Complaint extends \app\common\controller\Backend
 
         $total = model('CustomerServiceComplaint')->alias('a')
             ->join(config('database.prefix').'member b','a.uid=b.uid','LEFT')
-            ->join(config('database.prefix').'customer_service c','a.cs_id=c.id','LEFT')
+            ->join(config('database.prefix').'crm_customer_service c','a.cs_id=c.id','LEFT')
             ->where($where)
             ->where('b.uid','not null')
             ->where('c.id','not null')
             ->count();
         $list = model('CustomerServiceComplaint')->alias('a')
         ->join(config('database.prefix').'member b','a.uid=b.uid','LEFT')
-        ->join(config('database.prefix').'customer_service c','a.cs_id=c.id','LEFT')
+        ->join(config('database.prefix').'crm_customer_service c','a.cs_id=c.id','LEFT')
             ->field('a.*,b.mobile,c.name')
             ->where($where)
             ->where('b.uid','not null')

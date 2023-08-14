@@ -4,6 +4,8 @@
  */
 namespace app\v1_0\controller\member;
 
+use Think\Db;
+
 class Recommend extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -60,18 +62,36 @@ class Recommend extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $list = model('Job')
-            ->alias('a')
             ->field(
-                'id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage'
+                'id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,negotiable'
             )
             ->where('audit', 1)
             ->where('is_display', 1)
             ->where('uid', 'eq', $this->userinfo->uid)
             ->select();
+        $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
+            $list[$key]['district1_text'] = isset($category_district_data[$value['district1']]) ? $category_district_data[$value['district1']] : '';
+            $list[$key]['district2_text'] = isset($category_district_data[$value['district2']]) ? $category_district_data[$value['district2']] : '';
+            $list[$key]['district3_text'] = isset($category_district_data[$value['district3']]) ? $category_district_data[$value['district3']] : '';
+            $list[$key]['education_text'] = isset(
+                model('BaseModel')->map_education[$value['education']]
+            )
+                ? model('BaseModel')->map_education[$value['education']]
+                : '学历不限';
+            $list[$key]['experience_text'] = isset(
+                model('BaseModel')->map_education[$value['experience']]
+            )
+                ? model('BaseModel')->map_experience[$value['experience']]
+                : '经验';
+
+            $list[$key]['wage_text'] = model('BaseModel')->handle_wage(
+                $value['minwage'],
+                $value['maxwage'],
+                $value['negotiable']
+            );
             $list[$key]['trade'] = $this->company_profile->trade;
         }
-
         $return['items'] = $list;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
@@ -138,6 +158,20 @@ class Recommend extends \app\v1_0\controller\common\Base
         $jobid = input('get.id/d', 0, 'intval');
         $current_page = input('get.page/d', 0, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
+
+        // app增加刷新时间排序 zch
+        $sort_type = input('get.sort_type/d', 0, 'intval');
+        $sort = '';
+
+        if ($sort_type > 0)
+        {
+             switch ($sort_type){
+                 case 1: // 刷新时间降序排序 zch
+                     $sort = 'refreshtime';
+                     break;
+
+             }
+        }
         if (!$jobid) {
             $this->ajaxReturn(500, '请选择职位');
         }
@@ -167,7 +201,8 @@ class Recommend extends \app\v1_0\controller\common\Base
             'minage' => $jobinfo['minage'],
             'maxage' => $jobinfo['maxage'],
             'current_page' => $current_page,
-            'pagesize' => $pagesize
+            'pagesize' => $pagesize,
+            'sort' => $sort   // app增加最新、刷新时间排序 zch
         ];
         if ($this->userinfo && $this->userinfo->utype == 1) {
             $shield_find = model('Shield')
@@ -179,7 +214,7 @@ class Recommend extends \app\v1_0\controller\common\Base
         }
         $instance = new \app\common\lib\ResumeRecommend($params);
         $searchResult = $instance->run();
-        $return['items'] = $this->get_resume_datalist($searchResult['items']);
+        $return['items'] = $this->get_resume_datalist($searchResult['items']); // app增加最新、刷新时间排序 zch
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     public function resumeTotal()
@@ -378,6 +413,14 @@ class Recommend extends \app\v1_0\controller\common\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
+
+            $resume_work = model('ResumeWork')
+                ->field('rid,uid,starttime,endtime,todate,companyname,jobname,duty')
+                ->where('rid','in',$rids)
+                ->group('rid')
+                ->order('todate desc,endtime desc')
+                ->select();
+
             $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
             $photo_arr = $photo_id_arr = [];
@@ -414,8 +457,40 @@ class Recommend extends \app\v1_0\controller\common\Base
                 }
                 $work_list[$value['rid']] = $value;
             }
+            $resume_tag = model('Category')->getCache('QS_resumetag');
             foreach ($resume as $key => $val) {
                 $tmp_arr = [];
+                $tmp_arr['tag'] = [];
+                foreach(explode(',',$val['tag']) as $k=>$v)
+                {
+                    $tag = isset($resume_tag[$v]) ? $resume_tag[$v] : '';
+                    if (!empty($tag))
+                    {
+                        $tmp_arr['tag'][] = $tag;
+                    }
+                }
+                // app增加字段
+                $tmp_arr['companyname'] = '';
+                $tmp_arr['jobname'] = '';
+                $tmp_arr['starttime'] = '';
+                $tmp_arr['endtime'] = '';
+                $tmp_arr['specialty'] = $val['specialty'];
+                foreach ($resume_work as $k=>$v)
+                {
+                    if ($val['id'] == $v['rid'])
+                    {
+                        $tmp_arr['companyname'] = $v['companyname'];
+                        $tmp_arr['jobname'] = $v['jobname'];
+                        $tmp_arr['starttime'] = date('Y',$v['starttime']);
+                        if ($v['todate'] == 1)
+                        {
+                            $tmp_arr['endtime'] = '至今';
+                        }else
+                        {
+                            $tmp_arr['endtime'] = date('Y',$v['endtime']);
+                        }
+                    }
+                }
                 $tmp_arr['id'] = $val['id'];
                 $tmp_arr['stick'] = $val['stick'];
                 $tmp_arr['high_quality'] = $val['high_quality'];
@@ -538,4 +613,6 @@ class Recommend extends \app\v1_0\controller\common\Base
         }
         return $result_data_list;
     }
+
+
 }

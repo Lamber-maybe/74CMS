@@ -416,6 +416,25 @@ class Member extends \app\common\model\BaseModel
                     'global_config.audit_new_com'
                 );
 
+                /**
+                 * 【新增】
+                 * 增加CRM所属销售自动分配
+                 */
+                $is_rule = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_allocation_rule');
+                if (1 === intval($is_rule)) {
+                    $crm_auto_assign = model('b2bcrm.CrmAutoAssign')
+                        ->where('type', 2)
+                        ->order('assign_num asc,id asc')
+                        ->limit(1)
+                        ->value('admin_id');
+                    if (!empty($crm_auto_assign)) {
+                        $insert_data_company['admin_id'] = $crm_auto_assign;
+                        model('b2bcrm.CrmAutoAssign')
+                            ->where('admin_id', $crm_auto_assign)
+                            ->setInc('assign_num');
+                    }
+                }
+
                 if (
                     false ===
                     model('Company')
@@ -716,9 +735,6 @@ class Member extends \app\common\model\BaseModel
         model('RefreshjobQueue')
             ->where('uid', 'in', $uid)
             ->delete();
-        model('TaskRecord')
-            ->where('uid', 'in', $uid)
-            ->delete();
         model('Resume')
             ->where('uid', 'in', $uid)
             ->delete();
@@ -795,6 +811,18 @@ class Member extends \app\common\model\BaseModel
             ->where('personal_uid', 'in', $uid)
             ->delete();
         model('Job')->deleteJobByUids($uid);
+        model('b2bcrm.CrmClue')
+            ->where('uid', 'in', $uid)
+            ->delete();
+        model('b2bcrm.CrmClueRelease')
+            ->where('uid', 'in', $uid)
+            ->delete();
+        model('b2bcrm.CrmCompanyContact')
+            ->where('uid', 'in', $uid)
+            ->delete();
+        model('b2bcrm.CrmFollowUp')
+            ->where('uid', 'in', $uid)
+            ->delete();
         return;
     }
 

@@ -22,7 +22,7 @@ class FavResume extends \app\v1_0\controller\common\Base
         $list = model('FavResume')
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
-            ->field('a.id,a.resume_id,a.addtime,b.fullname,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.audit')
+            ->field('a.id,a.resume_id,a.addtime,b.fullname,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.audit,b.specialty')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -93,8 +93,10 @@ class FavResume extends \app\v1_0\controller\common\Base
             if (isset($work_list[$value['resume_id']])) {
                 $value['recent_work'] =
                     $work_list[$value['resume_id']]['jobname'];
+                $value['companyname'] = $work_list[$value['resume_id']]['companyname'];
             } else {
                 $value['recent_work'] = '';
+                $value['companyname'] = '';
             }
             $value['age'] = date('Y') - intval($value['birthday']);
             $district_arr = $category_arr = [];

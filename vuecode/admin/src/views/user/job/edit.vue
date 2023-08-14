@@ -278,12 +278,12 @@
         <el-button
           type="primary"
           :loading="submitLoading"
-          @click="onSubmit('form')"
           :disabled="issubmit"
+          @click="onSubmit('form')"
         >
           保存
         </el-button>
-        <el-button @click="goto('/user/job/list')">返回</el-button>
+        <!--        <el-button @click="goto('/user/job/list')">返回</el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -302,17 +302,22 @@ for (let i = 16; i <= 65; i++) {
 }
 var wage_data = []
 let current = 0
-let unit1 = 500
-let unit2 = 5000
+const unit1 = 500
+const unit2 = 5000
 for (let i = 0; i < 37; i++) {
-  if(current<15000){
+  if (current < 15000){
     current += unit1
-  }else{
+  } else {
     current += unit2
   }
   wage_data.push(current)
 }
 export default {
+  props: {
+    id: {
+      default: ''
+    }
+  },
   data() {
     var validateContactMobile = (rule, value, callback) => {
       if (!validMobile(value)) {
@@ -733,7 +738,10 @@ export default {
             }
             this.options_minage.push(tmp_json)
           }
-          return jobEdit({ id: this.$route.query.id }, 'get')
+          if (this.id == ''){
+            this.id = this.$route.query.id
+          }
+          return jobEdit({ id: this.id }, 'get')
         })
         .then(response => {
           this.form = { ...response.data.info }
@@ -817,9 +825,7 @@ export default {
           jobEdit(insertData)
             .then(response => {
               this.$message.success(response.message)
-              setTimeout(function() {
-                that.$router.push('/user/job/list')
-              }, 1500)
+              this.$emit('handleCloseJob')
               return true
             })
             .catch(() => {
@@ -880,7 +886,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style  lang="scss" scoped>
+.app-container{
+  height:calc(100vh - 78px);
+  overflow-y: auto;
+}
 .el-input,
 .el-select,
 .el-cascader,

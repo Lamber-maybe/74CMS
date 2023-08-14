@@ -2,6 +2,7 @@
   <div>
     <el-dialog
       title=""
+      append-to-body
       :visible="true"
       width="300px"
       center

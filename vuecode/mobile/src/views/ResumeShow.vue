@@ -6,21 +6,20 @@
 </template>
 
 <script>
-import ResumeOne from "../components/resume/ResumeOne";
-import ResumeTwo from "../components/resume/ResumeTwo";
+import ResumeOne from '../components/resume/ResumeOne'
+import ResumeTwo from '../components/resume/ResumeTwo'
 export default {
-  name: "resumeShow",
-  data() {
+  name: 'resumeShow',
+  data () {
     return {
-      detail_id: 'def',
-    };
-    
+      detail_id: 'def'
+    }
   },
   components: { ResumeOne, ResumeTwo },
-  created() {
-    this.detail_id = this.$store.state.config.mobile_resume_show_tpl
+  created () {
+    this.detail_id = this.$store.state.config.mobile_resume_show_tpl === undefined || !this.$store.state.config.mobile_resume_show_tpl ? 'def' : this.$store.state.config.mobile_resume_show_tpl
   },
   methods: {
-  },
-};
+  }
+}
 </script>

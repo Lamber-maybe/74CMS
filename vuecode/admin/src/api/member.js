@@ -107,3 +107,11 @@ export function management(params) {
     params
   })
 }
+export function lifeCycle(params) {
+  return request({
+    url: apiArr.lifeCycle,
+    method: 'get',
+    params
+  })
+}
+

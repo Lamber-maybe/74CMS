@@ -17,9 +17,9 @@
         联系电话
         <div class="right_txt">{{ info.tel ? info.tel : "暂无" }}</div>
       </div>
-      <div class="handle_line l3">
-        微信号
-        <div class="right_txt">{{ info.weixin ? info.weixin : "暂无" }}</div>
+      <div class="handle_line arrow l3" @click="weiXinQrcode = true" v-if="info.wx_qrcode">
+        微信
+        <div class="right_txt">点击查看二维码</div>
       </div>
       <div class="handle_line l4">
         联系QQ
@@ -33,6 +33,11 @@
         <div class="right_txt" @click="openComplaint">请填写投诉信息</div>
       </div>
     </div>
+    <van-dialog v-model="weiXinQrcode" title="专属客户" confirm-button-text="知道了">
+      <div class="dialog_wx_qr">
+        <div class="qr_img"><img v-if="info.wx_qrcode" :src="info.wx_qrcode"/></div>
+      </div>
+    </van-dialog>
     <van-popup
       :lazy-render="false"
       v-model="showComplaint"
@@ -61,6 +66,7 @@ export default {
   data () {
     return {
       showComplaint: false,
+      weiXinQrcode: false,
       info: {}
     }
   },
@@ -88,6 +94,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dialog_wx_qr{
+  padding: 20px 0px;
+  .qr_img{
+    margin:0 auto;
+  }
+}
 .handle_line {
   &.l5 {
     background: #ffffff url("../../../assets/images/exc_l5.png") 20px center

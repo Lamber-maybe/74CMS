@@ -19,7 +19,7 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.uid', 'left')
             ->field('a.id,a.jobid,a.personal_uid,a.addtime,b.fullname,b.display_name,b.high_quality,
-            b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.refreshtime,b.id as resume_id')
+            b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.refreshtime,b.id as resume_id,b.specialty,b.tag')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.addtime desc') // 【优化】企业会员中心求职管理-浏览记录 排序方式
@@ -41,6 +41,12 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
             );
         }
         if (!empty($resumeid_arr)) {
+            $resume_work = model('ResumeWork')
+                ->where('rid','in',$resumeid_arr)
+                ->order('todate desc,endtime desc')
+                ->group('rid')
+                ->select();
+
             $intention_data = model('ResumeIntention')
                 ->where('rid', 'in', $resumeid_arr)
                 ->order('id asc')
@@ -65,7 +71,30 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
         $category_data = model('Category')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
+        $resume_tag = model('Category')->getCache('QS_resumetag');
         foreach ($list as $key => $value) {
+
+            $value['companyname'] = '';
+            $value['jobname'] = '';
+            foreach($resume_work as $k=>$v)
+            {
+                if ($v['rid'] == $value['resume_id'])
+                {
+                    $value['companyname'] = $v['companyname'];
+                    $value['jobname'] = $v['jobname'];
+                }
+            }
+            $tag = explode(',',$value);
+            $tag_list = [];
+            foreach($tag as $k=>$v)
+            {
+                $tag_name = isset($resume_tag[$v]) ? $resume_tag[$v] : '';
+                if (!empty($tag_name))
+                {
+                    $tag_list[] = $tag_name;
+                }
+            }
+            $value['tag_list'] = $tag_list;
             $value['fullname'] = $fullname_arr[$value['resume_id']];
             $value['high_quality'] = $value['high_quality'];
             $value['sex_text'] = model('Resume')->map_sex[
@@ -175,5 +204,28 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
             ->where('b.id','not null')
             ->count();
         $this->ajaxReturn(200, '获取数据成功', $total);
+    }
+
+    public function countViewBe()
+    {
+        $company_id = $this->userinfo->uid;
+        $return['resume_fullname'] = '';
+        $return['addtime'] = '';
+        $return['count'] = model('ViewJob')->where(['company_uid'=>$company_id])->count();
+        if ($return['count'] > 0)
+        {
+            $resume = model('View_Job')->alias('a')
+                ->join('resume b','b.uid=a.personal_uid','left')
+                ->where(['a.company_uid'=>$company_id])
+                ->order('a.addtime desc')
+                ->field('b.fullname,a.addtime')
+                ->find();
+            if (!empty($resume)){
+                $return['resume_fullname'] = $resume['fullname'];
+                $return['addtime'] = $resume['addtime'];
+            }
+        }
+
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
 }

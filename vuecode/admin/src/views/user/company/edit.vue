@@ -34,17 +34,23 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item v-if="live_fields.logo === true" label="Logo" prop="logo">
-        <el-upload
-          class="logo-uploader"
-          :action="apiUpload"
-          :headers="headers"
-          :show-file-list="false"
-          :on-success="handleLogoSuccess"
-          :before-upload="beforeLogoUpload"
-        >
-          <img v-if="form.logo" :src="logoUrl" class="logo">
-          <i v-else class="el-icon-plus logo-uploader-icon" />
-        </el-upload>
+        <div style="position: relative">
+          <div v-if="form.logo" class="transparent" @click="logoDel">
+            <i class="el-icon-delete" />
+            删除
+          </div>
+          <el-upload
+            class="logo-uploader"
+            :action="apiUpload"
+            :headers="headers"
+            :show-file-list="false"
+            :on-success="handleLogoSuccess"
+            :before-upload="beforeLogoUpload"
+          >
+            <img v-if="form.logo" :src="logoUrl" class="logo">
+            <i v-else class="el-icon-plus logo-uploader-icon" />
+          </el-upload>
+        </div>
         <span class="smalltip">
           <i class="el-icon-info" />
           建议尺寸120*120
@@ -196,9 +202,9 @@
         >
           保存
         </el-button>
-        <el-button @click="goto('/user/company/list')">
-          返回
-        </el-button>
+        <!--        <el-button @click="goto('/user/company/list')">-->
+        <!--          返回-->
+        <!--        </el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -215,6 +221,11 @@ import apiArr from '@/api'
 // import { config } from 'vuex'
 
 export default {
+  props: {
+    id: {
+      default: ''
+    }
+  },
   data() {
     var validateUrl = (rule, value, callback) => {
       if (value == '') {
@@ -242,7 +253,7 @@ export default {
       }
     }
     return {
-      infoLoading: true,
+      infoLoading: false,
       submitLoading: false,
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -277,7 +288,7 @@ export default {
         nature: '',
         trade: '',
         logo: '',
-        citycategory_arr: '',
+        citycategory_arr: [],
         scale: '',
         registered: '',
         currency: '0',
@@ -489,6 +500,10 @@ export default {
     this.fetchData()
   },
   methods: {
+    logoDel(){
+      this.logoUrl = ''
+      this.form.logo = ''
+    },
     fetchData() {
       getFieldRule({}, 'get')
         .then(response => {
@@ -587,7 +602,9 @@ export default {
           this.options_scale = [...response.data.companyScale]
           this.options_tag = [...response.data.jobTag]
           this.options_setmeal = [...response.data.setmealList]
-          return companyEdit({ id: this.$route.query.id }, 'get')
+          if (this.id != ''){
+            return companyEdit({ id: this.id }, 'get')
+          }
         })
         .then(response => {
           this.form = { ...response.data.info }
@@ -596,20 +613,21 @@ export default {
           this.form.trade = response.data.info.trade == 0 ? '' : response.data.info.trade
           this.logoUrl = response.data.logoUrl
           this.form.currency = this.form.currency + ''
-          this.form.citycategory_arr = []
+          var citycategory_arr = []
           this.form.tag = this.form.tag == '' ? [] : this.form.tag.split(',')
           for (let index = 0; index < this.form.tag.length; index++) {
             this.form.tag[index] = parseInt(this.form.tag[index])
           }
           if (response.data.info.district1 != 0) {
-            this.form.citycategory_arr.push(response.data.info.district1)
+            citycategory_arr.push(response.data.info.district1)
           }
           if (response.data.info.district2 != 0) {
-            this.form.citycategory_arr.push(response.data.info.district2)
+            citycategory_arr.push(response.data.info.district2)
           }
           if (response.data.info.district3 != 0) {
-            this.form.citycategory_arr.push(response.data.info.district3)
+            citycategory_arr.push(response.data.info.district3)
           }
+          this.$set(this.form, 'citycategory_arr', citycategory_arr)
           this.infoLoading = false
         })
         .catch(() => {})
@@ -621,6 +639,7 @@ export default {
       this.submitLoading = true
       const that = this
       const insertData = { ...this.form }
+
       this.$refs[formName].validate(valid => {
         if (valid) {
           const tmp_citycategory_arr = this.form.citycategory_arr
@@ -634,9 +653,10 @@ export default {
           companyEdit(insertData)
             .then(response => {
               this.$message.success(response.message)
-              setTimeout(function() {
-                that.$router.push('/user/company/list')
-              }, 1500)
+              // setTimeout(function() {
+              //   that.$router.push('/user/company/list')
+              // }, 1500)
+              this.submitLoading = false
               return true
             })
             .catch(() => {
@@ -680,6 +700,36 @@ export default {
 </script>
 
 <style scoped>
+.transparent-top{
+  cursor:pointer;
+  z-index: 1;
+  font-size: 12px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  position: absolute;
+  bottom: 15px;
+  color: #d5cece;
+  left: 1px;
+  width: 120px;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.4);
+}
+.transparent{
+  cursor:pointer;
+  z-index: 1;
+  font-size: 12px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  position: absolute;
+  bottom: 15px;
+  color: #d5cece;
+  left: 1px;
+  width: 120px;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.4);
+}
 .logo-uploader {
   display: inline-block;
   border: 1px dashed #d9d9d9;

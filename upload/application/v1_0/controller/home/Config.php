@@ -299,4 +299,43 @@ class Config extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
+    /*
+     * 获取配置信息(单个查询)
+     * zch
+     * 2022-8-17
+     * */
+    public function getConfig()
+    {
+        $name = input('get.name/s','','trim');
+        if (empty($name))
+        {
+            $this->ajaxReturn(500, '缺少查询参数', []);
+        }
+        $list = model('Config')->getCache($name);
+        if (empty($list))
+        {
+            $this->ajaxReturn(200, '获取数据成功', []);
+        }
+        if (is_array($list))
+        {
+            foreach($list as $k=>$v)
+            {
+                switch ($k)
+                {
+                    case 'business_license_id':
+                        $list['business_license_url'] = model('Uploadfile')->getFileUrl($v);
+                        break;
+                    case 'business_licenses_id':
+                        $list['business_licenses_url'] = model('Uploadfile')->getFileUrl($v);
+                        break;
+                    case 'service_license_id':
+                        $list['service_license_url'] = model('Uploadfile')->getFileUrl($v);
+                        break;
+                }
+            }
+        }
+
+        $this->ajaxReturn(200, '获取数据成功', $list);
+    }
 }

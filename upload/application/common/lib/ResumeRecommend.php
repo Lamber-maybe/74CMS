@@ -24,6 +24,7 @@ class ResumeRecommend
     protected $list_max;
     protected $current_page;
     protected $pagesize;
+    protected $sort; // app增加最新、刷新时间排序 zch
 
     private $tableprefix;
     private $tablename;
@@ -98,6 +99,8 @@ class ResumeRecommend
         if ($this->current_page > $max_pages) {
             $this->current_page = $max_pages;
         }
+        // app增加最新、刷新时间排序 zch
+        $this->sort = isset($getdata['sort']) ? $getdata['sort'] : '';
     }
     public function run()
     {
@@ -127,27 +130,34 @@ class ResumeRecommend
     private function buildOrder()
     {
         $weight_config = $this->global_config['resume_recommend_weight'];
-        $this->orderby =
-            'score1 * ' .
-            $weight_config['category'] .
-            ' + score2 * ' .
-            $weight_config['trade'] .
-            ' + score3 * ' .
-            $weight_config['wage'] .
-            ' + score4 * ' .
-            $weight_config['district'] .
-            ' + score5 * ' .
-            $weight_config['nature'] .
-            ' + score6 * ' .
-            $weight_config['service_added'] .
-            ' + score7 * ' .
-            $weight_config['refreshtime'] .
-            ' + score8 * ' .
-            $weight_config['education'] .
-            ' + score9 * ' .
-            $weight_config['experience'] .
-            ' + score10 * ' .
-            $weight_config['birthyear'].' desc';
+        // app增加最新、刷新时间排序 zch
+        if (!empty($this->sort))
+        {
+            $this->orderby = $this->sort.' desc';
+        }else
+        {
+            $this->orderby =
+                'score1 * ' .
+                $weight_config['category'] .
+                ' + score2 * ' .
+                $weight_config['trade'] .
+                ' + score3 * ' .
+                $weight_config['wage'] .
+                ' + score4 * ' .
+                $weight_config['district'] .
+                ' + score5 * ' .
+                $weight_config['nature'] .
+                ' + score6 * ' .
+                $weight_config['service_added'] .
+                ' + score7 * ' .
+                $weight_config['refreshtime'] .
+                ' + score8 * ' .
+                $weight_config['education'] .
+                ' + score9 * ' .
+                $weight_config['experience'] .
+                ' + score10 * ' .
+                $weight_config['birthyear'].' desc';
+        }
     }
     private function buildWhere()
     {

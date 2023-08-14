@@ -567,7 +567,7 @@
         </div> -->
         <div class="content_wrapper">
           <div class="box_report">
-            <div class="tx1">骑士人才招聘系统温馨提示</div>
+            <div class="tx1">{{ $store.state.config.sitename }}温馨提示</div>
             <div class="tx2">
               求职过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请立即举报，我们将及时处理
               <span class="report" @click="handlerReport">立即举报</span>
