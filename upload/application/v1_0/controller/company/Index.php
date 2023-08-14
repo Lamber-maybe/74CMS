@@ -141,9 +141,9 @@ class Index extends \app\v1_0\controller\common\Base
         //浏览记录
         $return_manage['view'] = [
             'red_point' => 0,
-            'number' => model('ViewResume')
+            'number' => model('ViewJob')
                 ->alias('a')
-                ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
+                ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.id', 'left')
                 ->where('a.company_uid', $this->userinfo->uid)
                 ->where('b.id','not null')
                 ->count(),
@@ -243,7 +243,7 @@ class Index extends \app\v1_0\controller\common\Base
                 $map['jobid'] = 0;
             }else{
                 $id = array_column($joblist, 'id');
-                $map['jobid'] = $id;
+                $map['jobid'] = $id[0];
                 if (count($id) > 1) {
                     $map['jobid'] = ['in', $id];
                 }

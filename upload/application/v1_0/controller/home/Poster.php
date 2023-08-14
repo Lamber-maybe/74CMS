@@ -40,7 +40,7 @@ class Poster extends \app\v1_0\controller\common\Base
         }
         if($type == 'shortvideo'){
             $vtype = input('get.vtype/d',1,'intval');
-            $result = $poster->makeVideoPoster($index, $id, $vtype);
+            $result = $poster->makeVideoPoster(1, $id, $vtype);
         }
 
         if($result===false){

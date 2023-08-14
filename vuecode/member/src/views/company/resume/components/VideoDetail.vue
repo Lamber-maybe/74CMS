@@ -5,7 +5,6 @@
         <li><span>面试职位：</span>{{info.jobname}}</li>
         <li><span>公司名称：</span>{{info.companyname}}</li>
         <li><span>面试时间：</span>{{ info.interview_time | interviewTimeFilter }}</li>
-        <li><span>公司地址：</span>山西省榆次区汇通路汇通财富中心7015室</li>
         <li><span>联系电话：</span><span class="color_blue">{{ info.tel }}</span>({{ info.contact }})</li>
         <li><span>备注：</span>请在正式面试前30分钟做好面试准备和设备调试，准时参加视频面试</li>
       </ul>

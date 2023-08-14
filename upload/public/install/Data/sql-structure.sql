@@ -500,7 +500,7 @@ CREATE TABLE `qs_config` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `is_frontend` tinyint(1) unsigned NOT NULL,
-  `value` text NOT NULL,
+  `value` mediumtext NOT NULL,
   `note` varchar(100) NOT NULL,
   `is_secret` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`)
@@ -759,6 +759,27 @@ CREATE TABLE `qs_im_rule` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_im_rule||-_-||
+
+DROP TABLE IF EXISTS `qs_im_quickmsg`;
+CREATE TABLE `qs_im_quickmsg` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `content` varchar(100) NOT NULL,
+  `utype` tinyint(1) unsigned NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_im_quickmsg||-_-||
+
+DROP TABLE IF EXISTS `qs_im_token`;
+CREATE TABLE `qs_im_token` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
+  `im_userid` varchar(50) NOT NULL,
+  `token` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `index_uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_im_token||-_-||
 
 DROP TABLE IF EXISTS `qs_job`;
 CREATE TABLE `qs_job` (
@@ -1060,7 +1081,8 @@ CREATE TABLE `qs_member_bind` (
   `avatar` varchar(255) NOT NULL,
   `bindtime` int(10) unsigned NOT NULL,
   `is_subscribe` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_member_bind||-_-||
 
@@ -2299,3 +2321,29 @@ CREATE TABLE `qs_poster` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_poster||-_-||
+DROP TABLE IF EXISTS `qs_collection_seting`;
+CREATE TABLE `qs_collection_seting` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '采集状态:0|关闭,1|开启',
+    `matching_accuracy` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '匹配精准度',
+    `job_seting` varchar(500) NOT NULL DEFAULT '' COMMENT '职位设置',
+    `company_seting` varchar(500) NOT NULL DEFAULT '' COMMENT '企业设置',
+    `account_seting` varchar(255) NOT NULL DEFAULT '' COMMENT '账号设置',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集设置';
+||-_-||qs_collection_seting||-_-||
+
+DROP TABLE IF EXISTS `qs_marketing_template`;
+CREATE TABLE `qs_marketing_template` (
+ `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID（模板ID）',
+ `type` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '模板类型[1:职位模板;2:企业模板;]',
+ `built_in` tinyint(1) NOT NULL DEFAULT '0' COMMENT '内置模版[0:否;1:是]',
+ `name` varchar(100) NOT NULL DEFAULT '' COMMENT '模板名称',
+ `head` longtext COMMENT '头部模板',
+ `body` longtext COMMENT '内容（职位/企业）模板',
+ `tail` longtext COMMENT '尾部模板',
+ `create_time` int(10) NOT NULL DEFAULT '0' COMMENT '创建时间',
+ `update_time` int(10) NOT NULL DEFAULT '0' COMMENT '更新时间',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_marketing_template||-_-||

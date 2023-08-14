@@ -14,7 +14,7 @@
                 {{ scope.row.field_cn }}
               </span>
               <el-form-item v-else>
-                <el-input v-model="scope.row.field_cn" style="width:120px" maxlength="4" />
+                <el-input v-model="scope.row.field_cn" style="width:120px" maxlength="4"/>
               </el-form-item>
             </template>
           </el-table-column>
@@ -28,15 +28,17 @@
                   content="系统不允许关闭此项"
                   placement="top-start"
                 >
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </div>
-              <el-switch v-else v-model="scope.row.is_display" />
+              <el-switch v-else @change='switchChangeBtn(scope.row)' v-model="scope.row.is_display"/>
             </template>
           </el-table-column>
           <el-table-column align="center" label="是否必填">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.is_require" />
+              <div @click="switchBtn(scope.row)">
+                <el-switch :disabled="scope.row.is_display ? false : true " v-model="scope.row.is_require"/>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -49,7 +51,7 @@
 </template>
 
 <script>
-import { setFieldRule } from '@/api/configuration'
+import {setFieldRule} from '@/api/configuration'
 
 export default {
   props: ['listtype'],
@@ -63,6 +65,16 @@ export default {
     this.fetchInfo()
   },
   methods: {
+    switchBtn(info) {
+      if (!info.is_display) {
+        this.$message.warning('请先打开' + info.field_cn + '显示开关！')
+      }
+    },
+    switchChangeBtn(info) {
+      if (!info.is_display) {
+        info.is_require = false
+      }
+    },
     fetchInfo() {
       this.infoLoading = true
       const that = this
@@ -73,7 +85,7 @@ export default {
       setFieldRule(params, 'get')
         .then(response => {
           const data = [...response.data]
-          data.forEach(function(val, index, arr) {
+          data.forEach(function (val, index, arr) {
             val.is_display = val.is_display == 1
             val.is_require = val.is_require == 1
             val.enable_close = val.enable_close == 1
@@ -82,13 +94,14 @@ export default {
           })
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     onSubmit(formName) {
       const that = this
       let hasError = false
       const insertData = []
-      this.list.forEach(function(val, index, arr) {
+      this.list.forEach(function (val, index, arr) {
         const tmp_val = {
           id: val.id,
           field_cn: val.field_cn,
@@ -111,7 +124,8 @@ export default {
           this.$message.success(response.message)
           return true
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     }
   }
 }

@@ -48,7 +48,14 @@ import api from '@/api'
         }).catch(()=>{})
       },
       searchResume(){
-        let url = this.link_url_web.resumelist_search_key
+        let url = ''
+        if (this.keyword)
+        {
+          url = this.link_url_web.resumelist_search_key
+        }else
+        {
+          url = this.link_url_web.resumelist
+        }
         url = url.replace('_key_',this.keyword)
         location.href=url
       }

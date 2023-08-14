@@ -8,7 +8,7 @@
     >
       <el-form-item>
         <el-table border :data="list">
-          <el-table-column label="模块名称" prop="module_cn" />
+          <el-table-column label="模块名称" prop="module_cn"/>
           <el-table-column align="center" label="是否显示">
             <template slot-scope="scope">
               <div v-if="false === scope.row.enable_close">
@@ -19,26 +19,29 @@
                   content="系统不允许关闭此项"
                   placement="top-start"
                 >
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </div>
               <el-switch
                 v-else
                 v-model="scope.row.is_display"
-                @change="handle_total"
+                @change="switchChangeBtn(scope.row)"
               />
             </template>
           </el-table-column>
           <el-table-column label="完整度">
             <template slot-scope="scope">
               <el-form-item>
-                <el-input
-                  v-model="scope.row.score"
-                  type="number"
-                  style="width:120px"
-                  @change="handle_total"
-                  @blur="handle_total"
-                />
+                <div @click="switchBtn(scope.row)">
+                  <el-input
+                    v-model="scope.row.score"
+                    :disabled="scope.row.is_display ? false : true "
+                    type="number"
+                    style="width:120px"
+                    @change="handle_total"
+                    @blur="handle_total"
+                  />
+                </div>
               </el-form-item>
             </template>
           </el-table-column>
@@ -62,7 +65,7 @@
 </template>
 
 <script>
-import { setResumeModule } from '@/api/configuration'
+import {setResumeModule} from '@/api/configuration'
 
 export default {
   data() {
@@ -77,30 +80,42 @@ export default {
     this.fetchInfo()
   },
   methods: {
+    switchChangeBtn(info) {
+      if (!info.is_display) {
+        info.score = 0
+      }
+      this.handle_total()
+    },
+    switchBtn(info) {
+      if (!info.is_display) {
+        this.$message.warning('请先打开' + info.module_cn + '显示开关！')
+      }
+    },
     fetchInfo() {
       this.infoLoading = true
       const that = this
       setResumeModule({}, 'get')
         .then(response => {
           const data = [...response.data]
-          data.forEach(function(val, index, arr) {
+          data.forEach(function (val, index, arr) {
             val.is_display = val.is_display == 1
             val.enable_close = val.enable_close == 1
             that.list.push(val)
-            if (val.is_display === true){
+            if (val.is_display === true) {
               that.total = that.total + parseInt(val.score)
             }
           })
 
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     onSubmit(formName) {
       const that = this
       let hasError = false
       const insertData = []
-      this.list.forEach(function(val, index, arr) {
+      this.list.forEach(function (val, index, arr) {
         if (val.score == '') {
           val.score = 0
         }
@@ -112,7 +127,7 @@ export default {
         insertData[index] = tmp_val
       })
       if (this.total != 100) {
-        that.$message.error('完整度总和必须等于100')
+        that.$message.error('完整度总和必须等于100，当前总和' + this.total)
         hasError = true
       }
 
@@ -124,7 +139,8 @@ export default {
           this.$message.success(response.message)
           return true
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     handle_total() {
       let score_counter = 0

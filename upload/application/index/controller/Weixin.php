@@ -164,8 +164,8 @@ class Weixin extends \app\common\controller\Base
         $this->checkWeixinOpen($object);
         switch ($object->Event) {
             case "subscribe"://用户未关注时，进行关注后的事件推送
-                $this->outputWelcome($object);
                 $this->subscribe($object);
+                $this->outputWelcome($object);
                 if ($object->EventKey) {
                     $this->actionScan($object,1);
                 }
@@ -598,6 +598,32 @@ class Weixin extends \app\common\controller\Base
                     $this->outputArticle($object,$content_arr);
                 }else{
                     $this->outputText($object,'公告不存在或已删除');
+                }
+                break;
+            case 'subscribe_news':
+                if($news_id = $event['newsid']) $news = model('Article')->find($news_id);
+                if (isset($news_id)) {
+                    if($sceneQrcodeInfo!==null){
+                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    }else{
+                        $mobile_page = config('global_config.mobile_domain').'news/'.$news['id'];
+                    }
+                    $mobile_page = str_replace(":id",$news_id,$mobile_page);
+                    if(isset($event['scene_uuid'])){
+                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                    }
+                    $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                    $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+
+                    $content_arr = [
+                            "Title" => $news['title'].'-'.config('global_config.sitename'),
+                        "Description" => '点击查看 >>',
+                        "PicUrl" => $wechat_info_img,
+                        "Url" => $mobile_page
+                    ];
+                    $this->outputArticle($object,$content_arr);
+                }else{
+                    $this->outputText($object,'资讯不存在或已删除');
                 }
                 break;
             case 'subscribe_jobfairol':

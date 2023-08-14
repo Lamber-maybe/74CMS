@@ -36,13 +36,13 @@
 
 .jno_item_pop::-webkit-scrollbar { width: 0; }
 
-.jno_item_pop_list { margin-bottom: 15px; padding: 15px 24px; line-height: 32px; }
+.jno_item_pop_list { margin-bottom: 15px; padding: 0px 24px; line-height: 32px; }
 
-.jno_item_pop_href { display: inline-block; width: 24%; cursor: pointer; color: #666; }
+.jno_item_pop_href { display: inline-block; width: 24%; cursor: pointer; color: rgba(115, 115, 115, 0.61); }
 
 .jno_item_pop_href:hover { color: #1787fb; }
 
-.jno_item_pop_title { padding-bottom: 10px; margin: 10px 20px 0; font-size: 16px; font-weight: 700; border-bottom: 1px solid #e6e8ec; }
+.jno_item_pop_title { padding-bottom: 10px; margin: 18px 20px 0; font-size: 16px; font-weight: 700;  }
 
 .jno_item:hover .jno_item_pop { display: block; height: 430px; }
 

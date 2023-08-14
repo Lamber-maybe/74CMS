@@ -217,6 +217,8 @@ export default {
   company_fav_cancel: '/company/fav_resume/cancel',
   // 企业已查看简历列表
   company_view_resume_list: '/company/view_resume/index',
+  // 企业被查看简历列表
+  company_be_browsed_list: '/company/view_be_browsed/index',
   // 企业已查看简历删除
   company_view_resume_del: '/company/view_resume/delete',
   // 获取企业认证信息

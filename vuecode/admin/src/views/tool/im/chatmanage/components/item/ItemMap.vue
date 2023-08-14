@@ -9,15 +9,16 @@
         class="mapcard"
         :class="item.self_side == 1 ? 'mine' : 'other'"
         @click="locationToBaidu"
-      ><div class="inner" :class="item.self_side == 1 ? 'mine-name' : 'other-name'">
-         <span class="type sliceText substring" :class="item.self_side == 1 ? 'mine' : 'other'">{{ item.name }}</span>
-         <span class="type words" :class="item.self_side == 1 ? 'mine' : 'other'">
+      >
+        <div class="inner" :class="item.self_side == 1 ? 'mine-name' : 'other-name'">
+          <span class="type sliceText substring" :class="item.self_side == 1 ? 'mine' : 'other'">{{ item.name }}</span>
+          <span class="type words" :class="item.self_side == 1 ? 'mine' : 'other'">
            <a v-if="item.is_delete == 1" class="gray" href="javascript:;">撤回</a>
            <a v-if="item.is_delete == 0" class="back" href="javascript:;" @click="backmsg(item)">撤回</a>|
            <a v-if="item.disable_im == 1" href="javascript:;" class="gray">禁聊</a>
            <a v-if="item.disable_im == 0" href="javascript:;" class="forbid" @click="forbidmsg(item.uid)">禁聊</a>
          </span>
-       </div>
+        </div>
         <div class="title">{{ item.message.title }}</div>
         <div class="address">{{ item.message.address }}</div>
         <img style="width: 294px;" src="../../../../../../assets/images/im/map.png">
@@ -35,16 +36,16 @@
 </template>
 
 <script>
-import { messageBack } from '@/api/im'
-import { memberIm } from '@/api/member'
+import {messageBack} from '@/api/im'
+import {memberIm} from '@/api/member'
+
 export default {
   name: 'ItemMap',
   props: ['item'],
-  data(){
-    return {
-    }
+  data() {
+    return {}
   },
-  created(){
+  created() {
 
   },
   mounted() {
@@ -53,7 +54,7 @@ export default {
   beforeDestroy() {
   },
   methods: {
-    backmsg (item) {
+    backmsg(item) {
       const tips = '确定撤回该消息吗？'
       this
         .$confirm(tips, '提示', {
@@ -71,9 +72,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    forbidmsg (uid) {
+    forbidmsg(uid) {
       const tips = '确定禁聊该用户吗？'
       const disable_im = 1
       this
@@ -92,9 +94,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    locationToBaidu(){
+    locationToBaidu() {
       const url =
         'http://api.map.baidu.com/marker?location=' +
         this.item.message.lat +
@@ -115,40 +118,48 @@ export default {
 .status {
   color: #c9c9c9;
   font-size: 12px;
-  position:absolute;
-  top:176px;
-  width:74px;
-  &.mine{
-    right:0;
+  position: absolute;
+  top: 176px;
+  width: 74px;
+
+  &.mine {
+    right: 0;
   }
-  &.other{
-    left:0;
+
+  &.other {
+    left: 0;
   }
 }
+
 .datetime {
   text-align: center;
   font-size: 12px;
   color: #999999;
   margin-bottom: 18px;
 }
-.out{
-  border-top:1px solid transparent
+
+.out {
+  border-top: 1px solid transparent
 }
+
 .photo {
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
   }
 }
+
 .mapcard {
-  cursor:pointer;
+  cursor: pointer;
   width: 295px;
   height: 176px;
   background-color: #fff;
@@ -157,74 +168,112 @@ export default {
   box-shadow: 0px 0px 24px 0px rgba(219, 219, 219, 0.72);
   border-radius: 5px;
   line-height: 24px;
-  position:relative;
+  position: relative;
   margin-top: 20px;
-  .inner{
+
+  &:hover .words {
+    display: inline-block;
+
+    a {
+      margin: 0 4px;
+      font-weight: 500;
+    }
+
+    .back {
+      color: #f79317;
+    }
+
+    .gray {
+      color: gray;
+    }
+
+    .forbid {
+      color: #02bf57;
+    }
+  }
+
+  .inner {
     font-size: 14px;
     position: absolute;
     top: -30px;
     z-index: 1000000;
     color: #999999;
     min-width: 325px;
-    &.other-name{
+
+    &.other-name {
       left: 0;
       right: auto;
     }
-    &.mine-name{
+
+    &.mine-name {
       right: 0;
       left: auto;
     }
 
-    &:hover .words{
+    &:hover .words {
       display: inline-block;
-      a{
+
+      a {
         margin: 0 4px;
         font-weight: 500;
       }
-      .back{
+
+      .back {
         color: #f79317;
       }
-      .gray{
-        color:gray;
+
+      .gray {
+        color: gray;
       }
-      .forbid{
+
+      .forbid {
         color: #02bf57;
       }
     }
   }
-  .words{
-    display:none;
-    a{
+
+  .words {
+    display: none;
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .type{
-     &.mine{
+
+  .type {
+    &.mine {
       float: right;
       margin-left: 15px;
     }
-    &.other{
+
+    &.other {
       float: left;
       margin-right: 15px;
     }
-    &.sliceText{
+
+    &.sliceText {
       display: inline-block;
       max-width: 200px;
     }
   }
+
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .title {
     margin: 8px 20px 0;
     font-size: 16px;
@@ -234,6 +283,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .address {
     padding: 2px 20px 6px;
     font-size: 14px;

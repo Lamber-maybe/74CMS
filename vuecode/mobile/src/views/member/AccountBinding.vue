@@ -3,7 +3,7 @@
     <Head>合作账号登录</Head>
     <div class="log_wrapper">
       <div class="tx1">{{bindType=='weixin'?'微信':'QQ'}}账号绑定</div>
-      <div class="tx2">您已登录：<span>{{nickname}}</span></div>
+      <div class="tx2">您已登录：<span>{{bindType=='weixin'?'微信帐号':nickname?nickname:'QQ帐号'}}</span></div>
       <div class="tx3">请关联您的{{$store.state.config.sitename}}账号，以便您下次直接登录</div>
       <div class="field_cell_group">
         <div class="field_cell choose-utype" style="border:0;">

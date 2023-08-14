@@ -241,7 +241,7 @@ export default {
 </script>
 <style scoped>
 .large {
-  width: 608px;
+  width: 450px;
 }
 .el-checkbox-group {
   display: inline;

@@ -57,7 +57,7 @@ export default {
     fetchData () {
       this.og_url = location.href
       http
-        .get(api.pageinfo, {alias: this.pagealias, data: this.query_data === undefined ? '{}' : this.query_data, custom_data: this.custom_data === undefined ? '{}' : this.custom_data})
+        .post(api.pageinfo, {alias: this.pagealias, data: this.query_data === undefined ? {} : this.query_data, custom_data: this.custom_data === undefined ? {} : this.custom_data})
         .then(res => {
           if (res.data.seo_title !== undefined) {
             this.title = res.data.seo_title

@@ -73,7 +73,6 @@ class SceneQrcode extends \app\common\controller\Backend
     {
         $input_data = [
             'title' => input('post.title/s', '', 'trim'),
-            'title' => input('post.title/s', '', 'trim'),
             'deadline' => input('post.deadline/s', 'trim', 'trim'),
             'type' => input('post.type/s', '', 'trim'),
             'platform' => input('post.platform/d', 0, 'intval'),
@@ -210,6 +209,9 @@ class SceneQrcode extends \app\common\controller\Backend
             case 'jobfairol':
                 $this->searchJobfairol($keyword);
                 break;
+            case 'news':
+                $this->searchNews($keyword);
+                break;
             default:
                 $this->ajaxReturn(500, '参数错误');
         }
@@ -281,6 +283,25 @@ class SceneQrcode extends \app\common\controller\Backend
             $return = [];
         }else{
             $list = model('Notice')
+                ->where(function ($query) use ($keyword) {
+                    $query->where('id', intval($keyword))->whereOr('title', 'like','%'.$keyword.'%');
+                })->column('id,is_display,title');
+            $return = [];
+            foreach ($list as $key => $value) {
+                $arr['id'] = $value['id'];
+                $arr['label'] = $value['title'];
+                $arr['label_small'] = '';
+                $return[] = $arr;
+            }
+            $this->ajaxReturn(200, '获取数据成功', $return);
+        }
+    }
+    public function searchNews($keyword)
+    {
+        if (!$keyword) {
+            $return = [];
+        }else{
+            $list = model('Article')
                 ->where(function ($query) use ($keyword) {
                     $query->where('id', intval($keyword))->whereOr('title', 'like','%'.$keyword.'%');
                 })->column('id,is_display,title');

@@ -65,6 +65,27 @@ class FileManager
         }
     }
     /**
+     * 上传视频文件
+     */
+    public function uploadVideoReturnPath($file)
+    {
+        if (!$file) {
+            $this->_error = '请上传文件';
+            return false;
+        }
+        $info = $file->move($this->uploadfile_path);
+        if ($info) {
+            $return = [
+                'save_path' => $this->uploadfile_dir . '/' . $info->getSaveName()
+            ];
+            return $return;
+        } else {
+            // 上传失败获取错误信息
+            $this->_error = $file->getError();
+            return false;
+        }
+    }
+    /**
      * 上传文件
      */
     public function upload($file)

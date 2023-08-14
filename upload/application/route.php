@@ -14,7 +14,7 @@ Route::get('s/:code','v1_0/home.ShortUrl/index');
 Route::get('m','index/Mobile/index');
 Route::get('member','index/MemberCenter/index');
 
-Route::rule('index$','index/index/index','GET',['ext'=>'']);
+Route::rule('/$','index/index/index','GET',['ext'=>'']);
 Route::rule('job/:id$','index/job/show');
 Route::rule('resume/:id$','index/resume/show');
 Route::rule('company/:id$','index/company/show');

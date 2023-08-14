@@ -217,6 +217,10 @@ export default {
     company_view_resume_list: '/company/view_resume/index',
     // 企业已查看简历列表统计
     company_view_resume_list_total: '/company/view_resume/total',
+  // 企业被查看简历列表
+  company_view_beresume_list: '/company/view_be_browsed/index',
+  // 企业被查看简历列表统计
+  company_view_beresume_list_total: '/company/view_be_browsed/total',
     // 企业已查看简历删除
     company_view_resume_del: '/company/view_resume/delete',
     // 企业已查看简历删除(批量)

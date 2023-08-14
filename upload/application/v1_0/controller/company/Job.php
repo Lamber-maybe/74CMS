@@ -667,7 +667,7 @@ class Job extends \app\v1_0\controller\common\Base
                 break;
         }
         $list = $list
-            ->order('refreshtime desc')
+            ->order('refreshtime DESC, id DESC')
             ->page($current_page, $pagesize)
             ->select();
         $jobid_arr = $apply_total_list = $job_audit_reason_list = [];

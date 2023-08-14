@@ -50,6 +50,10 @@
     <div class="main-container" style="padding-top:60px">
       <div :class="{ 'fixed-header': fixedHeader }">
         <navbar />
+        <div class="newversion" v-if="new_version_notice==1 && $route.path != '/upgrade'">
+          <span class="text">发现新版本</span>
+          <span class="btn" @click="$router.push('/upgrade')">立即更新</span>
+        </div>
       </div>
       <app-main />
     </div>
@@ -62,6 +66,7 @@ import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import Logo from './components/Logo'
 import { clearCache } from '@/api/configuration'
+import { officialData } from '@/api/dashboard'
 
 export default {
   name: 'Layout',
@@ -74,7 +79,8 @@ export default {
   mixins: [ResizeMixin],
   data() {
     return {
-      selectedModulePath: '/'
+      selectedModulePath: '/',
+      new_version_notice:0
     }
   },
   computed: {
@@ -101,7 +107,7 @@ export default {
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
       }
-    }
+    },
   },
   watch: {
     $route: {
@@ -118,8 +124,14 @@ export default {
     const matched = this.$route.matched
     const matchedModulePath = matched[0].path == '' ? '/' : matched[0].path
     this.selectedModulePath = matchedModulePath
+    this.fetchData()
   },
   methods: {
+    fetchData() {
+      officialData({}).then(response => {
+        this.new_version_notice = response.data.new_version_notice
+      })
+    },
     select(e) {
       if (e !== null) {
         this.selectedModulePath = e
@@ -206,5 +218,32 @@ export default {
 
 .mobile .fixed-header {
   width: 100%;
+}
+
+.newversion{
+  position:absolute;
+  top:0;
+  right:20px;
+  height: 50px;
+  line-height: 50px;
+}
+.newversion .text{
+  font-size:15px;
+  background: url("../assets/images/01.png");
+  background-repeat: no-repeat;
+  padding-left:24px;
+
+}
+.newversion .btn{
+  font-size:14px;
+  margin-left:30px;
+  padding:6px 14px;
+  color:#fff;
+  background-color: #ff5722;
+  border-radius:14px;
+  cursor:pointer;
+}
+.newversion .btn:hover{
+  background-color: #ff5722db;
 }
 </style>

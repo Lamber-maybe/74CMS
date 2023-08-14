@@ -114,11 +114,11 @@
           </div>
           <div class="txt">我的收藏</div>
         </div>
-        <div class="item" @click="handlerJump('/member/company/view_resume',1)">
+        <div class="item" @click="handlerJump('/member/company/be_browsed',1)">
           <div class="num" :class="manage.view.red_point == 1 ? 'new' : ''">
             {{ manage.view.number }}
           </div>
-          <div class="txt">浏览记录</div>
+          <div class="txt">谁看过我</div>
         </div>
       </div>
       <div class="box_title" v-if="setmeal">
@@ -315,9 +315,9 @@ export default {
   created () {
     this.fetchData()
     this.fetchAd()
-    if (this.imToken != '') {
-      this.imWindowGlobal()
-    }
+    // if (this.imToken != '') {
+    //   this.imWindowGlobal()
+    // }
   },
   watch: {
     imToken (val) {

@@ -70,7 +70,8 @@
         <div class="context" v-if="resumeShow == 'video'">
           <VideoList class="videolist" :videotype="utype" :gointype="'mycollection'" :id="''"></VideoList>
         </div>
-        <div class="btn" @click="release">发布视频招聘</div>
+        <div class="btn" v-if="utype == 2" @click="release">发布视频招聘</div>
+        <div class="btn" v-else @click="release">发布视频简历</div>
     </div>
 </template>
 <script>

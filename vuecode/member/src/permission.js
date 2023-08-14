@@ -24,7 +24,7 @@ router.beforeEach(async (to, from, next) => {
     })
   }
   if (store.state.LoginOrNot) {
-    if (to.name === 'MemberLogin' || to.name === 'MemberReg' || to.name === 'FindPwd' || to.name === 'Appeal') {
+    if (to.name === 'MemberLogin' || to.name === 'Register' || to.name === 'FindPwd' || to.name === 'Appeal') {
       if (store.state.LoginType === 1) {
         next('/company')
       } else {

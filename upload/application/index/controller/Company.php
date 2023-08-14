@@ -32,7 +32,7 @@ class Company extends \app\index\controller\Base
             $where['a.nature'] = ['eq', $nature];
         }
 
-        
+
         $subsiteCondition = get_subsite_condition('a');
         $subsite_district_level = 0;
         if(!empty($subsiteCondition)){
@@ -85,17 +85,17 @@ class Company extends \app\index\controller\Base
             }else if($district_level==3){
                 $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
             }
-            
+
             $arr['id'] = $key;
             $arr['url'] = P($params);
             $arr['text'] = $value;
             $options_district[] = $arr;
         }
-        
+
         //根据显示状态筛选数据
         $where['a.is_display'] = 1;
 
-        $total = model('Company')->alias('a')->where($where)->count();
+        // $total = model('Company')->alias('a')->where($where)->count();
         $list = model('Company')
             ->alias('a')
             ->field(
@@ -115,7 +115,8 @@ class Company extends \app\index\controller\Base
             ->where($where)
             ->order('a.id desc')
             ->group('a.id')
-            ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);
+            // ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);
+            ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
         $pagerHtml = $list->render();
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];
         foreach ($list as $key => $value) {
@@ -214,7 +215,7 @@ class Company extends \app\index\controller\Base
         $options_scale = $category_all['QS_scale'];
         $options_nature = $category_all['QS_company_type'];
         $hot_company_list = $this->getHotlist(0);
-        
+
         $seoData['keyword'] = $keyword;
         $seoData['trade'] = isset($category_data['QS_trade'][$trade]) ? $category_data['QS_trade'][$trade] : '';
         if($district3>0){
@@ -229,7 +230,6 @@ class Company extends \app\index\controller\Base
         $seoData['nature'] = isset($category_data['QS_company_type'][$nature]) ? $category_data['QS_company_type'][$nature] : '';
 
         $this->initPageSeo('companylist',$seoData);
-
         $this->assign('subsite_district_level',$subsite_district_level);
         $this->assign('dataset',$return);
         $this->assign('pagerHtml',$pagerHtml);
@@ -416,8 +416,15 @@ class Company extends \app\index\controller\Base
                 's.uid=c.uid',
                 'LEFT'
             )
+            ->join(
+                config('database.prefix') . 'job_search_rtime d',
+                'c.uid=d.uid',
+                'LEFT'
+            )
+            ->where('d.id','not null')
             ->where('c.is_display',1)
-            ->where($subsiteCondition);
+            ->where($subsiteCondition)
+        ->group('c.id');
         if($id>0){
             $list = $list->where('c.id','neq',$id);
         }
@@ -466,7 +473,12 @@ class Company extends \app\index\controller\Base
                 config('database.prefix') . 'member_setmeal b',
                 'a.uid=b.uid',
                 'LEFT'
+            )->join(
+                config('database.prefix') . 'job_search_rtime c',
+                'a.uid=c.uid',
+                'LEFT'
             )
+            ->where('c.id','not null')
             ->where('a.is_display',1)
             ->where($subsiteCondition)
             ->where('a.id','neq',$id)

@@ -317,7 +317,12 @@ class TweetsTemplate extends \app\common\controller\Backend
         }
         $list = [];
         if(!empty($jobid_arr)){
-            $list = model('Job')->where('id','in',$jobid_arr)->select();
+            $where = [];
+            if (intval($condition['refreshtime'])< 0 )
+            {
+                $where['is_display'] = 1;
+            }
+            $list = model('Job')->where('id','in',$jobid_arr)->where($where)->select();
         }
 		$comid_arr = [];
 		foreach ($list as $k => $val) {
@@ -417,8 +422,9 @@ class TweetsTemplate extends \app\common\controller\Backend
 		$item['nowtime'] = date('Y-m-d',time());
 		$item['sitename'] = config('global_config.sitename');
 		$item['sitedir'] = config('global_config.sitedomain');
-		$item['login'] = config('global_config.sitedir').config('global_config.member_dirname').'/login';
-		$item['register'] = config('global_config.sitedir').config('global_config.member_dirname').'/reg/personal';
+        $shortUrl = new \app\common\model\ShortUrl();
+        $item['login'] =  $shortUrl->gen( config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/login', '社群推文营销');
+        $item['register'] = $shortUrl->gen(config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/reg/personal', '社群推文营销');
 		$this->ajaxReturn(200, '获取数据成功', $item);
 	}
     protected function _parseConditionOfJob($condition)
@@ -435,6 +441,10 @@ class TweetsTemplate extends \app\common\controller\Backend
                 'egt',
                 strtotime('-' . $settr . 'day')
             );
+        }elseif( isset($condition['refreshtime']) &&
+            intval($condition['refreshtime']) < 0)
+        {
+            $model = $model->where('a.license','eq',1);
         }
         if (
             isset($condition['jobcategory']) &&

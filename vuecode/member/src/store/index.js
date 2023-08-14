@@ -13,6 +13,7 @@ const service = axios.create({
 
 const store = new Vuex.Store({
     state: {
+        baiduMapFrom:{},
         imUnreaded: false,
         imChatid: '',
         imToken: '',
@@ -93,6 +94,10 @@ const store = new Vuex.Store({
     mutations: {
         setUserPoints(state, data) {
             state.userPoints = data.points
+        },
+        setBaiduMapFrom(state, data) {
+          console.log(data,'data')
+          state.baiduMapFrom = data.data
         },
         setUserSignin(state, data) {
             state.userSignin = data.signin

@@ -31,12 +31,11 @@ class Admin extends \app\common\model\BaseModel
         $this->where('id', $admininfo['id'])->update($login_update_info);
 
         $roleinfo = model('AdminRole')->find($admininfo['role_id']);
-        $admininfo['access'] = $roleinfo['access'] == 'all' ? $roleinfo['access'] : unserialize($roleinfo['access']);
-        $admininfo['access_mobile'] = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
-        $admininfo['access_export'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
-        $admininfo['access_delete'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
-        $admininfo['access_set_service'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_set_service'];
-        $admininfo['rolename'] = $roleinfo['name'];
+        $access = $roleinfo['access'] == 'all' ? $roleinfo['access'] : unserialize($roleinfo['access']);
+        $access_mobile = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
+        $access_export = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
+        $access_delete = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
+        $access_set_service = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_set_service'];
         $JwtAuth = \app\common\lib\JwtAuth::mkToken(
             config('sys.safecode'),
             7776000, //90天有效期
@@ -49,23 +48,14 @@ class Admin extends \app\common\model\BaseModel
             ]
         );
         $admin_token = $JwtAuth->getString();
-        $admin_log = [
-            'admin_id'=>$admininfo['id'],
-            'admin_name'=>$admininfo['username'],
-            'content'=>'登录成功',
-            'is_login'=>1,
-            'addtime'=>$login_update_info['last_login_time'],
-            'ip'=>$login_update_info['last_login_ip'],
-            'ip_addr'=>$login_update_info['last_login_ipaddress']
-        ];
-        model('admin_log')->insert($admin_log);
+        model('AdminLog')->record('登录成功',$admininfo,1);
 
         return [
             'token'=>$admin_token,
-            'access' => $admininfo['access'],
-            'access_export' => $admininfo['access_export'],
-            'access_delete' => $admininfo['access_delete'],
-            'access_set_service' => $admininfo['access_set_service']
+            'access' => $access,
+            'access_export' => $access_export,
+            'access_delete' => $access_delete,
+            'access_set_service' => $access_set_service
         ];
     }
 }

@@ -591,6 +591,9 @@ export default {
         })
         .then(response => {
           this.form = { ...response.data.info }
+          this.form.nature = response.data.info.nature == 0 ? '' : response.data.info.nature
+          this.form.scale = response.data.info.scale == 0 ? '' : response.data.info.scale
+          this.form.trade = response.data.info.trade == 0 ? '' : response.data.info.trade
           this.logoUrl = response.data.logoUrl
           this.form.currency = this.form.currency + ''
           this.form.citycategory_arr = []
@@ -627,6 +630,7 @@ export default {
           insertData.district3 =
             tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0
           insertData.contact = { ...this.form.contact }
+          insertData.info = { ...this.form.info }
           companyEdit(insertData)
             .then(response => {
               this.$message.success(response.message)

@@ -2,7 +2,10 @@
 	<el-card>
 		<div >
 			<menuheader>浏览记录</menuheader>
-			<div class="list">
+      <div class="menu_content">
+        <menu-nav :active-tab="params.type" :list="navList"></menu-nav>
+      </div>
+			<div class="list"  v-if="params.type==1">
 				<el-table :data="dataset" :header-cell-style="{background:'#fcfcfc',color:'#b8babd'}" v-loading="listLoading" @selection-change="handleSelectionChange">
 					<el-table-column type="selection"></el-table-column>
 					<el-table-column  header-align="left" align="left" label="基本信息">
@@ -54,6 +57,58 @@
           @handleCurrentChange="doSearch"
         ></pagination>
 			</div>
+      <div class="list"  v-if="params.type==0">
+        <el-table :data="dataset" :header-cell-style="{background:'#fcfcfc',color:'#b8babd'}" v-loading="listLoading" @selection-change="handleSelectionChange">
+          <el-table-column type="selection"></el-table-column>
+          <el-table-column  header-align="left" align="left" label="基本信息">
+            <template slot-scope="scope">
+              <div class="information_wrapper">
+                <div class="portraitImg">
+                  <img :src="scope.row.photo_img_src" />
+                </div>
+                <div class="information_list">
+                  <div class="fn_bar">
+                    <a class="name a-link" :href="scope.row.resume_link_url_web" target="_blank">{{scope.row.fullname}}</a>
+                    <div class="hq" v-if="scope.row.high_quality > 0"></div>
+                    <div class="clear"></div>
+                  </div>
+                  <p class="information">{{scope.row.age}}岁 | {{scope.row.education_text}} | {{scope.row.experience_text}} | {{scope.row.sex_text}}
+                  </p>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column width="260px" header-align="left" label="求职意向">
+            <template slot-scope="scope">
+              <p class="intention_post">想找 <span>{{scope.row.intention_jobs}}</span> 工作</p>
+              <p class="intention_local">想在 <span>{{scope.row.intention_district}}</span> 工作</p>
+            </template>
+          </el-table-column>
+          <el-table-column width="100px" header-align="left" label="浏览职位">
+            <template slot-scope="scope">
+              <p class="intention_post">{{scope.row.jobname}}</p>
+            </template>
+          </el-table-column>
+          <el-table-column header-align="center" align="center" label="浏览时间">
+            <template slot-scope="scope">
+              <div class="time">
+                {{ scope.row.addtime | timeFilter }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column  header-align="center" align="center"  width="120px" label="操作">
+            <template slot-scope="scope" >
+              <el-button size="mini" type="primary" @click="viewresume(scope.row.resume_link_url_web)">查看简历</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <pagination
+          :total="total"
+          :current-page="params.page"
+          :page-size="params.pagesize"
+          @handleCurrentChange="doSearch"
+        ></pagination>
+      </div>
 		</div>
 	</el-card>
 </template>
@@ -78,29 +133,66 @@ export default{
       dataset: [],
       total: 0,
       params: {
+        type: 0,
         page: 1,
         pagesize: 10,
       },
 		multipleSelection:[],
 		showDirectService:false,
-		directServiceInfo:{}
+		directServiceInfo:{},
+      navList: [
+        { label: '看过我', href: '/company/resume/browsing', name: '0', active: true },
+        { label: '我看过', href: '/company/resume/browsing?type=1', name: '1', active: false },
+      ],
+    }
+  },
+  watch:{
+    '$route':function(newVal){
+      console.log(this.params)
+      this.params.type = newVal.query.type===undefined?'0':newVal.query.type
+      this.params.page = 1
+      this.dataset = []
+      this.fetchData(true)
     }
   },
   created() {
+    this.params.type = this.$route.query.type===undefined?'0':this.$route.query.type
+    this.params.page = 1
     this.fetchData(true)
-
+    console.log(this.params.type)
   },
   methods: {
-    fetchData(init) {
-	this.listLoading = true
+    fetchData(init) {this.listLoading = true
+      if(this.params.type == 1){
+        http.get(api.company_view_resume_list, this.params).then((res) => {
+          this.dataset = [...res.data.items]
+          this.listLoading = false
+          if(init===true){
+            console.log(this.params)
+            this.fetchTotal()
+          }
+        }).catch(() => {})
+      }else{
+        http.get(api.company_view_beresume_list, this.params).then((res) => {
+          for (let i=0;i<=res.data.items.length-1;i++){
+            if(res.data.items[i].jobname == null){
+              res.data.items[i].jobname='职位已删除'
+            }
+          }
+          this.dataset = [...res.data.items]
+          this.listLoading = false
+          if(init===true){
+            console.log(this.params)
+            this.fetchsTotal()
+          }
+        }).catch(() => {})
+      }
+    },
+    fetchsTotal(){
       http
-        .get(api.company_view_resume_list, this.params)
+        .get(api.company_view_beresume_list_total,{})
         .then((res) => {
-			this.dataset = [...res.data.items]
-			this.listLoading = false
-			if(init===true){
-				this.fetchTotal()
-			}
+          this.total = res.data
         })
         .catch(() => {})
     },
@@ -163,6 +255,9 @@ export default{
           // on cancel
         })
 	},
+    viewresume(url){
+      window.location.href = url
+    },
     handlerDownload (resume_id) {
 		this.$confirm('确定下载该简历吗？','系统提示',{type:'warning'})
         .then(() => {

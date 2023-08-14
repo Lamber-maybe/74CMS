@@ -64,6 +64,13 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="企业排序" prop="time_order">
+        <el-select v-model="form.time_order" placeholder="不限" class="large">
+          <el-option label="企业刷新时间" value="refresh_time"></el-option>
+          <el-option label="企业注册时间" value="register_time"></el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="会员套餐" prop="setmeal_id">
         <el-checkbox
           v-model="checkSetmealAll"
@@ -97,6 +104,24 @@
             过滤未认证企业
           </el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="职位限制">
+        <el-radio-group v-model="form.job_limit" class="flex">
+          <el-radio :label="0">
+            不限
+          </el-radio>
+          <el-radio :label="1">
+            1条
+          </el-radio>
+          <el-radio :label="2">
+            2条
+          </el-radio>
+          <el-radio :label="3">
+            3条
+          </el-radio>
+          <el-input-number v-model="form.condition" :min="0" style="width: 200px"></el-input-number>
+        </el-radio-group>
+        <span style="color: #999999"><i class="el-icon-warning-outline" style="color: #409EFF"></i> 每家企业最多展示多少职位</span>
       </el-form-item>
       <el-form-item label="生成数量">
         <el-radio-group v-model="form.num">
@@ -141,7 +166,9 @@ export default {
         tag: [],
         setmeal_id: [],
         content: 'all',
-        num: 10
+        num: 10,
+        job_limit:0,
+        time_order:""
       },
       rules: {}
     }
@@ -202,9 +229,14 @@ export default {
 </script>
 <style scoped>
 .large {
-  width: 608px;
+  width: 450px;
 }
 .el-checkbox-group {
   display: inline;
 }
+  .flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
 </style>

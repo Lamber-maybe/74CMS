@@ -97,6 +97,35 @@ class Upload extends \app\common\controller\Backend
         }while(0);
         exit(JSON_ENCODE($returnJson));
     }
+    public function editorVideo()
+    {
+        $returnJson = [
+            'errno'=>500,
+            'data'=>[]
+        ];
+        $file = input('file.');
+        do{
+            if (!$file) {
+                break;
+            }
+            $file = array_values($file);
+            $file = $file[0];
+            $filemanager = new \app\common\lib\FileManager();
+            $result = $filemanager->uploadVideoReturnPath($file);
+            if (false !== $result) {
+                $returnJson = [
+                    'errno'=>0,
+                    'data'=>[
+                        "url"=> config('global_config.sitedomain').config('global_config.sitedir').'upload/'.$result['save_path']
+                    ]
+                ];
+                break;
+            } else {
+                break;
+            }
+        }while(0);
+        exit(JSON_ENCODE($returnJson));
+    }
     public function attach()
     {
         $file = input('file.file');

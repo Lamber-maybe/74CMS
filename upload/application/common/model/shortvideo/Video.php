@@ -286,6 +286,17 @@ class Video extends BaseModel
         }
     }
 
+    public function inspectId($id)
+    {
+        $count = $this->where(['id'=>$id])->count($id);
+        if ($count>0)
+        {
+            $id = $this->max('real_id')+rand(5,10);
+            $this->inspectId($id);
+        }
+        return $id;
+    }
+
     public function saveVideo($id, $fid, $filesize,$title,$lat,$lon,$address,$uid){
         $data = [
             'fid' => $fid,
@@ -313,8 +324,8 @@ class Video extends BaseModel
             if($data['audit'] == self::AUDIT_YES  && $data['is_public'] == self::PUBLIC_YES){
                 $data['id'] = $row['real_id'];
             }else{
-                if($data['id']>self::AUDIT_LIMIT){
-                    $data['id'] = $this->where(['id'=>['lt', self::AUDIT_LIMIT]])->max('id') + rand(5, 10);
+                if($id>self::AUDIT_LIMIT){
+                    $data['id'] = $this->where(['id'=>['lt', self::AUDIT_LIMIT]])->max('id') + 1;//2022.4.8 zxr
                 }
             }
             $this->where(['id'=>$id, 'uid'=>$uid])->update($data);
@@ -336,14 +347,16 @@ class Video extends BaseModel
                 }
             }
             $max = $this->where(['id'=>['lt', self::AUDIT_LIMIT]])->max('id');
-            if($max<self::AUDIT_LIMIT){
-                $max = self::AUDIT_LIMIT;
-            }
-            $data['id'] = $max+rand(2,5);//v3.0.2
-            $data['real_id'] = $this->max('real_id')+rand(5,10);
+            //2022.4.8 zxr
+//            if($max<self::AUDIT_LIMIT){
+//                $max = self::AUDIT_LIMIT;
+//            }
+            $data['id'] = $max+1;//2022.4.8 zxr
+            $data['real_id'] = $this->max('real_id')+1;//2022.4.8 zxr
             if($data['audit'] == self::AUDIT_YES  && $data['is_public'] == self::PUBLIC_YES){
                 $data['id'] = $data['real_id'];
             }
+//            $data['id'] = $this->inspectId($data['id']);//2022.4.8 zxr
             $this->save($data);
         }
     }

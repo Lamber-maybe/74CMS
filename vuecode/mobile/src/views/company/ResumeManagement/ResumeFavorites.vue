@@ -99,7 +99,8 @@ export default {
         { text: '面试邀请', href: '/member/company/interview', active: false },
         { text: '视频面试', href: '/member/company/interview_video', active: false },
         { text: '我的收藏', href: '/member/company/fav', active: true },
-        { text: '浏览记录', href: '/member/company/view_resume', active: false }
+        { text: '看过我', href: '/member/company/be_browsed', active: false },
+        { text: '我看过', href: '/member/company/view_resume', active: false }
       ]
     }
   },

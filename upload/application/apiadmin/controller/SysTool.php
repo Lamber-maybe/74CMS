@@ -110,12 +110,22 @@ class SysTool extends \app\common\controller\Backend
         }
         $setmealId = input('post.setmeal_id/d', 0, 'intval');
         $pwd = input('post.pwd/s', '', 'trim');
+
+        // 增加选择同步项 chenyang 2022年4月6日13:44:07
+        $syncItem = input('post.sync_item/a', []);
+        if (empty($syncItem)) {
+            $this->ajaxReturn(500, '请选择要同步的项目');
+        }
+
         $validate = validate('Login');
         $validate->processRule();
         if (!$validate->check(['username'=>$this->admininfo->username, 'password'=>$pwd])) {
             $this->ajaxReturn(500, '密码有误');
         }
-        $n = model('MemberSetmeal')->syncSet($setmealId, $this->admininfo);
-        $this->ajaxReturn(200, '同步成功', $n);
+        $result = model('MemberSetmeal')->syncSet($setmealId, $this->admininfo, $syncItem);
+        if ($result['status'] === false) {
+            $this->ajaxReturn(500, $result['msg']);
+        }
+        $this->ajaxReturn(200, '同步成功', $result['data'][0]);
     }
 }

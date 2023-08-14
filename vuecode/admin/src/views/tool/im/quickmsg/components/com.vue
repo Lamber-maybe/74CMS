@@ -8,11 +8,6 @@
       highlight-current-row
     >
       <el-table-column label="常用语" prop="content" class="mini" />
-      <el-table-column prop="sort_id" label="排序" width="180">
-        <template slot-scope="scope">
-          <el-input v-model="scope.row.sort_id" size="mini" class="mini" />
-        </template>
-      </el-table-column>
       <el-table-column fixed="right" label="操作" width="320">
         <template slot-scope="scope">
           <el-button
@@ -33,6 +28,13 @@
       </el-table-column>
     </el-table>
     <div class="spaceline" />
+    <el-button
+      size="small"
+      type="primary"
+      @click="funAdd()"
+    >
+      添加
+    </el-button>
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
@@ -54,13 +56,7 @@
             style="width: 300px"
           />
         </el-form-item>
-        <el-form-item label="排序" prop="sort_id">
-          <el-input
-            v-model.number="form.sort_id"
-            autocomplete="off"
-            style="width: 100px"
-          />
-        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -74,7 +70,8 @@
 import {
   imQuickmsgList,
   imQuickmsgDelete,
-  imQuickmsgEdit
+  imQuickmsgEdit,
+  imQuickmsgAdd
 } from '@/api/im'
 
 export default {
@@ -86,11 +83,7 @@ export default {
       dialogTitle: '',
       infoLoading: false,
       dialogFormVisible: false,
-      form: {
-        id: '',
-        content: '',
-        sort_id: 0
-      },
+      form: {},
       list: null,
       listLoading: true,
       key_type: '1',
@@ -102,9 +95,6 @@ export default {
         content: [
           { required: true, message: '请输入常用语', trigger: 'blur' },
           { max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur' }
-        ],
-        sort_id: [
-          { type: 'number', message: '排序必须为数字', trigger: 'blur' }
         ]
       }
     }
@@ -125,6 +115,19 @@ export default {
           this.listLoading = false
         })
         .catch(() => { })
+    },
+    funAdd() {
+      this.dialogTitle = '添加常用语'
+      if (this.list.length >= 15)
+      {
+        this.dialogFormVisible = false
+        this.$message.error('常用语最多15条');
+      }
+      else
+      {
+        this.dialogFormVisible = true
+      }
+      this.form = {}
     },
     funEdit(index, row) {
       this.dialogTitle = '修改常用语'
@@ -167,6 +170,22 @@ export default {
       } else {
         this.addSave(insertData, formName)
       }
+    },
+    addSave(insertData, formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          insertData.utype = 1
+          imQuickmsgAdd(insertData)
+            .then(response => {
+              this.$message.success(response.message)
+              this.dialogFormVisible = false
+              this.fetchData()
+            })
+            .catch(() => { })
+        } else {
+          return false
+        }
+      })
     },
     editSave(insertData, formName) {
       imQuickmsgEdit(insertData)

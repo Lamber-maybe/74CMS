@@ -142,6 +142,7 @@ export default {
   },
   created () {
     this.initWeixinPaymentOpenid()
+    this.getConfig()
     if (this.bg) {
       this.classname = `head_content ${this.bg}`
     }
@@ -202,7 +203,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setImToken']),
-    ...mapActions(['initWebSocket', 'webSocket_send']),
+    ...mapActions(['initWebSocket', 'webSocket_send','getConfig']),
     /**
      * 获取imToken
      */
@@ -238,7 +239,10 @@ export default {
       if (item.name === '刷新简历') {
         this.refreshResume()
         this.showMore = false
-      } else {
+      }else if (item.name === '一键刷新'){
+        this.handlerRefreshBatch()
+        this.showMore = false
+      }  else {
         this.$router.push(item.url)
       }
     },
@@ -255,6 +259,39 @@ export default {
         })
         .catch(err => {
           console.log(err)
+        })
+    },
+    handlerRefreshBatch () {
+      this.$dialog
+        .confirm({
+          title: '系统提示',
+          message: '确定刷新所有发布中的职位吗？'
+        })
+        .then(() => {
+          http
+            .post(api.company_job_refresh_batch, {})
+            .then(res => {
+              if (res.data.done === 0) {
+                this.$dialog
+                  .confirm({
+                    title: '系统提示',
+                    message: res.message
+                  })
+                  .then(() => {
+                    this.$router.push('/member/company/joblist')
+                  })
+                  .catch(() => {
+                    // on cancel
+                  })
+                return false
+              } else {
+                this.$notify({ type: 'success', message: res.message })
+              }
+            })
+            .catch(() => {})
+        })
+        .catch(() => {
+          // on cancel
         })
     },
     scrollToTop () {

@@ -1,3 +1,5 @@
+import {saveJobSeting} from "@/api/datacollection";
+
 export default {
   // 首页仪表盘
   dashboardBaseinfo: '/index/index',
@@ -17,6 +19,8 @@ export default {
   uploadAd: '/upload/ad',
   // 编辑器上传
   uploadEditor: '/upload/editor',
+  // 编辑器上传视频
+  uploadEditorVideo: '/upload/editorVideo',
   // 附件上传
   uploadAttach: '/upload/attach',
   // 上传hr工具箱
@@ -357,6 +361,7 @@ export default {
   imQuickmsgList: '/im_quickmsg/index',
   imQuickmsgSaveAll: '/im_quickmsg/save_all',
   imQuickmsgEdit: '/im_quickmsg/edit',
+  imQuickmsgAdd: '/im_quickmsg/add',
   imQuickmsgDelete: '/im_quickmsg/delete',
 
   // im基本设置
@@ -647,6 +652,16 @@ export default {
   // 微信公众号营销
   marketingWxoffiaccount: '/marketing/index',
   marketingWxoffiaccountSearchCompany: '/marketing/companySearch',
+
+  // 公众号营销（new）
+  marketingSearch: '/marketing/search',
+  companySearchByKeyword: '/marketing/companySearchByKeyword',
+  wxTemplateList: '/marketing/templateList',
+  templateOption: '/marketing/templateOption',
+  templateDelete: '/marketing/templateDelete',
+  templateEdit: '/marketing/templateEdit',
+  templateDetails: '/marketing/templateDetails',
+
   // 二维码
   showQrcode: '/qrcode/normal',
   // 登录二维码
@@ -745,4 +760,18 @@ export default {
   posterTplindexList: '/poster/getTplindexList',
   // 刷新职位
   refresh_job:'/company/refreshJob',
+  //在线升级
+  newVersionList:'/upgrade/newVersionList',
+  updateStart:'/upgrade/startup',
+  updateDownload:'/upgrade/download',
+  speedProgress:'/upgrade/speedProgress',
+  upgradeUnzip:'/upgrade/unzip',
+  upgradeUpdate:'/upgrade/update',
+
+  // 数据采集
+  getSeting: '/collection_seting/getSetingInfo',
+  saveSeting: '/collection_seting/saveSeting',
+  saveJobSeting: '/collection_seting/saveJobSeting',
+  saveCompanySeting: '/collection_seting/saveCompanySeting',
+  saveAccountSeting: '/collection_seting/saveAccountSeting'
 }

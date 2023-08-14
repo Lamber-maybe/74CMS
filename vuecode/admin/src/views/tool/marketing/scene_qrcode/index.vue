@@ -310,7 +310,7 @@ export default {
       this.showQrcode = true
     },
     funDownload(id){
-      location.href = window.global.RequestBaseUrl + apiArr.sceneQrcodeDownload + '?admintoken=' + getToken() + '&id=' + id
+      location.href = window.global.RequestBaseUrl + apiArr.sceneQrcodeDownload + (window.global.RequestBaseUrl.indexOf('?') == -1 ? '?' : '&') + 'admintoken=' + getToken() + '&id=' + id
     }
   }
 }

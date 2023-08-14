@@ -394,6 +394,16 @@ const toolRouter = {
           access: 'toolsync_com_display'
         }
       }]
+    },
+    {
+      path: '/tool/datacollection',
+      name: 'dataCollection',
+      component: () =>
+        import ('@/views/tool/datacollection/index.vue'),
+      meta: {
+        title: '数据采集',
+        access: 'dataCollection'
+      }
     }
   ]
 }

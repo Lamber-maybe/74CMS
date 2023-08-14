@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 class Backend extends \app\common\controller\Base
@@ -9,7 +10,14 @@ class Backend extends \app\common\controller\Base
     {
         parent::_initialize();
         $header_info = \think\Request::instance()->header();
-        $white_list = ['login-index', 'login-config', 'login-captcha','login-weixin','login-scan'];
+        $white_list = ['login-index',
+	 'login-config',
+	  'login-captcha',
+	  'login-weixin',
+            'login-scan',
+            // UEditor
+            'ueditor.controller-index'
+        ];
         if (
             !in_array(
                 $this->controller_name . '-' . $this->action_name,

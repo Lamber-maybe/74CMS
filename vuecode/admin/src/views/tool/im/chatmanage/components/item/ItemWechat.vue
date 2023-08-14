@@ -18,7 +18,7 @@
           </span>
         </div>
         <div class="clearfix">
-          <div class="ico" />
+          <div class="ico"/>
           <div v-if="item.message.status==1" class="info">
             <div class="i1">{{ item.message.contact }}的微信号</div>
             <div class="i2 substring">{{ item.message.wechat }}</div>
@@ -42,18 +42,19 @@
 </template>
 
 <script>
-import { messageBack } from '@/api/im'
-import { memberIm } from '@/api/member'
+import {messageBack} from '@/api/im'
+import {memberIm} from '@/api/member'
+
 export default {
   name: 'ItemWechat',
   props: ['item'],
-  data(){
+  data() {
     return {
       input_wechat: '',
       visibleWechat: false
     }
   },
-  created(){
+  created() {
 
   },
   mounted() {
@@ -62,7 +63,7 @@ export default {
   beforeDestroy() {
   },
   methods: {
-    backmsg (item) {
+    backmsg(item) {
       const tips = '确定撤回该消息吗？'
       this
         .$confirm(tips, '提示', {
@@ -80,9 +81,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    forbidmsg (uid) {
+    forbidmsg(uid) {
       const tips = '确定禁聊该用户吗？'
       const disable_im = 1
       this
@@ -101,9 +103,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    copy (ele) {
+    copy(ele) {
       var oInput = document.createElement('input')
       oInput.value = ele
       document.body.appendChild(oInput)
@@ -111,12 +114,12 @@ export default {
       document.execCommand('Copy') // 执行浏览器复制命令
       oInput.className = 'oInput'
       oInput.style.display = 'none'
-      this.$message({ type: 'success', message: '复制成功' })
+      this.$message({type: 'success', message: '复制成功'})
     },
-    refuse(item){
+    refuse(item) {
       this.$emit('refuse', item)
     },
-    agree(item){
+    agree(item) {
       item.message.wechat = this.input_wechat
       this.$emit('agree', item)
     }
@@ -129,39 +132,47 @@ export default {
 .status {
   color: #c9c9c9;
   font-size: 12px;
-  position:absolute;
-  top:98px;
-  width:74px;
-  &.mine{
-    right:0;
+  position: absolute;
+  top: 98px;
+  width: 74px;
+
+  &.mine {
+    right: 0;
   }
-  &.other{
-    left:0;
+
+  &.other {
+    left: 0;
   }
 }
+
 .datetime {
   text-align: center;
   font-size: 12px;
   color: #999999;
   margin-bottom: 18px;
 }
+
 .photo {
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
   }
 }
-.out{
-  border-top:1px solid transparent
+
+.out {
+  border-top: 1px solid transparent
 
 }
+
 .wechatcard {
   width: 280px;
   background-color: #fff;
@@ -171,10 +182,32 @@ export default {
   border-radius: 5px;
   line-height: 28px;
   padding: 24px 0 0;
-  position:relative;
+  position: relative;
   height: 98px;
   margin-top: 20px;
-  .inner{
+
+  &:hover .words {
+    display: inline-block;
+
+    a {
+      margin: 0 4px;
+      font-weight: 500;
+    }
+
+    .back {
+      color: #f79317;
+    }
+
+    .gray {
+      color: gray;
+    }
+
+    .forbid {
+      color: #02bf57;
+    }
+  }
+
+  .inner {
     position: absolute;
     font-size: 14px;
     top: -30px;
@@ -182,65 +215,81 @@ export default {
     color: #999999;
     min-width: 325px;
     cursor: pointer;
-    &.other-name{
+
+    &.other-name {
       left: 0;
       right: auto;
     }
-    &.mine-name{
+
+    &.mine-name {
       right: 0;
       left: auto;
     }
 
-    &:hover .words{
+    &:hover .words {
       display: inline-block;
-      a{
+
+      a {
         margin: 0 4px;
         font-weight: 500;
       }
-      .back{
+
+      .back {
         color: #f79317;
       }
-      .gray{
-        color:gray;
+
+      .gray {
+        color: gray;
       }
-      .forbid{
+
+      .forbid {
         color: #02bf57;
       }
     }
   }
-  .words{
-    display:none;
-    a{
+
+  .words {
+    display: none;
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .type{
-     &.mine{
+
+  .type {
+    &.mine {
       float: right;
       margin-left: 15px;
     }
-    &.other{
+
+    &.other {
       float: left;
       margin-right: 15px;
     }
-    &.sliceText{
+
+    &.sliceText {
       display: inline-block;
       max-width: 200px;
     }
   }
+
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .ico {
     float: left;
     width: 48px;
@@ -251,21 +300,25 @@ export default {
     margin-left: 20px;
     background-image: url("../../../../../../assets/images/im/wx01.png");
   }
+
   .info {
     float: left;
     margin-left: 16px;
     line-height: 22px;
     height: 64px;
     width: 170px;
+
     .i1 {
       color: #666666;
       font-size: 14px;
     }
+
     .i2 {
       color: #02bf57;
       font-size: 14px;
     }
   }
+
   .copy {
     height: 48px;
     line-height: 47px;
@@ -274,9 +327,10 @@ export default {
     border-top: 1px solid #ededed;
     text-align: center;
     cursor: pointer;
-    font-weight:bold;
+    font-weight: bold;
   }
 }
+
 .wechatcard2 {
   width: 280px;
   background-color: #fff;
@@ -287,74 +341,113 @@ export default {
   line-height: 28px;
   padding: 24px 0 0;
   height: 138px;
-  position:relative;
+  position: relative;
   height: 98px;
   margin-top: 20px;
-  .inner{
+
+  &:hover .words {
+    display: inline-block;
+
+    a {
+      margin: 0 4px;
+      font-weight: 500;
+    }
+
+    .back {
+      color: #f79317;
+    }
+
+    .gray {
+      color: gray;
+    }
+
+    .forbid {
+      color: #02bf57;
+    }
+  }
+
+  .inner {
     position: absolute;
     font-size: 14px;
     top: -30px;
     z-index: 1000000;
     color: #999999;
     min-width: 325px;
-    &.other-name{
+
+    &.other-name {
       left: 0;
       right: auto;
     }
-    &.mine-name{
+
+    &.mine-name {
       right: 0;
       left: auto;
     }
   }
-  &:hover .words{
+
+  &:hover .words {
     display: inline-block;
-    a{
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .gray{
-      color:gray;
+
+    .gray {
+      color: gray;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .words{
+
+  .words {
     display: none;
-    a{
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .type{
-     &.mine{
+
+  .type {
+    &.mine {
       float: right;
       margin-left: 15px;
     }
-    &.other{
+
+    &.other {
       float: left;
       margin-right: 15px;
     }
-    &.sliceText{
+
+    &.sliceText {
       display: inline-block;
       max-width: 200px;
     }
   }
+
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .ico {
     float: left;
     width: 48px;
@@ -365,21 +458,25 @@ export default {
     margin-left: 20px;
     background-image: url("../../../../../../assets/images/im/wx01.png");
   }
+
   .info {
     float: left;
     margin-left: 16px;
     line-height: 22px;
     height: 64px;
-    width:170px;
+    width: 170px;
+
     .i1 {
       color: #666666;
       font-size: 14px;
     }
+
     .i2 {
       color: #666666;
       font-size: 14px;
     }
   }
+
   .btn {
     .refuse {
       float: left;
@@ -392,6 +489,7 @@ export default {
       cursor: pointer;
       margin-right: 24px;
     }
+
     .agree {
       float: left;
       width: 70px;
@@ -402,11 +500,13 @@ export default {
       border-radius: 5px;
       cursor: pointer;
     }
+
     padding: 0 56px;
     height: 52px;
     font-size: 16px;
     text-align: center;
   }
+
   .copy {
     height: 48px;
     line-height: 47px;

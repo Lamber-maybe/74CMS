@@ -30,16 +30,16 @@
 </template>
 
 <script>
-import { messageBack } from '@/api/im'
-import { memberIm } from '@/api/member'
+import {messageBack} from '@/api/im'
+import {memberIm} from '@/api/member'
+
 export default {
   name: 'ItemText',
   props: ['item'],
-  data(){
-    return {
-    }
+  data() {
+    return {}
   },
-  created(){
+  created() {
 
   },
   mounted() {
@@ -48,7 +48,7 @@ export default {
   beforeDestroy() {
   },
   methods: {
-    backmsg (item) {
+    backmsg(item) {
       const tips = '确定撤回该消息吗？'
       this
         .$confirm(tips, '提示', {
@@ -66,9 +66,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    forbidmsg (uid) {
+    forbidmsg(uid) {
       const tips = '确定禁聊该用户吗？'
       const disable_im = 1
       this
@@ -87,9 +88,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    openHellomsg(){
+    openHellomsg() {
       this.$emit('showHellomsg')
     }
   }
@@ -97,49 +99,58 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.conf{
-  position:absolute;
-  bottom:-34px;
-  right:1px;
-  color:#1787FB;
-  font-size:12px;
-  cursor:pointer;
+.conf {
+  position: absolute;
+  bottom: -34px;
+  right: 1px;
+  color: #1787FB;
+  font-size: 12px;
+  cursor: pointer;
 }
+
 .status {
   color: #c9c9c9;
   font-size: 12px;
-  position:absolute;
+  position: absolute;
   bottom: -30px;
-  width:74px;
-  &.mine{
-    right:0;
+  width: 74px;
+
+  &.mine {
+    right: 0;
   }
-  &.other{
-    left:0;
+
+  &.other {
+    left: 0;
   }
 }
+
 .datetime {
   text-align: center;
   font-size: 12px;
   color: #999999;
   margin-bottom: 18px;
 }
+
 .photo {
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
   }
 }
-.out{
-  border-top:1px solid transparent
+
+.out {
+  border-top: 1px solid transparent
 }
+
 .content {
   max-width: 350px;
   min-height: 44px;
@@ -149,9 +160,31 @@ export default {
   line-height: 30px;
   padding: 6px 14px;
   margin: 0 14px;
-  position:relative;
+  position: relative;
   margin-top: 20px;
-  .inner{
+
+  &:hover .words {
+    display: inline-block;
+
+    a {
+      margin: 0 4px;
+      font-weight: 500;
+    }
+
+    .back {
+      color: #f79317;
+    }
+
+    .gray {
+      color: gray;
+    }
+
+    .forbid {
+      color: #02bf57;
+    }
+  }
+
+  .inner {
     font-size: 14px;
     position: absolute;
     top: -30px;
@@ -159,65 +192,82 @@ export default {
     color: #999999;
     min-width: 325px;
     cursor: pointer;
-    &.other-name{
+
+    &.other-name {
       left: 0;
       right: auto;
     }
-    &.mine-name{
+
+    &.mine-name {
       right: 0;
       left: auto;
     }
-    &:hover .words{
+
+    &:hover .words {
       display: inline-block;
-      a{
+
+      a {
         margin: 0 4px;
         font-weight: 500;
       }
-      .back{
+
+      .back {
         color: #f79317;
       }
-      .gray{
-        color:gray;
+
+      .gray {
+        color: gray;
       }
-      .forbid{
+
+      .forbid {
         color: #02bf57;
       }
     }
   }
-  .words{
+
+  .words {
     display: none;
-    a{
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .gray{
-      color:gray;
+
+    .gray {
+      color: gray;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .type{
-     &.mine{
+
+  .type {
+    &.mine {
       float: right;
       margin-left: 15px;
     }
-    &.other{
+
+    &.other {
       float: left;
       margin-right: 15px;
     }
-    &.sliceText{
+
+    &.sliceText {
       display: inline-block;
       max-width: 200px;
     }
   }
+
   &.mine {
     float: right;
     border-radius: 5px 0px 5px 5px;
   }
+
   &.other {
     float: left;
     border-radius: 0px 5px 5px 5px;

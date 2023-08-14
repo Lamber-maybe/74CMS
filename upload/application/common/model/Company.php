@@ -187,24 +187,58 @@ class Company extends \app\common\model\BaseModel
             ) {
                 throw new \Exception(model('Company')->getError());
             }
-            if (
-                false ===
-                model('CompanyInfo')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($data_info, ['comid' => $company_id])
-            ) {
-                throw new \Exception(model('CompanyInfo')->getError());
+
+            $CompanyInfo_count = model('CompanyInfo')->where(['comid' => $company_id])->count();
+            if ($CompanyInfo_count == 0)
+            {
+                $data_info['comid'] = $company_id;
+                $data_info['uid'] = $company_info_before_save['uid'];
+                if (
+                    false ===
+                    model('CompanyInfo')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($data_info)
+                ) {
+                    throw new \Exception(model('CompanyInfo')->getError());
+                }
+            }else {
+                if (
+                    false ===
+                    model('CompanyInfo')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($data_info, ['comid' => $company_id])
+                ) {
+                    throw new \Exception(model('CompanyInfo')->getError());
+                }
             }
 
-            if (
-                false ===
-                model('CompanyContact')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($data_contact, ['comid' => $company_id])
-            ) {
-                throw new \Exception(model('CompanyContact')->getError());
+            $CompanyContact_count = model('CompanyContact')->where(['comid' => $company_id])->count();
+            if ($CompanyContact_count == 0)
+            {
+                $data_contact['comid'] = $company_id;
+                $data_contact['uid'] = $company_info_before_save['uid'];
+                if (
+                    false ===
+                    model('CompanyContact')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($data_contact)
+                ) {
+                    throw new \Exception(model('CompanyContact')->getError());
+                }
+            }else
+            {
+                if (
+                    false ===
+                    model('CompanyContact')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($data_contact, ['comid' => $company_id])
+                ) {
+                    throw new \Exception(model('CompanyContact')->getError());
+                }
             }
             //提交事务
             \think\Db::commit();

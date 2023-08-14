@@ -8,11 +8,11 @@ export function imQuickmsgList(params, method = 'post') {
     params
   })
 }
-export function imQuickmsgAdd(params, method = 'post') {
+export function imQuickmsgAdd(data) {
   return request({
     url: apiArr.imQuickmsgAdd,
     method: 'post',
-    params
+    data
   })
 }
 export function imQuickmsgEdit(params, method = 'post') {

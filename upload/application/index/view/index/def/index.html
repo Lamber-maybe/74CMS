@@ -9,12 +9,12 @@
 				<div class="job_nav_ol">
 					{#foreach name="category_jobs[0]" item="c1" key="k1" length="8" #}
 					<li class="jno_item">
-						<div class="jno_item_text">{#$c1#}</div>
+						<div class="jno_item_text"><a href="{#:url('index/job/index',['c1'=>$k1])#}">{#$c1#}</a></div>
 						{#if condition="isset($category_jobs[$k1])"#}
 						<div class="jno_item_pop" style="top: -10px;">
 							{#foreach name="category_jobs[$k1]" item="c2" key="k2"#}
 							<div class="jno_item_pop_container">
-								<div class="jno_item_pop_title">{#$c2#}</div>
+								<div class="jno_item_pop_title"><a href="{#:url('index/job/index',['c1'=>$k1,'c2'=>$k2])#}">{#$c2#}</a></div>
 								{#if condition="isset($category_jobs[$k2])"#}
 								<div class="jno_item_pop_list">
 									{#foreach name="category_jobs[$k2]" item="c3" key="k3"#}
@@ -996,16 +996,7 @@
 				}
 			},
 			handlerRegCompany: function () {
-				httpget(qscms.apiList.userinfo).then(function (res) {
-					if (res.data.userinfo.utype === 2)
-					{
-						location.href = qscms.locationList.regCompany
-					}else
-					{
-						location.href = qscms.locationList.indexCompany
-					}
-
-				}).catch(function () { })
+				location.href = qscms.locationList.regCompany
 			},
 			handlerForget: function (utype) {
 				var url = qscms.locationList.forget

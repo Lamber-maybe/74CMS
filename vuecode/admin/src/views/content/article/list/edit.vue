@@ -54,7 +54,18 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="内容" required prop="content">
-          <div id="editor" class="editor" />
+          <div style="border: 1px solid #ccc;">
+            <Toolbar
+              style="border-bottom: 1px solid #ccc"
+              :editor="editor"
+              :defaultConfig="toolbarConfig"
+            />
+            <Editor
+              style="height: 400px; overflow-y: hidden;"
+              v-model="form.content"
+              @onCreated="onCreated"
+            />
+          </div>
         </el-form-item>
         <el-form-item label="附件" prop="attach">
           <el-upload
@@ -117,13 +128,15 @@ import { getToken } from '@/utils/auth'
 import { validUrl } from '@/utils/validate'
 import { articleEdit } from '@/api/article'
 import { getClassify } from '@/api/classify'
-import E from 'wangeditor'
 import apiArr from '@/api'
+import '@wangeditor/editor/dist/css/style.css'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 export default {
+  components: { Editor, Toolbar },
   data() {
     var validateContent = (rule, value, callback) => {
-      value = this.editor.txt.text()
+      value = this.editor.getText()
       if (value === '') {
         callback(new Error('请输入内容'))
       } else {
@@ -141,12 +154,17 @@ export default {
       }
     }
     return {
+      editor: null,
+      toolbarConfig: {
+        excludeKeys: [
+          'fullScreen'
+        ]
+      },
       headers: { admintoken: getToken() },
       fileupload_size: '',
       fileupload_ext: '',
       apiUpload: window.global.RequestBaseUrl + apiArr.upload,
       apiAttachUpload: window.global.RequestBaseUrl + apiArr.uploadAttach,
-      editor: '',
       articleCategory: [],
       form: {
         title: '',
@@ -230,21 +248,31 @@ export default {
     }
   },
   mounted() {
-    this.editor = new E('#editor')
-    this.editor.config.uploadImgServer = window.global.RequestBaseUrl + apiArr.uploadEditor
-    this.editor.config.uploadImgHeaders = {
-      admintoken: getToken()
-    }
-    this.editor.config.zIndex = 0
-    this.editor.config.pasteFilterStyle = false
-    this.editor.create()
   },
   created() {
     this.fileupload_size = this.config.fileupload_size
     this.fileupload_ext = this.config.fileupload_ext
     this.fetchInfo()
   },
+  beforeDestroy() {
+    const editor = this.editor
+    if (editor == null) return
+    editor.destroy() // 组件销毁时，及时销毁编辑器
+  },
   methods: {
+    onCreated(editor) {
+      this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+      this.editor.getMenuConfig('uploadImage').headers = {
+        admintoken: getToken()
+      }
+      this.editor.getMenuConfig('uploadImage').withCredentials = true
+      this.editor.getMenuConfig('uploadImage').server = window.global.RequestBaseUrl + apiArr.uploadEditor
+      this.editor.getMenuConfig('uploadVideo').headers = {
+        admintoken: getToken()
+      }
+      this.editor.getMenuConfig('uploadVideo').withCredentials = true
+      this.editor.getMenuConfig('uploadVideo').server = window.global.RequestBaseUrl + apiArr.uploadEditorVideo
+    },
     handleRemove(file, fileList) {
       let index = this.form.attach.indexOf({name:file.name,url:file.url})
       this.form.attach.splice(index,1)
@@ -284,7 +312,6 @@ export default {
           this.form = { ...response.data.info }
           this.form.addtime = this.form.addtime * 1000
           this.form.is_display = this.form.is_display == 1
-          this.editor.txt.html(this.form.content)
           this.imageUrl = response.data.imageUrl
           this.infoLoading = false
         })
@@ -292,7 +319,7 @@ export default {
     },
     onSubmit(formName) {
       const that = this
-      this.form.content = this.editor.txt.html()
+      this.form.content = this.editor.getHtml()
       const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {

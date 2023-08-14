@@ -66,7 +66,8 @@ class Index extends \app\common\controller\Backend
             $return = [
                 'upgrade_log'=>$result['data']['upgrade_log'],
                 'authorize_info'=>$result['data']['authorize_info'],
-                'official_news'=>$result['data']['official_news']
+                'official_news'=>$result['data']['official_news'],
+                'latest_version_text'=>$result['data']['latest_version_text']
             ];
             $ver = explode('.', config('version.version'));
             $version_int_1 = str_pad($ver[0], 2, '0', STR_PAD_LEFT);
@@ -150,10 +151,13 @@ class Index extends \app\common\controller\Backend
         $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
 
-        $resume_data = model('Resume')
-            ->where('addtime','between time',$daterange)
+        $resume_data = model('Member')
+            ->where('reg_time','between time',$daterange)
             ->group('time')
-            ->column('UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num');
+            ->column(
+                'UNIX_TIMESTAMP(FROM_UNIXTIME(`reg_time`, "%Y%m%d")) as time,count(*) as num'
+            );
+
 
         $company_data = model('Company')
             ->where('addtime','between time',$daterange)

@@ -126,6 +126,7 @@ export default {
       _this.showInfoSwipe = false
       _this.showInfoSwipe = true
       v && _this.initWH(v)
+      v && _this.wxshare(v)
     },
     progressLoading (loading) {
       if (loading) {

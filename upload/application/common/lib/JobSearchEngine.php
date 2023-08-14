@@ -64,7 +64,7 @@ class JobSearchEngine
         $this->where = '';
         $this->field = 'a.id,company_id,stick,refreshtime';
         //排序：什么关键词都没有的时候按置顶和时间排序,有关键词的时候按相关度，按刷新时间时按刷新时间排序
-        $this->orderby = 'stick desc,refreshtime desc';
+        $this->orderby = 'stick DESC, refreshtime DESC, a.id DESC';
         $this->list_max = $this->global_config['job_list_max'];
         $this->init_searchdata($getdata);
     }
@@ -231,11 +231,31 @@ class JobSearchEngine
                     );
                 }
                 $total_list = $total_list
+                    ->field($this->field)
                     ->where($this->where)
-                    ->field('distinct a.id')
+                    ->order($this->orderby)
                     ->limit($this->list_max)
                     ->select();
-                $total = count($total_list);
+                $tmp_idarr = [];
+                foreach ($total_list as $k=>$v){
+                    $tmp_idarr[] = $v['id'];
+                }
+                $total = 0;
+                if (!empty($tmp_idarr)) {
+                    // 如果有列表页显示数量限制时 提前将所有ID查询出来 chenyang 2022年4月7日18:09:23
+                    $idStr = '';
+                    foreach ($tmp_idarr as $id) {
+                        $idStr .= $id.',';
+                        $total ++;
+                    }
+                    $idStr = trim($idStr, ',');
+                    $idWhere = 'a.id in ('.$idStr.')';
+                    if ($this->where == '') {
+                        $this->where = $idWhere;
+                    }else{
+                        $this->where .= ' and '.$idWhere;
+                    }
+                }
             }
             //当前页码超出总量限制时，重置为最大值
             $total_page = $total == 0 ? 0 : ceil($total / $this->pagesize);

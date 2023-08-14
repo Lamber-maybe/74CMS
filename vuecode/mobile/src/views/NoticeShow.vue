@@ -13,7 +13,7 @@
           <div class="num">{{ info.click }}</div>
         </div>
       </div>
-      <div class="notice_content">
+      <div class="notice_content editor-content-view">
         <span style="white-space: pre-line;" v-html="info.content"></span>
       </div>
     </div>

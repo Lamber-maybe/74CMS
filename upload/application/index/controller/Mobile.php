@@ -31,7 +31,7 @@ class Mobile extends \think\Controller
                 $parse_url = parse_url($request_url);
                 $query_str = isset($parse_url['query'])?$parse_url['query']:'';
                 $query_arr = $this->convertUrlQuery($query_str);
-                
+
                 $params = [];
                 $replace_arr = [
                     'keyword'=>'keyword',
@@ -67,7 +67,7 @@ class Mobile extends \think\Controller
                 $parse_url = parse_url($request_url);
                 $query_str = isset($parse_url['query'])?$parse_url['query']:'';
                 $query_arr = $this->convertUrlQuery($query_str);
-                
+
                 $params = [];
                 $replace_arr = [
                     'keyword'=>'keyword',
@@ -103,7 +103,7 @@ class Mobile extends \think\Controller
                 $parse_url = parse_url($request_url);
                 $query_str = isset($parse_url['query'])?$parse_url['query']:'';
                 $query_arr = $this->convertUrlQuery($query_str);
-                
+
                 $params = [];
                 $replace_arr = [
                     'keyword'=>'keyword',
@@ -138,12 +138,18 @@ class Mobile extends \think\Controller
                 preg_match('/\d+/',$request_url,$arr);
                 $cid = isset($arr[0])?$arr[0]:null;
                 $location_href = url('index/article/index',['cid'=>$cid],'',$site_domain);
+            }else if(strpos($request_url_full,config('global_config.mobile_domain').'noticelist')===0) {//公告列表
+                $location_href = url('index/notice/index','','',$site_domain);
+            }else if(strpos($request_url_full,config('global_config.mobile_domain').'notice')===0) {//公告详情
+                preg_match('/\d+/',$request_url,$arr);
+                $id = isset($arr[0])?$arr[0]:null;
+                $location_href = url('index/notice/show',['id'=>$id],'','',$site_domain);
             }else{
                 $location_href = url('index/index/index','','',$site_domain);
             }
             $this->redirect($location_href,302);
             exit;
-            
+
         }
         return $this->fetch('./tpl/mobile/index.html');
     }

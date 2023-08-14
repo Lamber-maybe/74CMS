@@ -23,8 +23,8 @@
         系统检测到新版本，为了更好的使用体验，建议您立即升级程序
         <a
           style="color: #1e88e5"
-          href="https://74cms.com/downloadse/index.html"
-          target="_blank"
+          href="javascript:;"
+          @click="$router.push('/upgrade')"
         >
           立即升级
         </a>
@@ -300,11 +300,15 @@
         <div slot="header" class="clearfix">
           <span>系统信息</span>
         </div>
-        <el-row :gutter="20" style="font-size: 13px">
-          <el-col :span="6">
+        <el-row :gutter="20" style="font-size: 13px;line-height: 34px;">
+          <el-col :span="8">
             当前版本：<span class="color-link">v{{ baseinfo.version }}</span>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
+            最新版本：<span class="color-link2">v{{ latest_version }}</span>
+            <span v-if="new_version_notice==1" style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3" @click="$router.push('/upgrade')">立即升级</span></span>
+          </el-col>
+          <el-col :span="8">
             授权类型：<a
               class="a-link color-link"
               href="https://www.74cms.com"
@@ -312,7 +316,7 @@
               >{{ authorize.authorize }}</a
             >
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             骑士人才系统官网：<a
               class="a-link"
               href="https://www.74cms.com"
@@ -320,7 +324,7 @@
               >www.74cms.com</a
             >
           </el-col>
-          <el-col :span="6"> 程序开发：74CMS程序开发组 </el-col>
+          <el-col :span="8"> 程序开发：74CMS程序开发组 </el-col>
         </el-row>
         <el-row :gutter="20" style="font-size: 13px; margin-top: 10px">
           <el-col>
@@ -350,7 +354,7 @@
           <div class="clearfix" />
         </el-col>
         <el-col :span="10" style="text-align: center">
-          <img class="qrcode" src="static/wechat.jpg" />
+          <img class="qrcode" src="static/wechat.png" />
         </el-col>
       </el-card>
     </el-row>
@@ -387,6 +391,7 @@ export default {
       upgradeLog: [],
       authorize: {},
       officialNews: [],
+      latest_version:'',
       chartTabSelected: '0',
       new_version_notice: 0
     }
@@ -406,6 +411,7 @@ export default {
         this.authorize = response.data.authorize_info
         this.officialNews = response.data.official_news
         this.new_version_notice = response.data.new_version_notice
+        this.latest_version = response.data.latest_version_text
       })
     },
     handlerClickPending(e) {
@@ -523,6 +529,17 @@ export default {
 .color-link:hover {
   color: #fff;
   text-decoration: none;
+}
+.color-link2 {
+  color: #ff5722;
+}
+.color-link3 {
+  font-size: 12px;
+  padding: 3px 6px;
+  background-color: #33a70d;
+  color: #fff;
+  border-radius: 2px;
+  cursor:pointer;
 }
 .no-border {
   border: 0;

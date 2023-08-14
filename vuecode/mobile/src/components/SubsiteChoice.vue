@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import VueCookies from 'vue-cookies'
+// import VueCookies from 'vue-cookies'
 export default {
   name: 'SubsiteChoice',
   computed: {
@@ -20,7 +20,8 @@ export default {
   },
   methods: {
     choose_subsite (subsiteid) {
-      VueCookies.set('qscms_subsiteid', subsiteid)
+      localStorage.setItem("qscms_subsiteid",subsiteid)
+      // VueCookies.set('qscms_subsiteid', subsiteid)
       window.location.href = this.$store.state.config.mobile_domain
     }
   }

@@ -1,0 +1,22 @@
+{
+    "name": "yangwenqu/file_chunk",
+    "description": "大文件分片续传,上传、下载",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4",
+        "predis/predis":"v1.1.7"
+    },
+    "authors": [
+        {
+            "name": "ywq",
+            "email": "729343861@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Yangwenqu\\FileChunk\\": "src/"
+        }
+    }
+}

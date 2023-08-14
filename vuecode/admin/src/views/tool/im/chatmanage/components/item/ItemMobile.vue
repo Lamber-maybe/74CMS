@@ -6,7 +6,8 @@
         <img class="image" :src="item.avatar">
       </div>
       <div
-        :class="(item.message.status==1?'mobilecard':'mobilecard2')+' '+(item.self_side == 1 ? 'mine' : 'other')"
+        class="mobilecard"
+        :class="item.self_side == 1 ? 'mine' : 'other'"
       >
         <div class="inner" :class="item.self_side == 1 ? 'mine-name' : 'other-name'">
           <span class="type sliceText substring" :class="item.self_side == 1 ? 'mine' : 'other'">{{ item.name }}</span>
@@ -18,14 +19,14 @@
           </span>
         </div>
         <div class="clearfix">
-          <div class="ico" />
+          <div class="ico"/>
           <div v-if="item.message.status==1" class="info">
             <div class="i1">{{ item.message.contact }}的手机号</div>
             <div class="i2">{{ item.message.mobile }}</div>
           </div>
           <div v-if="item.message.status!=1" class="info clearfix">
             <div class="i1">我想和您交换手机号，</div>
-            <div class="i2">您是否同意</div>
+            <div :class="item.message.status==1 ? 'i2' : 'i1'">您是否同意</div>
           </div>
         </div>
         <div
@@ -41,16 +42,16 @@
 </template>
 
 <script>
-import { messageBack } from '@/api/im'
-import { memberIm } from '@/api/member'
+import {messageBack} from '@/api/im'
+import {memberIm} from '@/api/member'
+
 export default {
   name: 'ItemMobile',
   props: ['item'],
-  data(){
-    return {
-    }
+  data() {
+    return {}
   },
-  created(){
+  created() {
 
   },
   mounted() {
@@ -59,7 +60,7 @@ export default {
   beforeDestroy() {
   },
   methods: {
-    backmsg (item) {
+    backmsg(item) {
       const tips = '确定撤回该消息吗？'
       this
         .$confirm(tips, '提示', {
@@ -77,9 +78,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    forbidmsg (uid) {
+    forbidmsg(uid) {
       const tips = '确定禁聊该用户吗？'
       const disable_im = 1
       this
@@ -98,9 +100,10 @@ export default {
             return true
           })
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    copy (ele) {
+    copy(ele) {
       var oInput = document.createElement('input')
       oInput.value = ele
       document.body.appendChild(oInput)
@@ -108,12 +111,12 @@ export default {
       document.execCommand('Copy') // 执行浏览器复制命令
       oInput.className = 'oInput'
       oInput.style.display = 'none'
-      this.$message({ type: 'success', message: '复制成功' })
+      this.$message({type: 'success', message: '复制成功'})
     },
-    refuse(item){
+    refuse(item) {
       this.$emit('refuse', item)
     },
-    agree(item){
+    agree(item) {
       this.$emit('agree', item)
     }
   }
@@ -124,38 +127,46 @@ export default {
 .status {
   color: #c9c9c9;
   font-size: 12px;
-  position:absolute;
-  top:100px;
-  width:74px;
-  &.mine{
-    right:0;
+  position: absolute;
+  top: 100px;
+  width: 74px;
+
+  &.mine {
+    right: 0;
   }
-  &.other{
-    left:0;
+
+  &.other {
+    left: 0;
   }
 }
-.out{
-  border-top:1px solid transparent
+
+.out {
+  border-top: 1px solid transparent
 }
+
 .datetime {
   text-align: center;
   font-size: 12px;
   color: #999999;
   margin-bottom: 18px;
 }
+
 .photo {
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
   }
 }
+
 .mobilecard {
   width: 280px;
   background-color: #fff;
@@ -166,74 +177,112 @@ export default {
   line-height: 28px;
   padding: 24px 0 0;
   height: 98px;
-  position:relative;
+  position: relative;
   margin-top: 20px;
-  .inner{
+
+  &:hover .words {
+    display: inline-block;
+
+    a {
+      margin: 0 4px;
+      font-weight: 500;
+    }
+
+    .back {
+      color: #f79317;
+    }
+
+    .gray {
+      color: gray;
+    }
+
+    .forbid {
+      color: #02bf57;
+    }
+  }
+
+  .inner {
     font-size: 14px;
     position: absolute;
     top: -30px;
     z-index: 1000000;
     color: #999999;
     min-width: 325px;
-    &.other-name{
+
+    &.other-name {
       left: 0;
       right: auto;
     }
-    &.mine-name{
+
+    &.mine-name {
       right: 0;
       left: auto;
     }
 
-    &:hover .words{
+    &:hover .words {
       display: inline-block;
-      a{
+
+      a {
         margin: 0 4px;
         font-weight: 500;
       }
-      .back{
+
+      .back {
         color: #f79317;
       }
-      .gray{
-        color:gray;
+
+      .gray {
+        color: gray;
       }
-      .forbid{
+
+      .forbid {
         color: #02bf57;
       }
     }
   }
-  .words{
-    display:none;
-    a{
+
+  .words {
+    display: none;
+
+    a {
       margin: 0 4px;
       font-weight: 500;
     }
-    .back{
+
+    .back {
       color: #f79317;
     }
-    .forbid{
+
+    .forbid {
       color: #02bf57;
     }
   }
-  .type{
-     &.mine{
+
+  .type {
+    &.mine {
       float: right;
       margin-left: 15px;
     }
-    &.other{
+
+    &.other {
       float: left;
       margin-right: 15px;
     }
-    &.sliceText{
+
+    &.sliceText {
       display: inline-block;
       max-width: 200px;
     }
   }
+
   &.mine {
     float: right;
   }
+
   &.other {
     float: left;
   }
+
   .ico {
     float: left;
     width: 48px;
@@ -244,20 +293,24 @@ export default {
     margin-left: 40px;
     background-image: url("../../../../../../assets/images/im/sj01.png");
   }
+
   .info {
     float: left;
     margin-left: 16px;
     line-height: 22px;
     height: 64px;
+
     .i1 {
       color: #666666;
       font-size: 14px;
     }
+
     .i2 {
       color: #ff6425;
       font-size: 14px;
     }
   }
+
   .copy {
     height: 48px;
     line-height: 47px;
@@ -266,83 +319,8 @@ export default {
     border-top: 1px solid #ededed;
     text-align: center;
     cursor: pointer;
-    font-weight:bold;
+    font-weight: bold;
   }
 }
-.mobilecard2 {
-  width: 280px;
-  background-color: #fff;
-  margin: 0 14px;
-  border: 1px solid rgba(184, 185, 185, 0.3);
-  box-shadow: 0px 0px 24px 0px rgba(219, 219, 219, 0.72);
-  border-radius: 5px;
-  line-height: 28px;
-  padding: 24px 0 0;
-  height: 138px;
-  &.mine {
-    float: right;
-  }
-  &.other {
-    float: left;
-  }
-  .ico {
-    float: left;
-    width: 48px;
-    height: 47px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 48px 47px;
-    margin-left: 40px;
-    background-image: url("../../../../../../assets/images/im/sj01.png");
-  }
-  .info {
-    float: left;
-    margin-left: 16px;
-    line-height: 22px;
-    height: 64px;
-    .i1 {
-      color: #666666;
-      font-size: 14px;
-    }
-    .i2 {
-      color: #666666;
-      font-size: 14px;
-    }
-  }
-  .btn {
-    .refuse {
-      float: left;
-      width: 70px;
-      height: 29px;
-      background: #ffffff;
-      color: #5792ff;
-      border: 1px solid #5792ff;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 24px;
-    }
-    .agree {
-      float: left;
-      width: 70px;
-      height: 29px;
-      color: #fff;
-      background: #5792ff;
-      border: 1px solid #5792ff;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    padding: 0 56px;
-    height: 52px;
-    font-size: 14px;
-    text-align: center;
-  }
-  .copy {
-    height: 48px;
-    line-height: 47px;
-    font-size: 14px;
-    color: #b2b2b2;
-    border-top: 1px solid #ededed;
-    text-align: center;
-  }
-}
+
 </style>

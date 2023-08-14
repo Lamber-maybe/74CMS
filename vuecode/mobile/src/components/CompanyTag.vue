@@ -71,6 +71,9 @@ export default {
       customText: ''
     }
   },
+  created () {
+    this.$store.dispatch('getClassify', 'jobTag')
+  },
   methods: {
     initCB () {
       this.$store.dispatch('getClassify', 'jobTag')

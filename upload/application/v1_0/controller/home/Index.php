@@ -7,13 +7,13 @@ class Index extends \app\v1_0\controller\common\Base
     {
         parent::_initialize();
     }
-    protected function writeShowCache($pageCache){
-        if (in_array(config('platform'),['wechat','mobile'])) {
-            $index_module = model('MobileIndexModule')->column(
-                'alias,is_display,plan_id'
-            );
-            $return['module_rule'] = $index_module;
-        }
+    protected function writeShowCache($pageCache,$index_module){
+//        if (in_array(config('platform'),['wechat','mobile'])) {
+//            $index_module = model('MobileIndexModule')->column(
+//                'alias,is_display,plan_id'
+//            );
+//            $return['module_rule'] = $index_module;
+//        }
         //菜单
         if (
             !in_array(config('platform'),['wechat','mobile']) ||
@@ -65,9 +65,13 @@ class Index extends \app\v1_0\controller\common\Base
         }else{
             $return = false;
         }
+        $index_module = model('MobileIndexModule')->column(
+            'alias,is_display,plan_id'
+        );
         if (!$return) {
-            $return = $this->writeShowCache($pageCache);
+            $return = $this->writeShowCache($pageCache,$index_module);
         }
+        $return['module_rule'] = $index_module;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     /**

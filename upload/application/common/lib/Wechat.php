@@ -197,7 +197,34 @@ class Wechat {
         $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
         $this->apiRequest($url, $data,true);
     }
-
+    /**
+     * 模板消息
+     * @param unknown $openid
+     * @param unknown $data
+     * @param unknown $url
+     */
+    public function tmp_message($openid, $tmpId, $data, $url){
+        $access_token = $this->getAccessToken();
+        $template = array(
+            'touser'		=> $openid,
+            'template_id' 	=> $tmpId,
+            'url' 			=> $url,
+            'data' 			=> $data
+        );
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=".$access_token;
+        $result_arr = json_decode($this->apiRequest($url, $template, false), true);
+        if (isset($result_arr['errcode'])) {
+            if($result_arr['errcode'] == 40001){
+                $this->getAccessToken(true);
+                return $this->tmp_message($openid, $tmpId, $data, $url);
+            }else{
+                $this->error = $result_arr['errmsg'] . '(错误代码：' . $result_arr['errcode'] . ')';
+                return false;
+            }
+        } else {
+            return $result_arr;
+        }
+    }
     /**
      * 错误
      */

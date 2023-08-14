@@ -8,10 +8,11 @@
     >
       <el-card>
         <company-title>{{
-          type == "add" ? "发布职位" : "修改职位"
-        }}</company-title>
+            type == "add" ? "发布职位" : "修改职位"
+          }}
+        </company-title>
         <div class="Tips_text" v-if="type == 'add'">
-          <img src="../../assets/images/warning_icon.png" />
+          <img src="../../assets/images/warning_icon.png"/>
           亲爱的HR，您的帐号可同时发布
           {{ enable_addjob_num_total }} 个职位，现已发布
           {{ enable_addjob_num_total - enable_addjob_num }} 个职位。
@@ -48,7 +49,8 @@
               :label="item.id"
               v-for="item in columnsNature"
               :key="item.id"
-              >{{ item.text }}</el-radio
+            >{{ item.text }}
+            </el-radio
             >
           </el-radio-group>
         </el-form-item>
@@ -151,7 +153,8 @@
             v-if="field_rule.basic.negotiable.is_display == 1"
             class="checkbox_mg"
             v-model="form.basic.negotiable"
-            >面议</el-checkbox
+          >面议
+          </el-checkbox
           >
         </el-form-item>
         <el-form-item
@@ -174,11 +177,14 @@
             filterable
             @change="setLocation"
           ></el-cascader>
-          <el-input
-            class="region_width"
-            v-model="form.basic.address"
-            placeholder="请标注详细地址"
-          ></el-input>
+          <span @click="handlerShowMap">
+            <el-input
+              class="region_width"
+              v-model="form.basic.address"
+              placeholder="请标注详细地址"
+              disabled
+            ></el-input>
+          </span>
           <img
             class="taggingImg"
             src="../../assets/images/tagging.png"
@@ -212,7 +218,8 @@
               style="cursor: pointer; margin-right: 10px"
               @click="form.basic.content = item.content"
               size="medium"
-              >{{ item.title }}</el-tag
+            >{{ item.title }}
+            </el-tag
             >
           </div>
         </el-form-item>
@@ -319,7 +326,8 @@
             ></el-option>
           </el-select>
           <el-checkbox class="checkbox_mg" v-model="form.basic.age_na"
-            >不限</el-checkbox
+          >不限
+          </el-checkbox
           >
         </el-form-item>
         <el-form-item
@@ -466,11 +474,13 @@
               placeholder="请填写微信号"
               @input="hanlderWeixin"
             ></el-input
-            ><el-checkbox
+            >
+            <el-checkbox
               @change="handlerSync"
               v-model="weixin_sync_mobile"
               class="checkbox_mg"
-              >同手机号</el-checkbox
+            >同手机号
+            </el-checkbox
             >
           </el-form-item>
           <el-form-item
@@ -514,14 +524,16 @@
 
         <el-form-item>
           <el-checkbox v-model="contactHidden"
-            >联系方式保密（不想受到骚扰）</el-checkbox
+          >联系方式保密（不想受到骚扰）
+          </el-checkbox
           >
         </el-form-item>
 
         <div class="btn_wrapper">
           <el-button type="primary" @click="onSubmit('form')">{{
-            type == "add" ? "发布职位" : "保存修改"
-          }}</el-button>
+              type == "add" ? "发布职位" : "保存修改"
+            }}
+          </el-button>
         </div>
       </el-card>
     </el-form>
@@ -542,12 +554,12 @@
         :mapZoom="form.basic.map_zoom"
         :address="form.basic.address"
       ></Mapset>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handlerCloseMap(true)"
-          >保 存</el-button
-        >
+      <div class="preserveBtn">
+        <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handlerCloseMap(true)">保 存</el-button>
         <el-button @click="handlerCloseMap">取 消</el-button>
       </span>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -556,7 +568,10 @@
 var getCascaderObj = function (val, opt) {
   return val.map(function (value) {
     for (var itm of opt) {
-      if (itm.value == value) { opt = itm.children; return itm; }
+      if (itm.value == value) {
+        opt = itm.children;
+        return itm;
+      }
     }
     return null;
   });
@@ -564,6 +579,7 @@ var getCascaderObj = function (val, opt) {
 import Mapset from '@/components/company/Mapset'
 import http from '@/utils/http'
 import api from '@/api'
+
 export default {
   name: 'JobForm',
   components: {
@@ -588,11 +604,11 @@ export default {
       return this.$store.state.classifyJobCategory
     },
     columnsEducation() {
-      let arr = [{ id: 0, text: '不限' }]
+      let arr = [{id: 0, text: '不限'}]
       return arr.concat(this.$store.state.classifyEdu)
     },
     columnsExperience() {
-      let arr = [{ id: 0, text: '不限' }]
+      let arr = [{id: 0, text: '不限'}]
       return arr.concat(this.$store.state.classifyExperience)
     },
     columnsTag() {
@@ -828,23 +844,25 @@ export default {
       this.$refs.mapset.initCB()
     },
     handlerCloseMap(setData) {
+      this.$refs.mapset.mapLocation.address = ''
       this.showMap = false
       if (setData === true) {
         this.form.basic.map_lat = this.$refs.mapset.mapData.lat
         this.form.basic.map_lng = this.$refs.mapset.mapData.lng
         this.form.basic.map_zoom = this.$refs.mapset.mapData.zoom
-        this.form.basic.address = this.$refs.mapset.mapData.address
+        this.form.basic.address = this.$store.state.baiduMapFrom.location
       }
     },
     jobcategoryChange(e) {
       let length = e.length
       let pid = e[length - 1]
       http
-        .get(api.categoryjob_template_list, { pid })
+        .get(api.categoryjob_template_list, {pid})
         .then(res => {
           this.tpllist = res.data
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     }
   }
 }
@@ -858,66 +876,87 @@ export default {
   background: #fefce8;
   margin-bottom: 20px;
 }
+
 .Tips_text img {
   vertical-align: middle;
   margin: 0 10px 0 20px;
 }
+
 .form_title {
   padding: 20px 0;
   font-size: 16px;
 }
+
 .el-form {
   margin: 15px 0 0 16px;
 }
+
 .form_item {
   width: 820px;
   display: flex;
 }
+
 .form_item .el-form-item .el-select,
 .form_item .el-form-item .el-input {
   width: 170px;
 }
+
 .name_width {
   width: 430px;
 }
+
 .salary_width {
   width: 180px;
 }
+
 .region_width {
   width: 430px;
   margin-left: 20px;
 }
+
 .textField_width {
   width: 960px;
 }
+
 .el-card {
   margin-bottom: 10px;
 }
+
 .form_item_con {
   display: flex;
 }
+
 .form_item_con > div {
   border: 1px solid #ccc;
   padding: 0 10px 0 0;
   margin-right: 10px;
 }
+
 .form_item_con > div:nth-of-type(2) {
   margin-left: 10px;
 }
+
 .wx_width {
   width: 350px;
 }
+
 .checkbox_mg {
   margin: 0 6px 0 12px;
 }
+
 .taggingImg {
+  display: inline-block;
   vertical-align: middle;
   cursor: pointer;
+  padding-right: 10px;
+  margin-left: 10px;
 }
+
 .welfare_con {
   display: flex;
   flex-wrap: wrap;
 }
+
 .welfare_con > div > div {
   padding: 0px 12px;
   background: #fafafa;
@@ -926,13 +965,16 @@ export default {
   margin-right: 20px;
   margin-bottom: 20px;
 }
+
 .input_box .el-input {
   width: 133px;
 }
+
 .input_box .el-button {
   width: 77px;
   background: #fafafa;
 }
+
 .welfare_con .active_bg {
   background: #eef9ff;
   color: #1787fb;
@@ -941,7 +983,13 @@ export default {
 .el-form-item__content > span {
   cursor: pointer;
 }
+
 .el-form {
   margin: 0;
+}
+
+.preserveBtn {
+  margin-top: -10px;
+  text-align: center;
 }
 </style>

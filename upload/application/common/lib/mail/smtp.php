@@ -51,7 +51,7 @@ class smtp
         $mailer = \Swift_Mailer::newInstance($transport);
 
         // 用关联数组设置发件人地址，可以设置多个发件人
-        $addresses = [$this->smtp_sender_address];
+        $addresses = [$this->smtp_sender_address=>config('global_config.sitename')];
         $message->setFrom($addresses);
         if (false === $mailer->send($message)) {
             throw new \Exception('发送失败');

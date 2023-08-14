@@ -71,7 +71,7 @@ class Config extends \app\v1_0\controller\common\Base
             $list['sitename'] = $this->subsite->sitename;
             $list['subsite_info'] = $this->subsite->toArray();
         }
-        
+
         $config_payment = config('global_config.account_alipay');
         $list['account_alipay_appid'] = $config_payment['appid'];
         $this->ajaxReturn(200, '获取数据成功', $list);
@@ -192,7 +192,7 @@ class Config extends \app\v1_0\controller\common\Base
      * 页面信息
      */
     public function pageinfo(){
-        $alias = input('get.alias/s','','trim');
+        $alias = input('post.alias/s','','trim');
         if($alias==''){
             $this->ajaxReturn(200,'获取数据成功',[]);
         }
@@ -200,7 +200,7 @@ class Config extends \app\v1_0\controller\common\Base
         if(!$return){
             $this->ajaxReturn(200,'获取数据成功',[]);
         }
-        
+
         if($this->subsite!==null){
             if($this->subsite->title!=''){
                 $return['seo_title'] = $this->subsite->title;
@@ -219,18 +219,17 @@ class Config extends \app\v1_0\controller\common\Base
         $return['og_type'] = '招聘求职网';
         $return['og_site_name'] = config('global_config.sitename');
         $return['og_description'] = '为求职者提供免费注册、求职指导、简历管理等服务，职位真实可靠，上' . config('global_config.sitename') . '，找到满意工作';
-
         //============处理替换自定义标签start=============
-        $query = input('get.data/s','','trim');
-        $query = htmlspecialchars_decode($query,ENT_QUOTES);
-        if($query!="{}"){
-            $query = json_decode($query,true);
-        }else{
-            $query = [];
-        }
+        $query = input('post.data/a',[]);
+//        $query = htmlspecialchars_decode($query,ENT_QUOTES);
+//        if($query!="{}"){
+//            $query = json_decode($query,true);
+//        }else{
+//            $query = [];
+//        }
 
         $seoData = [];
-        
+
 
         if(isset($query['article_cid']) && intval($query['article_cid'])>0){
             $categoryinfo = model('ArticleCategory')->where('id',intval($query['article_cid']))->find();
@@ -252,7 +251,7 @@ class Config extends \app\v1_0\controller\common\Base
         }else{
             $seoData['keyword'] = '';
         }
-        
+
         if(isset($query['district3'])>0 && intval($query['district3'])>0){
             $seoData['citycategory'] = isset($category_district_data[intval($query['district3'])]) ? $category_district_data[intval($query['district3'])] : '';
         }else if(isset($query['district2'])>0 && intval($query['district2'])>0){
@@ -279,8 +278,9 @@ class Config extends \app\v1_0\controller\common\Base
             $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
         }
 
-        
-        $custom_data = input('get.custom_data/s','','trim');
+
+        $custom_data = input('post.custom_data/a');
+        $custom_data = json_encode($custom_data);
         $custom_data = htmlspecialchars_decode($custom_data,ENT_QUOTES);
         if($custom_data!="{}"){
             $custom_data = json_decode($custom_data,true);
@@ -292,7 +292,7 @@ class Config extends \app\v1_0\controller\common\Base
             $return['seo_keywords'] = str_replace("{".$key."}",$value,$return['seo_keywords']);
             $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
         }
-        
+
 
         //============处理替换自定义标签end=============
 

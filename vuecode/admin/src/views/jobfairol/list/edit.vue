@@ -57,7 +57,18 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="招聘会介绍" required prop="content">
-          <div id="editor" class="editor" />
+          <div style="border: 1px solid #ccc;">
+            <Toolbar
+              style="border-bottom: 1px solid #ccc"
+              :editor="editor"
+              :defaultConfig="toolbarConfig"
+            />
+            <Editor
+              style="height: 400px; overflow-y: hidden;"
+              v-model="form.content"
+              @onCreated="onCreated"
+            />
+          </div>
         </el-form-item>
         <el-form-item required label="允许报名套餐" prop="enable_setmeal_id">
           <el-checkbox-group v-model="form.enable_setmeal_id">
@@ -95,13 +106,15 @@
 <script>
 import { getToken } from '@/utils/auth'
 import { jobFairOnLineEdit } from '@/api/jobfairol'
-import E from 'wangeditor'
 import apiArr from '@/api'
 import { getClassify } from '@/api/classify'
+import '@wangeditor/editor/dist/css/style.css'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 export default {
+  components: { Editor, Toolbar },
   data() {
     var validateContent = (rule, value, callback) => {
-      value = this.editor.txt.text()
+      value = this.editor.getText()
       if (value === '') {
         callback(new Error('请输入招聘会介绍'))
       } else {
@@ -125,13 +138,18 @@ export default {
       }
     }
     return {
+      editor: null,
+      toolbarConfig: {
+        excludeKeys: [
+          'fullScreen'
+        ]
+      },
       thumbUrl: '',
       qrcodeUrl: '',
       apiUpload: window.global.RequestBaseUrl + apiArr.upload,
       headers: { admintoken: getToken() },
       fileupload_size: '',
       fileupload_ext: '',
-      editor: '',
       options_setmeal: [],
       form: {
         id: '',
@@ -167,23 +185,33 @@ export default {
     }
   },
   mounted() {
-    this.editor = new E('#editor')
-    this.editor.config.uploadImgServer = window.global.RequestBaseUrl + apiArr.uploadEditor
-    this.editor.config.uploadImgHeaders = {
-      admintoken: getToken()
-    }
-    this.editor.config.zIndex = 0
-    this.editor.config.pasteFilterStyle = false
-    this.editor.create()
     this.getSetmeal()
     this.getJobfairOnline()
     this.form.id = this.$route.query.id
+  },
+  beforeDestroy() {
+    const editor = this.editor
+    if (editor == null) return
+    editor.destroy() // 组件销毁时，及时销毁编辑器
   },
   created() {
     this.fileupload_size = this.config.fileupload_size
     this.fileupload_ext = this.config.fileupload_ext
   },
   methods: {
+    onCreated(editor) {
+      this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+      this.editor.getMenuConfig('uploadImage').headers = {
+        admintoken: getToken()
+      }
+      this.editor.getMenuConfig('uploadImage').withCredentials = true
+      this.editor.getMenuConfig('uploadImage').server = window.global.RequestBaseUrl + apiArr.uploadEditor
+      this.editor.getMenuConfig('uploadVideo').headers = {
+        admintoken: getToken()
+      }
+      this.editor.getMenuConfig('uploadVideo').withCredentials = true
+      this.editor.getMenuConfig('uploadVideo').server = window.global.RequestBaseUrl + apiArr.uploadEditorVideo
+    },
     getJobfairOnline: function(){
       this.infoLoading = true
       const param = { id: this.$route.query.id }
@@ -195,7 +223,6 @@ export default {
           return parseInt(item)
         })
         this.form.must_company_audit = parseInt(this.form.must_company_audit) === 1
-        this.editor.txt.html(this.form.content)
         this.thumbUrl = response.data.thumbUrl
         this.qrcodeUrl = response.data.qrcodeUrl
         this.infoLoading = false
@@ -236,7 +263,7 @@ export default {
     },
     onSubmit(formName) {
       const that = this
-      this.form.content = this.editor.txt.html()
+      this.form.content = this.editor.getHtml()
       var insertData = Object.assign({}, this.form)
       this.$refs[formName].validate(valid => {
         if (valid) {

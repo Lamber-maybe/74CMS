@@ -21,10 +21,32 @@
         </span>
       </el-form-item>
       <el-form-item label="注册协议">
-        <div id="editor_agreement" class="editor" />
+        <div style="border: 1px solid #ccc;">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editor_agreement"
+            :defaultConfig="toolbarConfig"
+          />
+          <Editor
+            style="height: 400px; overflow-y: hidden;"
+            v-model="form.agreement"
+            @onCreated="onCreated1"
+          />
+        </div>
       </el-form-item>
       <el-form-item label="隐私政策">
-        <div id="editor_privacy" class="editor" />
+        <div style="border: 1px solid #ccc;">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editor_privacy"
+            :defaultConfig="toolbarConfig"
+          />
+          <Editor
+            style="height: 400px; overflow-y: hidden;"
+            v-model="form.privacy"
+            @onCreated="onCreated2"
+          />
+        </div>
       </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -35,14 +57,24 @@
 
 <script>
 import { setConfig } from '@/api/configuration'
-import E from 'wangeditor'
+import '@wangeditor/editor/dist/css/style.css'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import {getToken} from "@/utils/auth";
+import apiArr from "@/api";
 
 export default {
+  components: { Editor, Toolbar },
   data() {
     return {
       infoLoading: true,
-      editor_agreement: '',
-      editor_privacy: '',
+      editor_agreement: null,
+      toolbarConfig: {
+        excludeKeys: [
+          'fullScreen',
+          'insertVideo'
+        ]
+      },
+      editor_privacy: null,
       form: {
         closereg: '',
         reg_prefix: '',
@@ -53,21 +85,33 @@ export default {
     }
   },
   mounted() {
-    this.editor_agreement = new E('#editor_agreement')
-    this.editor_agreement.config.uploadImgShowBase64 = true
-    this.editor_agreement.config.zIndex = 1
-    this.editor_agreement.config.pasteFilterStyle = false
-    this.editor_agreement.create()
-    this.editor_privacy = new E('#editor_privacy')
-    this.editor_privacy.config.uploadImgShowBase64 = true
-    this.editor_privacy.config.zIndex = 1
-    this.editor_privacy.config.pasteFilterStyle = false
-    this.editor_privacy.create()
+  },
+  beforeDestroy() {
+    const editor = this.editor
+    if (editor == null) return
+    editor.destroy() // 组件销毁时，及时销毁编辑器
   },
   created() {
     this.fetchInfo()
   },
   methods: {
+    onCreated1(editor) {
+      this.editor_agreement = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+      console.log(this.editor_agreement.getConfig())
+      this.editor_agreement.getMenuConfig('uploadImage').headers = {
+        admintoken: getToken()
+      }
+      this.editor_agreement.getMenuConfig('uploadImage').withCredentials = true
+      this.editor_agreement.getMenuConfig('uploadImage').server = window.global.RequestBaseUrl + apiArr.uploadEditor
+    },
+    onCreated2(editor) {
+      this.editor_privacy = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+      this.editor_privacy.getMenuConfig('uploadImage').headers = {
+        admintoken: getToken()
+      }
+      this.editor_privacy.getMenuConfig('uploadImage').withCredentials = true
+      this.editor_privacy.getMenuConfig('uploadImage').server = window.global.RequestBaseUrl + apiArr.uploadEditor
+    },
     fetchInfo() {
       this.infoLoading = true
       const param = {}
@@ -83,8 +127,6 @@ export default {
             privacy
           }
           this.form.closereg = this.form.closereg == 1
-          this.editor_agreement.txt.html(this.form.agreement)
-          this.editor_privacy.txt.html(this.form.privacy)
           this.infoLoading = false
         })
         .catch(() => {})

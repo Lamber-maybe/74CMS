@@ -100,7 +100,7 @@ export default {
           return time.getTime() > endDate.getTime() || time.getTime() < beginDate.getTime()
         }
       },
-      paramLabel: '',
+      paramLabel: '标题/ID',
       showParam: false,
       form: {
         title: '',
@@ -197,6 +197,9 @@ export default {
         case 'jobfairol':
           this.paramLabel = '标题/ID'
           break
+        case 'news':
+          this.paramLabel = '标题/ID'
+          break
       }
       // 如果类型选择招聘会或者网络招聘会，同时平台选择了小程序，则把平台重置为默认，因为小程序目前没有招聘会和网络招聘会
       if (item.alias == 'jobfairol'){
@@ -212,6 +215,10 @@ export default {
       }
     },
     searchList(e){
+      if (e == '') {
+        this.options_search_list = []
+        return false
+      }
       const type = this.form.type
       const param = {
         keyword: e,

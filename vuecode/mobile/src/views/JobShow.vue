@@ -556,7 +556,6 @@ export default {
       this.$store.state.LoginOrNot === true && this.$store.state.LoginType === 2
     // 请求数据
     this.fetchData()
-    this.getScanQrcodeImg()
   },
   watch: {
     '$route' (to, from) {
@@ -564,6 +563,11 @@ export default {
       // 请求数据
       this.fetchData()
       document.body.scrollTop = document.documentElement.scrollTop = 0
+    },
+    bindWeixinShow(e){
+      if(e===true){
+        this.getScanQrcodeImg()
+      }
     }
   },
   mounted () {

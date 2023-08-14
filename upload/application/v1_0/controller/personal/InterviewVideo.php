@@ -68,7 +68,7 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
                     $value['room_status'] = 'opened';
                 }
             }
-            $value['job_link_url_web'] = url('index/company/show',['id'=>$value['jobid']]);
+            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
             $value['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
 
             $list[$key] = $value;

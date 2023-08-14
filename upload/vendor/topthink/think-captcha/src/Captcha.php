@@ -296,7 +296,7 @@ class Captcha
 
         $JwtAuth = \app\common\lib\JwtAuth::mkToken(
             config('sys.safecode'),
-            $this->expire,
+            60,
             [
                 'info' => $code
             ]

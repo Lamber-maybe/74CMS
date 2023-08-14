@@ -237,11 +237,14 @@
             filterable
             @change="setLocation"
           ></el-cascader>
-          <el-input
-            class="el-select_width"
-            v-model="form.info.address"
-            placeholder="请标注详细地址"
-          ></el-input>
+          <span @click="handlerShowMap">
+            <el-input
+              class="el-select_width"
+              v-model="form.info.address"
+              placeholder="请标注详细地址"
+              disabled
+            ></el-input>
+          </span>
           <div class="inp_bz_map" @click="handlerShowMap">标注</div>
         </el-form-item>
         <el-form-item
@@ -464,30 +467,32 @@
       </el-card>
     </el-form>
 
-    <el-dialog
-      title="标注详情地址"
-      :visible.sync="showMap"
-      width="800px"
-      height="500px"
-      @opened="handlerMapOpened"
-      @closed="handlerMapClose"
-    >
-      <Mapset
-        ref="mapset"
-        title="地图标注"
-        :location="location"
-        :mapLat="form.basic.map_lat"
-        :mapLng="form.basic.map_lng"
-        :mapZoom="form.basic.map_zoom"
-        :address="form.info.address"
-      ></Mapset>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handlerMapClose(true)"
-          >保 存</el-button
-        >
-        <el-button @click="handlerMapClose">取 消</el-button>
-      </span>
-    </el-dialog>
+    <div class="dateRange">
+      <el-dialog
+        title="标注详情地址"
+        :visible.sync="showMap"
+        width="800px"
+        height="500px"
+        @opened="handlerMapOpened"
+        @closed="handlerMapClose"
+      >
+        <Mapset
+          ref="mapset"
+          title="地图标注"
+          :location="location"
+          :mapLat="form.basic.map_lat"
+          :mapLng="form.basic.map_lng"
+          :mapZoom="form.basic.map_zoom"
+          :address="form.info.address"
+        ></Mapset>
+        <div class="preserveBtn">
+          <span slot="footer" class="dialog-footer ">
+            <el-button type="primary" @click="handlerMapClose(true)">保 存</el-button>
+            <el-button @click="handlerMapClose">取 消</el-button>
+          </span>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -511,7 +516,7 @@ export default {
   data() {
     return {
       location: '',
-      companynameDisabled: true,
+      companynameDisabled: false,
       scanNewUpload: false,
       showMap: false,
       areaDistrictKey: 0,
@@ -612,6 +617,7 @@ export default {
     }
   },
   methods: {
+
     setLocation(e) {
       let that = this
       that.location = ''
@@ -703,8 +709,8 @@ export default {
         .get(api.company_profile, {})
         .then(res => {
           const { basic, contact, info, field_rule } = { ...res.data };
-          if (basic.companyname === undefined || basic.companyname == '') {
-            this.companynameDisabled = false
+          if (basic.companyname !== undefined && basic.companyname != '') {
+            this.companynameDisabled = true
           }
           this.form.basic = {
             logo: basic.logo,
@@ -802,13 +808,18 @@ export default {
       this.$refs.mapset.initCB()
     },
     handlerMapClose(setData) {
-      this.showMap = false
+      this.$refs.mapset.mapLocation.address = ''
       if (setData === true) {
+        if(this.$store.state.baiduMapFrom.location == ''){
+          return this.$message("请填写详细信息")
+        }
         this.form.basic.map_lat = this.$refs.mapset.mapData.lat
         this.form.basic.map_lng = this.$refs.mapset.mapData.lng
         this.form.basic.map_zoom = this.$refs.mapset.mapData.zoom
-        this.form.info.address = this.$refs.mapset.mapData.address
+        // this.form.info.address = this.$refs.mapset.mapData.address
+        this.form.info.address = this.$store.state.baiduMapFrom.location
       }
+      this.showMap = false
     }
   }
 };
@@ -953,5 +964,9 @@ export default {
 .codeImg span {
   left: -8px;
   color: white;
+}
+.preserveBtn{
+  margin-top: -10px;
+  text-align: center;
 }
 </style>

@@ -131,7 +131,7 @@
         </div>
         <!--招聘会介绍-->
         <div class="i_group" v-show="tab === 'show'">
-          <div class="j_des">
+          <div class="j_des editor-content-view">
             <div class="des_text" style="white-space: pre-line;" v-html="content"></div>
           </div>
         </div>

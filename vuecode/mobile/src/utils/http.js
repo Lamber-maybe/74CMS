@@ -32,7 +32,7 @@ export default {
           headers: {
             'user-token': store.state.userToken,
             platform: store.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           },
           params: params
         })
@@ -64,7 +64,7 @@ export default {
           headers: {
             'user-token': store.state.userToken,
             platform: store.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           }
         })
         .then((res) => {
@@ -95,7 +95,7 @@ export default {
           'Content-Type': 'multipart/form-data', // ;boundary=----WebKitFormBoundaryQ6d2Qh69dv9wad2u,
           'user-token': store.state.userToken,
           platform: store.state.platform,
-          'subsiteid': VueCookies.get('qscms_subsiteid')
+          'subsiteid': localStorage.getItem('qscms_subsiteid')
         },
         transformRequest: [
           function (data) {

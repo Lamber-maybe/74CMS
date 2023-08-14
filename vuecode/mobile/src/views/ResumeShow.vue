@@ -751,6 +751,13 @@ export default {
       this.fetchVideonum()
     }
   },
+  watch: {
+    bindWeixinShow(e){
+      if(e===true){
+        this.getScanQrcodeImg()
+      }
+    }
+  },
   methods: {
     ...mapMutations(['setImShowParams', 'setimChatid']),
     /**

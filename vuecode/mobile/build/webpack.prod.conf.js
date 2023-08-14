@@ -11,7 +11,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const env = require('../config/prod.env')
-const version = '3.5.1'
+const version = '3.6.0'
 // const Version = require('../static/version')
 const webpackConfig = merge(baseWebpackConfig, {
   module: {

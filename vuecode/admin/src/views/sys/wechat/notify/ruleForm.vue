@@ -66,8 +66,18 @@ export default {
     fetchInfo() {
       this.infoLoading = true
       const that = this
+      let utype = ''
+      if(that.listtype == 'company'){
+        utype = 1
+      }
+      if(that.listtype == 'personal'){
+        utype = 2
+      }
+      if(that.listtype == 'administrators'){
+        utype = 3
+      }
       const params = {
-        utype: that.listtype == 'company' ? 1 : 2
+        utype: utype
       }
 
       getWechatNotifyRule(params, 'get')

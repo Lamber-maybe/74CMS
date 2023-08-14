@@ -31,7 +31,9 @@
         "guzzlehttp/guzzle": "^6.5",
         "jaeger/querylist": "V3.2.1",
         "jaeger/querylist-ext-aquery": "^1.0",
-		"jpush/jpush": "*"
+		"jpush/jpush": "*",
+        "yangwenqu/file_chunk": "^1.0",
+        "ssskit/easyzip": "^1.1"
     },
     "autoload": {
         "psr-4": {

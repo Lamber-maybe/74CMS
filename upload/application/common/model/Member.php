@@ -263,7 +263,7 @@ class Member extends \app\common\model\BaseModel
         } else {
             if ($op == 1) {
                 $data['points'] = $check_points['points'] + $data['points'];
-            } else {
+            } elseif ($op == 2) {
                 $data['points'] = $check_points['points'] - $data['points'];
             }
             if ($data['points'] < 0) {
@@ -271,8 +271,8 @@ class Member extends \app\common\model\BaseModel
             }
 
             model('MemberPoints')
-                ->allowField(true)
-                ->save($data, ['uid' => $data['uid']]);
+                ->where(['uid' => $data['uid']])
+                ->update(['points' => $data['points']]);
         }
         if ($data['points'] > 0) {
             $log['uid'] = $data['uid'];
@@ -280,7 +280,7 @@ class Member extends \app\common\model\BaseModel
             $log['points'] = $param_points;
             $log['content'] = $data['note'];
             $log['addtime'] = time();
-            model('MemberPointsLog')->save($log);
+            model('MemberPointsLog')->insert($log);
         }
     }
     /**

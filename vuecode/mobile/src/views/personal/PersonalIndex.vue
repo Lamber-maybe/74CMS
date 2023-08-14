@@ -282,9 +282,9 @@ export default {
     this.getMessageList()
     this.initInfo()
     this.fetchAd()
-    if (this.imToken != '') {
-      this.imWindowGlobal()
-    }
+    // if (this.imToken != '') {
+    //   this.imWindowGlobal()
+    // }
   },
   methods: {
     getChatList () {

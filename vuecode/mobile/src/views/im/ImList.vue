@@ -3,8 +3,9 @@
     <Head>我的职聊</Head>
     <!-- 列表头部导航开始 -->
     <div class="im-top-nav">
-      <div :class="['nav-item',item.imgClass]" v-for="(item,index) in isTopNav" :key="index" @click="handleJump(item.url)">
-        {{item.val}}
+      <div :class="['nav-item',item.imgClass]" v-for="(item,index) in isTopNav" :key="index"
+           @click="handleJump(item.url)">
+        {{ item.val }}
       </div>
     </div>
     <!-- 列表头部导航结束 -->
@@ -13,17 +14,23 @@
     <div class="h100">
       <div class="list-tab-wrapper">
         <div :class="isFixedNav ? 'tab-btn-con tab-btn-con-ac' : 'tab-btn-con'" ref="tabBtnCon">
-          <div ref="btnItem0" :class="listTabIndex == 0 ? 'btn-item btn-ac' : 'btn-item'" @click="handleTabSwitch(0,$event)">全部</div>
-          <div ref="btnItem1" :class="listTabIndex == 1 ? 'btn-item btn-ac' : 'btn-item'" @click="handleTabSwitch(1,$event)">已读</div>
+          <div ref="btnItem0" :class="listTabIndex == 0 ? 'btn-item btn-ac' : 'btn-item'"
+               @click="handleTabSwitch(0,$event)">全部
+          </div>
+          <div ref="btnItem1" :class="listTabIndex == 1 ? 'btn-item btn-ac' : 'btn-item'"
+               @click="handleTabSwitch(1,$event)">已读
+          </div>
           <div ref="btnLine" class="btn-line"></div>
           <div class="btn-set-up" @click="SetUpListPopup=true"></div>
         </div>
-        <div class="tab-list-con" @touchstart="handleTouchStart($event)" @touchmove="handleTouchMove($event)" @touchend="handleTouchEnd">
+        <div class="tab-list-con" @touchstart="handleTouchStart($event)" @touchmove="handleTouchMove($event)"
+             @touchend="handleTouchEnd">
           <div ref="tabListMoveCon" class="tab-list-move-con">
             <div class="list-con list-con-ac">
 
               <ul class="list" v-if="chatListAryan.length>0">
-                <li :class="item.stick == 1 ? 'list-item list-item-stick':'list-item'" v-for="(item) in chatListAryan" :key="item.chat_id" @click="handleJumpImShow(item)">
+                <li :class="item.stick == 1 ? 'list-item list-item-stick':'list-item'" v-for="(item) in chatListAryan"
+                    :key="item.chat_id" @click="handleJumpImShow(item)">
                   <!-- :before-close="beforeClose" -->
                   <!-- @open="handleCancelTop(item)" -->
                   <van-swipe-cell :disabled="item.stick == 1 ? false : true">
@@ -33,16 +40,16 @@
                         <div class="badge" v-if="item.new > 0"></div>
                       </div>
                       <div class="info">
-                        <div class="info-txt-1 substring"  v-if="LoginType == 2">{{ item.detail}}</div>
-                        <div class="info-txt-1 substring"  v-if="LoginType == 1">{{ item.nickname}}</div>
+                        <div class="info-txt-1 substring" v-if="LoginType == 2">{{ item.detail }}</div>
+                        <div class="info-txt-1 substring" v-if="LoginType == 1">{{ item.nickname }}</div>
                         <div v-if="LoginType == 2" class="info-txt-2 substring">
-                          <span class="txt-color-1">{{item.nickname}}</span>
+                          <span class="txt-color-1">{{ item.nickname }}</span>
                           <span class="txt-color-2">正在与您沟通</span>
-                          <span class="txt-color-3">{{item.jobname}}</span>
+                          <span class="txt-color-3">{{ item.jobname }}</span>
                         </div>
-                        <div v-if="LoginType == 1" class="info-txt-2">{{item.detail}}</div>
+                        <div v-if="LoginType == 1" class="info-txt-2">{{ item.detail }}</div>
                       </div>
-                      <div class="time">{{item.updatetime}}</div>
+                      <div class="time">{{ item.updatetime }}</div>
                     </div>
                     <template #right>
                       <!--  -->
@@ -53,11 +60,12 @@
                   </van-swipe-cell>
                 </li>
               </ul>
-              <van-empty v-else description="暂无会话列表" />
+              <van-empty v-else description="暂无会话列表"/>
             </div>
             <div class="list-con">
               <ul class="list" v-if="readAryList.length>0">
-                <li :class="item.stick ==1 ? 'list-item list-item-stick':'list-item'" v-for="(item) in readAryList" :key="item.chat_id" @click="handleJumpImShow(item)">
+                <li :class="item.stick ==1 ? 'list-item list-item-stick':'list-item'" v-for="(item) in readAryList"
+                    :key="item.chat_id" @click="handleJumpImShow(item)">
                   <van-swipe-cell :disabled="item.stick == 1 ? false : true">
                     <div class="chat-item">
                       <div class="img">
@@ -65,15 +73,15 @@
                         <div class="badge" v-if="item.new > 0"></div>
                       </div>
                       <div class="info">
-                        <div class="info-txt-1 substring">{{item.nickname}}</div>
+                        <div class="info-txt-1 substring">{{ item.nickname }}</div>
                         <div v-if="LoginType == 2" class="info-txt-2 substring">
-                          <span class="txt-color-1">{{item.nickname}}</span>
+                          <span class="txt-color-1">{{ item.nickname }}</span>
                           <span class="txt-color-2">正在与您沟通</span>
-                          <span class="txt-color-3">{{item.jobname}}</span>
+                          <span class="txt-color-3">{{ item.jobname }}</span>
                         </div>
-                        <div v-if="LoginType == 1" class="info-txt-2">{{item.detail}}</div>
+                        <div v-if="LoginType == 1" class="info-txt-2">{{ item.detail }}</div>
                       </div>
-                      <div class="time">{{item.updatetime}}</div>
+                      <div class="time">{{ item.updatetime }}</div>
                     </div>
                     <template #right>
                       <div class="cancel-btn" @click="handleCancelClick(item)">
@@ -83,7 +91,7 @@
                   </van-swipe-cell>
                 </li>
               </ul>
-              <van-empty v-else description="暂无已读列表" />
+              <van-empty v-else description="暂无已读列表"/>
             </div>
           </div>
         </div>
@@ -120,7 +128,8 @@
     <!-- 招呼语结束 -->
 
     <!-- 绑定微信开始 -->
-    <van-dialog v-model="bindWeixinShow" title="系统提示" :show-cancel-button="false" :show-confirm-button="true" @confirm="handleImCheckBind">
+    <van-dialog v-model="bindWeixinShow" title="系统提示" :show-cancel-button="false" :show-confirm-button="true"
+                @confirm="handleImCheckBind">
       <div class="bind-weixin-box">
         <div class="title-1">您当前未绑定微信，绑定后可发起聊天。</div>
         <div class="img">
@@ -128,20 +137,22 @@
         </div>
         <div class="title-2">使用微信扫一扫，按提示快速绑定</div>
       </div>
-      <img src="" />
+      <img src=""/>
     </van-dialog>
     <!-- 绑定微信结束 -->
 
     <!-- 切换职位开始 -->
     <van-overlay :show="selectJobShow" z-index="15">
-      <SelectJob @handleSelectJob="handleSelectJob" @handleCloseSelectJob="handleCloseSelectJob" :chatid="imChatid" :companyId="companyId" :isSelectJob="true"></SelectJob>
+      <SelectJob @handleSelectJob="handleSelectJob" @handleCloseSelectJob="handleCloseSelectJob" :chatid="imChatid"
+                 :companyId="companyId" :isSelectJob="true"></SelectJob>
     </van-overlay>
     <!-- 切花职位结束 -->
+    <BottomNav></BottomNav>
   </div>
 </template>
 
 <script>
-import { formatTime } from '@/utils/index'
+import {formatTime} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import {mapState, mapMutations} from 'vuex'
@@ -149,14 +160,15 @@ import CommonIndex from './components/CommonIndex.vue'
 import ShieldList from './components/ShieldList.vue'
 import Greet from './components/Greet.vue'
 import SelectJob from './components/SelectJob.vue'
+
 export default {
   name: 'ImList',
   filters: {
-    timeFilter (timestamp) {
+    timeFilter(timestamp) {
       return formatTime(timestamp, '{y}-{m}-{d} {h}:{i}', true)
     }
   },
-  data () {
+  data() {
     return {
       // 企业头部导航列表
       companyImListTopNav: [
@@ -235,10 +247,10 @@ export default {
     }
   },
   watch: {
-    messagelist (newval, oldval) {
+    messagelist(newval, oldval) {
       this.getUserList()
     },
-    IsUpdataChatList (newval, oldval) {
+    IsUpdataChatList(newval, oldval) {
       if (newval != 0) {
         this.getUserList()
       }
@@ -254,7 +266,7 @@ export default {
     /**
      * 通过type区分 企业/个人 用于展示不同的头部列表数据
      */
-    isTopNav () {
+    isTopNav() {
       if (this.LoginType == 1) {
         return this.companyImListTopNav
       } else if (this.LoginType == 2) {
@@ -262,17 +274,17 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     window.addEventListener('scroll', this.scrollToTop)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('scroll', this.scrollToTop)
   },
-  created () {
+  created() {
     this.imWindowGlobal()
     this.getScanQrcodeImg()
   },
-  destroyed () {
+  destroyed() {
   },
   components: {
     CommonIndex,
@@ -285,7 +297,7 @@ export default {
     /**
      * 二维码图片
      */
-    getScanQrcodeImg () {
+    getScanQrcodeImg() {
       http.get(api.get_qrcode, {type: 'bind_weixin'}).then(res => {
         this.scanQrcodeImg = res.data
       })
@@ -293,7 +305,7 @@ export default {
     /**
      * 是否绑定微信公众号
      */
-    handleImCheckBind () {
+    handleImCheckBind() {
       http.get(api.imCheckBind).then(res => {
         if (res.data != 0) {
           location.reload(true)
@@ -313,7 +325,7 @@ export default {
      * choose_job选择职位
      * pay需要购买增值服务，触屏是快捷支付
      */
-    imWindowGlobal () {
+    imWindowGlobal() {
       http.get(api.im_window_global).then((res) => {
         if (parseInt(res.code) == 200) {
           // next 为空可以使用聊天
@@ -363,7 +375,7 @@ export default {
      * @index Number 当前点击下标
      * @e Object 当前点击元素event
      */
-    handleTabSwitch (index, e) {
+    handleTabSwitch(index, e) {
       this.listTabIndex = index
       this.handleTouchDomHeight()
       this.$refs.tabListMoveCon.style.transform = 'translate3d(-' + (index * 100) + '% , 0px , 0px)'
@@ -372,8 +384,8 @@ export default {
     },
     /**
      *  是否固定 全部 新招呼 沟通中 导航函数
-    */
-    scrollToTop () {
+     */
+    scrollToTop() {
       // 当前滚动距离 >= 元素距离顶部的时候固定导航
       if (this.getScrollTop() >= this.$refs.tabBtnCon.offsetTop) {
         this.isFixedNav = true
@@ -384,7 +396,7 @@ export default {
     /**
      * 当前距离顶部的滚动值
      * */
-    getScrollTop () {
+    getScrollTop() {
       let scrollTop = 0
       if (document.documentElement && document.documentElement.scrollTop) {
         scrollTop = document.documentElement.scrollTop
@@ -396,8 +408,8 @@ export default {
     /**
      * 滑动事件 手指放到屏幕时触发
      * @e Object event对象
-    */
-    handleTouchStart (e) {
+     */
+    handleTouchStart(e) {
       this.startX = e.touches[0].clientX
       this.startY = e.touches[0].clientY
     },
@@ -405,7 +417,7 @@ export default {
      * 滑动事件 手指在屏幕上滑动时触发
      * @e Object event对象
      */
-    handleTouchMove (e) {
+    handleTouchMove(e) {
       let moveX = e.changedTouches[0].clientX
       let moveY = e.changedTouches[0].clientY
 
@@ -418,7 +430,7 @@ export default {
     /**
      * 滑动事件 手指在离开屏幕时触发
      */
-    handleTouchEnd (e) {
+    handleTouchEnd(e) {
       this.endX = e.changedTouches[0].clientX
       this.endY = e.changedTouches[0].clientY
       let disX = Math.abs(this.endX - this.startX)
@@ -440,7 +452,7 @@ export default {
         this.$refs.btnLine.style.transform = 'translate3d(' + parseInt(currentLeft) + 'px , 0px , 0px)'
       }
     },
-    swipeDirection (disX, disY) {
+    swipeDirection(disX, disY) {
       let angle = (Math.atan2(disX, disY) * 180) / Math.PI
       if (angle > 40) {
         // 水平方向
@@ -454,7 +466,7 @@ export default {
     /***
      * 处理在 (全部 新招呼 沟通中) 切换时 高度问题 导致在第二项可以滚动
      */
-    handleTouchDomHeight () {
+    handleTouchDomHeight() {
       var allListCon = document.querySelectorAll('.tab-list-move-con .list-con')
       for (let index = 0; index < allListCon.length; index++) {
         const item = allListCon[index]
@@ -468,7 +480,7 @@ export default {
     /***
      * 聊天用户列表
      */
-    getUserList () {
+    getUserList() {
       http.post(api.chatList, {token: this.imToken}).then((res) => {
         this.chatListAryan = res.data.items
         this.readAryList = this.chatListAryan.filter((res) => {
@@ -480,7 +492,7 @@ export default {
      * 跳转聊天页面
      * @item Object 当前点击会话列表用户
      */
-    handleJumpImShow (chatItem) {
+    handleJumpImShow(chatItem) {
       // 跳转会话详情时先判断是否在黑名单中
       this.chatListAryan.forEach(item => {
         if (item.chat_id == chatItem.chat_id) {
@@ -493,7 +505,7 @@ export default {
      * 处理跳转会话详情时是选择职位还是 直接跳转
      * @item 当前点击会话项
      */
-    handleIsJump (item) {
+    handleIsJump(item) {
       http.post(api.im_job_detail, {jobid: item.jobid}).then((res) => {
         if (res.data.next == 'choose_job') {
           // 选择职位
@@ -510,7 +522,7 @@ export default {
      * 检测是否在黑名单中
      * @blackItem 当前点击会话项
      */
-    handleIsBlackList (blackItem) {
+    handleIsBlackList(blackItem) {
       http.post(api.check_blacklist, {token: this.imToken, chatid: blackItem.chat_id}).then((res) => {
         if (parseInt(res.code) === 200) {
           // 0 没有屏蔽
@@ -553,34 +565,34 @@ export default {
     /**
      * 关闭职聊设置列表弹窗
      */
-    gobackSetUpListClose () {
+    gobackSetUpListClose() {
       this.SetUpListPopup = false
     },
     /**
      * 打开常用语列表面板
      */
-    handleOpenCommone () {
+    handleOpenCommone() {
       this.SetUpListPopup = false
       this.$refs.CommonIndex.handleOpenCommonList()
     },
     /**
      * 打开已屏蔽列表
      */
-    handleOpenShiedList () {
+    handleOpenShiedList() {
       this.SetUpListPopup = false
       this.$refs.ShieldList.handleOpenShieldPopup()
     },
     /**
      * 打开招呼语弹窗
      */
-    handleOpenGreet () {
+    handleOpenGreet() {
       this.SetUpListPopup = false
       this.$refs.Greet.openGreet()
     },
     /**
      * 跳转
      */
-    handleJump (url) {
+    handleJump(url) {
       this.$router.push(url)
     },
     /**
@@ -589,7 +601,7 @@ export default {
      * @isSelectJob Boolen 是否完成职位切换  true 切换职位完成 false没有切换职位直接关闭窗口
      * @isSelectJob Object 当前选择职位的信息
      */
-    handleSelectJob (isSelectJob) {
+    handleSelectJob(isSelectJob) {
       if (isSelectJob) {
         // 职位选择完成后更新会话列表
         this.getUserList()
@@ -605,14 +617,21 @@ export default {
      * 跳转会话详情
      * @item 当前点击会话项
      * */
-    jumpImShow (item) {
+    jumpImShow(item) {
       let name = ''
       if (this.LoginType == 1) { // 企业
         name = item.nickname
       } else if (this.LoginType == 2) { // 个人
         name = item.detail
       }
-      this.setImShowParams({jobname: item.jobname, name: name, resumeid: item.resumeid, jobid: item.jobid, companyId: item.companyid, stick: item.stick})
+      this.setImShowParams({
+        jobname: item.jobname,
+        name: name,
+        resumeid: item.resumeid,
+        jobid: item.jobid,
+        companyId: item.companyid,
+        stick: item.stick
+      })
       this.setimChatid(item.chat_id)
       this.$router.push({path: '/im/' + item.chat_id})
     },
@@ -620,7 +639,7 @@ export default {
      * 取消置顶
      * @cancelItem 取消置顶项obj
      */
-    handleCancelClick (item) {
+    handleCancelClick(item) {
       http.post(api.chatStick, {token: this.imToken, chat_id: item.chat_id, stick: 0}).then(res => {
         if (parseInt(res.code) == 200) {
           this.$notify({
@@ -639,7 +658,7 @@ export default {
     /**
      * 选择职位弹窗关闭
      */
-    handleCloseSelectJob () {
+    handleCloseSelectJob() {
       this.selectJobShow = false
     }
   }
@@ -647,57 +666,68 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.h100{
+.h100 {
   height: calc(100vh - 126px - 42px);
-  overflow-y:auto;
+  overflow-y: auto;
   overflow-x: hidden;
 }
+
 // 列表头部导航开始
-.im-top-nav{
+.im-top-nav {
   display: flex;
   max-height: 126px;
   font-size: 14px;
   color: #000000;
   padding: 15px 10px;
   border-top: 1px solid #e8e8e8;
-  .nav-item{
+
+  .nav-item {
     flex: 1;
     text-align: center;
     padding: 58px 0 0;
-    &.get-delivery{
+
+    &.get-delivery {
       background: url('../../assets/images/im/im-list-get-delivery.png') no-repeat top center / 48px 48px;
     }
-    &.download{
+
+    &.download {
       background: url('../../assets/images/im/im-list-download.png') no-repeat top center / 48px 48px;
     }
-    &.collection{
-      background: url('../../assets/images/im/im-list-collection.png')no-repeat top center / 48px 48px;
+
+    &.collection {
+      background: url('../../assets/images/im/im-list-collection.png') no-repeat top center / 48px 48px;
     }
-    &.interview{
-      background: url('../../assets/images/im/im-list-interview.png')no-repeat top center / 48px 48px;
+
+    &.interview {
+      background: url('../../assets/images/im/im-list-interview.png') no-repeat top center / 48px 48px;
     }
-    &.see{
-      background: url('../../assets/images/im/im-list-see.png')no-repeat top center / 48px 48px;
+
+    &.see {
+      background: url('../../assets/images/im/im-list-see.png') no-repeat top center / 48px 48px;
     }
-    &.delivery{
-      background: url('../../assets/images/im/im-list-delivery.png')no-repeat top center / 48px 48px;
+
+    &.delivery {
+      background: url('../../assets/images/im/im-list-delivery.png') no-repeat top center / 48px 48px;
     }
   }
 }
+
 // 列表头部导航结束
 
-.list-tab-wrapper{
+.list-tab-wrapper {
   height: 100%;
-  .tab-btn-con{
+
+  .tab-btn-con {
     display: flex;
-    padding: 10px 0px ;
+    padding: 10px 0px;
     font-size: 14px;
     height: 66px;
     line-height: 46px;
     position: relative;
-    overflow:hidden ;
+    overflow: hidden;
     background: #fff;
-    &.tab-btn-con-ac{
+
+    &.tab-btn-con-ac {
       position: fixed;
       left: 0;
       right: 0;
@@ -705,12 +735,14 @@ export default {
       box-shadow: 0px 4px 8px rgb(0 0 0 / 4%);
       z-index: 999;
     }
-    .btn-item{
+
+    .btn-item {
       padding: 0 14px;
       color: #000000;
       font-size: 15px;
     }
-    .btn-set-up{
+
+    .btn-set-up {
       width: 18px;
       height: 18px;
       background: url('../../assets/images/im/im-list-set-up.png') no-repeat center center / 18px 18px;
@@ -719,7 +751,8 @@ export default {
       top: 50%;
       transform: translateY(-50%);
     }
-    .btn-line{
+
+    .btn-line {
       position: absolute;
       bottom: 10px;
       left: 18px;
@@ -727,27 +760,31 @@ export default {
       height: 3px;
       background: #1787FB;
       border-radius: 2px;
-      transition:transform .3s;
+      transition: transform .3s;
     }
   }
-  .tab-list-con{
+
+  .tab-list-con {
     height: 100%;
-    .tab-list-move-con{
+
+    .tab-list-move-con {
       transition-duration: 0.3s;
       display: flex;
       width: 100%;
       height: 100%;
     }
-    .list-con{
+
+    .list-con {
       flex-shrink: 0;
       width: 100%;
       height: 0;
 
-      &.list-con-ac{
+      &.list-con-ac {
         height: auto;
       }
-      .list{
-        .list-item{
+
+      .list {
+        .list-item {
           width: 100%;
           // display: flex;
           line-height: normal;
@@ -755,15 +792,17 @@ export default {
           // padding: 20px 17px;
           border-bottom: 1px solid #e8e8e8;
           // position: relative;
-          &.list-item-stick{
+          &.list-item-stick {
             background: #f9f9f9;
           }
-          .chat-item{
+
+          .chat-item {
             display: flex;
             padding: 20px 17px;
             height: 100%;
           }
-          .cancel-btn{
+
+          .cancel-btn {
             font-size: 14px;
             display: flex;
             align-items: center;
@@ -774,23 +813,26 @@ export default {
             // height: 100%;
             color: #fff;
           }
-          .img{
+
+          .img {
             width: 45px;
             height: 45px;
-            border-radius:2px ;
+            border-radius: 2px;
             margin-right: 15px;
             position: relative;
-            img{
+
+            img {
               width: 100%;
               height: 100%;
-              border-radius:2px ;
+              border-radius: 2px;
             }
-            .badge{
+
+            .badge {
               position: absolute;
               right: -3px;
               top: -3px;
-              width:10px;
-              height:10px ;
+              width: 10px;
+              height: 10px;
               background: #ff4c56;
               color: #fff;
               font-size: 10px;
@@ -800,31 +842,37 @@ export default {
               justify-content: center;
             }
           }
-          .info{
+
+          .info {
             width: 245px;
             font-size: 14px;
-            .info-txt-1{
-              color:#08050A;
+
+            .info-txt-1 {
+              color: #08050A;
               font-size: 16px;
               font-weight: 600;
               margin-bottom: 7px;
             }
-            .info-txt-2{
-              .txt-color-1{
+
+            .info-txt-2 {
+              .txt-color-1 {
                 color: #333333;
               }
-              .txt-color-2{
-                color:#999999 ;
+
+              .txt-color-2 {
+                color: #999999;
               }
-              .txt-color-3{
-                color:#FF7725 ;
+
+              .txt-color-3 {
+                color: #FF7725;
               }
             }
           }
-          .time{
+
+          .time {
             flex: 1;
             font-size: 14px;
-            color:#999999 ;
+            color: #999999;
             font-size: 12px;
           }
         }
@@ -832,12 +880,14 @@ export default {
     }
   }
 }
+
 // 设置列表开始
-.setup-list-wrapper{
+.setup-list-wrapper {
   background: #FAFAFA;
   height: 100%;
-  .setup-list{
-    .setup-list-item{
+
+  .setup-list {
+    .setup-list-item {
       background: #fff;
       margin-bottom: 10px;
       display: flex;
@@ -846,35 +896,41 @@ export default {
       font-size: 14px;
       color: #333333;
       height: 50px;
-      padding: 0 12px 0 18px ;
+      padding: 0 12px 0 18px;
     }
   }
 }
+
 // 设置列表结束
 
- // 绑定微信开始
-.bind-weixin-box{
+// 绑定微信开始
+.bind-weixin-box {
   display: flex;
   flex-direction: column;
   text-align: center;
   padding: 10px 0;
-  .title-1{
+
+  .title-1 {
     color: #646566;
-    font-size:14px ;
+    font-size: 14px;
   }
-  .img{
-    width:111px;
+
+  .img {
+    width: 111px;
     height: 111px;
     margin: 13px auto 10px;
-    img{
+
+    img {
       width: 100%;
       height: 100%;
     }
   }
-  .title-2{
+
+  .title-2 {
     color: #999999;
-    font-size:13px ;
+    font-size: 13px;
   }
 }
+
 //绑定微信结束
 </style>

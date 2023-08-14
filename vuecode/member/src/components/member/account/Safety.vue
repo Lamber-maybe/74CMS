@@ -58,7 +58,7 @@
 						<img src="../../../assets/images/weixin.png" />
 						微信
 					</div>
-					<div class="nameId2" v-if="bind_weixin==1"><img src="../../../assets/images/done.png" class="done"/>您已绑定：{{bind_weixin_nickname}}</div>
+					<div class="nameId2" v-if="bind_weixin==1"><img src="../../../assets/images/done.png" class="done"/>您已绑定：{{bind_weixin_nickname?bind_weixin_nickname:'微信帐号'}}</div>
 					<div class="nameId2" v-else>绑定后可使用微信快速登录，随时接收面试通知</div>
 					<div class="btn">
 						<el-button type="primary" @click="handlerBindWeixin">{{bind_weixin==1?'解除绑定':'立即绑定'}}</el-button>
@@ -69,7 +69,7 @@
 						<img src="../../../assets/images/qq.png" />
 						QQ
 					</div>
-					<div class="nameId2" v-if="bind_qq==1"><img src="../../../assets/images/done.png" class="done"/>您已绑定：{{bind_qq_nickname}}</div>
+					<div class="nameId2" v-if="bind_qq==1"><img src="../../../assets/images/done.png" class="done"/>您已绑定：{{bind_qq_nickname?bind_qq_nickname:'QQ帐号'}}</div>
 					<div class="nameId2" v-else>绑定后可使用QQ快速登录网站</div>
 					<div class="btn">
 						<el-button type="primary" v-if="bind_qq==1" @click="handlerBindQq">解除绑定</el-button>

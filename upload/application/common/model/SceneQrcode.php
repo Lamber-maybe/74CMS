@@ -56,6 +56,12 @@ class SceneQrcode extends \app\common\model\BaseModel
             'alias'=>'jobfairol',
             'offiaccount_param_name'=>'jobfairolid',
             'mobile_page'=>'jobfairol/:id'
+        ],
+        'news'=>[
+            'name'=>'资讯详情页',
+            'alias'=>'news',
+            'offiaccount_param_name'=>'newsid',
+            'mobile_page'=>'news/:id'
         ]
     ];
 }

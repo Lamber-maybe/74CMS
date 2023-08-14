@@ -20,7 +20,7 @@ class ImQuickmsg extends \app\common\controller\Backend
     }
 	public function index()
     {
-		$utype = input('get.utype/d', 1, 'intval');	
+		$utype = input('get.utype/d', 1, 'intval');
 		$url = $this->baseUrl.'/phraseTpl/list';
         $data = [
 			'utype'=>$utype,
@@ -34,7 +34,24 @@ class ImQuickmsg extends \app\common\controller\Backend
         }else{
             $this->ajaxReturn(200, $result['msg'], $result['result']);
         }
-    }	
+    }
+    public function add()
+    {
+        $url = $this->baseUrl.'/phraseTpl/addSave';
+        $data = [
+            'utype'=>input('post.utype/d', 0, 'intval'),
+            'appkey'=>$this->config['app_key'],
+            'appsecret'=>$this->config['app_secret'],
+            'content' => input('post.content/s', '', 'trim')
+        ];
+        $result = https_request($url,$data);
+        $result = json_decode($result,1);
+        if($result['code']==500){
+            $this->ajaxReturn(500, $result['msg'], null);
+        }else{
+            $this->ajaxReturn(200, '保存成功', $result['result']);
+        }
+    }
     public function edit()
     {
         $id = input('get.id/s', '', 'trim');
@@ -55,8 +72,7 @@ class ImQuickmsg extends \app\common\controller\Backend
         } else {
             $input_data = [
                 'id' => input('post.id/s', '', 'trim'),
-				'content' => input('post.content/s', '', 'trim'),
-				'sort_id' => input('post.sort_id/d', 0, 'intval')
+				'content' => input('post.content/s', '', 'trim')
             ];
             $id = trim($input_data['id']);
             if (!$id) {
@@ -67,8 +83,7 @@ class ImQuickmsg extends \app\common\controller\Backend
 				'id'=>$id,
 				'appkey'=>$this->config['app_key'],
 				'appsecret'=>$this->config['app_secret'],
-				'content' => $input_data['content'],
-				'sort_id' => $input_data['sort_id']
+				'content' => $input_data['content']
 			];
 			$result = https_request($url,$data);
 			$result = json_decode($result,1);

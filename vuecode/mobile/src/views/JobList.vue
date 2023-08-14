@@ -225,7 +225,8 @@ export default {
         nature: '',
         education: '',
         tag: '',
-        settr: ''
+        settr: '',
+        count_total: 1
       },
       page: 1,
       pagesize: 15,
@@ -415,6 +416,7 @@ export default {
         }
       }
       this.params.search_type = 'list'
+      this.params.count_total = 1
     },
     // 职位分类筛选打开之后给筛选组件赋值
     openedCategory () {
@@ -690,7 +692,7 @@ export default {
           this.loading = false
 
           // 数据全部加载完成
-          if (res.data.items.length < this.pagesize) {
+          if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
             this.finished = true
             if (init === false) {
               this.finished_text = '没有更多了'

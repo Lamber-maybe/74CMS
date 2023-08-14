@@ -21,9 +21,9 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
-        $return['contact'] = htmlspecialchars_decode($return['contact'],ENT_QUOTES);
-        $return['weixin'] = htmlspecialchars_decode($return['weixin'],ENT_QUOTES);
-        $return['telephone'] = htmlspecialchars_decode($return['telephone'],ENT_QUOTES);
+        $return['contact'] = isset($return['contact']) ? htmlspecialchars_decode($return['contact'],ENT_QUOTES):'';
+        $return['weixin'] = isset($return['weixin'])? htmlspecialchars_decode($return['weixin'],ENT_QUOTES):'';
+        $return['telephone'] = isset($return['telephone'])?htmlspecialchars_decode($return['telephone'],ENT_QUOTES):'';
         return $return === null ? [] : $return;
     }
     /**
@@ -39,9 +39,9 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
-        $return['address'] = htmlspecialchars_decode($return['address'],ENT_QUOTES);
-        $return['short_desc'] = htmlspecialchars_decode($return['short_desc'],ENT_QUOTES);
-        $return['content'] = htmlspecialchars_decode($return['content'],ENT_QUOTES);
+        $return['address'] = isset($return['address'])?htmlspecialchars_decode($return['address'],ENT_QUOTES):'';
+        $return['short_desc'] = isset($return['short_desc'])?htmlspecialchars_decode($return['short_desc'],ENT_QUOTES):'';
+        $return['content'] = isset($return['content'])?htmlspecialchars_decode($return['content'],ENT_QUOTES):'';
         return $return === null ? [] : $return;
     }
     /**
@@ -142,7 +142,7 @@ class Profile extends \app\v1_0\controller\common\Base
         }else{
             $basic['district_text_full'] = '';
         }
-        
+
         if($basic['district_text_full']!='' && $basic['district2']>0){
             $basic['district_text_full'] .= isset(
                 $category_district_data[$basic['district2']]

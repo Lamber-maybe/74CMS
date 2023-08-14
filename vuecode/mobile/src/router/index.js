@@ -68,6 +68,7 @@ import CompanyInterview from '../views/company/ResumeManagement/ResumeInterviewI
 import CompanyInterviewVideo from '../views/company/ResumeManagement/ResumeVideoInvitation'
 import CompanyFav from '../views/company/ResumeManagement/ResumeFavorites'
 import CompanyViewResume from '../views/company/ResumeManagement/BrowsingRecords'
+import CompanyBeBrowsed from '../views/company/ResumeManagement/BrowsingBeBrowsed'
 import CompanyAuthIndex from '../views/company/AccountManage/Auth'
 import CompanyJobAdd from '../views/company/AddJob'
 import CompanyJobEdit from '../views/company/EditJob'
@@ -850,17 +851,28 @@ const routes = [{
     utype: 1
   }
 },
-{
-  path: '/member/company/view_resume',
-  name: 'CompanyViewResume',
-  component: CompanyViewResume,
-  meta: {
-    title: '浏览记录',
-    keepAlive: false,
-    loginCheck: true,
-    utype: 1
-  }
-},
+  {
+    path: '/member/company/view_resume',
+    name: 'CompanyViewResume',
+    component: CompanyViewResume,
+    meta: {
+      title: '我看过',
+      keepAlive: false,
+      loginCheck: true,
+      utype: 1
+    }
+  },
+  {
+    path: '/member/company/be_browsed',
+    name: 'CompanyBeBrowsed',
+    component: CompanyBeBrowsed,
+    meta: {
+      title: '看过我',
+      keepAlive: false,
+      loginCheck: true,
+      utype: 1
+    }
+  },
 {
   path: '/member/company/auth',
   name: 'CompanyAuthIndex',

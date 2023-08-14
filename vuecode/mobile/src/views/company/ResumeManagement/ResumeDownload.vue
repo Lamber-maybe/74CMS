@@ -153,11 +153,8 @@ export default {
           active: false
         },
         { text: '我的收藏', href: '/member/company/fav', active: false },
-        {
-          text: '浏览记录',
-          href: '/member/company/view_resume',
-          active: false
-        }
+        { text: '看过我', href: '/member/company/be_browsed', active: false },
+        { text: '我看过', href: '/member/company/view_resume', active: false }
       ]
     }
   },

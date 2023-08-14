@@ -607,3 +607,77 @@ if (!function_exists('callBack')) {
         return $callback;
     }
 }
+
+if (!function_exists('responseJson')) {
+    /**
+     * 返回结果
+     * @author chenyang
+     * @param  integer $code    [状态码]
+     * @param  string  $message [返回信息]
+     * @param  array   $data    [返回数据体]
+     * @return json
+     * Date Time：2022年3月25日14:30:06
+     */
+    function responseJson($code = 200, $message = '成功', $data = []) {
+        $response = [
+            'code'    => $code,
+            'message' => $message,
+            'data'    => $data,
+        ];
+        exit(json_encode($response, JSON_UNESCAPED_UNICODE));
+    }
+}
+
+if (!function_exists('saveLog')) {
+    /**
+     * 记录日志
+     * @author chenyang
+     * @param  string|array $message     [信息]
+     * @param  string       $destination [保存路径]
+     * Date Time：2022年3月31日10:01:22
+     */
+    function saveLog($message, $destination = '') {
+        if (!$message) {
+            exit('无日志信息');
+        }
+
+        $request = \think\Request::instance();
+
+        // 没有指定日志文件名，则用默认的日志名称
+        if (empty($destination)) {
+            // 控制器
+            $controller = $request->controller();
+            // 方法名
+            $action = $request->action();
+            $destination = $controller .'_'. $action;
+        }
+
+        // 模块名
+        $module = $request->module();
+        $module =  str_replace('\\','/', $module);
+        if (empty($module)) {
+            $module = 'default';
+        }
+
+        $catalog = LOG_PATH.date('Ymd').DS.$module;
+
+        $logFilePath = $catalog.DS.$destination.'.log';
+
+        // 检测文件是否存在，不存在则创建，无法创建则终止执行
+        if (!file_exists($logFilePath)) {
+            if (!is_dir($catalog)) {
+                @mkdir($catalog, 0777, true);
+            }
+            if (!touch($logFilePath)) {
+                exit('无法创建日志文件');
+            }
+        }
+
+        if (is_array($message)) {
+            $message = var_export($message, true);
+        }
+
+        $message = '['. date('Y-m-d H:i:s'). ']'. PHP_EOL. $message. PHP_EOL;
+        @file_put_contents($logFilePath, $message, FILE_APPEND);
+    }
+}

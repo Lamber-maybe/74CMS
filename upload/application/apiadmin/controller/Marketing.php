@@ -1,361 +1,182 @@
 <?php
+/**
+ * 公众号营销
+ */
+
 namespace app\apiadmin\controller;
 
-class Marketing extends \app\common\controller\Backend
+use app\common\controller\Backend;
+use app\common\lib\Wechat;
+use think\Db;
+use think\Exception;
+use think\Validate;
+
+class Marketing extends Backend
 {
-    public function index()
+    public function search()
     {
+        // 参数1：信息类型
         $type = input('post.type/s', '', 'trim');
+        // 搜索条件参数
         $condition = input('post.condition/a', []);
-        if(in_array($type,['joblist','resumelist','companylist','companyshow'])){
-            $list = $this->$type($condition);
-        }else{
-            $list = [];
-        }
-        $return['items'] = $list;
-        $this->ajaxReturn(200, '获取数据成功', $return);
-    }
-    public function companySearch(){
-        $keyword = input('get.keyword/s', '', 'trim');
-        $list = [];
-        if ($keyword != '') {
-            $datalist = model('Company')
-                ->where('id', 'eq', $keyword)
-                ->whereOr('companyname', 'like', '%' . $keyword . '%')
-                ->field('id,companyname')
-                ->order('refreshtime desc')
-                ->select();
-            $comid_arr = [];
-            foreach ($datalist as $key => $value) {
-                $comid_arr[] = $value['id'];
-            }
-            $jobdata = [];
-            if(!empty($comid_arr)){
-                $jobdata = model('JobSearchRtime')->where('company_id','in',$comid_arr)->column('company_id,id,uid');
-            }
-            foreach ($datalist as $key => $value) {
-                $arr['id'] = $value['id'];
-                $arr['companyname'] = $value['companyname'];
-                $arr['has_job'] = isset($jobdata[$value['id']])?1:0;
-                $list[] = $arr;
-            }
-        }
-        $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
-    }
-    protected function joblist($condition){
-        $model = $this->_parseConditionOfJob($condition);
-        $jobid_arr = $model->column('a.id');
-        $list = [];
-        if(!empty($jobid_arr)){
-            $where = [
-                'id'         => ['in', $jobid_arr],
-                // 增加条件，不展示以及审核不通过的职位不允许查到 chenyang 2022年3月14日10:46:54
-                'audit'      => 1,
-                'is_display' => 1,
-            ];
-            $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where($where)->orderRaw('field(id,'.implode(",",$jobid_arr).')')->select();
-        }
-        $class = new \app\common\lib\Wechat;
-        $return = [];
-        $category_data = model('Category')->getCache();
-        foreach ($list as $key => $value) {
-            $item['id'] = $value['id'];
-            $item['jobname'] = $value['jobname'];
-            $item['content'] = $value['content'];
-            $item['address'] = $value['address'];
-            $item['wage'] = model('BaseModel')->handle_wage(
-                $value['minwage'],
-                $value['maxwage'],
-                $value['negotiable']
-            );
-            $item['education_text'] = isset(
-                model('BaseModel')->map_education[$value['education']]
-            )
-            ? model('BaseModel')->map_education[$value['education']]
-            : '学历不限';
-            $item['experience_text'] = isset(
-                model('BaseModel')->map_experience[$value['experience']]
-            )
-            ? model('BaseModel')->map_experience[$value['experience']]
-            : '经验不限';
-            $item['tag'] = [];
-            if ($value['tag']) {
-                $tag_arr = explode(',', $value['tag']);
-                foreach ($tag_arr as $k => $v) {
-                    if (
-                        is_numeric($v) &&
-                        isset($category_data['QS_jobtag'][$v])
-                    ) {
-                        $item['tag'][] = $category_data['QS_jobtag'][$v];
-                    } else {
-                        $item['tag'][] = $v;
-                    }
-                }
-            }
-            $item['tag'] = implode(",",$item['tag']);
-            $item['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
-            $qrcode = $class->makeQrcode(['alias'=>'subscribe_job','jobid'=>$value['id']]);
-            $item['wxqrcode'] = $qrcode?$qrcode:'';
-            $return[] = $item;
-        }
-        return $return;
-    }
-    protected function resumelist($condition){
-        $model = $this->_parseConditionOfResume($condition);
-        $resumeid_arr = $model->column('a.id');
-        $list = [];
-        if(!empty($resumeid_arr)){
-            $list = model('Resume')->field('id,display_name,fullname,sex,birthday,education,enter_job_time,current,specialty')->where('id','in',$resumeid_arr)->orderRaw('field(id,'.implode(",",$resumeid_arr).')')->select();
-        }
-        $class = new \app\common\lib\Wechat;
-        $return = [];
-        $category_data = model('Category')->getCache();
-        $category_job_data = model('CategoryJob')->getCache();
-        $category_district_data = model('CategoryDistrict')->getCache();
-        $intention_data = model('ResumeIntention')
-            ->where('rid', 'in', $resumeid_arr)
-            ->order('id asc')
-            ->select();
-        $intention_arr = [];
-        foreach ($intention_data as $key => $value) {
-            $intention_arr[$value['rid']][] = $value;
-        }
-        foreach ($list as $key => $value) {
-            $item['id'] = $value['id'];
-            $item['fullname'] = $value['fullname'];
-            if ($value['display_name'] == 0) {
-                if ($value['sex'] == 1) {
-                    $item['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '先生'
-                    );
-                } elseif ($value['sex'] == 2) {
-                    $item['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '女士'
-                    );
-                } else {
-                    $item['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '**'
-                    );
-                }
-            }
-            $item['sex'] = $value['sex'];
-            $item['sex_text'] = model('Resume')->map_sex[$value['sex']];
-            $item['age_text'] = date('Y') - intval($value['birthday']);
-            $item['education_text'] = isset(
-                model('BaseModel')->map_education[$value['education']]
-            )
-                ? model('BaseModel')->map_education[$value['education']]
-                : '';
 
-            $item['experience_text'] =
-                $value['enter_job_time'] == 0
-                    ? '尚未工作'
-                    : format_date($value['enter_job_time']);
-            
-            $item['current_text'] = isset(
-                $category_data['QS_current'][$value['current']]
-            )
-                ? $category_data['QS_current'][$value['current']]
-                : '';
-            $item['specialty'] = $value['specialty'];
-            //求职意向
-            $district_arr = $category_arr = [];
-            if (isset($intention_arr[$value['id']])) {
-                foreach ($intention_arr[$value['id']] as $k => $v) {
-                    if ($v['category']) {
-                        $category_arr[] = isset(
-                            $category_job_data[$v['category']]
-                        )
-                            ? $category_job_data[$v['category']]
-                            : '';
-                    }
-                    if ($v['district']) {
-                        $district_arr[] = isset(
-                            $category_district_data[$v['district']]
-                        )
-                            ? $category_district_data[$v['district']]
-                            : '';
-                    }
-                }
-            }
-            if (!empty($category_arr)) {
-                $category_arr = array_unique($category_arr);
-                $item['intention_jobs'] = implode(',', $category_arr);
-            } else {
-                $item['intention_jobs'] = '';
-            }
-            if (!empty($district_arr)) {
-                $district_arr = array_unique($district_arr);
-                $item['intention_district'] = implode(
-                    ',',
-                    $district_arr
-                );
-            } else {
-                $item['intention_district'] = '';
-            }
-            $item['resumeshow_link'] = config('global_config.mobile_domain').'resume/'.$value['id'];
-            $qrcode = $class->makeQrcode(['alias'=>'subscribe_resume','resumeid'=>$value['id']]);
-            $item['wxqrcode'] = $qrcode?$qrcode:'';
-            $return[] = $item;
+        switch ($type) {
+            case 'job_list':
+                // 职位列表
+                $items = $this->_searchJobList($condition);
+                break;
+
+            case 'company_list':
+                // 企业列表
+                $items = $this->_searchCompanyList($condition);
+                break;
+
+            case 'appoint_company':
+                // 指定企业
+                $items = $this->_searchCompanyByIds($condition);
+                break;
+
+            default:
+                $this->ajaxReturn(500, '错误的信息类型');
+                break;
         }
-        return $return;
-        
+
+        $miniprogram_appid = '';
+
+        $return = [
+            'items' => $items,
+            'common' => [
+                'site_name' => config('global_config.sitename'),
+                'site_domain' => config('global_config.sitedomain'),
+                'date' => time(),
+                'mini_program_appid' => $miniprogram_appid
+            ]
+        ];
+        $this->ajaxReturn(200, 'SUCCESS', $return);
+
     }
-    protected function companylist($condition){
-        $model = $this->_parseConditionOfCompany($condition);
-        $comid_arr = $model->order('a.refreshtime desc')->column('a.id');
-        $list = $joblist = $jobname_arr = [];
-        $class = new \app\common\lib\Wechat;
-        if(!empty($comid_arr)){
-            $list = model('Company')
-                ->alias('a')
-                ->join(config('dababase.prefix') . 'company_contact b','a.uid=b.uid','LEFT')
-                ->join(config('dababase.prefix') . 'company_info c','a.uid=c.uid','LEFT')
-                ->field('a.id,a.companyname,b.contact,c.address,a.tag')
-                ->where('a.id','in',$comid_arr)
-                ->orderRaw('field(a.id,'.implode(",",$comid_arr).')')
-                ->select();
-            $jobdata = model('Job')->field('id,company_id,jobname,minwage,maxwage,negotiable,education,experience,amount,content')->where('company_id','in',$comid_arr)->where('audit',1)->where('is_display',1)->select();
-            foreach ($jobdata as $key => $value) {
-                $arr['id'] = $value['id'];
-                $arr['company_id'] = $value['company_id'];
-                $arr['jobname'] = $value['jobname'];
-                $arr['content'] = $value['content'];
-                $arr['wage'] = model('BaseModel')->handle_wage(
-                    $value['minwage'],
-                    $value['maxwage'],
-                    $value['negotiable']
-                );
-                $arr['education_text'] = isset(
-                    model('BaseModel')->map_education[$value['education']]
-                )
-                ? model('BaseModel')->map_education[$value['education']]
-                : '学历不限';
-                $arr['experience_text'] = isset(
-                    model('BaseModel')->map_experience[$value['experience']]
-                )
-                ? model('BaseModel')->map_experience[$value['experience']]
-                : '经验不限';
-                $arr['amount'] = ($value['amount'] == 0 ? '若干' : $value['amount']) . '人';
-                $arr['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
-                $joblist[$value['company_id']][] = $arr;
-                $jobname_arr[$value['company_id']][] = $value['jobname'];
-            }
-        }
-        $return = [];
-        $category_data = model('Category')->getCache();
-        foreach ($list as $key => $value) {
-            $item['id'] = $value['id'];
-            $item['companyname'] = $value['companyname'];
-            $item['contact'] = $value['contact'];
-            $item['address'] = $value['address'];
-            $item['tag'] = [];
-            if ($value['tag']) {
-                $tag_arr = explode(',', $value['tag']);
-                foreach ($tag_arr as $k => $v) {
-                    if (
-                        is_numeric($v) &&
-                        isset($category_data['QS_jobtag'][$v])
-                    ) {
-                        $item['tag'][] = $category_data['QS_jobtag'][$v];
-                    } else {
-                        $item['tag'][] = $v;
-                    }
-                }
-            }
-            $item['tag'] = implode(",",$item['tag']);
-            $item['joblist'] = isset($joblist[$value['id']])?$joblist[$value['id']]:[];
-            $item['job_text'] = isset($jobname_arr[$value['id']])?implode(",",$jobname_arr[$value['id']]):'';
-            $item['companyshow_link'] = config('global_config.mobile_domain').'company/'.$value['id'];
-            $qrcode = $class->makeQrcode(['alias'=>'subscribe_company','comid'=>$value['id']]);
-            $item['wxqrcode'] = $qrcode?$qrcode:'';
-            $return[] = $item;
-        }
-        return $return;
-        
-    }
-    protected function companyshow($condition){
-        $company_id = intval($condition['company_id']);
-        $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('audit',1)->where('is_display',1)->where('company_id','eq',$company_id)->select();
-        $class = new \app\common\lib\Wechat;
-        $return = [];
-        $category_data = model('Category')->getCache();
-        foreach ($list as $key => $value) {
-            $item['id'] = $value['id'];
-            $item['jobname'] = $value['jobname'];
-            $item['content'] = $value['content'];
-            $item['address'] = $value['address'];
-            $item['wage'] = model('BaseModel')->handle_wage(
-                $value['minwage'],
-                $value['maxwage'],
-                $value['negotiable']
-            );
-            $item['education_text'] = isset(
-                model('BaseModel')->map_education[$value['education']]
-            )
-            ? model('BaseModel')->map_education[$value['education']]
-            : '学历不限';
-            $item['experience_text'] = isset(
-                model('BaseModel')->map_experience[$value['experience']]
-            )
-            ? model('BaseModel')->map_experience[$value['experience']]
-            : '经验不限';
-            $item['tag'] = [];
-            if ($value['tag']) {
-                $tag_arr = explode(',', $value['tag']);
-                foreach ($tag_arr as $k => $v) {
-                    if (
-                        is_numeric($v) &&
-                        isset($category_data['QS_jobtag'][$v])
-                    ) {
-                        $item['tag'][] = $category_data['QS_jobtag'][$v];
-                    } else {
-                        $item['tag'][] = $v;
-                    }
-                }
-            }
-            $item['tag'] = implode(",",$item['tag']);
-            $item['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
-            $qrcode = $class->makeQrcode(['alias'=>'subscribe_job','jobid'=>$value['id']]);
-            $item['wxqrcode'] = $qrcode?$qrcode:'';
-            $return[] = $item;
-        }
-        return $return;
-        
-    }
-    protected function _parseConditionOfJob($condition)
+
+    protected function _searchJobList($condition = [])
     {
-        $model = model('JobSearchRtime')->alias('a');
+        $model = $this->_parseJobByCondition($condition);
 
-        if (
-            isset($condition['refreshtime']) &&
-            intval($condition['refreshtime']) > 0
-        ) {
+        $jobid_arr = $model->column('jsr.id');
+
+        if (empty($jobid_arr) || !isset($jobid_arr)) {
+            return array();
+        }
+
+        $job_list = model('Job')
+            ->alias('j')
+            ->join('company c', 'c.id = j.company_id', 'LEFT')
+            ->field('j.id as job_id,
+            j.company_id,
+            c.companyname as company_name,
+            j.jobname as job_name,
+            j.content as job_content,
+            j.address as job_address,
+            j.minwage,
+            j.maxwage,
+            j.negotiable,
+            j.minage,
+            j.maxage,
+            j.age_na,
+            j.amount,
+            j.tag,
+            j.education,
+            j.experience')
+            ->where('j.id', 'in', $jobid_arr)
+            ->where('j.audit', 1)
+            ->where('j.is_display', 1)
+            ->orderRaw('field(j.id,' . implode(",", $jobid_arr) . ')')
+            ->select();
+
+        if (empty($job_list) || !isset($job_list)) {
+            return array();
+        }
+
+        $category_data = model('Category')->getCache();
+        $wechat_class = new Wechat();
+
+        $return = [];
+        foreach ($job_list as $job_key => $job_value) {
+            $job_info = $job_value->toArray();
+            $item = $job_info;
+
+            $item['job_wage'] = model('BaseModel')->handle_wage(
+                $job_info['minwage'],
+                $job_info['maxwage'],
+                $job_info['negotiable']
+            );
+
+            if ($job_info['age_na'] == 0) {
+                $item['job_age'] = $job_info['minage'] . '-' . $job_info['maxage'] . '岁';
+            } else {
+                $item['job_age'] = '不限';
+            }
+
+            $item['education_text'] = isset(
+                model('BaseModel')->map_education[$job_info['education']]
+            )
+                ? model('BaseModel')->map_education[$job_info['education']]
+                : '学历不限';
+
+            $item['experience_text'] = isset(
+                model('BaseModel')->map_experience[$job_info['experience']]
+            )
+                ? model('BaseModel')->map_experience[$job_info['experience']]
+                : '经验不限';
+
+            if (isset($job_info['tag']) && !empty($job_info['tag'])) {
+                $tag_arr = explode(',', $job_info['tag']);
+                foreach ($tag_arr as $tag_kay => $tag_value) {
+                    if (is_numeric($tag_value) && isset($category_data['QS_jobtag'][$tag_value])) {
+                        $item['job_tag'][] = $category_data['QS_jobtag'][$tag_value];
+                    } else {
+                        $item['job_tag'][] = $tag_value;
+                    }
+                }
+            }
+
+            $item['job_amount'] = ($job_value['amount'] == 0 ? '若干' : $job_value['amount']) . '人';
+
+            $item['job_link'] = config('global_config.mobile_domain') . 'job/' . $job_value['job_id'];
+
+            $item['job_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $job_value['job_id'];
+
+            $item['company_link'] = config('global_config.mobile_domain') . 'company/' . $job_value['company_id'];
+
+            $item['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $job_value['company_id'];
+
+            $job_qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_job', 'jobid' => $job_value['job_id']]);
+            $item['job_wx_qrcode'] = $job_qrcode ? $job_qrcode : '';
+
+            $company_qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_company', 'comid' => $job_value['company_id']]);
+            $item['company_wx_qrcode'] = $company_qrcode ? $company_qrcode : '';
+            $return[] = $item;
+        }
+
+        return $return;
+    }
+
+    protected function _parseJobByCondition($condition)
+    {
+        $model = model('JobSearchRtime')->alias('jsr');
+
+        if (isset($condition['refreshtime']) && intval($condition['refreshtime']) > 0) {
             $settr = intval($condition['refreshtime']);
             $model = $model->where(
-                'a.refreshtime',
+                'jsr.refreshtime',
                 'egt',
                 strtotime('-' . $settr . 'day')
             );
         }
-        if (
-            isset($condition['jobcategory']) &&
-            count($condition['jobcategory']) > 0
-        ) {
+        if (isset($condition['jobcategory']) && count($condition['jobcategory']) > 0) {
             $tmp_str = '';
-            foreach ($condition['jobcategory'] as $key => $value) {
+            foreach ($condition['jobcategory'] as $value) {
                 $arr_lenth = count($value);
                 $tmp_str .=
-                    ' or a.category' .
+                    ' or jsr.category' .
                     $arr_lenth .
                     '=' .
                     $value[$arr_lenth - 1];
@@ -366,15 +187,13 @@ class Marketing extends \app\common\controller\Backend
                 $model = $model->where($tmp_str);
             }
         }
-        if (
-            isset($condition['district']) &&
-            count($condition['district']) > 0
-        ) {
+
+        if (isset($condition['district']) && count($condition['district']) > 0) {
             $tmp_str = '';
             foreach ($condition['district'] as $key => $value) {
                 $arr_lenth = count($value);
                 $tmp_str .=
-                    ' or a.district' .
+                    ' or jsr.district' .
                     $arr_lenth .
                     '=' .
                     $value[$arr_lenth - 1];
@@ -385,33 +204,36 @@ class Marketing extends \app\common\controller\Backend
                 $model = $model->where($tmp_str);
             }
         }
+
         if (isset($condition['trade']) && count($condition['trade']) > 0) {
-            $model = $model->where('a.trade', 'in', $condition['trade']);
+            $model = $model->where('jsr.trade', 'in', $condition['trade']);
         }
 
         if (isset($condition['tag']) && count($condition['tag']) > 0) {
-            foreach ($condition['tag'] as $key => $value) {
-                $model = $model->where('FIND_IN_SET("' . $value . '",a.tag)');
+            foreach ($condition['tag'] as $value) {
+                $model = $model->where('FIND_IN_SET("' . $value . '",jsr.tag)');
             }
         }
 
         if (isset($condition['wage']) && count($condition['wage']) > 0) {
             $tmp_str = '';
-            foreach ($condition['wage'] as $key => $value) {
+            foreach ($condition['wage'] as $value) {
                 switch ($value) {
                     case 0: //面议
-                        $tmp_str .= ' or (a.minwage=0 and a.maxwage=0)';
+                        $tmp_str .= ' or (jsr.minwage=0 and jsr.maxwage=0)';
                         break;
+
                     case 15000:
-                        $tmp_str .= ' or a.maxwage>=15000';
+                        $tmp_str .= ' or jsr.maxwage>=15000';
                         break;
+
                     default:
                         if (false !== stripos($value, '-')) {
                             $arr = explode('-', $value);
                             $tmp_str .=
-                                ' or (a.maxwage>=' .
+                                ' or (jsr.maxwage>=' .
                                 $arr[0] .
-                                ' and a.minwage<' .
+                                ' and jsr.minwage<' .
                                 $arr[1] .
                                 ')';
                         }
@@ -425,189 +247,181 @@ class Marketing extends \app\common\controller\Backend
             }
         }
 
-        if (
-            isset($condition['setmeal_id']) &&
-            count($condition['setmeal_id']) > 0
-        ) {
-            $model = $model
-                ->join(
-                    config('dababase.prefix') . 'member_setmeal b',
-                    'a.uid=b.uid',
-                    'LEFT'
-                )
-                ->where('a.setmeal_id', 'in', $condition['setmeal_id']);
+        if (isset($condition['setmeal_id']) && count($condition['setmeal_id']) > 0) {
+            $model = $model->where('jsr.setmeal_id', 'in', $condition['setmeal_id']);
         }
 
-        switch($condition['content']){
-            case 'refreshtime':
-                $model = $model->order('a.refreshtime','desc');
-                break;
+        $filter = isset($condition['content']) ? $condition['content'] : 'all';
+        switch ($filter) {
             case 'stick':
-                $model = $model->where('a.stick',1)->order('a.refreshtime','desc');
+                $model = $model->where('jsr.stick', 1)->order('jsr.refreshtime', 'desc');
                 break;
             case 'emergency':
-                $model = $model->where('a.emergency',1)->order('a.refreshtime','desc');
+                $model = $model->where('jsr.emergency', 1)->order('jsr.refreshtime', 'desc');
                 break;
             case 'promotion':
-                $model = $model->order('a.stick','desc')->order('a.emergency','desc');
+                $model = $model->order('jsr.stick', 'desc')->order('jsr.emergency', 'desc');
                 break;
-            default:
-                $model = $model->order('a.refreshtime','desc');
-                break;
-        }
-        $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->distinct('a.id')->limit($num);
 
-        return $model;
-    }
-    
-    protected function _parseConditionOfResume($condition)
-    {
-        $model = model('ResumeSearchRtime')->alias('a');
-        
-        if (
-            (isset($condition['jobcategory']) &&
-                count($condition['jobcategory']) > 0) ||
-            (isset($condition['district']) && count($condition['district']) > 0)
-        ) {
-            $model = $model->join(
-                config('dababase.prefix') . 'resume_intention b',
-                'a.uid=b.uid',
-                'LEFT'
-            );
-            if (
-                isset($condition['jobcategory']) &&
-                count($condition['jobcategory']) > 0
-            ) {
-                $tmp_str = '';
-                foreach ($condition['jobcategory'] as $key => $value) {
-                    $arr_lenth = count($value);
-                    $tmp_str .=
-                        ' or b.category' .
-                        $arr_lenth .
-                        '=' .
-                        $value[$arr_lenth - 1];
-                }
-                if ($tmp_str != '') {
-                    $tmp_str = trim($tmp_str, ' ');
-                    $tmp_str = trim($tmp_str, 'or');
-                    $model = $model->where($tmp_str);
-                }
-            }
-            if (
-                isset($condition['district']) &&
-                count($condition['district']) > 0
-            ) {
-                $tmp_str = '';
-                foreach ($condition['district'] as $key => $value) {
-                    $arr_lenth = count($value);
-                    $tmp_str .=
-                        ' or b.district' .
-                        $arr_lenth .
-                        '=' .
-                        $value[$arr_lenth - 1];
-                }
-                if ($tmp_str != '') {
-                    $tmp_str = trim($tmp_str, ' ');
-                    $tmp_str = trim($tmp_str, 'or');
-                    $model = $model->where($tmp_str);
-                }
-            }
-        }
-        if (isset($condition['education']) && count($condition['education']) > 0) {
-            $model = $model->where('a.education', 'in', $condition['education']);
-        }
-        if (isset($condition['experience']) && count($condition['experience']) > 0) {
-            $where = '';
-            foreach ($condition['experience'] as $key => $value) {
-                switch ($value) {
-                    case 1: //无经验/应届生
-                        $where .= ' OR a.`enter_job_time`=0';
-                        break;
-                    case 2:
-                        $where .=
-                            ' OR a.`enter_job_time` > ' . strtotime('-2 year');
-                        break;
-                    case 3:
-                        $where .=
-                            ' OR (a.`enter_job_time` <= ' .
-                            strtotime('-2 year') .
-                            ' AND a.`enter_job_time` > ' .
-                            strtotime('-3 year').')';
-                        break;
-                    case 4:
-                        $where .=
-                            ' OR (a.`enter_job_time` <= ' .
-                            strtotime('-3 year') .
-                            ' AND a.`enter_job_time` > ' .
-                            strtotime('-4 year').')';
-                        break;
-                    case 5:
-                        $where .=
-                            ' OR (a.`enter_job_time` <= ' .
-                            strtotime('-3 year') .
-                            ' AND a.`enter_job_time` > ' .
-                            strtotime('-5 year').')';
-                        break;
-                    case 6:
-                        $where .=
-                            ' OR (a.`enter_job_time` <= ' .
-                            strtotime('-5 year') .
-                            ' AND a.`enter_job_time` > ' .
-                            strtotime('-10 year').')';
-                        break;
-                    case 7:
-                        $where .=
-                            ' OR a.`enter_job_time` <= ' . strtotime('-10 year');
-                        break;
-                    default:
-                        break;
-                }
-            }
-            $where = trim($where);
-            $where = ltrim($where,'OR');
-            if($where!=''){
-                $model = $model->where($where);
-            }
-        }
-        switch($condition['content']){
             case 'refreshtime':
-                $model = $model->order('a.refreshtime','desc');
-                break;
-            case 'promotion':
-                $model = $model->order('a.stick','desc')->order('a.refreshtime','desc');
-                break;
             default:
-                $model = $model->order('a.refreshtime','desc');
+                $model = $model->order('jsr.refreshtime', 'desc');
                 break;
         }
-        $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->distinct('a.id')->limit($num);
+
+
+        $num = (isset($condition['num']) && intval($condition['num']) > 0) ? intval($condition['num']) : 10;
+        $model = $model->distinct('jsr.id')->limit($num);
+
         return $model;
     }
-    protected function _parseConditionOfCompany($condition)
+
+    protected function _searchCompanyList($condition = [])
     {
-        $model = model('Company')->alias('a');
+        $model = $this->_parseCompanyByCondition($condition);
 
+        $comid_arr = $model->column('c.id');
+
+        if (empty($comid_arr) || !isset($comid_arr)) {
+            return array();
+        }
+
+        $company_list = model('Company')
+            ->alias('c')
+            ->join('company_contact cc', 'cc.uid=c.uid', 'LEFT')
+            ->join('company_info ci', 'ci.uid=c.uid', 'LEFT')
+            ->field('c.id as company_id,
+            c.companyname as company_name,
+            cc.contact as company_contact,
+            cc.mobile as company_mobile,
+            ci.address as company_address,
+            ci.website as company_website,
+            c.tag')
+            ->where('c.id', 'in', $comid_arr)
+            ->orderRaw('field(c.id,' . implode(",", $comid_arr) . ')')
+            ->select();
+
+        if (empty($company_list) || !isset($company_list)) {
+            return array();
+        }
+
+        $return = array();
+
+        $wechat_class = new Wechat();
+        $category_data = model('Category')->getCache();
+
+        foreach ($company_list as $company_key => $company) {
+            // 企业数据转数组
+            $company_info = $company->toarray();
+            $return[$company_key] = $company_info;
+
+            // 企业福利数据格式转换
+            if (isset($company_info['tag']) && !empty($company_info['tag'])) {
+                $tag_arr = explode(',', $company_info['tag']);
+                foreach ($tag_arr as $tag_kay => $tag_value) {
+                    if (is_numeric($tag_value) && isset($category_data['QS_jobtag'][$tag_value])) {
+                        $return[$company_key]['company_tag'][] = $category_data['QS_jobtag'][$tag_value];
+                    } else {
+                        $return[$company_key]['company_tag'][] = $tag_value;
+                    }
+                }
+            }
+
+            $qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_company', 'comid' => $company_info['company_id']]);
+            $return[$company_key]['company_wx_qrcode'] = $qrcode ? $qrcode : '';
+            $return[$company_key]['company_link'] = config('global_config.mobile_domain') . 'company/' . $company_info['company_id'];
+            $return[$company_key]['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $company_info['company_id'];
+
+            // 查询企业职位
+            $job_list = model('Job')
+                ->field('id as job_id,
+                company_id,
+                jobname as job_name,
+                minwage,
+                maxwage,
+                negotiable,
+                education,
+                experience,
+                amount,
+                content as job_content')
+                ->where('company_id', $company_info['company_id'])
+                ->where('audit', 1)
+                ->where('is_display', 1);
+            if (isset($condition['job_limit']) && !empty($condition['job_limit'])) {
+                $job_limit = intval($condition['job_limit']);
+                $job_list = $job_list->limit($job_limit);
+            }
+            $job_list = $job_list->select();
+
+            if (isset($job_list) && !empty($job_list)) {
+                foreach ($job_list as $job_key => $job) {
+                    $job_info = $job->toArray();
+                    $job_info['job_wage'] = model('BaseModel')->handle_wage(
+                        $job_info['minwage'],
+                        $job_info['maxwage'],
+                        $job_info['negotiable']
+                    );
+
+                    $job_info['education_text'] = isset(
+                        model('BaseModel')->map_education[$job_info['education']]
+                    )
+                        ? model('BaseModel')->map_education[$job_info['education']]
+                        : '学历不限';
+
+                    $job_info['experience_text'] = isset(
+                        model('BaseModel')->map_experience[$job_info['experience']]
+                    )
+                        ? model('BaseModel')->map_experience[$job_info['experience']]
+                        : '经验不限';
+
+                    $job_info['job_amount'] = ($job_info['amount'] == 0 ? '若干' : $job_info['amount']) . '人';
+
+                    $job_info['job_link'] = config('global_config.mobile_domain') . 'job/' . $job_info['job_id'];
+
+                    $job_qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_job', 'jobid' => $job_info['job_id']]);
+                    $job_info['job_wx_qrcode'] = $job_qrcode ? $job_qrcode : '';
+
+                    $job_info['job_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $job_info['job_id'];
+
+                    $job_names[$job_info['company_id']][] = $job_info['job_name'];
+
+                    $return[$company_key]['job_list'][$job_key] = $job_info;
+
+                }
+
+            } else {
+                $return[$company_key]['job_list'] = array();
+            }
+
+        }
+
+        return $return;
+
+    }
+
+    protected function _parseCompanyByCondition($condition)
+    {
+        $model = model('Company')->alias('c');
+
+        // 企业性质
         if (isset($condition['nature']) && count($condition['nature']) > 0) {
-            $model = $model->where('a.nature', 'in', $condition['nature']);
+            $model = $model->where('c.nature', 'in', $condition['nature']);
         }
 
+        // 所属行业
         if (isset($condition['trade']) && count($condition['trade']) > 0) {
-            $model = $model->where('a.trade', 'in', $condition['trade']);
+            $model = $model->where('c.trade', 'in', $condition['trade']);
         }
-        if (
-            isset($condition['district']) &&
-            count($condition['district']) > 0
-        ) {
+
+        if (isset($condition['district']) && count($condition['district']) > 0) {
             $tmp_str = '';
-            foreach ($condition['district'] as $key => $value) {
-                $arr_lenth = count($value);
+            foreach ($condition['district'] as $value) {
+                $arr_length = count($value);
                 $tmp_str .=
-                    ' or a.district' .
-                    $arr_lenth .
+                    ' or c.district' .
+                    $arr_length .
                     '=' .
-                    $value[$arr_lenth - 1];
+                    $value[$arr_length - 1];
             }
             if ($tmp_str != '') {
                 $tmp_str = trim($tmp_str, ' ');
@@ -616,41 +430,634 @@ class Marketing extends \app\common\controller\Backend
             }
         }
 
+        // 企业福利
         if (isset($condition['tag']) && count($condition['tag']) > 0) {
-            foreach ($condition['tag'] as $key => $value) {
-                $model = $model->where('FIND_IN_SET("' . $value . '",a.tag)');
+            foreach ($condition['tag'] as $value) {
+                $model = $model->where('FIND_IN_SET("' . $value . '",c.tag)');
             }
         }
-        if (
-            isset($condition['setmeal_id']) &&
-            count($condition['setmeal_id']) > 0
-        ) {
+
+        // 会员套餐
+        if (isset($condition['setmeal_id']) && count($condition['setmeal_id']) > 0) {
             $model = $model
-                ->join(
-                    config('dababase.prefix') . 'member_setmeal b',
-                    'a.uid=b.uid',
-                    'LEFT'
-                )
-                ->where('a.setmeal_id', 'in', $condition['setmeal_id']);
+                ->where('c.setmeal_id', 'in', $condition['setmeal_id']);
         }
-        switch($condition['content']){
+
+        $filter = isset($condition['content']) ? $condition['content'] : 'all';
+        switch ($filter) {
             case 'filter_nojobs':
                 $model = $model
-                    ->join(
-                        config('dababase.prefix') . 'job_search_rtime c',
-                        'a.uid=c.uid',
-                        'LEFT'
-                    )
-                    ->where('c.id', 'not null');
+                    ->join('job_search_rtime s', 's.uid=c.uid', 'LEFT')
+                    ->where('s.id', 'not null');
                 break;
+
             case 'filter_noaudit':
-                $model = $model->where('a.audit',1);
+                $model = $model->where('c.audit', 1);
                 break;
+
+            case 'all':
             default:
                 break;
         }
-        $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->distinct('a.id')->limit($num);
-        return $model;
+
+        $time_order = isset($condition['time_order']) ? $condition['time_order'] : '';
+        switch ($time_order) {
+            case 'register_time':
+                $model->order('c.addtime DESC');
+                break;
+
+            case 'refresh_time':
+            default:
+                $model->order('c.refreshtime DESC');
+                break;
+        }
+
+        $num = (isset($condition['num']) && intval($condition['num']) > 0) ? intval($condition['num']) : 10;
+
+        return $model->distinct('c.id')->limit($num);
     }
+
+    protected function _searchCompanyByIds($condition = [])
+    {
+        if (!isset($condition['company_ids']) || empty($condition['company_ids'])) {
+            $this->ajaxReturn(500, '请选择企业');
+        }
+
+        if (is_array($condition['company_ids'])) {
+            if (!isset($condition['company_ids'][0]) || empty($condition['company_ids'][0])) {
+                $this->ajaxReturn(500, '请正确选择指定企业');
+            }
+        } else {
+            $this->ajaxReturn(500, '请选择指定企业');
+        }
+
+        $comid_arr = $condition['company_ids'];
+
+        if (empty($comid_arr) || !isset($comid_arr)) {
+            return array();
+        }
+
+        $company_list = model('Company')
+            ->alias('c')
+            ->join('company_contact cc', 'cc.uid=c.uid', 'LEFT')
+            ->join('company_info ci', 'ci.uid=c.uid', 'LEFT')
+            ->field('c.id as company_id,
+            c.companyname as company_name,
+            cc.contact as company_contact,
+            cc.mobile as company_mobile,
+            ci.address as company_address,
+            ci.website as company_website,
+            c.tag')
+            ->where('c.id', 'in', $comid_arr)
+            ->orderRaw('field(c.id,' . implode(",", $comid_arr) . ')')
+            ->select();
+
+        if (empty($company_list) || !isset($company_list)) {
+            return array();
+        }
+
+        $return = array();
+
+        $wechat_class = new Wechat();
+        $category_data = model('Category')->getCache();
+
+        foreach ($company_list as $company_key => $company) {
+            // 企业数据转数组
+            $company_info = $company->toarray();
+            $return[$company_key] = $company_info;
+
+            // 企业福利数据格式转换
+            if (isset($company_info['tag']) && !empty($company_info['tag'])) {
+                $tag_arr = explode(',', $company_info['tag']);
+                foreach ($tag_arr as $tag_kay => $tag_value) {
+                    if (is_numeric($tag_value) && isset($category_data['QS_jobtag'][$tag_value])) {
+                        $return[$company_key]['company_tag'][] = $category_data['QS_jobtag'][$tag_value];
+                    } else {
+                        $return[$company_key]['company_tag'][] = $tag_value;
+                    }
+                }
+            }
+
+            $qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_company', 'comid' => $company_info['company_id']]);
+            $return[$company_key]['company_wx_qrcode'] = $qrcode ? $qrcode : '';
+            $return[$company_key]['company_link'] = config('global_config.mobile_domain') . 'company/' . $company_info['company_id'];
+            $return[$company_key]['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $company_info['company_id'];
+
+            // 查询企业职位
+            $job_list = model('Job')
+                ->field('id as job_id,
+                company_id,
+                jobname as job_name,
+                minwage,
+                maxwage,
+                negotiable,
+                education,
+                experience,
+                amount,
+                content as job_content')
+                ->where('company_id', $company_info['company_id'])
+                ->where('audit', 1)
+                ->where('is_display', 1);
+            if (isset($condition['job_limit']) && !empty($condition['job_limit'])) {
+                $job_limit = intval($condition['job_limit']);
+                $job_list = $job_list->limit($job_limit);
+            }
+            $job_list = $job_list->select();
+
+            if (isset($job_list) && !empty($job_list)) {
+                foreach ($job_list as $job_key => $job) {
+                    $job_info = $job->toArray();
+                    $job_info['job_wage'] = model('BaseModel')->handle_wage(
+                        $job_info['minwage'],
+                        $job_info['maxwage'],
+                        $job_info['negotiable']
+                    );
+
+                    $job_info['education_text'] = isset(
+                        model('BaseModel')->map_education[$job_info['education']]
+                    )
+                        ? model('BaseModel')->map_education[$job_info['education']]
+                        : '学历不限';
+
+                    $job_info['experience_text'] = isset(
+                        model('BaseModel')->map_experience[$job_info['experience']]
+                    )
+                        ? model('BaseModel')->map_experience[$job_info['experience']]
+                        : '经验不限';
+
+                    $job_info['job_amount'] = ($job_info['amount'] == 0 ? '若干' : $job_info['amount']) . '人';
+
+                    $job_info['job_link'] = config('global_config.mobile_domain') . 'job/' . $job_info['job_id'];
+
+                    $job_info['job_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $job_info['job_id'];
+
+                    $job_qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_job', 'jobid' => $job_info['job_id']]);
+                    $job_info['job_wx_qrcode'] = $job_qrcode ? $job_qrcode : '';
+
+                    $job_names[$job_info['company_id']][] = $job_info['job_name'];
+
+                    $return[$company_key]['job_list'][$job_key] = $job_info;
+
+                }
+
+            } else {
+                $return[$company_key]['job_list'] = array();
+            }
+
+        }
+
+        return $return;
+
+    }
+
+
+    /**
+     * @Purpose:
+     * 公众号营销 - 关键词检索指定公司
+     * @Method companySearchByKeyword()
+     *
+     * @param string $keyword 关键字检索[企业ID/企业名称]
+     *
+     * @return Jsonp
+     *
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     *
+     * @link {domain}marketing/companySearchByKeyword
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/2
+     */
+    public function companySearchByKeyword()
+    {
+        $keyword = input('post.keyword/s', '', 'trim');
+
+        if (isset($keyword) && !empty($keyword)) {
+            $company_list = model('Company')
+                ->alias('c')
+                ->join('member m', 'm.uid=c.uid', 'LEFT')
+                ->where('c.uid', 'eq', $keyword)
+                ->whereOr('c.id', 'eq', $keyword)
+                ->whereOr('c.companyname', 'like', '%' . $keyword . '%')
+                ->whereOr('m.mobile', 'like', '%' . $keyword . '%')
+                ->field('c.id as company_id, c.uid as uid, c.companyname as company_name, m.mobile')
+                ->order('refreshtime desc')
+                ->select();
+            if (isset($company_list) && !empty($company_list)) {
+                $comid_arr = [];
+                foreach ($company_list as $company) {
+                    $comid_arr[] = $company['company_id'];
+                }
+
+                $job_data = [];
+                if (!empty($comid_arr)) {
+                    $job_data = model('JobSearchRtime')
+                        ->where('company_id', 'in', $comid_arr)
+                        ->column('company_id,id,uid');
+                }
+
+                foreach ($company_list as $company) {
+                    $arr['company_id'] = $company['company_id'];
+                    $arr['company_uid'] = $company['uid'];
+                    $arr['company_name'] = $company['company_name'];
+                    $arr['mobile'] = $company['mobile'];
+                    $arr['has_job'] = isset($job_data[$company['company_id']]) ? 1 : 0;
+                    $list[] = $arr;
+                }
+            } else {
+                $list = array();
+            }
+
+        } else {
+            $list = array();
+        }
+
+        $this->ajaxReturn(200, 'SUCCESS', ['items' => $list]);
+
+    }
+
+
+    /**
+     * @Purpose:
+     * 营销模板 - 模板列表
+     * @Method templateList()
+     *
+     * @param integer $page_num 当前页（默认：1）
+     * @param integer $page_size 每页显示条数（默认：10）
+     * @param string $keyword 关键字检索[模板名称]
+     * @param integer $type 模板类型[0:全部;1:职位模板;2:企业模板;]
+     *
+     * @return Jsonp
+     *
+     * @throws null
+     *
+     * @link {domain}marketing/templateList
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/1
+     */
+    public function templateList()
+    {
+        $page_num = input('post.page_num/d', 1, 'intval');
+        $page_size = input('post.page_size/d', 10, 'intval');
+        $keyword = input('post.keyword/s', '', 'trim');
+        $type = input('post.type/d', 0, 'intval');
+
+        $map = array();
+
+        //  1.关键字
+        if (isset($keyword) && !empty($keyword)) {
+            //  关键字检索[模板名称]
+            $map['name'] = ['like', '%' . $keyword . '%'];
+        }
+
+        // 2.模板类型[0:全部;1:职位模板;2:企业模板;]
+        if (isset($type) && !empty($type)) {
+            $map['type'] = ['=', $type];
+        }
+
+        // 排序：ID倒序
+        $order = ['id DESC'];
+
+        // 查询字段
+        $field = 'id as template_id, type, built_in, name, head, body, tail';
+
+        try {
+            $list = model('MarketingTemplate')
+                ->getList($map, $order, $page_num, $page_size, $field);
+            if (false === $list) {
+                throw new Exception(model('MarketingTemplate')->getError());
+            }
+
+            $this->ajaxReturn(200, 'SUCCESS', $list);
+
+        } catch (Exception $e) {
+            $this->ajaxReturn(500, $e->getMessage());
+        }
+
+    }
+
+
+    /**
+     * @Purpose:
+     * 营销模板 - 模板编辑（新增/修改）
+     * @Method templateEdit()
+     *
+     * @param integer $template_id 营销模板ID
+     * @param integer $type 模板类型[0:全部;1:职位模板;2:企业模板;]
+     * @param string $name 模板名称
+     * @param string $head 头部模板
+     * @param string $body 内容（职位/企业）模板
+     * @param string $tail 尾部模板
+     *
+     * @return Jsonp
+     *
+     * @throws null
+     *
+     * @link {domain}marketing/templateEdit
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/1
+     */
+    public function templateEdit()
+    {
+        // 接受请求参数
+        $template_id = input('post.template_id/d', 0, 'intval');
+        $type = input('post.type/s', '', 'trim');
+        $name = input('post.name/s', '', 'trim');
+        $head = input('post.head/s', '', null);
+        $body = input('post.body/s', '', null);
+        $tail = input('post.tail/s', '', null);
+
+        // Validate验证数据
+        $data = [
+            'type' => $type,
+            'name' => $name,
+            'body' => $body
+        ];
+
+        // Validate验证规则
+        $rule = [
+            'type' => 'require|in:1,2',
+            'name' => 'require|length:1,100',
+            'body' => 'require'
+        ];
+
+        // Validate报错信息
+        $msg = [
+            'type.require' => '请选择模板类型',
+            'type.in' => '请选择正确的模板类型',
+            'name.require' => '请输入模板名称',
+            'name.length' => '模板名称长度限制为1~100',
+            'body.require' => '请填写模板正文'
+        ];
+
+        // 实例化`Validate`验证类
+        $validate = new Validate($rule, $msg);
+        if (!$validate->check($data)) {
+            $this->ajaxReturn(500, $validate->getError());
+        }
+
+        // 判断模板名称是否重复
+        $isRepeat = model('MarketingTemplate')
+            ->where('name', '=', $name)
+            ->where('id', '<>', $template_id)
+            ->find();
+        if (isset($isRepeat) && !empty($isRepeat)) {
+            $this->ajaxReturn(500, '模板名称已存在');
+        }
+
+        /**
+         * 根据`$template_id`参数判断写/更新操作
+         * $template_id不为空，更新
+         * $template_id为空，写入
+         */
+        if (isset($template_id) && !empty($template_id)) {
+            /**
+             * 修改营销模板
+             */
+            $isSet = model('MarketingTemplate')
+                ->find($template_id);
+            if (null === $isSet) {
+                $this->ajaxReturn(500, '要修改的模板不存在');
+            }
+
+            if (1 === $isSet->built_in) {
+                $this->ajaxReturn(500, '内置模板不可编辑');
+            }
+
+            Db::startTrans();
+            try {
+                // DB1：更新营销模板
+                $update = model('MarketingTemplate')
+                    ->allowField(true)
+                    ->isUpdate(true)
+                    ->save(
+                        [
+                            'name' => $name,
+                            'head' => $head,
+                            'body' => $body,
+                            'tail' => $tail
+                        ],
+                        [
+                            'id' => $template_id
+                        ]
+                    );
+                if (false === $update) {
+                    throw new Exception(model('MarketingTemplate')->getError());
+                }
+
+                // DB2：写入日志
+                $log_result = model('AdminLog')->record(
+                    '修改公众号营销模板。模板ID【' .
+                    $template_id .
+                    '】;模板名称【' .
+                    $name .
+                    '】',
+                    $this->admininfo
+                );
+
+                if (false === $log_result) {
+                    throw new Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+
+                $this->ajaxReturn(200, '修改成功');
+
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, $e->getMessage());
+            }
+
+        } else {
+            /**
+             * 新增营销模板
+             */
+            Db::startTrans();
+            try {
+                // DB1：写入新营销模板
+                $insert = model('MarketingTemplate')
+                    ->allowField(true)
+                    ->isUpdate(false)
+                    ->save([
+                        'type' => $type,
+                        'name' => $name,
+                        'head' => $head,
+                        'body' => $body,
+                        'tail' => $tail
+                    ]);
+                if (false === $insert) {
+                    throw new Exception(model('MarketingTemplate')->getError());
+                }
+
+                // DB2：写入日志
+                $log_result = model('AdminLog')->record(
+                    '新增公众号营销模板。模板ID【' .
+                    model('MarketingTemplate')->id .
+                    '】;模板名称【' .
+                    $name .
+                    '】',
+                    $this->admininfo
+                );
+
+                if (false === $log_result) {
+                    throw new Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+
+                $this->ajaxReturn(200, '添加成功');
+
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, $e->getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * @Purpose:
+     * 营销模板 - 获取模板参数
+     * @Method templateOption()
+     *
+     * @param null
+     *
+     * @return Jsonp
+     *
+     * @throws null
+     *
+     * @link {domain}marketing/templateOption
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/1
+     */
+    public function templateOption()
+    {
+        try {
+            // 1.头部模板参数[head]
+            $head_option = model('MarketingTemplate')->headOption;
+
+            // 2.正文模板参数[body]
+            $body_option = model('MarketingTemplate')->bodyOption;
+
+            // 3.尾部模板参数[tail]
+            $tail_option = model('MarketingTemplate')->tailOption;
+
+            $return = [
+                'head_option' => $head_option,
+                'body_option' => $body_option,
+                'tail_option' => $tail_option
+            ];
+
+            $this->ajaxReturn(200, 'SUCCESS', $return);
+
+        } catch (\Exception $e) {
+            $this->ajaxReturn(500, $e->getMessage());
+        }
+    }
+
+
+    /**
+     * @Purpose:
+     * 营销模板 - 查看模板详情
+     * @Method templateDetails()
+     *
+     * @param integer $template_id 营销模板ID
+     *
+     * @return Jsonp
+     *
+     * @throws null
+     *
+     * @link {domain}marketing/templateDetails
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/2
+     */
+    public function templateDetails()
+    {
+        $template_id = input('post.template_id/d', 0, 'intval');
+
+        if (!isset($template_id) || empty($template_id)) {
+            $this->ajaxReturn(500, '请选择要查看的模板');
+        }
+
+        $details = model('MarketingTemplate')
+            ->field('id as template_id,
+            type,
+            built_in,
+            name,
+            head,
+            body,
+            tail,
+            create_time,
+            update_time')
+            ->find($template_id);
+
+        if (null === $details) {
+            $this->ajaxReturn(500, '要查看的模板不存在');
+        } else {
+            $details = $details->toArray();
+            $this->ajaxReturn(200, 'SUCCESS', $details);
+        }
+
+    }
+
+
+    /**
+     * @Purpose:
+     * 营销模板 - 删除模板
+     * @Method templateDelete()
+     *
+     * @param integer $template_id 营销模板ID
+     *
+     * @return Jsonp
+     *
+     * @throws null
+     *
+     * @link {domain}marketing/templateDelete
+     *
+     * @author  Administrator
+     * @version 1.1
+     * @since   2022/4/2
+     */
+    public function templateDelete()
+    {
+        $template_id = input('post.template_id/d', 0, 'intval');
+
+        if (!isset($template_id) || empty($template_id)) {
+            $this->ajaxReturn(500, '请选择要删除的模板');
+        }
+
+        $template_info = model('MarketingTemplate')
+            ->field('id, built_in')
+            ->find($template_id);
+
+        if (null === $template_info) {
+            $this->ajaxReturn(500, '要删除的模板不存在');
+        } else {
+            if (1 === $template_info->built_in) {
+                $this->ajaxReturn(500, '内置模板不可删除');
+            }
+            $del_result = $template_info->delete();
+            if (0 === $del_result) {
+                $this->ajaxReturn(500, '删除失败');
+            } else {
+                $this->ajaxReturn(200, '删除成功');
+            }
+        }
+    }
+
+
 }

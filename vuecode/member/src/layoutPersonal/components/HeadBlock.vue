@@ -61,7 +61,13 @@ import api from '@/api'
       handlerSearch(){
         let url = ''
         if(this.searchType==1){
-          url = this.link_url_web.joblist_search_key
+          if(this.keyword)
+          {
+            url = this.link_url_web.joblist_search_key
+          }else
+          {
+            url = this.link_url_web.joblist
+          }
         }else{
           url = this.link_url_web.companylist_search_key
         }

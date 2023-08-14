@@ -23,6 +23,11 @@ import VueClipboard from 'vue-clipboard2'
 Vue.use(ElementUI)
 Vue.use(VueClipboard)
 
+
+import '../public/ueditor/ueditor.config'
+import '../public/ueditor/ueditor.all'
+import '../public/ueditor/lang/zh-cn/zh-cn'
+
 Vue.config.productionTip = false
 
 new Vue({

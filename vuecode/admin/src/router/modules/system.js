@@ -555,6 +555,17 @@ const systemRouter = {
     ]
   },
   {
+    path: '/upgrade',
+    name: 'upgrade',
+    component: () =>
+      import('@/views/sys/upgrade/index'),
+    meta: {
+      title: '系统升级',
+      access: 'upgrade'
+    },
+    hidden: true
+  },
+  {
     path: '/sys/log',
     name: 'log',
     component: () =>

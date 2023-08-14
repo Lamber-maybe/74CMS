@@ -439,7 +439,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': this.state.userToken,
             platform: this.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           },
           url: api.global_config,
           data: {}
@@ -461,7 +461,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -493,7 +493,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -580,7 +580,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': VueCookies.get('qscms_subsiteid')
+            'subsiteid': localStorage.getItem('qscms_subsiteid')
           },
           url: api.classify,
           params: {type: value}
