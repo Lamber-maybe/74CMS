@@ -21,9 +21,11 @@ const store = new Vuex.Store({
     platform: 'mobile',
     sendSmsInterval: 60, // 发送验证码间隔时间，以秒为单位
     sendSmsBtnText: '获取验证码',
+    sendSmsBtnTextColor: '#2199ff',
     sendSmsBtnDisabled: false,
     sendEmailInterval: 60, // 发送验证码间隔时间，以秒为单位
     sendEmailBtnText: '获取验证码',
+    sendEmailBtnTextColor: '#2199ff',
     sendEmailBtnDisabled: false,
     sendSmsTimer: '',
     sendSmsMessage: '',
@@ -99,6 +101,7 @@ const store = new Vuex.Store({
     clearCountDownFun (state, data) {
       state.sendSmsBtnDisabled = false
       state.sendSmsBtnText = '获取验证码'
+      state.sendSmsBtnTextColor = '#2199ff'
       state.sendSmsInterval = 60
       clearInterval(state.sendSmsTimer)
     },
@@ -107,17 +110,20 @@ const store = new Vuex.Store({
       if (state.sendSmsInterval === 0) {
         state.sendSmsBtnDisabled = false
         state.sendSmsBtnText = '获取验证码'
+        state.sendSmsBtnTextColor = '#2199ff'
         state.sendSmsInterval = 60
         clearInterval(state.sendSmsTimer)
       } else {
         state.sendSmsBtnDisabled = true
         state.sendSmsBtnText = `重发 ${state.sendSmsInterval} 秒`
+        state.sendSmsBtnTextColor = '#c9c9c9'
         state.sendSmsInterval--
       }
     },
     clearCountDownFunEmail (state, data) {
       state.sendEmailBtnDisabled = false
       state.sendEmailBtnText = '获取验证码'
+      state.sendEmailBtnTextColor = '#2199ff'
       state.sendEmailInterval = 60
       clearInterval(state.sendEmailTimer)
       clearInterval(state.sendSmsTimer)
@@ -127,11 +133,13 @@ const store = new Vuex.Store({
       if (state.sendEmailInterval === 0) {
         state.sendEmailBtnDisabled = false
         state.sendEmailBtnText = '获取验证码'
+        state.sendEmailBtnTextColor = '#2199ff'
         state.sendEmailInterval = 60
         clearInterval(state.sendEmailTimer)
       } else {
         state.sendEmailBtnDisabled = true
         state.sendEmailBtnText = `重发 ${state.sendEmailInterval} 秒`
+        state.sendEmailBtnTextColor = '#c9c9c9'
         state.sendEmailInterval--
       }
     },

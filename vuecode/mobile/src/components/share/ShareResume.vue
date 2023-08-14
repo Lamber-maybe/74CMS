@@ -31,6 +31,9 @@ export default {
   },
   methods: {
     makePic () {
+      if (parseInt(this.tplIndex) <= 0) {
+        return
+      }
       http
         .get(api.create_poster, { type: 'resume', id: this.infoid, index: this.tplIndex })
         .then(res => {

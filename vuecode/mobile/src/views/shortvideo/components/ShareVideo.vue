@@ -41,7 +41,7 @@ export default {
     },
     fetchData () {
       http
-        .get(api.shortvideo_share, {id: this.id, type: 'shortvideo', vtype: this.type})
+        .get(api.create_poster, {id: this.id, type: 'shortvideo', vtype: this.type})
         .then((res) => {
           this.src = res.data
           this.makePicDone = true

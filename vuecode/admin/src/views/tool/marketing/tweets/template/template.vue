@@ -3,7 +3,7 @@
     <div class="tem_div" @click="funAdd()">
       <div class="tem_add">
         <i class="el-icon-circle-plus" style="font-size: 75px;color: #409eff;" />
-        <br /><br />
+        <br><br>
         <span class="icon-name" style="font-size: 16px;color: #409eff;">新增模板</span>
       </div>
     </div>

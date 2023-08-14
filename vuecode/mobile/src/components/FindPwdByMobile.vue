@@ -28,7 +28,7 @@
               v-model="code"
             />
           </label>
-          <button class="reg_get_btn" @click="sendSms">
+          <button class="reg_get_btn" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">
             {{ $store.state.sendSmsBtnText }}
           </button>
         </div>

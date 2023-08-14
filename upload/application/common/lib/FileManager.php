@@ -17,9 +17,12 @@ class FileManager
     protected $validate;
     protected $uploadfile_dir;
     protected $uploadfile_path;
-    public function __construct()
+    public function __construct($config=[])
     {
         $global_config = config('global_config');
+        if(!empty($config)){
+            $global_config = array_merge($global_config,$config);
+        }
         $this->fileupload_type = $global_config['fileupload_type']
             ? $global_config['fileupload_type']
             : 'default';

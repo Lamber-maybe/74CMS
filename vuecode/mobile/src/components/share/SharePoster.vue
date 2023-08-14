@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import http from '@/utils/http'
+import api from '@/api'
 import ShareCompany from './ShareCompany'
 import ShareJob from './ShareJob'
 import ShareResume from './ShareResume'
@@ -28,15 +30,32 @@ export default {
   },
   data () {
     return {
-      currentTplIndex: 0
+      currentTplIndex: 0,
+      indexlist: []
     }
   },
+  created () {
+    // 请求列表数据
+    this.fetchData()
+  },
   methods: {
+    fetchData () {
+      this.id = this.$route.params.id
+      http
+        .get(api.poster_tplindex_list, { type: this.type == 'job' ? 1 : (this.type == 'resume' ? 2 : 3) })
+        .then(res => {
+          this.indexlist = res.data
+          this.currentTplIndex = this.indexlist[0]
+        })
+        .catch(() => {})
+    },
     changeTpl () {
-      this.currentTplIndex++
-      if (this.currentTplIndex >= 3) {
-        this.currentTplIndex = 0
+      const c_index = this.indexlist.indexOf(this.currentTplIndex)
+      let next_index = c_index + 1
+      if (this.indexlist[next_index] === undefined) {
+        next_index = 0
       }
+      this.currentTplIndex = this.indexlist[next_index]
     },
     // 关闭海报
     closePoster () {

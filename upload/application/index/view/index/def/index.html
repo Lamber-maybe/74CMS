@@ -1,6 +1,7 @@
 {#layout name="public/layout" /#}
 {#load href="__ROOT__/assets/css/swiper-bundle.min.css" /#}
 {#load href="__ROOT__/assets/css/index.css" /#}
+
 <div class="content_wrapper" id="app">
 	<div class="content">
 		<div class="home_con1 clearfix">
@@ -201,7 +202,7 @@
 								<div class="swiper-slide">
 									<a {#if condition="$vo.web_link_url!=''"#}href="{#$vo.web_link_url#}"
 										target="_blank" {#/if#}>
-										<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}" class="img"></a>
+										<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}"></a>
                   <div class="pcd"></div>
 								</div>
 								{#/volist#}
@@ -348,7 +349,7 @@
 					<div class="list_item float ">
 						<div class="img_box">
 							<a href="{#$vo.web_link_url#}">
-								<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+								<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}" :class="isIe?'ieStyle':''">
 							</a>
 						</div>
 						<p><a href="{#$vo.web_link_url#}" title="{#$vo.companyname#}" target="_blank">{#$vo.companyname#}</a></p>
@@ -637,6 +638,7 @@
 	var app = new Vue({
 		el: '#app',
 		data: {
+			isIe:false,
 			regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
 			loginUtype: 0,
 			username: '',
@@ -676,6 +678,9 @@
 				this.guideQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
 			}else{
 				this.guideQrcode = guide_qrcode
+			}
+            if(navigator.userAgent.indexOf('Trident')>-1){
+				this.isIe = true
 			}
 		},
 		methods: {
@@ -796,7 +801,7 @@
 						mobile: that.mobile
 					}
 					httpget(qscms.apiList.loginByCode, data).then(function (check_res) {
-						let setShow = false
+						var setShow = false
 						if (check_res.data == 1) {
 							setShow = true
 						}
@@ -846,7 +851,7 @@
 						username: that.username
 					}
 					httpget(qscms.apiList.loginByPwd, data).then(function (check_res) {
-						let setShow = false
+						var setShow = false
 						if (check_res.data == 1) {
 							setShow = true
 						}
@@ -1018,7 +1023,7 @@
 				this.changeImg()
 			},
 			submitPictureCaptcha: function () {
-				let that = this
+				var that = this
 				that.$refs.captchaForm.validate(function (valid) {
 					if (valid) {
 						that.showPictureCaptcha = false

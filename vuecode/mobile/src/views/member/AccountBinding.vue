@@ -29,7 +29,7 @@
             placeholder="请输入验证码"
             autocomplete="off"
           />
-          <button class="log_get_btn" @click="sendSms">{{ $store.state.sendSmsBtnText }}</button>
+          <button class="log_get_btn" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</button>
         </div>
         <div class="btn_group" style="margin-top:10px;">
           <van-button class="btn_mb" type="info" size="large" round @click="handleSubmit"
@@ -244,7 +244,6 @@ export default {
   border: 0;
   height: 100%;
   font-size: 15px;
-  color: #c9c9c9;
   padding: 0;
   background-color: #ffffff;
 }

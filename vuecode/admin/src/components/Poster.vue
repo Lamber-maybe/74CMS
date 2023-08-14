@@ -14,15 +14,21 @@
           id="posterImg"
           :src="posterImg"
           style="width: 300px"
-        />
+        >
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="warning" size="small" @click="changeTpl"
-          >换一个</el-button
-        >
-        <el-button type="primary" size="small" @click="downloadIamge"
-          >保存到电脑</el-button
-        >
+        <el-button
+          v-if="posterIndex===undefined"
+          type="warning"
+          size="small"
+          @click="changeTpl"
+        >换一个</el-button>
+        <el-button
+          v-if="posterIndex===undefined"
+          type="primary"
+          size="small"
+          @click="downloadIamge"
+        >保存到电脑</el-button>
         <el-button size="small" @click="$emit('closeDialog')">关 闭</el-button>
       </span>
     </el-dialog>
@@ -30,33 +36,49 @@
 </template>
 
 <script>
+import { posterTplindexList } from '@/api/poster'
 import { getToken } from '@/utils/auth'
 import apiArr from '@/api'
 import { makePoster } from '@/api/poster'
 export default {
-  props: ['posterId', 'posterType'],
+  props: ['posterId', 'posterType', 'posterIndex'],
   data() {
     return {
-      currentTplIndex: 0,
-      posterImg: ''
+      currentTplIndex: 1,
+      posterImg: '',
+      indexlist: []
     }
   },
   created() {
+    if (this.posterIndex !== undefined){
+      this.currentTplIndex = this.posterIndex
+    }
+    this.fetchData()
     this.funPoster()
   },
   methods: {
+    fetchData () {
+      this.listLoading = true
+      posterTplindexList({ type: this.posterType == 'job' ? 1 : (this.posterType == 'resume' ? 2 : 3) }).then(response => {
+        this.indexlist = response.data
+      }).catch(() => {
+        this.listLoading = false
+      })
+    },
     changeTpl() {
-      this.currentTplIndex++
-      if (this.currentTplIndex >= 3) {
-        this.currentTplIndex = 0
+      const c_index = this.indexlist.indexOf(this.currentTplIndex)
+      let next_index = c_index + 1
+      if (this.indexlist[next_index] === undefined){
+        next_index = 0
       }
+      this.currentTplIndex = this.indexlist[next_index]
       this.funPoster()
     },
     funPoster() {
       this.posterImg = ''
       const param = {
         type: this.posterType,
-        id: this.posterId,
+        id: this.posterId === undefined ? 0 : this.posterId,
         index: this.currentTplIndex
       }
       makePoster(param).then(response => {
@@ -64,7 +86,7 @@ export default {
       })
     },
     downloadIamge() {
-      const locationUrl = window.global.RequestBaseUrl + apiArr.downloadPoster + '?admintoken=' + getToken() + '&type=' + this.posterType + '&id=' + this.posterId + '&index=' + this.currentTplIndex
+      const locationUrl = window.global.RequestBaseUrl + apiArr.downloadPoster + (window.global.RequestBaseUrl.indexOf('?') == -1 ? '?' : '&') + 'admintoken=' + getToken() + '&type=' + this.posterType + '&id=' + (this.posterId === undefined ? 0 : this.posterId) + '&index=' + this.currentTplIndex
       window.location.href = locationUrl
     }
   }

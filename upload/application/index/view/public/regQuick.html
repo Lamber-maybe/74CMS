@@ -64,14 +64,14 @@
       <el-select class="for_wage" v-model="regQuick.minwage" placeholder="请选择" @change="changeMinWage(regQuick.minwage)">
         <el-option v-for="(item, index) in regQuick.optionMinWage"
                    :key="index"
-                   :label="`${item}元/月`"
+                   :label="item+'元/月'"
                    :value="item"></el-option>
       </el-select>
       <div class="for_sp"> - </div>
       <el-select class="for_wage" v-model="regQuick.maxwage" placeholder="请选择">
         <el-option v-for="(item, index) in regQuick.optionMaxWage"
                    :key="index"
-                   :label="`${item}元/月`"
+                   :label="item+'元/月'"
                    :value="item"></el-option>
       </el-select>
     </div>

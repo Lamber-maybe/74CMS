@@ -178,7 +178,7 @@
       <div class="box_8">
         <div class="put">联系方式<span class="phone_tip"
                                    v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span
-          class="phone" v-text="cur_user_mobile">}</span> 的手机号拔号</span></div>
+          class="phone" v-text="cur_user_mobile"></span> 的手机号拔号</span></div>
         <div class="contact_info" v-if="!phone_protect_open && show_contact == 1">
           <div class="info_line">
             联系人：

@@ -63,7 +63,7 @@ class Company extends \app\index\controller\Base
         } elseif ($district1 > 0) {
             $where['a.district1'] = ['eq', $district1];
         }
-        if($district3>0){
+        if($this->subsite!==null && $this->subsite->district3>0){
             $district_level = 0;
             $category_district = [];
         }else if($district2>0){

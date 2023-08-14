@@ -147,6 +147,7 @@
       var cityList = {}, tradeList = {};
       var d1 = 0, d2 = 0, d3 = 0, trade = 0;
       var cityLevel = parseInt('{#$district_level#}');
+      var subsite_district_level = parseInt('{#$subsite_district_level#}');
       var displayWordWidth = 870;
 
       // 筛选条件显示数量控制
@@ -186,6 +187,9 @@
             $('[data-type=cityReturn]').hide();
           }
           cityLevel = cityLevel - 1;
+          if(subsite_district_level==cityLevel-1){
+              $('[data-type=cityReturn]').hide();
+          }
           handleFilterConditionDisplay('cityLink');
         }
       });
@@ -249,7 +253,6 @@
               d1 = parseInt('{#$Request.param.d1#}');
               d2 = parseInt('{#$Request.param.d2#}');
               d3 = parseInt('{#$Request.param.d3#}');
-              subsite_district_level = parseInt('{#$subsite_district_level#}');
               if (cityLevel !== 1) {
                 if(qscms.subsiteid>0 && cityLevel==subsite_district_level+1){
                   $('[data-type=cityReturn]').hide();

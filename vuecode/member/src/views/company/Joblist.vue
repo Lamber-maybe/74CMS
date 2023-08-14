@@ -9,7 +9,7 @@
       <el-alert :title="`亲爱的HR，您的帐号可同时发布 ${enable_addjob_num_total} 个职位，现已发布 ${enable_addjob_num_total-enable_addjob_num} 个(包含审核中和未通过的)职位。`"
                 type="warning" :closable='false' show-icon> </el-alert>
 		<div v-if="params.type==0">
-			<el-table :header-cell-style="{background:'#fcfcfc',color:'#909399',fontSize:'12px'}"  :data="dataset" v-loading="listLoading" @selection-change="handleSelectionChange">
+			<el-table :header-cell-style="{background:'#fcfcfc',color:'#909399'}"  :data="dataset" v-loading="listLoading" @selection-change="handleSelectionChange">
 				<el-table-column type="selection"></el-table-column>
 				<el-table-column width="380" prop='jobname' label="职位名称">
 					<template slot-scope="scope">
@@ -157,7 +157,7 @@
         <p>让朋友帮你转，招人更快更简单</p>
       </div>
     </el-dialog>
-	<el-dialog  :title="'购买'+serviceTitle"  :visible.sync="showBuyService"  width="540px" @opened="initBuyService">
+	<el-dialog :title="'购买'+serviceTitle" :visible.sync="showBuyService" v-if="showBuyService" width="540px">
 		<BuyIncrementDialog ref="buyService" @submitPay="submitPay" :type="serviceType" :job-id="jobId"></BuyIncrementDialog>
 	</el-dialog>
 	</el-card>
@@ -213,18 +213,20 @@ import Poster from '@/components/Poster'
 		watch:{
 			'$route':function(newVal){
 				this.params.type = newVal.query.type===undefined?'0':newVal.query.type
+				this.params.page = 1
 				this.dataset = []
 				this.fetchData(true)
 			}
 		},
 		created () {
 			this.params.type = this.$route.query.type===undefined?'0':this.$route.query.type
+			this.params.page = 1
 			this.fetchData(true)
 		},
 		methods:{
-      handlerOuterLink(url){
-        window.open(url)
-      },
+			handlerOuterLink(url){
+				window.open(url)
+			},
 			submitPay(){
 				this.showBuyService = false
 				this.fetchData(true)
@@ -243,9 +245,6 @@ import Poster from '@/components/Poster'
 				this.jobId = jobid
 				this.serviceType = type
 				this.showBuyService = true
-			},
-			initBuyService(){
-				this.$refs.buyService.initCB()
 			},
 			fetchData (init) {
 				this.listLoading = true

@@ -12,14 +12,19 @@ class ResumeImg extends \app\common\controller\Backend
         $pagesize = input('get.pagesize/d', 10, 'intval');
 
         if ($audit != '') {
-            $where['audit'] = ['eq', $audit];
+            $where['a.audit'] = ['eq', $audit];
         }
         $total = model('ResumeImg')
+            ->alias('a')
             ->where($where)
             ->count();
         $list = model('ResumeImg')
+            ->alias('a')
+            ->field('a.*,b.fullname,c.mobile')
+            ->join(config('database.prefix').'resume b','a.uid=b.uid','left')
+            ->join(config('database.prefix').'resume_contact c','a.uid=c.uid','left')
             ->where($where)
-            ->order('audit asc,id desc')
+            ->order('a.audit asc,a.id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
         $img_id_arr = $img_src_data = [];
@@ -34,6 +39,7 @@ class ResumeImg extends \app\common\controller\Backend
             $value['img_src'] = isset($img_src_data[$value['img']])
                 ? $img_src_data[$value['img']]
                 : '';
+            $value['link_url'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['rid']]);
             $list[$key] = $value;
         }
 
@@ -47,19 +53,19 @@ class ResumeImg extends \app\common\controller\Backend
     }
     public function setAudit()
     {
-        $id = input('post.id/d', 0, 'intval');
+        $id = input('post.id/a',[]);
         $audit = input('post.audit/d', 0, 'intval');
-        if (!$id) {
-            $this->ajaxReturn(500, '请选择数据');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择信息');
         }
         model('ResumeImg')
-            ->where(['id' => ['eq', $id]])
+            ->where('id','in',$id)
             ->setField('audit', $audit);
         model('AdminLog')->record(
             '将简历照片/作品认证状态变更为【' .
                 model('ResumeImg')->map_audit[$audit] .
                 '】。简历照片/作品ID【' .
-                $id .
+                implode(",",$id) .
                 '】',
             $this->admininfo
         );
@@ -67,19 +73,15 @@ class ResumeImg extends \app\common\controller\Backend
     }
     public function delete()
     {
-        $id = input('post.id/d', 0, 'intval');
-        if (!$id) {
+        $id = input('post.id/a',[]);
+        if (empty($id)) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('ResumeImg')
-            ->where('id', $id)
-            ->find();
-        if (null === $info) {
-            $this->ajaxReturn(500, '请选择数据');
-        }
-        $info->delete();
+        model('ResumeImg')
+            ->where('id','in', $id)
+            ->delete();
         model('AdminLog')->record(
-            '删除简历照片/作品。简历照片/作品ID【' . $id . '】',
+            '删除简历照片/作品。简历照片/作品ID【' . implode(",",$id) . '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '删除成功');

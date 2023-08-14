@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-card v-loading="loading" class="box-card">
+    <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>企业风采</span>
       </div>
@@ -20,66 +20,98 @@
         </el-select>
       </div>
       <div class="spaceline" />
-      <div class="clearfix" />
-      <div v-if="list.length > 0">
-        <el-card
-          v-for="(item, index) in list"
-          :key="index"
-          class="img-content-box"
-          :body-style="{ padding: '0px' }"
-        >
-          <div class="imgbox">
-            <img
-              :src="
-                item.img_src != ''
-                  ? item.img_src
-                  : 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-              "
-              class="image"
-            >
-            <span class="note">{{ item.title }}</span>
-          </div>
-          <div style="padding: 14px;">
-            <div class="bottom clearfix">
-              <span class="time">{{ item.companyname }}</span>
-              <span class="time">{{ item.addtime | timeFilter }}</span>
-              <div class="clearfix" />
-              <span class="audit" :class="item.audit | auditFilter">
-                {{ options_audit[item.audit] }}
+      <el-table
+        v-loading="loading"
+        :data="list"
+        element-loading-text="Loading"
+        fit
+        highlight-current-row
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="企业风采" show-overflow-tooltip min-width="120">
+          <template slot-scope="scope">
+            <el-popover placement="right" trigger="hover">
+              <img
+                :src="scope.row.img_src"
+                style="max-width: 500px; max-height: 400px"
+              >
+              <span slot="reference">
+                <img :src="scope.row.img_src" width="50" height="50">
               </span>
-              <el-dropdown class="botton">
-                <span class="el-dropdown-link">
-                  操作
-                  <i class="el-icon-arrow-down el-icon--right" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="fun_audit(index, item)">
-                    审核
-                  </el-dropdown-item>
-                  <el-dropdown-item @click.native="fun_delete(index, item)">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </div>
-        </el-card>
-        <div class="clearfix" />
-        <div class="spaceline" />
-        <el-pagination
-          background
-          :current-page="currentPage"
-          :page-sizes="[10,15, 20, 30, 40]"
-          :page-size="pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-      <div v-else class="empty">
-        暂无数据
-      </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属企业" min-width="200">
+          <template slot-scope="scope">
+            <el-link type="primary" target="_blank" :href="scope.row.link_url">{{ scope.row.companyname }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="联系方式" min-width="150">
+          <template slot-scope="scope">
+            {{ scope.row.mobile }}
+          </template>
+        </el-table-column>
+        <el-table-column label="审核状态" min-width="80">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.audit | auditFilter">
+              {{ options_audit[scope.row.audit] }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="created_at"
+          label="上传时间"
+          min-width="150"
+        >
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.addtime | timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" min-width="150">
+          <template slot-scope="scope">
+            <el-button
+              size="small"
+              type="primary"
+              @click="funAudit(scope.row)"
+            >
+              审核
+            </el-button>
+            <el-button
+              size="small"
+              type="danger"
+              @click="funDelete(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="spaceline" />
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-button size="small" type="primary" @click="funAuditBatch">
+            审核
+          </el-button>
+          <el-button size="small" type="danger" @click="funDeleteBatch">
+            删除
+          </el-button>
+        </el-col>
+        <el-col :span="16" style="text-align: right">
+          <el-pagination
+            background
+            :current-page="currentPage"
+            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-size="pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </el-col>
+      </el-row>
     </el-card>
     <el-dialog
       title="将所选图片设置为"
@@ -123,16 +155,12 @@ export default {
       return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
     },
     auditFilter(audit) {
-      switch (audit) {
-        case 0:
-          return 'font_warning'
-        case 1:
-          return 'font_success'
-        case 2:
-          return 'font_danger'
-        default:
-          return ''
+      const auditMap = {
+        0: 'warning',
+        1: 'success',
+        2: 'danger'
       }
+      return auditMap[audit]
     }
   },
   data() {
@@ -147,7 +175,8 @@ export default {
       list: [],
       total: 0,
       currentPage: 1,
-      pagesize: 12
+      pagesize: 10,
+      tableIdarr: []
     }
   },
   created() {
@@ -193,30 +222,19 @@ export default {
     closeDialog() {
       this.dialogFormVisible = false
     },
-    fun_audit(index, row) {
+    funAudit(row) {
       this.setAuditVal = row.audit
-      this.auditId = row.id
+      this.auditId = [row.id]
       this.dialogFormVisible = true
     },
-    fun_delete(index, row) {
-      var that = this
-      that
-        .$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-        .then(() => {
-          const param = {
-            id: row.id
-          }
-          companyImgDelete(param).then(response => {
-            that.$message.success(response.message)
-            that.fetchData()
-            return true
-          })
-        })
-        .catch(() => {})
+    funAuditBatch() {
+      if (this.tableIdarr.length == 0) {
+        this.$message.error('请选择要审核的信息')
+        return false
+      }
+      this.auditId = this.tableIdarr
+      this.setAuditVal = 0
+      this.dialogFormVisible = true
     },
     fun_set_audit() {
       if (this.auditSubmitLoading == true) {
@@ -240,76 +258,59 @@ export default {
           return false
         }
       })
+    },
+    funDelete(index, row) {
+      var that = this
+      that
+        .$confirm('此操作将永久删除该信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            id: [row.id]
+          }
+          companyImgDelete(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
+          })
+        })
+        .catch(() => {})
+    },
+    funDeleteBatch() {
+      var that = this
+      if (that.tableIdarr.length == 0) {
+        that.$message.error('请选择要删除的信息')
+        return false
+      }
+      that
+        .$confirm('此操作将永久删除选中的信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            id: that.tableIdarr
+          }
+          companyImgDelete(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
+          })
+        })
+        .catch(() => { })
+    },
+    handleSelectionChange(idlist) {
+      this.tableIdarr = []
+      if (idlist.length > 0) {
+        for (const item of idlist) {
+          this.tableIdarr.push(item.id)
+        }
+      }
     }
   }
 }
 </script>
-<style scoped>
-.img-content-box {
-  width: 237px;
-  margin-right: 10px;
-  float: left;
-  margin-bottom:10px;
-}
-.img-content-box .note{
-    position: absolute;
-    left: 0px;
-    bottom: 0;
-    width: 235px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background-color: rgba(51, 51, 51, 0.8);
-    color: #e3e3e3;
-    padding: 0 10px;
-    font-size: 14px;
-    display: inline-block;
-    line-height:30px;
-}
-.audit {
-  font-size: 13px;
-}
-.time {
-  font-size: 13px;
-  color: #999;
-  margin-bottom: 8px;
-  display: block;
-}
-.imgbox {
-  width: 100%;
-  display: block;
-  height: 237px;
-  border-bottom: 1px solid #e3e3e3;
-  background-color: #999;
-  overflow:hidden;
-  position:relative;
-}
-.bottom {
-  margin-top: 4px;
-  line-height: 12px;
-}
-.botton {
-  padding: 0;
-  float: right;
-}
-.image {
-  width: 100%;
-  display: block;
-}
-.empty {
-  width: 100%;
-  height: 200px;
-  text-align: center;
-  color: #c1c1c1;
-  line-height: 200px;
-}
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: '';
-}
-
-.clearfix:after {
-  clear: both;
-}
-</style>

@@ -97,4 +97,19 @@ class Upload extends \app\common\controller\Backend
         }while(0);
         exit(JSON_ENCODE($returnJson));
     }
+    
+    public function poster()
+    {
+        $file = input('file.file');
+        if (!$file) {
+            $this->ajaxReturn(500, '请选择文件');
+        }
+        $filemanager = new \app\common\lib\FileManager(['fileupload_type'=>'default']);
+        $result = $filemanager->uploadReturnPath($file);
+        if (false !== $result) {
+            $this->ajaxReturn(200, '上传成功', $result['save_path']);
+        } else {
+            $this->ajaxReturn(500, $filemanager->getError());
+        }
+    }
 }

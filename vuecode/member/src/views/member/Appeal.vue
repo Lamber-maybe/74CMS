@@ -7,7 +7,7 @@
         <el-input placeholder="请输入手机号" v-model="mobile" clearable></el-input>
         <el-input placeholder="请输入验证码"  v-model="code" clearable></el-input>
         <div class="for_position">
-          <el-button type="text" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button>
+          <el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button>
         </div>
         <el-input
           v-model="description"

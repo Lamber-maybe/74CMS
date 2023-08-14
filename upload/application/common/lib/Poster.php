@@ -21,7 +21,7 @@ class Poster
     public function create($config=array(),$filename="")
     {
         //如果要看报什么错，可以先注释调这个header
-        if(empty($filename)) header("content-type: image/png");
+        if(empty($filename)) header("content-type: image/jpeg");
         $imageDefault = array(
             'left'=>0,
             'top'=>0,
@@ -57,7 +57,7 @@ class Poster
                 $val = array_merge($imageDefault,$val);
                 $info = getimagesize($val['url']);
                 $function = 'imagecreatefrom'.image_type_to_extension($info[2], false);
-                if($val['stream']){   //如果传的是字符串图像流
+                if(isset($val['stream']) && $val['stream']==1){   //如果传的是字符串图像流
                     $info = getimagesizefromstring($val['url']);
                     $function = 'imagecreatefromstring';
                 }
@@ -98,15 +98,15 @@ class Poster
                 $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6]));
                 $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7]));
                 $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7]));
-                if($val['center_x']==1){
+                if(isset($val['center_x']) && $val['center_x']==1){
                     $val['left'] = ($backgroundWidth - ($maxX - $minX))/2;
-                }else if(isset($val['float_right']) && $val['float_right']==1){
-                    $val['left'] = -($maxX - $minX + 80);
+                }else if(isset($val['float_right']) && $val['float_right']>0){
+                    $val['left'] = -($maxX - $minX + $val['float_right']);
                 }
                 $val['left'] = $val['left']<0?$backgroundWidth- abs($val['left']):$val['left'];
 
 
-                if($val['center_y']==1){
+                if(isset($val['center_y']) && $val['center_y']==1){
                     $val['top'] = ($backgroundHeight - ($maxY - $minY))/2;
                 }else{
                     $val['top'] = $val['top']<0?$backgroundHeight- abs($val['top']):$val['top'];
@@ -117,7 +117,9 @@ class Poster
         }
         //生成图片
         if(!empty($filename)){
-            $res = imagepng($imageRes,$filename,5); //保存到本地
+            imagepng($imageRes,$filename,5); //保存到本地
+            $res = imagecreatefrompng($filename);
+            $res = imagejpeg($res, $filename);
             imagedestroy($imageRes);
             if(!$res){
                 return false;
@@ -173,297 +175,255 @@ class Poster
      * 职位海报
      */
     public function makeJobPoster($index,$id){
-        $info = model('Job')
-            ->where('id', 'eq', $id)
-            ->field('uid',true)
-            ->find();
-        if($info===null){
-            $this->error = '没有找到职位信息';
-            return false;
-        }
-        $companyinfo = model('Company')->where('id', 'eq', $info['company_id'])->find();
-        if($companyinfo===null){
-            $this->error = '没有找到企业信息';
-            return false;
-        }
-        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
-        $save_dir = SYS_UPLOAD_PATH.'poster/job/'.($id%10).'/';
-        if(!is_dir($save_dir)){
-            mkdir($save_dir,0777,true);
-        }
-        $save_path = $save_dir.$filename;
-        $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/job/'.($id%10).'/'.$filename;
-        if(file_exists($save_path)){
-            return $show_path;
-        }
-
-        $category_district_data = model('CategoryDistrict')->getCache();
-        $info['wage_text'] = model('BaseModel')->handle_wage(
-            $info['minwage'],
-            $info['maxwage'],
-            $info['negotiable']
-        );
-        $info['nature_text'] = isset(
-            model('Job')->map_nature[$info['nature']]
-        )
-        ? model('Job')->map_nature[$info['nature']]
-        : '全职';
-        $info['education_text'] = isset(
-            model('BaseModel')->map_education[$info['education']]
-        )
-        ? model('BaseModel')->map_education[$info['education']]
-        : '学历不限';
-        $info['experience_text'] = isset(
-            model('BaseModel')->map_experience[$info['experience']]
-        )
-        ? model('BaseModel')->map_experience[$info['experience']]
-        : '经验不限';
-        $info['district_text'] = isset(
-            $category_district_data[$info['district']]
-        )
-        ? $category_district_data[$info['district']]
-        : '';
-
-        $locationUrl = config('global_config.mobile_domain').'job/'.$info['id'];
-        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_job&url='.$locationUrl.'&jobid='.$info['id'];
-        switch($index){
-            case 1:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>560,
-                            'top'=>-180,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>140,
-                            'height'=>140,
-                            'opacity'=>100
-                        ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>cut_str($companyinfo['companyname'],18,0,'...'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1210,
-                            'center_y'=>0,
-                            'fontSize'=>26,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1000,
-                            'center_y'=>0,
-                            'fontSize'=>40,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['wage_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1076,
-                            'center_y'=>0,
-                            'fontSize'=>38,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['nature_text'].' | '.$info['education_text'].' | '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1140,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>100,
-                            'center_y'=>0,
-                            'fontSize'=>30,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/job'.$index.'.jpg' //背景图
-                ];
-                break;
-            case 2:
-                $config = [
-                    'image'=>[
-                      [
-                        'url'=>$info['qrcode'],//二维码
-                        'stream'=>0,
-                        'left'=>530,
-                        'top'=>-150,
-                        'right'=>0,
-                        'bottom'=>0,
-                        'width'=>140,
-                        'height'=>140,
+        if($id==0){
+            $filename = 'preview_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/job/preview/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/job/preview/'.$filename;
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>460,
                         'opacity'=>100
-                      ]
                     ],
-                    'text'=>[
-                        [
-                            'text'=>cut_str($companyinfo['companyname'],12,0,'...'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>80,
-                            'center_x'=>0,
-                            'top'=>1090,
-                            'center_y'=>0,
-                            'fontSize'=>26,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>100,
-                            'center_x'=>0,
-                            'top'=>880,
-                            'center_y'=>0,
-                            'fontSize'=>40,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['wage_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>100,
-                            'center_x'=>0,
-                            'top'=>800,
-                            'center_y'=>0,
-                            'fontSize'=>38,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['nature_text'].' | '.$info['education_text'].' | '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>100,
-                            'center_x'=>0,
-                            'top'=>950,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>1230,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'153,153,153', //字体颜色
-                            'angle'=>0,
-                        ]
+                    [
+                        'url'=>default_empty('logo'),//logo
+                        'left'=>116,
+                        'top'=>1616,
+                        'width'=>120,
+                        'height'=>120,
+                        'opacity'=>100
                     ],
-                    'background'=>API_LIB_PATH.'poster/job'.$index.'.jpg' //背景图
-                ];
-                break;
-            default:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>310,
-                            'top'=>-210,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>140,
-                            'height'=>140,
-                            'opacity'=>100
-                        ]
+                    [
+                        'url'=>config('global_config.wechat_qrcode')?model('Uploadfile')->getFileUrl(config('global_config.wechat_qrcode')):make_file_url('resource/weixin_img.jpg'),//二维码
+                        'left'=>770,
+                        'top'=>-210,
+                        'width'=>200,
+                        'height'=>200,
+                        'opacity'=>100
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>'销售经理',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1460,
+                        'fontSize'=>40,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
                     ],
-                    'text'=>[
-                        [
-                            'text'=>cut_str($companyinfo['companyname'],16,0,'...'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>590,
-                            'center_y'=>0,
-                            'fontSize'=>26,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>680,
-                            'center_y'=>0,
-                            'fontSize'=>40,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['wage_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>760,
-                            'center_y'=>0,
-                            'fontSize'=>38,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['nature_text'].' · '.$info['education_text'].' · '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>830,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['district_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>880,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>1290,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
+                    [
+                        'text'=>'5k~8k/月',
+                        'fontPath'=>$this->fontPath,
+                        'float_right'=>120,
+                        'top'=>1456,
+                        'center_y'=>0,
+                        'fontSize'=>32,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
                     ],
-                    'background'=>API_LIB_PATH.'poster/job'.$index.'.jpg' //背景图
-                ];
-                break;
+                    [
+                        'text'=>'全职 | 本科 | 经验不限',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1540,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'山西丰火连天网络科技有限公司',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1656,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'0,0,0'//字体颜色
+                    ],
+                    [
+                        'text'=>'晋中市',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1720,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>754,
+                        'top'=>-170,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/job/'.$index.'.jpg' //背景图
+            ];
+        }else{
+            $info = model('Job')
+                ->where('id', 'eq', $id)
+                ->field('uid',true)
+                ->find();
+            if($info===null){
+                $this->error = '没有找到职位信息';
+                return false;
+            }
+            $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/job/'.($id%10).'/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/job/'.($id%10).'/'.$filename;
+            if(file_exists($save_path)){
+                return $show_path;
+            }
+
+            $companyinfo = model('Company')->where('id', 'eq', $info['company_id'])->find();
+            if($companyinfo===null){
+                $this->error = '没有找到企业信息';
+                return false;
+            }
+            $companyinfo['logo_src'] = model('Uploadfile')->getFileUrl($companyinfo['logo']);
+            $companyinfo['logo_src'] = $companyinfo['logo_src'] ? $companyinfo['logo_src'] : default_empty('logo');
+            $category_district_data = model('CategoryDistrict')->getCache();
+            $companyinfo['district_text'] = isset(
+                $category_district_data[$companyinfo['district']]
+            )
+            ? $category_district_data[$companyinfo['district']]
+            : '';
+
+            $info['wage_text'] = model('BaseModel')->handle_wage(
+                $info['minwage'],
+                $info['maxwage'],
+                $info['negotiable']
+            );
+            $info['nature_text'] = isset(
+                model('Job')->map_nature[$info['nature']]
+            )
+            ? model('Job')->map_nature[$info['nature']]
+            : '全职';
+            $info['education_text'] = isset(
+                model('BaseModel')->map_education[$info['education']]
+            )
+            ? model('BaseModel')->map_education[$info['education']]
+            : '学历不限';
+            $info['experience_text'] = isset(
+                model('BaseModel')->map_experience[$info['experience']]
+            )
+            ? model('BaseModel')->map_experience[$info['experience']]
+            : '经验不限';
+
+            $locationUrl = config('global_config.mobile_domain').'job/'.$info['id'];
+            $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_job&url='.$locationUrl.'&jobid='.$info['id'];
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>460,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>$companyinfo['logo_src'],//logo
+                        'left'=>116,
+                        'top'=>1616,
+                        'width'=>120,
+                        'height'=>120,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>$info['qrcode'],//二维码
+                        'left'=>770,
+                        'top'=>-210,
+                        'width'=>200,
+                        'height'=>200,
+                        'opacity'=>100
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>$info['jobname'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1460,
+                        'fontSize'=>40,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
+                    ],
+                    [
+                        'text'=>$info['wage_text'],
+                        'fontPath'=>$this->fontPath,
+                        'float_right'=>120,
+                        'top'=>1456,
+                        'center_y'=>0,
+                        'fontSize'=>32,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
+                    ],
+                    [
+                        'text'=>$info['nature_text'].' | '.$info['education_text'].' | '.$info['experience_text'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1540,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>cut_str($companyinfo['companyname'],12,0,'...'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1656,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'0,0,0'//字体颜色
+                    ],
+                    [
+                        'text'=>$companyinfo['district_text'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1720,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>754,
+                        'top'=>-170,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/job/'.$index.'.jpg' //背景图
+            ];
         }
+        
+        
+        
+        
+        
 
         $result = $this->create($config,$save_path);
         if($result===false){
@@ -477,420 +437,348 @@ class Poster
      * 简历海报
      */
     public function makeResumePoster($index,$id){
-        $info = model('Resume')
+        if($id==0){
+            $filename = 'preview_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/resume/preview/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/resume/preview/'.$filename;
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>440,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>default_empty('photo'),//照片
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>config('global_config.wechat_qrcode')?model('Uploadfile')->getFileUrl(config('global_config.wechat_qrcode')):make_file_url('resource/weixin_img.jpg'),//二维码
+                        'left'=>770,
+                        'top'=>-220,
+                        'width'=>190,
+                        'height'=>190,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>API_LIB_PATH.'poster/radius.png',//圆角
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>'胡依依',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1450,
+                        'fontSize'=>36,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'女 · 本科 · 5年经验',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1518,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'我已离职，可随时到岗',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1596,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>'意向岗位：',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1664,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>'设计师，产品经理',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>275,
+                        'top'=>1664,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'意向地区：',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1724,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>'太原市,晋中市',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>275,
+                        'top'=>1724,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>760,
+                        'top'=>-178,
+                        'fontSize'=>22,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/resume/'.$index.'.jpg' //背景图
+            ];
+        }else{
+            $info = model('Resume')
             ->where('id', 'eq', $id)
             ->field('uid',true)
             ->find();
-        if($info===null){
-            $this->error = '没有找到简历信息';
-            return false;
-        }
-        $info = $info->toArray();
-
-        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
-        $save_dir = SYS_UPLOAD_PATH.'poster/resume/'.($id%10).'/';
-        if(!is_dir($save_dir)){
-            mkdir($save_dir,0777,true);
-        }
-        $save_path = $save_dir.$filename;
-        $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/resume/'.($id%10).'/'.$filename;
-        if(file_exists($save_path)){
-            return $show_path;
-        }
-        $category_data = model('Category')->getCache();
-        $category_job_data = model('CategoryJob')->getCache();
-        $category_district_data = model('CategoryDistrict')->getCache();
-        if ($info['display_name'] == 0) {
-            if ($info['sex'] == 1) {
-                $info['fullname'] = cut_str(
-                    $info['fullname'],
-                    1,
-                    0,
-                    '先生'
-                );
-            } elseif ($info['sex'] == 2) {
-                $info['fullname'] = cut_str(
-                    $info['fullname'],
-                    1,
-                    0,
-                    '女士'
-                );
-            } else {
-                $info['fullname'] = cut_str(
-                    $info['fullname'],
-                    1,
-                    0,
-                    '**'
-                );
+            if($info===null){
+                $this->error = '没有找到简历信息';
+                return false;
             }
-        }
-        $info['sex_text'] = model('Resume')->map_sex[$info['sex']];
-        $info['education_text'] = isset(
-            model('BaseModel')->map_education[$info['education']]
-        )
-            ? model('BaseModel')->map_education[$info['education']]
-            : '';
-        $info['experience_text'] =
-            $info['enter_job_time'] == 0
-                ? '无经验'
-                : format_date($info['enter_job_time']) . '经验';
-        $info['current_text'] = isset(
-            $category_data['QS_current'][$info['current']]
-        )
-            ? $category_data['QS_current'][$info['current']]
-            : '';
+            $info = $info->toArray();
 
-        //求职意向
-        $intention_data = model('ResumeIntention')
-            ->field('id,rid,uid', true)
-            ->where(['rid' => ['eq', $info['id']]])
-            ->select();
-        $intention_list = [];
-        foreach ($intention_data as $key => $value) {
-            $tmp_arr = [];
-            $tmp_arr['category_text'] = isset(
-                $category_job_data[$value['category']]
+            $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/resume/'.($id%10).'/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/resume/'.($id%10).'/'.$filename;
+            if(file_exists($save_path)){
+                return $show_path;
+            }
+            $category_data = model('Category')->getCache();
+            $category_job_data = model('CategoryJob')->getCache();
+            $category_district_data = model('CategoryDistrict')->getCache();
+            if ($info['display_name'] == 0) {
+                if ($info['sex'] == 1) {
+                    $info['fullname'] = cut_str(
+                        $info['fullname'],
+                        1,
+                        0,
+                        '先生'
+                    );
+                } elseif ($info['sex'] == 2) {
+                    $info['fullname'] = cut_str(
+                        $info['fullname'],
+                        1,
+                        0,
+                        '女士'
+                    );
+                } else {
+                    $info['fullname'] = cut_str(
+                        $info['fullname'],
+                        1,
+                        0,
+                        '**'
+                    );
+                }
+            }
+            $info['sex_text'] = model('Resume')->map_sex[$info['sex']];
+            $info['education_text'] = isset(
+                model('BaseModel')->map_education[$info['education']]
             )
-                ? $category_job_data[$value['category']]
+                ? model('BaseModel')->map_education[$info['education']]
                 : '';
-            $tmp_arr['district_text'] = isset(
-                $category_district_data[$value['district']]
+            $info['experience_text'] =
+                $info['enter_job_time'] == 0
+                    ? '无经验'
+                    : format_date($info['enter_job_time']) . '经验';
+            $info['current_text'] = isset(
+                $category_data['QS_current'][$info['current']]
             )
-                ? $category_district_data[$value['district']]
+                ? $category_data['QS_current'][$info['current']]
                 : '';
-            $info['intention_jobs_text'][] = $tmp_arr['category_text'];
-            $info['intention_district_text'][] = $tmp_arr['district_text'];
-            $intention_list[] = $tmp_arr;
+
+            //求职意向
+            $intention_data = model('ResumeIntention')
+                ->field('id,rid,uid', true)
+                ->where(['rid' => ['eq', $info['id']]])
+                ->select();
+            $intention_list = [];
+            foreach ($intention_data as $key => $value) {
+                $tmp_arr = [];
+                $tmp_arr['category_text'] = isset(
+                    $category_job_data[$value['category']]
+                )
+                    ? $category_job_data[$value['category']]
+                    : '';
+                $tmp_arr['district_text'] = isset(
+                    $category_district_data[$value['district']]
+                )
+                    ? $category_district_data[$value['district']]
+                    : '';
+                $info['intention_jobs_text'][] = $tmp_arr['category_text'];
+                $info['intention_district_text'][] = $tmp_arr['district_text'];
+                $intention_list[] = $tmp_arr;
+            }
+            if(!empty($info['intention_jobs_text'])){
+                $info['intention_jobs_text'] = array_unique($info['intention_jobs_text']);
+                $info['intention_jobs_text'] = implode(",",$info['intention_jobs_text']);
+            }
+            if(!empty($info['intention_district_text'])){
+                $info['intention_district_text'] = array_unique($info['intention_district_text']);
+                $info['intention_district_text'] = implode(",",$info['intention_district_text']);
+            }
+
+            $info['photo_img_src'] = model('Uploadfile')->getFileUrl(
+                $info['photo_img']
+            );
+            $info['photo_img_src'] = $info['photo_img_src']?$info['photo_img_src']:default_empty('photo');
+
+
+            $locationUrl = config('global_config.mobile_domain').'resume/'.$info['id'];
+            $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_resume&url='.$locationUrl.'&resumeid='.$info['id'];
+
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>440,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>$info['photo_img_src'],//照片
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>$info['qrcode'],//二维码
+                        'left'=>770,
+                        'top'=>-220,
+                        'width'=>190,
+                        'height'=>190,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>API_LIB_PATH.'poster/radius.png',//圆角
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>$info['fullname'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1450,
+                        'fontSize'=>36,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
+                    ],
+                    [
+                        'text'=>$info['sex_text'].' · '.$info['education_text'].' · '.$info['experience_text'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1518,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>$info['current_text'],
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1596,
+                        'fontSize'=>24,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>'意向岗位：',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1664,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>cut_str($info['intention_jobs_text'],12,0,'...'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>275,
+                        'top'=>1664,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'意向地区：',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>105,
+                        'top'=>1724,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'102,102,102', //字体颜色
+                    ],
+                    [
+                        'text'=>cut_str($info['intention_district_text'],12,0,'...'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>275,
+                        'top'=>1724,
+                        'fontSize'=>26,       //字号
+                        'fontColor'=>'255,96,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>760,
+                        'top'=>-178,
+                        'fontSize'=>22,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/resume/'.$index.'.jpg' //背景图
+            ];
         }
-        if(!empty($info['intention_jobs_text'])){
-            $info['intention_jobs_text'] = array_unique($info['intention_jobs_text']);
-            $info['intention_jobs_text'] = implode(",",$info['intention_jobs_text']);
-        }
-        if(!empty($info['intention_district_text'])){
-            $info['intention_district_text'] = array_unique($info['intention_district_text']);
-            $info['intention_district_text'] = implode(",",$info['intention_district_text']);
-        }
-
-        $info['photo_img_src'] = model('Uploadfile')->getFileUrl(
-            $info['photo_img']
-        );
-        $info['photo_img_src'] = $info['photo_img_src']?$info['photo_img_src']:default_empty('photo');
-
-
-        $locationUrl = config('global_config.mobile_domain').'resume/'.$info['id'];
-        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_resume&url='.$locationUrl.'&resumeid='.$info['id'];
-
-        switch($index){
-            case 1:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>530,
-                            'top'=>-110,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>$info['photo_img_src'],
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>74,
-                            'top'=>-514,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>API_LIB_PATH.'poster/radius.png',
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>74,
-                            'top'=>-514,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>$info['fullname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>220,
-                            'center_x'=>0,
-                            'top'=>740,
-                            'center_y'=>0,
-                            'fontSize'=>28,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['sex_text'].' · '.$info['education_text'].' · '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>220,
-                            'center_x'=>0,
-                            'top'=>800,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想找 '.$info['intention_jobs_text'].' 的工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>80,
-                            'center_x'=>0,
-                            'top'=>960,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想在 '.$info['intention_district_text'].' 工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>80,
-                            'center_x'=>0,
-                            'top'=>1010,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>-80,
-                            'center_y'=>0,
-                            'fontSize'=>20,       //字号
-                            'fontColor'=>'153,153,153', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/resume'.$index.'.jpg' //背景图
-                ];
-                break;
-            case 2:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>530,
-                            'top'=>-140,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>$info['photo_img_src'],
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>74,
-                            'top'=>-546,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>API_LIB_PATH.'poster/radius.png',
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>74,
-                            'top'=>-546,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>$info['fullname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>220,
-                            'center_x'=>0,
-                            'top'=>710,
-                            'center_y'=>0,
-                            'fontSize'=>28,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['sex_text'].' · '.$info['education_text'].' · '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>220,
-                            'center_x'=>0,
-                            'top'=>770,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想找 '.$info['intention_jobs_text'].' 的工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>84,
-                            'center_x'=>0,
-                            'top'=>860,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想在 '.$info['intention_district_text'].' 工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>84,
-                            'center_x'=>0,
-                            'top'=>920,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>-50,
-                            'center_y'=>0,
-                            'fontSize'=>20,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/resume'.$index.'.jpg' //背景图
-                ];
-                break;
-            default:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>567,
-                            'top'=>-38,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>$info['photo_img_src'],
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>558,
-                            'top'=>-392,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>140,
-                            'height'=>140,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>API_LIB_PATH.'poster/radius.png',
-                            'radius'=>1,
-                            'stream'=>0,
-                            'left'=>558,
-                            'top'=>-392,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>140,
-                            'height'=>140,
-                            'opacity'=>100
-                        ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>$info['fullname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>864,
-                            'center_y'=>0,
-                            'fontSize'=>40,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['sex_text'].' · '.$info['education_text'].' · '.$info['experience_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>940,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['current_text'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1000,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想找 '.$info['intention_jobs_text'].' 的工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1070,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>'想在 '.$info['intention_district_text'].' 工作',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>1130,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,102,11', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>80,
-                            'center_y'=>0,
-                            'fontSize'=>30,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/resume'.$index.'.jpg' //背景图
-                ];
-                break;
-        }
-
+        
         $result = $this->create($config,$save_path);
         if($result===false){
             $this->error = '生成海报失败';
@@ -904,361 +792,244 @@ class Poster
      * 企业海报
      */
     public function makeCompanyPoster($index,$id){
-        $info = model('Company')
+        if($id==0){
+            $filename = 'preview_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/company/preview/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/company/preview/'.$filename;
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>440,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>default_empty('logo'),//logo
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>config('global_config.wechat_qrcode')?model('Uploadfile')->getFileUrl(config('global_config.wechat_qrcode')):make_file_url('resource/weixin_img.jpg'),//二维码
+                        'left'=>770,
+                        'top'=>-220,
+                        'width'=>190,
+                        'height'=>190,
+                        'opacity'=>100
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>'山西丰火连天网络科技有限公司',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1450,
+                        'fontSize'=>36,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'8个职位正在招聘',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>260,
+                        'top'=>1518,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>760,
+                        'top'=>-178,
+                        'fontSize'=>22,       //字号
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
+                        'fontPath'=>$this->fontPath,
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ],
+                    [
+                        'text'=>'设计师',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1620,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'5k~8k/月',
+                        'fontPath'=>$this->fontPath,
+                        'float_right'=>350,
+                        'top'=>1620,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'255,102,0' //字体颜色
+                    ],
+                    [
+                        'text'=>'产品经理',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>116,
+                        'top'=>1700,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'10k~15k/月',
+                        'fontPath'=>$this->fontPath,
+                        'float_right'=>350,
+                        'top'=>1700,
+                        'fontSize'=>30,       //字号
+                        'fontColor'=>'255,102,0' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/company/'.$index.'.jpg' //背景图
+            ];
+        }else{
+            $info = model('Company')
             ->where('id', 'eq', $id)
             ->field('uid',true)
             ->find();
-        if($info===null){
-            $this->error = '没有找到企业信息';
-            return false;
-        }
-        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
-        $save_dir = SYS_UPLOAD_PATH.'poster/company/'.($id%10).'/';
-        if(!is_dir($save_dir)){
-            mkdir($save_dir,0777,true);
-        }
-        $save_path = $save_dir.$filename;
-        $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/company/'.($id%10).'/'.$filename;
-        if(file_exists($save_path)){
-            return $show_path;
-        }
-        $category_district_data = model('CategoryDistrict')->getCache();
-        $info['logo_src'] = model('Uploadfile')->getFileUrl($info['logo']);
-        $info['logo_src'] = $info['logo_src'] ? $info['logo_src'] : default_empty('logo');
-        $job_list = model('Job')
-                ->field('id,jobname,minwage,maxwage,negotiable,district,nature,education,experience')
-                ->where('company_id', 'eq', $info['id'])
-                ->where('is_display', 1)
-                ->where('audit', 1)
-                ->limit(3) //最多展示3条职位信息
-                ->select();
-        foreach ($job_list as $key => $value) {
-            $job_list[$key]['wage_text'] = model('BaseModel')->handle_wage(
-                $value['minwage'],
-                $value['maxwage'],
-                $value['negotiable']
-            );
-            $job_list[$key]['district_text'] = isset(
-                $category_district_data[$value['district']]
-            )
-            ? $category_district_data[$value['district']]
-            : '';
-            $job_list[$key]['nature_text'] = isset(
-                model('Job')->map_nature[$value['nature']]
-            )
-            ? model('Job')->map_nature[$value['nature']]
-            : '全职';
+            if($info===null){
+                $this->error = '没有找到企业信息';
+                return false;
+            }
+            $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
+            $save_dir = SYS_UPLOAD_PATH.'poster/company/'.($id%10).'/';
+            if(!is_dir($save_dir)){
+                mkdir($save_dir,0777,true);
+            }
+            $save_path = $save_dir.$filename;
+            $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/company/'.($id%10).'/'.$filename;
+            if(file_exists($save_path)){
+                return $show_path;
+            }
+            $category_district_data = model('CategoryDistrict')->getCache();
+            $info['logo_src'] = model('Uploadfile')->getFileUrl($info['logo']);
+            $info['logo_src'] = $info['logo_src'] ? $info['logo_src'] : default_empty('logo');
+            $job_list = model('Job')
+                    ->field('id,jobname,minwage,maxwage,negotiable')
+                    ->where('company_id', 'eq', $info['id'])
+                    ->where('is_display', 1)
+                    ->where('audit', 1)
+                    ->limit(3) //最多展示3条职位信息
+                    ->select();
+            foreach ($job_list as $key => $value) {
+                $job_list[$key]['wage_text'] = model('BaseModel')->handle_wage(
+                    $value['minwage'],
+                    $value['maxwage'],
+                    $value['negotiable']
+                );
+            }
+            $info['jobnum'] = count($job_list);
 
-            $job_list[$key]['education_text'] = isset(
-                model('BaseModel')->map_education[$value['education']]
-            )
-            ? model('BaseModel')->map_education[$value['education']]
-            : '学历不限';
-            $job_list[$key]['experience_text'] = isset(
-                model('BaseModel')->map_experience[$value['experience']]
-            )
-            ? model('BaseModel')->map_experience[$value['experience']]
-            : '经验不限';
-        }
-        $info['jobnum'] = count($job_list);
-
-        $locationUrl = config('global_config.mobile_domain').'company/'.$info['id'];
-        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_company&url='.$locationUrl.'&comid='.$info['id'];
-        switch($index){
-            case 1:
-                $config = [
-                    'image'=>[
-                      [
+            $locationUrl = config('global_config.mobile_domain').'company/'.$info['id'];
+            $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_company&url='.$locationUrl.'&comid='.$info['id'];
+            
+            $config = [
+                'image'=>[
+                    [
+                        'url'=>API_LIB_PATH.'poster/bj.png',//文字背景
+                        'left'=>55,
+                        'top'=>1350,
+                        'width'=>970,
+                        'height'=>440,
+                        'opacity'=>100
+                    ],
+                    [
+                        'url'=>$info['logo_src'],//logo
+                        'radius'=>1,
+                        'left'=>90,
+                        'top'=>1390,
+                        'width'=>150,
+                        'height'=>150,
+                        'opacity'=>100
+                    ],
+                    [
                         'url'=>$info['qrcode'],//二维码
-                        'stream'=>0,
-                        'left'=>524,
-                        'top'=>-186,
-                        'right'=>0,
-                        'bottom'=>0,
-                        'width'=>130,
-                        'height'=>130,
+                        'left'=>770,
+                        'top'=>-220,
+                        'width'=>190,
+                        'height'=>190,
                         'opacity'=>100
-                      ],
-                      [
-                        'url'=>$info['logo_src'],
-                        'stream'=>0,
-                        'left'=>560,
-                        'top'=>-600,
-                        'right'=>0,
-                        'bottom'=>0,
-                        'width'=>110,
-                        'height'=>110,
-                        'opacity'=>100
-                      ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>cut_str($info['companyname'],12,0,'...'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>80,
-                            'center_x'=>0,
-                            'top'=>660,
-                            'center_y'=>0,
-                            'fontSize'=>26,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobnum'].'个职位正在招聘',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>80,
-                            'center_x'=>0,
-                            'top'=>720,
-                            'center_y'=>0,
-                            'fontSize'=>22,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>1220,
-                            'center_y'=>0,
-                            'fontSize'=>20,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/company'.$index.'.jpg' //背景图
-                ];
-
-                $job_index = 0;
-                foreach ($job_list as $key => $value) {
-                    if($job_index==2){
-                        break;
-                    }
-                    $left_plus = $job_index * 320;
-                    $config['text'][] = [
-                        'text'=>cut_str($value['jobname'],7,0,'...'),
+                    ]
+                ],
+                'text'=>[
+                    [
+                        'text'=>cut_str($info['companyname'],14,0,'...'),
                         'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>850,
-                        'center_y'=>0,
-                        'fontSize'=>24,       //字号
-                        'fontColor'=>'0,0,0', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $config['text'][] = [
-                        'text'=>$value['wage_text'],
+                        'left'=>260,
+                        'top'=>1450,
+                        'fontSize'=>36,       //字号
+                        'fontColor'=>'0,0,0' //字体颜色
+                    ],
+                    [
+                        'text'=>$info['jobnum'].'个职位正在招聘',
                         'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>900,
-                        'center_y'=>0,
+                        'left'=>260,
+                        'top'=>1518,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'68,68,68' //字体颜色
+                    ],
+                    [
+                        'text'=>'长按识别二维码',
+                        'fontPath'=>$this->fontPath,
+                        'left'=>760,
+                        'top'=>-178,
                         'fontSize'=>22,       //字号
-                        'fontColor'=>'255,102,0', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $config['text'][] = [
-                        'text'=>$value['district_text'],
+                        'fontColor'=>'119,119,119' //字体颜色
+                    ],
+                    [
+                        'text'=>config('global_config.sitename'),
                         'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>950,
-                        'center_y'=>0,
-                        'fontSize'=>22,       //字号
-                        'fontColor'=>'102,102,102', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $job_index++;
+                        'left'=>50,
+                        'center_x'=>1,
+                        'top'=>-50,
+                        'fontSize'=>28,       //字号
+                        'fontColor'=>'255,255,255' //字体颜色
+                    ]
+                ],
+                'background'=>SYS_UPLOAD_PATH.'resource/poster/company/'.$index.'.jpg' //背景图
+            ];
+            $job_index = 0;
+            foreach ($job_list as $key => $value) {
+                if($job_index==2){
+                    break;
                 }
-                break;
-            case 2:
-                $config = [
-                    'image'=>[
-                      [
-                        'url'=>$info['qrcode'],//二维码
-                        'stream'=>0,
-                        'left'=>562,
-                        'top'=>-116,
-                        'right'=>0,
-                        'bottom'=>0,
-                        'width'=>130,
-                        'height'=>130,
-                        'opacity'=>100
-                      ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>cut_str($info['companyname'],17,0,'...'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>720,
-                            'center_y'=>0,
-                            'fontSize'=>26,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobnum'].'个职位正在招聘',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>776,
-                            'center_y'=>0,
-                            'fontSize'=>22,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>50,
-                            'center_x'=>0,
-                            'top'=>80,
-                            'center_y'=>0,
-                            'fontSize'=>28,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/company'.$index.'.jpg' //背景图
+                $top_plus = $job_index * 80;
+                $config['text'][] = [
+                    'text'=>cut_str($value['jobname'],10,0,'...'),
+                    'fontPath'=>$this->fontPath,
+                    'left'=>116,
+                    'top'=>1620+$top_plus,
+                    'fontSize'=>30,       //字号
+                    'fontColor'=>'68,68,68' //字体颜色
                 ];
-                $job_index = 0;
-                foreach ($job_list as $key => $value) {
-                    if($job_index==2){
-                        break;
-                    }
-                    $left_plus = $job_index * 320;
-                    $config['text'][] = [
-                        'text'=>cut_str($value['jobname'],7,0,'...'),
-                        'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>880,
-                        'center_y'=>0,
-                        'fontSize'=>24,       //字号
-                        'fontColor'=>'0,0,0', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $config['text'][] = [
-                        'text'=>$value['wage_text'],
-                        'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>930,
-                        'center_y'=>0,
-                        'fontSize'=>22,       //字号
-                        'fontColor'=>'255,102,0', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $config['text'][] = [
-                        'text'=>$value['nature_text'].'·'.$value['education_text'].'·'.$value['experience_text'],
-                        'fontPath'=>$this->fontPath,
-                        'left'=>80+$left_plus,
-                        'center_x'=>0,
-                        'top'=>980,
-                        'center_y'=>0,
-                        'fontSize'=>20,       //字号
-                        'fontColor'=>'102,102,102', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $job_index++;
-                }
-                break;
-            default:
-                $config = [
-                    'image'=>[
-                        [
-                            'url'=>$info['qrcode'],//二维码
-                            'stream'=>0,
-                            'left'=>540,
-                            'top'=>-120,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>130,
-                            'height'=>130,
-                            'opacity'=>100
-                        ],
-                        [
-                            'url'=>$info['logo_src'],
-                            'stream'=>0,
-                            'left'=>324,
-                            'top'=>-616,
-                            'right'=>0,
-                            'bottom'=>0,
-                            'width'=>110,
-                            'height'=>110,
-                            'opacity'=>100
-                        ]
-                    ],
-                    'text'=>[
-                        [
-                            'text'=>$info['companyname'],
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>780,
-                            'center_y'=>0,
-                            'fontSize'=>28,       //字号
-                            'fontColor'=>'0,0,0', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>$info['jobnum'].'个职位正在招聘',
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>830,
-                            'center_y'=>0,
-                            'fontSize'=>22,       //字号
-                            'fontColor'=>'102,102,102', //字体颜色
-                            'angle'=>0,
-                        ],
-                        [
-                            'text'=>config('global_config.sitename'),
-                            'fontPath'=>$this->fontPath,
-                            'left'=>0,
-                            'center_x'=>1,
-                            'top'=>1300,
-                            'center_y'=>0,
-                            'fontSize'=>24,       //字号
-                            'fontColor'=>'255,255,255', //字体颜色
-                            'angle'=>0,
-                        ]
-                    ],
-                    'background'=>API_LIB_PATH.'poster/company'.$index.'.jpg' //背景图
+                $config['text'][] = [
+                    'text'=>$value['wage_text'],
+                    'fontPath'=>$this->fontPath,
+                    'float_right'=>350,
+                    'top'=>1620+$top_plus,
+                    'fontSize'=>30,       //字号
+                    'fontColor'=>'255,102,0' //字体颜色
                 ];
-                $job_index = 0;
-                foreach ($job_list as $key => $value) {
-                    $top_plus = $job_index * 64;
-                    $config['text'][] = [
-                        'text'=>$value['jobname'],
-                        'fontPath'=>$this->fontPath,
-                        'left'=>80,
-                        'center_x'=>0,
-                        'top'=>920+$top_plus,
-                        'center_y'=>0,
-                        'fontSize'=>26,       //字号
-                        'fontColor'=>'102,102,102', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $config['text'][] = [
-                        'text'=>$value['wage_text'],
-                        'fontPath'=>$this->fontPath,
-                        'left'=>0,
-                        'center_x'=>0,
-                        'float_right'=>1,
-                        'top'=>920+$top_plus,
-                        'center_y'=>0,
-                        'fontSize'=>26,       //字号
-                        'fontColor'=>'255,102,0', //字体颜色
-                        'angle'=>0,
-                    ];
-                    $job_index++;
-                }
-                break;
+                $job_index++;
+            }
         }
-
+        
+        
         $result = $this->create($config,$save_path);
         if($result===false){
             $this->error = '生成海报失败';

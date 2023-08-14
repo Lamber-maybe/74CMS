@@ -42,19 +42,33 @@ export default {
   props: ['posterId', 'type'],
   data() {
     return {
-      currentTplIndex: 0,
-      posterImg: ''
+      currentTplIndex: 1,
+      posterImg: '',
+      indexlist: []
     }
   },
   created() {
-    this.funPoster()
+    this.fetchData()
   },
   methods: {
+    fetchData () {
+      this.id = this.$route.params.id
+      http
+        .get(api.poster_tplindex_list, { type: this.type == 'job' ? 1 : (this.type == 'resume' ? 2 : 3) })
+        .then(res => {
+          this.indexlist = res.data
+          this.currentTplIndex = this.indexlist[0]
+          this.funPoster()
+        })
+        .catch(() => {})
+    },
     changeTpl() {
-      this.currentTplIndex++
-      if (this.currentTplIndex >= 3) {
-        this.currentTplIndex = 0
+      const c_index = this.indexlist.indexOf(this.currentTplIndex)
+      let next_index = c_index + 1
+      if (this.indexlist[next_index] === undefined) {
+        next_index = 0
       }
+      this.currentTplIndex = this.indexlist[next_index]
       this.funPoster()
     },
     funPoster() {

@@ -19,7 +19,7 @@
             </el-select>
             <el-input placeholder="请输入手机号" clearable v-model="mobile"></el-input>
             <el-input placeholder="请输入验证码" clearable v-model="code"></el-input>
-            <div class="for_position"><el-button type="text" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button></div>
+            <div class="for_position"><el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
           </div>
           <div class="g_agree">
             <el-checkbox class="for_after" v-model="checked"></el-checkbox>

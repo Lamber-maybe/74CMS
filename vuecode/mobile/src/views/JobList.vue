@@ -414,6 +414,7 @@ export default {
           this.params[key] = ''
         }
       }
+      this.params.search_type = 'list'
     },
     // 职位分类筛选打开之后给筛选组件赋值
     openedCategory () {

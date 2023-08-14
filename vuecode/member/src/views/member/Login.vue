@@ -16,7 +16,7 @@
           <div class="b_input" v-else>
             <el-input v-model="formCode.mobile" placeholder="请输入手机号" clearable></el-input>
             <el-input placeholder="请输入验证码" v-model="formCode.code" clearable></el-input>
-            <div class="for_position"><el-button type="text" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button></div>
+            <div class="for_position"><el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
           </div>
           <div class="b_handle">
             <div class="h_left" @click="loginByCode = !loginByCode">{{loginByCode ? '账号密码登录' : '手机验证码登录'}}</div>

@@ -3,7 +3,7 @@
     <div class="b1">
       <div class="title">
         名企招聘
-        <div class="more" @click="goto('/companyList')">更多</div>
+        <div class="more" @click="goto('/companyList?famous=1')">更多</div>
       </div>
       <div class="inv-top-menu-bar">
         <div class="top-menu">

@@ -134,7 +134,8 @@ export default {
         district3: '',
         trade: '',
         scale: '',
-        nature: ''
+        nature: '',
+        famous: ''
       },
       page: 1,
       pagesize: 15,

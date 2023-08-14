@@ -58,7 +58,7 @@
               v-model="formCode.code"
             />
           </label>
-          <button class="log_get_btn" @click="sendSms">
+          <button class="log_get_btn" :style="'color:'+$store.state.sendSmsBtnTextColor" @click="sendSms">
             {{ $store.state.sendSmsBtnText }}
           </button>
         </div>

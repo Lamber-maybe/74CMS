@@ -156,7 +156,7 @@ class Job extends \app\index\controller\Base
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
 
-        if($district3>0){
+        if($this->subsite!==null && $this->subsite->district3>0){
             $district_level = 0;
             $category_district = [];
         }else if($district2>0){

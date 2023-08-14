@@ -30,7 +30,7 @@
             autocomplete="off"
             v-model="form.code"
           />
-          <button class="reg_get_btn" @click="sendSms">
+          <button class="reg_get_btn" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">
             {{ $store.state.sendSmsBtnText }}
           </button>
         </div>
@@ -233,11 +233,10 @@ export default {
 .reg_get_btn {
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: -12px;
   border: 0;
   height: 100%;
   font-size: 15px;
-  color: #c9c9c9;
   padding: 0;
   background-color: #ffffff;
 }

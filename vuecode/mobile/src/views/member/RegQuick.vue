@@ -92,7 +92,7 @@
         class="reset_after"
       />
       <div class="for_btn">
-        <div class="edit_phone" @click="sendSms">{{ $store.state.sendSmsBtnText }}</div>
+        <div class="edit_phone" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</div>
       </div>
       <van-field
         required
@@ -625,7 +625,6 @@ export default {
     right: 0;
     top: -50px;
     font-size: 14px;
-    color: #2199ff;
     padding: 0 15px;
     height: 50px;
     line-height: 50px;

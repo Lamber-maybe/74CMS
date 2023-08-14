@@ -588,15 +588,6 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($info === false) {
             $this->ajaxReturn(500, '简历不存在');
         }
-        $info['cur_com_mobile'] = '';
-        if($info['show_contact']){
-            $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
-            if($company_contact){
-                $info['cur_com_mobile'] = $company_contact['mobile'];
-            }else{
-                $info['cur_com_mobile'] = $this->userinfo->mobile;
-            }
-        }
         $info['apply_num'] = model('JobApply')
             ->where([
                 'resume_id' => $info['base_info']['id'],
@@ -652,6 +643,19 @@ class Resume extends \app\v1_0\controller\common\Base
                 $info['phone_protect_timeout'] = 120;
             }
             $info['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
+            if($info['phone_protect_type']==1 && $this->userinfo===null){
+                $info['show_contact'] = 0;
+                $info['show_contact_note'] = 'need_login';
+            }
+        }
+        $info['cur_com_mobile'] = '';
+        if($info['show_contact'] && $this->userinfo!==null){
+            $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
+            if($company_contact){
+                $info['cur_com_mobile'] = $company_contact['mobile'];
+            }else{
+                $info['cur_com_mobile'] = $this->userinfo->mobile;
+            }
         }
         $this->ajaxReturn(200, '获取数据成功', $info);
     }

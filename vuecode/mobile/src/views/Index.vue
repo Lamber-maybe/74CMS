@@ -194,12 +194,12 @@ export default {
     showPopupAdOrNot () {
       let that = this
       let current = new Date()
-      let expire_time = localStorage.getItem('index_popup_expire_time')
+      let expire_time = localStorage.getItem('index_popup_expire_time_mobile')
       if ((expire_time === undefined || !expire_time || current.getTime() > new Date(expire_time)) && this.ad_dataset_popup.items.length > 0) {
         setTimeout(() => {
           that.showPopup = true
           expire_time = new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
-          localStorage.setItem('index_popup_expire_time', expire_time)
+          localStorage.setItem('index_popup_expire_time_mobile', expire_time)
         }, 500)
       }
     },

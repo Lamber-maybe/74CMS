@@ -7,7 +7,7 @@
           <el-input v-model="contact" placeholder="请输入联系人姓名" clearable v-if="utype === 1"></el-input>
           <el-input v-model="mobile" placeholder="请输入手机号" clearable></el-input>
           <el-input v-model="code" placeholder="请输入验证码" clearable></el-input>
-          <div class="for_position"><el-button type="text" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button></div>
+          <div class="for_position"><el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
           <el-input placeholder="请设置账号密码" v-model="password" show-password></el-input>
           <el-input placeholder="请重复输入密码" v-model="repeatPassword" show-password></el-input>
         </div>

@@ -19,7 +19,7 @@ class Job extends BaseValidate
     }
     protected $rule = [
         'uid' => 'number|gt:0',
-        'jobname' => 'require|max:20',
+        'jobname' => 'require|max:30',
         'company_id' => 'number|gt:0',
         'emergency' => 'in:0,1',
         'stick' => 'in:0,1',

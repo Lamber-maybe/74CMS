@@ -10,7 +10,7 @@
         </el-form-item>
         <el-form-item label="验证码:">
             <el-input class="input_width" v-model="code">
-              <template slot="append"><el-button  class="el_button" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button></template>
+              <template slot="append"><el-button  class="el_button" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></template>
             </el-input>
         </el-form-item>
       </el-form>
@@ -144,6 +144,5 @@ export default {
   }
   .el_button{
     padding: 12px 14px;
-    color: #4d9afc;
   }
 </style>

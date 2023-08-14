@@ -19,6 +19,8 @@ export default {
   uploadHrtool: '/hrtool/upload',
   // 上传微信素材
   uploadWechatMedia: '/upload/wechatMedia',
+  // 上传海报
+  uploadPoster: '/upload/poster',
   // 短信模板配置
   smsTplList: '/config/smsTplList',
   // 扩展字段自定义
@@ -708,5 +710,13 @@ export default {
 
   // 系统工具箱
   sysToolSyncSetmeal: '/sys_tool/syncSetmeal',
-  sysToolSyncCompanyDisplay: '/sys_tool/syncCompanyDisplay'
+  sysToolSyncCompanyDisplay: '/sys_tool/syncCompanyDisplay',
+
+  // 海报
+  posterList: '/poster/lists',
+  posterAdd: '/poster/add',
+  posterEdit: '/poster/edit',
+  posterDelete: '/poster/delete',
+  posterDisplay: '/poster/setDisplay',
+  posterTplindexList: '/poster/getTplindexList'
 }

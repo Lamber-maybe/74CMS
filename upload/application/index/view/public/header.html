@@ -354,7 +354,7 @@
             this.getConfig()
         },
         methods: {
-            setSubsite(subsiteid) {
+            setSubsite: function (subsiteid) {
                 Cookies.set('qscms_subsiteid', subsiteid)
                 location.reload();
             },

@@ -181,6 +181,34 @@ const applicationRouter = {
           hidden: true
         }
       ]
+    },
+    {
+      path: '/poster',
+      name: 'poster',
+      component: () => import('@/views/poster'),
+      redirect: 'noRedirect',
+      alwaysShow: true,
+      meta: { title: '海报设置', access: 'poster' },
+      children: [
+        {
+          path: '/poster/job',
+          name: 'posterJob',
+          component: () => import('@/views/poster/job'),
+          meta: { title: '职位海报', access: 'posterJob' }
+        },
+        {
+          path: '/poster/resume',
+          name: 'posterResume',
+          component: () => import('@/views/poster/resume'),
+          meta: { title: '简历海报', access: 'posterResume' }
+        },
+        {
+          path: '/poster/company',
+          name: 'posterCompany',
+          component: () => import('@/views/poster/company'),
+          meta: { title: '企业海报', access: 'posterCompany' }
+        }
+      ]
     }
   ]
 }

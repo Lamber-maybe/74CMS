@@ -11,7 +11,7 @@
         <el-input placeholder="请输入手机号" v-model="mobile" clearable></el-input>
         <el-input placeholder="请输入验证码" v-model="code" clearable></el-input>
         <div class="for_position">
-          <el-button type="text" @click="sendSms">{{ $store.state.sendSmsBtnText }}</el-button>
+          <el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button>
         </div>
         <el-input placeholder="新密码" v-model="password" show-password></el-input>
         <el-input placeholder="确认密码" v-model="repeatPassword" show-password></el-input>
@@ -20,7 +20,7 @@
         <el-input placeholder="请输入邮箱" v-model="email" clearable></el-input>
         <el-input placeholder="请输入验证码" v-model="code" clearable></el-input>
         <div class="for_position">
-          <el-button type="text" @click="sendEmail">{{ $store.state.sendEmailBtnText }}</el-button>
+          <el-button type="text" @click="sendEmail" :style="'color:'+$store.state.sendEmailBtnTextColor">{{ $store.state.sendEmailBtnText }}</el-button>
         </div>
         <el-input placeholder="新密码" v-model="password" show-password></el-input>
         <el-input placeholder="确认密码" v-model="repeatPassword" show-password></el-input>

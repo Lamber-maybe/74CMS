@@ -9,7 +9,8 @@ class Company extends \app\v1_0\controller\common\Base
     }
     public function index()
     {
-        $where = ['district1'=>['gt',0]];
+        $where = ['a.district1'=>['gt',0]];
+        $famous = input('get.famous/d', 0, 'intval');
         $keyword = input('get.keyword/s', '', 'trim');
         $district1 = input('get.district1/d', 0, 'intval');
         $district2 = input('get.district2/d', 0, 'intval');
@@ -21,6 +22,18 @@ class Company extends \app\v1_0\controller\common\Base
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if ($keyword != '') {
             $where['a.companyname'] = ['like', '%' . $keyword . '%'];
+        }
+        if($famous==1){
+            $famous_enterprises_setmeal = config(
+                'global_config.famous_enterprises'
+            );
+            $famous_enterprises_setmeal =
+                $famous_enterprises_setmeal == ''
+                    ? []
+                    : explode(',', $famous_enterprises_setmeal);
+            if(!empty($famous_enterprises_setmeal)){
+                $where['a.setmeal_id'] = ['in',$famous_enterprises_setmeal];
+            }
         }
         
         $subsiteCondition = get_subsite_condition('a');
@@ -62,13 +75,19 @@ class Company extends \app\v1_0\controller\common\Base
         $list = model('Company')
             ->alias('a')
             ->field(
-                'a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
+                'distinct a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
             )
             ->join(
                 config('database.prefix') . 'member_setmeal b',
                 'a.uid=b.uid',
                 'LEFT'
             )
+            ->join(
+                config('database.prefix') . 'job_search_rtime c',
+                'a.uid=c.uid',
+                'LEFT'
+            )
+            ->where('c.id','not null')
             ->where($where)
             ->order('a.id desc')
             ->page($current_page, $pagesize)

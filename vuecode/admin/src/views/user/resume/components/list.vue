@@ -918,7 +918,7 @@ export default {
       })
     },
     downTpl() {
-      location.href = window.global.RequestBaseUrl + apiArr.downloadImportResumeTpl + '?admintoken=' + getToken()
+      location.href = window.global.RequestBaseUrl + apiArr.downloadImportResumeTpl + (window.global.RequestBaseUrl.indexOf('?') == -1 ? '?' : '&') + 'admintoken=' + getToken()
     },
     openDialog() {
       this.showUpload = true

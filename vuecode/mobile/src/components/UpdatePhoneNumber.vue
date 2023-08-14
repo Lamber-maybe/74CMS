@@ -17,7 +17,7 @@
         <div class="wap_left">验证码：</div>
         <div class="wap_right">
           <input name="verifycode" id="diaLogMobileVc" v-model="code" type="number" placeholder="请输入验证码" class="wap_input">
-          <div class="wap_btn" @click="sendSms">{{ $store.state.sendSmsBtnText }}</div>
+          <div class="wap_btn" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</div>
         </div>
         <div class="clear"></div>
       </div>
@@ -136,7 +136,7 @@ export default {
     }
     .wap_btn {
       position: absolute; right: 0; top: 50%; transform: translate(0, -50%);
-      padding: .08rem .18rem; color: #bcbcbc;
+      padding: .08rem .18rem;
     }
   }
 }

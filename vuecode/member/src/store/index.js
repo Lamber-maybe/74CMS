@@ -19,9 +19,11 @@ const store = new Vuex.Store({
     userMobile: '',
     sendSmsInterval: 60, // 发送验证码间隔时间，以秒为单位
     sendSmsBtnText: '获取验证码',
+    sendSmsBtnTextColor: '#1787fb',
     sendSmsBtnDisabled: false,
     sendEmailInterval: 60, // 发送验证码间隔时间，以秒为单位
     sendEmailBtnText: '获取验证码',
+    sendEmailBtnTextColor: '#1787fb',
     sendEmailBtnDisabled: false,
     sendSmsTimer: '',
     sendSmsMessage: '',
@@ -128,6 +130,7 @@ const store = new Vuex.Store({
     clearCountDownFun(state) {
       state.sendSmsBtnDisabled = false
       state.sendSmsBtnText = '获取验证码'
+      state.sendSmsBtnTextColor = '#1787fb'
       state.sendSmsInterval = 60
       clearInterval(state.sendSmsTimer)
     },
@@ -136,17 +139,20 @@ const store = new Vuex.Store({
       if (state.sendSmsInterval === 0) {
         state.sendSmsBtnDisabled = false
         state.sendSmsBtnText = '获取验证码'
+        state.sendSmsBtnTextColor = '#1787fb'
         state.sendSmsInterval = 60
         clearInterval(state.sendSmsTimer)
       } else {
         state.sendSmsBtnDisabled = true
         state.sendSmsBtnText = `重发 ${state.sendSmsInterval} 秒`
+        state.sendSmsBtnTextColor = '#c9c9c9'
         state.sendSmsInterval--
       }
     },
     clearCountDownFunEmail(state) {
       state.sendEmailBtnDisabled = false
       state.sendEmailBtnText = '获取验证码'
+      state.sendEmailBtnTextColor = '#1787fb'
       state.sendEmailInterval = 60
       clearInterval(state.sendEmailTimer)
       clearInterval(state.sendSmsTimer)
@@ -156,11 +162,13 @@ const store = new Vuex.Store({
       if (state.sendEmailInterval === 0) {
         state.sendEmailBtnDisabled = false
         state.sendEmailBtnText = '获取验证码'
+        state.sendEmailBtnTextColor = '#1787fb'
         state.sendEmailInterval = 60
         clearInterval(state.sendEmailTimer)
       } else {
         state.sendEmailBtnDisabled = true
         state.sendEmailBtnText = `重发 ${state.sendEmailInterval} 秒`
+        state.sendEmailBtnTextColor = '#c9c9c9'
         state.sendEmailInterval--
       }
     },

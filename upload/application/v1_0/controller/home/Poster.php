@@ -63,5 +63,11 @@ class Poster extends \app\v1_0\controller\common\Base
         header('Content-Length:' . filesize($show_path));
         readfile($show_path);
     }
-
+    
+    public function getTplindexList()
+    {
+        $type = input('get.type/d',1,'intval');
+        $list = model('Poster')->where('type',$type)->where('is_display',1)->column('indexid');
+        $this->ajaxReturn(200,'获取数据成功',$list);
+    }
 }

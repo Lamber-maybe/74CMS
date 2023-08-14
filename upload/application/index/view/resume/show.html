@@ -564,11 +564,11 @@
         watch: {
             'form.interview_date': function (value) {
                 this.$nextTick(function () {
-                    let myDate = new Date() // 当前日期
-                    let year = myDate.getFullYear() //获取当前年
-                    let mon = myDate.getMonth() + 1 //获取当前月
-                    let date = myDate.getDate() //获取当前日
-                    let chooseDate = value.split('-')
+                    var myDate = new Date() // 当前日期
+                    var year = myDate.getFullYear() //获取当前年
+                    var mon = myDate.getMonth() + 1 //获取当前月
+                    var date = myDate.getDate() //获取当前日
+                    var chooseDate = value.split('-')
                     if (year === parseInt(chooseDate[0]) && mon === parseInt(chooseDate[1]) && date === parseInt(chooseDate[2])) {
                         this.form.startTime = '' + myDate.getHours() + ':' + myDate.getMinutes() + ''
                         this.form.interview_time = ''
@@ -662,7 +662,7 @@
                     this.btnLoading = true
                     this.$refs.form.validate(function (valid) {
                         if (valid) {
-                            let data = that.form
+                            var data = that.form
                             data.resume_id = that.resume_id
                             httppost(qscms.apiList.interview_add, data)
                                 .then(function () {
@@ -841,7 +841,7 @@
                 }).catch(function () { });
             },
             handleSubmitTipoff: function () {
-                let that = this
+                var that = this
                 this.$refs.tipoffForm.validate(function (valid) {
                     if (valid) {
                         httppost(qscms.apiList.tipoff, { target_id: id, type: 2, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })

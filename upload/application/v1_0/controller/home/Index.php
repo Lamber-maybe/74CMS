@@ -114,11 +114,18 @@ class Index extends \app\v1_0\controller\common\Base
         }
         $subsiteCondition = get_subsite_condition();
         $list = model('Company')
-            ->where('is_display',1)
-            ->where('setmeal_id', 'in', $famous_enterprises_setmeal)
+            ->alias('a')
+            ->where('a.is_display',1)
+            ->join(
+                config('database.prefix') . 'job_search_rtime c',
+                'a.uid=c.uid',
+                'LEFT'
+            )
+            ->where('c.id','not null')
+            ->where('a.setmeal_id', 'in', $famous_enterprises_setmeal)
             ->where($subsiteCondition)
-            ->field('id,logo,companyname')
-            ->order('refreshtime desc')
+            ->field('distinct a.id,a.logo,a.companyname')
+            ->order('a.refreshtime desc')
             ->limit(9)
             ->select();
         $job_list = $comid_arr = $logo_id_arr = $logo_arr = [];

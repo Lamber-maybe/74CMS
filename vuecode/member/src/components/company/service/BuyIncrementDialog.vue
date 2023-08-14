@@ -100,7 +100,7 @@ import api from '@/api'
       }
     },
     mounted(){
-      // this.initCB()
+      this.initCB()
     },
     methods:{
       initCB(){

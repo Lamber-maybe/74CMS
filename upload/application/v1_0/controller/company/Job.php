@@ -883,23 +883,14 @@ class Job extends \app\v1_0\controller\common\Base
 
             }
             $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
-            if ($member_setmeal['refresh_jobs_free_perday'] <= $check_refreshlog + count($refresh_jobid_arr)) {
+            if ($member_setmeal['refresh_jobs_free_perday'] < $check_refreshlog + count($refresh_jobid_arr)) {
                 $enough = 0;
                 break;
             }
         } while (0);
 
         if ($enough == 0) {
-            if(!empty($jobid)){
-                $this->ajaxReturn(200, '今天免费刷新次数已用完，请前往职位列表单条刷新。', ['done' => 0]);
-            }else{
-                $display_jobcount = model('Job')
-                ->where('uid', $this->userinfo->uid)
-                ->where('audit', 1)
-                ->where('is_display', 1)
-                ->count();
-                $this->ajaxReturn(200, '您当前共有' . $display_jobcount . '条在招职位，今天免费刷新次数已用完，请前往职位列表单条刷新。', ['done' => 0]);
-            }
+            $this->ajaxReturn(200, '您当前共有' . count($refresh_jobid_arr) . '条在招职位，今天免费刷新次数已用完，请前往职位列表单条刷新。', ['done' => 0]);
         }
 
         $result = model('Job')->refreshJobBatch($refresh_jobid_arr, $this->userinfo->uid);

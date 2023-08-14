@@ -4,7 +4,7 @@
       <div
         class="link_block l1"
         v-if="company == 1"
-        @click="$router.push('/companylist')"
+        @click="$router.push('/companylist?famous=1')"
       ></div>
       <div
         class="link_block l2"

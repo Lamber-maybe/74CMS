@@ -2265,3 +2265,16 @@ CREATE TABLE `qs_subsite` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_subsite||-_-||
+
+
+DROP TABLE IF EXISTS `qs_poster`;
+CREATE TABLE `qs_poster` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `indexid` int(10) unsigned NOT NULL,
+  `type` tinyint(1) unsigned NOT NULL COMMENT '1职位 2简历 3企业',
+  `name` varchar(30) NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  `is_display` tinyint(1) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_poster||-_-||

@@ -3,6 +3,89 @@ namespace app\apiadmin\controller;
 
 class Poster extends \app\common\controller\Backend
 {
+    public function lists()
+    {
+        $list = model('Poster')->getList(input('get.type/d',1,'intval'));
+        $this->ajaxReturn(200,'获取数据成功',$list);
+    }
+    
+    public function add()
+    {
+        $input_data = [
+            'type' => input('post.type/d', 1, 'intval'),
+            'name' => input('post.name/s', '', 'trim'),
+            'img' => input('post.img/s', '', 'trim'),
+            'sort_id' => input('post.sort_id/d', 0, 'intval'),
+            'is_display' => input('post.is_display/d', 1, 'intval')
+        ];
+        if (
+            false === model('Poster')->addOne($input_data)
+        ) {
+            $this->ajaxReturn(500, model('Poster')->getError());
+        }
+        model('AdminLog')->record(
+            '添加海报。海报ID【' .
+                model('Poster')->id .
+                '】;海报名称【' .
+                $input_data['name'] .
+                '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '保存成功');
+    }
+    public function edit()
+    {
+        $input_data = [
+            'id' => input('post.id/d', 0, 'intval'),
+            'type' => input('post.type/d', 1, 'intval'),
+            'name' => input('post.name/s', '', 'trim'),
+            'img' => input('post.img/s', '', 'trim'),
+            'sort_id' => input('post.sort_id/d', 0, 'intval'),
+            'is_display' => input('post.is_display/d', 1, 'intval')
+        ];
+        if (
+            false === model('Poster')->editOne($input_data)
+        ) {
+            $this->ajaxReturn(500, model('Poster')->getError());
+        }
+        model('AdminLog')->record(
+            '编辑海报。海报ID【' .
+                $input_data['id'] .
+                '】;海报名称【' .
+                $input_data['name'] .
+                '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '保存成功');
+    }
+    public function setDisplay()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        $info = model('Poster')->find($id);
+        if($info['is_display']==1){
+            model('Poster')->save(['is_display'=>0],['id'=>$id]);
+        }else{
+            model('Poster')->save(['is_display'=>1],['id'=>$id]);
+        }
+        model('AdminLog')->record(
+            '编辑海报显示状态。海报ID【' .
+                $id .
+                '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '设置成功');
+    }
+    public function delete()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        model('Poster')->deleteOne($id);
+        model('AdminLog')->record(
+            '删除海报。海报ID【' . $id .
+            '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '删除成功');
+    }
     public function index()
     {
         $type = input('get.type/s','job','trim');
@@ -58,5 +141,10 @@ class Poster extends \app\common\controller\Backend
         header('Content-Length:' . filesize($show_path));
         readfile($show_path);
     }
-    
+    public function getTplindexList()
+    {
+        $type = input('get.type/d',1,'intval');
+        $list = model('Poster')->where('type',$type)->where('is_display',1)->column('indexid');
+        $this->ajaxReturn(200,'获取数据成功',$list);
+    }
 }

@@ -391,6 +391,8 @@ export default {
   scene_record: '/home/index/scenerecord',
   // 海报
   create_poster: '/home/poster/index',
+  // 海报索引列表
+  poster_tplindex_list: '/home/poster/getTplindexList',
   // 页面管理详情
   pageinfo: '/home/config/pageinfo',
 
@@ -429,8 +431,6 @@ export default {
   shortvideo_record: '/home/short_video/play',
   // 广告列表
   shortvideo_adlist: '/home/short_video/adlist',
-  // 分享
-  shortvideo_share: '/home/poster',
   // 获取七牛的地址
   shortvideo_qiniu: '/member/upload/qiniu_token',
   // 保存七牛文件地址

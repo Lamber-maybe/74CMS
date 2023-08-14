@@ -462,6 +462,7 @@ class Job extends \app\v1_0\controller\common\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $base_info['id'] = $jobinfo['id'];
+        $base_info['company_id'] = $jobinfo['company_id'];
         $base_info['uid'] = $jobinfo['uid'];
         $base_info['jobname'] = $jobinfo['jobname'];
         $base_info['emergency'] = $jobinfo['emergency'];
@@ -535,23 +536,6 @@ class Job extends \app\v1_0\controller\common\Base
             $jobinfo['refreshtime']
         );
         $return['base_info'] = $base_info;
-
-
-        $getJobContact = model('Job')->getContact($jobinfo,$this->userinfo);
-        $return['show_contact'] = $getJobContact['show_contact'];
-        $return['show_contact_note'] = $getJobContact['show_contact_note'];
-        $return['contact_info'] = $getJobContact['contact_info'];
-        if($this->userinfo===null){
-            $return['has_apply'] = 0;
-        }else{
-            $check_apply = model('JobApply')->where('personal_uid',$this->userinfo->uid)->where('jobid',$jobinfo['id'])->find();
-            if($check_apply===null){
-                $return['has_apply'] = 0;
-            }else{
-                $return['has_apply'] = 1;
-            }
-        }
-
 
         $apply_map['company_uid'] = $jobinfo['uid'];
         $endtime = time();
@@ -713,6 +697,23 @@ class Job extends \app\v1_0\controller\common\Base
         }
         $return['field_rule'] = $field_rule;
 
+        $getJobContact = model('Job')->getContact($return['base_info'],$this->userinfo);
+        $return['show_contact'] = $getJobContact['show_contact'];
+        $return['show_contact_note'] = $getJobContact['show_contact_note'];
+        $return['contact_info'] = $getJobContact['contact_info'];
+        if($this->userinfo===null){
+            $return['has_apply'] = 0;
+        }else if($this->userinfo->utype == 2){
+            $check_apply = model('JobApply')->where('personal_uid',$this->userinfo->uid)->where('jobid',$return['base_info']['id'])->find();
+            if($check_apply===null){
+                $return['has_apply'] = 0;
+            }else{
+                $return['has_apply'] = 1;
+            }
+        }else{
+            $return['has_apply'] = 0;
+        }
+
         if ($this->userinfo != null && $this->userinfo->utype == 2) {
             $fav_info = model('FavJob')
                 ->where('jobid', $id)
@@ -753,9 +754,13 @@ class Job extends \app\v1_0\controller\common\Base
                 $return['phone_protect_timeout'] = 120;
             }
             $return['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
+            if($return['phone_protect_type']==1 && $this->userinfo===null){
+                $return['show_contact'] = 0;
+                $return['show_contact_note'] = 'need_login';
+            }
         }
         $return['cur_user_mobile'] = '';
-        if($return['show_contact']){
+        if($return['show_contact'] && $this->userinfo!==null){
             $return['cur_user_mobile'] = $this->userinfo->mobile;
         }
         $this->ajaxReturn(200, '获取数据成功', $return);

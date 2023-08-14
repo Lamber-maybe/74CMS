@@ -37,6 +37,7 @@ export default {
     window.addEventListener('beforeunload', () => {
       this.$store.state.config = ''
       this.$store.state.sendSmsBtnText = '获取验证码'
+      this.$store.state.sendSmsBtnTextColor = '#1787fb'
       this.$store.state.sendSmsInterval = 60
       localStorage.setItem('vuex', JSON.stringify(this.$store.state))
     })

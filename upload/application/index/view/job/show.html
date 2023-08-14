@@ -262,7 +262,7 @@
                         <div class="post_box4">
                             <div class="title title_padding">职位描述</div>
                             <div>
-                                <p ref="jobContent" :class="contentAll ? 'describe' : 'describe all'">
+                                <p ref="jobContent" id="jobContent" :class="contentAll ? 'describe' : 'describe all'">
                                     <span>{#$return.base_info.content#}</span>
                                 </p>
                                 <div class="bottom_more" v-if="contentHeight > 450" @click="contentAll = !contentAll">
@@ -705,12 +705,18 @@
             this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode&jobid=' + id
             this.captcha_open = captcha_open
             this.captcha_type = captcha_type
+            if(navigator.userAgent.indexOf('Trident')>-1){
+                this.contentHeight = document.getElementById("jobContent").clientHeight
+                this.contentAll = this.contentHeight > 450
+            }
         },
         mounted: function () {
             // 滚动条的获取
             window.addEventListener('scroll', this.getScrollTop)
-            this.contentHeight = this.$refs.jobContent.clientHeight
-            this.contentAll = this.contentHeight > 450
+            if(navigator.userAgent.indexOf('Trident')<=-1){
+                this.contentHeight = this.$refs.jobContent.clientHeight
+                this.contentAll = this.contentHeight > 450
+            }
         },
         computed: {
             options_tipoff: function () {
@@ -749,7 +755,7 @@
               location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
             },
             // 选择无工作经验
-            handleNoJobTime () {
+            handleNoJobTime: function () {
               var that = this
               that.regQuick.enter_job_time = ''
               that.regQuick.isNoJobTime = true
@@ -883,7 +889,7 @@
               this.changeImg()
             },
             submitPictureCaptcha: function () {
-              let that = this
+              var that = this
               that.$refs.captchaForm.validate(function (valid) {
                 if (valid) {
                   that.showPictureCaptcha = false
@@ -981,13 +987,21 @@
               var that = this
               var wageArray = []
               var storeMaxWage = 15000;
+              var _optionMinWage = []
+              var _optionMaxWage = []
               if (minValue <= storeMaxWage) {
-                let a = minValue
-                let b = storeMaxWage
+                var a = minValue
+                var b = storeMaxWage
                 if (type === 'min') {
-                  that.regQuick.optionMinWage = [...Array(((b - a) / 500))].map((e, i) => a + i * 500)
+                    for(var i=a;i<b;i+=500){
+                        _optionMinWage.push(i);
+                    }
+                    that.regQuick.optionMinWage = _optionMinWage
                 } else if (type === 'max') {
-                  that.regQuick.optionMaxWage = [...Array(((b - a) / 500) + 1)].map((e, i) => a + i * 500)
+                    for(var i=a;i<=b;i+=500){
+                        _optionMaxWage.push(i);
+                    }
+                    that.regQuick.optionMaxWage = _optionMaxWage
                 }
               }
               return wageArray
@@ -1020,10 +1034,10 @@
             handleclassify: function (data) {
               var dataArray = JSON.parse(JSON.stringify(data))
               var commitArray = []
-              commitArray = dataArray.map((item) => {
+              commitArray = dataArray.map(function(item) {
                 if (item.children.length) {
-                  let level2Array = item.children
-                  level2Array = level2Array.map((level2Item) => {
+                  var level2Array = item.children
+                  level2Array = level2Array.map(function(level2Item) {
                     if (level2Item.children.length) {
                       return { label: level2Item.label, value: level2Item.value, children: level2Item.children }
                     } else {
@@ -1196,7 +1210,7 @@
                 }).catch(function () { });
             },
             handleSubmitTipoff: function () {
-                let that = this
+                var that = this
                 this.$refs.tipoffForm.validate(function (valid) {
                     if (valid) {
                         httppost(qscms.apiList.tipoff, { target_id: id, type: 1, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })

@@ -418,4 +418,6 @@ export default {
   // 海报
   create_poster: '/home/poster/index',
   download_poster: '/home/poster/download',
+  // 海报索引列表
+  poster_tplindex_list: '/home/poster/getTplindexList',
 }
