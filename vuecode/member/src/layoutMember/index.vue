@@ -46,9 +46,13 @@
     background-color: #f3f3f3; 
   }
   .my_member {
-    width: 1200px; margin: 0 auto;
-    .my_main { background-color: #f3f3f3; padding: 0; }
+    width: 1200px; margin: 0 auto; 
+    .my_main { background-color: #f3f3f3; padding: 0; overflow: auto;}
     .el-aside { background-color: #f3f3f3; }
   }
-  
+  .my_member2{
+    width: 1200px; 
+    float: left;
+  }
+  .my_main2 {background-color: transparent; padding: 0; overflow: visible;}
 </style>

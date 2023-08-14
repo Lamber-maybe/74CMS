@@ -7,22 +7,22 @@
     >
       <el-form-item>
         <el-table border :data="list">
-          <el-table-column label="通知内容" width="130">
+          <el-table-column label="通知内容" min-width="130">
             <template slot-scope="scope">
               {{ scope.row.title }}
             </template>
           </el-table-column>
-          <el-table-column label="模板名称" width="130">
+          <el-table-column label="模板名称" min-width="130">
             <template slot-scope="scope">
               {{ scope.row.tpl_name }}
             </template>
           </el-table-column>
-          <el-table-column label="所属行业" width="180">
+          <el-table-column label="所属行业" min-width="180">
             <template slot-scope="scope">
               {{ scope.row.tpl_trade }}
             </template>
           </el-table-column>
-          <el-table-column label="模板编号" width="170">
+          <el-table-column label="模板编号" min-width="170">
             <template slot-scope="scope">
               {{ scope.row.tpl_number }}
             </template>
@@ -34,7 +34,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column align="center" label="模板ID" width="420">
+          <el-table-column align="center" label="模板ID" min-width="420">
             <template slot-scope="scope">
               <el-input v-model="scope.row.tpl_id" placeholder="请输入模板ID" />
             </template>

@@ -53,6 +53,7 @@ import BottomMenu from './BottomMenu.vue'
 import ListItem from './itemVideo'
 import http from '@/utils/http'
 import api from '@/api'
+import wxshare from '@/assets/js/share.js'
 // import 'animate.css'
 // import {WOW} from 'wowjs'
 
@@ -89,6 +90,17 @@ export default {
     }
   },
   created () {
+    if (this.videotype == 1) {
+      let wechatShareInfo = {
+      }
+      let url = this.$store.state.config.mobile_domain + `shortvideo/companylist`
+      wxshare(wechatShareInfo, 'svcomlist', url)
+    } else {
+      let wechatShareInfo = {
+      }
+      let url = this.$store.state.config.mobile_domain + `shortvideo/personalList`
+      wxshare(wechatShareInfo, 'svperslist', url)
+    }
     this.fetchData(true)
     this.getadlist()
   },

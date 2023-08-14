@@ -1,11 +1,12 @@
 <template>
   <div>
-    <van-dialog v-model="showDialog" @confirm="handlerConfirm" @cancel="showDialog=false" :before-close="beforeClose" show-cancel-button>
+    <van-dialog v-model="showDialog" @confirm="handlerConfirm" @cancel="showDialog=false" :before-close="beforeClose" title="输入验证码" show-cancel-button>
       <div class="captcha_box">
         <img class="captcha_img" :src="src" @click="changeImg" />
         <van-cell-group :border="false">
           <van-field label-width="120" :border="false" v-model="code" label=" " placeholder="请输入左侧验证码" />
         </van-cell-group>
+        <div class="little-border">&nbsp;</div>
       </div>
     </van-dialog>
   </div>
@@ -65,7 +66,7 @@ export default {
 <style lang="scss" scoped>
 .captcha_box{
   position:relative;
-  margin:30px 10px 10px;
+  margin:20px 10px 15px;
 }
 .captcha_img{
   position:absolute;
@@ -74,5 +75,13 @@ export default {
   width:120px;
   height:100%;
   z-index:1;
+}
+.little-border{
+  position:absolute;
+  width:calc(100% - 155px);
+  border-bottom:1px solid #EEE;
+  right:20px;
+  z-index:10;
+  bottom:1px;
 }
 </style>

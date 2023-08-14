@@ -24,6 +24,8 @@ export default {
        */
   get (url, params) {
     return new Promise((resolve, reject) => {
+      params = params || {}
+      params.__r = Math.random()
       service
         .get(url, {
           headers: {

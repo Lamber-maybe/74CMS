@@ -41,6 +41,7 @@
           <div style="padding: 14px;">
             <span class="note">{{ item.title }}</span>
             <div class="bottom clearfix">
+              <span class="time">{{ item.companyname }}</span>
               <span class="time">{{ item.addtime | timeFilter }}</span>
               <div class="clearfix" />
               <span class="audit" :class="item.audit | auditFilter">

@@ -162,7 +162,7 @@ class def
                     ->join(config('database.prefix').'job_search_rtime b','a.uid=b.uid','LEFT')
                     ->where('b.id','not null')
                     ->order('a.refreshtime desc')
-                    ->limit(8)
+                    ->limit(9)
                     ->distinct('a.id')
                     ->column('a.id,a.companyname,a.audit,a.setmeal_id,a.refreshtime','a.id');
         $company_id_arr = $setmeal_id_arr = $setmeal_list = [];

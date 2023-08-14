@@ -137,8 +137,8 @@ class Base extends \app\common\controller\Base
         );
         $user_token = $JwtAuth->getString();
         //把token存入数据表，并设置有效期
-        model('IdentityToken')->makeToken($user_token,$this->expire_platform[config('platform')]);
-        
+        model('IdentityToken')->makeToken($uid, $user_token,$this->expire_platform[config('platform')]);
+
         if ($utype == 1) {
             $next_code = $this->interceptCompanyProfile(true, $uid);
             if ($next_code == 200) {

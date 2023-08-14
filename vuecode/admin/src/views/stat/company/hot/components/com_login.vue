@@ -25,7 +25,7 @@
         <el-table-column
           prop="companyname"
           label="企业名称"
-          width="220"
+          min-width="220"
         />
         <el-table-column prop="nature" label="企业性质" />
         <el-table-column prop="scale" label="企业规模" />

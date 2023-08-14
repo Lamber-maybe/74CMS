@@ -17,10 +17,12 @@ class CompanyImg extends \app\common\controller\Backend
         $total = model('CompanyImg')
             ->where($where)
             ->count();
-        $list = model('CompanyImg')
+        $list = model('CompanyImg')->alias('a')
+            ->join(config('database.prefix').'company b', 'a.comid=b.id')
             ->where($where)
-            ->order('audit asc,id desc')
+            ->order('a.audit asc,a.id desc')
             ->page($current_page . ',' . $pagesize)
+            ->field('a.*,b.companyname')
             ->select();
         $img_id_arr = $img_src_data = [];
         foreach ($list as $key => $value) {

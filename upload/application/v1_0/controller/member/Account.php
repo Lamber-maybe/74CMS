@@ -84,6 +84,12 @@ class Account extends \app\v1_0\controller\common\Base
         $validate->extend('checkUsername', function ($value) use (
             $current_userinfo
         ) {
+            if (fieldRegex($value, 'mobile')){
+                return '用户名不可以是手机号';
+            }
+            if (fieldRegex($value, 'email')){
+                return '用户名不可以是邮箱';
+            }
             $info = model('Member')
                 ->where([
                     'username' => $value,

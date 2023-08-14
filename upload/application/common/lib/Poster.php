@@ -930,6 +930,7 @@ class Poster
                 ->where('company_id', 'eq', $info['id'])
                 ->where('is_display', 1)
                 ->where('audit', 1)
+                ->limit(3) //最多展示3条职位信息
                 ->select();
         foreach ($job_list as $key => $value) {
             $job_list[$key]['wage_text'] = model('BaseModel')->handle_wage(
@@ -1297,7 +1298,7 @@ class Poster
             return $show_path;
         }
 
-        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_shortvideo&url='.$locationUrl;
+        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_shortvideo&url='.$locationUrl.'&vid='.$id.'&vtype='.$vtype;
         $config = [
             'image'=>[
                 [

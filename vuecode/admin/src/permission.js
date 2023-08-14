@@ -6,7 +6,10 @@ import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
-
+// 支付方式参数
+const payParams = {
+  type: 'orderPayment'
+}
 
 NProgress.configure({
   showSpinner: false

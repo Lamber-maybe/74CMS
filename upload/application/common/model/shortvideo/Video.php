@@ -336,7 +336,10 @@ class Video extends BaseModel
                 }
             }
             $max = $this->where(['id'=>['lt', self::AUDIT_LIMIT]])->max('id');
-            $data['id'] = $max+rand(2,5);
+            if($max<self::AUDIT_LIMIT){
+                $max = self::AUDIT_LIMIT;
+            }
+            $data['id'] = $max+rand(2,5);//v3.0.2
             $data['real_id'] = $this->max('real_id')+rand(5,10);
             if($data['audit'] == self::AUDIT_YES  && $data['is_public'] == self::PUBLIC_YES){
                 $data['id'] = $data['real_id'];

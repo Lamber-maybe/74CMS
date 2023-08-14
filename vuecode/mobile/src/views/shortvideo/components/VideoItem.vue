@@ -97,6 +97,7 @@ import api from '@/api'
 import http from '@/utils/http'
 import ShareVideo from './ShareVideo.vue'
 import Login from '@/components/Login'
+import wxshare from '@/assets/js/share.js'
 
 export default {
   props: ['videoItem', 'isPoster', 'videoCategoryList', 'autoplay', 'videoType'],
@@ -339,6 +340,25 @@ export default {
     getlook (id) {
       http.get(api.shortvideo_record, {id: id, type: this.videoType}).then((r) => {})
     },
+    wxshare (v) {
+      if (this.videoType == 1) {
+        let wechatShareInfo = {
+          comname: v.companyname,
+          desc: v.title,
+          imgUrl: v.video_src + '?vframe/jpg/offset/0/w/100/h/100'
+        }
+        let url = this.$store.state.config.mobile_domain + `shortvideo/videoplay?id=${v.id}&gointype=playlist&videotype=1`
+        wxshare(wechatShareInfo, 'svcomshow', url)
+      } else {
+        let wechatShareInfo = {
+          resumename: v.fullname,
+          desc: v.title,
+          imgUrl: v.video_src + '?vframe/jpg/offset/0/w/100/h/100'
+        }
+        let url = this.$store.state.config.mobile_domain + `shortvideo/videoplay?id=${v.id}&gointype=playlist&videotype=2`
+        wxshare(wechatShareInfo, 'svpershow', url)
+      }
+    },
     initVideoEvents () {
       let video = this.$refs.video
       let _this = this
@@ -362,6 +382,7 @@ export default {
           _this.getlook(_this.videoItem.id)
         }
         _this.startProgress()
+        _this.wxshare(_this.videoItem)
       }
       video.oncanplay = function () {
         _this.progressLoading = false

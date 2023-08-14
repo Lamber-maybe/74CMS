@@ -2001,11 +2001,17 @@ CREATE TABLE `qs_tweets_template` (
 
 DROP TABLE IF EXISTS `qs_identity_token`;
 CREATE TABLE `qs_identity_token` (
-  `mdtoken` varchar(32) NOT NULL,
-  `updatetime` int(10) unsigned NOT NULL,
-  `expire` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`mdtoken`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `mdtoken` varchar(32) NOT NULL COMMENT 'token',
+  `updatetime` int(10) unsigned NOT NULL COMMENT '更新时间',
+  `uid` int(11) NOT NULL DEFAULT '0' COMMENT '用户uid',
+  `expire` int(10) unsigned NOT NULL COMMENT '过期时间',
+  PRIMARY KEY (`mdtoken`),
+  KEY `index_token` (`mdtoken`) USING BTREE,
+  KEY `index_uid` (`uid`) USING BTREE,
+  KEY `index_expire` (`expire`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录凭证记录表';
+||-_-||qs_identity_token||-_-||
+
 ||-_-||qs_identity_token||-_-||
 
 
@@ -2223,3 +2229,19 @@ CREATE TABLE `qs_sv_personal_video` (
   KEY `title` (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='个人视频表';
 ||-_-||qs_sv_personal_video||-_-||
+
+DROP TABLE IF EXISTS `qs_short_url`;
+CREATE TABLE `qs_short_url` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url` varchar(125) NOT NULL DEFAULT '' COMMENT '原始链接',
+  `code` varchar(5) NOT NULL DEFAULT '' COMMENT '短码',
+  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `endtime` int(11) NOT NULL DEFAULT '0' COMMENT '截止时间',
+  `pv` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
+  `admin_id` int(11) NOT NULL DEFAULT '0' COMMENT '建创者id',
+  `remark` varchar(50) NOT NULL DEFAULT '' COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `code_endtime` (`code`,`endtime`),
+  KEY `url_endtime` (`url`,`endtime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='短链接表';
+||-_-||qs_short_url||-_-||

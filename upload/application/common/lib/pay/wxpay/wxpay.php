@@ -59,7 +59,7 @@ class wxpay
         $wxpay->SetBody($option['service_name']); //描述
         $wxpay->SetAttach('test'); //回调附加参数
         $wxpay->SetOut_trade_no($this->order_prefix . $option['oid']); //商户订单号
-        $option['amount'] = PAY_TEST_MODE ? 0.01 : $option['amount'];
+        $option['amount'] = config('pay_test_mode') ? 0.01 : $option['amount']; //使用配置项
         $wxpay->SetTotal_fee($option['amount'] * 100); //支付金额
         $wxpay->SetTime_start(date('YmdHis')); //交易起始时间
         $wxpay->SetTime_expire(date('YmdHis', time() + 600)); //交易结束时间
@@ -93,7 +93,7 @@ class wxpay
         $wxpay->SetBody($option['service_name']); //描述
         $wxpay->SetAttach('test'); //回调附加参数
         $wxpay->SetOut_trade_no($this->order_prefix . $option['oid']); //商户订单号
-        $option['amount'] = PAY_TEST_MODE ? 0.01 : $option['amount'];
+        $option['amount'] = config('pay_test_mode') ? 0.01 : $option['amount'];
         $wxpay->SetTotal_fee($option['amount'] * 100); //支付金额
         $wxpay->SetTime_start(date('YmdHis')); //交易起始时间
         $wxpay->SetTime_expire(date('YmdHis', time() + 600)); //交易结束时间
@@ -150,7 +150,39 @@ class wxpay
             );
         }
     }
-    
+
+    /**
+     * 小程序支付
+     */
+    protected function _pay_from_miniprogram($option)
+    {
+        $wxpay = new WxPayUnifiedOrder();
+        $notify = new JsApiPay();
+        $wxpay->SetBody($option['service_name']); //描述
+        $wxpay->SetAttach('test'); //回调附加参数
+        $wxpay->SetOut_trade_no($this->order_prefix . $option['oid']); //商户订单号
+        $option['amount'] = config('pay_test_mode') ? 0.01 : $option['amount'];
+        $wxpay->SetTotal_fee($option['amount'] * 100); //支付金额
+        $wxpay->SetTime_start(date('YmdHis')); //交易起始时间
+        $wxpay->SetTime_expire(date('YmdHis', time() + 600)); //交易结束时间
+        $wxpay->SetGoods_tag($option['service_name']); //商品标记
+        $wxpay->SetNotify_url(
+            config('global_config.sitedomain') .
+                config('global_config.sitedir') .
+                'index/callback/wxpayNotify'
+        ); //支付通知回调地址
+        $openId = $notify->GetOpenidByCode($option['code']);
+        $wxpay->SetOpenid($openId); //用户标识
+        $wxpay->SetTrade_type('JSAPI'); //交易类型
+        $order = WxPayApi::unifiedOrder($wxpay); //创建统一支付表单信息
+        $jsApiParameters = $notify->GetJsApiParameters($order);
+        //获取共享收货地址js函数参数
+        $editAddress = $notify->GetEditAddressParameters();
+        return array(
+            'jsApiParameters' => json_decode($jsApiParameters,1),
+            'editAddress' => json_decode($editAddress,1)
+        );
+    }
     /**
      * APP支付
      */
@@ -159,7 +191,7 @@ class wxpay
         $aop = new \app\common\lib\pay\wxpay\WxPayApi();
         $wxpay = new WxPayUnifiedOrder();
         $wxpay->SetOut_trade_no($this->order_prefix . $option['oid']); //商户订单号
-        $option['amount'] = PAY_TEST_MODE ? 0.01 : $option['amount'];
+        $option['amount'] = config('pay_test_mode') ? 0.01 : $option['amount'];
         $wxpay->SetTotal_fee($option['amount'] * 100); //支付金额
         $wxpay->SetTrade_type('APP'); //交易类型
         $wxpay->SetBody($option['service_name']); //描述

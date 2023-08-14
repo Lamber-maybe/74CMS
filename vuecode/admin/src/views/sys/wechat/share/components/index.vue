@@ -6,7 +6,7 @@
       <el-table-column
         label="页面"
         prop="name"
-        width="150"
+        min-width="150"
       />
       <el-table-column
         label="分享语句"
@@ -15,7 +15,7 @@
       <el-table-column
         align="center"
         label="显示图片"
-        width="150"
+        min-width="150"
       >
         <template slot-scope="scope">
           <span v-if="scope.row.img==='self'">{{ scope.row.img_self_cn }}</span>
@@ -29,7 +29,7 @@
       <el-table-column
         fixed="right"
         label="操作"
-        width="220"
+        min-width="220"
       >
         <template slot-scope="scope">
           <el-button

@@ -8,7 +8,7 @@
       :data="list"
       style="width: 100%"
     >
-      <el-table-column prop="name" label="名称" width="180" />
+      <el-table-column prop="name" label="名称" min-width="180" />
       <el-table-column label="积分数">
         <template slot-scope="scope">{{ scope.row.points }}</template>
       </el-table-column>
@@ -34,7 +34,7 @@
           <span>{{ scope.row.sort_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="220">
+      <el-table-column fixed="right" label="操作" min-width="220">
         <template slot-scope="scope">
           <el-button
             type="primary"

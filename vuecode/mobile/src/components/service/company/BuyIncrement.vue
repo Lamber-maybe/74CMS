@@ -222,14 +222,15 @@ export default {
         jobid: 0
       },
       refresh_timerange: '请选择',
-      refresh_starttime: ''
+      refresh_starttime: '',
+      submitLock: false
     }
   },
   created () {
     let objDate = new Date()
     this.minDate = new Date(
       objDate.getFullYear(),
-      objDate.getMonth() + 1,
+      objDate.getMonth(),
       objDate.getDate(),
       objDate.getHours(),
       objDate.getMinutes(),
@@ -347,6 +348,11 @@ export default {
       this.showPicker = false
     },
     submit () {
+      if (this.submitLock) {
+        console.log('请勿重复点击')
+        return
+      }
+      this.submitLock = true
       this.submitData.deduct_points = this.is_deduct
         ? this.enable_points_deduct_points
         : 0

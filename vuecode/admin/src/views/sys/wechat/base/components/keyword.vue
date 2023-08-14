@@ -29,7 +29,7 @@
       <el-table-column
         fixed="right"
         label="操作"
-        width="220"
+        min-width="220"
       >
         <template slot-scope="scope">
           <el-button

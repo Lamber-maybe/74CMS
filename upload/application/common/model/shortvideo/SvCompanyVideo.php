@@ -19,6 +19,9 @@ class SvCompanyVideo extends Video
     protected $type = 1;
 
     public function checkCanPublish($uid){
+        if(intval(config('global_config.shortvideo_enable'))==0){
+            exception('视频招聘功能已关闭');
+        }
         $setMealId = (new Company())->where(['uid'=>$uid])->value('setmeal_id');
         $setMeals = config('global_config.shortvideo_enable_setmeal');
         $setMeals = array_map('intval', $setMeals);

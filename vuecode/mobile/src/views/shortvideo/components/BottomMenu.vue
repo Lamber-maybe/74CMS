@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     linkrelease () {
-      if (this.$store.state.config.shortvideo_enable == '1') {
+      if (parseInt(this.$store.state.config.shortvideo_enable) == 1) {
         if (this.$store.state.LoginOrNot == true) {
           if (this.$store.state.LoginType == 1) {
             http.get(api.shortvideo_upload).then(res => {
@@ -47,7 +47,7 @@ export default {
             this.$router.push('/shortvideo/release')
           }
         } else {
-          this.$notify('请先登录')
+          this.$router.push('/member/login')
         }
       } else {
         var that = this

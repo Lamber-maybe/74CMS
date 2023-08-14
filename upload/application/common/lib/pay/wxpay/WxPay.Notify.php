@@ -74,7 +74,7 @@ class WxPayNotify extends \app\common\lib\pay\wxpay\WxPayNotifyReply
         if ($order['status'] == 1) {
             return true;
         }
-        if (!PAY_TEST_MODE && $order['amount'] != $data['total_fee']) {
+        if (!config('pay_test_mode') && $order['amount'] != $data['total_fee']) {
             $msg = '订单金额不一致';
             return false;
         }

@@ -37,8 +37,8 @@
           />
           <van-list
             v-if="companyList.length > 0"
-            v-model="loading"
-            :finished="finished"
+            v-model="com_loading"
+            :finished="com_finished"
             :finished-text="finished_text"
             @load="onLoad"
             :immediate-check="true"
@@ -65,10 +65,10 @@
           />
           <van-list
             v-if="jobList.length > 0"
-            v-model="loading"
-            :finished="finished"
+            v-model="job_loading"
+            :finished="job_finished"
             :finished-text="finished_text"
-            @load="onLoad"
+            @load="onLoadJob"
             :immediate-check="true"
           >
             <div class="j_item" v-for="(item, index) in jobList" :key="index">
@@ -93,8 +93,8 @@
           />
           <van-list
             v-if="resumeList.length > 0"
-            v-model="loading"
-            :finished="finished"
+            v-model="res_loading"
+            :finished="res_finished"
             :finished-text="finished_text"
             @load="onLoadRes"
             :immediate-check="true"
@@ -193,10 +193,15 @@ export default {
       itemList: [{ name: '企业', tab: 'com' }, { name: '职位', tab: 'job' }],
       filterText: '企业',
       tab: 'com',
-      loading: !1,
-      finished: !1,
+      com_loading: false,
+      job_loading: false,
+      res_loading: false,
+      com_finished: false,
+      job_finished: false,
+      res_finished: false,
       finished_text: '',
       pageCJ: 1,
+      pageJob: 1,
       pageRes: 1,
       pagesize: 15,
       jobfair_id: 0,
@@ -260,7 +265,8 @@ export default {
         t.clickNum = r.data.info.click
         t.content = r.data.info.content
         let wechatShareInfo = {
-          title: t.info.title
+          title: t.info.title,
+          imgUrl: r.data.thumb_src
         }
         wxshare(wechatShareInfo, 'online_jobfairshow', location.href)
       }).catch(() => {})
@@ -268,18 +274,18 @@ export default {
     // 企业列表
     getCompanyList: function (init) {
       var t = this
-      http.get(api.jobfairol_comlist, {jobfair_id: t.jobfair_id, keyword: t.comJobKey, page: t.page, pagesize: t.pagesize}).then(r => {
+      http.get(api.jobfairol_comlist, {jobfair_id: t.jobfair_id, keyword: t.comJobKey, page: t.pageCJ, pagesize: t.pagesize}).then(r => {
         if (init === true) {
           this.companyList = [...r.data.items]
         } else {
           this.companyList = this.companyList.concat(r.data.items)
         }
         // 加载状态结束
-        this.loading = false
+        this.com_loading = false
 
         // 数据全部加载完成
         if (r.data.items.length < this.pagesize) {
-          this.finished = true
+          this.com_finished = true
           if (init === false) {
             this.finished_text = '没有更多了'
           }
@@ -296,11 +302,11 @@ export default {
           this.jobList = this.jobList.concat(r.data.items)
         }
         // 加载状态结束
-        this.loading = false
+        this.job_loading = false
 
         // 数据全部加载完成
         if (r.data.items.length < this.pagesize) {
-          this.finished = true
+          this.job_finished = true
           if (init === false) {
             this.finished_text = '没有更多了'
           }
@@ -310,18 +316,18 @@ export default {
     // 简历列表
     getResumeList: function (init) {
       var t = this
-      http.get(api.jobfairol_resumelist, {jobfair_id: t.jobfair_id, keyword: t.resKey, page: t.page, pagesize: t.pagesize}).then(r => {
+      http.get(api.jobfairol_resumelist, {jobfair_id: t.jobfair_id, keyword: t.resKey, page: t.pageJob, pagesize: t.pagesize}).then(r => {
         if (init === true) {
           this.resumeList = [...r.data.items]
         } else {
           this.resumeList = this.resumeList.concat(r.data.items)
         }
         // 加载状态结束
-        this.loading = false
+        this.res_loading = false
 
         // 数据全部加载完成
         if (r.data.items.length < this.pagesize) {
-          this.finished = true
+          this.res_finished = true
           if (init === false) {
             this.finished_text = '没有更多了'
           }
@@ -330,7 +336,11 @@ export default {
     },
     onLoad: function () {
       this.pageCJ++
-      this.getCompanylist(!1)
+      this.getCompanyList(!1)
+    },
+    onLoadJob: function () {
+      this.pageJob++
+      this.getJobList(!1)
     },
     onLoadRes: function () {
       this.pageRes++

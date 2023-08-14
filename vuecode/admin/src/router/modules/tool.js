@@ -320,6 +320,50 @@ const toolRouter = {
           access: 'nologinRemindBasic'
         }
       }]
+    },
+    {
+      path: '/tool/shorturl',
+      name: 'shorturl',
+      component: () =>
+          import ('@/views/tool/shorturl'),
+      redirect: 'noRedirect',
+      alwaysShow: true,
+      meta: {
+        title: '短链接',
+        access: 'shorturl'
+      },
+      children: [{
+        path: '/tool/shorturl/lists',
+        name: 'shorturlList',
+        component: () =>
+            import ('@/views/tool/shorturl/lists.vue'),
+        meta: {
+          title: '短链接',
+          access: 'shorturlList'
+        }
+      }]
+    },
+    {
+      path: '/tool/syncdata',
+      name: 'syncdata',
+      alwaysShow: true,
+      meta: {
+        title: '数据同步',
+        access: 'syncdata'
+      },
+      redirect: 'noRedirect',
+      component: () =>
+          import ('@/views/tool/index.vue'),
+      children: [{
+        path: '/tool/syncsetmeal',
+        name: 'toolsyncsetmeal',
+        component: () =>
+            import ('@/views/tool/syncsetmeal/index.vue'),
+        meta: {
+          title: '套餐权限同步',
+          access: 'toolsyncsetmeal'
+        }
+      }]
     }
   ]
 }

@@ -369,8 +369,13 @@ class Screen extends \app\v1_0\controller\common\Base
             ->group('nature')
             ->column('nature,count(*) as total');
         if (!empty($datalist)) {
+            $couter = 0;
             $category_data = model('Category')->getCache();
             foreach ($datalist as $key => $value) {
+                $couter++;
+                if($couter>5){
+                    break;
+                }
                 $arr['name'] = isset($category_data['QS_company_type'][$key])
                     ? $category_data['QS_company_type'][$key]
                     : '';
@@ -393,8 +398,13 @@ class Screen extends \app\v1_0\controller\common\Base
             ->group('scale')
             ->column('scale,count(*) as total');
         if (!empty($datalist)) {
+            $couter = 0;
             $category_data = model('Category')->getCache();
             foreach ($datalist as $key => $value) {
+                $couter++;
+                if($couter>5){
+                    break;
+                }
                 $arr['name'] = isset($category_data['QS_scale'][$key])
                     ? $category_data['QS_scale'][$key]
                     : '';

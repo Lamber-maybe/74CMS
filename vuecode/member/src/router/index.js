@@ -521,6 +521,48 @@ const routes = [
         }
       },
       {
+        path: '/company/jobfair', //招聘会
+        name: 'CompanyJobfair',
+        component: () => import('../views/company/jobfair/network/list'),
+        children: [
+
+          {
+            path: '/company/jobfair/network/index', //招聘会
+            name: 'CompanyJobfairNetworkIndex',
+            component: () => import('../views/company/jobfair/index'),
+            redirect: '/company/jobfair/network/all',
+            children: [
+              {
+                path: '/company/jobfair/network/all', //招聘会  全部
+                name: 'CompanyJobfairNetworkAll',
+                component: () => import('../views/company/jobfair/network/all'),
+                meta: {
+                  title: '网络招聘会 - 企业会员中心',
+                  keepAlive: false,
+                  loginCheck: true,
+                  utype: 1,
+                  activeMenu: '/company/jobfair/network/index'
+                }
+              },
+              {
+                path: '/company/jobfair/network/apply', //招聘会  已报名
+                name: 'CompanyJobfairNetworkApply',
+                component: () => import('../views/company/jobfair/network/apply'),
+                meta: {
+                  title: '已报名 - 网络招聘会 - 企业会员中心',
+                  keepAlive: false,
+                  loginCheck: true,
+                  utype: 1,
+                  activeMenu: '/company/jobfair/network/index'
+                }
+              }
+            ]
+          },
+
+
+        ]
+      },
+      {
         path: '/company/microposte', //微海报
         name: 'CompanyMicroposte',
         component: () => import('../views/company/Microposte'),

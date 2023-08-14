@@ -7,12 +7,14 @@
               <div class="portrait">
                 <img :src="serviceInfo.photo" alt="">
               </div>
-              <span class="text_1">{{serviceInfo.name}}</span>
-              <a class="text_2" @click="showServicerComplaint=true">我要投诉客服>></a>
-              <div class="text_3" v-if="serviceInfo.mobile">
+              <div>
+                <span class="text_1">{{serviceInfo.name}}</span>
+                <a class="text_2" @click="showServicerComplaint=true">我要投诉客服>></a>
+              </div>
+              <div class="text_3" v-if="isMobile">
                 <div class="text_3_box">手机号：<span>{{serviceInfo.mobile?serviceInfo.mobile:'暂无'}}</span></div>
               </div>
-              <div class="text_4">
+              <div class="text_4"  v-if="isTel">
                 <div class="text_4_box" v-if="serviceInfo.tel">联系电话：<span>{{serviceInfo.tel?serviceInfo.tel:'暂无'}}</span></div>
               </div>  
             </div>
@@ -221,6 +223,10 @@ export default {
   },
   data(){
       return{
+          screenWidth: document.body.clientWidth,
+          timer:false,
+          isMobile:true,
+          isTel:true,
           showPoster: false,
           posterId: '',
           showServicerComplaint:false,
@@ -251,6 +257,42 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  mounted () {
+    window.addEventListener('resize', ()=>{
+      if (!this.timer) {
+          this.screenWidth = document.body.clientWidth
+          if(this.screenWidth < 1200){
+            if(this.serviceInfo.tel && this.serviceInfo.mobile){
+              this.isTel = false
+              this.isMobile = true
+            } else {
+              if(this.serviceInfo.tel!=''){
+                this.isTel = true
+                this.isMobile = false
+              }else if(this.serviceInfo.mobile!=''){
+                this.isTel = false
+                this.isMobile = true
+              }
+            }
+          } else{
+            this.isTel = true
+            this.isMobile = true
+          }
+          this.timer = true
+          let that = this
+          setTimeout(function () {
+              that.timer = false
+          }, 400)
+      }
+    })
+    // window.onresize =()=>{   
+    //   return (()=>{
+    //     this.screenWidth = document.body.clientWidth
+    //   })()
+    // } 
+  },
+  watch: {
   },
   computed: {
     hasSign(){
@@ -448,12 +490,11 @@ export default {
 .customer_service{
   min-height: 62px;
   border: 1px solid #EBEEF5;
-  background-color: #FFF;
   margin-bottom: 18px;
   border-radius: 5px;
   box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
   padding-left:90px;
-  background: url(../../assets/images/member/customer_service_img.png) no-repeat left center;
+  background: url(../../assets/images/member/customer_service_img.png) no-repeat left center #FFF;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -499,17 +540,19 @@ export default {
     font-weight: 500;
   }
   .text_3{
-    width: 190px;
+    // width: 190px;
     .text_3_box{
       padding-left: 35px;
       background: url(../../assets/images/member/customer_icon_1.png) no-repeat left center /25px 25px;
+      white-space:nowrap;
     }
   }
   .text_4{
-    width: 210px;
+    // width: 210px;
     .text_4_box{
       padding-left: 35px;
       background: url(../../assets/images/member/customer_icon_2.png) no-repeat left center/26px 26px;
+      white-space:nowrap;
     }
   }
   .QQ_btn{

@@ -37,7 +37,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="是否是销售" prop="is_sc">
-          <el-radio-group v-model="form.is_sc">
+          <el-radio-group v-model.number="form.is_sc">
             <el-radio :label="1" >是</el-radio>
             <el-radio :label="0" >否</el-radio>
           </el-radio-group>

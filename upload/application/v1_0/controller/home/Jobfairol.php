@@ -70,10 +70,14 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         if(!$id){
             $this->ajaxReturn(500,'请选择招聘会');
         }
-        $info = model('JobfairOnline')->field('id,title,click,content')->where('id',$id)->find();
+        $info = model('JobfairOnline')->field('id,title,thumb,click,content')->where('id',$id)->find();
         if(null === $info){
             $this->ajaxReturn(500,'请选择招聘会');
         }
+        $info['thumb_src'] =
+            $info['thumb'] > 0
+                ? model('Uploadfile')->getFileUrl($info['thumb'])
+                : default_empty('jobfair_thumb');
         $info = $info->toArray();
         $info['total_company'] = model('JobfairOnlineParticipate')->where('jobfair_id',$id)->where('utype',1)->where('audit',1)->count();
         $info['total_job'] = model('Job')
@@ -85,6 +89,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                             ->where('a.is_display', 1)
                             ->where('a.audit',1)
                             ->count();
+        model('JobfairOnline')->where('id',$id)->setInc('click',1);
         $return['info'] = $info;
         $this->ajaxReturn(200,'获取数据成功',$return);
     }

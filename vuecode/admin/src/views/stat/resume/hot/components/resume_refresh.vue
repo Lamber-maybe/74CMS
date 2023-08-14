@@ -24,7 +24,7 @@
       >
         <el-table-column prop="fullname" label="姓名" />
         <el-table-column prop="sex" label="性别" />
-        <el-table-column label="基本信息" width="200">
+        <el-table-column label="基本信息" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.age }}</span>
             /

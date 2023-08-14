@@ -55,6 +55,9 @@ class Member extends \app\common\model\BaseModel
         $model = self::find($uid);
         $model->status = $status;
         if ($model->save()) {
+            if(!intval($status)){
+                model('IdentityToken')->where(['uid'=>$uid])->delete(); //锁定即删除token,
+            }
             if ($model->utype == 1) {
                 model('Company')->setUserStatus($uid, $status);
                 $jobid_arr = model('Job')
@@ -447,7 +450,7 @@ class Member extends \app\common\model\BaseModel
                 : '',
             ]);
         }
-        
+
         return [
             'uid' => $this->uid,
             'utype' => 1,

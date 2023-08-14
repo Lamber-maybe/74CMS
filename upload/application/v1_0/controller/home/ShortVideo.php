@@ -34,9 +34,6 @@ class ShortVideo extends \app\v1_0\controller\common\Base
         $this->collect = new SvCollect();
         $this->company = new SvCompanyVideo();
         $this->personal = new SvPersonalVideo();
-        if(intval(config('global_config.shortvideo_enable'))==0){
-            $this->ajaxReturn(500, '视频招聘功能已关闭');
-        }
     }
 
     public function adlist(){
@@ -68,6 +65,9 @@ class ShortVideo extends \app\v1_0\controller\common\Base
         $url = input('get.url/s', '', 'trim');
         $http = new Http();
         try{
+            if(intval(config('global_config.shortvideo_enable'))==0){
+                $this->ajaxReturn(500, '视频招聘功能已关闭');
+            }
             if(empty($url))exception('参数不正确');
             if(preg_match('/http[A-Za-z0-9\/\:\.]+/', $url, $match)){
                 $url = $match[0];
@@ -76,8 +76,8 @@ class ShortVideo extends \app\v1_0\controller\common\Base
             }
             $WebData = $http->request($url, '', 'GET', '', '');
             $VideoId = explode("/", $WebData['headers']['Location'][0]);
-            $VideoData =  $http->get2("https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=$VideoId[5]", "", "GET", "", "");
-            $VideoData = json_decode($VideoData['body'], true);
+            $VideoData =  $http->get3("https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=$VideoId[5]", "", "GET", "", "");
+            $VideoData = json_decode($VideoData, true);
             $VideoSrc = str_replace("playwm", "play", $VideoData['item_list'][0]['video']['play_addr']['url_list'][0]); //视频去水印未跳转地址
             $VideoTitle = $VideoData['item_list'][0]['desc']; //视频标题
             $VideoImg = $VideoData['item_list'][0]['video']['origin_cover']['url_list'][0]; //视频封面
@@ -122,6 +122,10 @@ class ShortVideo extends \app\v1_0\controller\common\Base
         $address = input('post.address/s', '', 'trim,htmlspecialchars');
         $filesize =  input('post.filesize/d', 0, 'intval');
         $type = $this->userinfo->utype;
+
+        if(intval(config('global_config.shortvideo_enable'))==0){
+            $this->ajaxReturn(500, '视频招聘功能已关闭');
+        }
 
         try{
             $m = new SvCompanyVideo();

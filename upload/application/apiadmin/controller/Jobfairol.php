@@ -416,25 +416,33 @@ class Jobfairol extends \app\common\controller\Backend{
         }
         $settr = input('post.settr/d',0,'intval');
         if($settr){
-            $where['refreshtime']=array('gt',strtotime("-".$settr." day"));
+            $where['a.refreshtime']=array('gt',strtotime("-".$settr." day"));
         }
         $audit = input('post.audit/d',0,'intval');
         if($audit){
-            $where['audit'] = $audit;
+            $where['a.audit'] = $audit;
         }
         $setmeal_id = input('post.setmeal_id/d',0,'intval');
         if($setmeal_id){
-            $where['setmeal_id'] = $setmeal_id;
+            $where['a.setmeal_id'] = $setmeal_id;
+            $where['b.deadline'] = ['gt', time()];
+            $count = model('Company')->alias('a')->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')->where($where)->count();
+        }else{
+            $count = model('Company')->alias('a')->where($where)->count();
         }
         $limit = 100;
-        $count = model('Company')->where($where)->count();
+
         if($count===0){
             $this->ajaxReturn(500, '没有符合条件的数据');
         }
         $a = 0;
         for ($i=0; $i < ceil($count/$limit); $i++) { //分段查询
             $offset = $i * $limit;
-            $com_list = model('Company')->where($where)->order('refreshtime desc')->limit($offset.','.$limit)->field('uid')->select();
+            if($setmeal_id){
+                $com_list = model('Company')->alias('a')->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')->where($where)->order('a.refreshtime desc')->limit($offset.','.$limit)->field('a.uid')->select();
+            }else{
+                $com_list = model('Company')->alias('a')->where($where)->order('a.refreshtime desc')->limit($offset.','.$limit)->field('a.uid')->select();
+            }
             foreach ($com_list as $key => $value) {
                 $post_data['uid'] = $value['uid'];
                 $post_data['jobfair_id'] = $jobfair_id;

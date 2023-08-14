@@ -7,7 +7,7 @@
     </div>
     <div class="title">上传视频</div>
     <div>
-      <textarea v-model="sub.title" placeholder="简要描述一下招聘信息或企业形象(限50字)" maxlength="50"></textarea>
+      <textarea v-model="sub.title" :placeholder="$store.state.LoginOrNot == true&&this.$store.state.LoginType == 1?'简要描述一下招聘信息或企业形象(限50字)':'简要描述一下求职期望、工作经验、技能特长等(限50字)'" maxlength="50"></textarea>
       <div class="video" v-if="imgshow" ref="videoImg">
         <div class="imgurl_box">
           <div class="img" :style="{'background':`url(${imgurl}) 50% 50% / cover no-repeat`}" @click="previewVideo"></div>
@@ -201,8 +201,7 @@ export default {
         fname: key + suffix
       }
       const config = {
-        useCdnDomain: true,
-        region: qiniu.region.z1
+        useCdnDomain: true
       }
       var observable = qiniu.upload(file, key, this.qiniu_token, putExtra, config)
       this.videosrc = ''
@@ -560,10 +559,13 @@ export default {
     padding-bottom: 25px;
 
     .addresss {
-      height: 15px;
       margin-left: 18px;
       font-size: 15px;
       color: #323233;
+      width: calc(100vw - 20px - 70px);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .addresssicon {

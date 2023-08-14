@@ -1,6 +1,8 @@
 <?php
 namespace app\apiadmin\controller;
 
+use app\common\model\MemberSetmeal;
+
 class Member extends \app\common\controller\Backend
 {
     public function _initialize()
@@ -84,7 +86,7 @@ class Member extends \app\common\controller\Backend
             $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
                 ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
                 ->where(function($query){
-                    $query->where('b.companyname','eq','')->whereOr('c.fullname','NULL');
+                    $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                 });
         }
         $total = $total->where($where)->count();
@@ -100,7 +102,7 @@ class Member extends \app\common\controller\Backend
             $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
                     ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
                     ->where(function($query){
-                        $query->where('b.companyname','eq','')->whereOr('c.fullname','NULL');
+                        $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                     });
         }
         $list = $list->field($field)->where($where)
@@ -110,7 +112,7 @@ class Member extends \app\common\controller\Backend
         foreach ($list as $key => $value) {
             $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
         }
-        
+
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -209,6 +211,12 @@ class Member extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
+            if (fieldRegex($input_data['username'], 'mobile')){
+                $this->ajaxReturn(500, '用户名不可以是手机号');
+            }
+            if (fieldRegex($input_data['username'], 'email')){
+                $this->ajaxReturn(500, '用户名不可以是邮箱');
+            }
             if (isset($input_data['password']) && $input_data['password']) {
                 $input_data['password'] = model('Member')->makePassword(
                     $input_data['password'],
@@ -243,7 +251,7 @@ class Member extends \app\common\controller\Backend
         }
         \think\Db::startTrans();
         try {
-            
+
             //删除会员相关信息
             if (
                 false ===
@@ -670,7 +678,7 @@ class Member extends \app\common\controller\Backend
         );
         $user_token = $JwtAuth->getString();
         //把token存入数据表，并设置有效期
-        model('IdentityToken')->makeToken($user_token,$this->expire_platform['web']);
+        model('IdentityToken')->makeToken($uid, $user_token,$this->expire_platform['web']);
         $next_code = 200;
         if ($userinfo['utype'] == 1) {
             $company_profile = model('Company')
@@ -721,5 +729,21 @@ class Member extends \app\common\controller\Backend
             'next_code' => $next_code,
             'user_iminfo' => model('ImToken')->getUserImInfo($uid,$userinfo['utype'])
         ];
+    }
+    public function syncSetmeal(){
+        if($this->admininfo->access != 'all'){
+            $this->ajaxReturn(500, '只有超级管理员才有权限执行此操作');
+        }
+        $setmealId = input('post.setmeal_id/d', 0, 'intval');
+        $pwd = input('post.pwd/s', '', 'trim');
+        $validate = validate('Login');
+        $validate->processRule();
+        if (!$validate->check(['username'=>$this->admininfo->username, 'password'=>$pwd])) {
+            $this->ajaxReturn(500, '密码有误');
+        }
+
+        $m = new MemberSetmeal();
+        $n = $m->syncSet($setmealId, $this->admininfo);
+        $this->ajaxReturn(200, '同步成功', $n);
     }
 }

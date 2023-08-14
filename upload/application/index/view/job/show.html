@@ -15,7 +15,8 @@
                 </div>
             </div>
             <div class="content1_btn float" v-cloak>
-                <button class="btn" @click="doApplyResume">投递简历</button>
+                <div v-if="!hasApply" class="btn" @click="doApplyResume">投递简历</div>
+                <div v-if="hasApply" class="btn" style="background:#cecece;">已投递简历</div>
                 <p class="operate">
                     <span class="collect" :class="hasFav===true?'has':''"
                         @click="doFav">{{hasFav===true?'已收藏':'收藏'}}</span>
@@ -182,6 +183,7 @@
                                     <div class="contact_details" v-if="hasApply===false">
                                         <p class="box_text">企业未开启查看联系方式，请直接投递简历</p>
                                         <div class="contact_btn" @click="doApplyResume" v-if="hasApply===false">投递简历</div>
+                                        <div class="contact_btn" @click="doApplyResume" v-if="hasApply" style="background:#CECECE;">已投递简历</div>
                                     </div>
                                     <div class="contact_details" v-else>
                                         <p class="box_text">企业未开启查看联系方式<br /><br />您已投递简历，请等待企业联系</p>
@@ -192,6 +194,10 @@
                                 <div class="title box2_title_padding">联系方式</div>
                                 {#if condition="!$phone_protect_open"#}
                                 <div class="contact_list" v-cloak>
+                                    <div class="contact_item">
+                                        <span class="contact_width">联系人：</span>
+                                        {{contactData.contact_info.contact}}
+                                    </div>
                                     <div class="contact_item">
                                         <span class="contact_width">联系手机：</span>
                                         {{contactData.contact_info.mobile}}
@@ -214,7 +220,8 @@
                                     </div>
                                 </div>
                                 <div class="post_box2_btn">
-                                    <span class="contact_btn1" @click="doApplyResume">投递简历</span>
+                                    <span class="contact_btn1" v-if="!hasApply" @click="doApplyResume">投递简历</span>
+                                    <span class="contact_btn1" v-if="hasApply" style="background:#CECECE;">投递简历</span>
                                     <el-popover placement="right" width="200" trigger="hover">
                                         <span>
                                             <img :src="imQrcode" width="174" height="174" />
@@ -444,7 +451,8 @@
                     {#eq name="return.base_info.negotiable" value="0"#}<span>/月</span>{#/eq#}</p>
             </div>
             <div class="show_nav_btn">
-                <div class="nav_btn1" @click="doApplyResume">投递简历</div>
+                <div v-if="!hasApply" class="nav_btn1" @click="doApplyResume">投递简历</div>
+                <div v-if="hasApply" class="nav_btn1" style="background:#cecece;">已投递简历</div>
             </div>
         </div>
     </div>
@@ -616,7 +624,7 @@
             utype: 0,
             showMap: false,
             hasFav: false,
-            hasApply: false,
+            hasApply: true,
             clickNum: 0,
             shareQrcode: '',
             rightQrcode: '',
@@ -731,6 +739,7 @@
                   httppost(qscms.apiList.jobapply, params)
                     .then(function (res) {
                       that.$message({ type: 'success', message: res.message })
+                      location.reload()
                     })
                     .catch(function () { })
                 }

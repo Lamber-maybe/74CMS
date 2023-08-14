@@ -6,11 +6,11 @@
       <div class="tx2">您已登录：<span>{{nickname}}</span></div>
       <div class="tx3">请关联您的{{$store.state.config.sitename}}账号，以便您下次直接登录</div>
       <div class="field_cell_group">
-        <div class="field_cell choose-utype">
-          <van-radio-group v-model="utype" direction="horizontal">
-            <van-radio :name="2">我要找工作</van-radio>
-            <van-radio :name="1">我要招聘</van-radio>
-          </van-radio-group>
+        <div class="field_cell choose-utype" style="border:0;">
+          <div class="t_box">
+            <router-link class="swb" :class="$route.query.utype==2?'active':''" :to="genCurUrl(2)">我要找工作</router-link>
+            <router-link class="swb" :class="$route.query.utype==1?'active':''" :to="genCurUrl(1)">我要招聘</router-link>
+          </div>
         </div>
         <div class="field_cell">
           <input
@@ -31,7 +31,7 @@
           />
           <button class="log_get_btn" @click="sendSms">{{ $store.state.sendSmsBtnText }}</button>
         </div>
-        <div class="btn_group">
+        <div class="btn_group" style="margin-top:10px;">
           <van-button class="btn_mb" type="info" size="large" round @click="handleSubmit"
             >绑定网站账号</van-button
           >
@@ -90,13 +90,19 @@ export default {
     }
   },
   created () {
+    this.utype = this.$route.query.utype ? parseInt(this.$route.query.utype) : 2
     this.openid = this.$route.query.openid
     this.unionid = this.$route.query.unionid
     this.nickname = this.$route.query.nickname
     this.avatar = this.$route.query.avatar
     this.bindType = this.$route.query.bindType
+    this.$route.query.utype = this.utype
   },
   methods: {
+    genCurUrl (utype) {
+      let avatar = encodeURIComponent(this.avatar)
+      return `/member/bind?openid=${this.openid}&unionid=${this.unionid}&nickname=${this.nickname}&avatar=${avatar}&bindType=${this.bindType}&utype=${utype}`
+    },
     showAgreement (alias) {
       this.showTextContent = ''
       this.showText = true
@@ -202,6 +208,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.t_box {
+  display: flex;flex-wrap: wrap;justify-content: space-between;
+  .swb {
+    width: 145px;font-size: 14px;padding: 6px 0 6px 47px;border-radius: 33px;color: #999999;
+    background: #f0f0f0 url("../../assets/images/sw_fw_ic1.png") 20px center no-repeat;background-size: 17px;
+    &.active {
+      background: #ebf5ff url("../../assets/images/sw_fw_ic2.png") 20px center no-repeat;background-size: 17px;color: #3388ff;
+    }
+  }
+}
 .log_wrapper {
   width: 323px;
   margin: 0 auto;
@@ -248,7 +264,7 @@ export default {
 .tx3 {
   font-size: 13px;
   color: #ff6060;
-  padding: 10px 0 25px;
+  padding-top: 10px ;
 }
 .btn_mb {
   margin-bottom: 16px;
@@ -271,12 +287,9 @@ export default {
 .van-radio{
   font-size:14px;
 }
-.field_cell{
-  border:0;
-}
+
 .choose-utype{
-  margin-top:10px;
-  margin-bottom:0;
-  height:30px;
+  margin-top:0px;
+
 }
 </style>

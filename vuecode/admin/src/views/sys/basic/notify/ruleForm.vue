@@ -8,7 +8,7 @@
     >
       <el-form-item>
         <el-table border :data="list">
-          <el-table-column label="通知内容" width="120">
+          <el-table-column label="通知内容" min-width="120">
             <template slot-scope="scope">
               {{ scope.row.title }}
             </template>
@@ -18,7 +18,7 @@
               {{ scope.row.type_cn }}
             </template>
           </el-table-column>
-          <el-table-column label="通知内容" width="450">
+          <el-table-column label="通知内容" min-width="450">
             <template slot-scope="scope">
               {{ scope.row.content }}
             </template>

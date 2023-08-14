@@ -25,7 +25,7 @@
         <el-table-column
           prop="jobname"
           label="职位名称"
-          width="220"
+          min-width="220"
         />
         <el-table-column prop="education" label="学历要求" />
         <el-table-column prop="experience" label="经验要求" />

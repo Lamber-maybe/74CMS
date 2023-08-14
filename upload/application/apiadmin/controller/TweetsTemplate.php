@@ -9,11 +9,11 @@ class TweetsTemplate extends \app\common\controller\Backend
             ->where($where)
 			->order('is_sys desc,id desc')
             ->select();
-			
+
 		$TweetsLabel = model('TweetsLabel')
             ->order('id desc')->select();
-		
-		
+
+
 		foreach($list as $key=>$val){
 			$content = $val['content'];
 			foreach($TweetsLabel as $keys=>$vals){
@@ -55,7 +55,7 @@ class TweetsTemplate extends \app\common\controller\Backend
         }else{
 			$this->ajaxReturn(500, model('TweetsTemplate')->getError());
 		}
-        
+
     }
     public function edit()
     {
@@ -78,7 +78,7 @@ class TweetsTemplate extends \app\common\controller\Backend
 			$input_data['addtime'] = time();
 			if($input_data['id']){
 				$r = model('TweetsTemplate')->where('id', $input_data['id'])->update($input_data);
-			}        
+			}
 			if ($r === false) {
 				$this->ajaxReturn(500, model('TweetsTemplate')->getError());
 			}
@@ -113,7 +113,7 @@ class TweetsTemplate extends \app\common\controller\Backend
             }else{
                 $jobcontactdata = [];
             }
-			
+
 			$allDistrict = model('CategoryDistrict')->getCache('all');
             foreach ($datalist as $key => $values) {
                 $list[$key]['id'] = $values['id'];
@@ -127,22 +127,22 @@ class TweetsTemplate extends \app\common\controller\Backend
                         $item['job'] = $value['jobname'];
                         $item['jobname'] = $value['jobname'];
                         if($value['nature']==1){
-                            $item['nature'] = '全职'; 
+                            $item['nature'] = '全职';
                         }elseif($value['nature']==2){
-                            $item['nature'] = '实习'; 
+                            $item['nature'] = '实习';
                         }else{
-                            $item['nature'] = '不限'; 
+                            $item['nature'] = '不限';
                         }
                         $item['education'] = isset(
                             model('BaseModel')->map_education[$value['education']]
                         )
                             ? model('BaseModel')->map_education[$value['education']]
-                            : '学历不限';			
+                            : '学历不限';
                         $item['experience'] = isset(
                             model('BaseModel')->map_experience[$value['experience']]
                         )
                         ? model('BaseModel')->map_experience[$value['experience']]
-                        : '经验不限';		
+                        : '经验不限';
                         $item['wage'] = model('BaseModel')->handle_wage(
                             $value['minwage'],
                             $value['maxwage'],
@@ -165,12 +165,12 @@ class TweetsTemplate extends \app\common\controller\Backend
                         $item['jobtag'] = implode(",",$item['tag']);
                         $item['amount'] = $value['amount'];
                         if($value['district1']&&$value['district2']&&$value['district3']){
-                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];	
+                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];
                         }elseif($value['district1']&&$value['district2']){
-                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];	
+                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];
                         }elseif($value['district1']){
-                            $item['district_cn'] = $allDistrict[$value['district1']];	
-                        }		
+                            $item['district_cn'] = $allDistrict[$value['district1']];
+                        }
                         $item['address'] = $value['address'];
                         $item['content'] = $value['content'];
                         $jid = $value['id'];
@@ -182,21 +182,21 @@ class TweetsTemplate extends \app\common\controller\Backend
                             if($jobcontactdata[$jid]['use_company_contact']==1){
                                 $item['contact'] = $condata[$cid]['contact'];
                                 $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-                            }else{						
+                            }else{
                                 $item['contact'] = $jobcontactdata[$jid]['contact'];
                                 $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
                             }
                         }
-                        
+
                         $item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
                         $item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
                         $list[$key]['joblist'][]=$item;
                     }
                 }
-                
+
                 $list[$key]['has_job_num'] = count($list[$key]['joblist']);
                 $list[$key]['has_job'] = $list[$key]['has_job_num']==0?0:1;
-				
+
             }
         }
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
@@ -230,22 +230,22 @@ class TweetsTemplate extends \app\common\controller\Backend
 				$item['job'] = $value['jobname'];
 				$item['jobname'] = $value['jobname'];
 				if($value['nature']==1){
-					$item['nature'] = '全职'; 
+					$item['nature'] = '全职';
 				}elseif($value['nature']==2){
-					$item['nature'] = '实习'; 
+					$item['nature'] = '实习';
 				}else{
-					$item['nature'] = '不限'; 
+					$item['nature'] = '不限';
 				}
 				$item['education'] = isset(
 					model('BaseModel')->map_education[$value['education']]
 				)
 					? model('BaseModel')->map_education[$value['education']]
-					: '学历不限';			
+					: '学历不限';
 				$item['experience'] = isset(
 					model('BaseModel')->map_experience[$value['experience']]
 				)
 				? model('BaseModel')->map_experience[$value['experience']]
-				: '经验不限';		
+				: '经验不限';
 				$item['wage'] = model('BaseModel')->handle_wage(
 					$value['minwage'],
 					$value['maxwage'],
@@ -268,16 +268,16 @@ class TweetsTemplate extends \app\common\controller\Backend
 				$item['jobtag'] = implode(",",$item['tag']);
 				$item['amount'] = $value['amount'];
 				if($value['district1']&&$value['district2']&&$value['district3']){
-					$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];	
+					$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];
 				}elseif($value['district1']&&$value['district2']){
-					$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];	
+					$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];
 				}elseif($value['district1']){
-					$item['district_cn'] = $allDistrict[$value['district1']];	
+					$item['district_cn'] = $allDistrict[$value['district1']];
 				}
 				$item['address'] = $value['address'];
 				$item['content'] = $value['content'];
 				$jid = $value['id'];
-				$cid = $value['company_id'];	
+				$cid = $value['company_id'];
                 if(!isset($jobcontactdata[$jid])){
                     $item['contact'] = $condata[$cid]['contact'];
                     $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
@@ -285,11 +285,11 @@ class TweetsTemplate extends \app\common\controller\Backend
                     if($jobcontactdata[$jid]['use_company_contact']==1){
                         $item['contact'] = $condata[$cid]['contact'];
                         $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-                    }else{						
+                    }else{
                         $item['contact'] = $jobcontactdata[$jid]['contact'];
                         $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
                     }
-                }	
+                }
 				$item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
 				$item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
 				$list[] = $item;
@@ -303,7 +303,7 @@ class TweetsTemplate extends \app\common\controller\Backend
         $jobid_arr = [];
         if($type==='joblist'){
             $model = $this->_parseConditionOfJob($condition);
-            $jobid_arr = $model->where('a.audit',1)->where('a.is_display',1)->column('a.id');
+            $jobid_arr = $model->column('a.id');//v3.0.2
         }else if($type==='tocompany'){
             foreach($condition as $key=>$val){
                 foreach($val['joblist'] as $keys=>$vals) {
@@ -329,34 +329,34 @@ class TweetsTemplate extends \app\common\controller\Backend
 			$condata = model('CompanyContact')->where('comid','in',$comid_arr)->column('contact,mobile,telephone','comid');
 		}
 		unset($comid_arr);
-		
+
         $return = [];
         $category_data = model('Category')->getCache();
 		$jobcontactdata = model('JobContact')->where('jid','in',$jobid_arr)->column('contact,mobile,telephone,use_company_contact','jid');
 		$allDistrict = model('CategoryDistrict')->getCache('all');
-		foreach ($list as $key => $value) {            
+		foreach ($list as $key => $value) {
 			$item['id'] = $value['id'];
 			$com_id = $value['company_id'];
             $item['company'] = isset($comdata[$com_id])?$comdata[$com_id]:'未知';
             $item['job'] = $value['jobname'];
             $item['jobname'] = $value['jobname'];
 			if($value['nature']==1){
-				$item['nature'] = '全职'; 
+				$item['nature'] = '全职';
 			}elseif($value['nature']==2){
-				$item['nature'] = '实习'; 
+				$item['nature'] = '实习';
 			}else{
-				$item['nature'] = '不限'; 
+				$item['nature'] = '不限';
 			}
             $item['education'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )
                 ? model('BaseModel')->map_education[$value['education']]
-                : '学历不限';			
+                : '学历不限';
             $item['experience'] = isset(
                 model('BaseModel')->map_experience[$value['experience']]
             )
             ? model('BaseModel')->map_experience[$value['experience']]
-            : '经验不限';		
+            : '经验不限';
             $item['wage'] = model('BaseModel')->handle_wage(
                 $value['minwage'],
                 $value['maxwage'],
@@ -376,19 +376,19 @@ class TweetsTemplate extends \app\common\controller\Backend
             }else{
 				$item['jobtag'] = [];
 			}
-            
+
 			$item['amount'] = $value['amount'];
 			if($value['district1']&&$value['district2']&&$value['district3']){
-				$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];	
+				$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];
 			}elseif($value['district1']&&$value['district2']){
-				$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];	
+				$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];
 			}elseif($value['district1']){
-				$item['district_cn'] = $allDistrict[$value['district1']];	
-			}            		
+				$item['district_cn'] = $allDistrict[$value['district1']];
+			}
             $item['address'] = $value['address'];
 			$item['content'] = $value['content'];
 			$jid = $value['id'];
-			$cid = $value['company_id'];	
+			$cid = $value['company_id'];
             if(!isset($jobcontactdata[$jid])){
                 $item['contact'] = $condata[$cid]['contact'];
                 $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
@@ -396,20 +396,23 @@ class TweetsTemplate extends \app\common\controller\Backend
                 if($jobcontactdata[$jid]['use_company_contact']==1){
                     $item['contact'] = $condata[$cid]['contact'];
                     $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-                }else{						
+                }else{
                     $item['contact'] = $jobcontactdata[$jid]['contact'];
                     $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
-                }		
-            }		
-			
-            $item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-            $item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
+                }
+            }
+
+            $item['joburl_o'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
+            $item['companyurl_o'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
             $return[] = $item;
         }
+		$shortUrl = new \app\common\model\ShortUrl();
+		$shortUrl->genCode4Array($return, 'joburl_o', 'joburl', '社群推文营销');
+        $shortUrl->genCode4Array($return, 'companyurl_o', 'companyurl', '社群推文营销');
         $return['items'] = $return;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-	
+
     public function title_footer(){
 		$item['nowtime'] = date('Y-m-d',time());
 		$item['sitename'] = config('global_config.sitename');

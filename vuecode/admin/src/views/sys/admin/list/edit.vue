@@ -38,9 +38,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="是否是销售" prop="is_sc">
-          <el-radio-group v-model="form.is_sc">
-            <el-radio :label="1" >是</el-radio>
-            <el-radio :label="0" >否</el-radio>
+          <el-radio-group v-model.number="form.is_sc">
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="0">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="登录名" prop="username">
@@ -120,6 +120,7 @@ export default {
         .then(response => {
           // console.log(response)
           this.form = { ...response.data }
+          this.form.is_sc = parseInt(this.form.is_sc)
           this.infoLoading = false
         })
         .catch(() => {})
@@ -132,6 +133,7 @@ export default {
           apiEdit(insertData)
             .then(response => {
               this.$message.success(response.message)
+              this.$store.dispatch('crm/getAdminList')
               setTimeout(function() {
                 that.$router.push('/sys/admin/list')
               }, 1500)

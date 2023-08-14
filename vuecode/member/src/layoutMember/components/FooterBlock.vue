@@ -34,12 +34,13 @@
 </script>
 
 <style lang="scss" scoped>
+.my_footer_mgt{
+  margin-top: 15px;
+} 
   .my_footer {
     width: 100%;
     background-color: #fff;
     padding-bottom: 20px;
-    margin-top: 15px;
-
     .link_nav {
       text-align: center;
       font-size: 0;

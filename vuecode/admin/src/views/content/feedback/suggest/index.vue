@@ -34,13 +34,13 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column label="类型" width="80">
+        <el-table-column type="selection" min-width="30" />
+        <el-table-column label="类型" min-width="80">
           <template slot-scope="scope">
             {{ scope.row.type_cn }}
           </template>
         </el-table-column>
-        <el-table-column label="处理情况" width="100">
+        <el-table-column label="处理情况" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | statusFilter">
               {{ scope.row.status == 1 ? '已处理' : '未处理' }}
@@ -52,7 +52,7 @@
             <el-popover
               placement="right"
               trigger="hover"
-              width="400"
+              min-width="400"
             >
               {{ scope.row.content }}
               <span slot="reference">
@@ -61,7 +61,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="联系方式" width="200">
+        <el-table-column label="联系方式" min-width="200">
           <template slot-scope="scope">
             {{ scope.row.mobile }} 【uid：{{ scope.row.uid }}】
           </template>
@@ -70,14 +70,14 @@
           align="center"
           prop="addtime"
           label="添加时间"
-          width="200"
+          min-width="200"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="220">
           <template slot-scope="scope">
             <el-button
               size="small"

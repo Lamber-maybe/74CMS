@@ -1284,6 +1284,10 @@ INSERT INTO `qs_wechat_share` VALUES
 (NUll,'jobnearby','附近职位','【附近职位】{district}-这有一些家门口的工作-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL,'online_jobfairlist','网络招聘会列表','【网络招聘会】{sitename}网络招聘会-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL,'online_jobfairshow','网络招聘会详情','【网络招聘会信息】{title}-{sitename}','self','招聘会图片','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
+(NULL, 'svcomlist', '视频招聘列表', '【视频招聘】求职新体验，刷视频就能找工作-{sitename}', 'logo', '', '你有*个好友看过正在看~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL, 'svperslist', '视频求职列表', '【视频招聘】视频求职简历，看视频找人才-{sitename}', 'logo', '', '更多靠谱好人才等你发现~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL, 'svcomshow', '视频招聘详情', '【视频招聘】{comname}发布了招聘信息，走过路过不要错过-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"企业名称\",\"value\":\"comname\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL, 'svpershow', '视频求职详情', '【视频招聘】{resumename}发布了视频简历，快来看看吧-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"姓名\",\"value\":\"resumename\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
 
 
 INSERT INTO `qs_tweets_label` VALUES 

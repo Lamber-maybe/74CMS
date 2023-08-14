@@ -11,14 +11,14 @@
         fit
         highlight-current-row
       >
-        <el-table-column align="center" label="ID" width="95">
+        <el-table-column align="center" label="ID" min-width="95">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
         <el-table-column label="角色" prop="name" />
         <el-table-column label="关联管理员" prop="user_total" />
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="220">
           <template slot-scope="scope">
             <span v-if="scope.row.access == 'all'" style="color:#909399">
               超级管理员不允许修改

@@ -11,7 +11,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column align="center" label="ID" width="95">
+        <el-table-column align="center" label="ID" min-width="95">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
@@ -20,7 +20,7 @@
         <el-table-column label="角色" prop="role_name" />
         <el-table-column label="是否是销售" prop="is_sc">
           <template slot-scope="scope">
-            <span v-if="scope.row.is_sc">是</span><span v-else>不是</span>
+            <span v-if="!!parseInt(scope.row.is_sc)">是</span><span v-else>不是</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="openid" label="微信绑定">
@@ -39,7 +39,7 @@
           label="最后登录IP"
           prop="last_login_ip"
         />
-        <el-table-column fixed="right" label="操作" width="400">
+        <el-table-column fixed="right" label="操作" min-width="400">
           <template slot-scope="scope">
             <el-button
               size="small"

@@ -44,13 +44,34 @@ class Http
             'body' => $retrun
         ];
     }
+    function get3($url ) {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1" );
+
+        curl_setopt( $ch, CURLOPT_URL, $url);
+
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+        curl_setopt( $ch, CURLOPT_ENCODING, "" );
+
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+        curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+
+        curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+        $content = curl_exec( $ch );
+        curl_close ( $ch );
+        return $content;
+    }
     function request($url, $header, $type, $data, $DataType, $HeaderType = "PC")
     {
         //常用header
         //$header = "user-agent:" . 1 . "\r\n" . "referer:" . 1 . "\r\n" . "AccessToken:" . 1 . "\r\n" . "cookie:" . 1 . "\r\n";
         if (empty($header)) {
             if ($HeaderType == "PC") {
-                $header = "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36 Edg/88.0.705.63\r\n";
+                $header = "user-agent:Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1\r\n";
             } else if ($HeaderType == "PE") {
                 $header = "user-agent:Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/88.0.4324.150\r\n";
             }

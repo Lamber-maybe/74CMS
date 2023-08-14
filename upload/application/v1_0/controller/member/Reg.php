@@ -276,7 +276,10 @@ class Reg extends \app\v1_0\controller\common\Base
                 'birthday' => $input_data['birthday'],
                 'education' => $input_data['education'],
                 'enter_job_time' => $input_data['enter_job_time'],
-                'current' => $input_data['current']
+                'current' => $input_data['current'],
+                'major1' => 0,
+                'major2' => 0,
+                'major' => 0
             ];
             $add_resume_data['enter_job_time'] = !$add_resume_data['enter_job_time'] ? 0 : strtotime($add_resume_data['enter_job_time']);
             $add_resume_data['platform'] = config('platform');
@@ -370,7 +373,7 @@ class Reg extends \app\v1_0\controller\common\Base
         $current_complete = model('Resume')->countCompletePercent($resume_id);
         $login_return['require_complete'] = $global_config['apply_job_min_percent'];
         $login_return['current_complete'] = $current_complete;
-        
+
         if(config('global_config.audit_add_resume')==0){
             $login_return['next_code'] = 50005;
             $this->ajaxReturn(

@@ -48,7 +48,7 @@ class JobApply extends \app\common\model\BaseModel
             return false;
         }
         $job_info = model('Job')
-            ->field('id,uid,jobname,audit')
+            ->field('id,uid,jobname,audit,is_display')
             ->where('id', 'eq', $jobid)
             ->find();
         if (null === $job_info) {
@@ -57,6 +57,10 @@ class JobApply extends \app\common\model\BaseModel
         }
         if($job_info['audit']!=1){
             $this->error = '该职位还没有审核通过，无法继续此操作';
+            return false;
+        }
+        if($job_info['is_display']!= 1){
+            $this->error = '该职位已停止招聘，无法继续此操作';
             return false;
         }
         $global_config = config('global_config');

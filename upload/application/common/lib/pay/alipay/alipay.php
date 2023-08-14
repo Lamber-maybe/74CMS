@@ -42,7 +42,7 @@ class alipay
             'subject' => $data['service_name'],
             'out_trade_no' => $this->order_prefix . $data['oid'],
             'timeout_express' => '90m',
-            'total_amount' => PAY_TEST_MODE ? 0.01 : $data['amount'],
+            'total_amount' => config('pay_test_mode') ? 0.01 : $data['amount'], //使用config配置
             'product_code' => 'FAST_INSTANT_TRADE_PAY',
         ];
         $aop = new \AopClient();
@@ -79,7 +79,7 @@ class alipay
             'subject' => $data['service_name'],
             'out_trade_no' => $this->order_prefix . $data['oid'],
             'timeout_express' => '90m',
-            'total_amount' => PAY_TEST_MODE ? 0.01 : $data['amount'],
+            'total_amount' => config('pay_test_mode') ? 0.01 : $data['amount'],
             'product_code' => 'QUICK_WAP_WAY',
         ];
         $aop = new \AopClient();
@@ -116,7 +116,7 @@ class alipay
             'subject' => $data['service_name'],
             'out_trade_no' => $this->order_prefix . $data['oid'],
             'timeout_express' => '90m',
-            'total_amount' => PAY_TEST_MODE ? 0.01 : $data['amount'],
+            'total_amount' => config('pay_test_mode') ? 0.01 : $data['amount'],
             'product_code' => 'QUICK_MSECURITY_PAY',
         ];
         $aop = new \AopClient();
@@ -216,7 +216,7 @@ class alipay
                 if ($order['status'] == 1) {
                     return true;
                 }
-                if (!PAY_TEST_MODE && $order['amount'] != $total_fee) {
+                if (!config('pay_test_mode') && $order['amount'] != $total_fee) {
                     return false;
                 }
                 $result = model('Order')->orderPaid(
@@ -291,7 +291,7 @@ class alipay
                 if ($order['status'] == 1) {
                     return true;
                 }
-                if (!PAY_TEST_MODE && $order['amount'] != $total_fee) {
+                if (!config('pay_test_mode') && $order['amount'] != $total_fee) {
                     return false;
                 }
                 $result = model('Order')->orderPaid(

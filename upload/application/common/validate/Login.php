@@ -17,6 +17,10 @@ class Login extends BaseValidate
         'username.max' => '用户名不能超过15个字',
         'password.require' => '请填写密码'
     ];
+
+    public function processRule(){
+        unset($this->rule['code'], $this->rule['secret_str']);
+    }
     // 自定义验证规则
     protected function checkPassword($value, $rule, $data)
     {

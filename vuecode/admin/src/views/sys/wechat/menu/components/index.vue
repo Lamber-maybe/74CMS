@@ -31,12 +31,12 @@
       <el-table-column
         prop="sort_id"
         label="排序"
-        width="180"
+        min-width="180"
       />
       <el-table-column
         fixed="right"
         label="操作"
-        width="350"
+        min-width="350"
       >
         <template slot-scope="scope">
           <el-button

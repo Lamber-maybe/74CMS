@@ -234,4 +234,16 @@ class JsApiPay
         return 'https://api.weixin.qq.com/sns/oauth2/access_token?' .
             $bizString;
     }
+    public function GetOpenidByCode($code){
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.config('global_config.wechat_miniprogram_appid').'&secret='.config('global_config.wechat_miniprogram_appsecret').'&js_code='.$code.'&grant_type=authorization_code';
+        $http = new \app\common\lib\Http;
+        $result = $http->get($url);
+        $result = json_decode($result,1);
+        if(isset($result['openid'])){
+            return $result['openid'];
+        }else{
+            // return 'otA8g0XseFatNbQEKvEwtFg1c-AQ';
+            return '';
+        }
+    }
 }

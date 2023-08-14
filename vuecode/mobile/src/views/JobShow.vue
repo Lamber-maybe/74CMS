@@ -1,6 +1,7 @@
 <template>
   <div id="app" class="my_app">
-    <Meta v-if="base_info.jobname!==undefined" pagealias="jobshow" :custom_data="{jobname:base_info.jobname,companyname:com_info.companyname,nature:base_info.nature_text,category:base_info.category_text,district:base_info.district_text}" />
+    <Meta v-if="base_info.jobname!==undefined" pagealias="jobshow"
+          :custom_data="{jobname:base_info.jobname,companyname:com_info.companyname,nature:base_info.nature_text,category:base_info.category_text,district:base_info.district_text}"/>
     <Head>职位详情</Head>
     <van-skeleton title avatar :row="10" :loading="mainLoading">
       <div class="box_1">
@@ -175,7 +176,9 @@
       </div>
       <div class="form_split_10"></div>
       <div class="box_8">
-        <div class="put">联系方式<span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span class="phone" v-text="cur_user_mobile">}</span> 的手机号拔号</span></div>
+        <div class="put">联系方式<span class="phone_tip"
+                                   v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span
+          class="phone" v-text="cur_user_mobile">}</span> 的手机号拔号</span></div>
         <div class="contact_info" v-if="!phone_protect_open && show_contact == 1">
           <div class="info_line">
             联系人：
@@ -232,7 +235,9 @@
         </div>
         <div class="code_pro_wrap" v-if="show_contact == 1 && phone_protect_open">
           <img class="secret" src="../assets/images/318.jpg"/>
-          <div v-if="phone_protect_type==1" class="pro_tip">1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号</div>
+          <div v-if="phone_protect_type==1" class="pro_tip">1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span
+            v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号
+          </div>
         </div>
         <div
           class="contact_login"
@@ -266,8 +271,8 @@
           v-if="show_contact == 0 && show_contact_note == 'need_apply'"
           @click="doApply"
         >
-          <div class="tx1" >企业要求<span class="link">投递简历</span></div>
-          <div class="tx2" >后才可查看联系方式</div>
+          <div class="tx1">企业要求<span class="link">投递简历</span></div>
+          <div class="tx2">后才可查看联系方式</div>
         </div>
         <div
           class="contact_delivery"
@@ -319,13 +324,13 @@
         <div class="info" @click="$router.push('/company/' + com_info.id)">
           <div class="up">
             <div class="logo_box">
-              <img :src="com_info.logo_src" :alt="com_info.companyname" />
+              <img :src="com_info.logo_src" :alt="com_info.companyname"/>
             </div>
             <div class="tx1">
               <div class="name">{{ com_info.companyname }}</div>
               <div class="auth_ico" v-if="com_info.audit == 1"></div>
               <div class="crw_ico" v-if="com_info.setmeal_icon != ''">
-                <img :src="com_info.setmeal_icon" alt="" />
+                <img :src="com_info.setmeal_icon" alt=""/>
               </div>
               <div class="clear"></div>
             </div>
@@ -369,7 +374,7 @@
               <div class="name">{{ item.companyname }}</div>
               <div class="auth_ico" v-if="item.company_audit == 1"></div>
               <div class="crw_ico" v-if="item.setmeal_icon != ''">
-                <img :src="item.setmeal_icon" alt="" />
+                <img :src="item.setmeal_icon" alt=""/>
               </div>
               <div class="clear"></div>
             </div>
@@ -426,7 +431,8 @@
       :overlay="false"
       style="width:100%;height:100%"
     >
-      <Tipoff ref="tipoff" :type="1" :target_id="base_info.id" :jobname="base_info.jobname" @closePopout="showTipoff = false"></Tipoff>
+      <Tipoff ref="tipoff" :type="1" :target_id="base_info.id" :jobname="base_info.jobname"
+              @closePopout="showTipoff = false"></Tipoff>
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
@@ -434,17 +440,20 @@
     <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
-              @handleForward="handleForward"
-              @handlePoster="handlePoster"></Share>
+             @handleForward="handleForward"
+             @handlePoster="handlePoster"></Share>
     </van-popup>
-    <van-dialog v-model="codePro.show" show-cancel-button :confirm-button-text="codePro.btnCn" @confirm="callCodePro" confirm-button-color="#1989fa">
+    <van-dialog v-model="codePro.show" show-cancel-button :confirm-button-text="codePro.btnCn" @confirm="callCodePro"
+                confirm-button-color="#1989fa">
       <div class="line18 m-top">拔打号码</div>
       <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
       <div class="line18 font12">(电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)</div>
-      <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号</div>
+      <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号
+      </div>
     </van-dialog>
-    <div class="click_copy" @click="handlerCopy">一键<br />复制</div>
-    <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
+    <div class="return_list" v-if="isRetrunBtn != null" @click="$router.push('/campus/job')">返回列表</div>
+    <div class="click_copy" @click="handlerCopy">一键<br/>复制</div>
+    <div class="generate_posters" @click="handlePoster">生成<br/>海报</div>
   </div>
 </template>
 
@@ -453,13 +462,14 @@ import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import Subscribe from '@/components/Subscribe'
 import Tipoff from '@/components/Tipoff'
-import { countDistance } from '@/utils/index'
+import {countDistance} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Login from '@/components/Login'
 import JobCompetitive from '@/components/JobCompetitive'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
+
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -493,7 +503,7 @@ export default {
       is_personal_login: false,
       showCompetitive: false,
       base_info: {},
-      field_rule: { basic: {}, contact: {} },
+      field_rule: {basic: {}, contact: {}},
       show_contact: 0,
       show_contact_note: '',
       contact_info: {},
@@ -518,7 +528,8 @@ export default {
       cur_user_mobile: '',
       phone_protect_open: false,
       phone_protect_timeout: 0,
-      phone_protect_type: 0
+      phone_protect_type: 0,
+      shortUrl: ''
     }
   },
   created () {
@@ -537,27 +548,42 @@ export default {
       document.body.scrollTop = document.documentElement.scrollTop = 0
     }
   },
-  mounted () {},
+  mounted () {
+  },
   methods: {
     // 一键复制
-    handlerCopy () {
+    async handlerCopy () {
       let that = this
-      let copyMessage = `${this.com_info.companyname}
+      let copy = () => {
+        let copyMessage = `${this.com_info.companyname}
 招聘：${this.base_info.jobname}
 要求：工作经验${this.base_info.experience_text}、学历要求${this.base_info.education_text}
 工资：${this.base_info.wage_text}
-查看联系方式：${location.href}
+查看联系方式：${this.shortUrl}
 -招聘求职就上${this.$store.state.config.sitename}-`
-      this.$copyText(copyMessage).then(function (e) {
-        that.$notify({ type: 'success', message: '内容已复制到剪切板！' })
-      }, function (e) {
-        that.$notify({ type: 'error', message: '抱歉，复制失败！' })
-      })
+        this.$copyText(copyMessage).then(function (e) {
+          that.$notify({type: 'success', message: '内容已复制到剪切板！'})
+        }, function (e) {
+          that.$notify({type: 'error', message: '抱歉，复制失败！'})
+        })
+      }
+      if (!this.shortUrl) {
+        const params = {
+          jobId: this.query_id
+        }
+        let res = await http.get('/home/short_url/genJobShow', params)
+        if (res.code == 200) {
+          this.shortUrl = res.data
+          copy()
+        }
+      } else {
+        copy()
+      }
     },
     toDetail (id) {
       this.$router.push('/job/' + id)
     },
-    handlerMap ({ BMap, map }) {
+    handlerMap ({BMap, map}) {
       this.BMap = BMap
     },
     getPosition (map_lat, map_lng) {
@@ -587,13 +613,13 @@ export default {
             }
           }
         },
-        { enableHighAccuracy: true }
+        {enableHighAccuracy: true}
       )
     },
     getCompetitiveness () {
       if (this.is_personal_login === true) {
         http
-          .get(api.competitiveness, { id: this.query_id })
+          .get(api.competitiveness, {id: this.query_id})
           .then(res => {
             if (res.data.length == 0) {
               this.match_level = 3
@@ -603,7 +629,8 @@ export default {
               this.competitive_data = res.data
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         this.match_level = 3
       }
@@ -629,7 +656,7 @@ export default {
         phone_protect_open,
         phone_protect_timeout,
         phone_protect_type
-      } = { ...res.data }
+      } = {...res.data}
       this.field_rule = field_rule
       this.base_info = base_info
       this.show_contact = show_contact
@@ -701,7 +728,8 @@ export default {
             .then(() => {
               window.location.href = `tel:${this.contact_info.mobile}`
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         }
       } else if (this.is_personal_login === false) {
         this.$dialog
@@ -716,7 +744,8 @@ export default {
               method: 'doTel'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.show_contact_note === 'need_resume') {
           this.$notify('您还没有简历，创建简历后可拨打企业电话')
@@ -745,7 +774,8 @@ export default {
               method: 'doMsg'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else if (this.base_info.im_userid) {
         this.$router.push('/im/imshow/' + this.base_info.im_userid)
       } else {
@@ -768,7 +798,8 @@ export default {
                 method: 'doApply'
               }
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         } else {
           const params = {
             jobid: this.query_id
@@ -776,10 +807,11 @@ export default {
           http
             .post(api.jobapply, params)
             .then(res => {
-              this.$notify({ type: 'success', message: res.message })
+              this.$notify({type: 'success', message: res.message})
               this.fetchData()
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         }
       } else {
         // 快速注册简历
@@ -805,7 +837,8 @@ export default {
               method: 'doFav'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         const params = {
           jobid: this.query_id
@@ -815,9 +848,10 @@ export default {
           .post(_api_url, params)
           .then(res => {
             this.has_fav = this.has_fav === 1 ? 0 : 1
-            this.$notify({ type: 'success', message: res.message })
+            this.$notify({type: 'success', message: res.message})
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       }
     },
     doShare () {
@@ -895,7 +929,8 @@ export default {
               method: 'handlerReport'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         this.$refs.tipoff.initCB()
         this.showTipoff = true
@@ -907,775 +942,842 @@ export default {
 
 <style lang="scss" scoped>
   .click_copy {
-    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
-    right: 15px;bottom: 150px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
-  }
-  .generate_posters {
-    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
-    right: 15px;bottom: 100px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
-  }
-.my_app {
-  padding-bottom: 16px;
-}
-.box_12 {
-  .bottom_bar {
-    .item_apply {
-      float: left;
-      padding: 12px 0;
-      height: 100%;
-      text-align: center;
-      background-color: #1787fb;
-      color: #ffffff;
-      font-size: 18px;
-      width: 255px;
-    }
-    .item_chat {
-      float: left;
-      width: 60px;
-      height: 100%;
-      padding: 32px 0 4px;
-      text-align: center;
-      font-size: 10px;
-      color: #333333;
-      background: url("../assets/images/chat_ico.svg") center 9px no-repeat;
-      background-size: 17px;
-      position: relative;
-      &::after {
-        position: absolute;
-        box-sizing: border-box;
-        content: " ";
-        pointer-events: none;
-        right: 0;
-        top: 0;
-        left: 0;
-        border-bottom: 0.026667rem solid #f3f3f3;
-      }
-    }
-    .item_call {
-      float: left;
-      width: 60px;
-      height: 100%;
-      padding: 32px 0 4px;
-      text-align: center;
-      font-size: 10px;
-      color: #333333;
-      background: url("../assets/images/calling_ico.svg") center 9px no-repeat;
-      background-size: 17px;
-      position: relative;
-      &::after {
-        position: absolute;
-        box-sizing: border-box;
-        content: " ";
-        pointer-events: none;
-        right: 0;
-        top: 0;
-        left: 0;
-        border-bottom: 0.026667rem solid #f3f3f3;
-      }
-    }
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ffffff;
-    z-index: 3;
+    z-index: 1;
+    width: 41px;
+    height: 41px;
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.7);
+    right: 15px;
+    bottom: 150px;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 14px;
+    text-align: center;
+    padding-top: 7px;
+  }
+
+  .generate_posters {
+    position: fixed;
+    z-index: 1;
+    width: 41px;
+    height: 41px;
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.7);
+    right: 15px;
+    bottom: 100px;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 14px;
+    text-align: center;
+    padding-top: 7px;
+  }
+
+  .my_app {
+    padding-bottom: 16px;
+  }
+
+  .box_12 {
+    .bottom_bar {
+      .item_apply {
+        float: left;
+        padding: 12px 0;
+        height: 100%;
+        text-align: center;
+        background-color: #1787fb;
+        color: #ffffff;
+        font-size: 18px;
+        width: 255px;
+      }
+
+      .item_chat {
+        float: left;
+        width: 60px;
+        height: 100%;
+        padding: 32px 0 4px;
+        text-align: center;
+        font-size: 10px;
+        color: #333333;
+        background: url("../assets/images/chat_ico.svg") center 9px no-repeat;
+        background-size: 17px;
+        position: relative;
+
+        &::after {
+          position: absolute;
+          box-sizing: border-box;
+          content: " ";
+          pointer-events: none;
+          right: 0;
+          top: 0;
+          left: 0;
+          border-bottom: 0.026667rem solid #f3f3f3;
+        }
+      }
+
+      .item_call {
+        float: left;
+        width: 60px;
+        height: 100%;
+        padding: 32px 0 4px;
+        text-align: center;
+        font-size: 10px;
+        color: #333333;
+        background: url("../assets/images/calling_ico.svg") center 9px no-repeat;
+        background-size: 17px;
+        position: relative;
+
+        &::after {
+          position: absolute;
+          box-sizing: border-box;
+          content: " ";
+          pointer-events: none;
+          right: 0;
+          top: 0;
+          left: 0;
+          border-bottom: 0.026667rem solid #f3f3f3;
+        }
+      }
+
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ffffff;
+      z-index: 3;
+      height: 50px;
+      width: 100%;
+    }
+
+    position: relative;
     height: 50px;
     width: 100%;
-  }
-  position: relative;
-  height: 50px;
-  width: 100%;
-  background-color: #ffffff;
-}
-.box_11 {
-  .list {
-    .top {
-      position: absolute;
-      right: -25px;
-      top: -25px;
-      width: 50px;
-      height: 50px;
-      background-color: #feae41;
-      color: #ffffff;
-      font-size: 10px;
-      font-weight: bold;
-      text-align: center;
-      transform: rotateZ(45deg);
-      padding-top: 36px;
-    }
-    .company {
-      .crw_ico {
-        float: left;
-        margin-left: 6px;
-        width: 14px;
-        height: 18px;
-        position: relative;
-        img {
-          position: absolute;
-          left: 0;
-          top: 4px;
-          width: 14px;
-          height: 12px;
-          border: 0;
-        }
-      }
-      .auth_ico {
-        float: left;
-        margin-left: 6px;
-        width: 15px;
-        height: 18px;
-        background: url("../assets/images/jobs_list_auth_ico.png") 0 4px
-          no-repeat;
-        background-size: 15px 11px;
-      }
-      .name {
-        float: left;
-        max-width: 300px;
-        font-size: 13px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      width: 100%;
-      border-top: 1px solid #f3f3f3;
-      padding: 12px 0;
-    }
-    .tag_wrapper {
-      .tag_item {
-        float: left;
-        font-size: 10px;
-        color: #8096a3;
-        background-color: #e9f8ff;
-        border-radius: 3px;
-        padding: 3px 5px;
-        &:not(:first-child) {
-          margin-left: 5px;
-        }
-      }
-      width: 100%;
-      padding-bottom: 10px;
-    }
-    .tx2 {
-      font-size: 14px;
-      color: #666666;
-      padding: 0 60px 0 0;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      position: relative;
-      margin-bottom: 8px;
-    }
-    .tx1 {
-      .wage {
-        position: absolute;
-        right: 0;
-        top: 19px;
-        font-size: 14px;
-        color: #ff5d24;
-        font-weight: bold;
-      }
-      .worry_ico {
-        font-size: 10px;
-        color: #ffffff;
-        margin-top: 3px;
-        padding: 1px 3px;
-        border-radius: 3px;
-        background-color: #ff8b82;
-        float: left;
-      }
-      .name {
-        font-size: 16px;
-        color: #333333;
-        font-weight: bold;
-        max-width: 240px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        float: left;
-        margin-right: 6px;
-      }
-      position: relative;
-      padding-top: 17px;
-      margin-bottom: 8px;
-    }
-    .time {
-      position: absolute;
-      right: 17px;
-      top: 48px;
-      font-size: 13px;
-      color: #999999;
-    }
-    position: relative;
-    width: 100%;
     background-color: #ffffff;
-    padding: 0 17px;
-    overflow: hidden;
   }
-  width: 100%;
-}
-.box_sp {
-  width: 100%;
-  padding: 12px 0;
-  text-align: center;
-  background-color: #f3f3f3;
-  font-size: 12px;
-  color: #999999;
-}
-.box_10 {
-  .info {
-    .down {
-      &::after {
+
+  .box_11 {
+    .list {
+      .top {
         position: absolute;
-        right: 7px;
-        top: 17px;
-        width: 7px;
-        height: 7px;
-        border-top: 1px solid #999999;
-        border-right: 1px solid #999999;
-        transform: rotate(45deg);
-        content: "";
+        right: -25px;
+        top: -25px;
+        width: 50px;
+        height: 50px;
+        background-color: #feae41;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        transform: rotateZ(45deg);
+        padding-top: 36px;
       }
-      .link {
-        color: #1787fb;
-      }
-      position: relative;
-      padding: 12.5px 25px 12.5px 0;
-      font-size: 13px;
-      color: #666666;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      border-top: 1px dotted #f8f8f8;
-    }
-    .up {
-      .tx3 {
-        font-size: 14px;
-        color: #666666;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 17px;
-      }
-      .tx2 {
-        font-size: 13px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 7px;
-      }
-      .tx1 {
-        margin-bottom: 9px;
+
+      .company {
         .crw_ico {
           float: left;
           margin-left: 6px;
           width: 14px;
-          height: 22px;
+          height: 18px;
           position: relative;
+
           img {
             position: absolute;
             left: 0;
-            top: 5px;
+            top: 4px;
             width: 14px;
             height: 12px;
             border: 0;
           }
         }
+
         .auth_ico {
           float: left;
           margin-left: 6px;
           width: 15px;
-          height: 22px;
-          background: url("../assets/images/jobs_list_auth_ico.png") 0 4px
-            no-repeat;
+          height: 18px;
+          background: url("../assets/images/jobs_list_auth_ico.png") 0 4px no-repeat;
           background-size: 15px 11px;
         }
+
         .name {
           float: left;
-          font-size: 16px;
-          font-weight: bold;
-          color: #333333;
-          max-width: 220px;
+          max-width: 300px;
+          font-size: 13px;
+          color: #999999;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
         }
-      }
-      .logo_box {
-        position: absolute;
-        left: 2px;
-        top: 5px;
-        width: 60px;
-        height: 60px;
-        img {
-          width: 60px;
-          height: 60px;
-          border: 0;
-        }
-      }
-      position: relative;
-      padding-left: 75px;
-    }
-    width: 100%;
-    background-color: #ffffff;
-    position: relative;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 16px;
-}
-.box_9 {
-  .p_con {
-    padding: 10px 0 40px;
-  }
-  .self_content {
-    .percent_text {
-      &.t3 {
-        left: 251px;
-      }
-      &.t2 {
-        left: 155px;
-      }
-      &.t1 {
-        left: 50px;
-      }
-      position: absolute;
-      bottom: -22px;
-      font-size: 13px;
-      color: #666666;
-    }
-    &.level_3 {
-      .t3 {
-        color: #fa7445;
-      }
-      .cir_block {
-        left: 260px;
-      }
-      .percent {
+
         width: 100%;
-        background: linear-gradient(to right, #6de078, #f6d144, #ff7a31);
+        border-top: 1px solid #f3f3f3;
+        padding: 12px 0;
       }
-    }
-    &.level_2 {
-      .t2 {
-        color: #fa7445;
+
+      .tag_wrapper {
+        .tag_item {
+          float: left;
+          font-size: 10px;
+          color: #8096a3;
+          background-color: #e9f8ff;
+          border-radius: 3px;
+          padding: 3px 5px;
+
+          &:not(:first-child) {
+            margin-left: 5px;
+          }
+        }
+
+        width: 100%;
+        padding-bottom: 10px;
       }
-      .cir_block {
-        left: 160px;
-      }
-      .percent {
-        width: 167px;
-        background: linear-gradient(to right, #6de078, #cfe055, #ead447);
-      }
-    }
-    &.level_1 {
-      .t1 {
-        color: #fa7445;
-      }
-      .cir_block {
-        left: 55px;
-      }
-      .percent {
-        width: 62px;
-        background: linear-gradient(to right, #6de078, #9ae068);
-      }
-    }
-    .cir_block {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      border-radius: 100%;
-      background-color: #ffffff;
-      box-shadow: 0 0 5px #c2c2c2;
-      z-index: 3;
-      top: -3px;
-    }
-    .sp_block {
-      &.s3 {
-        left: 262px;
-        top: 0;
-      }
-      &.s2 {
-        left: 167px;
-        top: 0;
-      }
-      &.s1 {
-        left: 62px;
-        top: 0;
-      }
-      position: absolute;
-      width: 2px;
-      height: 100%;
-      background-color: #ffffff;
-      z-index: 2;
-    }
-    .percent {
-      position: absolute;
-      left: 0;
-      top: 0;
-      border-radius: 5px;
-      height: 100%;
-    }
-    position: relative;
-    width: 325px;
-    height: 10px;
-    margin: 0 auto;
-    background-color: #f3f3f3;
-    border-radius: 10px;
-  }
-  .doubt {
-    .content {
-      &::after {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translate(0, -50%);
-        width: 13px;
-        height: 13px;
-        border: 1px solid #ffffff;
-        border-radius: 100%;
-        background: url("../assets/images/doubt_ico.svg") 0 no-repeat;
-        background-size: 13px;
-        content: " ";
-        box-shadow: 0 0 3px #eae7e7;
-      }
-      display: inline-block;
-      position: relative;
-      padding: 5px 0 5px 20px;
-      font-size: 12px;
-      color: #999999;
-    }
-    text-align: center;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 16px;
-  position: relative;
-}
-.box_8 {
-  .contact_delivery {
-    .tx2 {
-      padding-bottom: 15.5px;
-    }
-    .tx1 {
-      padding-top: 16px;
-      margin-bottom: 3px;
-    }
-    .link {
-      color: #1787fb;
-    }
-    text-align: center;
-    font-size: 14px;
-    color: #333333;
-    box-shadow: 0 0 8px #c2c2c2;
-    border-radius: 7px;
-  }
-  .contact_resume {
-    .tx2 {
-      padding-bottom: 15.5px;
-    }
-    .tx1 {
-      padding-top: 16px;
-      margin-bottom: 3px;
-    }
-    .link {
-      color: #1787fb;
-    }
-    text-align: center;
-    font-size: 14px;
-    color: #333333;
-    box-shadow: 0 0 8px #c2c2c2;
-    border-radius: 7px;
-  }
-  .contact_login {
-    .link {
-      color: #1787fb;
-    }
-    padding: 26.5px 0;
-    text-align: center;
-    font-size: 14px;
-    color: #333333;
-    box-shadow: 0 0 8px #c2c2c2;
-    border-radius: 7px;
-  }
-  .contact_info {
-    .info_line {
-      &:last-child {
-        padding-bottom: 0;
-      }
-      margin-bottom: 9px;
-      font-size: 14px;
-      color: #999999;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      span {
-        color: #666666;
-      }
-    }
-  }
-  width: 100%;
-  background-color: #ffffff;
-  position: relative;
-  padding: 0 16px 15px;
-}
-.box_7 {
-  .report {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-    padding-top: 27px;
-    width: 55px;
-    text-align: center;
-    background: url("../assets/images/report_ico.png") center 0 no-repeat;
-    background-size: 19px 23px;
-    font-size: 11px;
-    color: #ff5d24;
-    border-left: 1px solid #f3f3f3;
-  }
-  .tx2 {
-    font-size: 12px;
-    color: #666666;
-  }
-  .tx1 {
-    font-size: 13px;
-    color: #ff5d24;
-    margin-bottom: 2px;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  position: relative;
-  padding: 18.5px 0 20.5px 16px;
-}
-.box_6 {
-  .content {
-    .des {
-      font-size: 14px;
-      color: #666666;
-      line-height: 1.7;
-      word-break: break-all;
-    }
-    .tx1 {
-      font-size: 14px;
-      color: #666666;
-      margin-bottom: 2px;
-    }
-    .b_item {
-      float: left;
-      width: 50%;
-      vertical-align: top;
-      font-size: 14px;
-      color: #999999;
-      margin-bottom: 9px;
-      span {
-        color: #666666;
-      }
-    }
-    padding-bottom: 10px;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 16px;
-  margin-bottom: 9px;
-}
-.box_5 {
-  .content {
-    .item {
-      &:not(:last-child)::after {
-        content: " ";
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translate(0, -50%);
-        width: 1px;
-        height: 25px;
-        background-color: #f3f3f3;
-      }
+
       .tx2 {
+        font-size: 14px;
+        color: #666666;
+        padding: 0 60px 0 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        position: relative;
+        margin-bottom: 8px;
+      }
+
+      .tx1 {
+        .wage {
+          position: absolute;
+          right: 0;
+          top: 19px;
+          font-size: 14px;
+          color: #ff5d24;
+          font-weight: bold;
+        }
+
+        .worry_ico {
+          font-size: 10px;
+          color: #ffffff;
+          margin-top: 3px;
+          padding: 1px 3px;
+          border-radius: 3px;
+          background-color: #ff8b82;
+          float: left;
+        }
+
+        .name {
+          font-size: 16px;
+          color: #333333;
+          font-weight: bold;
+          max-width: 240px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          float: left;
+          margin-right: 6px;
+        }
+
+        position: relative;
+        padding-top: 17px;
+        margin-bottom: 8px;
+      }
+
+      .time {
+        position: absolute;
+        right: 17px;
+        top: 48px;
         font-size: 13px;
         color: #999999;
       }
-      .tx1 {
-        font-size: 17px;
-        font-weight: bold;
-        color: #ff6600;
-        margin-bottom: 4.5px;
-      }
-      flex: 1;
+
       position: relative;
+      width: 100%;
+      background-color: #ffffff;
+      padding: 0 17px;
+      overflow: hidden;
+    }
+
+    width: 100%;
+  }
+
+  .box_sp {
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+    background-color: #f3f3f3;
+    font-size: 12px;
+    color: #999999;
+  }
+
+  .box_10 {
+    .info {
+      .down {
+        &::after {
+          position: absolute;
+          right: 7px;
+          top: 17px;
+          width: 7px;
+          height: 7px;
+          border-top: 1px solid #999999;
+          border-right: 1px solid #999999;
+          transform: rotate(45deg);
+          content: "";
+        }
+
+        .link {
+          color: #1787fb;
+        }
+
+        position: relative;
+        padding: 12.5px 25px 12.5px 0;
+        font-size: 13px;
+        color: #666666;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border-top: 1px dotted #f8f8f8;
+      }
+
+      .up {
+        .tx3 {
+          font-size: 14px;
+          color: #666666;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          margin-bottom: 17px;
+        }
+
+        .tx2 {
+          font-size: 13px;
+          color: #999999;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          margin-bottom: 7px;
+        }
+
+        .tx1 {
+          margin-bottom: 9px;
+
+          .crw_ico {
+            float: left;
+            margin-left: 6px;
+            width: 14px;
+            height: 22px;
+            position: relative;
+
+            img {
+              position: absolute;
+              left: 0;
+              top: 5px;
+              width: 14px;
+              height: 12px;
+              border: 0;
+            }
+          }
+
+          .auth_ico {
+            float: left;
+            margin-left: 6px;
+            width: 15px;
+            height: 22px;
+            background: url("../assets/images/jobs_list_auth_ico.png") 0 4px no-repeat;
+            background-size: 15px 11px;
+          }
+
+          .name {
+            float: left;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333333;
+            max-width: 220px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .logo_box {
+          position: absolute;
+          left: 2px;
+          top: 5px;
+          width: 60px;
+          height: 60px;
+
+          img {
+            width: 60px;
+            height: 60px;
+            border: 0;
+          }
+        }
+
+        position: relative;
+        padding-left: 75px;
+      }
+
+      width: 100%;
+      background-color: #ffffff;
+      position: relative;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0 16px;
+  }
+
+  .box_9 {
+    .p_con {
+      padding: 10px 0 40px;
+    }
+
+    .self_content {
+      .percent_text {
+        &.t3 {
+          left: 251px;
+        }
+
+        &.t2 {
+          left: 155px;
+        }
+
+        &.t1 {
+          left: 50px;
+        }
+
+        position: absolute;
+        bottom: -22px;
+        font-size: 13px;
+        color: #666666;
+      }
+
+      &.level_3 {
+        .t3 {
+          color: #fa7445;
+        }
+
+        .cir_block {
+          left: 260px;
+        }
+
+        .percent {
+          width: 100%;
+          background: linear-gradient(to right, #6de078, #f6d144, #ff7a31);
+        }
+      }
+
+      &.level_2 {
+        .t2 {
+          color: #fa7445;
+        }
+
+        .cir_block {
+          left: 160px;
+        }
+
+        .percent {
+          width: 167px;
+          background: linear-gradient(to right, #6de078, #cfe055, #ead447);
+        }
+      }
+
+      &.level_1 {
+        .t1 {
+          color: #fa7445;
+        }
+
+        .cir_block {
+          left: 55px;
+        }
+
+        .percent {
+          width: 62px;
+          background: linear-gradient(to right, #6de078, #9ae068);
+        }
+      }
+
+      .cir_block {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-radius: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 0 5px #c2c2c2;
+        z-index: 3;
+        top: -3px;
+      }
+
+      .sp_block {
+        &.s3 {
+          left: 262px;
+          top: 0;
+        }
+
+        &.s2 {
+          left: 167px;
+          top: 0;
+        }
+
+        &.s1 {
+          left: 62px;
+          top: 0;
+        }
+
+        position: absolute;
+        width: 2px;
+        height: 100%;
+        background-color: #ffffff;
+        z-index: 2;
+      }
+
+      .percent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 5px;
+        height: 100%;
+      }
+
+      position: relative;
+      width: 325px;
+      height: 10px;
+      margin: 0 auto;
+      background-color: #f3f3f3;
+      border-radius: 10px;
+    }
+
+    .doubt {
+      .content {
+        &::after {
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 13px;
+          height: 13px;
+          border: 1px solid #ffffff;
+          border-radius: 100%;
+          background: url("../assets/images/doubt_ico.svg") 0 no-repeat;
+          background-size: 13px;
+          content: " ";
+          box-shadow: 0 0 3px #eae7e7;
+        }
+
+        display: inline-block;
+        position: relative;
+        padding: 5px 0 5px 20px;
+        font-size: 12px;
+        color: #999999;
+      }
+
       text-align: center;
     }
-    border-bottom: 1px solid #f5f5f5;
-    padding: 6.5px 0 27.5px;
-    display: flex;
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0 16px;
+    position: relative;
   }
-  .put {
-    border-top: 1px solid #f5f5f5;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 16px;
-}
-.box_4 {
-  .content {
-    .item {
-      float: left;
-      font-size: 13px;
-      color: #8096a3;
-      padding: 8px 13px;
-      background-color: #e9f8ff;
-      border-radius: 33px;
-      margin: 0 9px 9px 0;
-    }
-    padding-bottom: 16px;
-  }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 0 0 16px;
-}
-.box_3 {
-  .bg {
-    .box {
-      &::after {
-        position: absolute;
-        right: 17px;
-        top: 21px;
-        width: 8px;
-        height: 8px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
+
+  .box_8 {
+    .contact_delivery {
       .tx2 {
-        font-size: 12px;
-        color: #767676;
+        padding-bottom: 15.5px;
+      }
+
+      .tx1 {
+        padding-top: 16px;
+        margin-bottom: 3px;
+      }
+
+      .link {
+        color: #1787fb;
+      }
+
+      text-align: center;
+      font-size: 14px;
+      color: #333333;
+      box-shadow: 0 0 8px #c2c2c2;
+      border-radius: 7px;
+    }
+
+    .contact_resume {
+      .tx2 {
+        padding-bottom: 15.5px;
+      }
+
+      .tx1 {
+        padding-top: 16px;
+        margin-bottom: 3px;
+      }
+
+      .link {
+        color: #1787fb;
+      }
+
+      text-align: center;
+      font-size: 14px;
+      color: #333333;
+      box-shadow: 0 0 8px #c2c2c2;
+      border-radius: 7px;
+    }
+
+    .contact_login {
+      .link {
+        color: #1787fb;
+      }
+
+      padding: 26.5px 0;
+      text-align: center;
+      font-size: 14px;
+      color: #333333;
+      box-shadow: 0 0 8px #c2c2c2;
+      border-radius: 7px;
+    }
+
+    .contact_info {
+      .info_line {
+        &:last-child {
+          padding-bottom: 0;
+        }
+
+        margin-bottom: 9px;
+        font-size: 14px;
+        color: #999999;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+
+        span {
+          color: #666666;
+        }
       }
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    position: relative;
+    padding: 0 16px 15px;
+  }
+
+  .box_7 {
+    .report {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+      padding-top: 27px;
+      width: 55px;
+      text-align: center;
+      background: url("../assets/images/report_ico.png") center 0 no-repeat;
+      background-size: 19px 23px;
+      font-size: 11px;
+      color: #ff5d24;
+      border-left: 1px solid #f3f3f3;
+    }
+
+    .tx2 {
+      font-size: 12px;
+      color: #666666;
+    }
+
+    .tx1 {
+      font-size: 13px;
+      color: #ff5d24;
+      margin-bottom: 2px;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    position: relative;
+    padding: 18.5px 0 20.5px 16px;
+  }
+
+  .box_6 {
+    .content {
+      .des {
+        font-size: 14px;
+        color: #666666;
+        line-height: 1.7;
+        word-break: break-all;
+      }
+
       .tx1 {
         font-size: 14px;
-        font-weight: bold;
-        color: #333333;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 1.5px;
+        color: #666666;
+        margin-bottom: 2px;
       }
-      width: 285px;
-      margin: 0 auto;
-      padding: 6.5px 40px 7px 50px;
-      position: relative;
-      border-radius: 53px;
-      background: #ffffff url("../assets/images/job_show_add_ico.png") 5px
-        center no-repeat;
-      background-size: 40.5px;
+
+      .b_item {
+        float: left;
+        width: 50%;
+        vertical-align: top;
+        font-size: 14px;
+        color: #999999;
+        margin-bottom: 9px;
+
+        span {
+          color: #666666;
+        }
+      }
+
+      padding-bottom: 10px;
     }
+
     width: 100%;
-    height: 81px;
-    background: url("../assets/images/job_show_address_bg.png") 0 no-repeat;
-    background-size: 100% 81px;
-    padding-top: 14px;
+    background-color: #ffffff;
+    padding: 0 16px;
+    margin-bottom: 9px;
   }
-  .address {
-    padding-left: 20px;
-    line-height: 1.8;
-    font-size: 14px;
-    color: #767676;
-    word-break: break-all;
-    margin-bottom: 8px;
-    background: url("../assets/images/address_ico_blue.svg") 0 5px no-repeat;
-    background-size: 13px;
+
+  .box_5 {
+    .content {
+      .item {
+        &:not(:last-child)::after {
+          content: " ";
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 1px;
+          height: 25px;
+          background-color: #f3f3f3;
+        }
+
+        .tx2 {
+          font-size: 13px;
+          color: #999999;
+        }
+
+        .tx1 {
+          font-size: 17px;
+          font-weight: bold;
+          color: #ff6600;
+          margin-bottom: 4.5px;
+        }
+
+        flex: 1;
+        position: relative;
+        text-align: center;
+      }
+
+      border-bottom: 1px solid #f5f5f5;
+      padding: 6.5px 0 27.5px;
+      display: flex;
+    }
+
+    .put {
+      border-top: 1px solid #f5f5f5;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0 16px;
   }
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 16px;
-}
-.put {
-  padding: 16.5px 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333333;
-  position: relative;
-  .distance {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-    font-size: 12px;
-    color: #1787fb;
+
+  .box_4 {
+    .content {
+      .item {
+        float: left;
+        font-size: 13px;
+        color: #8096a3;
+        padding: 8px 13px;
+        background-color: #e9f8ff;
+        border-radius: 33px;
+        margin: 0 9px 9px 0;
+      }
+
+      padding-bottom: 16px;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0 0 0 16px;
   }
-  .right_arrow {
-    &::after {
+
+  .box_3 {
+    .bg {
+      .box {
+        &::after {
+          position: absolute;
+          right: 17px;
+          top: 21px;
+          width: 8px;
+          height: 8px;
+          border-top: 1px solid #666666;
+          border-right: 1px solid #666666;
+          transform: rotate(45deg);
+          content: " ";
+        }
+
+        .tx2 {
+          font-size: 12px;
+          color: #767676;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .tx1 {
+          font-size: 14px;
+          font-weight: bold;
+          color: #333333;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          margin-bottom: 1.5px;
+        }
+
+        width: 285px;
+        margin: 0 auto;
+        padding: 6.5px 40px 7px 50px;
+        position: relative;
+        border-radius: 53px;
+        background: #ffffff url("../assets/images/job_show_add_ico.png") 5px center no-repeat;
+        background-size: 40.5px;
+      }
+
+      width: 100%;
+      height: 81px;
+      background: url("../assets/images/job_show_address_bg.png") 0 no-repeat;
+      background-size: 100% 81px;
+      padding-top: 14px;
+    }
+
+    .address {
+      padding-left: 20px;
+      line-height: 1.8;
+      font-size: 14px;
+      color: #767676;
+      word-break: break-all;
+      margin-bottom: 8px;
+      background: url("../assets/images/address_ico_blue.svg") 0 5px no-repeat;
+      background-size: 13px;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0 16px;
+  }
+
+  .put {
+    padding: 16.5px 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+    position: relative;
+
+    .distance {
       position: absolute;
-      right: 1px;
-      top: 6px;
-      width: 6px;
-      height: 6px;
-      border-top: 1px solid #1787fb;
-      border-right: 1px solid #1787fb;
-      transform: rotate(45deg);
-      content: " ";
+      right: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+      font-size: 12px;
+      color: #1787fb;
     }
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translate(0, -50%);
-    font-size: 12px;
-    color: #1787fb;
-    padding-right: 10px;
-  }
-}
-.box_2 {
-  .bg_box {
-    position: absolute;
-    left: -20px;
-    top: 2px;
-    width: 50px;
-    height: 100%;
-    background: linear-gradient(to right, #3b9dfe, #6fc9ff);
-    z-index: 1;
-    transform: rotate(35deg);
-  }
-  .auth_ico {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translate(0, -50%);
-    padding-top: 13px;
-    font-size: 10px;
-    color: #ffffff;
-    z-index: 2;
-    background: url("../assets/images/job_show_auth_ico.png") center 0 no-repeat;
-    background-size: 13px;
-  }
-  .cell {
-    float: left;
-    font-size: 12px;
-    color: #5f82a7;
-    padding: 9px 15px 9px 17px;
-    background: url("../assets/images/done_ico_blue.svg") 0 center no-repeat;
-    background-size: 12px;
-    &:last-child {
-      padding-right: 0;
-    }
-  }
-  position: relative;
-  width: 100%;
-  background-color: #eef9ff;
-  overflow: hidden;
-  padding-left: 50px;
-}
-.box_1 {
-  .chat_bar {
-    .right {
+
+    .right_arrow {
       &::after {
         position: absolute;
-        right: 0;
-        top: 5px;
+        right: 1px;
+        top: 6px;
         width: 6px;
         height: 6px;
         border-top: 1px solid #1787fb;
@@ -1683,135 +1785,254 @@ export default {
         transform: rotate(45deg);
         content: " ";
       }
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translate(0, -50%);
-      font-size: 12px;
-      color: #1787fb;
-      padding-right: 11px;
-    }
-    position: relative;
-    font-size: 12px;
-    color: #999999;
-    padding: 12px 0 12px 17px;
-    border-top: 1px solid #f5f5f5;
-    background: url("../assets/images/hot_point_ico.svg") 0 center no-repeat;
-    background-size: 15px;
-  }
-  .tx3 {
-    .time {
+
       position: absolute;
       right: 0;
       top: 50%;
       transform: translate(0, -50%);
       font-size: 12px;
-      color: #999999;
+      color: #1787fb;
+      padding-right: 10px;
     }
-    font-size: 14px;
-    color: #666666;
-    padding: 0 80px 0 0;
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 17px;
   }
-  .tx2 {
-    font-size: 18px;
-    font-weight: bold;
-    color: #ff5d24;
-    margin-bottom: 8.5px;
-  }
-  .tx1 {
-    margin-bottom: 5.5px;
-    position: relative;
-    font-size: 19px;
-    font-weight: bold;
-    color: #333333;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .share {
-    .text {
+
+  .box_2 {
+    .bg_box {
+      position: absolute;
+      left: -20px;
+      top: 2px;
+      width: 50px;
+      height: 100%;
+      background: linear-gradient(to right, #3b9dfe, #6fc9ff);
+      z-index: 1;
+      transform: rotate(35deg);
+    }
+
+    .auth_ico {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translate(0, -50%);
+      padding-top: 13px;
+      font-size: 10px;
+      color: #ffffff;
+      z-index: 2;
+      background: url("../assets/images/job_show_auth_ico.png") center 0 no-repeat;
+      background-size: 13px;
+    }
+
+    .cell {
+      float: left;
       font-size: 12px;
-      color: #999999;
+      color: #5f82a7;
+      padding: 9px 15px 9px 17px;
+      background: url("../assets/images/done_ico_blue.svg") 0 center no-repeat;
+      background-size: 12px;
+
+      &:last-child {
+        padding-right: 0;
+      }
     }
-    .ico {
-      width: 16px;
-      height: 16px;
-      margin: 0 auto 2.5px;
-      background: url("../assets/images/share_ico.png") 0 no-repeat;
-      background-size: 16px;
-    }
-    position: absolute;
-    top: 25px;
-    right: 17px;
-    z-index:1;
+
+    position: relative;
+    width: 100%;
+    background-color: #eef9ff;
+    overflow: hidden;
+    padding-left: 50px;
   }
-  .collect {
-    .text {
-      font-size: 12px;
-      color: #999999;
-    }
-    .ico {
-      width: 16px;
-      height: 16px;
-      margin: 0 auto 2.5px;
+
+  .box_1 {
+    .chat_bar {
+      .right {
+        &::after {
+          position: absolute;
+          right: 0;
+          top: 5px;
+          width: 6px;
+          height: 6px;
+          border-top: 1px solid #1787fb;
+          border-right: 1px solid #1787fb;
+          transform: rotate(45deg);
+          content: " ";
+        }
+
+        position: absolute;
+        right: 2px;
+        top: 50%;
+        transform: translate(0, -50%);
+        font-size: 12px;
+        color: #1787fb;
+        padding-right: 11px;
+      }
+
       position: relative;
-      border-radius: 100%;
-      background: url("../assets/images/collect_ico.png") 0 no-repeat;
-      background-size: 16px;
+      font-size: 12px;
+      color: #999999;
+      padding: 12px 0 12px 17px;
+      border-top: 1px solid #f5f5f5;
+      background: url("../assets/images/hot_point_ico.svg") 0 center no-repeat;
+      background-size: 15px;
     }
-    position: absolute;
-    top: 25px;
-    right: 55px;
-    z-index:1;
+
+    .tx3 {
+      .time {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(0, -50%);
+        font-size: 12px;
+        color: #999999;
+      }
+
+      font-size: 14px;
+      color: #666666;
+      padding: 0 80px 0 0;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-bottom: 17px;
+    }
+
+    .tx2 {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff5d24;
+      margin-bottom: 8.5px;
+    }
+
+    .tx1 {
+      margin-bottom: 5.5px;
+      position: relative;
+      font-size: 19px;
+      font-weight: bold;
+      color: #333333;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .share {
+      .text {
+        font-size: 12px;
+        color: #999999;
+      }
+
+      .ico {
+        width: 16px;
+        height: 16px;
+        margin: 0 auto 2.5px;
+        background: url("../assets/images/share_ico.png") 0 no-repeat;
+        background-size: 16px;
+      }
+
+      position: absolute;
+      top: 25px;
+      right: 17px;
+      z-index: 1;
+    }
+
+    .collect {
+      .text {
+        font-size: 12px;
+        color: #999999;
+      }
+
+      .ico {
+        width: 16px;
+        height: 16px;
+        margin: 0 auto 2.5px;
+        position: relative;
+        border-radius: 100%;
+        background: url("../assets/images/collect_ico.png") 0 no-repeat;
+        background-size: 16px;
+      }
+
+      position: absolute;
+      top: 25px;
+      right: 55px;
+      z-index: 1;
+    }
+
+    width: 100%;
+    background-color: #ffffff;
+    position: relative;
+    padding: 21px 16px 0;
+    border-top: 1px solid #f3f3f3;
   }
-  width: 100%;
-  background-color: #ffffff;
-  position: relative;
-  padding: 21px 16px 0;
-  border-top: 1px solid #f3f3f3;
-}
-.phone_tip{
-  display:inline-block;position: absolute;right:0;top:50%;transform:translate(0, -50%);color:#666;font-size:12px;
-  .phone{color:#ff5d24;}
-}
-.code_pro_wrap{
-  .secret{width:100%;}
-  .pro_tip{margin-top: .08rem;color: #888;font-size:12px;}
-}
-.orange-phone{color:#ff5d24;font-weight:bold;}
-.font12{
-  font-size:12px;
-}
-.font15{
-  font-size:15px;
-}
-.line18{
-  line-height:25px;
-  text-align:center;
-}
-.color-orange{
-  color:#ff5d24
-}
-.m-top{margin-top:25px;}
-.m-btm{margin-bottom:20px;}
-.bold{font-weight:bold;}
-.return_list{
-  width: 80px;
-  height: 30px;
-  line-height: 30px;
-  background: rgba(0,0,0, .5);
-  border-radius: 30px 0 0 30px;
-  color: #fff;
-  text-align: center;
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-}
+
+  .phone_tip {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: #666;
+    font-size: 12px;
+
+    .phone {
+      color: #ff5d24;
+    }
+  }
+
+  .code_pro_wrap {
+    .secret {
+      width: 100%;
+    }
+
+    .pro_tip {
+      margin-top: .08rem;
+      color: #888;
+      font-size: 12px;
+    }
+  }
+
+  .orange-phone {
+    color: #ff5d24;
+    font-weight: bold;
+  }
+
+  .font12 {
+    font-size: 12px;
+  }
+
+  .font15 {
+    font-size: 15px;
+  }
+
+  .line18 {
+    line-height: 25px;
+    text-align: center;
+  }
+
+  .color-orange {
+    color: #ff5d24
+  }
+
+  .m-top {
+    margin-top: 25px;
+  }
+
+  .m-btm {
+    margin-bottom: 20px;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .return_list {
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    background: rgba(0, 0, 0, .5);
+    border-radius: 30px 0 0 30px;
+    color: #fff;
+    text-align: center;
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
 </style>

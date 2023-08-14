@@ -39,7 +39,7 @@
 import http from '@/utils/http'
 import api from '@/api'
 export default {
-  props: ['posterId'],
+  props: ['posterId', 'type'],
   data() {
     return {
       currentTplIndex: 0,
@@ -60,7 +60,7 @@ export default {
     funPoster() {
       this.posterImg = ''
       const param = {
-        type: 'company',
+        type: this.type || 'company',
         id: this.posterId,
         index: this.currentTplIndex
       }

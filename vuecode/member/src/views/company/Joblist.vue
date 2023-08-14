@@ -161,6 +161,12 @@
 		<BuyIncrementDialog ref="buyService" @submitPay="submitPay" :type="serviceType" :job-id="jobId"></BuyIncrementDialog>
 	</el-dialog>
 	</el-card>
+	<Poster
+		v-if="showPoster"
+		:poster-id="posterId"
+		type="job"
+		@closeDialog="showPoster = false"
+	/>
 	</div>
 </template>
 
@@ -168,9 +174,11 @@
 import BuyIncrementDialog from '@/components/company/service/BuyIncrementDialog.vue'
 import http from '@/utils/http'
 import api from '@/api'
+import Poster from '@/components/Poster'
 	export default{
 		components:{
-			BuyIncrementDialog
+			BuyIncrementDialog,
+			Poster
 		},
 		data(){
 			return{
@@ -178,6 +186,8 @@ import api from '@/api'
 				serviceTitle:'',
 				serviceType:'',
 				jobId:0,
+				showPoster: false,
+				posterId: '',
 				btnLoading:false,
 				multipleSelection:[],
 				listLoading:false,
@@ -503,9 +513,13 @@ import api from '@/api'
 				// on cancel
 				})
 			},
-			handlerShare(item){
+			handlerShare2(item){
 				this.showShare = true
 				this.shareQrcode = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url='+encodeURIComponent(this.$store.state.config.mobile_domain + 'job/'+item.id)
+			},
+			handlerShare(item) {
+				this.showPoster = true
+				this.posterId = item.id
 			},
 			handlerMicroposte(item){
 				if(this.enable_poster==0){

@@ -44,22 +44,22 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column label="举报对象" width="200">
+        <el-table-column type="selection" min-width="30" />
+        <el-table-column label="举报对象" min-width="200">
           <template slot-scope="scope">
             <el-link :href="scope.row.link" target="_blank" type="primary">
               {{ scope.row.target }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="核实情况" width="100">
+        <el-table-column label="核实情况" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | statusFilter">
               {{ scope.row.status == 1 ? '属实' : (scope.row.status==2?'不属实':'未核实') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="举报原因" width="250">
+        <el-table-column label="举报原因" min-width="250">
           <template slot-scope="scope">
             {{ scope.row.reason_cn }}
           </template>
@@ -69,7 +69,7 @@
             <span>{{ scope.row.content }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="举报者" width="200">
+        <el-table-column label="举报者" min-width="200">
           <template slot-scope="scope">
             {{ scope.row.mobile }} 【uid：{{ scope.row.uid }}】
           </template>
@@ -78,14 +78,14 @@
           align="center"
           prop="addtime"
           label="举报时间"
-          width="200"
+          min-width="200"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="220">
           <template slot-scope="scope">
             <el-button
               size="small"

@@ -77,8 +77,7 @@ class FileManager
                     $upload_result['save_path'],
                     $this->fileupload_type
                 ),
-                'file_id' => $file_id,
-                'file_size' => $file->getSize()
+                'file_id' => $file_id
             ];
         } else {
             return false;

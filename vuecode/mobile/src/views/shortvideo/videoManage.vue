@@ -5,7 +5,7 @@
               <div class="icon"></div>
               <van-notice-bar color="#ff6400" background="#fefbea">视频播放量超过{{playnum}}次，就可以自动上热门</van-notice-bar>
         </div>
-        <div class="box_nav" v-if="$store.state.config.shortvideo_enable == '1'">
+        <div class="box_nav" v-if="parseInt($store.state.config.shortvideo_enable) == 1">
           <div
             class="item "
             :class="resumeShow == 'resume' ? 'active' : ''"
@@ -246,7 +246,7 @@ export default {
       })
     },
     release () {
-      if (this.$store.state.config.shortvideo_enable == '1') {
+      if (parseInt(this.$store.state.config.shortvideo_enable) == 1) {
         this.$router.push('/shortvideo/release')
       } else {
         var that = this

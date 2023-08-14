@@ -25,14 +25,14 @@
     >
       <el-table-column
         type="selection"
-        width="42"
+        min-width="42"
       />
       <el-table-column label="敏感词" prop="name" />
       <el-table-column label="替换词" prop="replace_text" />
       <el-table-column
         fixed="right"
         label="操作"
-        width="220"
+        min-width="220"
       >
         <template slot-scope="scope">
           <el-button

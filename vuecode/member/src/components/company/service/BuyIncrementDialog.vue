@@ -18,6 +18,7 @@
          format="yyyy-MM-dd HH:mm"
          value-format="yyyy-MM-dd HH:mm"
           v-model="submitData.starttime"
+         :picker-options="gtNow"
           type="datetime"
           placeholder="请选择开始刷新时间">
         </el-date-picker>
@@ -79,6 +80,11 @@ import api from '@/api'
         enable_points_deduct_points: 0,
         enable_points_deduct_expense: 0.0,
         after_deduct_expense: 0.0,
+        gtNow: {
+          disabledDate (time) {
+            return time.getTime() < Date.now() - 8.64e7;
+          }
+        },
         submitData: {
           service_type: '',
           service_id: '',
@@ -90,6 +96,7 @@ import api from '@/api'
         },
         mySetmeal:{},
         options_timerange:[],
+        submitLock: false
       }
     },
     mounted(){
@@ -142,7 +149,7 @@ import api from '@/api'
               this.old_amount = list[0].expense
               this.handlerFinalAmount()
             }
-            
+
             this.submitData.jobid = this.jobId===undefined?this.jobId:parseInt(this.jobId)
             if (
               this.submitData.jobid === undefined ||
@@ -212,9 +219,14 @@ import api from '@/api'
           window.location.host +
           '/'+this.$store.state.config.member_dirname+'/company/service/order'
           let that = this
-        this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData,function(){
-          that.$emit('submitPay')
-        })
+          if (!this.submitLock) {
+            this.submitLock = true
+            this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData,function(){
+              that.$emit('submitPay')
+            })
+          } else {
+            console.log('点击过快')
+          }
       },
     }
   }

@@ -1,7 +1,9 @@
 <?php
 namespace app\index\controller;
-
 use app\common\model\Uploadfile;
+use app\common\model\shortvideo\SvCompanyVideo;
+use app\common\model\shortvideo\SvPersonalVideo;
+use Think\Exception;
 
 \think\Loader::import('wechat.wxBizMsgCrypt');
 class Weixin extends \app\common\controller\Base
@@ -598,6 +600,37 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object,'公告不存在或已删除');
                 }
                 break;
+            case 'subscribe_jobfair':
+                if($jobfair_id = $event['jobfairid']) $jobfair = model('Jobfair')->find($jobfair_id);
+                if (isset($jobfair)) {
+                    if($sceneQrcodeInfo!==null){
+                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    }else{
+                        $mobile_page = config('global_config.mobile_domain').'jobfair/'.$jobfair['id'];
+                    }
+                    $mobile_page = str_replace(":id",$jobfair_id,$mobile_page);
+                    if(isset($event['scene_uuid'])){
+                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                    }
+                    $thumb = '';
+                    if($jobfair['thumb']){
+                        $thumb = model('Uploadfile')->getFileUrl($jobfair['thumb']);
+                    }
+                    if(!$thumb){
+                        $thumb = default_empty('jobfair_thumb');
+                    }
+
+                    $content_arr = [
+                        "Title" => $jobfair['title'].'等你来参加-'.config('global_config.sitename'),
+                        "Description" => date('Y-m-d',$jobfair['holddate_start']).'-'.date('Y-m-d',$jobfair['holddate_end']),
+                        "PicUrl" => $thumb,
+                        "Url" => $mobile_page
+                    ];
+                    $this->outputArticle($object,$content_arr);
+                }else{
+                    $this->outputText($object,'招聘会不存在或已删除');
+                }
+                break;
             case 'subscribe_jobfairol':
                 if($jobfairol_id = $event['jobfairolid']) $jobfairol = model('JobfairOnline')->find($jobfairol_id);
                 if (isset($jobfairol)) {
@@ -660,6 +693,35 @@ class Weixin extends \app\common\controller\Base
                 $certinfo->info = json_encode($loginReturn);
                 $certinfo->save();
                 $this->outputText($object,'扫码登录成功');
+                break;
+            case 'subscribe_shortvideo':
+                $vid = intval($event['vid']);
+                $vtype = intval($event['vtype']);
+                if(!$vid || !$vtype){
+                    $this->outputText($object,'扫码失败，请刷新页面重试');
+                }
+                $m = new SvCompanyVideo();
+                if($vtype == 2){
+                    $m = new SvPersonalVideo();
+                }
+                try{
+                    $info = $m->detail($vid);
+                }catch(Exception $e){
+                    $this->outputText($object,$e->getMessage());
+                }
+
+                if($vtype == 1){
+                    $title = sprintf('【视频招聘】%s发布了招聘信息，走过路过不要错过-%s', $info['companyname'], config('global_config.sitename'));
+                }else{
+                    $title = sprintf('【视频求职】%s发布了视频简历，快来看看吧-%s', $info['fullname'], config('global_config.sitename'));
+                }
+                $content_arr = [
+                    "Title" => $title,
+                    "Description" => $info['title'],
+                    "PicUrl" =>  $info['video_src'].'?vframe/jpg/offset/1/w/100/h/100',
+                    "Url" => config('global_config.mobile_domain').'shortvideo/videoplay?id='.$vid.'&gointype=playlist&videotype='.$vtype
+                ];
+                $this->outputArticle($object,$content_arr);
                 break;
             default:
                 break;
@@ -757,6 +819,7 @@ class Weixin extends \app\common\controller\Base
 	        <PicUrl><![CDATA[%s]]></PicUrl>
 	        <Url><![CDATA[%s]]></Url>
 			</item>";
+        $article['Description'] = str_replace('%', '',  $article['Description']);
         $item_str = sprintf($itemTpl, $article['Title'], $article['Description'], $article['PicUrl'], $article['Url']);
         $xmlTpl = "<xml>
 			<ToUserName><![CDATA[%s]]></ToUserName>

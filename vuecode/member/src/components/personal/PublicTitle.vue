@@ -13,6 +13,6 @@
 <style lang="scss" scoped>
     .title {
         position: relative;background-color: #fff;
-        .text {font-size: 18px;color: #333;padding: 30px 0 15px;}
+        .text {font-size: 18px;color: #333;padding: 10px 0 15px;}
     }
 </style>

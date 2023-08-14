@@ -281,7 +281,7 @@
                     <div class="job_duty">
                       <div class="duty_title">
                         <div class="clearfix">
-                          <p class="require_text" title="{#$vo.district_text_full#}">工作地区<span>{#$vo.district_text_full#}</span></p>
+                          <p class="require_text" title="{#$vo.district_text_full#}">工作地区<span span="distic substring">{#$vo.district_text_full#}</span></p>
                           <p class="require_text">招聘人数<span>{#$vo.amount_text#}人</span></p>
                         </div>
                         <div class="clearfix">
@@ -298,7 +298,7 @@
                 </div>
                 <p class="job_salary job_salary_margin">
                   <strong>{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}<span>/月</span>{#/if#}</strong>
-                  <span>{#$vo.district_text#}</span>
+                  <span class="substring distic">{#$vo.district_text_full#}</span>
                   <span>{#$vo.education_text#}</span>
                   <span>{#$vo.experience_text#}</span>
                 </p>
@@ -347,7 +347,7 @@
               <div class="name_box float">
                 <a class="job_name" href="{#:url('index/job/show',['id'=>$vo.id])#}" target="_blank">{#$vo.jobname#}</a>
               </div>
-              <div class="region float">{#$vo.district_text#}</div>
+              <div class="region float substring distc distinc">{#$vo.district_text_full#}</div>
               <div class="company_title j float">
                 <a class="c_name" href="{#:url('index/company/show',['id'=>$vo.company_id])#}"
                   target="_blank">{#$vo.companyname#}</a>

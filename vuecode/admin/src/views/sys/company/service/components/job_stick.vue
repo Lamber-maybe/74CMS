@@ -11,7 +11,7 @@
       <el-table-column
         prop="name"
         label="名称"
-        width="180"
+        min-width="180"
       />
       <el-table-column label="服务时长">
         <template slot-scope="scope">
@@ -54,7 +54,7 @@
       <el-table-column
         fixed="right"
         label="操作"
-        width="220"
+        min-width="220"
       >
         <template slot-scope="scope">
           <el-button

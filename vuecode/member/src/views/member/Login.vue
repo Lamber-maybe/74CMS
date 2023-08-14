@@ -1,8 +1,12 @@
 <template>
-    <div class="login_box">
-      <div class="b_bg" :class="utype==1?'':'p'"></div>
+    <div class="login_box" :class="utype==1?'':'p'">
+      <!-- <div class="b_bg" :class="utype==1?'':'p'"></div> -->
       <div class="b_group">
         <div v-if="$store.state.config.wechat_login_open==1" :class="scan ? 'b_sw aco' : 'b_sw'" @click="showScan"></div>
+        <div class="login_tips" :class="utype==1 ? 'tips_color_2' : 'tips_color_1'" @click="showScan">
+          <div class="text_1">{{utype==1?'我是求职者':'我是招聘方'}}</div>
+          <div class="text_2" @click="$router.push(layout.utype_other_login_route)">{{utype==1?'个人在此登录':'企业在此登录'}}</div>
+        </div>
         <div v-show="!scan">
           <div class="b_title">{{layout.utype_current_text}}登录</div>
           <div class="b_input" v-if="!loginByCode">
@@ -28,7 +32,7 @@
               <div class="p_item" v-if="$store.state.config.wechat_login_open==1"><a href="javascript:;" class="p_ico wx" @click="showScan"></a></div>
             </div>
           </div>
-          <div class="b_sw_txt">如果您是{{layout.utype_other_text}}，请<span @click="$router.push(layout.utype_other_login_route)">点击此处登录>></span></div>
+          <!-- <div class="b_sw_txt">如果您是{{layout.utype_other_text}}，请<span @click="$router.push(layout.utype_other_login_route)">点击此处登录>></span></div> -->
         </div>
         <div class="scan_login" v-show="scan" id="wxlogin">
           <div class="l_t1">手机扫码，安全登录</div>
@@ -37,7 +41,7 @@
         </div>
       </div>
       <div class="clear"></div>
-    <Captcha ref="captcha" :mask="true"></Captcha>
+      <Captcha ref="captcha" :mask="true"></Captcha>
     </div>
 </template>
 
@@ -306,20 +310,72 @@ import Captcha from '@/components/captcha/index'
 
 <style lang="scss" scoped>
   .login_box {
-    width: 1200px; padding-top: 15px;
-    .b_bg {
-      float: left; width: 785px; height: 500px; background-color: #fff;
-      background: url("../../assets/images/member/p_bg_company.jpg") 0 0 no-repeat;
+    width: 1200px; padding: 97px 0 ;
+    background: url('../../assets/images/member/login_2.jpg') no-repeat center center;
       &.p {
-        background: url("../../assets/images/member/p_bg_personal.jpg") 0 0 no-repeat;
+        background: url("../../assets/images/member/login_1.jpg") no-repeat center center;
       }
-    }
     .b_group {
-      float: right; width: 400px; height: 500px; background-color: #fff; position: relative; padding: 0 40px;
+      width: 400px; height: 500px; background-color: #fff; position: relative; padding: 0 40px; left: 764px; box-shadow: 0px 0px 6px 5px rgba(0, 0, 0, 0.03);
       .b_sw {
-        position: absolute; right: 13px; top: 13px; width: 38px; height: 38px; cursor: pointer;
+        position: absolute; left: 13px; top: 13px; width: 38px; height: 38px; cursor: pointer; transform: rotate(-90deg);
         background: url("../../assets/images/member/3.png") 0 0 no-repeat;
         &.aco {background: url("../../assets/images/member/9.png") 0 0 no-repeat;}
+      }
+      .login_tips{
+        width: 100px;
+        height: 60px;
+        border-radius: 0 0 15px 15px;
+        position: absolute;
+        right: 25px;
+        top: -6px;
+        text-align: center;
+        color: #fff;
+        padding: 0 2px;
+        &::before{
+          content: '';
+          border-style: solid;
+          border-width: 3px;
+          position:absolute;
+          left: -6px;
+          top: 0;
+        }
+        &::after{
+          content: '';
+          border-style: solid;
+          border-width: 3px;
+          position: absolute;
+          right: -6px;
+          top: 0;
+        }
+        .text_1{
+          line-height: 33px;
+          border-bottom: 1px dashed #fff;
+          font-size: 15px;
+        }
+        .text_2{
+          line-height: 25px;
+          font-size:12px ;
+          cursor: pointer;
+        }
+      }
+      .tips_color_1{
+        background-color:#fea407; 
+        &::before{
+          border-color: transparent #fea407 #fea407 transparent;
+        }
+        &::after{
+          border-color: transparent transparent #fea407 #fea407;
+        }
+      }
+      .tips_color_2{
+        background-color:#39c2cf; 
+        &::before{
+          border-color: transparent #39c2cf #39c2cf transparent;
+        }
+        &::after{
+          border-color: transparent transparent #39c2cf #39c2cf;
+        }
       }
       .scan_login {
         text-align: center; padding-top: 93px;
