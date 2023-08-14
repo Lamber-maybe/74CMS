@@ -27,7 +27,7 @@ class Setmeal extends \app\common\model\BaseModel
         if (file_exists($file_path)) {
             return config('global_config.sitedomain') .
                 config('global_config.sitedir') .
-                SYS_UPLOAD_DIR_NAME.DS.'resource/setmeal' .
+                SYS_UPLOAD_DIR_NAME.'/resource/setmeal' .
                 $setmeal_id .
                 '.png';
         } else {

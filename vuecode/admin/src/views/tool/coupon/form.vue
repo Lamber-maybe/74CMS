@@ -152,8 +152,8 @@ export default {
           this.options_setmeal = response.data
         })
         .catch(() => {})
-      if (this.item_info !== null) {
-        this.form = { ...this.form, ...this.item_info }
+      if (this.itemInfo !== null) {
+        this.form = { ...this.form, ...this.itemInfo }
       }
     },
     addSave(insertData, formName) {

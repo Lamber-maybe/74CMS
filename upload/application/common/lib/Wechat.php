@@ -87,6 +87,8 @@ class Wechat {
             if($result_arr['errcode'] == 40001){
                 $this->getAccessToken(true);
                 return $this->menuSync();
+            }else if($result_arr['errcode']==0){
+                return true;
             }else{
                 $this->error = $result_arr['errmsg'] . '(错误代码：' . $result_arr['errcode'] . ')';
                 return false;

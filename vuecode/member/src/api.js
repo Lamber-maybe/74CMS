@@ -403,6 +403,10 @@ export default {
   personal_index: '/personal/index/index',
   //执行计划任务
   cron_run:'home/cron/index',
+  //网络招聘会列表
+  company_jobfairol:'home/jobfairol/index',
+  //已报名网络招聘会列表
+  company_jobfairol_reserve:'company/jobfairol/index',
   // 简历详情
   resumeshow: '/home/resume/show',
   // rtc配置

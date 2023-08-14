@@ -109,11 +109,12 @@ export default {
         position: relative;
       }
       .tx1 {
-        padding-top: 7.5px;
+        padding-top: 6px;
         font-size: 15px;
         color: #333333;
         height: 47px;line-height: 1.5;
         word-break: break-all;
+        overflow:hidden;
       }
       &:not(:last-child) {
         border-bottom: 1px solid #f3f3f3;

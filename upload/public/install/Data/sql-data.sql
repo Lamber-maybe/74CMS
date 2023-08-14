@@ -775,7 +775,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'fileupload_ext',1,'bmp,png,gif,jpeg,jpg,pdf,doc,docx,xls,xlsx,zip,7z,tar.gz,txt','文件上传后缀',0),
 (NULL,'contact_email',0,'xxx@xxx.xxx','网站联系邮箱',0),
 (NULL,'contact_address',1,'00省00市00路00号0大厦00楼','联系地址',0),
-(NULL,'bottom_other',1,'Copyright © 2021 74cms.com All Right Reserved Powered by 74cmsse v1.0.0','其他说明',0),
+(NULL,'bottom_other',1,'Copyright © 2021 74cms.com All Right Reserved Powered by 74cmsse','其他说明',0),
 (NULL,'icp',1,'icp000000000','备案号',0),
 (NULL,'isclose',1,'0','暂时关闭网站',0),
 (NULL,'close_reason',1,'','关闭网站原因',0),
@@ -1077,7 +1077,8 @@ INSERT INTO `qs_navigation` VALUES
 (NUll,1,'新闻资讯',1,'article','','_self',0),
 (NUll,1,'HR工具箱',1,'hrtool','','_self',0),
 (NUll,1,'地图找工作',1,'map','','_self',0),
-(NUll,1,'帮助中心',1,'help','','_self',0);
+(NUll,1,'帮助中心',1,'help','','_self',0),
+(NULL,1,'网络招聘会',1,'jobfairol','','_self',0);
 
 INSERT INTO `qs_notify_rule` VALUES 
 (NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}，联系微信：{weixin}）','',0,1,1,0,0),
@@ -1131,7 +1132,9 @@ INSERT INTO `qs_page` VALUES
 (NUll,'hr工具箱频道页','hrtoolindex',0,0,'HR工具箱 - {sitename}','HR工具箱,{sitename}','HR工具箱,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NUll,'hr工具箱列表页','hrtoolshow',0,0,'{cname} - {sitename}','{cname},{sitename}','{cname},{describe}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"分类名称\",\"value\":\"cname\"},{\"name\":\"分类描述\",\"value\":\"describe\"}]'),
 (NUll,'帮助详情页','helpshow',1,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"关键词\",\"value\":\"seo_keywords\"},{\"name\":\"描述\",\"value\":\"seo_description\"}]'),
-(NUll,'说明页详情页','explainshow',1,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"关键词\",\"value\":\"seo_keywords\"},{\"name\":\"描述\",\"value\":\"seo_description\"}]');
+(NUll,'说明页详情页','explainshow',1,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"关键词\",\"value\":\"seo_keywords\"},{\"name\":\"描述\",\"value\":\"seo_description\"}]'),
+(NULL, '网络招聘会列表', 'jobfairollist', '0', '0', '网络招聘会 - {sitename}', '', '', '[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
+(NULL, '网络招聘会详情', 'jobfairolshow', '0', '0', '{title} - {sitename}', '{title}', '{title}', '[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');
 
 INSERT INTO `qs_personal_service_stick` VALUES 
 (NUll,'简历置顶3天',1,3,'10.00',1,'10.00',1,0),

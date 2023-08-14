@@ -4,7 +4,7 @@ body { margin: 0; padding: 0; color: #666666; background-color: #ffffff; -webkit
 	font-family: Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;font-size: 14px;
 }
 
-* { -webkit-box-sizing: border-box; box-sizing: border-box; }
+* { -webkit-box-sizing: border-box; box-sizing: border-box;touch-action: manipulation }
 
 h1, h2, h3, h4, h5, form, p, ul, input { margin: 0; padding: 0; }
 

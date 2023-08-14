@@ -354,8 +354,7 @@
                 <input type="checkbox" class="J_allList" value="{#$vo.id#}" />
               </div>
               <div class="name_box float">
-                <a class="resume_name" target="_blank"
-                  href="{#:url("index/resume/show",["id"=>$vo.id])#}">{#$vo.fullname#}</a>
+                <a class="resume_name" target="_blank" href="{#:url("index/resume/show",["id"=>$vo.id])#}">{#$vo.fullname#}</a>
                 {#eq name="vo.high_quality" value="1"#}
                 <div class="high_quality"></div>
                 {#/eq#}
@@ -881,7 +880,7 @@
             type: 'warning',
             confirmButtonText: '去登录',
           }).then(function () {
-            location.href = qscms.locationList.loginCompany + '?redirect=' + qscms.locationList.recommendResume;
+            location.href = qscms.locationList.loginCompany + '?redirect=' + qscms.sitedomain + qscms.locationList.recommendResume;
           }).catch(function () { });
         } else {
           location.href = qscms.locationList.recommendResume;

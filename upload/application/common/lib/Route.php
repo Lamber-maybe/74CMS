@@ -49,6 +49,12 @@ class Route
                 ['ext' => 'html'],
                 ['id' => '\d+']
             ], //视频面试
+            'jobfairol' => 'index/jobfairol/index', //网络招聘会列表页
+            'jobfairol/:id' => [
+                'index/jobfairol/show',
+                ['ext' => 'html'],
+                ['id' => '\d+']
+            ], //网络招聘会详情
         ],
         'ext' => ''
     ];
@@ -97,6 +103,12 @@ class Route
                 ['ext' => 'html'],
                 ['id' => '\d+']
             ], //视频面试
+            'jobfairol/:id' => [
+                'index/jobfairol/show',
+                ['ext' => 'html'],
+                ['id' => '\d+']
+            ], //招聘会详情
+            'jobfairol' => 'index/jobfairol/index', //网络招聘会列表页
         ],
         'ext' => 'html'
     ];
@@ -117,8 +129,8 @@ class Route
             'news/index' => 'index/article/index', //资讯列表页
             'news/news-show-<id>' => ['index/article/show', ['id' => '\d+']], //资讯详情页
             'explain/explain-show-<id>' => ['index/explain/show', ['id' => '\d+']], //说明页详情页
-            'notice' => 'index/notice/index', //公告列表页
             'notice/notice-show-<id>' => ['index/notice/show', ['id' => '\d+']], //公告详情页
+            'notice' => 'index/notice/index', //公告列表页
             'help' => 'index/help/show', //帮助详情页
             'hrtools/index' => 'index/hrtool/index', //hr工具箱
             'hrtools/hrtools-list-<id>' => [
@@ -131,6 +143,12 @@ class Route
                 ['ext' => 'html'],
                 ['id' => '\d+']
             ], //视频面试
+            'jobfairol' => 'index/jobfairol/index', //网络招聘会列表页
+            'jobfairol/:id' => [
+                'index/jobfairol/show',
+                ['ext' => 'html'],
+                ['id' => '\d+']
+            ], //网络招聘会详情
         ],
         'ext' => 'htm'
     ];
@@ -170,6 +188,11 @@ class Route
                 'index/video/main',
                 ['id' => '\d+']
             ], //视频面试
+            'jobfairol' => 'index/jobfairol/index', //网络招聘会列表页
+            'jobfairol/show/id/:id' => [
+                'index/jobfairol/show',
+                ['id' => '\d+']
+            ], //网络招聘会详情
         ],
         'ext' => ''
     ];

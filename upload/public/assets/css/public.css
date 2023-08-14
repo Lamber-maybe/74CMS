@@ -569,7 +569,7 @@ cursor: pointer;
 	padding: 6px 10px;
     color:#999999 ;
 	border-radius: 5px;
-	margin: 0 2px;
+	margin: 2px 2px 0 2px;
     border:1px solid #e2e2e2;
 }
 .paging_num.active{

@@ -1,0 +1,58 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/jobfairol.css" /#}
+<div class="content_wrapper">
+	<div class="JobFair_banner">
+		<img src="__ROOT__/assets/images/jobfairol/networkJobFair_banner.png">
+	</div>
+	<div class="content">
+		<div class="networkJobFair_wrapper">
+			{#volist name="list" id="vo"#}
+			<div class="networkJobFair_list clearfix">
+				<div class="networkJobFair_img float">
+					<a href="{#:url('index/jobfairol/show',['id'=>$vo.id])#}" target="_blank">
+					<img src="{#$vo.thumb_src#}" />
+					</a>
+				</div>
+				<div class="networkJobFair_text float">
+					<p class="text1"><a href="{#:url('index/jobfairol/show',['id'=>$vo.id])#}" target="_blank">{#$vo.title#}</a></p>
+					<p class="text2 text2_margin1">
+						<span class="text2_item">
+							参会企业
+							<span>{#$vo.total_company#}</span>
+						</span>
+						<span class="text2_item">
+							参会个人
+							<span>{#$vo.total_personal#}</span>
+						</span>
+						<span class="text2_item">
+							浏览次数
+							<span>{#$vo.click#}</span>
+						</span>
+					</p>
+					<p class="text3">举办时间：{#:date('Y-m-d h:i:s',$vo.starttime)#}  至  {#:date('Y-m-d h:i:s',$vo.endtime)#} </p>
+				</div>
+
+				<div class="networkJobFair_btn">
+					{#if condition="$vo['score'] eq 2"#}
+					<button class="button_margin" type="button" onclick="window.location='{#:url(\'index/jobfairol/show\',[\'id\'=>$vo.id])#}'">在线预定</button><br />
+					<p><a href="{#:url('index/jobfairol/show',['id'=>$vo.id])#}" target="_blank">参会企业</a></p>
+					{#/if#}
+					{#if condition="$vo['score'] eq 0"#}
+					<button class="button_margin" type="button" onclick="window.location='{#:url(\'index/jobfairol/show\',[\'id\'=>$vo.id])#}'">查看详情</button><br />
+					{#/if#}
+				</div>
+				{#if condition="$vo['score'] eq 2"#}
+				<img class="icon" src="__ROOT__/assets/images/jobfairol/JobFair_img1.png">
+				{#/if#}
+				{#if condition="$vo['score'] eq 1"#}
+				<img class="icon" src="__ROOT__/assets/images/jobfairol/JobFair_img0.png">
+				{#/if#}
+				{#if condition="$vo['score'] eq 0"#}
+				<img class="icon" src="__ROOT__/assets/images/jobfairol/JobFair_img3.png">
+				{#/if#}
+			</div>
+			{#/volist#}
+			{#$pagerHtml#}
+		</div>
+	</div>
+</div>

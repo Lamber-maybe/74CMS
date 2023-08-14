@@ -64,6 +64,7 @@ export default {
         { name: '找人才', src: `member`, url: '/resumelist', imgName: 'resume' },
         { name: '发布职位', src: `member`, url: '/member/company/index', imgName: 'add_job' },
         { name: '创建简历', src: `member`, url: '/member/personal/index', imgName: 'add_resume' },
+        { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
         { name: '职场资讯', src: `member`, url: '/newslist', imgName: 'news' },
         { name: '我的', src: `member`, url: '/member/login', imgName: 'user' }
       ],
@@ -77,6 +78,7 @@ export default {
         { name: '智能匹配', src: `personal`, url: '/member/personal/recommend', imgName: 'recommend' },
         { name: '会员服务', src: `personal`, url: '/member/personal/service', imgName: 'service' },
         { name: '我的职聊', src: `personal`, url: '/im/imlist', imgName: 'im' },
+        { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
         { name: '我的', src: `personal`, url: '/member/login', imgName: 'user' }
       ],
       companyMoreList: [
@@ -89,6 +91,7 @@ export default {
         { name: '智能匹配', src: `company`, url: '/member/company/recommend', imgName: 'recommend' },
         { name: '会员服务', src: `company`, url: '/member/company/mysetmeal', imgName: 'setmeal' },
         { name: '我的职聊', src: `company`, url: '/im/imlist', imgName: 'im' },
+        { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
         { name: '我的', src: `company`, url: '/member/login', imgName: 'user' }
       ],
       itemList: [],

@@ -1,0 +1,108 @@
+.JobFair_banner{
+	height: 300px;
+}
+.JobFair_banner img{
+	width: 100%;
+	height: 300px;
+}
+
+.networkJobFair_list{
+	background: #fff;
+	padding: 28px 45px 27px 30px;
+	position: relative;
+	margin-bottom: 10px;
+}
+.networkJobFair_list:hover {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.networkJobFair_list .networkJobFair_img{
+	width:245px ;
+	height: 145px;
+	margin-right: 20px;
+}
+.networkJobFair_list .networkJobFair_img img{
+	width: 100%;
+	height: 100%;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.networkJobFair_text {
+	margin-top: 10px;
+}
+
+.networkJobFair_text .text1{
+	color:#333;
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 8px;
+}
+.networkJobFair_text .text2{
+	color: #666666;
+	font-size: 15px;
+}
+
+.networkJobFair_text .text2_margin1{
+	margin: 20px 0;
+}
+
+.networkJobFair_text .text2 .text2_item{
+	margin-right: 40px;
+}
+
+.networkJobFair_text .text2 .text2_item span{
+	color: #333333;
+	font-size: 20px;
+}
+
+.networkJobFair_text .text3{
+	color:#666666 ;
+	font-size: 15px;
+}
+.networkJobFair_text .text3_margin{
+	margin: 17px 0 30px;
+}
+
+.networkJobFair_list  .networkJobFair_btn{
+	float: right;
+}
+.networkJobFair_list  .networkJobFair_btn button{
+	color:#ffffff ;
+	font-size:14px ;
+	padding:9px 37px ;
+	background:#1787fb;
+	border-radius: 5px;
+	margin-bottom: 17px;
+	cursor: pointer;
+}
+.networkJobFair_list  .networkJobFair_btn button:hover {
+	background: #1782f1;
+}
+.networkJobFair_list  .networkJobFair_btn .button_margin{
+	margin-top: 43px;
+}
+.networkJobFair_list  .networkJobFair_btn .button_margin2{
+	margin-top: 54px;
+}
+
+.networkJobFair_list  .networkJobFair_btn p{
+	text-align: center;
+	font-size: 14px;
+	color: #666666;
+}
+.networkJobFair_list  .networkJobFair_btn p a{
+	font-size: 14px;
+	color: #666666;
+	cursor: pointer;
+}
+
+.networkJobFair_wrapper  .paging_box{
+	padding: 20px 0;
+}
+
+
+.networkJobFair_list .icon{
+	position: absolute;
+	right: 0;
+	top: 0;
+}

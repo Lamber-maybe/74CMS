@@ -370,5 +370,19 @@ export default {
   // 实地认证信息
   company_report: '/home/company/report',
   // 计划任务
-  cron_run: '/home/cron/index'
+  cron_run: '/home/cron/index',
+  // 网络招聘会列表
+  jobfairol: '/home/jobfairol/index',
+  // 网络招聘会已报名
+  jobfairol_reserve_list: '/company/jobfairol/index',
+  // 网络招聘会详情页
+  jobfairol_show: '/home/jobfairol/show',
+  // 网络招聘会企业列表
+  jobfairol_comlist: '/home/jobfairol/comlist',
+  // 网络招聘会职位列表
+  jobfairol_joblist: '/home/jobfairol/joblist',
+  // 网络招聘会简历列表
+  jobfairol_resumelist: '/home/jobfairol/resumelist',
+  // 网络招聘会参会
+  jobfairol_apply: '/home/jobfairol/apply'
 }

@@ -84,7 +84,7 @@
         <div class="box_2" v-if="ad_dataset_banner.items.length > 0">
             <el-carousel :height="70 + 'px'">
               <el-carousel-item v-for="(item,index) in ad_dataset_banner.items" :key="index">
-                <img :src="item.image_src" class="img">
+                <img :src="item.image_src" class="img" @click="handleClickBanner(item)">
               </el-carousel-item>
             </el-carousel>
         </div>
@@ -211,6 +211,11 @@ import api from '@/api'
         this.initInfo()
     },
     methods:{
+        handleClickBanner(item){
+            if(item.link_url !== ''){
+              window.open(item.link_url)
+            }
+        },
         handlerJumpService (path, type) {
             if (type == 'stick' && this.basic.stick === 1) {
             this.$message.error('该简历已经在推广状态，不能重复推广')

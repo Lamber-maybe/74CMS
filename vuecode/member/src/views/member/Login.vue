@@ -143,7 +143,11 @@ import Captcha from '@/components/captcha/index'
       },
       redirectTo () {
         if (this.redirect !== '') {
-          this.$router.push(this.redirect)
+          if(this.redirect.indexOf("http")==0){
+            location.href = this.redirect
+          }else{
+            this.$router.push(this.redirect)
+          }
         } else {
           if (this.utype === 1) {
             this.$router.push('/company')

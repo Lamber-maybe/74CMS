@@ -30,3 +30,10 @@ export function companySetmealEdit(params, method = 'post') {
     })
   }
 }
+export function companySetmealAdd(data) {
+  return request({
+    url: apiArr.companySetmealAdd,
+    method: 'post',
+    data
+  })
+}

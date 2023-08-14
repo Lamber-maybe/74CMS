@@ -216,4 +216,19 @@ class CompanySetmeal extends \app\common\controller\Backend
             $this->ajaxReturn(200, '保存成功');
         }
     }
+    public function add()
+    {
+        $uid = input('post.uid/d', 0, 'intval');
+        $setmeal_id = input('post.setmeal_id/d', 0, 'intval');
+        
+        model('Member')->setMemberSetmeal(['uid'=>$uid,'setmeal_id'=>$setmeal_id,'note'=>'管理员更换套餐']);
+        
+        model('AdminLog')->record(
+            '更换企业套餐。企业UID【' .
+            $uid .
+                '】；套餐ID【'.$setmeal_id.'】',
+            $this->admininfo
+        );
+    $this->ajaxReturn(200, '更换套餐成功');
+    }
 }

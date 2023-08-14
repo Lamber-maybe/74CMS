@@ -92,6 +92,9 @@ import Microposte from '../views/company/Microposte'
 import ScanMicroposte from '../views/ScanMicroposte'
 import ScanUpload from '../views/ScanUpload'
 
+import JobfairolIndex from '../views/jobfairol/Index'
+import JobfairolShow from '../views/jobfairol/Show'
+import JobfairolReserve from '../views/jobfairol/Seserve'
 Vue.use(VueRouter)
 
 /**
@@ -1090,6 +1093,38 @@ const routes = [
       keepAlive: false,
       loginCheck: false,
       utype: 0
+    }
+  },
+  
+  {
+    path: '/jobfairol',
+    name: 'jobfairol',
+    component: JobfairolIndex,
+    meta: {
+      title: '网络招聘会',
+      keepAlive: true,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/jobfairol/:id(\\d+)',
+    name: 'jobfairolShow',
+    component: JobfairolShow,
+    meta: {
+      title: '网络招聘会详情',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/jobfairol/reserve',
+    name: 'JobfairolReserve',
+    component: JobfairolReserve,
+    meta: {
+      title: '已报名网络招聘会列表',
+      keepAlive: false,
+      loginCheck: true,
+      utype: 1
     }
   },
   {

@@ -90,6 +90,13 @@
             <el-button
               size="small"
               type="primary"
+              @click="funAdd(scope.row)"
+            >
+              更换套餐
+            </el-button>
+            <el-button
+              size="small"
+              type="primary"
               @click="funEdit(scope.row)"
             >
               编辑
@@ -140,10 +147,24 @@
         @pageReload="fetchData"
       />
     </el-dialog>
+    <el-dialog
+      v-if="dialogAddVisible"
+      title="更换套餐"
+      :visible.sync="dialogAddVisible"
+      width="25%"
+      :close-on-click-modal="false"
+    >
+      <diaadd
+        :uid="listUid"
+        @setDialogFormVisible="dialogAddVisible=false"
+        @pageReload="fetchData"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import diaadd from './add.vue'
 import diaform from './form.vue'
 import dialist from './loglist.vue'
 import { getClassify } from '@/api/classify'
@@ -152,7 +173,8 @@ import { companySetmealList } from '@/api/company_setmeal'
 export default {
   components: {
     dialist,
-    diaform
+    diaform,
+    diaadd
   },
   data() {
     return {
@@ -168,6 +190,7 @@ export default {
       options_setmeal: [],
       dialogListVisible: false,
       dialogFormVisible: false,
+      dialogAddVisible: false,
       listUid: 0
     }
   },
@@ -225,6 +248,14 @@ export default {
         this.listUid = 0
       }
       this.dialogFormVisible = true
+    },
+    funAdd(row) {
+      if (row) {
+        this.listUid = row.uid
+      } else {
+        this.listUid = 0
+      }
+      this.dialogAddVisible = true
     }
   }
 }

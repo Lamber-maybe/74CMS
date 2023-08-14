@@ -72,7 +72,7 @@
       @close="closeDialog"
     >
       <diaform
-        :item_info="item_info"
+        :item-info="item_info"
         @setDialogFormVisible="closeDialog"
         @pageReload="fetchData"
       />

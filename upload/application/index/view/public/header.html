@@ -187,6 +187,9 @@
                 case 'help':
                     $navlist[$key]['url'] = url('index/help/show');
                     break;
+                case 'jobfairol':
+                    $navlist[$key]['url'] = url('index/jobfairol/index');
+                    break;
                 default:
                     break;
             }
@@ -196,9 +199,8 @@
     ?>
     <div class="nav_wrapper">
         <ul class="nav clearfix">
-            <li class="nav_item {#if condition=" $navSelTag eq 'index'"#}active{#/if#}">
-                <a class="item" href="{#:url('index/index/index')#}">网站首页</a>
-            </li>
+            <li class="nav_item {#if condition="$navSelTag eq 'index'"#}active{#/if#}">
+                <a class="item" href="{#:url('index/index/index')#}">网站首页</a></li>
             <?php
                 foreach($navlist1 as $key=>$value){
             ?>

@@ -305,6 +305,9 @@ function make_file_url($path, $type = 'default')
                 '/' .
                 $path;
             break;
+        case 'original':
+            return $path;
+            break;
         default:
             return config('global_config.sitedomain') .
             config('global_config.sitedir') .
@@ -329,11 +332,14 @@ function default_empty($alias)
         case 'logo':
             $filename = 'empty_logo.jpg';
             break;
+        case 'jobfair_thumb':
+            $filename = 'empty_jobfair_thumb.jpg';
+            break;
         default:
             $filename = '';
             break;
     }
-    return config('global_config.sitedomain') . config('global_config.sitedir') . SYS_UPLOAD_DIR_NAME.DS.'resource/' . $filename;
+    return config('global_config.sitedomain') . config('global_config.sitedir') . SYS_UPLOAD_DIR_NAME.'/resource/' . $filename;
 }
 /**
  * Mb转换为字节

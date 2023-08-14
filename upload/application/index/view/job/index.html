@@ -244,9 +244,7 @@
                 type="checkbox" {#if condition="$Request.param.famous eq 1"#}checked{#/if#} /> 名企</label>
             <label onclick="javascript:location.href='{#:P(["license"=>$Request.param.license==1?null:1])#}'"><input
                 type="checkbox" {#if condition="$Request.param.license eq 1"#}checked{#/if#} /> 企业已认证</label>
-            <label
-              onclick="javascript:location.href='{#:P(["filter_apply"=>$Request.param.filter_apply==1?null:1])#}'"><input
-                type="checkbox" {#if condition="$Request.param.filter_apply eq 1"#}checked{#/if#} /> 过滤已投递</label>
+            <label onclick="javascript:location.href='{#:P(["filter_apply"=>$Request.param.filter_apply==1?null:1])#}'"><input type="checkbox" {#if condition="$Request.param.filter_apply eq 1"#}checked{#/if#} /> 过滤已投递</label>
           </div>
           <div class="array_type">
             <div class="t">展示方式：</div>
@@ -314,8 +312,7 @@
               </div>
               <div class="company">
                 <div class="company_title">
-                  <a class="c_name substring" title="{#$vo.companyname#}" href="{#:url('index/company/show',['id'=>$vo.company_id])#}"
-                    target="_blank">{#$vo.companyname#}</a>
+                  <a class="c_name substring" title="{#$vo.companyname#}" href="{#:url('index/company/show',['id'=>$vo.company_id])#}" target="_blank">{#$vo.companyname#}</a>
                   {#if condition="$vo.company_audit eq 1"#}
                   <div class="s_ic1"></div>
                   {#/if#}
@@ -414,8 +411,7 @@
           <div class="right_box2_title">推荐职位</div>
           {#volist name="hotjob_list" id="vo"#}
           <div class="right_box2_text">
-            <a target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}"
-              class="box2_text1 {#eq name="vo.emergency" value="1"#}emergency{#/eq#}">{#$vo.jobname#}</a>
+            <a target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}" class="box2_text1 {#eq name="vo.emergency" value="1" #}emergency{#/eq#}">{#$vo.jobname#}</a>
             <p class="box2_text2"><a target="_blank"
                 href="{#:url('index/company/show',['id'=>$vo.company_id])#}">{#$vo.companyname#}</a></p>
             <p class="box2_text3">{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}/月{#/if#}</p>
@@ -869,7 +865,7 @@
             confirmButtonText: '去登录',
           }).then(function () {
             location.href = qscms.locationList.loginPersonal + '?redirect=' +
-              qscms.locationList.recommendJob;
+              qscms.sitedomain + qscms.locationList.recommendJob;
           }).catch(function () { });
         } else {
           location.href = qscms.locationList.recommendJob;

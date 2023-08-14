@@ -1,0 +1,375 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/jobfairolshow.css" /#}
+<div id="app">
+	<div class="banner_img"></div>
+	<div class="content_top">
+		<div class="content ol">
+			<div class="process_wrapper">
+				<div class="process_text">
+					<img class="img1" src="__ROOT__/assets/images/jobfairol/process_icon1.png" />
+					{#$info.content#}
+					<img class="img2" src="__ROOT__/assets/images/jobfairol/process_icon2.png" />
+				</div>
+				<div class="sum_wrapper clearfix">
+					<div class="sum_box1 float">
+						<p>参会企业</p>
+						<span>{#$info.total_company#}</span>
+					</div>
+					<div class="sum_box2 float">
+						<p>可投职位</p>
+						<span>{#$info.total_job#}</span>
+					</div>
+					<div class="sum_box3 float">
+						<p>浏览次数</p>
+						<span>{#$info.click#}</span>
+					</div>
+				</div>
+			</div>
+			<div class="search_wrapper clearfix">
+				<div class="search_box float clearfix">
+					<div class="clearfix float">
+						<div class="search_select float">
+							<span>{{ fText }}</span>
+							<ul class="select_hover_box">
+								<li @click="changeSearchType('com', '企业名称')">企业名称</li>
+								<li @click="changeSearchType('job', '职位名称')">职位名称</li>
+								<li @click="changeSearchType('res', '求职者')">求职者</li>
+							</ul>
+						</div>
+						<div class="search_input float">
+							<input type="text" v-model="keyword" @keyup.enter="doSearch" placeholder="请输入关键字" />
+						</div>
+						<div class="search_btn float">
+							<button type="button" @click="doSearch">搜索</button>
+						</div>
+					</div>
+				</div>
+				<div class="right_btn">
+					<button type="button" @click="doApply('1')">企业参会</button>
+					<button type="button" @click="doApply('2')">个人参会</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="content_wrapper">
+		<div class="tab_wrapper">
+			<div class="tab clearfix">
+				<div :class="'float '+(tab === 'com' || tab === 'job' ? 'active' : '')" @click="changeTab('com')">
+					<a>参展企业大厅</a>
+					<span class="bt_border"></span>
+				</div>
+				<div :class="'float '+(tab === 'res' ? 'active' : '')" @click="changeTab('res')">
+					<a>求职者大厅</a>
+					<span class="bt_border"></span>
+				</div>
+			</div>
+		</div>
+		<div class="content ol">
+			<!-- 企业列表 -->
+			<div class="list_empty" v-if="companyList.length === 0 && tab === 'com'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="jobfair_wrapper clearfix" v-show="tab === 'com'">
+				<div class="jobfair_list float" v-for="(item, index) in companyList" :key="index">
+					<div class="base_information clearfix">
+						<div class="img float"><img :src="item.logo_src" alt=""></div>
+						<div class="text float">
+							<a :href="companyUrl(item.id)" target="_blank">{{ item.companyname }}</a><br />
+							<button class="btn" @click="dialogVisible = true,dialogQrSrc = item.qrcode_src,diaComName=item.companyname">微信直面</button>
+						</div>
+					</div>
+					<div class="post clearfix" v-for="(item1, index1) in item.joblist" :key="index1">
+						<a :href="jobsUrl(item1.id)" target="_blank">{{ item1.jobname }}</a>
+						<button class="btn" @click="jobApply(item1.id)">投简历</button>
+					</div>
+					<div class="c_noj" v-if="item.joblist.length <= 0">该企业暂无招聘职位</div>
+					<div class="move_wrapper" v-if="item.joblist.length > 0">
+						<a :href="companyUrl(item.id)" target="_blank" class="more">查看该公司全部职位>></a>
+					</div>
+				</div>
+			</div>
+			<!-- 职位列表 -->
+			<div class="list_empty" v-if="jobList.length === 0 && tab === 'job'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="post_wrapper clearfix" v-show="tab === 'job'">
+				<div class="post_item float" v-for="(item, index) in jobList" :key="index">
+					<div class="clearfix">
+						<div class="post_img float">
+							<img :src="item.company_logo" />
+						</div>
+						<div class="post_text float">
+							<p class="post_name">
+								<a :href="jobsUrl(item.id)" target="_blank">{{ item.jobname }}</a>
+								<span>{{ item.wage_text }}</span>
+							</p>
+							<p class="post_information">
+								<span>{{ item.education_text }}</span>
+								<span>{{ item.experience_text }}</span>
+								<span>{{ item.district_text }}</span>
+							</p>
+						</div>
+					</div>
+					<div class=" btn_box clearfix">
+						<a :href="companyUrl(item.company_id)" target="_blank">{{ item.companyname }}</a>
+						<button @click="dialogVisible = true,dialogQrSrc = item.qrcode_src,diaComName=item.companyname">微信直面</button>
+					</div>
+				</div>
+			</div>
+			<!-- 求职者列表 -->
+			<div class="list_empty" v-if="resList.length === 0 && tab === 'res'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="jobHunter_wrapper clearfix" v-show="tab === 'res'">
+				<div class="jobHunter_list float" v-for="(item, index) in resList" :key="index" @click="window.location.href=resumeUrl(item.id)">
+					<div class="p_img">
+						<img class="photo" :src="item.photo_img_src">
+						<div class="gm m" v-if="item.sex == 1"></div>
+						<div class="gm n" v-if="item.sex == 2"></div>
+					</div>
+					<p class="name"><a :href="resumeUrl(item.id)" target="_blank">{{ item.fullname }}</a></p>
+					<p class="information">
+						<span>{{ item.age_text }}岁</span>
+						<span>{{ item.education_text }}</span>
+						<span class="last">{{ item.experience_text }}</span>
+					</p>
+					<div class="post_list">
+						<span v-for="(item1,index1) in item.intention_jobs.split(',')" :key="index1">{{ item1 }}</span>
+					</div>
+					<span class="update_time">更新时间： {{ item.refreshtime }}</span>
+				</div>
+			</div>
+			<div class="paging ol clearfix">
+				<div class="paging_box ol clearfix">
+					<button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
+					<button class="paging_pre" v-if="page==1">上一页</button>
+					<div class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</div>
+					<button v-if="page!=total_page" class="paging_next enable" @click="page++,pageClick()">下一页</button>
+					<button v-if="page==total_page" class="paging_next">下一页</button>
+				</div>
+			</div>
+		</div>
+		<el-dialog
+			:title="'微信直面-' + diaComName"
+			:visible.sync="dialogVisible"
+			width="20%">
+				<div class="face_qr_box"><img :src="dialogQrSrc"></div>
+				<div class="face_qr_txt">微信扫描二维码</div>
+				<div class="face_qr_txt">微信远程面试，快速入职</div>
+		</el-dialog>
+	</div>
+</div>
+<script type="text/javascript">
+	var app = new Vue({
+		el: '#app',
+		data: {
+			isLogin:false,
+			utype:0,
+			id:"{#$info.id#}",
+			companyList:[],
+			jobList:[],
+			resList:[],
+			page:1,
+			pagesize:16,
+			total:0,
+			total_page:0,
+			keyword: '',
+			tab: 'com',
+			fText: '企业名称',
+			searchType: 'com',
+			dialogVisible:false,
+			dialogQrSrc: '',
+			company_url:"{#:url('index/company/show',['id'=>'_id'])#}",
+			jobs_url:"{#:url('index/job/show',['id'=>'_id'])#}",
+			resume_url:"{#:url('index/resume/show',['id'=>'_id'])#}",
+			diaComName: '',
+			score: "{#$info.score#}"
+		},
+		created:function(){
+			this.getCompanyList(true)
+			this.getJobList(false)
+			this.getResList(false)
+		},
+		computed: {
+			//分页
+			pagination: function(){
+				var left = 1;
+				var right = this.total_page;
+				var ar = [];
+				if(this.total_page>= 5){
+					if(this.page > 3 && this.page < this.total_page-2){
+						left = this.page - 2
+						right = this.page + 2
+					}else{
+						if(this.page<=3){
+							left = 1
+							right = 5
+						}else{
+							right = this.total_page
+							left = this.total_page -4
+						}
+					}
+				}
+				while (left <= right){
+					ar.push(left)
+					left ++
+				}
+				return ar
+			}
+		},
+		methods:{
+			getCompanyList:function(init){
+				var t = this;
+				httpget(qscms.apiList.jobfairolCompanyList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+					t.companyList = r.data.items
+					if (init) {
+						t.total = r.data.total
+						t.total_page = r.data.total_page
+					}
+				}).catch(function(){})
+			},
+			getJobList:function(init){
+				var t = this;
+				httpget(qscms.apiList.jobfairolJobList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+					t.jobList = r.data.items
+					if (init) {
+						t.total = r.data.total
+						t.total_page = r.data.total_page
+					}
+				}).catch(function(){})
+			},
+			getResList:function(init){
+				var t = this;
+				httpget(qscms.apiList.jobfairolResList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+					t.resList = r.data.items
+					if (init) {
+						t.total = r.data.total
+						t.total_page = r.data.total_page
+					}
+				}).catch(function(){})
+			},
+			changeTab:function (tab) {
+				this.tab = tab
+				if (this.tab === 'com') {
+					this.getCompanyList(true)
+				} else if (this.searchType === 'job') {
+					this.getJobList(true)
+				} else {
+					this.getResList(true)
+				}
+			},
+			doSearch:function() {
+				this.publicGetData()
+				this.tab = this.searchType
+			},
+			changeSearchType:function(type, text) {
+				this.searchType = type
+				this.fText = text
+			},
+			doApply:function(utype) {
+				var that = this
+				var currentScore = parseInt(this.score)
+				if (currentScore === 0) {
+					that.$confirm('当前招聘会已结束', '提示', {
+						type: 'warning'
+					})
+					.then(function () {})
+					.catch(function () {})
+					return false
+				} else if (currentScore === 1) {
+					that.$confirm('当前招聘会还未开始', '提示', {
+						type: 'warning'
+					})
+					.then(function () {})
+					.catch(function () {})
+					return false
+				}
+				var loginUtype = parseInt(qscms.loginUtype);
+				var thisType = parseInt(utype);
+				var confirmText = thisType === 1 ? '当前操作需要登录企业账号' : '当前操作需要登录个人账号';
+				if (qscms.isLogin) {
+					if (loginUtype !== thisType) {
+						that.$confirm(confirmText, '提示', {
+							type: 'warning',
+							confirmButtonText: '去登录'
+						})
+						.then(function () {
+							if (thisType === 1) {
+								location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+							} else {
+								location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+							}
+						})
+						.catch(function () {})
+					} else {
+						httppost(qscms.apiList.jobfairolApply,{jobfair_id:that.id}).then(function(r){
+							that.$message({
+								type: 'success',
+								message: r.message
+							})
+						}).catch(function(){})
+					}
+				} else {
+					that.$confirm(confirmText, '提示', {
+						type: 'warning',
+						confirmButtonText: '去登录'
+					})
+					.then(function () {
+						if (thisType === 1) {
+							location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+						} else {
+							location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+						}
+					})
+					.catch(function () { })
+				}
+			},
+			//分页
+			btnClick: function(data){
+				if(data !== this.page){
+					this.page = data
+					//根据点击页数请求数据
+					this.publicGetData()
+				}
+			},
+			pageClick: function(){
+				this.publicGetData()
+			},
+			publicGetData:function() {
+				if (this.searchType === 'com') {
+					this.getCompanyList(true)
+				} else if (this.searchType === 'job') {
+					this.getJobList(true)
+				} else {
+					this.getResList(true)
+				}
+			},
+			// 投简历
+			jobApply: function (id) {
+				var that = this
+				if (parseInt(qscms.loginUtype) !== 2) {
+					that.$confirm('当前操作需要登录求职者账号', '提示', {
+						type: 'warning',
+						confirmButtonText: '去登录'
+					})
+					.then(function () {
+						location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+					})
+					.catch(function () { })
+				} else {
+					var params = {
+						jobid: id
+					}
+					httppost(qscms.apiList.jobapply, params)
+						.then(function (res) {
+							that.$message({ type: 'success', message: res.message })
+						})
+						.catch(function () { })
+				}
+			},
+			companyUrl:function(id){
+				return this.company_url.replace('_id',id)
+			},
+			jobsUrl:function(id){
+				return this.jobs_url.replace('_id',id)
+			},
+			resumeUrl:function(id){
+				return this.resume_url.replace('_id',id)
+			}
+		}
+	})
+</script>

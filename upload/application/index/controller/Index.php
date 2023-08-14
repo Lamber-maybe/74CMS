@@ -230,6 +230,7 @@ class Index extends \app\index\controller\Base
         $list = model('JobSearchRtime')->alias('a')
                 ->join(config('database.prefix').'job b','a.id=b.id','LEFT')
                 ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+                ->where('a.emergency',1)
                 ->where('c.id','not null')
                 ->order('a.refreshtime desc')
                 ->limit(5)

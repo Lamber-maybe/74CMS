@@ -593,4 +593,25 @@ export default {
   jobApplyList: '/job_apply/index',
 
 
+  
+
+
+  // 网络招聘会
+  jobFairListOl: '/jobfairol/index',
+  jobFairListOlAdd: '/jobfairol/add',
+  jobFairListOlEdit: '/jobfairol/edit',
+  jobFairListOlDelete: '/jobfairol/delete',
+  jobFairListOlCompanyList: 'jobfairol/companyList',
+  jobFairListOlPersonalList: 'jobfairol/personalList',
+  jobFairListOlSticky: 'jobfairol/setSticky',
+  jobFairListOlQrcode: 'jobfairol/setQrcode',
+  jobFairListOlCompanySearch: 'jobfairol/getCompany',
+  jobFairListOlParAdd: 'jobfairol/participateAdd',
+  jobFairListOlPersonalSearch: 'jobfairol/getPersonal',
+  jobFairListOlStatus: 'jobfairol/setStatus',
+  jobFairListOlParticipateDelete: 'jobfairol/participateDelete',
+  jobFairListOlQrService: 'jobfairol/qrService',
+  jobFairListOlComBatchAdd: 'jobfairol/companyBatchAdd',
+  jobFairListOlPerBatchAdd: 'jobfairol/personalBatchAdd',
+
 }

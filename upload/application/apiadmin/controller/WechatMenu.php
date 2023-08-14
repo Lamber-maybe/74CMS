@@ -108,7 +108,7 @@ class WechatMenu extends \app\common\controller\Backend
         $syncResult = $instance->menuSync();
         if($syncResult===true){
             model('AdminLog')->record(
-                '删除微信菜单。菜单ID【' . implode(',', $id) . '】',
+                '同步微信菜单',
                 $this->admininfo
             );
             $this->ajaxReturn(200, '同步菜单成功');

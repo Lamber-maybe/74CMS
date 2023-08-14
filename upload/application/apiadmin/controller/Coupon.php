@@ -108,7 +108,7 @@ class Coupon extends \app\common\controller\Backend
         }
         $list = model('Coupon')
             ->where('id', 'in', $id)
-            ->column('title');
+            ->column('name');
         model('Coupon')->destroy($id);
         model('AdminLog')->record(
             '删除优惠券。优惠券ID【' .

@@ -37,17 +37,8 @@
         <span class="link next" v-else>下一篇： -</span>
       </div>
     </div>
-    <div class="follow_block">
-      <div class="follow_content">
-        <div class="content">
-          <div class="form_split_10"></div>
-          <img src="" alt="" class="logo" />
-          <div class="name">太原人才网</div>
-          <div class="txt">及时获取最新招聘岗位信息</div>
-          <div class="follow_btn">关注</div>
-        </div>
-      </div>
-    </div>
+    <div class="form_split_10"></div>
+    <Subscribe></Subscribe>
   </div>
 </template>
 
@@ -56,8 +47,12 @@ import wxshare from '@/assets/js/share.js'
 import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
+import Subscribe from '@/components/Subscribe'
 export default {
   name: 'NoticeShow',
+  components: {
+    Subscribe
+  },
   filters: {
     timeFilter (timestamp) {
       return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')

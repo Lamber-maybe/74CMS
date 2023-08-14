@@ -61,12 +61,9 @@
            <div class="banner" v-if="ad_dataset_banner.items.length > 0">
              <el-carousel :height="80 + 'px'">
                <el-carousel-item v-for="(item,index) in ad_dataset_banner.items" :key="index">
-                 <img :src="item.image_src" class="img">
+                 <img :src="item.image_src" class="img" @click="handleClickBanner(item)">
                </el-carousel-item>
              </el-carousel>
-                <!--<div class="banner" v-for="(item,index) in ad_dataset_banner.items" :key="index" @click="handleClickBanner(item)" :style="item.link_url!=''?'cursor:pointer':''">
-                    <img :src="item.image_src" />
-                </div>-->
             </div>
             <!-- 人才推荐 -->
            <div class="recommend_content">
@@ -242,7 +239,7 @@ export default {
   },
   methods:{
         handleClickBanner(item){
-            if(item.link_url!=''){
+            if(item.link_url !== ''){
                 window.open(item.link_url)
             }
         },

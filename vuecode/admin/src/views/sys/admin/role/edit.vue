@@ -57,6 +57,7 @@ import businessRouter from '@/router/modules/business'
 import contentRouter from '@/router/modules/content'
 import mobileRouter from '@/router/modules/mobile'
 import statRouter from '@/router/modules/stat'
+import applicationRouter from '@/router/modules/application'
 import toolRouter from '@/router/modules/tool'
 import systemRouter from '@/router/modules/system'
 
@@ -93,6 +94,7 @@ export default {
       { ...contentRouter },
       { ...mobileRouter },
       { ...statRouter },
+      { ...applicationRouter },
       { ...toolRouter },
       { ...systemRouter }
     ]

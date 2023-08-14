@@ -183,7 +183,7 @@ abstract class Controller {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    protected function error($message='',$jumpUrl='',$ajax=false,$previous) {
+    protected function error($message='',$jumpUrl='',$ajax=false,$previous=false) {
         $this->dispatchJump($message,0,$jumpUrl,$ajax,$previous);
     }
 
@@ -195,7 +195,7 @@ abstract class Controller {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    protected function success($message='',$jumpUrl='',$ajax=false,$previous) {
+    protected function success($message='',$jumpUrl='',$ajax=false,$previous=false) {
         $this->dispatchJump($message,1,$jumpUrl,$ajax,$previous);
     }
 

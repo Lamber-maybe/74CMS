@@ -1876,3 +1876,37 @@ CREATE TABLE `qs_wechat_share` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_wechat_share||-_-||
+
+DROP TABLE IF EXISTS `qs_jobfair_online`;
+CREATE TABLE `qs_jobfair_online` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `thumb` int(10) unsigned NOT NULL,
+  `starttime` int(10) unsigned NOT NULL,
+  `endtime` int(10) unsigned NOT NULL,
+  `content` text NOT NULL,
+  `enable_setmeal_id` varchar(100) NOT NULL,
+  `must_company_audit` tinyint(1) unsigned NOT NULL,
+  `min_complete_percent` int(10) unsigned NOT NULL,
+  `click` int(10) unsigned NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  `qrcode` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_jobfair_online||-_-||
+
+DROP TABLE IF EXISTS `qs_jobfair_online_participate`;
+CREATE TABLE `qs_jobfair_online_participate` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `jobfair_id` int(10) unsigned NOT NULL,
+  `utype` tinyint(1) unsigned NOT NULL,
+  `uid` int(10) unsigned NOT NULL,
+  `audit` tinyint(1) unsigned NOT NULL,
+  `qrcode` int(10) unsigned NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  `source` tinyint(1) unsigned NOT NULL,
+  `stick` tinyint(1) unsigned NOT NULL,
+  `note` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_jobfair_online_participate||-_-||

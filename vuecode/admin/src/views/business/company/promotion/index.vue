@@ -124,7 +124,7 @@
         </el-col>
       </el-row>
     </el-card>
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="35%">
+    <el-dialog v-if="dialogVisible" :title="dialogTitle" :visible.sync="dialogVisible" width="35%">
       <dia_add
         v-if="itemInfo === null"
         @setDialogVisible="closeDialog"
