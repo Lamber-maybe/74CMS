@@ -157,13 +157,13 @@ class Weixin extends \app\common\controller\Base
      */
     protected function receiveEvent($object) 
     { 
-		$this->checkWeixinOpen($object);
+        $this->checkWeixinOpen($object);
         switch ($object->Event) {
             case "subscribe"://用户未关注时，进行关注后的事件推送
                 $this->outputWelcome($object);
                 $this->subscribe($object);
                 if ($object->EventKey) {
-                    $this->actionScan($object);
+                    $this->actionScan($object,1);
                 }
                 break;
             case "SCAN":
@@ -307,11 +307,21 @@ class Weixin extends \app\common\controller\Base
     /**
      * 扫描事件
      */
-    protected function actionScan($object) {
+    protected function actionScan($object,$subscribe=0) {
         //用户未关注时，关注后的推送数据包中，EventKey含有“qrscene_”前缀
         $event_key = stripos($object->EventKey, 'qrscene_') === false ? $object->EventKey : ltrim($object->EventKey, 'qrscene_');
         $this->openGate($event_key, $object);
         parse_str($event_key,$event);
+        $sceneQrcodeInfo = null;
+        if(isset($event['scene_uuid'])){
+            $sceneQrcodeInfo = model('SceneQrcode')->where('uuid',$event['scene_uuid'])->find();
+            if($sceneQrcodeInfo!==null){
+                model('SceneQrcodeScanLog')->save(['pid'=>$sceneQrcodeInfo['id'],'addtime'=>time()]);
+                if($subscribe){
+                    model('SceneQrcodeSubscribeLog')->save(['pid'=>$sceneQrcodeInfo['id'],'addtime'=>time()]);
+                }
+            }
+        }
         switch ($event['alias']) {
             case 'mapQrcode':
                 $jobid = intval($event['jobid']);
@@ -358,6 +368,13 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object,'职位不存在或已删除');
                     break;
                 }
+                if($sceneQrcodeInfo!==null){
+                    $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                }else{
+                    $mobile_page = config('global_config.mobile_domain');
+                }
+                $mobile_page = str_replace(":id",$jobid,$mobile_page);
+                $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
                 $jobinfo['wage_text'] = model('BaseModel')->handle_wage(
                     $jobinfo['minwage'],
                     $jobinfo['maxwage'],
@@ -369,7 +386,7 @@ class Weixin extends \app\common\controller\Base
                     "Title" => '【'.$jobinfo['companyname'].'】招聘 '.$jobinfo['jobname'].' 职位 '.$jobinfo['amount_text'].' 人，待遇 '.$jobinfo['wage_text'].',工作地点：'.$jobinfo['address'], 
                     "Description" => $jobinfo['content'], 
                     "PicUrl" => $jobinfo['logo_src'], 
-                    "Url" => config('global_config.mobile_domain').'job/'.$jobinfo['id']
+                    "Url" => $mobile_page
                 ];
                 $this->outputArticle($object,$content_arr);
                 break;
@@ -384,6 +401,14 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object,'简历不存在或已删除');
                     break;
                 }
+                if($sceneQrcodeInfo!==null){
+                    $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                }else{
+                    $mobile_page = config('global_config.mobile_domain');
+                }
+                $mobile_page = str_replace(":id",$resumeid,$mobile_page);
+                $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+
                 $category_data = model('Category')->getCache();
                 $category_job_data = model('CategoryJob')->getCache();
                 $resumeinfo['fullname'] = $resumeinfo['fullname'];
@@ -450,13 +475,21 @@ class Weixin extends \app\common\controller\Base
                     "Title" => '【'.$resumeinfo['fullname'].'】在找'.$resumeinfo['intention_jobs_text'].'相关的工作-'.config('global_config.sitename'), 
                     "Description" => $resumeinfo['sex_text'].'|'.$resumeinfo['age'].'岁|'.$resumeinfo['education_text'].'|'.$resumeinfo['experience_text'].','.$resumeinfo['current_text'], 
                     "PicUrl" => $resumeinfo['photo_img_src'], 
-                    "Url" => config('global_config.mobile_domain').'resume/'.$resumeinfo['id']
+                    "Url" => $mobile_page
                 ];
                 $this->outputArticle($object,$content_arr);
                 break;
             case 'subscribe_company':
                 if($company_id = $event['comid']) $company = model('Company')->find($company_id);
                 if (isset($company)) {
+                    if($sceneQrcodeInfo!==null){
+                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    }else{
+                        $mobile_page = config('global_config.mobile_domain');
+                    }
+                    $mobile_page = str_replace(":id",$company_id,$mobile_page);
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+
                     $companyInfo = model('CompanyInfo')->where('comid',$company_id)->find();
                     $companycontents=$companyInfo['content'];
                     $logo = $company['logo'] > 0 ? model('Uploadfile')->getFileUrl($company['logo']) : default_empty('logo');
@@ -465,11 +498,117 @@ class Weixin extends \app\common\controller\Base
                         "Title" => '【'.$company['companyname'].'】招聘-'.config('global_config.sitename'),
                         "Description" => $companycontents, 
                         "PicUrl" => $logo,
-                        "Url" => config('global_config.mobile_domain').'company/'.$company['id']
+                        "Url" => $mobile_page
                     ];
                     $this->outputArticle($object,$content_arr);
                 }else{
                     $this->outputText($object,'企业不存在或已删除');
+                }
+                break;
+            case 'subscribe_index':
+                if($sceneQrcodeInfo!==null){
+                    $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                }else{
+                    $mobile_page = config('global_config.mobile_domain');
+                }
+                $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                
+                $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+                $content_arr = [
+                    "Title" => '找工作招人才就上'.config('global_config.sitename'),
+                    "Description" => config('global_config.sitename').'-个人求职、企业招聘专业平台', 
+                    "PicUrl" => $wechat_info_img,
+                    "Url" => $mobile_page
+                ];
+                $this->outputArticle($object,$content_arr);
+                break;
+            case 'subscribe_reg_personal':
+                if($sceneQrcodeInfo!==null){
+                    $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                }else{
+                    $mobile_page = config('global_config.mobile_domain');
+                }
+                $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                
+                $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+                $content_arr = [
+                    "Title" => '欢迎注册'.config('global_config.sitename').'求职会员，好工作职等你挑！',
+                    "Description" => '靠谱好工作就上'.config('global_config.sitename').'('.config('global_config.sitedomain').config('global_config.sitedir').')！', 
+                    "PicUrl" => $wechat_info_img,
+                    "Url" => $mobile_page
+                ];
+                $this->outputArticle($object,$content_arr);
+                break;
+            case 'subscribe_reg_company':
+                if($sceneQrcodeInfo!==null){
+                    $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                }else{
+                    $mobile_page = config('global_config.mobile_domain');
+                }
+                $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+                $content_arr = [
+                    "Title" => '欢迎注册'.config('global_config.sitename').'招聘会员，海量人才等你挑！',
+                    "Description" => config('global_config.sitename').'-本地人才库等你发现！', 
+                    "PicUrl" => $wechat_info_img,
+                    "Url" => $mobile_page
+                ];
+                $this->outputArticle($object,$content_arr);
+                break;
+            case 'subscribe_notice':
+                if($notice_id = $event['noticeid']) $notice = model('Notice')->find($notice_id);
+                if (isset($notice)) {
+                    if($sceneQrcodeInfo!==null){
+                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    }else{
+                        $mobile_page = config('global_config.mobile_domain');
+                    }
+                    $mobile_page = str_replace(":id",$notice_id,$mobile_page);
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                    $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                    $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+                    
+                    $content_arr = [
+                        "Title" => $notice['title'].'-'.config('global_config.sitename'),
+                        "Description" => '点击查看 >>', 
+                        "PicUrl" => $wechat_info_img,
+                        "Url" => $mobile_page
+                    ];
+                    $this->outputArticle($object,$content_arr);
+                }else{
+                    $this->outputText($object,'公告不存在或已删除');
+                }
+                break;
+            case 'subscribe_jobfairol':
+                if($jobfairol_id = $event['jobfairolid']) $jobfairol = model('JobfairOnline')->find($jobfairol_id);
+                if (isset($jobfairol)) {
+                    if($sceneQrcodeInfo!==null){
+                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    }else{
+                        $mobile_page = config('global_config.mobile_domain');
+                    }
+                    $mobile_page = str_replace(":id",$jobfairol_id,$mobile_page);
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                    $thumb = '';
+                    if($jobfairol['thumb']){
+                        $thumb = model('Uploadfile')->getFileUrl($jobfairol['thumb']);
+                    }
+                    if(!$thumb){
+                        $thumb = default_empty('jobfair_thumb');
+                    }
+                    
+                    $content_arr = [
+                        "Title" => $jobfairol['title'].'-'.config('global_config.sitename'),
+                        "Description" => '点击查看>>', 
+                        "PicUrl" => $thumb,
+                        "Url" => $mobile_page
+                    ];
+                    $this->outputArticle($object,$content_arr);
+                }else{
+                    $this->outputText($object,'招聘会不存在或已删除');
                 }
                 break;
             default:

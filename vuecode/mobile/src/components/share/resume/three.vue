@@ -194,7 +194,7 @@ export default {
 }
 
 .user_info .job_demand {
-  margin-top: 27px;
+  margin-top: 20px;
 }
 
 .user_info .demand_1,
@@ -205,6 +205,10 @@ export default {
 }
 .user_info .demand_1 {
   margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .user_info .demand_1 .demand_color,
@@ -230,7 +234,7 @@ export default {
 }
 
 .info .share_code .share_text_1 {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 
 .info .share_code .code_img {

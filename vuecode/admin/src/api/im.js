@@ -37,3 +37,11 @@ export function quickmsgDelete(data) {
     data
   })
 }
+export function syncImTokenBatch(params) {
+  return request({
+    url: apiArr.syncImTokenBatch,
+    method: 'get',
+    params
+  })
+}
+

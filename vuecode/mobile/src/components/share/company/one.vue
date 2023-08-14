@@ -11,8 +11,8 @@
 
           <div class="com_box">
             <div class="com_img"><img :src="info.logo"></div>
-            <h3 class="com_name">{{info.companyname}}</h3>
-            <p class="job_num">
+            <h3 class="com_name substring">{{info.companyname}}</h3>
+            <p class="job_num substring">
               <span class="color">{{info.jobnum}}个</span>职位正在招聘
             </p>
             <div class="com_line"></div>
@@ -112,14 +112,16 @@ export default {
   text-align: center;
   color: #0f0f0f;
   font-size: 17px;
-  margin-bottom: 7.5px;
+  max-width: 230px;
+  margin: 0 auto 7.5px;
 }
 
 .com_box .job_num {
   color: #999999;
   font-size: 13px;
   text-align: center;
-  margin-bottom: 15px;
+  max-width: 230px;
+  margin: 0 auto 15px;
 }
 
 .com_box .color {

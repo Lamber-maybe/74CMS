@@ -386,5 +386,7 @@ export default {
   // 网络招聘会参会
   jobfairol_apply: '/home/jobfairol/apply',
   // 号码保护
-  secret_phone: '/member/index/secretPhone'
+  secret_phone: '/member/index/secretPhone',
+  // 场景码扫描添加记录
+  scene_record: '/home/index/scenerecord'
 }

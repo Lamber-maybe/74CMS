@@ -136,7 +136,7 @@ export default {
   margin: 0 10px;
   border-bottom: 1.5px dashed #e6e6e6;
   position: relative;
-  padding:17px 0 20px 0;
+  padding:12px 0 15px 0;
 }
 
 .user_info .user_img{
@@ -213,6 +213,10 @@ export default {
 }
 .user_info  .demand_1{
   margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .user_info  .demand_1 .demand_color,
@@ -222,7 +226,7 @@ export default {
 }
 
 .info .share_code{
-  padding: 15px 24px 0px 17.5px;
+  padding: 10px 24px 0px 17.5px;
   position: relative;
 }
 
@@ -234,7 +238,8 @@ export default {
 }
 
 .info .share_code .share_text_1{
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  margin-top: 2px;
 }
 
 .info .share_code .code_img{
@@ -259,6 +264,6 @@ export default {
   text-align: center;
   color:#afafaf ;
   font-size: 13px;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 </style>

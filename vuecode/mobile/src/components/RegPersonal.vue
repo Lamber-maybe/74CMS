@@ -8,7 +8,7 @@
           <label>
             <input
               class="reg_field"
-              type="number"
+              type="tel"
               placeholder="请输入手机号"
               autocomplete="off"
               v-model="mobile"
@@ -168,10 +168,12 @@ export default {
         this.$notify('两次输入的密码不一致')
         return false
       }
+      let scene_uuid = localStorage.getItem('scene_uuid')
       let postData = {
         mobile: this.mobile,
         code: this.code,
-        password: this.password
+        password: this.password,
+        scene_uuid: scene_uuid
       }
       http
         .post(api.reg_personal, postData)

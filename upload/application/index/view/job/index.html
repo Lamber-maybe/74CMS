@@ -274,7 +274,7 @@
                         <p class="hover_text2">{#$vo.wage_text#}</p>
                       </div>
                       <div class="hover_img">
-                        <img src="__ROOT__/assets/images/CodeImg_icon.png" />
+                        <img src="{#$vo.qrcode_url#}" />
                       </div>
                     </div>
 
@@ -297,7 +297,7 @@
 
                 </div>
                 <p class="job_salary job_salary_margin">
-                  <strong>{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}<span> /月</span>{#/if#}</strong>
+                  <strong>{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}<span>/月</span>{#/if#}</strong>
                   <span>{#$vo.district_text#}</span>
                   <span>{#$vo.education_text#}</span>
                   <span>{#$vo.experience_text#}</span>

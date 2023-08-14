@@ -20,7 +20,9 @@ class Reg extends \app\v1_0\controller\common\Base
             'contact' => input('post.contact/s', '', 'trim'),
             'mobile' => input('post.mobile/s', '', 'trim'),
             'code' => input('post.code/s', '', 'trim'),
-            'password' => input('post.password/s', '', 'trim')
+            'password' => input('post.password/s', '', 'trim'),
+            'scene_uuid' => input('post.scene_uuid/s', '', 'trim'),
+            'scene_id' => input('post.scene_id/s', '', 'trim')
         ];
         $validate = new \think\Validate([
             'companyname' => 'require|max:60|uniqueCompanyname',
@@ -84,6 +86,12 @@ class Reg extends \app\v1_0\controller\common\Base
         if (false === $reg_userinfo) {
             $this->ajaxReturn(500, model('Member')->getError());
         }
+        if($input_data['scene_uuid'] || $input_data['scene_id']){
+            $scene_qrcode_info = model('SceneQrcode')->where('id',$input_data['scene_id'])->whereOr('uuid',$input_data['scene_uuid'])->find();
+            if($scene_qrcode_info!==null){
+                model('SceneQrcodeRegLog')->save(['uid'=>$reg_userinfo['uid'],'pid'=>$scene_qrcode_info['id'],'addtime'=>time()]);
+            }
+        }
         cache('smscode_' . $input_data['mobile'], null);
         $this->ajaxReturn(
             200,
@@ -99,7 +107,9 @@ class Reg extends \app\v1_0\controller\common\Base
         $input_data = [
             'mobile' => input('post.mobile/s', '', 'trim'),
             'code' => input('post.code/s', '', 'trim'),
-            'password' => input('post.password/s', '', 'trim')
+            'password' => input('post.password/s', '', 'trim'),
+            'scene_uuid' => input('post.scene_uuid/s', '', 'trim'),
+            'scene_id' => input('post.scene_id/s', '', 'trim')
         ];
         $validate = new \think\Validate([
             'mobile' => 'require|checkMobile',
@@ -146,6 +156,12 @@ class Reg extends \app\v1_0\controller\common\Base
         $reg_userinfo = model('Member')->regPersonal($input_data);
         if (false === $reg_userinfo) {
             $this->ajaxReturn(500, model('Member')->getError());
+        }
+        if($input_data['scene_uuid'] || $input_data['scene_id']){
+            $scene_qrcode_info = model('SceneQrcode')->where('id',$input_data['scene_id'])->whereOr('uuid',$input_data['scene_uuid'])->find();
+            if($scene_qrcode_info!==null){
+                model('SceneQrcodeRegLog')->save(['uid'=>$reg_userinfo['uid'],'pid'=>$scene_qrcode_info['id'],'addtime'=>time()]);
+            }
         }
         cache('smscode_' . $input_data['mobile'], null);
         $this->ajaxReturn(

@@ -103,6 +103,21 @@ class CompanyDownResume extends \app\common\model\BaseModel
                     break;
                 }
             }
+
+            //修复 简历每日下载上限
+            $member_setmeal = model('Member')->getMemberSetmeal($company_uid);
+            if($member_setmeal['download_resume_max_perday']>0){
+                $downnum = $this->where('uid',$company_uid)->where('addtime','egt',strtotime('today'))->count();
+                if($downnum>=$member_setmeal['download_resume_max_perday']){
+                    $return_data['status'] = 0;
+                    $return_data['msg'] = '您今天已下载 '.$downnum.' 份简历，已达到每天下载上限，请先收藏该简历，明天继续下载。';
+                    $return_data['done'] = 1;
+                    break;
+                }
+            }
+            
+
+
             if ($resume_info['high_quality'] == 1) {
                 $need_points = $global_config['resume_download_points_talent'];
             } else {
@@ -128,7 +143,6 @@ class CompanyDownResume extends \app\common\model\BaseModel
                 }
             }
             if ($need_points > 0) {
-                $member_setmeal = model('Member')->getMemberSetmeal($company_uid);
                 if ($member_setmeal['download_resume_point'] < $need_points) {
                     $return_data['status'] = 0;
                     $return_data['msg'] = '下载简历点数不足，无法进行下载操作';

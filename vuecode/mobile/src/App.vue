@@ -12,6 +12,8 @@
 
 <script>
 import { isWeiXin } from '@/utils/index'
+import http from '@/utils/http'
+import api from '@/api'
 export default {
   created () {
     // 刷新页面时把config置空，保证系统配置信息的时效性
@@ -20,6 +22,10 @@ export default {
       localStorage.setItem('vuex', JSON.stringify(this.$store.state))
     })
     this.$store.commit('setPlatform', isWeiXin() === true ? 'wechat' : 'mobile')
+    if (this.$route.query.scene_uuid !== undefined) {
+      localStorage.setItem('scene_uuid', this.$route.query.scene_uuid)
+      http.post(api.scene_record, {scene_uuid: this.$route.query.scene_uuid}).then(() => {}).catch(() => {})
+    }
   }
 }
 </script>

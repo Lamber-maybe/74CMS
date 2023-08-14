@@ -8,7 +8,7 @@
           <label>
             <input
               class="reg_field"
-              type="tel"
+              type="text"
               placeholder="请输入企业名称"
               autocomplete="off"
               v-model="companyname"
@@ -19,7 +19,7 @@
           <label>
             <input
               class="reg_field"
-              type="tel"
+              type="text"
               placeholder="请输入联系人"
               autocomplete="off"
               v-model="contact"
@@ -200,12 +200,14 @@ export default {
         this.$notify('两次输入的密码不一致')
         return false
       }
+      let scene_uuid = localStorage.getItem('scene_uuid')
       let postData = {
         companyname: this.companyname,
         contact: this.contact,
         mobile: this.mobile,
         code: this.code,
-        password: this.password
+        password: this.password,
+        scene_uuid: scene_uuid
       }
       http
         .post(api.reg_company, postData)

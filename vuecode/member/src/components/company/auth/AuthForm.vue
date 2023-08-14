@@ -197,7 +197,7 @@ export default {
         .catch(() => {})
     },
     download(){
-      location.href='https://74cmsse.tywangcai.com/v1_0/home/index/downloadproxy'
+      location.href=window.global.RequestBaseUrl+api.downloadproxy
     }
   }
 }

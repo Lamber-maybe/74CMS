@@ -90,20 +90,20 @@ export default {
 
 .com_box .job_name {
   color: #0f0f0f;
-  font-size: 25px;
-  margin-bottom: 17.5px;
+  font-size: 21px;
+  margin-bottom: 4px;
   font-weight: 600;
 }
 
 .com_box .job_salary {
   color: #ff6000;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 20px;
 }
 
 .com_box .job_oth {
   color: #777777;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 0;
 }
 

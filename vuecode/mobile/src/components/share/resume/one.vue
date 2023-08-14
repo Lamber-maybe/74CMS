@@ -87,15 +87,15 @@ export default {
 }
 .info .user_name {
   color: #0f0f0f;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
   max-width: 250px;
 }
 
 .info .oth_info {
   color: #999999;
-  margin-bottom: 7.5px;
+  margin-bottom: 2px;
   font-size: 0;
   max-width: 200px;
 }
@@ -125,7 +125,7 @@ export default {
 .info .info_text_1{
   color:#999999 ;
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   max-width: 215px;
 }
 
@@ -136,10 +136,11 @@ export default {
 }
 
 .info .info_job{
-  margin-bottom: 10px;
+  margin-bottom: 7px;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .info .info_region{

@@ -170,18 +170,20 @@ import api from '@/api'
         previewUrl:'',
         joblistUrl:'',
         ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] },
+        contact:{},
+        intentionList:[]
       }
     },
     computed: {
         basic () {
             return this.$store.state.resume.basic
-        },
-        contact () {
-            return this.$store.state.resume.contact
-        },
-        intentionList () {
-            return this.$store.state.resume.intention_list
         }
+        // contact () {
+        //     return this.$store.state.resume.contact
+        // },
+        // intentionList () {
+        //     return this.$store.state.resume.intention_list
+        // }
     },
     watch: {
         basic: {
@@ -298,7 +300,11 @@ import api from '@/api'
                     }else{
                         this.fetchAd()
                         // 更新基本资料
+                        this.contact = res.data.contact
+                        this.intentionList = res.data.intention_list
                         this.$store.dispatch('setBasicInfo', res.data.basic)
+                        this.$store.dispatch('setResumeContact', res.data.contact)
+                        this.$store.dispatch('setIntentionList', res.data.intention_list)
                         this.resumePublic = res.data.basic.is_display==1?true:false
                         this.currentIntention = res.data.intention_list[0]
                         this.recommendIntentionId = res.data.intention_list[0].id

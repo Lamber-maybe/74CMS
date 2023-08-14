@@ -206,8 +206,8 @@ class Index extends \app\v1_0\controller\common\Base
     public function downloadproxy(){
         $file = SYS_UPLOAD_PATH.'resource/proxy.docx';
         $result = file_get_contents($file);
-        echo "$result"; 
         ob_start(); 
+        echo "$result"; 
         header("Cache-Control: public"); 
         Header("Content-type: application/octet-stream"); 
         Header("Accept-Ranges: bytes"); 
@@ -221,5 +221,13 @@ class Index extends \app\v1_0\controller\common\Base
         header("Pragma:no-cache"); 
         header("Expires:0"); 
         ob_end_flush(); 
+    }
+    public function scenerecord(){
+        $scene_id = input('post.scene_id/s','','trim');
+        $scene_uuid = input('post.scene_uuid/s','','trim');
+        $sceneQrcodeInfo = model('SceneQrcode')->where('uuid',$scene_uuid)->whereOr('id',$scene_id)->find();
+        if($sceneQrcodeInfo!==null){
+            model('SceneQrcodeScanLog')->save(['pid'=>$sceneQrcodeInfo['id'],'addtime'=>time()]);
+        }
     }
 }

@@ -22,7 +22,8 @@ export default {
       utype: 1
     }
   },
-  created () {},
+  created () {
+  },
   watch: {
     $route: {
       immediate: true,

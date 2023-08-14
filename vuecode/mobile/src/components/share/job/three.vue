@@ -139,6 +139,7 @@ export default {
   font-size: 25px;
   margin-bottom: 12.5px;
   font-weight: 600;
+  max-width:200px ;
 }
 
 .com_box .job_oth {
@@ -185,7 +186,7 @@ export default {
 .share_code .com_name{
   color:#555555 ;
   font-size:17px;
-  max-width: 225px;
+  max-width: 150px;
   margin-bottom:10px;
 }
 .share_code .share_info{

@@ -39,7 +39,7 @@ class Im
             if ($result['code'] != 200) {
                 throw new \Exception($result['msg']);
             }
-            cache('name', $result['result']['access_token'], 7200);
+            cache('im_access_token', $result['result']['access_token'], 7200);
             $access_token = $result['result']['access_token'];
         }
         return $access_token;

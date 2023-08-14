@@ -228,9 +228,8 @@
     </van-dialog>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <van-popup v-model="showPoster">
-      <SharePoster @closePoster="closePoster" :type="'resume'" :info="shareInfo"></SharePoster>
-    </van-popup>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'resume'" :info="shareInfo"></SharePoster>
+    <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
               @handleForward="handleForward"
@@ -329,6 +328,7 @@ export default {
     },
     handlePoster () {
       this.shareInfo = {
+        id: this.basic.id,
         photo: this.basic.photo_img_src,
         fullname: this.basic.fullname,
         age: this.basic.age,

@@ -1,5 +1,11 @@
 <template>
-  <div class="app-container">
+  <div
+    v-loading.fullscreen.lock="fullscreenLoading"
+    class="app-container"
+    :element-loading-text="fullscreenLoadingText"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-card class="box-card">
       <div
         slot="header"
@@ -18,6 +24,7 @@
             马上申请
           </a>
         </p>
+        <p>如果您的会员无法正常使用即时聊天功能或您已更换app_key等信息，请使用下方同步数据功能</p>
       </div>
       <el-form
         ref="form"
@@ -46,6 +53,11 @@
           >
             保存
           </el-button>
+          <el-button
+            @click="confirmSync"
+          >
+            同步数据
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -54,10 +66,13 @@
 
 <script>
 import { setConfig } from '@/api/configuration'
+import { syncImTokenBatch } from '@/api/im'
 
 export default {
   data() {
     return {
+      fullscreenLoading: false,
+      fullscreenLoadingText: '正在同步数据...',
       infoLoading: false,
       form: {
         app_key: '',
@@ -103,6 +118,38 @@ export default {
           return false
         }
       })
+    },
+    confirmSync(){
+      this.$confirm('同步数据会先清空用户token数据，中途无法取消，请不要中途刷新页面，否则将引发不可预估的错误。<br>确定同步吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      }).then(() => {
+        this.sync(1)
+      }).catch(() => {
+
+      })
+    },
+    sync(page){
+      const that = this
+      const param = {}
+      param.page = page
+      param.pagesize = 10
+      that.fullscreenLoading = true
+      that.fullscreenLoadingText = '正在同步数据...（已完成 ' + (page - 1) * param.pagesize + ' 条）'
+      syncImTokenBatch(param)
+        .then(response => {
+          if (response.data.finish === 0){
+            page = page + 1
+            that.sync(page)
+          } else {
+            that.fullscreenLoading = false
+            that.$message({ type: 'success', message: '同步成功' })
+            return true
+          }
+        })
+        .catch(() => {})
     }
   }
 }

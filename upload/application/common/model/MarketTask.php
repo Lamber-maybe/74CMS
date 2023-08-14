@@ -429,7 +429,7 @@ class MarketTask extends \app\common\model\BaseModel
             foreach ($condition['district'] as $key => $value) {
                 $arr_lenth = count($value);
                 $tmp_str .=
-                    ' or d.district' .
+                    ' or b.district' .
                     $arr_lenth .
                     '=' .
                     $value[$arr_lenth - 1];
@@ -456,7 +456,7 @@ class MarketTask extends \app\common\model\BaseModel
                     'a.uid=c.uid',
                     'LEFT'
                 )
-                ->where('setmeal_id', 'in', $condition['setmeal_id']);
+                ->where('b.setmeal_id', 'in', $condition['setmeal_id']);
         }
 
         if (isset($condition['auth_cominfo'])) {

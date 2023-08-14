@@ -100,11 +100,11 @@ class Wechat {
     /**
      * [生成微信公众号带参数二维码]
      */
-    public function makeQrcode($params = array()) {
+    public function makeQrcode($params = array(),$expire=2592000) {
         $access_token = $this->getAccessToken();
         $url = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=" . $access_token;
         $post_data = [
-            "expire_seconds"=>2592000,
+            "expire_seconds"=>$expire,
             "action_name"=>"QR_STR_SCENE",
             "action_info"=>[
                 "scene"=>[
@@ -117,7 +117,7 @@ class Wechat {
         if (isset($result_arr['errcode'])) {
             if($result_arr['errcode'] == 40001){
                 $this->getAccessToken(true);
-                return $this->makeQrcode($params);
+                return $this->makeQrcode($params,$expire);
             }else{
                 $this->error = $result_arr['errmsg'] . '(错误代码：' . $result_arr['errcode'] . ')';
                 return false;

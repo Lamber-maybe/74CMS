@@ -260,6 +260,38 @@ const toolRouter = {
       ]
     },
     {
+      path: '/tool/marketing',
+      name: 'marketing',
+      component: () =>
+        import ('@/views/tool/marketing'),
+      redirect: 'noRedirect',
+      alwaysShow: true,
+      meta: {
+        title: '营销工具',
+        access: 'marketing'
+      },
+      children: [{
+        path: '/tool/marketing/wx_offiaccount/index',
+        name: 'marketingWxoffiaccount',
+        component: () =>
+          import ('@/views/tool/marketing/wx_offiaccount/index'),
+        meta: {
+          title: '公众号营销',
+          access: 'marketingWxoffiaccount'
+        }
+      }, {
+        path: '/tool/marketing/scene_qrcode',
+        name: 'marketingSceneQrcode',
+        component: () =>
+          import ('@/views/tool/marketing/scene_qrcode/index'),
+        meta: {
+          title: '场景码',
+          access: 'marketingSceneQrcode'
+        }
+      }
+      ]
+    },
+    {
       path: '/tool/nologin_remind',
       name: 'nologinRemind',
       component: () =>

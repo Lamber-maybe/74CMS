@@ -1,4 +1,4 @@
 window.global = {
-  RequestTimeout: 5000,
+  RequestTimeout: 30000,
   RequestBaseUrl: '{RequestBaseUrl}v1_0'
 }

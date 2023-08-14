@@ -16,6 +16,9 @@ class Base extends \app\common\controller\Base
             $header_info = \think\Request::instance()->header();
             $this->platform = isset($header_info['platform']) ? $header_info['platform'] : '';
         }
+        if(!$this->platform){
+            $this->platform = 'wechat';
+        }
         \think\Config::set('platform', $this->platform);
         if(config('global_config.isclose')==1){
             $this->ajaxReturn(50008, '网站暂时关闭',config('global_config.close_reason'));

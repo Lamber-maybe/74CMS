@@ -487,7 +487,8 @@ export default {
     handlerPay (parameter, payment) {
       if (payment === 'wxpay') {
         if (isWeiXin()) {
-          console.log('微信中jsapi支付')
+          let successUrl = this.$route.path
+          this.$router.push({name: 'JsapiPay', params: {jsApiParameters: parameter.jsApiParameters, successUrl: successUrl}})
         } else {
           window.location.href = parameter
         }

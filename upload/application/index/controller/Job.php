@@ -629,6 +629,8 @@ class Job extends \app\index\controller\Base
                 );
                 $tmp_arr['map_lat'] = $val['map_lat'];
                 $tmp_arr['map_lng'] = $val['map_lng'];
+                $tmp_arr['share_url'] = config('global_config.mobile_domain').'job/'.$val['id'];
+                $tmp_arr['qrcode_url'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_job&url='.$tmp_arr['share_url'].'&jobid='.$val['id'];
                 $result_data_list[] = $tmp_arr;
             }
         }

@@ -1922,3 +1922,49 @@ CREATE TABLE `qs_jobfair_online_participate` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_jobfair_online_participate||-_-||
+
+DROP TABLE IF EXISTS `qs_scene_qrcode`;
+CREATE TABLE `qs_scene_qrcode` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(32) NOT NULL,
+  `title` varchar(30) NOT NULL,
+  `type` varchar(30) NOT NULL,
+  `deadline` int(10) unsigned NOT NULL,
+  `platform` tinyint(1) unsigned NOT NULL,
+  `paramid` int(10) unsigned NOT NULL,
+  `qrcode_src` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uuid` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_scene_qrcode||-_-||
+
+DROP TABLE IF EXISTS `qs_scene_qrcode_reg_log`;
+CREATE TABLE `qs_scene_qrcode_reg_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) unsigned NOT NULL,
+  `uid` int(10) unsigned NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pid` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_scene_qrcode_reg_log||-_-||
+
+DROP TABLE IF EXISTS `qs_scene_qrcode_scan_log`;
+CREATE TABLE `qs_scene_qrcode_scan_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) unsigned NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pid` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_scene_qrcode_scan_log||-_-||
+
+DROP TABLE IF EXISTS `qs_scene_qrcode_subscribe_log`;
+CREATE TABLE `qs_scene_qrcode_subscribe_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) unsigned NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pid` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_scene_qrcode_subscribe_log||-_-||

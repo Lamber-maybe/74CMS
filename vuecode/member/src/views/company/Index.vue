@@ -20,7 +20,7 @@
                         <div class="clear"></div>
                     </div>
                     <div class="companyVipDetailsLInk" @click="$router.push('/company/service/setmeal/detail')">
-                        了解商务会员招聘特权
+                        了解{{setmeal.name}}招聘特权
                     </div>
                 </div>
                 <div class="companyVipDetails" style="margin: 0 51px;">

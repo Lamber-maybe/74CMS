@@ -1,4 +1,4 @@
 window.global = {
-  RequestTimeout: 10000,
+  RequestTimeout: 30000,
   RequestBaseUrl: '{RequestBaseUrl}apiadmin'
 }

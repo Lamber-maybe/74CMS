@@ -613,5 +613,20 @@ export default {
   jobFairListOlComBatchAdd: 'jobfairol/companyBatchAdd',
   jobFairListOlPerBatchAdd: 'jobfairol/personalBatchAdd',
 
-  
+
+  // 同步im数据
+  syncImTokenBatch: '/config/syncImTokenBatch',
+  // 微信公众号营销
+  marketingWxoffiaccount: '/marketing/index',
+  marketingWxoffiaccountSearchCompany: '/marketing/companySearch',
+  // 二维码
+  showQrcode: '/qrcode/normal',
+  // 场景码
+  sceneQrcodeList: '/scene_qrcode/index',
+  sceneQrcodeAdd: '/scene_qrcode/add',
+  sceneQrcodeDelete: '/scene_qrcode/delete',
+  sceneQrcodePlatformList: '/scene_qrcode/platformList',
+  sceneQrcodeTypeList: '/scene_qrcode/typeList',
+  sceneQrcodeDownload: '/scene_qrcode/download',
+  sceneSearchList: '/scene_qrcode/searchList'
 }

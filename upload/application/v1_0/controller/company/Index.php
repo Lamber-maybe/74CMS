@@ -162,7 +162,7 @@ class Index extends \app\v1_0\controller\common\Base
             ->select();
 
         //是否提醒完善认证资料
-        if($return_companyinfo['company_audit']==1 && $return_companyinfo['need_audit']==0 && $companyinfo['audit_complete']==0){
+        if($return_companyinfo['company_audit']==1 && $companyinfo['audit_complete']==0){
             $return_companyinfo['notice_auth_complete'] = 1;
         }else{
             $return_companyinfo['notice_auth_complete'] = 0;

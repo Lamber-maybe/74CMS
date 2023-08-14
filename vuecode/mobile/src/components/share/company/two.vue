@@ -131,6 +131,7 @@ export default {
   justify-content: space-between;
   flex-wrap: wrap;
   margin: 15px 18.5px;
+  min-height: 60px;
 }
 
 .com_job_list .com_job_item {

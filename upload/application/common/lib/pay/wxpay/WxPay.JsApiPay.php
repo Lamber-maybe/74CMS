@@ -180,7 +180,8 @@ class JsApiPay
         $time = time();
         $data['timestamp'] = "$time";
         $data['noncestr'] = '1234568';
-        $data['accesstoken'] = $getData['access_token'];
+        // $data['accesstoken'] = $getData['access_token'];
+        $data['accesstoken'] = '';
         ksort($data);
         $params = $this->ToUrlParams($data);
         $addrSign = sha1($params);

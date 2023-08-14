@@ -14,7 +14,12 @@ class Article extends \app\index\controller\Base
             $this->redirect(config('global_config.mobile_domain').'newslist',302);
             exit;
         }
-        $list = model('Article')->order('sort_id desc,id desc');
+        $list = model('Article')
+            ->alias('a')
+            ->join(config('dababase.prefix') . 'article_category b','a.cid=b.id','LEFT')
+            ->where('b.id','not null')
+            ->order('a.sort_id desc,a.id desc')
+            ->field('a.*');
         $current_page = request()->get('page/d',1,'intval');
         $pagesize = 10;
         $cid = request()->route('cid/d',0,'intval');
@@ -32,9 +37,9 @@ class Article extends \app\index\controller\Base
                     'seo_description'=>$categoryinfo['seo_description']
                 ];
             }
-            $list = $list->where('cid','eq',$cid);
+            $list = $list->where('a.cid','eq',$cid);
         }
-        $list = $list->where('is_display',1)->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
+        $list = $list->where('a.is_display',1)->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
         
         $pagerHtml = $list->render();
 

@@ -7,7 +7,7 @@
         <ShareResume v-if="type === 'resume'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareResume>
         <div class="job_btns">
           <div class="job_btn_1" @click="changeTpl">换一组</div>
-          <div class="job_btn_2">长按保存图片</div>
+          <div class="job_btn_2" @click="longTap">长按保存图片</div>
         </div>
       </div>
     </div>
@@ -42,6 +42,9 @@ export default {
     // 关闭海报
     closePoster () {
       this.$emit('closePoster')
+    },
+    longTap () {
+      this.$toast('请长按海报图片保存到相册')
     }
   }
 }

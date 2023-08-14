@@ -13,8 +13,8 @@
             <span class="info_icon_1"></span>
             <span class="info_icon_2"></span>
             <div class="com_info_text">
-              <p class="i_text_1">{{info.companyname}}</p>
-              <p class="i_text_2">{{info.address}}</p>
+              <p class="i_text_1 substring">{{info.companyname}}</p>
+              <p class="i_text_2 substring">{{info.address}}</p>
             </div>
             <div class="line"></div>
             <div class="com_list">

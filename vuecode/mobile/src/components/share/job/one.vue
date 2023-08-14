@@ -7,8 +7,8 @@
       </h2>
       <div class=" job_poster">
         <div class="com_box">
-          <h3 class="com_name">{{info.companyname}}</h3>
-          <p class="job_name">{{info.jobname}}</p>
+          <h3 class="com_name substring">{{info.companyname}}</h3>
+          <p class="job_name substring">{{info.jobname}}</p>
           <p class="job_salary">{{info.wage}}/月</p>
           <p class="job_oth">
             <span class="oth_item">{{info.nature}}</span>
@@ -80,15 +80,17 @@ export default {
   .com_box .com_name {
     color: #0f0f0f;
     font-size: 15px;
-    margin-bottom: 10px;
     font-weight: normal;
+    max-width: 250px;
+    margin: 0 auto 10px;
   }
 
   .com_box .job_name {
     color: #0f0f0f;
     font-size: 22px;
-    margin-bottom: 5px;
+    max-width: 250px;
     font-weight: 600;
+    margin: 0 auto 5px;
   }
 
   .com_box .job_salary {
