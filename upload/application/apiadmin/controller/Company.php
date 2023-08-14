@@ -463,4 +463,89 @@ class Company extends \app\common\controller\Backend
         );
         $this->ajaxReturn(200, '设置成功');
     }
+
+    /**
+     * 刷新职位
+     * @access public
+     * @author chenyang
+     * @return Json
+     * Date Time：2022年3月11日14:57:25
+     */
+    public function refreshJob(){
+        try {
+            $companyIdStr = input('post.company_id/s', '', 'trim');
+            $companyIdArr = explode(',', $companyIdStr);
+            if (empty($companyIdStr) || empty($companyIdArr)) {
+                $this->ajaxReturn(400, '请选择您要刷新的企业');
+            }
+
+            // 是否批量操作:0|否,1|是
+            $isBatch = input('post.is_batch/d', 0, 'intval');
+
+            // 获取全部企业
+            $companyWhere = [
+                'id' => ['in', $companyIdArr]
+            ];
+            $companyField = [
+                'id',
+                'uid',
+            ];
+            $companyModel = model('company');
+            $companyList = $companyModel->where($companyWhere)->field($companyField)->select();
+            if (empty($companyList)) {
+                $this->ajaxReturn(400, '未获取到企业信息');
+            }
+            $companyList = collection($companyList)->toArray();
+
+            $jobModel  = model('Job');
+            $jobIdList = [];
+            foreach ($companyList as $companyInfo) {
+                // 获取当前企业下已审核的所有职位
+                $jobWhere = [
+                    'company_id' => $companyInfo['id'],
+                    'audit'      => 1,
+                    'is_display' => 1,
+                ];
+                $jobIdArr = $jobModel->where($jobWhere)->column('id');
+                if (empty($jobIdArr)) {
+                    continue;
+                }
+                // 刷新职位
+                $refreshParams = [
+                    'id'  => $jobIdArr,
+                ];
+                $result = $jobModel->refreshJobData($refreshParams);
+                if ($result['status'] === false) {
+                    continue;
+                }
+
+                // 记录刷新的职位ID
+                $jobIdList = array_merge($jobIdList, array_column($result['data'], 'id'));
+            }
+
+            if (!empty($jobIdList)) {
+                model('AdminLog')->record(
+                    '刷新职位；职位ID【' .
+                    implode(',', $jobIdList) .
+                    '】',
+                    $this->admininfo
+                );
+            }
+
+            $refreshJobTotal = count($jobIdList);
+
+            // 判断是否是批量刷新
+            if ($isBatch ==  1) {
+                $this->ajaxReturn(200, '成功刷新'.$refreshJobTotal.'条职位');
+            }else{
+                if ($refreshJobTotal <= 0) {
+                    $this->ajaxReturn(400, '刷新失败');
+                }
+                $this->ajaxReturn(200, '刷新成功');
+            }
+        } catch (\Exception $e) {
+            $this->ajaxReturn(400, '刷新失败');
+        }
+    }
+
 }

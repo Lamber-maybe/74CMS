@@ -40,6 +40,11 @@ class Resume extends BaseValidate
         'custom_field_2' => 'max:255',
         'custom_field_3' => 'max:255'
     ];
+
+    protected $message  =   [
+        'residence' => '现居住地最多30个字',
+    ];
+
     protected function checkIdcard($value, $rule, $data)
     {
         if ($value == '') {

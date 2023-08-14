@@ -316,12 +316,12 @@ export default {
     this.fetchData()
     this.fetchAd()
     if (this.imToken != '') {
-      this.getChatList()
+      this.imWindowGlobal()
     }
   },
   watch: {
     imToken (val) {
-      this.getChatList()
+      this.imWindowGlobal()
     },
     chatList: {
       // 数据变化时执行的逻辑代码
@@ -341,6 +341,16 @@ export default {
     getChatList () {
       http.post(api.chatList, {token: this.imToken}).then((res) => {
         this.chatList = res.data.items
+      })
+    },
+    /**
+     * 全局检测聊天是否开启
+     */
+    imWindowGlobal () {
+      http.post(api.im_window_global).then((res) => {
+        if (res.data.next == '') {
+          this.getChatList()
+        }
       })
     },
     handlerBindWeixin () {

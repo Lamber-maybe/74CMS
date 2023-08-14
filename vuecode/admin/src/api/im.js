@@ -52,6 +52,20 @@ export function imQuickmsgDelete(data) {
     data
   })
 }
+export function messageBack(data) {
+  return request({
+    url: apiArr.imMessageBack,
+    method: 'post',
+    data
+  })
+}
+export function messageForbid(data) {
+  return request({
+    url: apiArr.imMessageForbid,
+    method: 'post',
+    data
+  })
+}
 export function setImRule(params, method = 'post') {
   if (method == 'post') {
     return request({
@@ -82,3 +96,34 @@ export function imForbidList(params, method = 'post') {
     })
   }
 }
+export function imChatmanageList(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.imChatmanageList,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.imChatmanageList,
+      method,
+      params
+    })
+  }
+}
+export function imChatmessageList(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.imChatmessageList,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.imChatmessageList,
+      method,
+      params
+    })
+  }
+}
+

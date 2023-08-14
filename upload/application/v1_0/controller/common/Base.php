@@ -109,6 +109,9 @@ class Base extends \app\common\controller\Base
                 $memberinfo->last_login_ip . ':' . get_client_port();
             $memberinfo->nologin_notice_counter = 0;
             $memberinfo->save();
+
+            // 自动刷新简历 chenyang 2022年3月10日15:42:14
+            model('Resume')->refreshResumeData($memberinfo);
         }
         $action_log_data['utype'] = $memberinfo->utype;
         $action_log_data['uid'] = $uid;
@@ -291,4 +294,5 @@ class Base extends \app\common\controller\Base
             return round($month_count).'个月';
         }
     }
+
 }

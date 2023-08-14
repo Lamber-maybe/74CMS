@@ -185,6 +185,16 @@ const toolRouter = {
         }
       },
       {
+        path: '/tool/im/chatmanage',
+        name: 'imChatmanage',
+        component: () =>
+          import ('@/views/tool/im/chatmanage/index.vue'),
+        meta: {
+          title: '会话管理',
+          access: 'imChatmanage'
+        }
+      },
+      {
         path: '/tool/im/quickmsg',
         name: 'imQuickmsg',
         component: () =>

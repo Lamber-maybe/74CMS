@@ -3,7 +3,7 @@ namespace app\common\model;
 
 class Notice extends \app\common\model\BaseModel
 {
-    protected $readonly = ['id', 'addtime'];
+    protected $readonly = ['id'];
     protected $type     = [
         'id'        => 'integer',
         'is_display' => 'integer',
@@ -11,9 +11,4 @@ class Notice extends \app\common\model\BaseModel
         'addtime'    => 'integer',
         'sort_id'    => 'integer',
     ];
-    protected $insert = ['addtime','click'=>0];
-    protected function setAddtimeAttr()
-    {
-        return time();
-    }
 }

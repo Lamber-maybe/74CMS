@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-dialog title="验证码" :visible.sync="showDialog" :modal="showMadal" width="350px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true">
-       <el-form  label-width="0px" :inline="true">
+       <el-form  label-width="0px" :inline="true" @submit.native.prevent>
         <el-form-item label=" ">
-          <el-input v-model="code"  style="width:120px;"></el-input>
+          <el-input ref="ipt" v-model="code" @keydown.native.enter="handlerConfirm"  style="width:120px;"></el-input>
         </el-form-item>
         <el-form-item label=" ">
           <img class="captcha_img" :src="src" @click="changeImg" />
@@ -47,9 +47,13 @@ export default {
       let data = {code: this.code, secret_str: this.secret_str}
       this.callback(data)
       this.showDialog = false
+      this.code = ''
     },
     show (callback) {
       this.showDialog = true
+      this.$nextTick(()=>{
+        this.$refs.ipt.focus()
+      })
       this.callback = callback
       if(this.mask===true){
         this.showMadal = true

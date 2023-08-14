@@ -177,6 +177,8 @@ class Jobfairol extends \app\common\controller\Backend{
         $stick = input('get.stick/d', '');
         $key_type = input('get.key_type/d', '');
         $keyword = input('get.keyword/s', '', 'trim');
+        // 排序规则
+        $orderKey = input('get.order_key/d', '');
         if ($audit !== '') $where['a.audit'] = $audit;
         if ($source !== '') $where['a.source'] = $source;
         if ($stick !== '') $where['a.stick'] = $stick;
@@ -201,6 +203,22 @@ class Jobfairol extends \app\common\controller\Backend{
                     break;
             }
         }
+
+        // 排序规则:默认|参会状态,1|添加时间,2|刷新时间 chenyang 2022年3月21日18:47:17
+        if ($orderKey == 1) {
+            // 按添加时间排序
+            $list = $list->order(['a.addtime' => 'desc']);
+        }elseif ($orderKey == 2) {
+            // 按刷新时间排序
+            $list = $list->order(['b.refreshtime' => 'desc']);
+        }else{
+            // 按参会状态排序 默认排序
+            // 参会状态:0|待审核,1|已通过,2|未通过
+            // 按照参会状态 待审核-已通过-未通过 进行排序
+            $list = $list->orderRaw('FIELD(a.audit,0,1,2) asc');
+            $list = $list->order(['a.addtime' => 'desc']);
+        }
+
         $list = $list->page($current_page, $pagesize)->select();
         foreach ($list as $key => $val) {
             $val['setmeal_cn'] = model('Setmeal')->where('id', $val['setmeal_id'])->value('name');
@@ -238,6 +256,9 @@ class Jobfairol extends \app\common\controller\Backend{
         $source = input('get.source/d', '');
         $key_type = input('get.key_type/d', '');
         $keyword = input('get.keyword/s', '', 'trim');
+        // 排序规则
+        $orderKey = input('get.order_key/d', '');
+
         if ($audit !== '') $where['a.audit'] = $audit;
         if ($source !== '') $where['a.source'] = $source;
         $where['jobfair_id'] = $jobfair_id;
@@ -259,6 +280,22 @@ class Jobfairol extends \app\common\controller\Backend{
                     break;
             }
         }
+
+        // 排序规则:默认|参会状态,1|添加时间,2|刷新时间 chenyang 2022年3月17日14:48:42
+        if ($orderKey == 1) {
+            // 按添加时间排序
+            $list = $list->order(['a.addtime' => 'desc']);
+        }elseif ($orderKey == 2) {
+            // 按刷新时间排序
+            $list = $list->order(['b.refreshtime' => 'desc']);
+        }else{
+            // 按参会状态排序 默认排序
+            // 参会状态:0|待审核,1|已通过,2|未通过
+            // 按照参会状态 待审核-已通过-未通过 进行排序
+            $list = $list->orderRaw('FIELD(a.audit,0,1,2) asc');
+            $list = $list->order(['a.addtime' => 'desc']);
+        }
+
         $list = $list->page($current_page, $pagesize)->select();
         $ridarr = [];
         $complete_list = [];
@@ -292,7 +329,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $value['link'] = url('index/resume/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }
-        $total = model('JobfairOnlineParticipate')->where('jobfair_id',$jobfair_id)->where('utype',2)->count();
+        $total = model('JobfairOnlineParticipate')->alias('a')->where($where)->count();
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;

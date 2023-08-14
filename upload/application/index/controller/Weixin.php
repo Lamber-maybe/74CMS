@@ -600,37 +600,6 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object,'公告不存在或已删除');
                 }
                 break;
-            case 'subscribe_jobfair':
-                if($jobfair_id = $event['jobfairid']) $jobfair = model('Jobfair')->find($jobfair_id);
-                if (isset($jobfair)) {
-                    if($sceneQrcodeInfo!==null){
-                        $mobile_page = config('global_config.mobile_domain').model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
-                    }else{
-                        $mobile_page = config('global_config.mobile_domain').'jobfair/'.$jobfair['id'];
-                    }
-                    $mobile_page = str_replace(":id",$jobfair_id,$mobile_page);
-                    if(isset($event['scene_uuid'])){
-                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
-                    }
-                    $thumb = '';
-                    if($jobfair['thumb']){
-                        $thumb = model('Uploadfile')->getFileUrl($jobfair['thumb']);
-                    }
-                    if(!$thumb){
-                        $thumb = default_empty('jobfair_thumb');
-                    }
-
-                    $content_arr = [
-                        "Title" => $jobfair['title'].'等你来参加-'.config('global_config.sitename'),
-                        "Description" => date('Y-m-d',$jobfair['holddate_start']).'-'.date('Y-m-d',$jobfair['holddate_end']),
-                        "PicUrl" => $thumb,
-                        "Url" => $mobile_page
-                    ];
-                    $this->outputArticle($object,$content_arr);
-                }else{
-                    $this->outputText($object,'招聘会不存在或已删除');
-                }
-                break;
             case 'subscribe_jobfairol':
                 if($jobfairol_id = $event['jobfairolid']) $jobfairol = model('JobfairOnline')->find($jobfairol_id);
                 if (isset($jobfairol)) {
@@ -965,5 +934,7 @@ class Weixin extends \app\common\controller\Base
         $content = str_replace("{avatar}",$avatar,$content);
         $this->outputMessage($object,$content,'text');
         $this->outputMessage($object,config('global_config.wechat_welcome_img_mediaid'),'image');
+
+        exit('');
     }
 }

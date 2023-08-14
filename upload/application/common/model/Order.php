@@ -907,7 +907,12 @@ class Order extends \app\common\model\BaseModel
         //快捷支付-刷新职位
         if ($order['utype'] == 1 && $order['service_type'] == 'single_job_refresh') {
             $extra = json_decode($order['extra'], true);
-            model('Job')->refreshJob($extra['jobid'], $order['uid']);
+            // 刷新职位信息 chenyang 2022年3月21日15:13:24
+            $refreshParams = [
+                'id'          => $extra['jobid'],
+                'refresh_log' => true,
+            ];
+            model('Job')->refreshJobData($refreshParams);
             $points_log = '刷新职位';
         }
         //快捷支付-下载简历

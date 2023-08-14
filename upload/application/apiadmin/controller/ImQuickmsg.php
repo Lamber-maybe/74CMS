@@ -7,6 +7,16 @@ class ImQuickmsg extends \app\common\controller\Backend
     {
         $this->baseUrl = 'https://imserv.v2.74cms.com';
         $this->config = config('global_config.account_im');
+        $this->im_open = config('global_config.im_open');
+        if($this->im_open!='1'){
+            $this->ajaxReturn(200, '职聊功能已关闭', null);
+        }
+        if(empty($this->config['app_key'])){
+            $this->ajaxReturn(200, 'app_key不能为空', null);
+        }
+        if(empty($this->config['app_secret'])){
+            $this->ajaxReturn(200, 'app_secret不能为空', null);
+        }
     }
 	public function index()
     {

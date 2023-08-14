@@ -536,7 +536,7 @@
 			</div>
 		</div>
 	</div>
-	<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
+	<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px" :close-on-click-modal="false">
 		{#include file="captcha/picture" /#}
 	</el-dialog>
   <!--底部未登录引导-->
@@ -996,7 +996,16 @@
 				}
 			},
 			handlerRegCompany: function () {
-				location.href = qscms.locationList.regCompany
+				httpget(qscms.apiList.userinfo).then(function (res) {
+					if (res.data.userinfo.utype === 2)
+					{
+						location.href = qscms.locationList.regCompany
+					}else
+					{
+						location.href = qscms.locationList.indexCompany
+					}
+
+				}).catch(function () { })
 			},
 			handlerForget: function (utype) {
 				var url = qscms.locationList.forget
@@ -1024,11 +1033,14 @@
 			},
 			submitPictureCaptcha: function () {
 				var that = this
+				console.log(this.captchaForm)
 				that.$refs.captchaForm.validate(function (valid) {
 					if (valid) {
 						that.showPictureCaptcha = false
 						that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+						that.captchaForm.code = ''
 					} else {
+						that.captchaForm.code = ''
 						return false;
 					}
 				});

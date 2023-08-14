@@ -100,3 +100,11 @@ export function companySetDisplay(data) {
     data
   })
 }
+// 刷新职位
+export function refreshJob(data) {
+  return request({
+    url: apiArr.refresh_job,
+    method: 'post',
+    data
+  })
+}

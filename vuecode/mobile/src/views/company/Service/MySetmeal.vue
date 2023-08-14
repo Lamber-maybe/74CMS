@@ -33,21 +33,30 @@
         </div>
       </div>
       <div class="box_2">
-        <div class="item">
-          <div class="ico"></div>
-          <div class="text">
-            职位并发 <span>{{ mySetmeal.jobs_meanwhile }}</span>
+        <div class="box_2_inner">
+          <div class="item">
+            <div class="ico"></div>
+            <div class="text">
+              职位并发 <span>{{ mySetmeal.jobs_meanwhile }}</span>
+            </div>
+            <div class="link" @click="handlerJobadd">发职位</div>
           </div>
-          <div class="link" @click="handlerJobadd">发职位</div>
-        </div>
-        <div class="item right">
-          <div class="ico"></div>
-          <div class="text">
-            简历点 <span>{{ mySetmeal.download_resume_point }}</span>
+          <div class="item item2">
+            <div class="ico"></div>
+            <div class="text">
+              简历点 <span>{{ mySetmeal.download_resume_point }}</span>
+            </div>
+            <div class="link" @click="$router.push('/resumelist')">搜简历</div>
           </div>
-          <div class="link" @click="$router.push('/resumelist')">搜简历</div>
+          <div class="item item3">
+            <div class="ico"></div>
+            <div class="text">
+              职聊次数 <span>{{ mySetmeal.im_total }}</span>
+            </div>
+            <div class="link" @click="$router.push('/resumelist')">去沟通</div>
+          </div>
+          <div class="clear"></div>
         </div>
-        <div class="clear"></div>
       </div>
       <div class="box_title">
         我的特权
@@ -69,6 +78,12 @@
           下载简历数上限
           <div class="tip_text">
             {{ mySetmeal.download_resume_max_perday }}份/天
+          </div>
+        </div>
+        <div class="item i9">
+          职聊次数上限
+          <div class="tip_text">
+            {{ mySetmeal.im_max_perday }}次/天
           </div>
         </div>
         <div class="item i3">
@@ -214,6 +229,11 @@ export default {
   }
   .box_3 {
     .item {
+      &.i9 {
+        background: url("../../../assets/images/my_setitem_ic9.png") 3.5px
+        center no-repeat;
+        background-size: 15.5px 13px;
+      }
       &.i8 {
         background: url("../../../assets/images/my_setitem_ic8.png") 3.5px
           center no-repeat;
@@ -278,6 +298,11 @@ export default {
     border-top: 1px solid #f3f3f3;
   }
   .box_2 {
+    .box_2_inner{
+      white-space:nowrap;
+      font-size:0;
+      padding:10px 5px;
+    }
     .item {
       .link {
         display: block;
@@ -306,27 +331,44 @@ export default {
           no-repeat;
         background-size: 30px 30px;
       }
-      float: left;
+      // float: left;
+      margin-right: 15px;
+      display: inline-block;
       text-align: center;
-      width: 160px;
+      width: 130px;
       height: 155px;
       border-radius: 6px;
-      box-shadow: 0 0 5px #c2c2c2;
+      box-shadow: 0 0 2px #c2c2c2;
       padding-top: 28px;
-      &.right {
+
+      &.item2 {
         .ico {
           width: 35px;
           height: 30px;
           margin: 0 auto;
           background: url("../../../assets/images/my_setmeal_ic3.png") 0 0
+          no-repeat;
+          background-size: 35px 30px;
+        }
+      }
+      &.item3 {
+        .ico {
+          width: 35px;
+          height: 30px;
+          margin: 0 auto;
+          background: url("../../../assets/images/my_setmeal_ic4.png") 0 0
             no-repeat;
           background-size: 35px 30px;
         }
-        float: right;
       }
+
     }
     width: 100%;
     margin-bottom: 10px;
+    overflow-x: auto;
+    &:last-child{
+      margin-right: 0;
+    }
   }
   .box_1 {
     .bottom {

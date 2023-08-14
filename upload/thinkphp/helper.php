@@ -587,3 +587,23 @@ if (!function_exists('collection')) {
         }
     }
 }
+
+if (!function_exists('callBack')) {
+    /**
+     * 返回结果函数
+     * @author chenyang
+     * @param  bool   $status [返回状态:true|false]
+     * @param  string $msg    [返回信息]
+     * @param  array  $data   [返回结果]
+     * @return array
+     * Date Time：2022年3月18日18:21:45
+     */
+    function callBack($status = true, $msg = '', $data = []) {
+        $callback = [
+            'status' => $status,
+            'msg'    => $msg,
+            'data'   => $data,
+        ];
+        return $callback;
+    }
+}

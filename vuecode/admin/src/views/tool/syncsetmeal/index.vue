@@ -68,7 +68,6 @@
         >
           1.操作执行成功后数据不可恢复,请提前备份好数据;<br>
           2.套餐权限指您的套餐配置信息，如需修改请在[企业业务配置-->套餐管理]处修改对应套餐;
-          立即同步
 
         </el-form-item>
         <el-form-item label=" ">
@@ -81,9 +80,9 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-dialog title="请输入密码确认" :visible.sync="enterPwdShow" width="350px">
+    <el-dialog title="验证密码" :visible.sync="enterPwdShow" width="350px">
       <el-row>
-        <el-col :span="18"> <el-input v-model="form.pwd" type="password" placeholder="请输入密码" /> </el-col>
+        <el-col :span="18"> <el-input v-model="form.pwd" type="password" placeholder="请输入当前管理员密码" /> </el-col>
         <el-col :span="6"> <el-button type="primary" @click="onSubmit">确定</el-button></el-col>
       </el-row>
     </el-dialog>
@@ -98,6 +97,7 @@ export default {
     return {
       loading: true,
       setMealList: [],
+      is_administrator:0,
       enable_video_interview: false,
       show_apply_contact: false,
       enable_poster: false,
@@ -133,6 +133,7 @@ export default {
       .then(response => {
         this.setMealList = response.data.items
         this.loading = false
+        this.is_administrator = response.data.is_administrator
       })
   },
   methods: {
@@ -142,6 +143,11 @@ export default {
       this.enable_poster = !!parseInt(this.detail.enable_poster)
     },
     onSubmitPre () {
+      // 判断不是超管时，不允许操作 chenyang 2022年3月9日18:50:15
+      if (this.is_administrator != 1) {
+        this.$message.error('只有超级管理员才有权限执行此操作')
+        return false
+      }
       if (!this.form.setmeal_id){
         this.$message.error('请选择要同步的套餐')
         return

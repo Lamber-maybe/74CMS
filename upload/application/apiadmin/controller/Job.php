@@ -278,18 +278,28 @@ class Job extends \app\common\controller\Backend
     }
     public function refresh()
     {
-        $id = input('post.id/a');
+        $idArr = input('post.id/a');
         $uid = input('post.uid/a');
-        if (empty($id) || empty($uid)) {
+        if (empty($idArr) || empty($uid)) {
             $this->ajaxReturn(500, '请选择职位');
         }
-        model('Job')->refreshJobBackend($id, $uid);
+
+        // 刷新职位信息 chenyang 2022年3月21日11:27:34
+        $refreshParams = [
+            'id' => $idArr,
+        ];
+        $result = model('Job')->refreshJobData($refreshParams);
+        if ($result['status'] === false) {
+            $this->ajaxReturn(500, $result['msg']);
+        }
+
+        $jobIdArr = array_column($result['data'], 'id');
         model('AdminLog')->record(
             '刷新职位；职位ID【' .
-                implode(',', $id) .
+                implode(',', $jobIdArr) .
                 '】',
             $this->admininfo
         );
-        $this->ajaxReturn(200, '刷新成功');
+        $this->ajaxReturn(200, '成功刷新'. count($jobIdArr) .'条职位');
     }
 }

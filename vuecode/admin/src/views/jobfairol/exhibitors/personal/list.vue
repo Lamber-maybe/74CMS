@@ -32,6 +32,16 @@
           <el-option label="后台添加" value="1" />
           <el-option label="自主申请" value="0" />
         </el-select>
+        <el-select
+          v-model="filter.order_key"
+          placeholder="排序方式"
+          class="list-options"
+          @change="funSearch"
+        >
+          <el-option label="按参会状态排序" value="" />
+          <el-option label="按添加时间排序" value="1" />
+          <el-option label="按刷新时间排序" value="2" />
+        </el-select>
         <el-input
           v-model="filter.keyword"
           placeholder="请输入搜索内容"
@@ -312,6 +322,7 @@ export default {
       filter: {
         audit: '',
         source: '',
+        order_key: '',
         keyword: '',
         key_type: '1'
       },
@@ -332,6 +343,7 @@ export default {
         jobfair_id: this.jobfair_id,
         audit: this.filter.audit,
         source: this.filter.source,
+        order_key: this.filter.order_key,
         key_type: this.filter.key_type,
         keyword: this.filter.keyword,
         page: this.currentPage,
@@ -450,6 +462,7 @@ export default {
     },
     // 删选
     funSearch: function(){
+      this.currentPage = 1
       this.getExhibitors()
     },
     // 关键字筛选

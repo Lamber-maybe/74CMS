@@ -979,7 +979,7 @@ export default {
                     confirmButtonText: '去支付'
                   })
                     .then(() => {
-                      this.$router.push({path: '/member/order/add/common?type=service'})
+                      this.$router.push({path: '/member/order/add/common?type=service&service_type=im'})
                     })
                     .catch(() => {})
                 }

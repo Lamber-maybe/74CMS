@@ -18,9 +18,9 @@ class Mobile extends \think\Controller
     public function index()
     {
         if(!is_mobile_request()){
-            $site_domain = trim(config('global_config.sitedomain'),"http://");
-            $site_domain = trim($site_domain,"https://");
-            $site_domain = trim($site_domain,"/");
+            $site_domain = config('global_config.sitedomain');
+//            $site_domain = trim($site_domain,"https://");
+//            $site_domain = trim($site_domain,"/");
             $request_url_full = request()->url(true);
             $request_url = request()->url();
             if(strpos($request_url_full,config('global_config.mobile_domain').'job/')===0){//职位详情页

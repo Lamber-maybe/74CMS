@@ -28,7 +28,23 @@ class Backend extends \app\common\controller\Base
             if ($auth_result['code'] != 200) {
                 $this->ajaxReturn($auth_result['code'], $auth_result['info']);
             }
-            $this->admininfo = $auth_result['info'];
+
+            // 获取当前用户信息 chenyang 2022年3月21日17:14:07
+            $adminInfo = model('Admin')->where(['id' => $auth_result['info']->id])->find();
+            if (!$adminInfo) {
+                $this->ajaxReturn(50001, '没有找到用户信息');
+            }
+            // 获取当前角色下的所有权限
+            $roleinfo = model('AdminRole')->find($adminInfo['role_id']);
+
+            $adminInfo['access'] = $roleinfo['access'] == 'all' ? $roleinfo['access'] : unserialize($roleinfo['access']);
+            $adminInfo['access_mobile'] = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
+            $adminInfo['access_export'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
+            $adminInfo['access_delete'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
+            $adminInfo['access_set_service'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_set_service'];
+            $adminInfo['rolename'] = $roleinfo['name'];
+
+            $this->admininfo = $adminInfo;
         }
         \think\Config::set('platform', 'system');
         $this->checkDeleteAccess();

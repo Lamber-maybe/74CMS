@@ -40,9 +40,26 @@ class Admin extends \app\common\model\BaseModel
         $JwtAuth = \app\common\lib\JwtAuth::mkToken(
             config('sys.safecode'),
             7776000, //90天有效期
-            ['info' => $admininfo]
+            // ['info' => $admininfo]
+            [
+                'info' => [
+                    'id'      => $admininfo['id'],
+                    'role_id' => $admininfo['role_id'],
+                ]
+            ]
         );
         $admin_token = $JwtAuth->getString();
+        $admin_log = [
+            'admin_id'=>$admininfo['id'],
+            'admin_name'=>$admininfo['username'],
+            'content'=>'登录成功',
+            'is_login'=>1,
+            'addtime'=>$login_update_info['last_login_time'],
+            'ip'=>$login_update_info['last_login_ip'],
+            'ip_addr'=>$login_update_info['last_login_ipaddress']
+        ];
+        model('admin_log')->insert($admin_log);
+
         return [
             'token'=>$admin_token,
             'access' => $admininfo['access'],

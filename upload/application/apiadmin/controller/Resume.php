@@ -1621,12 +1621,23 @@ class Resume extends \app\common\controller\Backend
      * 刷新简历
      */
     public function refresh(){
-        $id = input('post.id/a');
-        if (empty($id)) {
+        $uidArr = input('post.uid/a');
+        if (empty($uidArr)) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('Resume')->backendRefreshResume($id);
-        model('AdminLog')->record('刷新简历。简历ID【'.implode(",",$id).'】',$this->admininfo);
+        // 刷新简历信息 chenyang 2022年3月15日15:32:33
+        foreach ($uidArr as $uid) {
+            $refreshParams = [
+                'uid'   => $uid,
+                'utype' => 2
+            ];
+            $result = model('Resume')->refreshResumeData($refreshParams, 2);
+            if ($result['status'] === false) {
+                $this->ajaxReturn(500, $result['msg']);
+            }
+        }
+
+        model('AdminLog')->record('刷新简历。简历ID【'.implode(",",$uidArr).'】',$this->admininfo);
         $this->ajaxReturn(200, '刷新成功');
     }
     /**

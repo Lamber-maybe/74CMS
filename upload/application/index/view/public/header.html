@@ -394,12 +394,15 @@ function isJSON(str) {
                 var that = this
                 httpget(qscms.apiList.imGetToken, {})
                     .then(function(res){
-                        qscms.imToken = res.data
-                        window.ws = new WebSocket('wss://imserv.v2.74cms.com');
-                        window.ws.onopen = that.websocketonopen;
-                        window.ws.onmessage = that.websocketonmessage;
-                        window.ws.onerror = that.websocketonerror;
-                        window.ws.onclose = that.websocketclose;
+                        if(res.data!=''){
+                            qscms.imToken = res.data
+                            window.ws = new WebSocket('wss://imserv.v2.74cms.com');
+                            window.ws.onopen = that.websocketonopen;
+                            window.ws.onmessage = that.websocketonmessage;
+                            window.ws.onerror = that.websocketonerror;
+                            window.ws.onclose = that.websocketclose;
+                        }
+
                     }).catch(()=>{})
             },
             websocketonopen:function() {

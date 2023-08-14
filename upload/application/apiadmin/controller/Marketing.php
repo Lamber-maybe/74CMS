@@ -47,7 +47,13 @@ class Marketing extends \app\common\controller\Backend
         $jobid_arr = $model->column('a.id');
         $list = [];
         if(!empty($jobid_arr)){
-            $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('id','in',$jobid_arr)->orderRaw('field(id,'.implode(",",$jobid_arr).')')->select();
+            $where = [
+                'id'         => ['in', $jobid_arr],
+                // 增加条件，不展示以及审核不通过的职位不允许查到 chenyang 2022年3月14日10:46:54
+                'audit'      => 1,
+                'is_display' => 1,
+            ];
+            $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where($where)->orderRaw('field(id,'.implode(",",$jobid_arr).')')->select();
         }
         $class = new \app\common\lib\Wechat;
         $return = [];

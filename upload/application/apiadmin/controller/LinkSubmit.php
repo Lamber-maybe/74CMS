@@ -58,7 +58,7 @@ class LinkSubmit extends \app\common\controller\Backend
         $urls = [];
         $sitedomain = config('global_config.sitedomain');
         foreach ($list as $key => $value) {
-            $urls[] = $sitedomain.url('index/'.$type.'/show',['id' => $value['id']]);
+            $urls[] = url('index/'.$type.'/show',['id' => $value['id']]);
         }
         $site = str_replace('http://', '', $sitedomain);
         $site = str_replace('https://', '', $site);
@@ -78,9 +78,10 @@ class LinkSubmit extends \app\common\controller\Backend
         curl_setopt_array($ch, $options);
         $result = curl_exec($ch);
         $result = json_decode($result, true);
+        $count_not_valid = isset($result['not_valid'])?count($result['not_valid']):0;
         if (isset($result['success'])) {
             model('AdminLog')->record(
-                '成功推送链接至百度【' . $result['success'] . '条】',
+                '成功推送链接至百度【' . $result['success'] . '条】,不合法的URL有【'.$count_not_valid.'条】',
                 $this->admininfo
             );
             $this->ajaxReturn(200, '提交成功', [

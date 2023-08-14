@@ -345,7 +345,11 @@ export default {
               showConfirmButton: true
             }).then(() => {
               // 用户类型-1为企业 2位个人
-              this.$router.push({path: '/index'})
+              if (this.LoginType == 1) {
+                this.$router.push({path: '/member/company/index'})
+              } else if (this.LoginType == 2) {
+                this.$router.push({path: '/member/personal/index'})
+              }
             })
             return false
           }

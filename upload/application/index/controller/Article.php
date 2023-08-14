@@ -14,10 +14,19 @@ class Article extends \app\index\controller\Base
             $this->redirect(config('global_config.mobile_domain').'newslist',302);
             exit;
         }
+
+        // 增加关键词搜索 chenyang 2022年3月14日17:27:27
+        $keyword = request()->route('keyword/s', '', 'trim');
+        $where = [];
+        if (!empty($keyword)) {
+            $where['a.title'] = ['like', '%'.$keyword.'%'];
+        }
+
         $list = model('Article')
             ->alias('a')
             ->join(config('dababase.prefix') . 'article_category b','a.cid=b.id','LEFT')
             ->where('b.id','not null')
+            ->where($where)
             ->order('a.sort_id desc,a.id desc')
             ->field('a.*');
         $current_page = request()->get('page/d',1,'intval');

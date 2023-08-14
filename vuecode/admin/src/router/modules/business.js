@@ -78,7 +78,7 @@ const businessRouter = {
         import ('@/views/business/company/report/add'),
       meta: {
         title: '添加实地认证',
-        access: 'businessCompanyReportAdd',
+        access: 'businessCompanyReport',
         activeMenu: '/business/company/report'
       },
       hidden: true
@@ -90,7 +90,7 @@ const businessRouter = {
         import ('@/views/business/company/report/edit'),
       meta: {
         title: '编辑实地认证',
-        access: 'businessCompanyReportEdit',
+        access: 'businessCompanyReport',
         activeMenu: '/business/company/report'
       },
       hidden: true

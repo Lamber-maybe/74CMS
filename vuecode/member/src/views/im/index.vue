@@ -1,232 +1,238 @@
 <template>
   <div class="im-content">
     <div class="im-frame">
-      <!--左侧会话列表-->
-      <ChatList :websocketOk="websocketOk" ref="chatlist" @showPhrase="showPhrase=true" @setTatgetinfo="setTatgetinfo" />
-      <div class="mid-line"></div>
-      <!--右侧空信息-->
-      <div class="right-empty" v-show="target_userinfo.nickname==''">
+      <div class="main-empty" v-show="noChat===true">
         <div class="emp_text">与您沟通过的信息都会在左侧列表中显示</div>
       </div>
-      <!--右侧聊天记录列表-->
-      <div class="right" v-show="target_userinfo.nickname!=''">
-        <div class="r-top">
-          <!--企业会员时显示tab标签-->
-          <div class="tablist" v-if="$store.state.LoginType==1">
-            <div class="tab select">聊天</div>
-            <div class="tab" @click="locationToResume">在线简历</div>
-            <div class="clear"></div>
-          </div>
-          <!--个人会员时显示企业联系人和企业名称-->
-          <div class="cominfo" v-else>
-            <div class="contact">{{ target_userinfo.nickname }}</div>
-            <div class="companyname">{{ target_userinfo.detail }}</div>
-            <div class="clear"></div>
-          </div>
-          <div class="right-op">
-            <div class="op-stick" v-if="target_userinfo.stick==0" @click="setStick(1)">置顶</div>
-            <div class="op-stick" v-else @click="setStick(0)">取消置顶</div>
-            <el-popover
-              placement="top-end"
-              trigger="click"
-              @show="getInterviewInfo()"
-            >
-              <div slot="reference" class="op-interview">面试安排</div>
-              <div class="interview-box" v-if="interviewInfoList.length>0" v-loading="interviewInfoLoading">
-                <div class="tit">面试安排</div>
-                <el-carousel trigger="click" :arrow="interviewInfoList.length>1?'always':'never'">
-                  <el-carousel-item v-for="(item,index) in interviewInfoList" :key="index">
-                    <div class="info">
-                      <div class="line"><div class="label">面试职位：</div><div class="val">{{item.jobname}}</div><div class="clear"></div></div>
-                      <div class="line"><div class="label">公司名称：</div><div class="val">{{item.companyname}}</div><div class="clear"></div></div>
-                      <div class="line"><div class="label">面试时间：</div><div class="val">{{item.interview_time}}</div><div class="clear"></div></div>
-                      <div class="line"><div class="label">面试地址：</div><div class="val">{{item.address}}</div><div class="clear"></div></div>
-                      <div class="line"><div class="label">联系电话：</div><div class="val">{{item.tel}}（{{item.contact}}）</div><div class="clear"></div></div>
-                      <div class="line" v-if="item.note!=''">
-                        <div class="label">联系备注：</div>
-                        <div class="val" v-if="item.note_.length>14">
-                          {{item.note}}
-                          <el-popover
-                            placement="top"
-                            title=""
-                            width="300"
-                            trigger="hover"
-                            :content="item.note_">
-                            <span style="color:#FF5F27" slot="reference">[查看]</span>
-                          </el-popover>
-                        </div>
-                        <div class="val" v-else>{{item.note}}</div>
-                        <div class="clear"></div>
-                      </div>
-                    </div>
-                  </el-carousel-item>
-                </el-carousel>
-              </div>
-              <div class="interview-box empty" v-else v-loading="interviewInfoLoading">
-                <div class="tip">{{this.$store.state.LoginType==1?'您还没有向该求职者发出面试邀请':'该企业未向您发出面试邀请'}}</div>
-              </div>
-            </el-popover>
-            <div class="clear"></div>
-          </div>
+      <div class="clear"></div>
+      <div style="width:1190px;" v-show="noChat===false">
+        <!--左侧会话列表-->
+        <ChatList :websocketOk="websocketOk" ref="chatlist" @showPhrase="showPhrase=true" @setTatgetinfo="setTatgetinfo" @changeNoChat="changeNoChat" />
+        <div class="mid-line"></div>
+        <!--右侧空信息-->
+        <div class="right-empty" v-show="target_userinfo.nickname==''">
+          <div class="emp_text">与您沟通过的信息都会在左侧列表中显示</div>
         </div>
-        <!--聊天主界面-->
-        <div class="main-container">
-          <!--企业会员时显示对方简历详情-->
-          <div class="resumeinfo" v-if="$store.state.LoginType==1">
-            <div v-if="resumeinfo.fullname">
-              <div class="fullname">{{ resumeinfo.fullname }}</div>
-              <div class="detail">{{ resumeinfo.sex_text }} · {{ resumeinfo.age }}岁 · {{ resumeinfo.education_text }} · {{ resumeinfo.experience_text }}</div>
+        <!--右侧聊天记录列表-->
+        <div class="right" v-show="target_userinfo.nickname!=''">
+          <div class="r-top">
+            <!--企业会员时显示tab标签-->
+            <div class="tablist" v-if="$store.state.LoginType==1">
+              <div class="tab select">聊天</div>
+              <div class="tab" @click="locationToResume">在线简历</div>
               <div class="clear"></div>
-              <div class="intention"><span class="label">期望职位</span><span class="item">{{ resumeinfo.intention_category }}</span><span class="item">{{ resumeinfo.intention_district }}</span><span class="wage">{{ resumeinfo.intention_wage }}</span></div>
             </div>
-            <div v-else style="line-height: 50px;color: #999;">正在加载简历信息...</div>
-            <div class="floatinfo">
-              <div class="jobname">沟通职位：{{jobinfo.jobname}}<span class="change" @click="selectJob()"></span></div>
-              <div class="starttime">聊天开始于 {{ chat_starttime }}</div>
+            <!--个人会员时显示企业联系人和企业名称-->
+            <div class="cominfo" v-else>
+              <div class="contact">{{ target_userinfo.nickname }}</div>
+              <div class="companyname">{{ target_userinfo.detail }}</div>
+              <div class="clear"></div>
             </div>
-          </div>
-          <!--个人会员时显示职位详情-->
-          <div class="jobinfo" v-else>
-            沟通职位：<span class="jobname" @click="toJobDetail">{{jobinfo.jobname?jobinfo.jobname:'--'}}</span
-            ><span class="wage">{{jobinfo.wage_text?jobinfo.wage_text:''}}</span
-            ><span class="starttime">聊天开始于 {{ chat_starttime }}</span>
-          </div>
-            <el-alert
-              v-if="alert_warning===true"
-              :title="$store.state.config.im_notice"
-              type="warning"
-              @close="alert_warning=false"
-            >
-            </el-alert>
-          <!--聊天记录列表-->
-          <MessageList @sendReturnReceiptAll="sendReturnReceiptAll" @showHellomsg="showHellomsg" :chat_starttime="chat_starttime" :messagelist_height="messagelist_height" @applyJob="applyJob" @agreeWechat="agreeWechat" @refuseWechat="refuseWechat" @agreeMobile="agreeMobile" @refuseMobile="refuseMobile" ref="messagelist" />
-
-          <!--被屏蔽时-->
-          <div class="disabled-opzone" v-if="disabled!=0">
-            <div class="msg">{{disabled_msg}}</div>
-            <el-button class="btn" type="primary" round v-if="disabled==1" @click="cancelBlacklist">解除屏蔽</el-button>
-            <el-button class="btn" type="primary" round v-else-if="$store.state.LoginType==1" @click="jumpTo('resumelist')">搜索简历</el-button>
-            <el-button class="btn" type="primary" round v-else-if="$store.state.LoginType==2" @click="jumpTo('joblist')">搜索职位</el-button>
-          </div>
-          <!--正常聊天操作界面-->
-          <div class="opzone" v-else>
-            <div class="optop">
-              <div class="blacklist-add" @click="addBlacklist">屏蔽聊天</div>
-              <!--表情-->
+            <div class="right-op">
+              <div class="op-stick" v-if="target_userinfo.stick==0" @click="setStick(1)">置顶</div>
+              <div class="op-stick" v-else @click="setStick(0)">取消置顶</div>
               <el-popover
-                placement="top-start"
-                width="430"
+                placement="top-end"
                 trigger="click"
+                @show="getInterviewInfo()"
               >
-                <el-tooltip slot="reference" effect="dark" content="表情" placement="top">
-                  <div
-                    class="i face"
-                  ></div>
-                </el-tooltip>
-                <Emoji @chooseEmojiDefault="chooseEmojiDefault"></Emoji>
-              </el-popover>
-              <!--常用语-->
-              <el-popover
-                placement="top-start"
-                width="400"
-                trigger="click">
-                <div class="quickbox">
-                  <div class="quicktitle">
-                    <div class="tit">常用语</div>
-                    <div class="conf" @click="showPhrase=true">设置</div>
-                  </div>
-                  <div class="quicklist">
-                    <div class="quickitem" v-for="(item,index) in phrase_list" :key="index" @click="message=item.content">{{item.content}}</div>
-                  </div>
+                <div slot="reference" class="op-interview">面试安排</div>
+                <div class="interview-box" v-if="interviewInfoList.length>0" v-loading="interviewInfoLoading">
+                  <div class="tit">面试安排</div>
+                  <el-carousel trigger="click" :arrow="interviewInfoList.length>1?'always':'never'">
+                    <el-carousel-item v-for="(item,index) in interviewInfoList" :key="index">
+                      <div class="info">
+                        <div class="line"><div class="label">面试职位：</div><div class="val">{{item.jobname}}</div><div class="clear"></div></div>
+                        <div class="line"><div class="label">公司名称：</div><div class="val">{{item.companyname}}</div><div class="clear"></div></div>
+                        <div class="line"><div class="label">面试时间：</div><div class="val">{{item.interview_time}}</div><div class="clear"></div></div>
+                        <div class="line"><div class="label">面试地址：</div><div class="val">{{item.address}}</div><div class="clear"></div></div>
+                        <div class="line"><div class="label">联系电话：</div><div class="val">{{item.tel}}（{{item.contact}}）</div><div class="clear"></div></div>
+                        <div class="line" v-if="item.note!=''">
+                          <div class="label">联系备注：</div>
+                          <div class="val" v-if="item.note_.length>14">
+                            {{item.note}}
+                            <el-popover
+                              placement="top"
+                              title=""
+                              width="300"
+                              trigger="hover"
+                              :content="item.note_">
+                              <span style="color:#FF5F27" slot="reference">[查看]</span>
+                            </el-popover>
+                          </div>
+                          <div class="val" v-else>{{item.note}}</div>
+                          <div class="clear"></div>
+                        </div>
+                      </div>
+                    </el-carousel-item>
+                  </el-carousel>
                 </div>
-                <el-tooltip slot="reference" effect="dark" content="常用语" placement="top">
-                  <div class="i phrase"></div>
-                </el-tooltip>
-              </el-popover>
-              <!--发送位置-->
-              <el-tooltip v-if="$store.state.LoginType==3" slot="reference" effect="dark" content="发送位置" placement="top">
-                <div class="i location" @click="showMap=true"></div>
-              </el-tooltip>
-              <!--发送简历-->
-              <el-tooltip v-if="$store.state.LoginType==2" slot="reference" effect="dark" content="发送简历" placement="top">
-                <div class="i card" @click="sendResumeCard"></div>
-              </el-tooltip>
-              <!--邀请投递-->
-              <el-popover
-                placement="top"
-                width="200"
-                v-model="visibleInvite"
-                 v-if="$store.state.LoginType==1"
-              >
-                <p style="margin-top:10px;">确定邀请对方投递简历吗？</p>
-                <div style="text-align: center; margin: 10px 0">
-                  <el-button size="mini" @click="visibleInvite=false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="sendInviteCard">确定</el-button>
+                <div class="interview-box empty" v-else v-loading="interviewInfoLoading">
+                  <div class="tip">{{this.$store.state.LoginType==1?'您还没有向该求职者发出面试邀请':'该企业未向您发出面试邀请'}}</div>
                 </div>
-                <el-tooltip slot="reference" effect="dark" content="邀请投递" placement="top">
-                  <div class="i card"></div>
-                </el-tooltip>
-              </el-popover>
-              <!--交换手机-->
-              <el-popover
-                placement="top"
-                width="200"
-                v-model="visibleMobile"
-              >
-                <p style="margin-top:10px;">确定与对方交换手机号吗？</p>
-                <div style="text-align: center; margin: 10px 0">
-                  <el-button size="mini" @click="visibleMobile=false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="sendMobileApply">确定</el-button>
-                </div>
-                <el-tooltip slot="reference" effect="dark" content="交换电话" placement="top">
-                  <div class="i mobile"></div>
-                </el-tooltip>
-              </el-popover>
-              <!--交换微信-->
-              <el-popover
-                placement="top"
-                width="240"
-                v-model="visibleWechat"
-              >
-                <p style="margin:10px 0;">确定与对方交换微信吗？</p>
-                <el-input v-model.trim="input_wechat" size="small" placeholder="请输入您的微信号"></el-input>
-                <div style="text-align: center; margin: 14px 0 10px">
-                  <el-button size="small" @click="visibleWechat=false">取消</el-button>
-                  <el-button type="primary" size="small" @click="sendWechatApply">确定</el-button>
-                </div>
-                <el-tooltip slot="reference" effect="dark" content="交换微信" placement="top">
-                  <div class="i wechat"></div>
-                </el-tooltip>
               </el-popover>
               <div class="clear"></div>
             </div>
-            <!--输入内容区域-->
-            <div class="content">
-              <!-- <input type="file" name="img"  @change="beforeAvatarUpload($event)"  accept="image/*" ref="fileinput"> -->
-              <el-input
-                @keydown.enter.native="keyDown"
-                class="input"
-                type="textarea"
-                placeholder="说点什么...（为了您的个人隐私安全，请不要轻易向对方泄露您的联系方式）"
-                v-model.trim="message"
+          </div>
+          <!--聊天主界面-->
+          <div class="main-container">
+            <!--企业会员时显示对方简历详情-->
+            <div class="resumeinfo" v-if="$store.state.LoginType==1">
+              <div v-if="resumeinfo.fullname">
+                <div class="fullname">{{ resumeinfo.fullname }}</div>
+                <div class="detail">{{ resumeinfo.sex_text }} · {{ resumeinfo.age }}岁 · {{ resumeinfo.education_text }} · {{ resumeinfo.experience_text }}</div>
+                <div class="clear"></div>
+                <div class="intention"><span class="label">期望职位</span><span class="item">{{ resumeinfo.intention_category }}</span><span class="item">{{ resumeinfo.intention_district }}</span><span class="wage">{{ resumeinfo.intention_wage }}</span></div>
+              </div>
+              <div v-else style="line-height: 50px;color: #999;">正在加载简历信息...</div>
+              <div class="floatinfo">
+                <div class="jobname">沟通职位：{{jobinfo.jobname}}<span class="change" @click="selectJob()"></span></div>
+                <div class="starttime">聊天开始于 {{ chat_starttime }}</div>
+              </div>
+            </div>
+            <!--个人会员时显示职位详情-->
+            <div class="jobinfo" v-else>
+              沟通职位：<span class="jobname" @click="toJobDetail">{{jobinfo.jobname?jobinfo.jobname:'--'}}</span
+              ><span class="wage">{{jobinfo.wage_text?jobinfo.wage_text:''}}</span
+              ><span class="starttime">聊天开始于 {{ chat_starttime }}</span>
+            </div>
+              <el-alert
+                v-if="alert_warning===true"
+                :title="$store.state.config.im_notice"
+                type="warning"
+                @close="alert_warning=false"
               >
-              </el-input>
-              <div class="btn">
-                <div
-                  class="submit"
-                  :class="enableSubmit === true ? '' : 'disabled'"
-                  @click="sendText"
+              </el-alert>
+            <!--聊天记录列表-->
+            <MessageList @sendReturnReceiptAll="sendReturnReceiptAll" @showHellomsg="showHellomsg" :chat_starttime="chat_starttime" :messagelist_height="messagelist_height" @applyJob="applyJob" @agreeWechat="agreeWechat" @refuseWechat="refuseWechat" @agreeMobile="agreeMobile" @refuseMobile="refuseMobile" ref="messagelist" />
+
+            <!--被屏蔽时-->
+            <div class="disabled-opzone" v-if="disabled!=0">
+              <div class="msg">{{disabled_msg}}</div>
+              <el-button class="btn" type="primary" round v-if="disabled==1" @click="cancelBlacklist">解除屏蔽</el-button>
+              <el-button class="btn" type="primary" round v-else-if="$store.state.LoginType==1" @click="jumpTo('resumelist')">搜索简历</el-button>
+              <el-button class="btn" type="primary" round v-else-if="$store.state.LoginType==2" @click="jumpTo('joblist')">搜索职位</el-button>
+            </div>
+            <!--正常聊天操作界面-->
+            <div class="opzone" v-else>
+              <div class="optop">
+                <div class="blacklist-add" @click="addBlacklist">屏蔽聊天</div>
+                <!--表情-->
+                <el-popover
+                  placement="top-start"
+                  width="430"
+                  trigger="click"
                 >
-                  发送
-                </div>
-                <div class="tip">按Enter键发送，按Ctrl+Enter键换行</div>
+                  <el-tooltip slot="reference" effect="dark" content="表情" placement="top">
+                    <div
+                      class="i face"
+                    ></div>
+                  </el-tooltip>
+                  <Emoji @chooseEmojiDefault="chooseEmojiDefault"></Emoji>
+                </el-popover>
+                <!--常用语-->
+                <el-popover
+                  placement="top-start"
+                  width="400"
+                  trigger="click">
+                  <div class="quickbox">
+                    <div class="quicktitle">
+                      <div class="tit">常用语</div>
+                      <div class="conf" @click="showPhrase=true">设置</div>
+                    </div>
+                    <div class="quicklist">
+                      <div class="quickitem" v-for="(item,index) in phrase_list" :key="index" @click="message=item.content">{{item.content}}</div>
+                    </div>
+                  </div>
+                  <el-tooltip slot="reference" effect="dark" content="常用语" placement="top">
+                    <div class="i phrase"></div>
+                  </el-tooltip>
+                </el-popover>
+                <!--发送位置-->
+                <el-tooltip v-if="$store.state.LoginType==3" slot="reference" effect="dark" content="发送位置" placement="top">
+                  <div class="i location" @click="showMap=true"></div>
+                </el-tooltip>
+                <!--发送简历-->
+                <el-tooltip v-if="$store.state.LoginType==2" slot="reference" effect="dark" content="发送简历" placement="top">
+                  <div class="i card" @click="sendResumeCard"></div>
+                </el-tooltip>
+                <!--邀请投递-->
+                <el-popover
+                  placement="top"
+                  width="200"
+                  v-model="visibleInvite"
+                   v-if="$store.state.LoginType==1"
+                >
+                  <p style="margin-top:10px;">确定邀请对方投递简历吗？</p>
+                  <div style="text-align: center; margin: 10px 0">
+                    <el-button size="mini" @click="visibleInvite=false">取消</el-button>
+                    <el-button type="primary" size="mini" @click="sendInviteCard">确定</el-button>
+                  </div>
+                  <el-tooltip slot="reference" effect="dark" content="邀请投递" placement="top">
+                    <div class="i card"></div>
+                  </el-tooltip>
+                </el-popover>
+                <!--交换手机-->
+                <el-popover
+                  placement="top"
+                  width="200"
+                  v-model="visibleMobile"
+                >
+                  <p style="margin-top:10px;">确定与对方交换手机号吗？</p>
+                  <div style="text-align: center; margin: 10px 0">
+                    <el-button size="mini" @click="visibleMobile=false">取消</el-button>
+                    <el-button type="primary" size="mini" @click="sendMobileApply">确定</el-button>
+                  </div>
+                  <el-tooltip slot="reference" effect="dark" content="交换电话" placement="top">
+                    <div class="i mobile"></div>
+                  </el-tooltip>
+                </el-popover>
+                <!--交换微信-->
+                <el-popover
+                  placement="top"
+                  width="240"
+                  v-model="visibleWechat"
+                >
+                  <p style="margin:10px 0;">确定与对方交换微信吗？</p>
+                  <el-input v-model.trim="input_wechat" size="small" placeholder="请输入您的微信号"></el-input>
+                  <div style="text-align: center; margin: 14px 0 10px">
+                    <el-button size="small" @click="visibleWechat=false">取消</el-button>
+                    <el-button type="primary" size="small" @click="sendWechatApply">确定</el-button>
+                  </div>
+                  <el-tooltip slot="reference" effect="dark" content="交换微信" placement="top">
+                    <div class="i wechat"></div>
+                  </el-tooltip>
+                </el-popover>
                 <div class="clear"></div>
               </div>
+              <!--输入内容区域-->
+              <div class="content">
+                <!-- <input type="file" name="img"  @change="beforeAvatarUpload($event)"  accept="image/*" ref="fileinput"> -->
+                <el-input
+                  @keydown.enter.native="keyDown"
+                  class="input"
+                  type="textarea"
+                  placeholder="说点什么...（为了您的个人隐私安全，请不要轻易向对方泄露您的联系方式）"
+                  v-model.trim="message"
+                >
+                </el-input>
+                <div class="btn">
+                  <div
+                    class="submit"
+                    :class="enableSubmit === true ? '' : 'disabled'"
+                    @click="sendText"
+                  >
+                    发送
+                  </div>
+                  <div class="tip">按Enter键发送，按Ctrl+Enter键换行</div>
+                  <div class="clear"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <div class="clear"></div>
       </div>
-      <div class="clear"></div>
     </div>
     <!--发送位置弹窗-->
     <el-dialog title="发送位置" width="837px" :visible.sync="showMap" v-if="showMap" :close-on-click-modal="false">
@@ -271,6 +277,7 @@ export default {
   },
   data() {
     return {
+      noChat:true,
       bind_timer:'',
       showBindWeixin:false,
       interviewInfoLoading:false,
@@ -342,6 +349,9 @@ export default {
     window.ws.close(); // 离开路由之后断开websocket连接
   },
   methods: {
+    changeNoChat(val){
+      this.noChat = val
+    },
     loopCheckBind(){
       http
         .get(api.im_check_bind, {})
@@ -972,6 +982,25 @@ export default {
   padding: 5px;
   box-sizing: border-box;
   margin-top: 14px;
+}
+.main-empty{
+  flex:1;
+  max-width: 1190px;
+  min-width:678px;
+  height: 762px;
+  float: left;
+  background: #ffffff url(../../assets/images/im/default_list_ico.png) center center no-repeat;
+  border-bottom: 1px solid #f3f3f3;
+  position: relative;
+  .emp_text {
+    color: #666;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    line-height: 22px;
+    left: 0;
+    bottom: 300px;
+  }
 }
 .im-frame {
   max-width: 1190px;

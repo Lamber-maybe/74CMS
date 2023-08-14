@@ -65,6 +65,29 @@
             :value="item.id"
           />
         </el-select>
+
+        <el-select
+          v-model="is_openid"
+          class="list-options"
+          placeholder="不限微信绑定"
+          @change="funSearch"
+        >
+          <el-option label="不限微信绑定" value="" />
+          <el-option label="已绑定微信" value="1" />
+          <el-option label="未绑定微信" value="2" />
+        </el-select>
+
+        <el-select
+          v-model="is_email"
+          class="list-options"
+          placeholder="不限邮箱绑定"
+          @change="funSearch"
+        >
+          <el-option label="不限邮箱绑定" value="" />
+          <el-option label="已绑定邮箱" value="1" />
+          <el-option label="未绑定邮箱" value="2" />
+        </el-select>
+
         <el-input
           v-model="keyword"
           placeholder="请输入搜索内容"
@@ -130,6 +153,7 @@
             <span>{{ scope.row.reg_time | timeFilter }}</span>
           </template>
         </el-table-column>
+
         <el-table-column align="center" label="最近登录" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
@@ -300,6 +324,8 @@ export default {
       setImReason: '',
       status: '',
       regtime: '',
+      is_openid: '',
+      is_email: '',
       sort: '',
       platform: '',
       list: null,
@@ -342,6 +368,8 @@ export default {
         list_type,
         status: this.status,
         regtime: this.regtime,
+        is_openid: this.is_openid,
+        is_email: this.is_email,
         sort: this.sort,
         platform: this.platform,
         utype: this.utype,

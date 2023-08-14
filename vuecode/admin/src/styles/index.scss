@@ -232,3 +232,8 @@ div:focus {
 	background-color:#ffa473;
 	border-color:#ffa473;
 }
+.substring{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

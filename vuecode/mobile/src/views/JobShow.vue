@@ -453,6 +453,7 @@
       </div>
     </van-dialog>
     <div class="return_list" v-if="isRetrunBtn != null" @click="$router.push('/campus/job')">返回列表</div>
+    <div class="click_home_page" @click="handlerHomePage">返回<br/>首页</div>
     <div class="click_copy" @click="handlerCopy">一键<br/>复制</div>
     <div class="generate_posters" @click="handlePoster">生成<br/>海报</div>
     <!-- 绑定微信开始 -->
@@ -576,6 +577,9 @@ export default {
       http.get(api.get_qrcode, {type: 'bind_weixin'}).then(res => {
         this.scanQrcodeImg = res.data
       })
+    },
+    handlerHomePage () {
+      this.$router.push('/index')
     },
     // 一键复制
     async handlerCopy () {
@@ -1038,7 +1042,22 @@ export default {
     text-align: center;
     padding-top: 7px;
   }
-
+  .click_home_page{
+    position: fixed;
+    z-index: 1;
+    width: 41px;
+    height: 41px;
+    border-radius: 999px;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    right: 15px;
+    bottom: 200px;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 14px;
+    text-align: center;
+    padding-top: 7px;
+  }
   .generate_posters {
     position: fixed;
     z-index: 1;

@@ -280,7 +280,7 @@ const systemRouter = {
         import('@/views/sys/category/group/list'),
       meta: {
         title: '其他分类管理',
-        access: 'sysCategoryGroupList',
+        access: 'sysCategoryGroup',
         activeMenu: '/sys/category/group'
       },
       hidden: true

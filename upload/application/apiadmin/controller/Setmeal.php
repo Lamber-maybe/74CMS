@@ -10,6 +10,13 @@ class Setmeal extends \app\common\controller\Backend
             ->order('sort_id desc,id asc')
             ->select();
         $return['items'] = $list;
+
+        // 增加是否是超管字段:0|否,1|是 chenyang 2022年3月9日18:38:15
+        $return['is_administrator'] = 0;
+        if ($this->admininfo->access == 'all') {
+            $return['is_administrator'] = 1;
+        }
+
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     public function add()

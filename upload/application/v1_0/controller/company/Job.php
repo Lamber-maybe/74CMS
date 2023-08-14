@@ -134,6 +134,11 @@ class Job extends \app\v1_0\controller\common\Base
                 0,
                 'intval'
             );
+
+            // 校验招聘人数不能小于0 chenyang 2022年3月10日10:44:39
+            if ($input_data['basic']['amount'] < 0) {
+                $this->ajaxReturn(400, '请填写正确的招聘人数');
+            }
         } else {
             $input_data['basic']['amount'] = 0;
         }
@@ -780,91 +785,29 @@ class Job extends \app\v1_0\controller\common\Base
         if (!$id) {
             $this->ajaxReturn(500, '请选择职位');
         }
-        $job_info = model('Job')
-            ->where('id', $id)
-            ->where('uid', $this->userinfo->uid)
-            ->field('id,refreshtime,jobname')
-            ->find();
-        if ($job_info === null) {
-            $this->ajaxReturn(500, '没有找到职位信息');
+
+        // 刷新职位信息 chenyang 2022年3月21日11:27:34
+        $refreshParams = [
+            'id'          => $id,
+            'uid'         => $this->userinfo->uid,
+            'refresh_log' => true
+        ];
+        $result = model('Job')->refreshJobData($refreshParams, 2);
+        if ($result['status'] === false) {
+            if (!empty($result['data'])) {
+                $this->ajaxReturn(200, $result['msg'], $result['data']);
+            }
+            $this->ajaxReturn(500, $result['msg']);
         }
 
-        $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-
-        $done = 1;
-        do {
-            if ($member_setmeal['refresh_jobs_free_perday'] <= 0) {
-                $done = 0;
-                break;
-            }
-
-            $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
-
-            if ($member_setmeal['refresh_jobs_free_perday'] <= $check_refreshlog) {
-                $done = 0;
-                break;
-            }
-        } while (0);
-        if ($done == 0) {
-            $return_data['done'] = 0;
-            if (config('global_config.single_job_refresh_enable_points_deduct') == 1) {
-                $member_points = model('Member')->getMemberPoints($this->userinfo->uid);
-                if ($member_points >= config('global_config.single_job_refresh_deduce_points')) {
-                    $return_data['use_type'] = 'points';
-                    $return_data['need_points'] = config('global_config.single_job_refresh_deduce_points');
-                }
-            }
-            if (!isset($return_data['use_type'])) {
-                $return_data['use_type'] = 'money';
-                $return_data['need_expense'] = config('global_config.single_job_refresh_expense');
-            }
-            $return_data['discount'] = $member_setmeal['service_added_discount'];
-            $this->ajaxReturn(200, '今日免费刷新次数不足', $return_data);
-        }
-
-        $timestamp = time();
-
-        $global_config = config('global_config');
-        if ($global_config['refresh_jobs_space'] > 0) {
-            if (
-                $timestamp - $job_info['refreshtime'] <
-                $global_config['refresh_jobs_space'] * 60
-            ) {
-                $this->ajaxReturn(500, '刷新间隔不能小于' .
-                    $global_config['refresh_jobs_space'] .
-                    '分钟，请稍后再试');
-            }
-        }
-
-        $result = model('Job')->refreshJob($id, $this->userinfo->uid);
-        if ($result === false) {
-            $this->ajaxReturn(500, model('Job')->getError());
-        }
-        $log['uid'] = $this->userinfo->uid;
-        $log['content'] =
-            '套餐特权-免费刷新职位【' . $job_info['jobname'] . '】';
-        $log['addtime'] = time();
-        model('MemberSetmealLog')
-            ->allowField(true)
-            ->save($log);
-        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【' . $job_info['jobname'] . '】');
+        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【' . $result['data'][0]['jobname'] . '】');
 
         $this->ajaxReturn(200, '刷新成功', ['done' => 1]);
     }
     public function refreshBatch()
     {
         $jobidArr = input('post.id/a',[]);
-        if(!empty($jobidArr)){
-            $joblist = model('Job')
-                ->field('id,jobname')
-                ->whereIn('id',$jobidArr)
-                ->where([
-                    'audit' => 1,
-                    'uid' => $this->userinfo->uid,
-                    'is_display' => 1,
-                ])
-                ->select();
-        }else{
+        if (empty($jobidArr)) {
             $joblist = model('Job')
                 ->field('id,jobname')
                 ->where([
@@ -873,48 +816,28 @@ class Job extends \app\v1_0\controller\common\Base
                     'is_display' => 1,
                 ])
                 ->select();
-        }
-
-        $refresh_jobid_arr = $log_arr = [];
-        $timestamp = time();
-        foreach ($joblist as $key => $value) {
-            $refresh_jobid_arr[] = $value['id'];
-            $log_arr[] = ['uid' => $this->userinfo->uid, 'content' => '套餐特权-免费刷新职位【' . $value['jobname'] . '】', 'addtime' => $timestamp];
-        }
-        if (empty($refresh_jobid_arr)) {
-            $this->ajaxReturn(500, '没有可刷新的职位');
-        }
-
-        $enough = 1;
-        do {
-            $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-            if ($member_setmeal['refresh_jobs_free_perday'] <= 0) {
-                $enough = 0;
-                break;
-
+            if (empty($joblist) || $joblist === null) {
+                $this->ajaxReturn(500, '没有可刷新的职位');
             }
-            $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
-            if ($member_setmeal['refresh_jobs_free_perday'] < $check_refreshlog + count($refresh_jobid_arr)) {
-                $enough = 0;
-                break;
+            $jobidArr = array_column($joblist, 'id');
+        }
+
+        // 刷新职位信息 chenyang 2022年3月21日12:58:57
+        $refreshParams = [
+            'id'          => $jobidArr,
+            'uid'         => $this->userinfo->uid,
+            'refresh_log' => true
+        ];
+        $result = model('Job')->refreshJobData($refreshParams, 2);
+        if ($result['status'] === false) {
+            if (!empty($result['data'])) {
+                $this->ajaxReturn(200, $result['msg'], $result['data']);
             }
-        } while (0);
-
-        if ($enough == 0) {
-            $this->ajaxReturn(200, '您当前共有' . count($refresh_jobid_arr) . '条在招职位，今天免费刷新次数已用完，请前往职位列表单条刷新。', ['done' => 0]);
+            $this->ajaxReturn(500, $result['msg']);
         }
 
-        $result = model('Job')->refreshJobBatch($refresh_jobid_arr, $this->userinfo->uid);
-        if ($result === false) {
-            $this->ajaxReturn(500, model('Job')->getError());
-        }
-
-        if (!empty($log_arr)) {
-            model('MemberSetmealLog')
-                ->allowField(true)
-                ->saveAll($log_arr);
-        }
-        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【职位id：' . implode(",",$refresh_jobid_arr) . '】');
+        $jobidArr = array_column($result['data'], 'id');
+        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【职位id：' . implode(",",$jobidArr) . '】');
 
         $this->ajaxReturn(200, '刷新成功', ['done' => 1]);
     }

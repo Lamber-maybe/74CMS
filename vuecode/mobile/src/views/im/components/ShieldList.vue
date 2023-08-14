@@ -32,7 +32,7 @@ export default {
     }
   },
   created () {
-    this.getBlacklist()
+
   },
   computed: {
     ...mapState({
@@ -45,6 +45,7 @@ export default {
      */
     handleOpenShieldPopup  () {
       this.ShieldPopup = true
+      this.getBlacklist()
     },
     /**
      * 关闭屏蔽聊天弹窗

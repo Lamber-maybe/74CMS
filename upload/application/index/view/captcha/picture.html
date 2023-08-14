@@ -1,4 +1,4 @@
-<el-form ref="captchaForm" :rules="captchaRules" :model="captchaForm" label-width="0px" :inline="true" :hide-required-asterisk="true">
+<el-form ref="captchaForm" :rules="captchaRules" :model="captchaForm" label-width="0px" :inline="true" :hide-required-asterisk="true" @submit.native.prevent>
 	<el-form-item label=" " prop="code">
         <el-input v-model="captchaForm.code" style="width:120px;"></el-input>
 	</el-form-item>

@@ -13,7 +13,7 @@ class Company extends \app\index\controller\Base
             $this->redirect(config('global_config.mobile_domain').'companylist',302);
             exit;
         }
-        $where = ['district1'=>['gt',0]];
+        $where = ['a.district1'=>['gt',0]];
         $keyword = request()->route('keyword/s','','trim');
         $trade = request()->route('trade/d',0,'intval');
         $nature = request()->route('nature/d',0,'intval');
@@ -106,8 +106,15 @@ class Company extends \app\index\controller\Base
                 'a.uid=b.uid',
                 'LEFT'
             )
+            ->join(
+                config('database.prefix') . 'job_search_rtime c',
+                'a.uid=c.uid',
+                'LEFT'
+            )
+            ->where('c.id','not null')
             ->where($where)
             ->order('a.id desc')
+            ->group('a.id')
             ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);
         $pagerHtml = $list->render();
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];

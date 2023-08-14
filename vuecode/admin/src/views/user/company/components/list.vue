@@ -115,7 +115,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="公司名称" min-width="220">
+        <el-table-column label="公司名称" min-width="210">
           <template slot-scope="scope">
             <div v-if="scope.row.companyname != ''">
               <div>
@@ -148,14 +148,14 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="认证状态" min-width="100">
+        <el-table-column label="认证状态" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.auth_status | auditFilter">
               {{ options_audit[scope.row.auth_status] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="显示状态" min-width="100">
+        <el-table-column label="显示状态" min-width="80">
           <template slot-scope="scope">
             <el-tooltip :content="scope.row.is_display==1?'显示中':'不显示'" placement="top">
               <el-switch
@@ -198,7 +198,7 @@
             <div v-else>{{ scope.row.setmeal_deadline_text }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="在招职位" prop="jobs_num" min-width="80" />
+        <el-table-column align="center" label="在招职位" prop="jobs_num" min-width="70" />
         <el-table-column align="center" label="推广" min-width="80">
           <template slot-scope="scope">
             <el-button
@@ -229,6 +229,9 @@
             <el-dropdown trigger="click" style="margin-left: 10px">
               <el-button type="small">···</el-button>
               <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="handlerRefreshJob(scope.row)">
+                  刷新
+                </el-dropdown-item>
                 <el-dropdown-item
                   @click.native="funLog(scope.$index, scope.row)"
                 >
@@ -257,6 +260,9 @@
           </el-button>
           <el-button size="small" type="primary" @click="funService">
             分配客服
+          </el-button>
+          <el-button size="small" type="primary" @click="handlerRefreshJobBatch">
+            刷新
           </el-button>
           <el-button size="small" type="warning" @click="funAuditBatch">
             认证
@@ -418,8 +424,8 @@
 <script>
 import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
-import { companyList, companyAudit, companyDelete, companySetService, companySetDisplay } from '@/api/company'
-import { management } from '@/api/member'
+import { companyList, companyAudit, companyDelete, companySetService, companySetDisplay , refreshJob} from '@/api/company'
+import { management} from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
 import { exportCompanyById } from '@/api/export'
 import Poster from '@/components/Poster'
@@ -839,6 +845,61 @@ export default {
           return false
         }
       }).catch(() => { })
+    },
+    /**
+     * 刷新职位
+     * @author chenyang
+     * Date Time：2022年3月11日16:32:40
+     */
+    handlerRefreshJob (companyData) {
+      this.$confirm('确定要刷新所选企业的所有职位？','系统提示',{
+        type: 'warning'
+      })
+        .then(() => {
+          refreshJob({company_id:companyData.id,is_batch:0})
+            .then(res => {
+              if (res.code == 200) {
+                this.$message({ type: 'success', message: res.message })
+                this.fetchData()
+              } else {
+                this.$message({ type: 'error', message: res.message })
+              }
+          })
+            .catch(() => {})
+        })
+        .catch(() => {
+          // on cancel
+        })
+    },
+    /**
+     * 批量刷新职位
+     * @author chenyang
+     * Date Time：2022年3月11日16:47:26
+     */
+    handlerRefreshJobBatch(){
+      if(this.tableIdarr.length<=0){
+        this.$message({ type: 'error', message:'请勾选要刷新的企业！'})
+        return false
+      }
+      this.$confirm('确定要批量刷新所选企业的所有职位？','系统提示',{
+        type: 'warning'
+      })
+        .then(() => {
+          var companyIdstr =this.tableIdarr.join(',')
+          refreshJob({company_id:companyIdstr,is_batch:1})
+            .then(res => {
+              if (res.code == 200) {
+                this.$message({ type: 'success', message: res.message })
+                this.fetchData()
+              } else {
+                this.$message({ type: 'error', message: res.message })
+              }
+            })
+            .catch(() => {})
+        })
+        .catch(() => {
+          // on cancel
+        })
     }
   }
 }

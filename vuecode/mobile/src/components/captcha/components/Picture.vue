@@ -2,9 +2,9 @@
   <div>
     <van-dialog v-model="showDialog" @confirm="handlerConfirm" @cancel="showDialog=false" :before-close="beforeClose" title="输入验证码" show-cancel-button>
       <div class="captcha_box">
-        <img class="captcha_img" :src="src" @click="changeImg" />
+        <img class="captcha_img" :src="src" @click="changeImg"  ref="seach_input"/>
         <van-cell-group :border="false">
-          <van-field label-width="120" :border="false" v-model="code" label=" " placeholder="请输入左侧验证码" />
+          <van-field label-width="120" :border="false" v-model="code" label=" " placeholder="请输入左侧验证码"  @keyup.enter.native="handlerConfirm" />
         </van-cell-group>
         <div class="little-border">&nbsp;</div>
       </div>
@@ -41,6 +41,7 @@ export default {
       let data = {code: this.code, secret_str: this.secret_str}
       this.callback(data)
       this.enableClose = true
+      this.showDialog = false
     },
     beforeClose (action, done) {
       done(this.enableClose)

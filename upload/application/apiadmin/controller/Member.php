@@ -22,6 +22,8 @@ class Member extends \app\common\controller\Backend
         $regtime = input('get.regtime/s', '', 'trim');
         $platform = input('get.platform/s', '', 'trim');
         $utype = input('get.utype/d', 0, 'intval');
+        $is_openid = input('get.is_openid/d', 0, 'intval');
+        $is_email = input('get.is_email/d', 0, 'intval');
 
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -76,7 +78,34 @@ class Member extends \app\common\controller\Backend
         if($utype>0){
             $where['a.utype'] = $utype;
         }
-
+        $wheres = '';
+        if ($is_openid === 1)
+        {
+            $wheres .= 'd.id is not null';
+        }elseif ($is_openid === 2)
+        {
+            $wheres .= 'd.id is null';
+        }
+        if (empty($wheres))
+        {
+            if ($is_email === 1)
+            {
+                $wheres .= " a.email != ''";
+            }elseif ($is_email === 2)
+            {
+                $wheres .= " a.email  = ''";
+            }
+        }
+        else
+        {
+            if ($is_email === 1)
+            {
+                $wheres .= "  and a.email != ''";
+            }elseif ($is_email === 2)
+            {
+                $wheres .= " and a.email = ''";
+            }
+        }
         $total = model('Member')->alias('a');
         if($list_type=='company'){
             $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')->where('a.utype',1)->where('b.companyname','neq','');
@@ -89,8 +118,8 @@ class Member extends \app\common\controller\Backend
                     $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                 });
         }
-        $total = $total->where($where)->count();
-        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform,a.disable_im';
+        $total = $total->join(config('database.prefix').'member_bind d','d.uid=a.uid and d.type="weixin"','left')->where($wheres)->where($where)->count();
+        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform,a.disable_im,d.openid';
         $list = model('Member')->alias('a');
         if($list_type=='company'){
             $field .= ',b.companyname';
@@ -105,14 +134,16 @@ class Member extends \app\common\controller\Backend
                         $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                     });
         }
-        $list = $list->field($field)->where($where)
+        $list = $list->field($field)->where($where)->where($wheres)
+                ->join(config('database.prefix').'member_bind d','d.uid=a.uid and d.type="weixin"','left')
                 ->order($order)
                 ->page($current_page . ',' . $pagesize)
                 ->select();
+
         foreach ($list as $key => $value) {
             $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
+            $list[$key]['is_openid'] = empty($value['openid'])?'否':'是';
         }
-
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;

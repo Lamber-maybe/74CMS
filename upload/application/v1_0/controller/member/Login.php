@@ -90,17 +90,9 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($input_data['utype'] == 2) {
-            //自动刷新
-            if(config('global_config.resume_auto_refresh')==1){
-                $condition = ['uid'=>$member['uid']];
-                $timestamp = time();
-                $resumeinfo = model('Resume')->where($condition)->find();
-                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
-                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
-                }
-            }
+            // 刷新简历信息 chenyang 2022年3月15日10:10:51
+            model('Resume')->refreshResumeData($member);
+
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -215,17 +207,9 @@ class Login extends \app\v1_0\controller\common\Base
 
         //通知完整度
         if ($input_data['utype'] == 2 && $is_reg==0) {
-            //自动刷新
-            if(config('global_config.resume_auto_refresh')==1){
-                $condition = ['uid'=>$member['uid']];
-                $timestamp = time();
-                $resumeinfo = model('Resume')->where($condition)->find();
-                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
-                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
-                }
-            }
+            // 刷新简历信息 chenyang 2022年3月15日10:10:51
+            model('Resume')->refreshResumeData($member);
+
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -298,17 +282,9 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($member['utype'] == 2) {
-            //自动刷新
-            if(config('global_config.resume_auto_refresh')==1){
-                $condition = ['uid'=>$member['uid']];
-                $timestamp = time();
-                $resumeinfo = model('Resume')->where($condition)->find();
-                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
-                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
-                }
-            }
+            // 刷新简历信息 chenyang 2022年3月15日10:10:51
+            model('Resume')->refreshResumeData($member);
+
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -361,17 +337,9 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($member['utype'] == 2) {
-            //自动刷新
-            if(config('global_config.resume_auto_refresh')==1){
-                $condition = ['uid'=>$member['uid']];
-                $timestamp = time();
-                $resumeinfo = model('Resume')->where($condition)->find();
-                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
-                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
-                }
-            }
+            // 刷新简历信息 chenyang 2022年3月15日10:10:51
+            model('Resume')->refreshResumeData($member);
+
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -432,17 +400,9 @@ class Login extends \app\v1_0\controller\common\Base
         
         //通知完整度
         if ($member['utype'] == 2) {
-            //自动刷新
-            if(config('global_config.resume_auto_refresh')==1){
-                $condition = ['uid'=>$member['uid']];
-                $timestamp = time();
-                $resumeinfo = model('Resume')->where($condition)->find();
-                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
-                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
-                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
-                }
-            }
+            // 刷新简历信息 chenyang 2022年3月15日10:10:51
+            model('Resume')->refreshResumeData($member);
+
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,

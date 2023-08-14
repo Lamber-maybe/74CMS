@@ -31,7 +31,7 @@ export default {
     }
   },
   created () {
-    this.getGreetList()
+
   },
   computed: {
     ...mapState({
@@ -44,6 +44,7 @@ export default {
      */
     openGreet () {
       this.greetPpopup = true
+      this.getGreetList()
     },
     /**
      * 关闭招呼语管理弹窗

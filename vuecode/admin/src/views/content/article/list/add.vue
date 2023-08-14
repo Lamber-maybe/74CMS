@@ -80,6 +80,9 @@
             format="yyyy-MM-dd HH:mm"
           />
         </el-form-item>
+        <el-form-item label="点击量" prop="click">
+          <el-input v-model.number="form.click" />
+        </el-form-item>
         <el-form-item label="排序" prop="sort_id">
           <el-input v-model.number="form.sort_id" />
         </el-form-item>
@@ -98,6 +101,7 @@
             <el-option label="转载" :value="1" />
           </el-select>
         </el-form-item>
+
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/content/article/list')">返回</el-button>
@@ -183,6 +187,13 @@ export default {
           {
             type: 'number',
             message: '排序必须为数字',
+            trigger: 'blur'
+          }
+        ],
+        click: [
+          {
+            type: 'number',
+            message: '浏览量必须为数字',
             trigger: 'blur'
           }
         ],

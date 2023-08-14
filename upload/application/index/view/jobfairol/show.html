@@ -31,8 +31,8 @@
 						<div class="search_select float">
 							<span>{{ selectedSearchTypeCn }}</span>
 							<ul class="select_hover_box">
-								<li @click="changeSelectedSearchType('com', '企业名称')">企业名称</li>
 								<li @click="changeSelectedSearchType('job', '职位名称')">职位名称</li>
+								<li @click="changeSelectedSearchType('com', '企业名称')">企业名称</li>
 								<li @click="changeSelectedSearchType('res', '求职者')">求职者</li>
 							</ul>
 						</div>
@@ -169,8 +169,8 @@
 			total:0,
 			total_page:0,
 			keyword: '',
-			selectedSearchType:'com',
-			selectedSearchTypeCn:'企业名称',
+			selectedSearchType:'job',
+			selectedSearchTypeCn:'职位名称',
 			searchType: 'com',
 			dialogVisible:false,
 			dialogQrSrc: '',

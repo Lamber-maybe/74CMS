@@ -58,6 +58,9 @@
             placeholder="请选择发布日期"
           />
         </el-form-item>
+        <el-form-item label="点击量" prop="click">
+          <el-input v-model.number="form.click" />
+        </el-form-item>
         <el-form-item label="排序" prop="sort_id">
           <el-input v-model.number="form.sort_id" />
         </el-form-item>

@@ -61,13 +61,18 @@
     </van-popup>
     <van-field
       required
+      readonly
+      clickable
+      label="工作职责"
+      class="reset_after no_border"
+    />
+    <van-field
       v-model="work.duty"
       rows="3"
       type="textarea"
-      label="工作职责"
       placeholder="简单描述一下你的工作职责"
       show-word-limi
-      class="reset_after no_border"
+      class="reset_after"
     />
     <div v-if="isShowAddEduBox">
       <div class="form_active_title_2 mt_9">教育经历 <span class="title_close" @click="isShowAddEduBox = !isShowAddEduBox"></span></div>

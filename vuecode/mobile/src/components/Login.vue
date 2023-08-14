@@ -306,7 +306,7 @@ export default {
                 if (response.data.next_code != 200) {
                   handlerHttpError({ code: response.data.next_code, message: '' })
                 } else {
-                  this.$refs.Head.getImToken()
+                  this.$refs.Head.imWindowGlobal()
                   this.$emit('afterLogin', this.after_login_data)
                 }
               } else {

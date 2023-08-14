@@ -229,6 +229,27 @@ class Index extends \app\v1_0\controller\common\Base
             'jobid'=>$id,
             'addtime'=>['egt',$starttime]
         ];
+        // 如果没有传职位ID就去获取全部职位 chenyang 2022年3月22日16:32:33
+        if (empty($id)) {
+            $joblist = model('Job')
+                ->field('id,jobname')
+                ->where([
+                    'audit'      => 1,
+                    'uid'        => $this->userinfo->uid,
+                    'is_display' => 1,
+                ])
+                ->select();
+            if (empty($joblist) || $joblist === null) {
+                $map['jobid'] = 0;
+            }else{
+                $id = array_column($joblist, 'id');
+                $map['jobid'] = $id;
+                if (count($id) > 1) {
+                    $map['jobid'] = ['in', $id];
+                }
+            }
+        }
+
         $viewDataAll = model('StatViewJob')->where($map)->select();
         $applyDataAll = model('JobApply')->where($map)->select();
         $allData = $dateArr = $viewData = $applyData = [];

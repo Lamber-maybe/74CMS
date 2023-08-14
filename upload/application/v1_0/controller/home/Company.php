@@ -1,6 +1,8 @@
 <?php
 namespace app\v1_0\controller\home;
 
+use think\Db;
+
 class Company extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -92,6 +94,7 @@ class Company extends \app\v1_0\controller\common\Base
             ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
+
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];
         foreach ($list as $key => $value) {
             $comid_arr[] = $value['id'];

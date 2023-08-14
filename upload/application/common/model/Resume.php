@@ -980,6 +980,7 @@ class Resume extends \app\common\model\BaseModel
      * 处理简历姓名显示方式
      */
     public function formatFullname($rids,$userinfo,$single=false){
+
         $list = $this->whereIn('id',$rids)->field(true)->select();
         $return = [];
         $userinfo = (array)$userinfo;
@@ -1082,4 +1083,132 @@ class Resume extends \app\common\model\BaseModel
         }
         return $return;
     }
+
+    /**
+     * 刷新简历信息
+     * @access public
+     * @author chenyang
+     * @param  array   $params [请求参数]
+     * @param  integer $source [来源:1|登录自动刷新,2|系统级手动刷新,3|会员手动刷新]
+     * @return array
+     * Date Time：2022年3月15日09:27:45
+     */
+    public function refreshResumeData($params, $source = 1){
+        if (!isset($params['uid']) || empty($params['uid'])) {
+            return callBack(false, '缺少会员ID');
+        }
+
+        $condition = [
+            'uid' => $params['uid']
+        ];
+        // 如果缺少会员类型则进行查询
+        if (!isset($params['utype']) || empty($params['utype'])) {
+            $params = model('Member')->where($condition)->field(['uid', 'utype'])->find();
+        }
+
+        // 必须为个人用户
+        if ($params['utype'] == 2) {
+            // 获取简历信息
+            $resumeModel = model('Resume');
+            $resumeInfo = $resumeModel->where($condition)->field('refreshtime')->find();
+            if (empty($resumeInfo) || $resumeInfo === null) {
+                return callBack(false, '没有找到简历信息');
+            }
+
+            $currentTime = time();
+            $isRefresh = false;
+
+            switch ($source) {
+                // 登录自动刷新
+                case 1:
+                    // 判断是否开启了登录自动刷新功能 并且 当天如果未刷新过则进行自动刷新
+                    if (config('global_config.resume_auto_refresh') == 1 && $resumeInfo->refreshtime < strtotime('today')) {
+                        $isRefresh = true;
+                    }
+                    break;
+                // 系统级手动刷新
+                case 2:
+                    $isRefresh = true;
+                    break;
+                // 会员手动刷新
+                case 3:
+                    // 校验简历刷新条件
+                    $validateParams = [
+                        'uid'          => $params['uid'],
+                        'current_time' => $currentTime,
+                    ];
+                    $validateResult = $this->_validateRefreshResume($validateParams);
+                    if ($validateResult['status'] === false) {
+                        return callBack(false, $validateResult['msg']);
+                    }
+                    $isRefresh = true;
+                    break;
+                default:
+                    return callBack(false, '刷新简历-来源参数有误');
+            }
+
+            if ($isRefresh === true) {
+                // 刷新简历
+                $resumeModel->where($condition)->setField('refreshtime', $currentTime);
+                model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+                model('ResumeSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+
+                ############### 系统级刷新不记录在log表中 ###############
+                if ($source == 3) {
+                    $saveData = [
+                        'uid'      => $params['uid'],
+                        'addtime'  => $currentTime,
+                        'platform' => config('platform'),
+                    ];
+                    model('RefreshResumeLog')->save($saveData);
+                }
+            }
+        }
+        return callBack(true, 'SUCCESS');
+    }
+
+    /**
+     * 校验简历刷新条件
+     * @access private
+     * @author chenyang
+     * @param  integer $params['uid']          [会员ID]
+     * @param  integer $params['current_time'] [当前时间]
+     * @return array
+     * Date Time：2022年3月15日11:49:46
+     */
+    private function _validateRefreshResume($params){
+        // 判断是否设置每天刷新简历次数
+        $refreshResumeMaxPerday = config('global_config.refresh_resume_max_perday');
+        if ($refreshResumeMaxPerday > 0) {
+            // 获取当天的简历刷新次数
+            $refreshTotal = model('RefreshResumeLog')
+                ->whereTime('addtime', 'today')
+                ->where('uid', $params['uid'])
+                ->count();
+            // 校验每天可刷新简历次数
+            if ($refreshTotal >= $refreshResumeMaxPerday) {
+                $errorMsg = '每天最多刷新简历' . $refreshResumeMaxPerday . '次，请明天再试';
+                return ['status' => false, 'msg' => $errorMsg];
+            }
+        }
+
+        // 判断是否设置简历刷新间隔
+        $refreshResumeSpace = config('global_config.refresh_resume_space');
+        if ($refreshResumeSpace > 0) {
+            // 获取简历log刷新时间
+            $resumeLogInfo = model('RefreshResumeLog')
+                            ->field('addtime')
+                            ->where('uid', $params['uid'])
+                            ->whereTime('addtime', 'today')
+                            ->order(['addtime' => 'desc'])
+                            ->find();
+            // 校验简历刷新间隔
+            if (!empty($resumeLogInfo) && $params['current_time'] - $resumeLogInfo['addtime'] < $refreshResumeSpace * 60) {
+                $errorMsg = '刷新间隔不能小于' . $refreshResumeSpace . '分钟，请稍后再试';
+                return ['status' => false, 'msg' => $errorMsg];
+            }
+        }
+        return ['status' => true, 'msg' => 'SUCCESS'];
+    }
+
 }

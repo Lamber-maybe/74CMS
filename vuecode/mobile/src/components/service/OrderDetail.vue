@@ -274,6 +274,9 @@ export default {
         case 'resume_package':
           return_str = '超值简历下载叠加包'
           break
+        case 'im':
+          return_str = '超值职聊次数叠加包'
+          break
         case 'refresh_job_package':
           return_str = '自动抢占招聘先机'
           break
@@ -464,6 +467,11 @@ export default {
         }
         &.resume_package {
           background: url("../../assets/images/company_order_ico_jlzzb.png") 0
+          no-repeat;
+          background-size: 50px;
+        }
+        &.im {
+          background: url("../../assets/images/company_order_ico_im.png") 0
             no-repeat;
           background-size: 50px;
         }

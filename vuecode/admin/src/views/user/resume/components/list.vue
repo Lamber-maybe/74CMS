@@ -689,12 +689,12 @@ export default {
     },
     funRefresh() {
       var that = this
-      if (that.tableIdarr.length == 0) {
+      if (that.tableUidarr.length == 0) {
         that.$message.error('请选择要刷新的简历')
         return false
       }
       const param = {
-        id: that.tableIdarr
+        uid: that.tableUidarr
       }
       resumeRefresh(param).then(response => {
         that.$message.success(response.message)

@@ -41,21 +41,30 @@
           ><span>赠送简历点数：{{ setmealDetail.download_resume_point }}</span>
         </div>
         <div class="tx2">
+          <span>赠送职聊次数：{{ setmealDetail.im_total }}</span>
           <span
             >赠送会员{{ $store.state.config.points_byname }}：{{
               setmealDetail.gift_point
             }}</span
-          ><span
-            >免费刷新职位：{{
-              setmealDetail.refresh_jobs_free_perday
-            }}次/天</span
           >
         </div>
         <div class="tx2">
           <span
-            >下载简历上限：{{
+          >免费刷新职位：{{
+              setmealDetail.refresh_jobs_free_perday
+            }}次/天</span
+          >
+          <span
+          >下载简历上限：{{
               setmealDetail.download_resume_max_perday
             }}份/天</span
+          >
+        </div>
+        <div class="tx2">
+          <span
+            >发起职聊上限：{{
+              setmealDetail.im_max_perday
+            }}次/天</span
           >
         </div>
         <div

@@ -96,6 +96,7 @@ export default {
           this.imShowParams.jobid = item.id
           this.setImShowParams(this.imShowParams)
           this.getJobList()
+
           this.$emit('handleSelectJob', item)
         }
       })

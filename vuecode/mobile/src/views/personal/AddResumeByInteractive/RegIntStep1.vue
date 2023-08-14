@@ -70,7 +70,6 @@
           @input="hanlderMobile"
     />
     <van-field
-      required
       v-model="contact.weixin"
       label="联系微信"
       placeholder="请填写联系微信"
@@ -217,10 +216,10 @@ export default {
         this.$notify('请填写联系电话')
         return false
       }
-      if (!this.contact.weixin) {
-        this.$notify('请填写联系微信')
-        return false
-      }
+      // if (!this.contact.weixin) {
+      //   this.$notify('请填写联系微信')
+      //   return false
+      // }
       http.post(api.reg_resume_int_step1, {
         basic: {
           fullname: this.basic.fullname,

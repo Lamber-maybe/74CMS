@@ -779,4 +779,193 @@ class Job extends \app\common\model\BaseModel
         }
         return $return;
     }
+
+    /**
+     * 刷新职位信息
+     * @access public
+     * @author chenyang
+     * @param  array   $params [请求参数]
+     * @param  integer $source [来源:1|系统级刷新,2|会员手动刷新]
+     * @return array
+     * Date Time：2022年3月18日16:02:39
+     */
+    public function refreshJobData($params, $source = 1){
+        if (!in_array($source, [1, 2])) {
+            return callBack(false, '刷新职位-来源参数有误');
+        }
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+        if ($source == 2 && (!isset($params['uid']) || empty($params['uid']))) {
+            return callBack(false, '缺少UID');
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id'         => $params['id'],
+            'audit'      => 1,
+            'is_display' => 1,
+        ];
+        if (is_array($params['id'])) {
+            $condition['id'] = ['in', $params['id']];
+        }
+        if (isset($params['uid']) && !empty($params['uid'])) {
+            $condition['uid'] = $params['uid'];
+        }
+        $jobModel = model('Job');
+        $jobList = $jobModel->where($condition)->field('id,uid,jobname,refreshtime')->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+        $jobList = collection($jobList)->toArray();
+
+        $currentTime = time();
+
+        // 校验是否是会员手动刷新
+        if ($source == 2) {
+            // 校验简历刷新条件
+            $validateParams = [
+                'id'           => $params['id'],
+                'uid'          => $params['uid'],
+                'id_total'     => is_array($params['id']) ? count($params['id']) : 0,
+                'current_time' => $currentTime,
+            ];
+            $validateResult = $this->_validateRefreshJob($validateParams);
+            if ($validateResult['status'] === false) {
+                return callBack(false, $validateResult['msg'], $validateResult['data']);
+            }
+        }
+
+        $platform = config('platform');
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[]   = $jobInfo['uid'];
+            $saveData[] = [
+                'uid'      => $jobInfo['uid'],
+                'jobid'    => $jobInfo['id'],
+                'addtime'  => $currentTime,
+                'platform' => $platform,
+            ];
+            $logData[] = [
+                'uid'     => $jobInfo['uid'],
+                'content' => '套餐特权-免费刷新职位【' . $jobInfo['jobname'] . '】',
+                'addtime' => $currentTime
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        $jobModel->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        // 判断是否记录刷新职位log
+        if (isset($params['refresh_log']) && $params['refresh_log'] == true) {
+            model('RefreshJobLog')->saveAll($saveData);
+        }
+
+        ############### 系统级刷新不记录在log表中 ###############
+        if ($source == 2) {
+            model('MemberSetmealLog')->allowField(true)->saveAll($logData);
+        }
+
+        return callBack(true, 'SUCCESS', $jobList);
+    }
+
+    /**
+     * 校验职位刷新条件
+     * @access private
+     * @author chenyang
+     * @param  integer $params['id']           [职位ID]
+     * @param  integer $params['uid']          [会员ID]
+     * @param  integer $params['id_total']     [职位ID数]
+     * @param  integer $params['current_time'] [当前时间]
+     * @return array
+     * Date Time：2022年3月18日18:37:54
+     */
+    private function _validateRefreshJob($params){
+        // 获取会员套餐
+        $memberSetmeal = model('Member')->getMemberSetmeal($params['uid']);
+
+        $done = 1;
+        do {
+            // 校验每天可刷新简历次数
+            if ($memberSetmeal['refresh_jobs_free_perday'] <= 0) {
+                $done = 0;
+                break;
+            }
+            // 获取今天的职位刷新次数
+            $refreshTotal = model('RefreshJobLog')
+                ->whereTime('addtime', 'today')
+                ->where('uid', $params['uid'])
+                ->count();
+            // 校验每天可刷新简历次数
+            if ($refreshTotal >= $memberSetmeal['refresh_jobs_free_perday']) {
+                $done = 0;
+                break;
+            }
+            // 校验如果是批量刷新，当天刷新次数 + 本次要刷新的次数 不能大于 可刷新次数
+            if ($params['id_total'] >= 0 && $refreshTotal + $params['id_total'] > $memberSetmeal['refresh_jobs_free_perday']) {
+                $done = 0;
+                break;
+            }
+        } while (0);
+
+        if ($params['id_total'] > 0 && $done == 0) {
+            $errorMsg = '您当前共有' . $params['id_total'] . '条在招职位，今天免费刷新次数已用完，请前往职位列表单条刷新。';
+            return callBack(false, $errorMsg, ['done' => 0]);
+        }
+
+        // 当批量查询时不校验快捷消费与刷新间隔数
+        if ($params['id_total'] <= 0) {
+            if ($done == 0) {
+                ######################### 快捷消费 #########################
+                $returnData['done'] = 0;
+                // 判断是否设置刷新职位允许积分抵扣开关
+                if (config('global_config.single_job_refresh_enable_points_deduct') == 1) {
+                    // 获取当前用户积分数
+                    $memberPoints = model('Member')->getMemberPoints($params['uid']);
+                    // 获取刷新职位允许积分抵扣数
+                    $deducePoints = config('global_config.single_job_refresh_deduce_points');
+                    // 判断当前积分是否足够刷新职位抵扣
+                    if ($memberPoints >= $deducePoints) {
+                        $returnData['use_type']    = 'points';
+                        $returnData['need_points'] = $deducePoints;
+                    }
+                }
+                // 没有积分则使用价格支付
+                if (!isset($returnData['use_type'])) {
+                    $returnData['use_type']     = 'money';
+                    $returnData['need_expense'] = config('global_config.single_job_refresh_expense');
+                }
+                $returnData['discount'] = $memberSetmeal['service_added_discount'];
+                return callBack(false, '今日免费刷新次数不足', $returnData);
+            }
+
+            // 判断是否设置职位刷新间隔
+            $refreshJobsSpace = config('global_config.refresh_jobs_space');
+            if ($refreshJobsSpace > 0) {
+                // 获取职位log刷新时间
+                $resumeLogInfo = model('RefreshJobLog')
+                    ->field('addtime')
+                    ->where('uid', $params['uid'])
+                    ->where('jobid', $params['id'])
+                    ->whereTime('addtime', 'today')
+                    ->order(['addtime' => 'desc'])
+                    ->find();
+                // 校验职位刷新间隔
+                if (!empty($resumeLogInfo) && $params['current_time'] - $resumeLogInfo['addtime'] < $refreshJobsSpace * 60) {
+                    $errorMsg = '刷新间隔不能小于' . $refreshJobsSpace . '分钟，请稍后再试';
+                    return callBack(false, $errorMsg);
+                }
+            }
+        }
+        return callBack(true, 'SUCCESS');
+    }
+
 }

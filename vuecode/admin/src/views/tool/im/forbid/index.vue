@@ -1,74 +1,77 @@
 <template>
   <div class="app-container">
-    <div class="tip">
-      <p>
-        已禁聊会员无法使用在线聊天功能，系统提示 “ 抱歉，您暂时无法使用此功能哦 ”
-      </p>
-    </div>
-    <div class="list-search" style="display: inline-block">
-      <el-input
-        v-model="keyword"
-        placeholder="请输入搜索关键词"
-        class="input-with-select"
-        @keyup.enter.native="funSearchKeyword"
-      >
-        <el-select
-          slot="prepend"
-          v-model="key_type"
-          placeholder="请选择"
-          class="input-sel"
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>已禁聊用户</span>
+      </div>
+      <div class="tip">
+        <p>
+          已禁聊会员无法使用在线聊天功能，系统提示 “ 抱歉，您暂时无法使用此功能哦 ”
+        </p>
+      </div>
+      <div class="list-search" style="display: inline-block">
+        <el-input
+          v-model="keyword"
+          placeholder="请输入搜索关键词"
+          class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
-          <el-option label="关键词" value="1" />
-        </el-select>
-        <el-button
-          slot="append"
-          icon="el-icon-search"
-          @click="funSearchKeyword"
-        />
-      </el-input>
-    </div>
-    <div class="spaceline" />
-    <el-table
-      v-loading="listLoading"
-      border
-      size="mini"
-      :data="list"
-      element-loading-text="Loading"
-      fit
-      highlight-current-row
-    >
-      <el-table-column label="禁聊会员" prop="username" class="mini" />
-      <el-table-column label="会员类型" prop="utype" class="mini">
-        <template slot-scope="scope">
-          {{ scope.row.utype==1?'企业':'个人' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="账号状态 " prop="status" class="mini">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
-          <el-tag v-else type="danger">已锁定</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="屏蔽时间" prop="addtime" class="mini">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.addtime | timeFilter }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="禁聊原因 " prop="reason" class="mini" />
-      <el-table-column fixed="right" label="操作" width="320">
-        <template slot-scope="scope">
-          <el-button
-            size="small"
-            type="danger"
-            @click.native="funIm(scope.row)"
+          <el-select
+            slot="prepend"
+            v-model="key_type"
+            placeholder="请选择"
+            class="input-sel"
           >
-            解除屏蔽
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="spaceline" />
+            <el-option label="关键词" value="1" />
+          </el-select>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="funSearchKeyword"
+          />
+        </el-input>
+      </div>
+      <div class="spaceline" />
+      <el-table
+        v-loading="listLoading"
+        :data="list"
+        element-loading-text="Loading"
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="禁聊会员" prop="username" class="mini" />
+        <el-table-column label="会员类型" prop="utype" class="mini">
+          <template slot-scope="scope">
+            {{ scope.row.utype==1?'企业':'个人' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="账号状态 " prop="status" class="mini">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
+            <el-tag v-else type="danger">已锁定</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="屏蔽时间" prop="addtime" class="mini">
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.addtime | timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="禁聊原因 " prop="reason" class="mini" />
+        <el-table-column fixed="right" label="操作" width="320">
+          <template slot-scope="scope">
+            <el-button
+              size="small"
+              type="danger"
+              @click.native="funIm(scope.row)"
+            >
+              解除屏蔽
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="spaceline" />
+    </el-card>
   </div>
 </template>
 

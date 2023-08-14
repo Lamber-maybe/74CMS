@@ -149,7 +149,7 @@ export default {
       if (value == '') {
         callback()
       }
-      if (this.form.starttime != '' && this.form.starttime > value) {
+      if (this.form.starttime != '' && this.form.starttime > value && value != null) {
         callback(new Error('开始时间不能大于结束时间'))
       } else {
         callback()
@@ -318,7 +318,7 @@ export default {
           this.form = { ...response.data.info }
           this.form.target = this.form.target + ''
           this.form.starttime = this.form.starttime * 1000
-          this.form.deadline = this.form.deadline * 1000
+          this.form.deadline = this.form.deadline == 0 ? '' : this.form.deadline * 1000
           this.form.is_display = this.form.is_display == 1
           this.imageSrc = response.data.imageSrc
           this.handleChange(this.form.cid)

@@ -178,14 +178,14 @@ export default {
       }
     },
     beforeFileUpload(file) {
-      const filetypeArr = file.name.split('.')
-      const filetype = filetypeArr[filetypeArr.length - 1]
-      const configFileExtArr = this.fileupload_ext.split(',')
-
-      if (!configFileExtArr.includes(filetype)) {
-        this.$message.error('上传文件格式不允许')
-        return false
-      }
+      // const filetypeArr = file.name.split('.')
+      // const filetype = filetypeArr[filetypeArr.length - 1]
+      // const configFileExtArr = this.fileupload_ext.split(',')
+      //
+      // if (!configFileExtArr.includes(filetype)) {
+      //   this.$message.error('上传文件格式不允许')
+      //   return false
+      // }
       if (file.size / 1024 > this.fileupload_size) {
         this.$message.error(`上传文件最大为${this.fileupload_size}kb`)
         return false

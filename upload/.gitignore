@@ -23,3 +23,6 @@ public/adminm/static/config.js
 public/m/static/config.js
 public/m/static/tongji.js
 public/member/static/config.js
+application/database.php
+application/.htaccess
+public/tpl/member/static/config.js

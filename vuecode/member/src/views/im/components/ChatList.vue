@@ -137,6 +137,11 @@ export default {
                 }
               }
             })
+            if(this.chatList.length==0){
+              this.$emit("changeNoChat",true)
+            }else{
+              this.$emit("changeNoChat",false)
+            }
           }
         })
         .catch(() => {});
@@ -165,6 +170,11 @@ export default {
         .post(api.im_chat_list, {token:this.$store.state.imToken})
         .then(res => {
           this.chatList = res.data.items;
+          if(this.chatList.length==0){
+            this.$emit("changeNoChat",true)
+          }else{
+            this.$emit("changeNoChat",false)
+          }
           this.filterChat()
           if(init===true){
             this.chatList.forEach(element => {

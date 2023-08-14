@@ -64,7 +64,8 @@ class Notice extends \app\common\controller\Backend
             'seo_keywords' => input('post.seo_keywords/s', '', 'trim'),
             'seo_description' => input('post.seo_description/s', '', 'trim'),
             'addtime' => input('post.addtime/s', '', 'trim'),
-            'sort_id' => input('post.sort_id/d', 0, 'intval')
+            'sort_id' => input('post.sort_id/d', 0, 'intval'),
+            'click' => input('post.click/d', 0, 'intval'),
         ];
         if ($input_data['addtime']) {
             $input_data['addtime'] = strtotime($input_data['addtime']);
@@ -119,7 +120,8 @@ class Notice extends \app\common\controller\Backend
                     'trim'
                 ),
                 'addtime' => input('post.addtime/s', '', 'trim'),
-                'sort_id' => input('post.sort_id/d', 0, 'intval')
+                'sort_id' => input('post.sort_id/d', 0, 'intval'),
+                'click' => input('post.click/d', 0, 'intval'),
             ];
             $id = intval($input_data['id']);
             if (!$id) {

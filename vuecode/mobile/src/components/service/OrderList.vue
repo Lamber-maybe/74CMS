@@ -411,8 +411,13 @@ export default {
             no-repeat;
           background-size: 50px;
         }
-        &.resume_package {
-          background: url("../../assets/images/company_order_ico_jlzzb.png") 0
+       &.resume_package {
+         background: url("../../assets/images/company_order_ico_jlzzb.png") 0
+         no-repeat;
+         background-size: 50px;
+       }
+        &.im {
+          background: url("../../assets/images/company_order_ico_im.png") 0
             no-repeat;
           background-size: 50px;
         }

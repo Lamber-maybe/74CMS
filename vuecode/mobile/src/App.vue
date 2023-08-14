@@ -42,19 +42,28 @@ export default {
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) { // 页面呼出
       // 0 - 表示连接尚未建立，1 - 表示连接已建立，可以进行通信，2 - 表示连接正在进行关闭，3 - 表示连接已经关闭或者连接不能打开
-        if (this.ws.readyState != 1) {
-          this.initWebSocket(this.imToken)
+        var u = navigator.userAgent
+        var app = navigator.appVersion
+        var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) // ios终端
+        if (isIOS) {
+          if (this.LoginType != 0) {
+            if (this.ws.readyState != 1) {
+              this.imWindowGlobal()
+            }
+          }
         }
       }
     })
     if (this.LoginType != 0) {
-      this.timer = setInterval(this.ping, 30000)
+      http.post(api.im_window_global).then((res) => {
+        if (res.data.next == '') {
+          this.timer = setInterval(this.ping, 30000)
+        }
+      })
     }
   },
   beforeDestroy () {
-    if (this.LoginType != 0) {
-      clearInterval(this.timer)
-    }
+    clearInterval(this.timer)
   },
   created () {
     // 刷新页面时把config置空，保证系统配置信息的时效性
@@ -73,7 +82,7 @@ export default {
     if (this.LoginType != 0) {
       // 获取聊天token
       // if (this.ws.readyState == undefined) {
-      this.getImToken()
+      this.imWindowGlobal()
       // }
     }
   },
@@ -94,6 +103,16 @@ export default {
       http.get(api.imToken).then((res) => {
         this.setImToken(res.data)
         this.initWebSocket(res.data)
+      })
+    },
+    /**
+     * 全局检测聊天是否开启
+     */
+    imWindowGlobal () {
+      http.post(api.im_window_global).then((res) => {
+        if (res.data.next == '') {
+          this.getImToken()
+        }
       })
     },
     ping () {

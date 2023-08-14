@@ -18,7 +18,7 @@
 				}
 				return(false);
 		}
-		var code = getQueryVariable("code") 
+		var code = getQueryVariable("code")
 		if(code!==false){
 			location.href=qscms.sitedir + qscms.memberDirname + '/oauth/weixin/'+code
 		}
@@ -480,7 +480,7 @@
 				</div>
 			</div>
 		</div>
-		<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
+		<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px" :close-on-click-modal="false">
 			{#include file="captcha/picture" /#}
 		</el-dialog>
 		<!--底部未登录引导-->
@@ -498,7 +498,7 @@
 	</div>
 	<!-- footer -->
 	{#include file="public/footer" /#}
-	
+
 <script>
 function loadTencent() {
 	if (window.BMap !== undefined) {
@@ -972,7 +972,9 @@ var app = new Vue({
 				if (valid) {
 					that.showPictureCaptcha = false
 					that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+					that.captchaForm.code = ''
 				} else {
+					that.captchaForm.code = ''
 					return false;
 				}
 			});

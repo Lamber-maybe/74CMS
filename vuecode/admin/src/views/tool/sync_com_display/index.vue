@@ -57,9 +57,9 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-dialog title="请输入密码确认" :visible.sync="enterPwdShow" width="350px">
+    <el-dialog title="验证密码" :visible.sync="enterPwdShow" width="350px">
       <el-row>
-        <el-col :span="18"> <el-input v-model="form.pwd" type="password" placeholder="请输入密码" /> </el-col>
+        <el-col :span="18"> <el-input v-model="form.pwd" type="password" placeholder="请输入当前管理员密码" /> </el-col>
         <el-col :span="6"> <el-button type="primary" @click="onSubmit">确定</el-button></el-col>
       </el-row>
     </el-dialog>

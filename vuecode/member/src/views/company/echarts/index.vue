@@ -44,8 +44,17 @@ import api from '@/api'
 				http.get(api.get_publish_jobs, {}).then(response=>{
 					this.publishedJoblist = response.data.items
 					if(this.publishedJoblist.length==0){
-						return false
-					}
+            // 如果当前企业中未发布职位的话返回一条默认数据，防止招聘效果统计出现错误 chenyang 2022年3月16日16:55:56
+            this.publishedJoblist.push({
+              'id':0,
+              'jobname':'暂无职位',
+            })
+					}else{
+            this.publishedJoblist.unshift({
+              'id':0,
+              'jobname':'全部',
+            })
+          }
 					this.jobid = this.publishedJoblist[0].id
 					this.fetchLineData();
 

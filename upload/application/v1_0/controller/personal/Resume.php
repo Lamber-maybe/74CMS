@@ -330,7 +330,7 @@ class Resume extends \app\v1_0\controller\common\Base
         if($info===false){
             $this->ajaxReturn(200, '获取数据成功', null);
         }
-        
+//        $info['basic']['experience_text'] = $info['basic']['experience_text']=='无'?'无经验':$info['basic']['experience_text'];
         $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['basic']['id'];
         $info['preview_url'] = url('index/resume/show',['id'=>$info['basic']['id']]);
         $this->ajaxReturn(200, '获取数据成功', $info);
@@ -341,9 +341,13 @@ class Resume extends \app\v1_0\controller\common\Base
     public function refresh()
     {
         $this->interceptPersonalResume();
-        $r = model('Resume')->refreshResume($this->userinfo->uid);
-        if ($r === false) {
-            $this->ajaxReturn(500, model('Resume')->getError());
+        // 刷新简历信息 chenyang 2022年3月15日11:25:12
+        $refreshParams = [
+            'uid' => $this->userinfo->uid
+        ];
+        $result = model('Resume')->refreshResumeData($refreshParams, 3);
+        if ($result['status'] === false) {
+            $this->ajaxReturn(500, $result['msg']);
         }
         model('Task')->doTask(
             $this->userinfo->uid,

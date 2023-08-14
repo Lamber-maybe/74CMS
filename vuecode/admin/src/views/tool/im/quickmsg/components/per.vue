@@ -2,8 +2,6 @@
   <div class="app-container">
     <el-table
       v-loading="listLoading"
-      border
-      size="mini"
       :data="list"
       element-loading-text="Loading"
       fit

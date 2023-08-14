@@ -2,6 +2,7 @@
   <div class="app-container">
     <el-table
       :data="list"
+      v-loading="listLoading"
     >
       <el-table-column
         label="关键词"
@@ -221,7 +222,11 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      wechatKeywordList({}, 'get')
+      const param = {
+        page: this.currentPage,
+        pagesize: this.pagesize
+      }
+      wechatKeywordList(param)
         .then(response => {
           this.list = response.data.items
           this.listLoading = false

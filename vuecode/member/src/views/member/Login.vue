@@ -14,8 +14,8 @@
             <el-input placeholder="请输入密码" v-model="formPwd.password" show-password @keyup.native.enter="handleSubmit"></el-input>
           </div>
           <div class="b_input" v-else>
-            <el-input v-model="formCode.mobile" placeholder="请输入手机号" clearable></el-input>
-            <el-input placeholder="请输入验证码" v-model="formCode.code" clearable></el-input>
+            <el-input v-model="formCode.mobile" @keyup.native.enter="handleSubmit" placeholder="请输入手机号" clearable></el-input>
+            <el-input placeholder="请输入验证码" @keyup.native.enter="keyupSubmit" v-model="formCode.code" clearable></el-input>
             <div class="for_position"><el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
           </div>
           <div class="b_handle">
@@ -266,6 +266,15 @@ import Captcha from '@/components/captcha/index'
           this.doSubmitPwd()
         } else {
           this.doSubmitCode()
+        }
+      },
+      keyupSubmit(){
+        if(this.formCode.code != ''){
+          if (!this.loginByCode) {
+            this.doSubmitPwd()
+          } else {
+            this.doSubmitCode()
+          }
         }
       },
       // 发送验证码

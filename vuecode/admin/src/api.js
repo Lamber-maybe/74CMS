@@ -365,6 +365,11 @@ export default {
   // im已禁聊用户
   imForbidList: '/im_forbid/index',
 
+  // 会话管理
+  imChatmanageList: '/im_chatmanage/index',
+  imChatmessageList: '/im_chatmanage/messageList',
+  imMessageBack: '/im_chatmanage/messageBack',
+  imMessageForbid: '/im_chatmanage/messageForbid',
   // 百度链接提交
   linksubmit: '/link_submit/index',
 
@@ -737,5 +742,7 @@ export default {
   posterEdit: '/poster/edit',
   posterDelete: '/poster/delete',
   posterDisplay: '/poster/setDisplay',
-  posterTplindexList: '/poster/getTplindexList'
+  posterTplindexList: '/poster/getTplindexList',
+  // 刷新职位
+  refresh_job:'/company/refreshJob',
 }
