@@ -49,7 +49,7 @@ class Baiduxml
         $xml = '<?xml version="1.0" encoding="utf-8"?>';
         $xml .= '<urlset>';
         $xml .= '<url>';
-        $xml .= '<loc>'.$this->global['sitedomain'].url('index/job/show',['id'=>$value['id']]).'?sid=aladingb</loc>';
+        $xml .= '<loc>'.url('index/job/show',['id'=>$value['id']]).'?sid=aladingb</loc>';
         $xml .= '<lastmod>'.date('Y-m-d',$value['refreshtime']).'</lastmod>';
         $xml .= '<changefreq>always</changefreq>';
         $xml .= '<priority>1.0</priority>';
@@ -167,7 +167,7 @@ class Baiduxml
         $xml .= '<urlset>';
         foreach ($list as $key => $value) {
             $xml .= '<url>';
-            $xml .= '<loc>'.$this->global['sitedomain'].url('index/job/show',['id'=>$value['id']]).'?sid=aladingb</loc>';
+            $xml .= '<loc>'.url('index/job/show',['id'=>$value['id']]).'?sid=aladingb</loc>';
             $xml .= '<lastmod>'.date('Y-m-d',$value['refreshtime']).'</lastmod>';
             $xml .= '<changefreq>always</changefreq>';
             $xml .= '<priority>1.0</priority>';

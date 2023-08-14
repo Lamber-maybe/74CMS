@@ -234,7 +234,7 @@ class JobSearchEngine
                     ->field($this->field)
                     ->where($this->where)
                     ->order($this->orderby)
-                    ->limit($this->list_max)
+//                    ->limit($this->list_max)
                     ->select();
                 $tmp_idarr = [];
                 foreach ($total_list as $k=>$v){

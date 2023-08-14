@@ -12,7 +12,8 @@
       </swiper>
     </div>
     <div class="b2 clearfix" v-else>
-      <div class="item" v-for="(item,index) in dataset" :key="index">
+<!--      后台设置触屏个性化，如果设置为单行五个并且在菜单设置中，将菜单隐藏只剩下五个的情况下，触屏首页的按钮点击没反应-->
+      <div class="item" v-for="(item,index) in dataset" :key="index"  @click="beforeJump(index)">
         <img :src="item.icon == '' ? require('../../../assets/images/index/ap2/' + item.alias + '.png') : item.icon" alt="" />
         <div class="des">{{ item.title }}</div>
       </div>

@@ -150,19 +150,19 @@ class Index extends \app\common\controller\Backend
         $endtime = strtotime('today');
         $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
-
+        //添加utype=2条件，解决后台首页注册统计图(当前是否为个人数 = 个人+企业数)问题
         $resume_data = model('Member')
-            ->where('reg_time','between time',$daterange)
+            ->where(['reg_time'=>['between time',$daterange],'utype'=>2])
             ->group('time')
             ->column(
                 'UNIX_TIMESTAMP(FROM_UNIXTIME(`reg_time`, "%Y%m%d")) as time,count(*) as num'
             );
 
-
-        $company_data = model('Company')
-            ->where('addtime','between time',$daterange)
+        //修改企业数量错误问题
+        $company_data = model('Member')
+            ->where(['reg_time'=>['between time',$daterange],'utype'=>1])
             ->group('time')
-            ->column('UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num');
+            ->column('UNIX_TIMESTAMP(FROM_UNIXTIME(`reg_time`, "%Y%m%d")) as time,count(*) as num');
 
         for ($i = $starttime; $i <= $endtime; $i += 86400) {
             $return['xAxis'][] = date('m/d', $i);

@@ -76,6 +76,7 @@
             jobfairolCompanyList: '/home/jobfairol/comlist',//获取网络招聘会参会企业
             jobfairolJobList: '/home/jobfairol/joblist',//获取网络招聘会参会职位
             jobfairolResList: '/home/jobfairol/resumelist',//获取网络招聘会参会个人
+            jobfairol_addlog: '/home/jobfairol/logAdd',//添加网络招聘会查看日志
             jobfairolApply: '/home/jobfairol/apply',//报名
             secretPhone: '/member/index/secretPhone',//号码保护接口
             config: '/home/config/index',//获取网站配置信息
@@ -105,12 +106,14 @@
 
     var locationUrl = qscms.sitedir + qscms.memberDirname
     qscms.locationList = {
+        helpCenter: locationUrl + "/help",
         indexCompany: locationUrl + "/company",
         indexPersonal: locationUrl + "/personal",
         loginCompany: locationUrl + "/login/company",
         loginPersonal: locationUrl + "/login/personal",
         regCompany: locationUrl + "/reg/company",
         regPersonal: locationUrl + "/reg/personal",
+        reg: locationUrl + "/reg",
         createResume: locationUrl + "/personal/resume/add_resume_step1",
         recommendResume: locationUrl + "/company/recommend",
         recommendJob: locationUrl + "/personal/recommend",
@@ -135,6 +138,7 @@
         personalIm: locationUrl + "/personal/im",
         companyIm: locationUrl + "/company/im",
         companyServiceIm: locationUrl + "/company/service/increment/add/im",
+        companyServiceIncrement: locationUrl + "/company/service/increment",
     }
     //获取列表中已选择的项目
     qscms.getSelItemArr = function () {
@@ -145,7 +149,7 @@
         });
         return idArr
     }
-    
+
     var visitor = Cookies.get('qscms_visitor');
     if (visitor !== undefined && visitor !== null) {
         visitor = JSON.parse(visitor)

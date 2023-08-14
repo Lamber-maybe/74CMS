@@ -11,9 +11,9 @@ class Backend extends \app\common\controller\Base
         parent::_initialize();
         $header_info = \think\Request::instance()->header();
         $white_list = ['login-index',
-	 'login-config',
-	  'login-captcha',
-	  'login-weixin',
+            'login-config',
+            'login-captcha',
+            'login-weixin',
             'login-scan',
             // UEditor
             'ueditor.controller-index'
@@ -57,18 +57,24 @@ class Backend extends \app\common\controller\Base
         \think\Config::set('platform', 'system');
         $this->checkDeleteAccess();
     }
-    protected function checkDeleteAccess(){
-        if(in_array($this->action_name,['del','delete']) && $this->admininfo->access_delete==0){
+
+    protected function checkDeleteAccess()
+    {
+        if (in_array($this->action_name, ['del', 'delete']) && $this->admininfo->access_delete == 0) {
             $this->ajaxReturn(500, '当前管理员没有删除数据权限');
         }
     }
-    protected function checkExportAccess(){
-        if($this->admininfo->access_export==0){
+
+    protected function checkExportAccess()
+    {
+        if ($this->admininfo->access_export == 0) {
             $this->ajaxReturn(500, '当前管理员没有导出数据权限');
         }
     }
-    protected function checkSetServiceAccess(){
-        if($this->admininfo->access_set_service==0){
+
+    protected function checkSetServiceAccess()
+    {
+        if ($this->admininfo->access_set_service == 0) {
             $this->ajaxReturn(500, '当前管理员没有分配客服权限');
         }
     }

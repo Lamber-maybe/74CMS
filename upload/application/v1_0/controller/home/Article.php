@@ -94,7 +94,12 @@ class Article extends \app\v1_0\controller\common\Base
             ->field('id,click')
             ->find();
         if ($info !== null) {
-            $info->click = $info->click+1;
+
+            //新增资讯随机阅读量添加
+            $rand_click_article = empty(config('global_config.rand_click_article')) ? 0 :intval(config('global_config.rand_click_article'));
+            $num = $rand_click_article>0 ? rand(1,$rand_click_article) : 1;
+
+            $info->click = $info->click+$num;
             $info->save();
             $click = $info['click'];
         }else{

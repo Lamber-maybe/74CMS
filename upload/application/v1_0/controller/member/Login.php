@@ -146,7 +146,7 @@ class Login extends \app\v1_0\controller\common\Base
             'code' => 'require|max:4',
             'utype' => 'require|in:1,2'
         ]);
-        $validate->extend('checkMobile', function ($value) {
+        $validate->extend('checkMobile', function ($value) use ($error_mark) {
             if (fieldRegex($value, 'mobile')) {
                 return true;
             } else {

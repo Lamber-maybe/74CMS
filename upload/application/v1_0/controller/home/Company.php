@@ -13,7 +13,7 @@ class Company extends \app\v1_0\controller\common\Base
     {
         $where = ['a.district1'=>['gt',0]];
         $famous = input('get.famous/d', 0, 'intval');
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $district1 = input('get.district1/d', 0, 'intval');
         $district2 = input('get.district2/d', 0, 'intval');
         $district3 = input('get.district3/d', 0, 'intval');

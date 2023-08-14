@@ -43,19 +43,7 @@
             format="yyyy-MM-dd HH:mm:ss"
           />
         </el-form-item>
-        <el-form-item required label="缩略图" prop="thumb">
-          <el-upload
-            class="thumb-uploader"
-            :action="apiUpload"
-            :headers="headers"
-            :show-file-list="false"
-            :on-success="handleThumbSuccess"
-            :before-upload="beforeThumbUpload"
-          >
-            <img v-if="form.thumb" :src="thumbUrl" class="thumb">
-            <i v-else class="el-icon-plus thumb-uploader-icon" />
-          </el-upload>
-        </el-form-item>
+
         <el-form-item label="招聘会介绍" required prop="content">
           <div style="border: 1px solid #ccc;">
             <Toolbar
@@ -94,6 +82,70 @@
             <i v-else class="el-icon-plus thumb-uploader-icon" />
           </el-upload>
         </el-form-item>
+        <el-form-item  label="上传图片">
+          <div class="upload-wrapper">
+            <div class="upload-item">
+              <el-upload
+                class="thumb-uploader"
+                :action="apiUpload"
+                :headers="headers"
+                :show-file-list="false"
+                :on-success="handleThumbSuccess"
+                :before-upload="beforeThumbUpload"
+              >
+                <img v-if="form.thumb" :src="thumbUrl" class="thumb">
+                <i v-else class="el-icon-plus thumb-uploader-icon" />
+              </el-upload>
+              <div class="smalltips">
+                缩略图
+              </div>
+              <div class="sp">
+                <i class="el-icon-info" />
+                建议尺寸：245*145
+              </div>
+            </div>
+            <div class="upload-item">
+              <el-upload
+                class="thumb-uploader"
+                :action="apiUpload"
+                :headers="headers"
+                :show-file-list="false"
+                :on-success="handlePcSuccess"
+                :before-upload="beforeThumbUpload"
+              >
+                <img v-if="form.pc_header_logo" :src="pc_header_logo_url" class="thumb">
+                <i v-else class="el-icon-plus thumb-uploader-icon" />
+              </el-upload>
+              <span class="smalltips">
+               pc头图
+              </span>
+              <span class="sp">
+                <i class="el-icon-info" />
+               建议尺寸：750*280
+              </span>
+            </div>
+            <div class="upload-item">
+              <el-upload
+                class="thumb-uploader"
+                :action="apiUpload"
+                :headers="headers"
+                :show-file-list="false"
+                :on-success="handleMobileSuccess"
+                :before-upload="beforeThumbUpload"
+              >
+                <img v-if="form.mobile_header_logo" :src="mobile_header_logo_url" class="thumb">
+                <i v-else class="el-icon-plus thumb-uploader-icon" />
+              </el-upload>
+              <span class="smalltips ">
+               触屏头图
+              </span>
+              <span class=" sp">
+                <i class="el-icon-info" />
+               建议尺寸：750*280
+              </span>
+            </div>
+          </div>
+        </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/jobfairol/list')">返回</el-button>
@@ -121,14 +173,7 @@ export default {
         callback()
       }
     }
-    var validateThumb = (rule, value, callback) => {
-      value = this.form.thumb
-      if (value === '') {
-        callback(new Error('请上传缩略图'))
-      } else {
-        callback()
-      }
-    }
+
     var validateQrcode = (rule, value, callback) => {
       value = this.form.qrcode
       if (value === '') {
@@ -146,6 +191,8 @@ export default {
       },
       thumbUrl: '',
       qrcodeUrl: '',
+      pc_header_logo_url: '',
+      mobile_header_logo_url: '',
       apiUpload: window.global.RequestBaseUrl + apiArr.upload,
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -154,6 +201,8 @@ export default {
       form: {
         title: '',
         thumb: '',
+        pc_header_logo: '',
+        mobile_header_logo: '',
         holddate: '',
         content: '',
         enable_setmeal_id: [],
@@ -170,7 +219,6 @@ export default {
           { required: true, message: '请选择举办日期', trigger: 'blur' }
         ],
         content: [{ validator: validateContent, trigger: 'blur' }],
-        thumb: [{ validator: validateThumb }],
         enable_setmeal_id: [
           { required: true, message: '请选择允许报名套餐' }
         ],
@@ -213,6 +261,25 @@ export default {
       if (res.code === 200) {
         this.thumbUrl = URL.createObjectURL(file.raw)
         this.form.thumb = res.data.file_id
+      } else {
+        this.$message.error(res.message)
+        return false
+      }
+    },
+
+    handlePcSuccess(res, file) {
+      if (res.code === 200) {
+        this.pc_header_logo_url = URL.createObjectURL(file.raw)
+        this.form.pc_header_logo = res.data.file_id
+      } else {
+        this.$message.error(res.message)
+        return false
+      }
+    },
+    handleMobileSuccess(res, file) {
+      if (res.code === 200) {
+        this.mobile_header_logo_url = URL.createObjectURL(file.raw)
+        this.form.mobile_header_logo = res.data.file_id
       } else {
         this.$message.error(res.message)
         return false
@@ -288,6 +355,19 @@ export default {
   }
 </style>
 <style scoped>
+  .smalltips{
+    flex-shrink: 0;
+    color: #8c8c8c;
+    flex-shrink: 0;
+    line-height: 31px;
+  }
+  .sp{
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #bdbdbd;
+    flex-shrink: 0;
+    line-height: 10px;
+  }
   .thumb-uploader {
     display: inline-block;
     border: 1px dashed #d9d9d9;
@@ -317,6 +397,16 @@ export default {
   .el-input,
   .el-date-editor {
     width: 450px;
+  }
+  .upload-wrapper{
+    display: flex;
+  }
+  .upload-wrapper .upload-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 36px;
   }
 </style>
 

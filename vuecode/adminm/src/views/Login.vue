@@ -96,7 +96,7 @@ export default {
     },
     onSubmit () {
       let that = this
-      let data = {username:that.username,password:that.password,code:that.code,secret_str:that.secret_str}
+      let data = {username:that.username,password:that.$md5(that.password),code:that.code,secret_str:that.secret_str}
       http
           .post(api.login, data)
           .then(res => {
@@ -104,7 +104,10 @@ export default {
             localStorage.setItem('admintoken',res.data.token)
             location.reload()
           })
-          .catch(() => {})
+          .catch(() => {
+              that.code = ''
+              that.captcha()
+          })
     },
     weixinLogin(){
       this.$router.push('/login/oauth/weixin')

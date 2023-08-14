@@ -100,13 +100,13 @@ u { text-decoration: none; }
 }
 /*# sourceMappingURL=base.css.map */
 /*右侧固定漂浮栏*/
-.right_fixed_float { position: fixed;left: 50%;bottom: 223px;z-index: 9;margin-left: 627px;background: #ffffff;border-radius: 8px; }
+.right_fixed_float { position: fixed;left: 50%;bottom: 223px;z-index: 9;margin-left: 627px;background: #ffffff;border-radius: 8px; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
 .right_fixed_float .rff_cell { width: 60px;height: 63px;cursor: pointer;border-bottom: 1px solid #f3f3f3;position: relative; }
 .right_fixed_float .rff_cell.tel { background: url("../images/index_rf_ico.png") center no-repeat; }
 .right_fixed_float .rff_cell.qq { background: url("../images/index_rf_ico_1.png") center no-repeat; }
 .right_fixed_float .rff_cell.wx { background: url("../images/index_rf_ico_2.png") center no-repeat; }
 .right_fixed_float .rff_cell.qr { border-bottom: 0;background: url("../images/index_rf_ico_3.png") center no-repeat; }
-.right_fixed_back_top { position: fixed;left: 50%;bottom: 160px;z-index: 9;margin-left: 627px;background: #ffffff url("../images/index_rf_ico_4.png") center 7px no-repeat;border-radius: 8px;width: 60px;height: 60px;text-align: center;line-height: 1;padding-top: 43px;font-size: 12px;color: #b0b0b0;cursor: pointer; }
+.right_fixed_back_top { position: fixed;left: 50%;bottom: 160px;z-index: 9;margin-left: 627px;background: #ffffff url("../images/index_rf_ico_4.png") center 7px no-repeat;border-radius: 8px;width: 60px;height: 60px;text-align: center;line-height: 1;padding-top: 43px;font-size: 12px;color: #b0b0b0;cursor: pointer; pointer; box-shadow: 0px 3px 11px 0px rgb(0 10 41 / 7%);}
 .right_fixed_float .rff_cell .rff_cell_dia { position: absolute;right: 60px;top: 0;background: #ffffff;z-index: 10;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);display: none;padding: 10px 22px;width: max-content; }
 .right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line { line-height: 16px;font-size: 14px; color: #333333;padding: 10px 0; }
 .right_fixed_float .rff_cell.tel .rff_cell_dia .tel_line .number { font-size: 16px;font-weight: bold; }

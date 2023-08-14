@@ -200,15 +200,24 @@ class CollectionLogic
         $password = model('Member')->makePassword($password, $pwdHash);
 
         $memberData = [
-            'utype'           => 1,
-            'mobile'          => $mobile,
-            'username'        => $username,
-            'password'        => $password,
-            'pwd_hash'        => $pwdHash,
-            'reg_time'        => $this->_currentTime,
-            'last_login_time' => $this->_currentTime,
-            'robot'           => 1,
-            'platform'        => 'web',
+            'utype'                  => 1,
+            'mobile'                 => $mobile,
+            'username'               => $username,
+            'email'                  => '',
+            'password'               => $password,
+            'pwd_hash'               => $pwdHash,
+            'reg_time'               => $this->_currentTime,
+            'reg_ip'                 => '',
+            'reg_address'            => '',
+            'last_login_time'        => $this->_currentTime,
+            'last_login_ip'          => '',
+            'last_login_address'     => '',
+            'status'                 => 1,
+            'avatar'                 => 0,
+            'robot'                  => 1,
+            'platform'               => 'web',
+            'nologin_notice_counter' => 0,
+            'disable_im'             => 0,
         ];
         return $memberData;
     }
@@ -257,13 +266,15 @@ class CollectionLogic
     private function _registerCompany($params){
         // 生成企业数据
         $companyData = $this->_generateCompanyData($params);
-        $insertData = array_merge($companyData['basic'], $companyData['default']);
+        $insertData = array_merge($companyData['basic'], $companyData['default']['basic']);
 
         // 保存企业信息
         $companyId = model('company')->insertGetId($insertData);
         if (empty($companyId)) {
             throw new \Exception('新增企业信息失败，请求SQL为：'.model('company')->getLastSql());
         }
+
+        $companyData['info'] = array_merge($companyData['default']['info'], $companyData['info']);
 
         // 保存企业详情
         $companyData['info']['comid'] = $companyId;
@@ -309,8 +320,6 @@ class CollectionLogic
             }
         }
 
-        model('ImToken')->regToken($params['uid'],1);
-
         if ($insertData['cs_id'] > 0) {
             $customer_service = model('CustomerService')
                 ->where('id', $insertData['cs_id'])
@@ -347,6 +356,10 @@ class CollectionLogic
         $companyTrade = $this->_convertCompanyTrade($params['company_trade']);
         // 转换企业地区
         $district = !empty($params['company_district']) ? $params['company_district'] : $params['company_address'];
+        // 避免比较相似度时匹配度过低，只保留十个字符
+        if (iconv_strlen($district) > 10) {
+            $district = mb_substr($district, 0, 10);
+        }
         $district = $this->_convertDistrict($district, 1);
         // 转换企业规模
         $companyScale = $this->_convertScale($params['company_scale']);
@@ -378,23 +391,29 @@ class CollectionLogic
             ],
             // 默认数据，新增时使用
             'default' => [
-                'uid'         => $params['uid'],
-                'companyname' => $params['company_name'],
-                'short_name'  => '',
-                'registered'  => !empty($this->_companySeting) ? $this->_companySeting['registered'] : 0,
-                'currency'    => !empty($this->_companySeting) ? $this->_companySeting['currency'] : 0,
-                'tag'         => '',
-                'map_lat'     => 0.0,
-                'map_lng'     => 0.0,
-                'map_zoom'    => 0,
-                'logo'        => 0,
-                'addtime'     => $this->_currentTime,
-                'refreshtime' => $this->_currentTime,
-                'platform'    => 'web',
-                'is_display'  => !empty($this->_companySeting) ? $this->_companySeting['is_display'] : 1,
-                'audit'       => !empty($this->_companySeting) ? $this->_companySeting['audit_status'] : 1,
-                'robot'       => 1,
-                'cs_id'       => model('member')->distributionCustomerService(), // 分配客服
+                'basic' => [
+                    'uid'         => $params['uid'],
+                    'companyname' => $params['company_name'],
+                    'short_name'  => '',
+                    'registered'  => !empty($this->_companySeting) ? $this->_companySeting['registered'] : 0,
+                    'currency'    => !empty($this->_companySeting) ? $this->_companySeting['currency'] : 0,
+                    'tag'         => '',
+                    'map_lat'     => 0.0,
+                    'map_lng'     => 0.0,
+                    'map_zoom'    => 0,
+                    'logo'        => 0,
+                    'addtime'     => $this->_currentTime,
+                    'refreshtime' => $this->_currentTime,
+                    'platform'    => 'web',
+                    'is_display'  => !empty($this->_companySeting) ? $this->_companySeting['is_display'] : 1,
+                    'audit'       => !empty($this->_companySeting) ? $this->_companySeting['audit_status'] : 1,
+                    'robot'       => 1,
+                    'cs_id'       => model('member')->distributionCustomerService(), // 分配客服
+                ],
+                'info' => [
+                    'short_desc' => '',
+                    'content'    => '',
+                ],
             ],
         ];
 
@@ -524,28 +543,39 @@ class CollectionLogic
             ],
             'contact' => [
                 'uid'                 => $params['uid'],
+                'contact'             => '',
+                'mobile'              => '',
+                'weixin'              => '',
+                'telephone'           => '',
+                'qq'                  => '',
+                'email'               => '',
                 'is_display'          => 1,
                 'use_company_contact' => 1,
             ],
             // 默认数据，新增时使用
             'default' => [
-                'emergency'   => 0,
-                'stick'       => 0,
-                'sex'         => 0,
-                'minage'      => !empty($this->_jobSeting) ? $this->_jobSeting['minage'] : 0,
-                'maxage'      => !empty($this->_jobSeting) ? $this->_jobSeting['maxage'] : 0,
-                'age_na'      => !empty($this->_jobSeting) ? $this->_jobSeting['age_na'] : 1,
-                'department'  => '',
-                'addtime'     => $this->_currentTime,
-                'refreshtime' => $this->_currentTime,
-                'setmeal_id'  => $setmeal['setmeal_id'],
-                'is_display'  => !empty($this->_jobSeting) ? $this->_jobSeting['recruit_status'] : 1,
-                'audit'       => !empty($this->_jobSeting) ? $this->_jobSeting['audit_status'] : 1,
-                'map_lat'     => 0,
-                'map_lng'     => 0,
-                'map_zoom'    => 0,
-                'robot'       => 1,
-                'platform'    => 'web'
+                'emergency'      => 0,
+                'stick'          => 0,
+                'sex'            => 0,
+                'minage'         => !empty($this->_jobSeting) ? $this->_jobSeting['minage'] : 0,
+                'maxage'         => !empty($this->_jobSeting) ? $this->_jobSeting['maxage'] : 0,
+                'age_na'         => !empty($this->_jobSeting) ? $this->_jobSeting['age_na'] : 1,
+                'department'     => '',
+                'addtime'        => $this->_currentTime,
+                'refreshtime'    => $this->_currentTime,
+                'setmeal_id'     => $setmeal['setmeal_id'],
+                'is_display'     => !empty($this->_jobSeting) ? $this->_jobSeting['recruit_status'] : 1,
+                'audit'          => !empty($this->_jobSeting) ? $this->_jobSeting['audit_status'] : 1,
+                'click'          => 0,
+                'user_status'    => 1,
+                'robot'          => 1,
+                'map_lat'        => 0,
+                'map_lng'        => 0,
+                'map_zoom'       => 0,
+                'platform'       => 'web',
+                'custom_field_1' => '',
+                'custom_field_2' => '',
+                'custom_field_3' => '',
             ],
         ];
         return $jobData;

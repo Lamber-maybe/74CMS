@@ -18,6 +18,13 @@ abstract class BaseValidate
     public  $field = [];
     public  $conditionRule = [];
     public  $condition = [];
+    // 指定类型
+    protected $appointType = [
+        'is_string',
+        'is_numeric',
+        'is_array',
+        'is_float',
+    ];
 
     public function __construct($data = [])
     {
@@ -81,43 +88,6 @@ abstract class BaseValidate
     }
 
     /**
-     * json 验证
-     * @param array $data  验证的参数
-     * @param string $key 验证参数的key （field_name）
-     * @return array
-     */
-    public function getJsonData($data = [],$key = ''){
-        foreach ($this->interfaceParam[$this->control][$this->action]['validate'] as $rule) {
-            if(empty($key)){
-                if ($rule['type'] == 'json') {
-                    $jsonDataValidate = $rule['rule'];
-                }
-            } else{
-                if ($rule['type'] == 'json' && $rule['field_name'] == $key) {
-                    $jsonDataValidate = $rule['rule'];
-                }
-            }
-        }
-        if(!isset($jsonDataValidate) || empty($jsonDataValidate)){
-            return $data;
-        }
-
-        if(is_array($data)){
-            $jsonData = [];
-            foreach($data as $v){
-                if(is_array($v)){
-                    $requestData = $v;
-                    $jsonData[] = $this->setAttr($jsonDataValidate,$requestData);
-                } else {
-                    $requestData = $data;
-                    $jsonData = $this->setAttr($jsonDataValidate,$requestData);
-                    break;
-                }
-            }
-            return $jsonData;
-        }
-    }
-    /**
      * @param $config
      * @param $requestData
      * @return array
@@ -133,8 +103,8 @@ abstract class BaseValidate
                 $type = isset($rule['type']) ? $rule['type'] : 'is_string';
                 $long = isset($rule['long']) ? $rule['long'] : null;
                 $empty = isset($rule['empty']) ? $rule['empty'] : true;
-                //是否转换
-                $isConversion = isset($rule['is_conversion']) ? $rule['is_conversion'] : true;
+                // 是否转换
+                $isConversion = isset($rule['is_conversion']) ? $rule['is_conversion'] : false;
                 if (isset($rule['eq']) && !empty($rule['eq'])) $eq = $rule['eq'];
                 $fieldName = $rule['field_name']; //数据字段名
                 $name = $rule['name'];//数据备注名
@@ -155,33 +125,35 @@ abstract class BaseValidate
                 if (!$empty && empty($requestData[$fieldName])) {
                     responseJson(400, $name . '不能为空');
                 }
+                // 判断是否是指定范围内的类型
+                if (!in_array($type, $this->appointType)) {
+                    responseJson(400, '未能识别:' . $name . '-的数据类型');
+                }
                 // 判断是否设置默认值
                  if (!is_null($default)) {
                      if(!isset($requestData[$fieldName])){
                          $data[$fieldName] = $default;
                      } else{
-                         $data[$fieldName] = trim(isset($requestData[$fieldName]) && empty($requestData[$fieldName]) ? $default : $requestData[$fieldName]);
+                         $data[$fieldName] = isset($requestData[$fieldName]) && empty($requestData[$fieldName]) ? $default : $requestData[$fieldName];
                      }
                  }else{
                      $data[$fieldName] = isset($requestData[$fieldName]) ? $requestData[$fieldName] : '';
                  }
+
+                $data[$fieldName] = !is_array($data[$fieldName]) ? trim($data[$fieldName]) : $data[$fieldName];
+
                 //数据类型判断
-                if ($type != 'is_string' && $type != 'json') {
-                    if (isset($data[$fieldName]) && $data[$fieldName]) {
-                        if(!$type($data[$fieldName])){
-                            responseJson(400, $name . '数据类型错误');
-                        }
-                    }
-                } else if ($type == 'json') {
-                    $arrData = $this->checkJson($data[$fieldName],$rule);
-                    $data[$fieldName] = $this->getJsonData($arrData,$fieldName);
-                } else {
-                    if (isset($data[$fieldName]) && !is_string($data[$fieldName])) {
-                        responseJson(400, '未能识别:' . $name . '-的数据类型');
+                if (isset($data[$fieldName]) && $data[$fieldName]) {
+                    if(!$type($data[$fieldName])){
+                        responseJson(400, $name . '数据类型错误');
                     }
                 }
+                // 校验数组类型的数据
+                if ($type == 'is_array' && isset($rule['deep']) && !empty($rule['deep'])) {
+                    $data[$fieldName] = $this->getArrayData($rule['deep'], $data[$fieldName]);
+                }
                 // 当设置的是int，强制转换数据类型
-                if ($type == 'is_numeric') {
+                if ($type == 'is_numeric' && is_numeric($data[$fieldName])) {
                     $data[$fieldName] = intval($data[$fieldName]);
                 }
                 //判断数据长度
@@ -204,7 +176,6 @@ abstract class BaseValidate
                 if(isset($rule['elt']) && $data[$fieldName] > $rule['elt']){
                     responseJson(400, $name . '不能大于'.$rule['elt']);
                 }
-
                 //其中一个字段等于另外一个字段的值
                 if (isset($requestData[$fieldName]) && isset($eq) && !empty($eq)) {
                     if ($requestData[$fieldName] != $requestData[$eq]) {
@@ -215,68 +186,22 @@ abstract class BaseValidate
                 if($requireValue && !in_array($requestData[$fieldName],$requireValue)){
                     responseJson(400, $name . '必须是'.json_encode($requireValue).'范围内的数据');
                 }
+                // 时间类型数据 转换为时间戳
+                if (strstr($fieldName,'time') !== false && $isConversion) {
+                    if (empty($data[$fieldName])) {
+                        continue;
+                    }
+                    // 取出 - 存在的次数
+                    $time = array_count_values(str_split($data[$fieldName]));
+                    // 如果小于两次 则不是时间格式
+                    if (!isset($time['-']) || $time['-']< 2) {
+                        responseJson(400, $name . '数据类型错误');
+                    }
+                    $data[$fieldName] = strtotime($data[$fieldName]);
+                }
             }
         }
         return $data;
-    }
-
-    /**
-     * 检查是否是json字符串
-     * @param $string
-     * @param $rule
-     * @return array|mixed|void
-     */
-    public function checkJson($string,$rule = [])
-    {
-
-        if ($string !== '') {
-            $array = json_decode($string, true);
-            if (!is_array($array)) {
-                responseJson(400, $rule['name'].'不是正确的数据类型');
-            }
-        } else {
-            $array = [];
-        }
-        return $array;
-    }
-
-    /**
-     * 检查int类型
-     *
-     * @param $name
-     * @param $value
-     *
-     * @return int
-     */
-    public function checkInt($name, $value)
-    {
-        $res = 0;
-        if (preg_match('/^-?\d{1,}$/', $value)) {
-            $res = (int)$value;
-        } else {
-            responseJson(400, $name .'不是int类型：' . $value);
-        }
-
-        return $res;
-    }
-
-    /**
-     * 检查float类型
-     *
-     * @param $name
-     * @param $value
-     *
-     * @return float
-     */
-    public function checkFloat($name, $value)
-    {
-        $res = 0.00;
-        if (!is_float($value)) {
-            responseJson(400, $name . '不是float类型：' . $value);
-        } else {
-            $res = $value;
-        }
-        return $res;
     }
 
     /**
@@ -296,111 +221,6 @@ abstract class BaseValidate
     }
 
     /**
-     * @param $params
-     * @return array
-     * 获取条件
-     */
-    public  function getCondition($params){
-        //条件规则
-        if(is_string($params) || empty($this->conditionRule) ){
-            $this->condition = ['1=1'];
-        }
-        if(is_array($params)){
-            foreach($params as $k=>$v){
-                if(!isset($this->conditionRule[$k])) continue;
-                $field = $k;
-                $value = $v;
-                $rule = $this->conditionRule[$k]['rule'];
-                $this->assemblyCondition($field,$value,$rule);
-            }
-        }
-        //删除
-        if(isset($this->conditionRule['is_del'])){
-            $this->condition['is_del'] = 0;
-        }
-        //是否被禁用
-        if(isset($this->conditionRule['is_disabled'])){
-            $this->condition['is_disabled'] = 0;
-        }
-        return $this->condition;
-    }
-    /**
-     * @param $field
-     * @param $value
-     * @param string $rule
-     * @return array
-     * 组装条件
-     */
-    public function assemblyCondition($field,$value,$rule = '')
-    {
-        switch ($rule) {
-            case 'like':
-                $this->like($field,$value);
-                break;
-            case 'not in':
-                $this->not_in($field,$value);
-                break;
-            case 'in':
-                $this->in($field,$value);
-                break;
-            case 'egt':
-                $this->egt($field,$value);
-                break;
-            case 'elt':
-                $this->elt($field,$value);
-                break;
-            case 'gt':
-                $this->gt($field,$value);
-                break;
-            case 'lt':
-                $this->lt($field,$value);
-                break;
-            case 'between':
-                $this->between($field,$value[0],$value[1]);
-                break;
-            case 'not between':
-                $this->not_between($field,$value[0],$value[1]);
-                break;
-            default:
-                $this->condition[$field] = $value;
-                break;
-        }
-    }
-    private function like($param,$value){
-        if(is_string($value)){
-            $this->condition[$param] = ['like','%'.$value.'%'];
-        }
-    }
-    private function not_in($param,$value){
-        if(is_string($value)) {
-            $this->condition[$param] = ['not in', $value];
-        }
-    }
-    private function in($param,$value){
-        if(is_string($value)) {
-            $this->condition[$param] = ['in', $value];
-        }
-    }
-    private function egt($param,$value){
-        $this->condition[$param] = ['egt', $value];
-    }
-    private function elt($param,$value){
-        $this->condition[$param] = ['elt', $value];
-    }
-    private function gt($param,$value){
-        $this->condition[$param] = ['gt', $value];
-    }
-    private function lt($param,$value){
-        $this->condition[$param] = ['lt', $value];
-    }
-    private function between($param,$value1,$value2){
-        $this->condition[$param] = ['between',[$value1,$value2]];
-    }
-    private function not_between($param,$value1,$value2){
-        $this->condition[$param] = ['not between',[$value1,$value2]];
-    }
-
-    /**
      * 获取字段
      * @param $key
      * @return mixed
@@ -408,4 +228,28 @@ abstract class BaseValidate
     public function getField($key = ''){
         return empty($key) ? $this->field : $this->field[$key];
     }
+
+    /**
+     * array 验证
+     * @param  array  $deepData
+     * @param  string $data
+     * @return array
+     */
+    public function getArrayData($deepData = [], $data = []){
+        $arrayData = [];
+        if (is_array($data)) {
+            foreach ($data as $v) {
+                if (is_array($v)) {
+                    $requestData = $v;
+                    $arrayData[] = $this->setAttr($deepData, $requestData);
+                } else {
+                    $requestData = $data;
+                    $arrayData = $this->setAttr($deepData, $requestData);
+                    break;
+                }
+            }
+        }
+        return $arrayData;
+    }
+
 }

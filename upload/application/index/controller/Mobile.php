@@ -143,7 +143,7 @@ class Mobile extends \think\Controller
             }else if(strpos($request_url_full,config('global_config.mobile_domain').'notice')===0) {//公告详情
                 preg_match('/\d+/',$request_url,$arr);
                 $id = isset($arr[0])?$arr[0]:null;
-                $location_href = url('index/notice/show',['id'=>$id],'','',$site_domain);
+                $location_href = url('index/notice/show',['id'=>$id],'',$site_domain);
             }else{
                 $location_href = url('index/index/index','','',$site_domain);
             }

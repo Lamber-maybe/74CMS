@@ -1,0 +1,358 @@
+{#layout name="public/noright_fixed_float" /#}
+{#load href="__ROOT__/assets/css/jobfairolcontent.css" /#}
+{#load href="__ROOT__/assets/css/swiper-bundle.min.css" /#}
+<div id="app">
+    <div class="banner_img">
+        <div class="banner_img_inner">
+            {#if condition="$info.banner neq ''"#}
+            <img class="banner_inner_img" src="{#$info.banner#}" alt="">
+            {#else /#}
+            <img class="banner_inner_img" src="__ROOT__/assets/images/jobfairol/pc_banner.png" alt="">
+            {#/if#}
+            <div class="pos_swiper">
+                <marquee width="1200" height="30" direction="left">
+                    {#volist name="info.log" id="vo"#}
+                    <span class="swiper-link">
+                        <img class="logos" src="{#$vo.logo#}" alt="">
+                        <em class="contents">
+                            {#$vo.content#}
+                        </em>
+                    </span>
+                    {#/volist#}
+                </marquee>
+			</div>
+            <!-- <div class="pos_swiper">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        {#volist name="info.log" id="vo"#}
+                        <div class="swiper-slide">
+							<span class="swiper-link">
+								<img class="logos" src="{#$vo.logo#}" alt="">
+								<em class="contents">
+									{#$vo.content#}
+								</em>
+							</span>
+                        </div>
+                        {#/volist#}
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <div class="middle">
+        <div class="content">
+            <div class="notice_details clearfix">
+                <div class="notice_details_left float">
+                    <h3>{#$info.title#}</h3>
+                    <div class="time">
+                        <div>
+                            <img src="__ROOT__/assets/images/jobfairol/time.png" alt="">
+                            <span>{#$info.addtime#}</span>
+                        </div>
+
+                        <div class="browse">
+                            <img src="__ROOT__/assets/images/jobfairol/browse.png" alt="">
+                            <span>{#$info.click#}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <img src="__ROOT__/assets/images/jobfairol/hr.png" alt="">
+                    </div>
+                    {#if condition="$info.content neq ''"#}
+                    <div class="details_con editor-content-view">
+                        {#$info.content#}
+                    </div>
+                    {#else /#}
+                    <div class="img">
+                        <div>
+                            <img src="__ROOT__/assets/images/jobfairol/noData2x.png" alt="">
+                        </div>
+                        <div class="span">
+                            <span>暂无内容</span>
+                        </div>
+                    </div>
+
+                    {#/if#}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right_btns">
+        <div class="logo" @click="doApply('1')">
+            <img src="__ROOT__/assets/images/jobfairol/qych.png" alt="">
+        </div>
+        <div class="button1">
+            <button type="button" @click="doApply('1')">企业参会</button>
+        </div>
+        <div class="logo1" @click="doApply('2')">
+            <img src="__ROOT__/assets/images/jobfairol/grch.png" alt="">
+        </div>
+        <div class="button2">
+            <button type="button" @click="doApply('2')">个人参会</button>
+        </div>
+    </div>
+</div>
+{#load href="__ROOT__/assets/js/swiper-bundle.min.js" /#}
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading:false,
+            isLogin:false,
+            utype:0,
+            id:"{#$info.id#}",
+            companyList:[],
+            jobList:[],
+            resList:[],
+            page:1,
+            pagesize:16,
+            total:0,
+            total_page:0,
+            keyword: '',
+            selectedSearchType:'job',
+            selectedSearchTypeCn:'职位名称',
+            searchType: 'com',
+            dialogVisible:false,
+            dialogQrSrc: '',
+            company_url:"{#:url('index/company/show',['id'=>'_id'])#}",
+            jobs_url:"{#:url('index/job/show',['id'=>'_id'])#}",
+            resume_url:"{#:url('index/resume/show',['id'=>'_id'])#}",
+            diaComName: '',
+            score: "{#$info.score#}"
+        },
+        created:function(){
+            this.getCompanyList(true)
+        },
+        computed: {
+            //分页
+            pagination: function(){
+                var left = 1;
+                var right = this.total_page;
+                var ar = [];
+                if(this.total_page>= 5){
+                    if(this.page > 3 && this.page < this.total_page-2){
+                        left = this.page - 2
+                        right = this.page + 2
+                    }else{
+                        if(this.page<=3){
+                            left = 1
+                            right = 5
+                        }else{
+                            right = this.total_page
+                            left = this.total_page -4
+                        }
+                    }
+                }
+                while (left <= right){
+                    ar.push(left)
+                    left ++
+                }
+                return ar
+            }
+        },
+        methods:{
+            getCompanyList:function(init){
+                var t = this;
+                t.loading = true
+                httpget(qscms.apiList.jobfairolCompanyList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+                    t.companyList = r.data.items
+                    t.loading = false
+                    if (init) {
+                        t.total = r.data.total
+                        t.total_page = r.data.total_page
+                    }
+                }).catch(function(){})
+            },
+            getJobList:function(init){
+                var t = this;
+                t.loading = true
+                httpget(qscms.apiList.jobfairolJobList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+                    t.jobList = r.data.items
+                    t.loading = false
+                    if (init) {
+                        t.total = r.data.total
+                        t.total_page = r.data.total_page
+                    }
+                }).catch(function(){})
+            },
+            getResList:function(init){
+                var t = this;
+                t.loading = true
+                httpget(qscms.apiList.jobfairolResList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
+                    t.resList = r.data.items
+                    t.loading = false
+                    if (init) {
+                        t.total = r.data.total
+                        t.total_page = r.data.total_page
+                    }
+                }).catch(function(){})
+            },
+            changeTab:function (searchType) {
+                this.page = 1
+                this.searchType = searchType
+                this.keyword = ''
+                if (this.searchType === 'com') {
+                    this.getCompanyList(true)
+                } else if(this.searchType === 'job')
+                {
+                    this.getJobList(true)
+                }else {
+                    this.getResList(true)
+                }
+            },
+            doSearch:function() {
+                this.page = 1
+                this.searchType = this.selectedSearchType
+                this.publicGetData(true)
+            },
+            changeSelectedSearchType:function(type, text) {
+                this.selectedSearchType = type
+                if (this.selectedSearchType === 'com') {
+                    this.selectedSearchTypeCn = '企业名称'
+                } else if (this.selectedSearchType === 'job') {
+                    this.selectedSearchTypeCn = '职位名称'
+                } else {
+                    this.selectedSearchTypeCn = '简历名称'
+                }
+            },
+            doApply:function(utype) {
+                console.log(utype)
+
+                var that = this
+                var currentScore = parseInt(this.score)
+                if (currentScore === 0) {
+                    that.$confirm('当前招聘会已结束', '提示', {
+                        type: 'warning'
+                    })
+                        .then(function () {})
+                        .catch(function () {})
+                    return false
+                } else if (currentScore === 1) {
+                    that.$confirm('当前招聘会还未开始', '提示', {
+                        type: 'warning'
+                    })
+                        .then(function () {})
+                        .catch(function () {})
+                    return false
+                }
+                var loginUtype = parseInt(qscms.loginUtype);
+                var thisType = parseInt(utype);
+                var confirmText = thisType === 1 ? '当前操作需要登录企业账号' : '当前操作需要登录个人账号';
+                if (qscms.isLogin) {
+                    if (loginUtype !== thisType) {
+                        that.$confirm(confirmText, '提示', {
+                            type: 'warning',
+                            confirmButtonText: '去登录'
+                        })
+                            .then(function () {
+                                if (thisType === 1) {
+                                    location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                                } else {
+                                    location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                                }
+                            })
+                            .catch(function () {})
+                    } else {
+                        httppost(qscms.apiList.jobfairolApply,{jobfair_id:that.id}).then(function(r){
+                            that.$message({
+                                type: 'success',
+                                message: r.message
+                            })
+                        }).catch(function(){})
+                    }
+                } else {
+                    that.$confirm(confirmText, '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            if (thisType === 1) {
+                                location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                            } else {
+                                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                            }
+                        })
+                        .catch(function () { })
+                }
+            },
+            //分页
+            btnClick: function(data){
+                if(data !== this.page){
+                    this.page = data
+                    //根据点击页数请求数据
+                    this.publicGetData(false)
+                }
+            },
+            pageClick: function(){
+                this.publicGetData(false)
+            },
+            publicGetData:function(init) {
+                if (this.searchType === 'com') {
+                    this.getCompanyList(init)
+                } else if (this.searchType === 'job') {
+                    this.getJobList(init)
+                } else {
+                    this.getResList(init)
+                }
+            },
+            companyUrl:function(id){
+                return this.company_url.replace('_id',id)
+            },
+            jobsUrl:function(id){
+                return this.jobs_url.replace('_id',id)
+            },
+            resumeUrl:function(id){
+                return this.resume_url.replace('_id',id)
+            }
+        }
+    })
+    $(function () {
+		// setTimeout(function(){
+		// var mySwiperCompany = setTimeout(function() {
+        //       new Swiper('.mySwiper', {
+        //         autoplay: {
+        //             disableOnInteraction: false,
+        //             delay: 0
+        //         },
+        //         autoplayDisableOnInteraction : false,
+        //         slidesPerView: 4,
+        //         speed: 4000,
+        //         loop: true
+        //       })
+        //     }, 100)
+		// },100)
+
+
+
+		// var mySwiperCompany = new Swiper('.mySwiper', {
+		// 	autoplay: {
+        //             disableOnInteraction: false,
+        //             delay: 0
+        //         },
+		// 	autoplayDisableOnInteraction: false,
+		// 	speed: 5000,
+		// 	loop: true,
+		// 	freeMode: true,
+		// 	slidesPerView: 4,
+		// 	slidesPerGroup: 1
+		// });
+
+		// var num = -1
+		// function suiji() {
+		// 	var randomY = parseInt(Math.random() * 100);
+		// 	$(".scroll li").eq(num).css("left", 1300)
+		// 	.css("top", 0).css("display", "block")
+		// 	.animate({
+		// 		left: -600
+		// 	}, 15000)
+
+		// }
+		// setInterval(function() {
+		// 	num++;
+		// 	if (num >= $('.pos_swiper .swiper-link').length) {
+		// 		num = 0;
+		// 	}
+		// 	suiji();
+		// }, 2000);
+	})
+</script>

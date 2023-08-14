@@ -213,14 +213,37 @@ export default {
       })
     },
     copyShort(row) {
-      var oInput = document.createElement('input')
-      oInput.value = this.config.sitedomain.trim('/') + '/s/' + row.code
-      document.body.appendChild(oInput)
-      oInput.select() // 选择对象
-      document.execCommand('Copy') // 执行浏览器复制命令
-      oInput.className = 'oInput'
-      oInput.style.display = 'none'
+      const output = this.config.sitedomain.trim('/') + '/s/' + row.code
+      const copyHandler = this.copys(output)
+      document.addEventListener('copy', copyHandler)
+      document.execCommand('copy')
+      removeEventListener('copy', copyHandler)
       this.$message({ type: 'success', message: '复制成功' })
+      // /**
+      //  * 【ID1000130】
+      //  * 【bug】短链接模块复制问题
+      //  * @type {HTMLInputElement}
+      //  */
+      // var oInput = document.createElement('input')
+      // oInput.value = this.config.sitedomain.trim('/') + '/s/' + row.code
+      // document.body.appendChild(oInput)
+      // oInput.select() // 选择对象
+      // document.execCommand('Copy') // 执行浏览器复制命令
+      // oInput.className = 'oInput'
+      // oInput.style.display = 'none'
+      // this.$message({ type: 'success', message: '复制成功' })
+    },
+    /**
+     * 【ID1000130】
+     * 【bug】短链接模块复制问题
+     * @param content
+     * @returns {(function(*): void)|*}
+     */
+    copys(content) {
+      return function(event) {
+        event.clipboardData.setData('text/plain', content)
+        event.preventDefault()
+      }
     },
     genQrcode(row) {
       this.qrcodeShow = true
@@ -252,7 +275,7 @@ export default {
           this.list = response.data.list
           this.listLoading = false
           this.total = parseInt(response.data.total)
-          this.currentPage = response.data.current_page
+          this.currentPage = response.data.page
           this.pagesize = parseInt(response.data.pagesize)
         })
         .catch(() => {})

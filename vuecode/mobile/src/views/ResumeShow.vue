@@ -621,6 +621,7 @@
       <SelectJob @handleCommunicate="handleCommunicate" @handleCloseSelectJob="handleCloseSelectJob" :chatid="imChatid" :companyId="companyId" :isSelectJob="false"></SelectJob>
     </van-overlay>
     <!-- 切花职位结束 -->
+    <PaySubmit ref="paySubmit" payment="" :success-url="$route.path"></PaySubmit>
   </div>
 </template>
 
@@ -640,6 +641,7 @@ import Vue from 'vue'
 import { ImagePreview } from 'vant'
 import SelectJob from '@/views/im/components/SelectJob.vue'
 import {mapMutations} from 'vuex'
+import PaySubmit from '@/components/service/PaySubmit'
 Vue.use(ImagePreview)
 export default {
   name: 'ResumeShow',
@@ -651,7 +653,8 @@ export default {
     Tipoff,
     Share,
     SharePoster,
-    SelectJob
+    SelectJob,
+    PaySubmit
   },
   filters: {
     monthTimeFilter (timestamp) {
@@ -1191,7 +1194,6 @@ export default {
       }
     },
     handlerDirectPay (payment) {
-      let openid = localStorage.getItem('weixinOpenid')
       let pay_data = {
         service_type: 'single_resume_down',
         deduct_points:
@@ -1200,35 +1202,35 @@ export default {
             : 0,
         payment,
         resumeid: this.query_id,
-        return_url: this.$store.state.config.mobile_domain + 'resume/' + this.query_id,
-        openid: openid
+        return_url: this.$store.state.config.mobile_domain + 'resume/' + this.query_id
       }
-      http
-        .post(api.company_pay_direct_service, pay_data)
-        .then(res => {
-          if (res.data.pay_status == 1) {
-            this.$notify({ type: 'success', message: '支付成功' })
-            this.fetchData(true)
-            return false
-          } else {
-            this.handlerPay(res.data.parameter, payment)
-          }
-        })
-        .catch(() => {})
+      this.$refs.paySubmit.handlerSubmit(api.company_pay_direct_service, pay_data)
+      // http
+      //   .post(api.company_pay_direct_service, pay_data)
+      //   .then(res => {
+      //     if (res.data.pay_status == 1) {
+      //       this.$notify({ type: 'success', message: '支付成功' })
+      //       this.fetchData(true)
+      //       return false
+      //     } else {
+      //       this.handlerPay(res.data.parameter, payment)
+      //     }
+      //   })
+      //   .catch(() => {})
     },
-    handlerPay (parameter, payment) {
-      if (payment == 'wxpay') {
-        if (isWeiXin()) {
-          let successUrl = this.$route.path
-          let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + parameter.jsApiParameters.appId + '&timeStamp=' + parameter.jsApiParameters.timeStamp + '&nonceStr=' + parameter.jsApiParameters.nonceStr + '&package=' + parameter.jsApiParameters.package + '&signType=' + parameter.jsApiParameters.signType + '&paySign=' + parameter.jsApiParameters.paySign + '&successUrl=' + successUrl
-          window.location.href = locationUrl
-        } else {
-          window.location.href = parameter
-        }
-      } else {
-        window.location.href = parameter
-      }
-    },
+    // handlerPay (parameter, payment) {
+    //   if (payment == 'wxpay') {
+    //     if (isWeiXin()) {
+    //       let successUrl = this.$route.path
+    //       let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + parameter.jsApiParameters.appId + '&timeStamp=' + parameter.jsApiParameters.timeStamp + '&nonceStr=' + parameter.jsApiParameters.nonceStr + '&package=' + parameter.jsApiParameters.package + '&signType=' + parameter.jsApiParameters.signType + '&paySign=' + parameter.jsApiParameters.paySign + '&successUrl=' + successUrl
+    //       window.location.href = locationUrl
+    //     } else {
+    //       window.location.href = parameter
+    //     }
+    //   } else {
+    //     window.location.href = parameter
+    //   }
+    // },
     handlerReport () {
       if (this.is_company_login === false) {
         this.$dialog

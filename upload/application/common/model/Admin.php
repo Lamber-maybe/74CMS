@@ -58,4 +58,26 @@ class Admin extends \app\common\model\BaseModel
             'access_set_service' => $access_set_service
         ];
     }
+
+    /**
+     * @Purpose:
+     * 验证MD5加密后的密码
+     * @Method checkMd5Password()
+     *
+     * @param string $md5Password Md5加密后的密码
+     * @param string $randstr 密码盐
+     *
+     * @return string
+     *
+     * @throws null
+     *
+     * @link XXXXXXXXXX
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2022/4/27
+     */
+    public function makeMd5Password($md5Password, $randstr) {
+        return md5($md5Password.$randstr.config('sys.safecode'));
+    }
 }

@@ -68,6 +68,14 @@
           浏览量在“1~设置值”之间随机增加，0为不干预
         </span>
       </el-form-item>
+<!--      新增资讯浏览量随机值-->
+      <el-form-item label="资讯浏览量随机值" prop="rand_click_article">
+        <el-input v-model="form.rand_click_article" class="small" @keyup.native="keyup()" />
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          浏览量在“1~设置值”之间随机增加，0为不干预
+        </span>
+      </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
       </el-form-item>
@@ -90,7 +98,8 @@ export default {
         qrcode_type: 'normal',
         rand_click_job: 0,
         rand_click_company: 0,
-        rand_click_resume: 0
+        rand_click_resume: 0,
+        rand_click_article: 0
       },
       rules: {
         points_byname: [
@@ -135,7 +144,8 @@ export default {
             qrcode_type,
             rand_click_job,
             rand_click_company,
-            rand_click_resume
+            rand_click_resume,
+            rand_click_article
           } = { ...response.data }
           this.form = {
             points_byname,
@@ -145,7 +155,8 @@ export default {
             qrcode_type,
             rand_click_job,
             rand_click_company,
-            rand_click_resume
+            rand_click_resume,
+            rand_click_article
           }
           this.infoLoading = false
         })
@@ -176,6 +187,9 @@ export default {
       }
       if (this.form.rand_click_resume == ''){
         this.form.rand_click_resume = 0
+      }
+      if (this.rand_click_article == ''){
+        this.rand_click_article = 0
       }
     }
   }

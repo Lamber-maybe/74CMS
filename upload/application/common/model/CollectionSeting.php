@@ -8,6 +8,7 @@ namespace app\common\model;
 
 class CollectionSeting extends BaseModel
 {
+    protected $table = 'collection_seting';
 
     /**
      * 修改
@@ -22,7 +23,7 @@ class CollectionSeting extends BaseModel
         if (empty($where)) {
             return false;
         }
-        return $this->where($where)->update($update);
+        return db($this->table)->where($where)->update($update);
     }
 
     /**
@@ -35,11 +36,11 @@ class CollectionSeting extends BaseModel
      * Date Time：2022年4月12日10:15:36
      */
     public function getInfo($where, $field = '*') {
-        $info = $this->where($where)->field($field)->find();
-        if (empty($info) || is_null($info)) {
+        $info = db($this->table)->where($where)->field($field)->find();
+        if (is_null($info) || empty($info)) {
             return [];
         }
-        return $info->toArray();
+        return $info;
     }
 
 }

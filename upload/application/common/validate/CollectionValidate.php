@@ -59,6 +59,8 @@ class CollectionValidate extends BaseValidate
                     ['field_name'=>'company_district','name'=>'企业地区','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_address','name'=>'企业地址','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_scale','name'=>'企业规模','type'=>'is_string','default'=>'','require'=>true],
+                    ['field_name'=>'company_content','name'=>'企业介绍','type'=>'is_string','default'=>'','require'=>false],
+                    ['field_name'=>'company_short_desc','name'=>'企业简介','type'=>'is_string','default'=>'','require'=>false],
                 ],
             ],
             // 保存企业信息

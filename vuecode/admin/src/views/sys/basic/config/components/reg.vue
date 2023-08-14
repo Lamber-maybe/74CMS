@@ -132,8 +132,8 @@ export default {
         .catch(() => {})
     },
     onSubmit(formName) {
-      this.form.agreement = this.editor_agreement.txt.html()
-      this.form.privacy = this.editor_privacy.txt.html()
+      this.form.agreement = this.editor_agreement.getHtml()
+      this.form.privacy = this.editor_privacy.getHtml()
       const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {

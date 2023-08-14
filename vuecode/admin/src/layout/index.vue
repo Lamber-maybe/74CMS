@@ -30,6 +30,10 @@
             {{ name }}
             <span style="color:#4FC08D">（{{ rolename }}）</span>
           </template>
+          <el-menu-item @click.native="personal">
+            <i class="el-icon-s-tools" />
+            个人中心
+          </el-menu-item>
           <el-menu-item @click.native="logout">
             <i class="el-icon-switch-button" />
             退出
@@ -174,6 +178,9 @@ export default {
           })
         })
         .catch(() => {})
+    },
+    personal(){
+      this.$router.push('/poster/personal')
     }
   }
 }

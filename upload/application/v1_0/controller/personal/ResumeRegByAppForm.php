@@ -400,7 +400,10 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             ->find();
         \think\Db::startTrans();
         try {
-            $input_data['work']['rid'] = $resume_id;
+            $basic_info = model('Resume')
+                ->where('uid', $this->userinfo->uid)
+                ->find();
+            $input_data['work']['rid'] = $basic_info->id;
             if (null === $work_info) {
                 $result = model('ResumeWork')
                     ->validate(true)
@@ -418,9 +421,6 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
                 throw new \Exception(model('ResumeWork')->getError());
             }
 
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
             if ($work_info !== null) {
                 $result = model('ResumeWork')
                     ->validate(true)

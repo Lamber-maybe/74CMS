@@ -113,8 +113,9 @@ class Im extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500,'token不能为空');
         }
         $hasConversation = false;
-        if($this->userinfo->utype==2){
-            $jobid = input('post.jobid/d', 0, 'intval');
+        $companyid = input('post.companyid/d', 0, 'intval');
+        $jobid = input('post.jobid/d', 0, 'intval');
+        if($this->userinfo->utype==2 && $companyid == 0){
             if(!$jobid){
                 $this->ajaxReturn(500,'请选择职位');
             }
@@ -137,7 +138,61 @@ class Im extends \app\v1_0\controller\common\Base
                 //聊过
                 $hasConversation = true;
             }
-        }else{
+        }
+        elseif ($this->userinfo->utype==2 && $companyid > 0 && $jobid >= 0){
+            $companyinfo = model('Company')->where('id',$companyid)->find();
+            if(null === $companyinfo){
+                $this->ajaxReturn(500,'没有找到企业信息');
+            }
+            $resumeinfo = model('Resume')->where('uid',$this->userinfo->uid)->find();
+            if(null===$resumeinfo){
+                $this->ajaxReturn(500,'没有找到简历信息');
+            }
+            $joblist = model('job')->field('id')->where('uid',$companyinfo['uid'])->select();
+            if(empty($joblist)){
+                $this->ajaxReturn(200,'您目前选择的企业没有招聘的职位，暂时无法发起聊天。');
+            }
+            if ($jobid > 0 || count($joblist)==1)
+            {
+                if ($jobid >0)
+                {
+                    $jobinfo = model('Job')->where('id',$jobid)->find();
+                    if(null===$jobinfo){
+                        $this->ajaxReturn(500,'没有找到职位信息');
+                    }
+                }
+                else
+                {
+                    $jobinfo = model('Job')->where('id',$joblist[0]['id'])->find();
+                    $jobid = $jobinfo['id'];
+                }
+                $check_data = [
+                    'token'=>$token,
+                    'uid'=>$jobinfo['uid']
+                ];
+                $url = $this->baseUrl.'/chat/hasConversation';
+                $result = https_request($url,$check_data);
+                $result = json_decode($result,1);
+                if($result['result']['status']==1){
+                    //聊过
+                    $hasConversation = true;
+                }
+            }else{
+                $this->ajaxReturn(200,'请选择职位',['next'=>'choose_job']);
+            }
+            $check_data = [
+                'token'=>$token,
+                'uid'=>$companyinfo['uid']
+            ];
+            $url = $this->baseUrl.'/chat/hasConversation';
+            $result = https_request($url,$check_data);
+            $result = json_decode($result,1);
+            if($result['result']['status']==1){
+                //聊过
+                $hasConversation = true;
+            }
+        }
+        else{
             $resumeid = input('post.resumeid/d', 0, 'intval');
             if(!$resumeid){
                 $this->ajaxReturn(500,'请选择');
@@ -179,7 +234,7 @@ class Im extends \app\v1_0\controller\common\Base
         }
         $companyinfo = model('Company')->field('companyname')->where('uid',$jobinfo['uid'])->find();
         if(null===$companyinfo){
-            $this->ajaxReturn(500,'没有找到企业信息');
+            $this->ajaxReturn(500,'没有找到企业信息11');
         }
         if($this->userinfo->utype==1){
             $target_uid = $resumeinfo['uid'];

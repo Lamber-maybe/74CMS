@@ -95,6 +95,8 @@ class Jobfairol extends \app\common\controller\Backend{
         $input_data = [
             'title' => input('post.title/s', '', 'trim'),
             'thumb' => input('post.thumb/d', 0, 'intval'),
+            'mobile_header_logo' => input('post.mobile_header_logo/d', 0, 'intval'),
+            'pc_header_logo' => input('post.pc_header_logo/d', 0, 'intval'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
             'content' => input('post.content/s', '', 'trim'),
@@ -123,6 +125,8 @@ class Jobfairol extends \app\common\controller\Backend{
                 'id' => input('post.id/d', 0, 'intval'),
                 'title' => input('post.title/s', '', 'trim'),
                 'thumb' => input('post.thumb/d', 0, 'intval'),
+                'mobile_header_logo' => input('post.mobile_header_logo/d', 0, 'intval'),
+                'pc_header_logo' => input('post.pc_header_logo/d', 0, 'intval'),
                 'starttime' => input('post.starttime/s', '', 'trim'),
                 'endtime' => input('post.endtime/s', '', 'trim'),
                 'content' => input('post.content/s', '', 'trim'),
@@ -148,13 +152,17 @@ class Jobfairol extends \app\common\controller\Backend{
             $imgs = $imageUrl = [];
             if($info['thumb']) $imgs[] = $info['thumb'];
             if($info['qrcode']) $imgs[] = $info['qrcode'];
+            if($info['pc_header_logo']) $imgs[] = $info['pc_header_logo'];
+            if($info['mobile_header_logo']) $imgs[] = $info['mobile_header_logo'];
             if(!empty($imgs)){
                 $imageUrl = model('Uploadfile')->getFileUrlBatch($imgs);
             }
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,
                 'thumbUrl' => isset($imageUrl[$info['thumb']])?$imageUrl[$info['thumb']]:'',
-                'qrcodeUrl' => isset($imageUrl[$info['qrcode']])?$imageUrl[$info['qrcode']]:''
+                'qrcodeUrl' => isset($imageUrl[$info['qrcode']])?$imageUrl[$info['qrcode']]:'',
+                'pc_header_logo_url' => isset($imageUrl[$info['pc_header_logo']])?$imageUrl[$info['pc_header_logo']]:'',
+                'mobile_header_logo_url' => isset($imageUrl[$info['mobile_header_logo']])?$imageUrl[$info['mobile_header_logo']]:''
             ]);
         }
     }
@@ -422,7 +430,32 @@ class Jobfairol extends \app\common\controller\Backend{
         if (empty($jobfair_id)) {
             $this->ajaxReturn(500, '请选择网络招聘会');
         }
+        $data = model('JobfairOnlineParticipate')
+            ->where('jobfair_id',$jobfair_id)
+            ->where(['uid' => ['in', $uid]])
+            ->field('utype,uid')
+            ->group('uid')
+            ->select();
+        $title = model('JobfairOnline')->where(['id'=>$jobfair_id])->value('title');
+        if (empty($title))
+        {
+            $this->ajaxReturn(500, '网络招聘会编号错误');
+        }
+        $company = [];
+        $member = [];
+        foreach($data as $k=>$v)
+        {
+            if ($v['utype'] == 1)
+            {
+                $company[] = $v['uid'];
+            }else
+            {
+                $member[] = $v['uid'];
+            }
+        }
         model('JobfairOnline')->setStatus($jobfair_id,$uid,$audit,$this->admininfo);
+        
+
         $this->ajaxReturn(200, '设置成功');
     }
     // 删除参会企业或个人

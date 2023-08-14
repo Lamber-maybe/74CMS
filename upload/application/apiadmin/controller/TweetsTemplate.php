@@ -317,12 +317,7 @@ class TweetsTemplate extends \app\common\controller\Backend
         }
         $list = [];
         if(!empty($jobid_arr)){
-            $where = [];
-            if (intval($condition['refreshtime'])< 0 )
-            {
-                $where['is_display'] = 1;
-            }
-            $list = model('Job')->where('id','in',$jobid_arr)->where($where)->select();
+            $list = model('Job')->where('id','in',$jobid_arr)->select();
         }
 		$comid_arr = [];
 		foreach ($list as $k => $val) {
@@ -441,10 +436,6 @@ class TweetsTemplate extends \app\common\controller\Backend
                 'egt',
                 strtotime('-' . $settr . 'day')
             );
-        }elseif( isset($condition['refreshtime']) &&
-            intval($condition['refreshtime']) < 0)
-        {
-            $model = $model->where('a.license','eq',1);
         }
         if (
             isset($condition['jobcategory']) &&

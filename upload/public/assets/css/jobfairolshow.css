@@ -1,13 +1,19 @@
 .banner_img {
-  height: 410px;
-  background: url(../images/jobfairol/networkJobFair_banner2.png) no-repeat;
+  background:#f8f8f8 ;
+}
+.banner_img .banner_img_inner{
+  width: 1200px;
+  margin: 0 auto  ;
+  height: 375px;
+  padding-top: 23px;
+  padding-bottom: 22px;
   position: relative;
-  overflow: hidden;
 }
 
-.banner_img img {
+.banner_img .banner_inner_img {
   width: 100%;
-  height: 410px;
+  height: 100%;
+  border-radius: 8px;
 }
 
 .banner_img .notice_list {
@@ -57,71 +63,69 @@
   margin-right: 180px;
 }
 
-.content_top {
-  background: #fff;
+.banner_img .pos_swiper{
+  position: absolute;
+  bottom: 66px;
+  width: 100%;
+  overflow: hidden;
+  /* padding: 0 110px; */
+  height: 52px;
+}
+.banner_img .pos_swiper .swiper-link{
+  background-color: #343434;
+  display: inline-block;
+  margin: 0 auto;
+  color: #fff;
+  border-radius: 30px;
+  opacity: 60%;
+  height: 32px;
+  vertical-align: middle;
+  white-space:nowrap;
+  padding: 0 10px 0 0;
+  margin-right: 100px;
 }
 
-.process_wrapper {
-  box-shadow: 0px 0px 8px 8px #fafafa;
-  margin-bottom: 20px;
-  padding: 16px 50px;
+.banner_img .pos_swiper .swiper-link em{
+  /* display: inline-block; */
+  vertical-align: middle;
+  font-style: inherit;
 }
 
-.process_wrapper .process_text {
-  border-bottom: 1px solid #f3f3f3;
-  padding: 24px 34px 36px 20px;
+.banner_img .pos_swiper .swiper-link .logos{
+  width: 32px;
+  height: 32px;
+  /* display: inline-block; */
+  vertical-align: middle;
+  border-radius: 50%;
+}
+.swiper-slide {
+  /* flex-shrink: 0;
+  height: 100%;
   position: relative;
-  color: #333333;
-  font-size: 16px;
-  line-height: 26px;
+  transition-property: transform; */
+  /* margin-left: 20px; */
 }
 
-.process_text img {
-
+/* 搜索/ 参会企业 可投职位 浏览次数 */
+.content_top {
+  background: #f8f8f8;
 }
 
-.process_text .img1 {
-  position: absolute;
-  left: -20px;
-  top: 0;
-}
-
-.process_text .img2 {
-  position: absolute;
-  right: -20px;
-  bottom: 25px;
-}
-
-.sum_wrapper {
-  padding: 30px 0 19px;
-}
-
-.sum_wrapper div {
-  width: 365px;
-  text-align: center;
-}
-
-.sum_wrapper div p {
-  color: #666;
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-.sum_wrapper div span {
-  color: #333;
-  font-size: 36px;
-  font-weight: bold;
-}
 
 /* 搜索框 */
 .search_wrapper {
+  width: 1200px;
+  margin: 0 auto;
   background: #f8f8f8;
-  padding: 17px 40px 17px 31px;
   border-radius: 5px;
+  text-align: center;
 }
 
 .jobfair_search_box {
   background: #fff;
+  border: 1px solid #1787fb;
+  display: inline-block;
+  border-radius: 3px;
 }
 
 .jobfair_search_box .search_btn button {
@@ -136,7 +140,7 @@
 }
 
 .jobfair_search_box .search_select {
-  width: 122px;
+  width: 110px;
   height: 46px;
   line-height: 46px;
   cursor: pointer;
@@ -144,9 +148,11 @@
 }
 
 .jobfair_search_box .search_select span {
-  padding-left: 23px;
+  /*padding-left: 23px;*/
   padding-right: 16px;
-  background: url(../images/jobfairol/select_icon.png) right 6px no-repeat;
+  background: url(../images/jobfairol/select_icon.png) right 4px no-repeat;
+  color: #444444;
+  font-size: 16px;
 }
 
 .jobfair_search_box .search_select:hover .select_hover_box {
@@ -168,116 +174,301 @@
 .jobfair_search_box .select_hover_box li {
   padding: 5px 0;
 }
-
+.jobfair_search_box .search_input{
+  height: 46px;
+}
 .jobfair_search_box .search_input input {
   width: 526px;
   border: none;
   border-left: 1px solid #ededed;
   height: 20px;
   padding-left: 20px;
-  margin-top: 13px;
-}
-
-.search_wrapper .right_btn {
-  float: right;
-}
-
-.search_wrapper .right_btn button {
-  padding: 11px 30px 11px 54px;
+  /* color: #CBCBCB; */
   font-size: 16px;
+  height: 100%;
+}
+
+.process_wrapper {
+  box-shadow: 0px 0px 8px 8px #fafafa;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.process_wrapper .process_text {
+  border-bottom: 1px solid #f3f3f3;
+  padding: 0px 0px 0 20px;
+  position: relative;
+  font-size: 20px;
+  font-weight: 400;
+  color: #383838;
+  display: flex;
+  align-items: center;
+  padding: 15px 21px;
+
+}
+
+.process_wrapper .process_text img{
+  width: 4px;
+  height: 19px;
+}
+.process_wrapper .process_text .contents{
+  width: 1110px;
+  padding: 0 0 0 6px;
+}
+
+.process_wrapper .process_text  .contents span{
+  font-size: 14px;
+  line-height: 25px;
+  margin-left: 7px;
+}
+
+.process_wrapper .process_text .img1 {
+  position: absolute;
+  left: -20px;
+  top: 0;
+}
+
+.process_wrapper .process_text .font {
+  font-size: 16px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #1787FB;
+  position: relative;
+  padding-right: 12px;
+}
+.process_wrapper .process_text .font::before,
+.process_wrapper .process_text .font::after{
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  transform-origin:100% 50%;
+  background-color: #1787FB;
+}
+.process_wrapper .process_text .font::before{
+  transform: rotate(-45deg);
+}
+.process_wrapper .process_text .font::after{
+  transform: rotate(45deg);
+}
+
+.process_wrapper .content {
+  font-size: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/*  */
+.process_wrapper .sum_wrapper {
+  display: flex;
+  margin: 0 auto;
+  padding: 0 21px;
+
+}
+
+.process_wrapper .sum_wrapper .sum_box {
+  width: 389px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0px;
+}
+.process_wrapper .sum_wrapper .sum_box .img{
+  margin-right: 50px;
+  display: block;
+  width: 60px;
+  height: 60px;
+}
+.process_wrapper .sum_wrapper .sum_box.sub_bg{
+  background: url(../images/jobfairol/fgx.png) no-repeat left center,url(../images/jobfairol/fgx.png) no-repeat right center;
+}
+
+.process_wrapper .sum_wrapper .sum_box p {
+  height: 15px;
+  font-size: 14px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #656565;
+}
+
+.sum_wrapper .sum_box span {
+  width: 50px;
+  height: 22px;
+  font-size: 30px;
+  font-family: Source Han Sans CN;
+  font-weight: 500;
+  color: #383838;
+  line-height: 40px;
+}
+
+
+
+
+
+.right_btns{
+  position: fixed;
+  top: 700px;
+  left: 84%;
+  z-index: 1;
+  text-align: center;
+}
+.right_btns .logo {
+  cursor: pointer;
+  width:70px ;
+  height:70px ;
+}
+.right_btns .logo img{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.right_btns .logo1 {
+  cursor: pointer;
+  margin-top: 21px;
+  width:70px ;
+  height:70px ;
+}
+.right_btns .logo1 img{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.right_btns .button1 {
+  font-size: 14px;
   border-radius: 30px;
   cursor: pointer;
+  color: #696969;
+  /* margin-top: -10px; */
 }
-
-.search_wrapper .right_btn button:first-child {
-  color: #1787fb;
-  border: 1px solid #1787fb;
-  background: url(../images/jobfairol/search_icon1.png) 30px 13px no-repeat;
-}
-
-.search_wrapper .right_btn button:last-child {
-  color: #ff772d;
-  border: 1px solid #ff772d;
-  margin-left: 16px;
-  background: url(../images/jobfairol/search_icon2.png) 30px 13px no-repeat;
-}
-
-/* tab切换 */
-.tab_wrapper {
-  margin: auto;
-  background: #fff;
-}
-
-.tab_wrapper .tab {
-  width: 1200px;
-  margin: auto;
-  padding: 35px 0 13px;
-}
-
-.tab_wrapper .tab div {
-  width: 580px;
-  text-align: center;
-  font-weight: bold;
-  position: relative;
-}
-
-.tab_wrapper .tab div a {
-  color: #666666;
-  font-size: 24px;
+.right_btns .button2 {
+  font-size: 14px;
+  border-radius: 30px;
   cursor: pointer;
-  text-decoration: none;
-}
-
-.tab_wrapper .tab div .bt_border {
-  position: absolute;
-  left: 50%;
-  bottom: -13px;
-  width: 160px;
-  height: 3px;
-  margin-left: -80px;
-  background: #1787fb;
-  display: none;
-}
-
-.tab_wrapper .tab .active a {
-  color: #1787fb;
-}
-.tab_wrapper .tab .active .bt_border {
-  display: block;
+  color: #696969;
+  /* margin-top: -10px; */
 }
 
 .content_wrapper {
   position: relative;
+  background-color: #f8f8f8;
+}
+
+
+/* tab切换 */
+.tab_wrapper {
+  width: 1200px;
+  margin:0 auto;
+  /*background: #fff;*/
+}
+
+.tab_wrapper .tab {
+  display: flex;
+  /* width: 580px; */
+  margin: auto;
+  padding: 20px 0 25px;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab_wrapper .tab .tab-item {
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  padding: 10px 24px 10px 36px;
+  margin-right: 29px;
+  border: 2px solid transparent;
+}
+.tab_wrapper .tab .tab-item:nth-child(3n) {
+  margin-right:0 ;
+}
+
+.tab_wrapper .tab .tab-item .tab-link {
+  color: #303030;
+  font-size: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  width: 80px;
+  height: 19px;
+  font-family: Source Han Sans CN;
+  font-weight: 500;
+}
+
+.tab_wrapper .tab .tab-item.active {
+  background: #ffff;
+  border-radius: 25px;
+  border: 2px solid #1787fb;
+}
+.tab_wrapper .tab .tab-item.active .tab-link{
+  font-size: 20px;
+  font-family: Source Han Sans CN;
+  font-weight: 500;
+  color: #1787FB;
+  position: relative;
+}
+.tab_wrapper .tab .tab-item.active .tab-link::before{
+  content: '';
+  position: absolute;
+  left: -11px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  background: #1787fb;
+  border-radius: 50%;
+}
+.tab_wrapper .tab .tab-item.active .tab-link::after{
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  background: #1787fb;
+  border-radius: 50%;
+  opacity: 0.4;
 }
 
 /* 企业列表 */
-.jobfair_wrapper,
-.jobHunter_wrapper,
-.post_wrapper {
-  margin-right: -12px;
-}
-
 .content .jobfair_list {
-  width: 290px;
-  height: 279px;
-  background: #fff;
-  margin-right: 12px;
-  padding: 26px 20px 14px;
-  margin-bottom: 10px;
+  width: 388px;
+  height: 399px;
+  background: #FFFFFF;
+  margin-right: 17px;
+  padding: 24px 20px;
+  margin-bottom: 17px;
   position: relative;
   transition: linear all 0.2s;
+  border-radius: 8px;
+  border: 2px solid transparent;
 }
+.content .jobfair_list:nth-child(3n){
+  margin-right: 0;
+}
+
+/* .text span{
+  color: #929292;
+  font-size: 14px;
+  font-weight: 400;
+} */
+
 .content .jobfair_list:hover {
-  -webkit-box-shadow: 0 3px 20px 2px #f0f0f0;
-  box-shadow: 0 3px 20px 2px #f0f0f0;
-  -webkit-transform: translateY(-3px);
-  transform: translateY(-3px);
-  z-index: 1;
+  border: solid 2px #1787FB;
+  box-shadow: 0px 0px 12px 0px rgba(23, 135, 251, 0.26);
+
+}
+
+.content .jobfair_list .text a:hover {
+  color: #1787FB;
 }
 .jobfair_list .base_information {
-  border-bottom: 1px dashed #ebebeb;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 
 .jobfair_list .base_information .img {
@@ -285,6 +476,8 @@
   height: 52px;
   border: 1px solid #f3f3f3;
   margin-right: 10px;
+  border-radius: 4px;
+
 }
 
 .jobfair_list .base_information .text {
@@ -293,10 +486,18 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.jobfair_list .base_information .text a {
-  color: #333;
+.jobfair_list .base_information .text .com_name {
+  color: #444444;
   font-size: 16px;
+  line-height: 26px;
   cursor: pointer;
+  font-weight: 400;
+}
+.jobfair_list .base_information .text  .order {
+  color: #929292;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 26px;
 }
 .jobfair_list .base_information .text .btn {
   color: #ffffff;
@@ -310,26 +511,52 @@
 }
 
 .jobfair_list .base_information .img img {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
+  background: #E5E5E5;
+  border-radius: 4px;
 }
 
+.jobfair_list .post-box{
+  height: 240px;
+  overflow: hidden;
+}
 .jobfair_list .post {
-  margin-bottom: 14px;
+  border-bottom: 1px solid #ebebeb;
+  padding: 9px 0;
+  position: relative;
 }
 
-.jobfair_list .post a {
-  color: #666;
-  font-size: 14px;
+.jobfair_list .post .post_name {
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 180px;
-  display: inline-block;
+  max-width: 240px;
+  display: block;
+  font-size: 16px;
+  line-height: 26px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #5E5E5E;
+}
+.jobfair_list .post .wage_text{
+  color: #FC6502;
+  font-size: 16px;
+  position: absolute;
+  right: 0;
+  top: 20px;
+  font-weight: 500;
+}
+.jobfair_list .post .district{
+  font-size: 12px;
+  line-height: 20px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #BABABA;
 }
 
-.jobfair_list .post .btn {
+/* .jobfair_list .post .btn {
   border: 1px solid #1787fb;
   color: #1787fb;
   font-size: 12px;
@@ -342,26 +569,87 @@
 .jobfair_list .post .btn:hover {
   background: #1787fb;
   color: #fff;
-}
+} */
 
 .jobfair_list .move_wrapper {
-  text-align: center;
-  padding: 8px 0;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 12px 0 0;
+}
+.jobfair_list .move_wrapper .more{
+  position: relative;
+  padding-right: 14px;
+}
+.jobfair_list .move_wrapper .more::before,
+.jobfair_list .move_wrapper .more::after{
   position: absolute;
-  left: 20px;
-  bottom: 14px;
-  width: 250px;
+  content: '';
+  width: 7px;
+  height: 1px;
+  right: 4px;
+  top: 50%;
+  margin-top: -0.5px;
+  background: #1787FB;
+  transform-origin: 100% 50%;
+}
+.jobfair_list .move_wrapper .more::before{
+  transform: rotate(-45deg);
+}
+.jobfair_list .move_wrapper .more::after{
+  transform: rotate(45deg);
+}
+/* .jobfair_list .move_wrapper  .kao{
+  margin-left: 4px;
+  width:12px ;
+  height: 12px;
+} */
+.jobfair_list .wechats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jobfair_list .wechats .button_news {
+  padding: 9px 17px 9px 37px;
+  display: flex;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #FF9332 url(../images/jobfairol/news.png) no-repeat 18px center;
 }
 
-.c_noj {
+.jobfair_list .wechats  .button_wx{
+  padding: 9px 17px 9px 38px;
+  display: flex;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #1787FB url(../images/jobfairol/wechat.png) no-repeat 18px center;
+  margin-left: 22px;
+}
+.jobfair_list .c_noj {
   color: #999;
   text-align: center;
-  height: 130px;
-  line-height: 130px;
+}
+.jobfair_list .c_noj .noData2x{
+  padding-top: 227px;
+  background: url(../images/jobfairol/noData2x.png) no-repeat center center / 196px 196px;
 }
 
+.jobfair_list .c_noj .noData2x .noj-text{
+  font-size: 14px;
+  color: #AFAFAF;
+}
+
+
+.wechat{
+  padding: 101px 36px 1px 45px;
+}
+
+
+
 .content.ol {
-  padding-top: 20px;
+  padding-top: 18px;
 }
 
 .paging.ol {
@@ -372,74 +660,302 @@
   padding-top: 10px;
 }
 
-.move_wrapper a {
-  color: #999;
-  font-size: 12px;
+.move_wrapper span {
+  font-size: 14px;
   cursor: pointer;
+  color: #1787FB;
 }
 .move_wrapper a:hover {
   text-decoration: underline;
 }
 
+/* 职位列表 */
+.post_wrapper .post_item {
+  width: 392px;
+  height: 228px;
+  background: #fff;
+  padding: 24px 20px;
+  margin-right: 12px;
+  margin-bottom: 13px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  border: solid 2px transparent;
+}
+.post_wrapper .post_item:nth-child(3n){
+  margin-right: 0;
+}
+.post_wrapper .post_item:hover {
+  border: solid 2px #1787FB;
+  box-shadow: 0px 0px 12px 0px rgba(23, 135, 251, 0.26);
+}
+.post_wrapper .post_item .post_name a:hover{
+  color: #1787FB;
+}
+
+.post_wrapper .post_item .post_img {
+  width: 52px;
+  height: 52px;
+  margin-right: 10px;
+  border: 1px solid #f5f5f5;
+}
+.post_wrapper .post_item .post_img img {
+  width: 52px;
+  height: 52px;
+}
+.post_wrapper .post_item .post_text {
+  position: relative;
+}
+.post_wrapper .post_item .line-bg{
+  width: 100%;
+}
+
+.post_wrapper  .post_item .post_name {
+  margin-bottom: 8px;
+}
+
+.post_wrapper  .post_item .post_name .pos_link {
+  cursor: pointer;
+  color: #444;
+  font-size: 16px;
+  width: 270px;
+  line-height: 30px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.post_wrapper  .post_item .wage_text{
+  position: absolute;
+  right: 0;
+  top: 10px;
+  color: #FC6502;
+  font-size: 16px;
+  font-family: Source Han Sans CN;
+  font-weight: 500;
+}
+
+.post_wrapper .post_item .post_information {
+  font-size: 14px;
+  color: #929292;
+  max-width: 270px;
+}
+
+.post_wrapper .post_item .post_information span {
+  position: relative;
+  padding-right: 13px;
+}
+
+.post_wrapper .post_item .post_information span::after {
+  content: "";
+  width: 1px;
+  height: 10px;
+  position: absolute;
+  right: 6px;
+  top: 2px;
+  background: #e2e2e2;
+}
+
+.post_wrapper .post_item .post_information span:last-child {
+  padding-right: 0;
+}
+
+.post_wrapper .post_item .post_information span:last-child::after {
+  content: "";
+  width: 0;
+  height: 0;
+}
+.post_wrapper .post_item .company_box{
+  margin-top: 8px;
+}
+
+.post_wrapper .post_item .company_box .company_link {
+  color: #5E5E5E;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+  width: 241px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 400;
+}
+.post_wrapper .post_item .company_box .order-info{
+  font-size: 12px;
+  line-height: 20px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #BABABA;
+}
+.post_wrapper .post_item .company_box{
+  display: flex;
+}
+.post_wrapper .post_item .company_box .company_logo{
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+.post_wrapper .post_item .company_box .company_logo img{
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.post_wrapper .post_item .company_box .company_data{
+  margin-left: 10px;
+  flex-shrink: 0;
+  width: 293px;
+}
+.post_wrapper .post_item .company_box .updatetime{
+  font-size: 12px;
+  color: #bec7cb;
+}
+
+.post_wrapper .post_item .company_box button {
+  color: #ffffff;
+  font-size: 12px;
+  padding: 3px 11px 3px 28px;
+  border-radius: 10px;
+  background: url(../images/jobfairol/WX_icon.png) 8px 5px no-repeat;
+  background-color: #00c785;
+  cursor: pointer;
+  float: right;
+}
+
+.post_wrapper .wec{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+}
+.post_wrapper .button_news {
+  padding: 9px 17px 9px 37px;
+  display: flex;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #FF9332 url(../images/jobfairol/news.png) no-repeat 18px center;
+}
+
+.post_wrapper .button_wx{
+  padding: 9px 17px 9px 38px;
+  display: flex;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #1787FB url(../images/jobfairol/wechat.png) no-repeat 18px center;
+  margin-left: 22px;
+}
+
 /* 求职者列表 */
 .jobHunter_list {
-  width: 290px;
-  height: 279px;
+  width: 392px;
+  height: 247px;
   background: #fff;
-  text-align: center;
-  padding: 25px 0 35px;
+  /* padding: 25px 0 35px; */
+  padding: 24px 20px;
   margin-right: 12px;
   margin-bottom: 10px;
   transition: linear all 0.2s;
-  cursor: pointer;
+  border-radius: 8px;
+  border: solid 2px transparent;
 }
+.jobHunter_list:nth-child(3n) {
+  margin-right: 0;
+}
+
 .jobHunter_list:hover {
-  -webkit-box-shadow: 0 3px 20px 2px #f0f0f0;
-  box-shadow: 0 3px 20px 2px #f0f0f0;
-  -webkit-transform: translateY(-3px);
-  transform: translateY(-3px);
-  z-index: 1;
+  border: solid 2px #1787FB;
+  box-shadow: 0px 0px 12px 0px rgba(23, 135, 251, 0.26);
 }
 
-.p_img {
+.jobHunter_list .member{
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.jobHunter_list .member .p_img {
   position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 4px auto 15px;
-  border-radius: 80px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 20px;
 }
-.p_img .photo {
-  width: 80px;
-  height: 80px;
-  border-radius: 80px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+.jobHunter_list .member .p_img .photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
-.p_img .gm {
+.jobHunter_list .member .p_img .gm {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   z-index: 1;
-  right: 3px;
-  bottom: 0;
+  right: -3px;
+  top: 0;
 }
-.p_img .gm.m {
+.jobHunter_list .member .p_img .gm.m {
   background: url("../../assets/images/jobfairol/JobFair_img4.png") 0 no-repeat;
-  background-size: 20px;
+  background-size: 14px 14px;
 }
-.p_img .gm.n {
+.jobHunter_list .member .p_img .gm.n {
   background: url("../../assets/images/jobfairol/JobFair_img5.png") 0 no-repeat;
-  background-size: 20px;
+  background-size: 15px 15px;
 }
 
-.jobHunter_list .name {
-  margin-bottom: 15px;
+.jobHunter_list .member .job-info {
+  width: 188px;
+  margin-right: 20px;
+  flex-shrink: 0;
+  position: relative;
 }
 
-.jobHunter_list .name a {
+.jobHunter_list .member .job-info .name{
   color: #333333;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
+  display: block;
+  line-height: 30px;
+}
+
+.jobHunter_list .member .job-info .me{
+  font-size: 14px;
+  color: #B4B4B4;
+  line-height: 26px;
+}
+.jobHunter_list .member .refreshtime{
+  color:#C2C2C2;
+  font-size: 12px;
+  flex-shrink: 0;
+  width: 70px;
+  text-align: right;
+}
+
+.jobHunter_list .qw{
+  margin-top: 10px;
+}
+
+.jobHunter_list .qw .expect{
+  display: flex;
+  align-items: center;
+}
+
+.jobHunter_list .qw .expect .text{
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.jobHunter_list .data {
+  padding: 9px 0 10px 0px;
+  font-size: 14px;
+  font-family: Source Han Sans CN;
+  font-weight: 400;
+  color: #929292;
 }
 
 .jobHunter_list .information {
@@ -493,109 +1009,46 @@
   font-size: 12px;
 }
 
-/* 职位列表 */
 
-.post_item {
-  width: 290px;
-  background: #fff;
-  padding: 26px 22px 25px;
-  margin-right: 12px;
-  margin-bottom: 13px;
-}
 
-.post_item .post_img {
-  width: 52px;
-  height: 52px;
-  margin-right: 10px;
-  border: 1px solid #f5f5f5;
+.jobHunter_wrapper .wechatss{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 19px;
 }
-.post_item .post_img img {
-  width: 52px;
-  height: 52px;
-}
-.post_item .post_text {
-  border-bottom: 1px dashed #ebebeb;
-}
-
-.post_item .post_name {
-  margin-bottom: 13px;
-}
-
-.post_item .post_name a {
+.jobHunter_wrapper .button_news {
+  padding: 9px 17px 9px 37px;
+  display: flex;
+  border-radius: 3px;
   cursor: pointer;
-  color: #333333;
-  font-size: 16px;
-  width: 114px;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #FFFFFF;
+  background: #FF9332 url(../images/jobfairol/news.png) no-repeat 18px center;
 }
 
-.post_item .post_name span {
-  color: #ff552e;
-  font-size: 14px;
-  float: right;
-}
-
-.post_item .post_information {
-  color: #666666;
-  font-size: 12px;
-  margin-bottom: 21px;
-}
-
-.post_item .post_information span {
-  position: relative;
-  padding-right: 13px;
-}
-
-.post_item .post_information span::after {
-  content: "";
-  width: 1px;
-  height: 10px;
-  position: absolute;
-  right: 6px;
-  top: 2px;
-  background: #e2e2e2;
-}
-
-.post_item .post_information span:last-child {
-  padding-right: 0;
-}
-
-.post_item .post_information span:last-child::after {
-  content: "";
-  width: 0;
-  height: 0;
-}
-
-.post_item .btn_box {
-  margin-top: 16px;
-}
-
-.post_item .btn_box a {
-  color: #999999;
-  font-size: 12px;
-  line-height: 22px;
+.jobHunter_wrapper .button_wx{
+  padding: 9px 17px 9px 38px;
+  display: flex;
+  border-radius: 3px;
   cursor: pointer;
-  width: 156px;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #FFFFFF;
+  background: #1787FB url(../images/jobfairol/see_resume_icon.png) no-repeat 18px center;
+  margin-left: 22px;
 }
 
-.post_item .btn_box button {
-  color: #ffffff;
-  font-size: 12px;
-  padding: 3px 11px 3px 28px;
-  border-radius: 10px;
-  background: url(../images/jobfairol/WX_icon.png) 8px 5px no-repeat;
-  background-color: #00c785;
-  cursor: pointer;
-  float: right;
+.hr1{
+  width: 100%;
+}
+.hr1 img{
+  width: 100%;
+  height: 100%;
+  
 }
 
+
+
+
+/* 分页 */
 .paging .paging_box {
   padding: 30px 0 10px;
 }
@@ -605,6 +1058,7 @@
   cursor: pointer;
 }
 
+/* 弹窗样式 */
 .face_qr_box {
   width: 123px;
   height: 123px;
@@ -621,3 +1075,4 @@
   color: #666;
   text-align: center;
 }
+

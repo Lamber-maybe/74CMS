@@ -1003,12 +1003,9 @@
 				url = url.replace('1', utype)
 				location.href = url
 			},
-			handlerReg: function (utype) {
-				if (utype == 1) {
-					location.href = qscms.locationList.regCompany
-				} else {
-					location.href = qscms.locationList.regPersonal
-				}
+			handlerReg: function () {
+				//进入模板首页注册时，先进选身份的注册页
+				location.href = qscms.locationList.reg
 			},
 			changeImg: function () {
 				var that = this

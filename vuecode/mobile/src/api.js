@@ -379,6 +379,8 @@ export default {
   jobfairol_reserve_list: '/company/jobfairol/index',
   // 网络招聘会详情页
   jobfairol_show: '/home/jobfairol/show',
+  // 添加网络招聘会查看记录
+  jobfairol_addlog: '/home/jobfairol/logAdd',
   // 网络招聘会企业列表
   jobfairol_comlist: '/home/jobfairol/comlist',
   // 网络招聘会职位列表

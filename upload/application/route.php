@@ -34,4 +34,5 @@ Route::rule('help','index/help/show');
 Route::rule('hrtool','index/hrtool/index');
 Route::rule('map','index/map/index');
 Route::rule('video/:id','index/video/main');
+Route::rule('jobfairol/details/:id$','index/jobfairol/details');//网络招聘会详情
 Route::rule('jobfairol','index/jobfairol/index');

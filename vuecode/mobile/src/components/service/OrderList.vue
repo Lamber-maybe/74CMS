@@ -276,9 +276,7 @@ export default {
         this.$store.state.LoginType == 1
           ? api.company_repay
           : api.personal_repay
-      this.$refs.paySubmit.handlerSubmit(url, { id: this.order_id, payment: this.payment }, function () {
-        this.fetchData(true)
-      })
+      this.$refs.paySubmit.handlerSubmit(url, { id: this.order_id, payment: this.payment })
     },
     payFinish () {
       this.fetchData(true)

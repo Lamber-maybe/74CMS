@@ -59,7 +59,6 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
-import { isWeiXin } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 export default {
@@ -141,7 +140,7 @@ export default {
     this.showSubstationName = this.show_sub === 'true'
   },
   created () {
-    this.initWeixinPaymentOpenid()
+    // this.initWeixinPaymentOpenid()
     this.getConfig()
     if (this.bg) {
       this.classname = `head_content ${this.bg}`
@@ -323,33 +322,6 @@ export default {
         window.history.length > 1
           ? this.$router.go(-1)
           : this.$router.push('/')
-      }
-    },
-    initWeixinPaymentOpenid () {
-      let weixinOpenid = localStorage.getItem('weixinOpenid')
-      if (isWeiXin() === true && !weixinOpenid && this.config.payment_wechat_appid != '') {
-        let code = ''
-        let url = window.location.href
-        let param_str = url.split('?')[1]
-        if (param_str !== undefined) {
-          let cs_arr = param_str.split('&')
-          let cs = {}
-          for (let i = 0; i < cs_arr.length; i++) {
-            cs[cs_arr[i].split('=')[0]] = cs_arr[i].split('=')[1]
-          }
-          code = cs.code
-        }
-        if (code !== '') {
-          http.post(api.get_weixin_openid, {code}).then(res => {
-            localStorage.setItem('weixinOpenid', res.data)
-          }).catch(() => {})
-        } else {
-          let appid = this.config.payment_wechat_appid
-          let redirect_uri = encodeURI(location.href)
-          let state = 'STATE'
-          let url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirect_uri + '&response_type=code&scope=snsapi_base&state=' + state + '#wechat_redirect'
-          location.href = url
-        }
       }
     }
   }

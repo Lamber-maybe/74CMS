@@ -376,6 +376,9 @@ function default_empty($alias)
         case 'jobfair_thumb':
             $filename = 'empty_jobfair_thumb.jpg';
             break;
+        case 'jobfair_banner':
+            $filename = 'jobfair_banner.png';
+            break;
         default:
             $filename = '';
             break;

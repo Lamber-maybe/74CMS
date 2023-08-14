@@ -103,6 +103,7 @@ import videoManage from '../views/shortvideo/videoManage'
 import videoRelease from '../views/shortvideo/releaseVideo'
 import videoplay from '../views/shortvideo/VideoPlay'
 import subsiteList from '../views/SubsiteList'
+import OrderAddPay from '../views/service/OrderAddPay'
 
 Vue.use(VueRouter)
 
@@ -1224,6 +1225,17 @@ const routes = [{
     title: '分站列表',
     keepAlive: false,
     loginCheck: false
+  }
+},
+{
+  path: '/member/order/addpay',
+  name: 'OrderAddPay',
+  component: OrderAddPay,
+  meta: {
+    title: '支付',
+    keepAlive: false,
+    loginCheck: true,
+    utype: 0
   }
 },
 {

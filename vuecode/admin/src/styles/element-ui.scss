@@ -84,6 +84,9 @@
       }
     }
   }
+  .el-table::before{
+    background:transparent;
+  }
   .el-drawer{
     overflow: initial;
     .el-drawer__body{

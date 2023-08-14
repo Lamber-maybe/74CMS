@@ -24,7 +24,7 @@ class AttentionMe extends \app\v1_0\controller\common\Base
             ->field('a.*,b.companyname,b.id as company_id,b.audit as company_audit,b.district,b.scale,b.nature')
             ->where($where)
             ->where('b.companyname','not null')
-            ->order('a.id desc')
+            ->order('a.addtime desc')
             ->page($current_page, $pagesize)
             ->select();
         $comuid_arr = [];
@@ -43,10 +43,10 @@ class AttentionMe extends \app\v1_0\controller\common\Base
         } else {
             $job_list = [];
         }
+        //解决企业下载个人简历，在个人会员中心的对我感兴趣中的标签还是显示未下载PC 触屏
         $downlist = model('CompanyDownResume')
             ->where('personal_uid', 'eq', $this->userinfo->uid)
-            ->column('comid');
-
+            ->column('comid,id','comid');
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         $returnlist = [];

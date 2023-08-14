@@ -696,7 +696,6 @@ export default {
   tweetsSearchCompany: '/tweets_template/companySearch',
   tweetsTitleFooter: '/tweets_template/title_footer',
 
-
   // 生成海报
   makePoster: '/poster/index',
   downloadPoster: '/poster/download',
@@ -704,7 +703,6 @@ export default {
   // 触屏页面配置
   pageMobileList: '/page_mobile/index',
   pageMobileEdit: '/page_mobile/edit',
-
 
   // 简历导入
   resumeImport: '/resume/import',
@@ -758,6 +756,7 @@ export default {
   posterDelete: '/poster/delete',
   posterDisplay: '/poster/setDisplay',
   posterTplindexList: '/poster/getTplindexList',
+
   // 刷新职位
   refresh_job:'/company/refreshJob',
   //在线升级
@@ -773,5 +772,16 @@ export default {
   saveSeting: '/collection_seting/saveSeting',
   saveJobSeting: '/collection_seting/saveJobSeting',
   saveCompanySeting: '/collection_seting/saveCompanySeting',
-  saveAccountSeting: '/collection_seting/saveAccountSeting'
+  saveAccountSeting: '/collection_seting/saveAccountSeting',
+
+
+  // 个人中心
+  personalIndex: '/personal/index',
+  personalAvatar: '/personal/avatar',
+  personalUsername: '/personal/username',
+  personalPassword: '/personal/password',
+  personalBindingCode: '/personal/bindingCode',
+  personalBindingMobile: '/personal/bindingMobile',
+
+
 }

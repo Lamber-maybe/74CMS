@@ -198,7 +198,7 @@ class Index extends \app\v1_0\controller\common\Base
     public function ajaxSearchLocation(){
         $alias = input('get.alias/s','joblist','trim');
         $input = [
-            'keyword'=>input('get.keyword/s',null)
+            'keyword'=>input('get.keyword/s',null,'trim,addslashes')
         ];
         $path = 'index/index/index';
         if($alias=='joblist'){

@@ -93,7 +93,7 @@ class Jobfairol extends \app\index\controller\Base{
         if(!$id){
             $this->ajaxReturn(500,'请选择网络招聘会');
         }
-        $info = model('JobfairOnline')->field('id,title,click,content,starttime,endtime')->where('id',$id)->find();
+        $info = model('JobfairOnline')->field('id,title,click,content,starttime,endtime,pc_header_logo')->where('id',$id)->find();
         if(null === $info){
             $this->ajaxReturn(500,'请选择网络招聘会');
         }
@@ -121,18 +121,88 @@ class Jobfairol extends \app\index\controller\Base{
             ->where('a.is_display', 1)
             ->where('a.audit',1)
             ->count();
+
+        $imgs = $imageUrl = [];
+
+        if($info['pc_header_logo']) $imgs[] = $info['pc_header_logo'];
+        if(!empty($imgs)){
+            $imageUrl = model('Uploadfile')->getFileUrlBatch($imgs);
+        }
+        $info['banner'] = isset($imageUrl[$info['pc_header_logo']])?$imageUrl[$info['pc_header_logo']]:'';
+        $this->logAdd();
+
+        $info['log'] = $this->getLog();
         model('JobfairOnline')->where('id',$id)->setInc('click',1);
         $this->initPageSeo('jobfairolshow',['title'=>$info['title']]);
         $this->assign('pageHeader',$this->pageHeader);
         $this->assign('info',$info);
         return $this->fetch('show');
     }
+
+    /**
+     * 网络招聘会详情
+     */
+    public function details(){
+        $id = request()->route('id/d',0,'intval');
+        if(is_mobile_request()===true){
+            $this->redirect(config('global_config.mobile_domain').'jobfairol/'.$id,302);
+            exit;
+        }
+        if(!$id){
+            $this->ajaxReturn(500,'请选择网络招聘会');
+        }
+        $info = model('JobfairOnline')->field('id,title,click,content,starttime,endtime,pc_header_logo,addtime')->where('id',$id)->find();
+
+        if(null === $info){
+            $this->ajaxReturn(500,'请选择网络招聘会');
+        }
+        $info = $info->toArray();
+        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
+        $timestamp = time();
+
+        if ($info['starttime'] <= $timestamp && $info['endtime'] > $timestamp) {
+            $info['score'] = 2;
+        } else if ($info['starttime'] > $timestamp) {
+            $info['score'] = 1;
+        } else {
+            $info['score'] = 0;
+        }
+        $info['total_company'] = model('JobfairOnlineParticipate')
+            ->where('jobfair_id',$id)
+            ->where('utype',1)
+            ->where('audit',1)
+            ->count();
+        $info['total_job'] = model('Job')
+            ->alias('a')
+            ->join(config('database.prefix') . 'jobfair_online_participate b', 'a.uid=b.uid', 'left')
+            ->where('b.jobfair_id',$id)
+            ->where('b.utype',1)
+            ->where('b.audit',1)
+            ->where('a.is_display', 1)
+            ->where('a.audit',1)
+            ->count();
+        $imgs = $imageUrl = [];
+
+        if($info['pc_header_logo']) $imgs[] = $info['pc_header_logo'];
+        if(!empty($imgs)){
+            $imageUrl = model('Uploadfile')->getFileUrlBatch($imgs);
+        }
+        $info['addtime'] = !empty($info['addtime']) ? date('Y-m-d',$info['addtime']):'';
+        $info['banner'] = isset($imageUrl[$info['pc_header_logo']])?$imageUrl[$info['pc_header_logo']]:'';
+        $info['log'] = $this->getLog();
+
+        model('JobfairOnline')->where('id',$id)->setInc('click',1);
+        $this->initPageSeo('jobfairolshow',['title'=>$info['title']]);
+        $this->assign('pageHeader',$this->pageHeader);
+        $this->assign('info',$info);
+        return $this->fetch('details');
+    }
     /**
      * 参会企业列表
      */
     public function comlist(){
         $jobfair_id = input('get.jobfair_id/d', 0, 'intval');
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if(!$jobfair_id){
@@ -223,7 +293,7 @@ class Jobfairol extends \app\index\controller\Base{
      */
     public function joblist(){
         $jobfair_id = input('get.jobfair_id/d', 0, 'intval');
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if(!$jobfair_id){
@@ -342,7 +412,7 @@ class Jobfairol extends \app\index\controller\Base{
      */
     public function resumelist(){
         $jobfair_id = input('get.jobfair_id/d', 0, 'intval');
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if(!$jobfair_id){
@@ -550,5 +620,132 @@ class Jobfairol extends \app\index\controller\Base{
             $this->ajaxReturn(500, model('JobfairOnlineParticipate')->getError());
         }
         $this->ajaxReturn(200, '报名成功，请等待管理员审核');
+    }
+
+    //查看log
+    public function getLog()
+    {
+        $time = strtotime(date('Y-m-d'));
+        $data = model('JobfairOnlineViewLog')->alias('a')
+            ->join('qs_member b','b.uid=a.uid','left')
+            ->where('a.addtime','gt',$time)
+            ->field("a.*,
+            case when a.type = 1 then (select companyname from qs_company where id=a.content_id)
+             when a.type = 2 then (select jobname from qs_job where id = a.content_id)
+             when a.type = 3 then (select fullname from qs_resume where id = a.content_id) end as content_name,
+             case when b.utype = 1 then (select companyname from qs_company where uid = a.uid)
+              when b.utype = 2 then (select fullname from qs_resume where uid = a.uid) end as member_name
+             ")->order('a.addtime','desc')
+            ->select();
+        $res = [];
+        foreach($data as $k=>$v)
+        {
+            if (!empty($v['member_name']))
+            {
+                $member_name = substr($v['member_name'],3,strlen($v['member_name'])-3);
+                $v['member_name'] = str_replace($member_name,'**',$v['member_name']);
+            }
+            $user_name = empty($v['uid']) ? '游客' : $v['member_name'];
+            $date = $this->time_tran($v['addtime']);
+
+            if (!empty($v['content_name']))
+            {
+                $content_name = substr($v['content_name'],3,strlen($v['content_name'])-3);
+                $v['content_name'] = str_replace($content_name,'**',$v['content_name']);
+            }
+            switch ($v['type'])
+            {
+                case 0:
+                    $content = '进入会场';
+                    break;
+                case 1:
+                    $content = '查看了'.$v['content_name'].'企业';
+                    break;
+                case 2:
+                    $content = '查看了'.$v['content_name'].'职位';
+                    break;
+                case 3:
+                    $content = '查看了'.$v['content_name'].'简历';
+                    break;
+            }
+            $res[] = [
+                'logo' =>
+                    $v['photo_img'] > 0
+                        ? model('Uploadfile')->getFileUrl($v['photo_img'])
+                        : default_empty('photo'),
+                'content' => $user_name.$date.$content
+            ];
+        }
+        return $res;
+    }
+    public function logAdd()
+    {
+        $arr = [
+            'uid' => !empty($this->userinfo->uid) ? $this->userinfo->uid : 0,
+            'addtime' => time(),
+            'type' => input('get.type/d', 0, 'intval'),
+            'content_id' => input('get.content_id/d', 0, 'intval'),
+        ];
+        $arr['photo_img'] = 0;
+        $utype = isset($this->userinfo->utype) ? $this->userinfo->utype : 0;
+
+        if ($arr['uid'] > 0 &&  $utype > 0)
+        {
+            if($utype == 2)
+            {
+                $arr['photo_img'] = model('resume')->where(['uid'=>$arr['uid']])->value('photo_img');
+            }else
+            {
+                $arr['photo_img'] = model('company')->where(['uid'=>$arr['uid']])->value('logo');
+            }
+        }
+        model('JobfairOnlineViewLog')->insert($arr);
+
+    }
+    public function time_tran($the_time)
+    {
+        $now_time = time();
+        $show_time = $the_time;
+
+        $dur = $now_time - $show_time;
+        if ($dur < 0) {
+
+            return date('Y-m-d',$the_time);
+
+        } else {
+
+            if ($dur < 60) {
+
+                return $dur . '秒前';
+
+            } else {
+
+                if ($dur < 3600) {
+
+                    return floor($dur / 60) . '分钟前';
+
+                } else {
+
+                    if ($dur < 86400) {
+
+                        return floor($dur / 3600) . '小时前';
+
+                    } else {
+
+                        if ($dur < 259200) {//3天内
+
+                            return floor($dur / 86400) . '天前';
+
+                        } else {
+
+                            return date('Y-m-d',$the_time);
+
+                        }
+
+                    }
+
+                }
+            }
+        }
     }
 }

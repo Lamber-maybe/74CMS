@@ -467,7 +467,7 @@ class Company extends \app\index\controller\Base
         $list = model('Company')
             ->alias('a')
             ->field(
-                'a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
+                'distinct a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
             )
             ->join(
                 config('database.prefix') . 'member_setmeal b',

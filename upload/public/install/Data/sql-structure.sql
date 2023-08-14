@@ -47,6 +47,12 @@ CREATE TABLE `qs_admin` (
   `last_login_ipaddress` varchar(30) NOT NULL,
   `openid` varchar(50) NOT NULL DEFAULT '',
   `is_sc` tinyint(3) NOT NULL DEFAULT 0 COMMENT '是否是销售',
+  `qy_userid` varchar(50) NOT NULL DEFAULT '' COMMENT '企业微信成员UserID',
+  `qy_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '企业微信成员非企业成员的标识',
+  `bind_qywx` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否绑定企业微信[0:否;1:是;]',
+  `bind_qywx_time` int(10) NOT NULL DEFAULT '0' COMMENT '绑定企业微信时间',
+  `mobile` char(11) NOT NULL DEFAULT '',
+  `avatar` varchar(200) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin||-_-||
@@ -56,7 +62,7 @@ CREATE TABLE `qs_admin_log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `admin_id` int(10) unsigned NOT NULL,
   `admin_name` varchar(30) NOT NULL,
-  `content` varchar(255) NOT NULL,
+  `content` text NOT NULL,
   `is_login` tinyint(1) unsigned NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `ip` varchar(30) NOT NULL,
@@ -318,7 +324,7 @@ CREATE TABLE `qs_company_info` (
   `comid` int(10) unsigned NOT NULL,
   `uid` int(10) unsigned NOT NULL,
   `website` varchar(200) NOT NULL,
-  `short_desc` varchar(255) NOT NULL,
+  `short_desc` text NOT NULL,
   `content` text NOT NULL,
   `address` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
@@ -1947,6 +1953,8 @@ CREATE TABLE `qs_jobfair_online` (
   `click` int(10) unsigned NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `qrcode` int(10) unsigned NOT NULL,
+  `pc_header_logo` int(10) NOT NULL COMMENT 'pc头部图片id',
+  `mobile_header_logo` int(10) NOT NULL COMMENT '触屏头部图片id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_jobfair_online||-_-||
@@ -2347,3 +2355,14 @@ CREATE TABLE `qs_marketing_template` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_marketing_template||-_-||
+DROP TABLE IF EXISTS `qs_jobfair_online_view_log`;
+CREATE TABLE `qs_jobfair_online_view_log` (
+id int(11) NOT NULL AUTO_INCREMENT,
+uid int(11) NOT NULL COMMENT 'uid',
+addtime int(11) NOT NULL COMMENT '添加时间',
+type tinyint(1) NOT NULL DEFAULT '0' COMMENT '查看类型 1-企业 2-职位 3-简历',
+content_id int(10) NOT NULL COMMENT '查看内容id（企业id/职位id/会员简历id）',
+photo_img int(10) NOT NULL DEFAULT '0' COMMENT '头像id',
+PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='网络招聘会查看记录表';
+||-_-||qs_jobfair_online_view_log||-_-||

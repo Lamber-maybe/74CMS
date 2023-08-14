@@ -20,12 +20,13 @@ class Upgrade extends \app\common\controller\Backend
     public function newVersionList()
     {
         $current_version = config('version.version');
+        $edition_en = config('version.edition_en');
         $ver = explode(".",$current_version);
         $version_int_1 = str_pad($ver[0], 2, '0', STR_PAD_LEFT);
         $version_int_2 = str_pad($ver[1], 2, '0', STR_PAD_LEFT);
         $version_int_3 = str_pad($ver[2], 3, '0', STR_PAD_LEFT);
         $current_version_int = $version_int_1 . $version_int_2 . $version_int_3;
-        $url = $this->api.'/getVersionList?version='.$current_version_int;
+        $url = $this->api.'/getVersionList?version='.$current_version_int.'&edition='.$edition_en;
         $result = https_request($url);
         if(false === $result){
             $this->ajaxReturn(500, 'http请求数据失败');
@@ -83,7 +84,11 @@ class Upgrade extends \app\common\controller\Backend
         $save_dir = $this->save_dir.$dirname.'/';
         $unzip_dir = $this->unzip_dir.$dirname.'/';
         if(!is_dir($save_dir)){
+            if(is_writeable($save_dir)){
+
+            }
             mkdir($save_dir, 0777,true);
+            chmod($save_dir,0777);
         }else{
             if(file_exists($save_dir)){
                 rmdirs($save_dir);
@@ -91,6 +96,7 @@ class Upgrade extends \app\common\controller\Backend
         }
         if(!is_dir($unzip_dir)){
             mkdir($unzip_dir, 0777,true);
+            chmod($unzip_dir,0777);
         }else{
             if(file_exists($unzip_dir)){
                 rmdirs($unzip_dir);
@@ -126,11 +132,13 @@ class Upgrade extends \app\common\controller\Backend
         if(!file_exists($save_file)){
             $this->ajaxReturn(200, '下载进度',0);
         }
-        $file = new Download();
         $save_file_size =intval(filesize($save_file));
         $couter = $save_file_size/$path_size;
         $progress = floatval(sprintf("%.2f",round($couter,2)));
         $nums = $progress*80;
+        if($nums<80 && !file_exists($save_dir.'finish.lock')){
+            $nums = 79;
+        }
         $this->ajaxReturn(200, '升级进度',$nums);
     }
     /**
@@ -179,12 +187,59 @@ class Upgrade extends \app\common\controller\Backend
         if(!is_dir($cover_dir)){
             $this->ajaxReturn(500, '覆盖文件失败，没有检测到覆盖包文件');
         }
+        //如果覆盖包里包含admin文件夹，检查是否需要把admin替换成别的名称
+        $admin_dirname = $this->getCurrentAdminDirname();
+        if(is_dir($cover_dir.'/public/admin')){
+            if($admin_dirname!='admin'){
+                rename($cover_dir.'/public/admin',$cover_dir.'/public/'.$admin_dirname);
+            }
+        }
+
         //覆盖cover文件
         $num = $this->copy_merge($cover_dir,PUBLIC_PATH.'../');
         //清空压缩包目录和解压目录
         rmdirs($this->save_dir);
         rmdirs($this->unzip_dir);
         $this->ajaxReturn(200, '升级完成，共更新'.$num.'个文件');
+    }
+
+    /**
+     * 获取当前admin目录的目录名
+     * @return mixed|string
+     */
+    protected function getCurrentAdminDirname(){
+        //定义后台目录名变量
+        $admin_dirname = 'admin';
+        //列出白名单目录
+        $dir_white_list = [
+            'assets',
+            'baiduxml',
+            'adminm',
+            'install',
+            'static',
+            'tpl',
+            'upload'
+        ];
+        // 扫描$con目录下的所有文件
+        $public_dirname_list = scandir(PUBLIC_PATH);
+        foreach($public_dirname_list as $k=>$v){
+            if($v!="." && $v!=".." && is_dir($v) && !in_array($v,$dir_white_list)){
+                $child_dir_list = scandir(PUBLIC_PATH.$v);
+                if(in_array('.marker',$child_dir_list)){
+                    $admin_dirname = $v;
+                    break;
+                }
+                if(in_array('ueditor',$child_dir_list)){
+                    $admin_dirname = $v;
+                    break;
+                }
+            }
+        }
+        //在admin目录下生成标识
+        if(!file_exists(PUBLIC_PATH.$admin_dirname.'/.marker')){
+            file_put_contents(PUBLIC_PATH.$admin_dirname.'/.marker','');
+        }
+        return $admin_dirname;
     }
 
     /**
@@ -204,6 +259,7 @@ class Upgrade extends \app\common\controller\Backend
         // 如果目标目录不存在，则创建。
         if (! is_dir ( $target )) {
             mkdir ( $target, 0777, true );
+            chmod($target,0777);
             $count ++;
         }
         // 搜索目录下的所有文件

@@ -10,7 +10,7 @@ class Job extends \app\v1_0\controller\common\Base
     public function index()
     {
         $search_type = input('get.search_type/s', '', 'trim');
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $emergency = input('get.emergency/d', 0, 'intval');
         $famous = input('get.famous/d', 0, 'intval');
         $company_id = input('get.company_id/d', 0, 'intval');
@@ -194,7 +194,7 @@ class Job extends \app\v1_0\controller\common\Base
      */
     public function map()
     {
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         $south_west_lat = input('get.south_west_lat/f', 0, 'floatval');
         $south_west_lng = input('get.south_west_lng/f', 0, 'floatval');
         $north_east_lat = input('get.north_east_lat/f', 0, 'floatval');

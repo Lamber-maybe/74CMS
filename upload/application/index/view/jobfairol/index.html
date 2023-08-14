@@ -29,7 +29,8 @@
 							<span>{#$vo.click#}</span>
 						</span>
 					</p>
-					<p class="text3">举办时间：{#:date('Y-m-d h:i:s',$vo.starttime)#}  至  {#:date('Y-m-d h:i:s',$vo.endtime)#} </p>
+<!--					修改网络招聘会前后台时间格式不一致问题，小写h改为大写H-->
+					<p class="text3">举办时间：{#:date('Y-m-d H:i:s',$vo.starttime)#}  至  {#:date('Y-m-d H:i:s',$vo.endtime)#} </p>
 				</div>
 
 				<div class="networkJobFair_btn">

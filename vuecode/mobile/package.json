@@ -27,6 +27,7 @@
     "vue": "^2.6.11",
     "vue-awesome-swiper": "^4.1.1",
     "vue-axios": "^2.1.5",
+    "vue-baberrage": "^3.2.4",
     "vue-baidu-map": "^0.21.22",
     "vue-clipboard2": "^0.3.1",
     "vue-cookies": "^1.7.4",

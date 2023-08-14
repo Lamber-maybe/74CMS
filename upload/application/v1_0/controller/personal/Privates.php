@@ -40,7 +40,7 @@ class Privates extends \app\v1_0\controller\common\Base
      */
     public function searchCompany()
     {
-        $keyword = input('get.keyword/s', '', 'trim');
+        $keyword = input('get.keyword/s', '', 'trim,addslashes');
         if ($keyword == '') {
             $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
         }

@@ -13,7 +13,7 @@ class Resume extends \app\index\controller\Base
             $this->redirect(config('global_config.mobile_domain').'resumelist',302);
             exit;
         }
-        $keyword = request()->route('keyword/s', '', 'trim');
+        $keyword = request()->route('keyword/s', '', 'trim,addslashes');
         $listtype = request()->route('listtype/s','','trim');
         $category1 = request()->route('c1/d',0,'intval');
         $category2 = request()->route('c2/d',0,'intval');

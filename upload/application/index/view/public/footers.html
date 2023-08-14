@@ -1,0 +1,233 @@
+<div class="indexFooter_wrapper" id="footerContent">
+    <div class="indexFooter clearfix">
+        <div class="clearfix float">
+            <div class="float clearfix">
+                <ul class="footer_list  float">
+                    <li class="fc">个人</li>
+                    <li><a href="javascript:;" @click="handlerResumeIndex">登记简历</a></li>
+                    <li><a href="javascript:;" @click="handlerPersonalJobApplyList">求职管理</a></li>
+                    <li><a href="{#:url('index/job/index')#}">最新职位</a></li>
+                    <li><a href="{#:url('index/company/index')#}">企业信息</a></li>
+                </ul>
+                
+                <ul class="footer_list float">
+                    <li class="fc">企业</li>
+                    <li><a href="javascript:;" @click="handlerCompanyIndex">企业入驻</a></li>
+                    <li><a href="javascript:;" @click="handlerAddJob">发布招聘</a></li>
+                    <li><a href="javascript:;" @click="handlerCompanyService">会员服务</a></li>
+                    <li><a href="javascript:;" @click="handlerCompanyJobApplyList">招聘管理</a></li>
+                </ul>
+                
+                <?php 
+                    $explain_data1 = model('Explain')->where('is_display',1)->order('sort_id desc,id asc')->limit(4)->column('id,title,link_url'); 
+                    $explain_list1 = [];
+                    foreach($explain_data1 as $key=>$value){
+                        $arr = $value;
+                        if($arr['link_url']==''){
+                            $arr['link_url'] = url('index/explain/show',['id'=>$arr['id']]);
+                            $arr['target'] = '_self';
+                        }else{
+                            $arr['target'] = '_blank';
+                        }
+                        $explain_list1[] = $arr;
+                    }
+                ?>
+                <ul class="footer_list float">
+                    <li class="fc">特色</li>
+                    {#volist name="explain_list1" id="vo"#}
+                    <li><a target="{#$vo.target#}" href="{#$vo.link_url#}">{#$vo.title#}</a></li>
+                    {#/volist#}
+                </ul>
+                
+                <?php 
+                    $help_list = model('Help')->where('is_display',1)->order('sort_id desc')->limit(4)->column('id,title,cid'); 
+                ?>
+                <ul class="footer_list float">
+                    <li class="fc">帮助</li>
+                    {#volist name="help_list" id="vo"#}
+                    <li><a href="{#:url('index/help/show',['id'=>$vo.id])#}">{#$vo.title#}</a></li>
+                    {#/volist#}
+                </ul>
+            </div>
+            <div class="code_box float clearfix">
+                <div class="float code1">
+                    <p>微信公众号</p>
+                    <div class="img">
+                        <img class="codeImg" class="codeImg" src="{#$global_config.wechat_qrcode#}" />
+                    </div>
+                </div>
+                <div class="float code2">
+                    <P>手机微信版</P>
+                    <div class="img1">
+                        <img v-cloak class="codeImg" class="codeImg" :src="mobileQrcode" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer_contactType">
+            <p class="contact_title">联系电话</p>
+            <div class="contact_tel">
+                <img src="__ROOT__/assets/images/contact_icon.png" >
+                <span>{#$global_config.contact_tel#}</span>
+            </div>
+            <p class="job_time">服务时间：{#$global_config.service_time#}</p>
+            <p class="job_QQ">客服QQ：<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={#$global_config.service_qq#}&site=在线客服&menu=yes">{#$global_config.service_qq#}</a></p>
+        </div>
+    </div>
+    
+    <div class="indexFooter_nav_con">
+        <ul class="indexFooter_nav clearfix">
+            <li><a href="{#:url('index/index/index')#}">网站首页</a></li>
+            <?php 
+                $explain_data2 = model('Explain')->where('is_display',1)->order('sort_id desc,id asc')->limit(4)->page(2)->column('id,title,link_url'); 
+                $explain_list2 = [];
+                foreach($explain_data2 as $key=>$value){
+                    $arr = $value;
+                    if($arr['link_url']==''){
+                        $arr['link_url'] = url('index/explain/show',['id'=>$arr['id']]);
+                        $arr['target'] = '_self';
+                    }else{
+                        $arr['target'] = '_blank';
+                    }
+                    $explain_list2[] = $arr;
+                }
+            ?>
+            {#volist name="explain_list2" id="vo"#}
+            <li><a target="{#$vo.target#}" href="{#$vo.link_url#}">{#$vo.title#}</a></li>
+            {#/volist#}
+        </ul>
+    </div>
+    <div class="footer_text1">
+        <span>{#$global_config.bottom_other#}</span>	<span class="address">联系地址：{#$global_config.contact_address#}</span>
+    </div>
+    <div class="footer_text2">
+        {#if condition="$global_config.service_license!=''"#}
+        <span><a>《人力资源服务许可证》编号:{#$global_config.service_license#}</a></span>
+        {#/if#}
+        <span><a target="_blank" href="https://beian.miit.gov.cn/">网站备案:{#$global_config.icp#}</a></span>
+        {#if condition="$global_config.network_security!=''"#}
+		<span class="security"><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={#:findNumByStr($global_config.network_security)#}">公网安备:{#$global_config.network_security#}</a></span>     
+        {#/if#}
+        {#if condition="$global_config.statistics!=''"#}
+        {#:htmlspecialchars_decode($global_config.statistics)#}
+        {#/if#}
+    </div>
+    <!--右侧固定漂浮栏-->
+<!--    {#if condition="$global_config.service_ol_open eq '1'"#}-->
+<!--    <div class="right_fixed_float">-->
+<!--        <div class="rff_cell tel">-->
+<!--            <div class="rff_cell_dia">-->
+<!--            <div class="tel_line" v-for="(item,index) in mobileList"><span class="number">{{item.value}}</span><span>（{{item.name}}）</span></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="rff_cell qq">-->
+<!--            <div class="rff_cell_dia">-->
+<!--            <a href="javascript:;" @click="wakeupQq(item.value)" class="qq_line" v-for="(item,index) in qqList">QQ交谈</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="rff_cell wx">-->
+<!--            <div class="rff_cell_dia">-->
+<!--                <div class="wx_item" v-for="(item,index) in weixinList"><img :src="item.value" alt="" class="img"><p class="img_name">{{item.name}}</p></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="rff_cell wx qr">-->
+<!--            <div class="rff_cell_dia">-->
+<!--            <div class="wx_item"><img src="{#$global_config.wechat_qrcode#}" alt="" class="img"><p class="img_name">{#$global_config.wechat_name#}</p></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    {#/if#}-->
+    <!--返回顶部-->
+<!--    <div class="right_fixed_back_top" v-if="backTopFlag" @click="backTop">顶部</div>-->
+</div>
+<script> 
+var version = "<?php echo config('version.version').' '.config('version.edition')?>";
+console.log('\n' + ' %c 74cmsSE v'+version+'  %c https://www.74cms.com ' + '\n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    var app = new Vue({
+        el: '#footerContent',
+        data:{
+            mobileQrcode:'',
+            backTopFlag: false,
+            scrollTop: 0,
+            mobileList:[],
+            qqList:[],
+            weixinList:[],
+        },
+        created:function(){
+            this.getServiceOl()
+            this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}" 
+        },
+        mounted:function () {
+            window.addEventListener('scroll', this.scrollToTop)
+        },
+        destroyed:function () {
+            window.removeEventListener('scroll', this.scrollToTop)
+        },
+        methods:{
+            wakeupQq:function(qq){
+                if(qq){
+                    window.open('http://wpa.qq.com/msgrd?v=3&uin='+qq+'&site=在线客服&menu=yes')
+                }
+            },
+            getServiceOl:function() {
+                var that = this
+                httpget(qscms.apiList.serviceOl).then(function (res) {
+                 that.mobileList = res.data.mobile
+                 that.qqList = res.data.qq
+                 that.weixinList = res.data.weixin
+                }).catch(function () { })
+            },
+            // 点击图片回到顶部方法，加计时器是为了过渡顺滑
+            backTop:function() {
+                var that = this
+                var timer = setInterval(function(){
+                var ispeed = Math.floor(-that.scrollTop / 5)
+                document.documentElement.scrollTop = document.body.scrollTop = that.scrollTop + ispeed
+                if (that.scrollTop === 0) {
+                    clearInterval(timer)
+                }
+                }, 16)
+            },
+            // 为了计算距离顶部的高度，当高度大于60显示回顶部图标，小于60则隐藏
+            scrollToTop:function() {
+                var that = this
+                that.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+                that.backTopFlag = that.scrollTop > 60;
+            },
+            handlerResumeIndex:function(){
+                location.href = qscms.locationList.personalResume
+            },
+            handlerPersonalJobApplyList:function(){
+                location.href = qscms.locationList.personalJobApplyList
+            },
+            handlerCompanyIndex:function(){
+                location.href = qscms.locationList.indexCompany
+            },
+            handlerAddJob:function(){
+                httpget(qscms.apiList.companyCheckJobaddNum, {}).then(function(res){
+                    if (res.data.enable_addjob_num <= 0) {
+                        this.$confirm('您当前是' +
+                            res.data.setmeal_name +
+                            '，当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！','系统提示',{
+                            confirmButtonText: '升级套餐',
+                            type: 'warning'
+                        })
+                        .then(function(){
+                            location.href = qscms.locationList.companySetmealAdd
+                        })
+                        .catch(function(){})
+                        return false
+                    } else {
+                        location.href = qscms.locationList.companyJobAdd
+                    }
+                }).catch(function(){})
+            },
+            handlerCompanyService:function(){
+                location.href = qscms.locationList.companyService
+            },
+            handlerCompanyJobApplyList:function(){
+                location.href = qscms.locationList.companyJobApplyList
+            },
+        }
+    })
+</script>

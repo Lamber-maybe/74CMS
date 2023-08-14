@@ -16,7 +16,13 @@ class Login extends \app\common\controller\Backend
         $data['password'] = input('post.password/s', '', 'trim');
         $data['code'] = input('post.code/s', '', 'trim');
         $data['secret_str'] = input('post.secret_str/s', '', 'trim');
-        $validate = validate('Login');
+        /**
+         * 明文传输漏洞
+         * 旧代码:
+         *  $validate = validate('Login');
+         * @since    2022/4/27
+         */
+        $validate = validate('LoginMd5');
         if (!$validate->check($data)) {
             $this->ajaxReturn(0, $validate->getError());
         } else {

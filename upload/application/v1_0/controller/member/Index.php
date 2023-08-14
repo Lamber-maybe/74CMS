@@ -14,20 +14,52 @@ class Index extends \app\v1_0\controller\common\Base
         if($this->userinfo){
             if($this->userinfo->utype==1){
                 $data['jobapply'] = model('JobApply')->where('company_uid',$this->userinfo->uid)->count();
-                $data['interview'] = model('CompanyInterview')->where('uid',$this->userinfo->uid)->count();
+                $data['interview'] = model('CompanyInterview')
+                    ->alias('a')
+                    ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
+                    ->where('a.uid', $this->userinfo->uid)
+                    ->where('b.id','not null')
+                    ->count();
                 $data['view'] = model('ViewResume')->alias('a')
                                 ->join(config('database.prefix').'resume b','a.personal_uid=b.uid','LEFT')
                                 ->where('a.company_uid',$this->userinfo->uid)
                                 ->where('b.id','not null')
                                 ->count();
                 $companyinfo = model('Company')
-                    ->field('logo')
+                    ->field('logo,nature,trade,scale')
                     ->where('uid', $this->userinfo->uid)
                     ->find();
                 $data['photo'] =
                     $companyinfo['logo'] > 0
                     ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
                     : default_empty('logo');
+                $job_data = model('Job')
+                    ->where('uid', $this->userinfo->uid)
+                    ->where('is_display', 1)
+                    ->column('id,company_id,jobname', 'id');
+                $data['jobNum'] = isset($job_data)
+                    ? count($job_data)
+                    : 0;
+
+                /**
+                 * 首页新增企业信息
+                 */
+                $category_data = model('Category')->getCache();
+                $data['more']['nature_text'] = isset(
+                    $category_data['QS_company_type'][$companyinfo['nature']]
+                )
+                    ? $category_data['QS_company_type'][$companyinfo['nature']]
+                    : '';
+                $data['more']['trade_text'] = isset(
+                    $category_data['QS_trade'][$companyinfo['trade']]
+                )
+                    ? $category_data['QS_trade'][$companyinfo['trade']]
+                    : '';
+                $data['more']['scale_text'] = isset(
+                    $category_data['QS_scale'][$companyinfo['scale']]
+                )
+                    ? $category_data['QS_scale'][$companyinfo['scale']]
+                    : '';
             }
             if($this->userinfo->utype==2){
                 $data['jobapply'] = model('JobApply')->where('personal_uid',$this->userinfo->uid)->count();
@@ -40,13 +72,29 @@ class Index extends \app\v1_0\controller\common\Base
                             ->where('c.jobname','not null')
                             ->count();
                 $basic = model('Resume')
-                    ->field('photo_img')
+                    ->field('id,photo_img,sex,birthday,enter_job_time,education')
                     ->where('uid', $this->userinfo->uid)
                     ->find();
                 $data['photo'] =
                     $basic['photo_img'] > 0
                         ? model('Uploadfile')->getFileUrl($basic['photo_img'])
                         : default_empty('photo');
+                /**
+                 * 首页新增个人信息
+                 */
+                $data['more']['education_text'] = isset(
+                    model('BaseModel')->map_education[$basic['education']]
+                )
+                    ? model('BaseModel')->map_education[$basic['education']]
+                    : '';
+                $data['more']['age'] = date('Y') - intval($basic['birthday']);
+                $data['more']['sex'] = $basic['sex'];
+                $data['more']['experience_text'] =
+                    $basic['enter_job_time'] == 0
+                        ? '无经验'
+                        : format_date($basic['enter_job_time']);
+                $data['more']['complete_percent'] = model('Resume')
+                    ->countCompletePercent($basic['id']);
             }
         }
         

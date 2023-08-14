@@ -85,22 +85,21 @@ class Weixin extends \app\common\controller\Base
      */
     protected function responseMsg() {
         if (!$this->checkSignature()) exit('false');
-            //解密
-	if ($postStr = file_get_contents("php://input")) {
+        //解密
+        if ($postStr = file_get_contents("php://input")) {
             if ($this->encrypt_type == 'aes') {
                 $this->pc = new \WXBizMsgCrypt(config('global_config.wechat_token'), config('global_config.wechat_encodingaeskey'), config('global_config.wechat_appid'));
                 $decryptMsg = "";//解密后的明文
                 $errCode = $this->pc->decryptMsg($this->msg_signature, $this->timestamp, $this->nonce, $postStr, $decryptMsg);
                 if ($errCode != 0) {
-                    echo "";
-                    exit;
+                    exit('');
                 }
                 $postStr = $decryptMsg;
             }
             libxml_disable_entity_loader(true);
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
             $rxType = trim($postObj->MsgType);
-        //消息类型分离
+            //消息类型分离
             switch ($rxType) {
                 case "event":
                     $this->receiveEvent($postObj);
@@ -115,22 +114,24 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($postObj,"unknown msg type: " . $rxType);
                     break;
             }
-        } else {
-            echo "";
-            exit;
         }
+        exit('');
     }
     /**
      * 关注公众号
      */
     protected function subscribe($object){
         $data['openid'] = addslashes($object->FromUserName);
-        model('WechatFans')->save($data);
+        $check = model('WechatFans')->where('openid',$data['openid'])->find();
+        if($check===null){
+            model('WechatFans')->save($data);
+        }
+
         $checkBindInfo = model('MemberBind')
-                        ->where('is_subscribe',0)
-                        ->where('openid',$data['openid'])
-                        ->where('type','weixin')
-                        ->find();
+            ->where('is_subscribe',0)
+            ->where('openid',$data['openid'])
+            ->where('type','weixin')
+            ->find();
         if($checkBindInfo!==null){
             $checkBindInfo->is_subscribe = 1;
             $checkBindInfo->save();
@@ -147,10 +148,10 @@ class Weixin extends \app\common\controller\Base
         $openid = addslashes($object->FromUserName);
         model('WechatFans')->where('openid',$openid)->delete();
         $checkBindInfo = model('MemberBind')
-                        ->where('is_subscribe',1)
-                        ->where('openid',$openid)
-                        ->where('type','weixin')
-                        ->find();
+            ->where('is_subscribe',1)
+            ->where('openid',$openid)
+            ->where('type','weixin')
+            ->find();
         if($checkBindInfo!==null){
             $checkBindInfo->is_subscribe = 0;
             $checkBindInfo->save();
@@ -190,10 +191,8 @@ class Weixin extends \app\common\controller\Base
                 break;
             default:
                 $this->subscribe($object);
-                // $this->outputWelcome($object);
                 break;
         }
-        exit;
     }
     /**
      * 接收文本消息
@@ -202,7 +201,7 @@ class Weixin extends \app\common\controller\Base
     {
         $keyword = trim($object->Content);
         $keyword = addslashes($keyword);
-		$this->checkWeixinOpen($object);
+        $this->checkWeixinOpen($object);
         //自动回复模式
         $this->enterSearch($object, $keyword);
     }
@@ -212,7 +211,7 @@ class Weixin extends \app\common\controller\Base
     protected function receiveVoice($object) {
         $Recognition = trim($object->Recognition);
         $keyword = rtrim($object->Recognition,'。');
-		$this->checkWeixinOpen($object);
+        $this->checkWeixinOpen($object);
         //自动回复模式
         $this->enterSearch($object, $keyword);
     }
@@ -240,14 +239,12 @@ class Weixin extends \app\common\controller\Base
                 $this->actionUnbind($object);
             } else {
                 $this->outputText($object,'您还没有绑定帐号！');
-                exit;
             }
         } else {
             //检查关键词表
             $check_keyword = model('WechatKeyword')->where('word',$keyword)->find();
             if($check_keyword!==null){
                 $this->outputKeyword($object,$check_keyword);
-                exit;
             }else{
                 $params = [
                     'count_total'=>0,
@@ -268,10 +265,8 @@ class Weixin extends \app\common\controller\Base
                         'Url'=>$link_url
                     ];
                     $this->outputArticle($object,$content_arr);
-                    exit;
                 }else{
                     $this->outputText($object,"没有找到包含关键字 " . $keyword . " 的信息，试试其他关键字");
-                    exit;
                 }
             }
         }
@@ -289,32 +284,11 @@ class Weixin extends \app\common\controller\Base
         return $memberinfo;
     }
     /**
-     * 闸机开门
-     */
-    public function openGate($event_key, $object) {
-        if (stripos($event_key, 'gate_') !== false) {
-            $usinfo = $this->getUserInfo($object->FromUserName);
-            $event_key_arr = explode("_", $event_key);
-            if ($event_key_arr[1] == 'in') {
-                $status = 'opendoorin1';
-            } else {
-                $status = 'opendoorout1';
-            }
-            $url = "http://gate.74cms.com/Pad/Index/index";
-            $data['userinfo'] = json_encode($usinfo);
-            $data['status'] = $status;
-            $data['tag'] = $event_key_arr[2];
-            $data['secret'] = $event_key_arr[3];
-            https_request($url, $data);
-        }
-    }
-    /**
      * 扫描事件
      */
     protected function actionScan($object,$subscribe=0) {
         //用户未关注时，关注后的推送数据包中，EventKey含有“qrscene_”前缀
         $event_key = stripos($object->EventKey, 'qrscene_') === false ? $object->EventKey : ltrim($object->EventKey, 'qrscene_');
-        $this->openGate($event_key, $object);
         parse_str($event_key,$event);
         $sceneQrcodeInfo = null;
         if(isset($event['scene_uuid'])){
@@ -326,6 +300,9 @@ class Weixin extends \app\common\controller\Base
                 }
             }
         }
+        if(!isset($event['alias'])){
+            return;
+        }
         switch ($event['alias']) {
             case 'mapQrcode':
                 $jobid = intval($event['jobid']);
@@ -334,11 +311,11 @@ class Weixin extends \app\common\controller\Base
                     break;
                 }
                 $jobinfo = model('Job')->alias('a')
-                        ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
-                        ->where('b.id','NOT NULL')
-                        ->where('a.id',$jobid)
-                        ->field('a.jobname,a.map_lat,a.map_lng,a.address,b.companyname')
-                        ->find();
+                    ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+                    ->where('b.id','NOT NULL')
+                    ->where('a.id',$jobid)
+                    ->field('a.jobname,a.map_lat,a.map_lng,a.address,b.companyname')
+                    ->find();
                 if($jobinfo===null){
                     $this->outputText($object,'职位不存在或已删除');
                     break;
@@ -363,11 +340,11 @@ class Weixin extends \app\common\controller\Base
                     break;
                 }
                 $jobinfo = model('Job')->alias('a')
-                        ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
-                        ->where('b.id','NOT NULL')
-                        ->where('a.id',$jobid)
-                        ->field('a.id,a.jobname,a.amount,a.minwage,a.maxwage,a.negotiable,a.address,a.content,b.companyname,b.logo')
-                        ->find();
+                    ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+                    ->where('b.id','NOT NULL')
+                    ->where('a.id',$jobid)
+                    ->field('a.id,a.jobname,a.amount,a.minwage,a.maxwage,a.negotiable,a.address,a.content,b.companyname,b.logo')
+                    ->find();
                 if($jobinfo===null){
                     $this->outputText($object,'职位不存在或已删除');
                     break;
@@ -522,8 +499,8 @@ class Weixin extends \app\common\controller\Base
                     $mobile_page = config('global_config.mobile_domain');
                 }
                 if(isset($event['scene_uuid'])){
-                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
-                    }
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                }
 
                 $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
                 $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
@@ -542,8 +519,8 @@ class Weixin extends \app\common\controller\Base
                     $mobile_page = config('global_config.mobile_domain').'member/reg/personal';
                 }
                 if(isset($event['scene_uuid'])){
-                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
-                    }
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                }
 
                 $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
                 $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
@@ -562,8 +539,8 @@ class Weixin extends \app\common\controller\Base
                     $mobile_page = config('global_config.mobile_domain').'member/reg/company';
                 }
                 if(isset($event['scene_uuid'])){
-                        $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
-                    }
+                    $mobile_page .= '?scene_uuid='.$event['scene_uuid'];
+                }
                 $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
                 $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
                 $content_arr = [
@@ -616,7 +593,7 @@ class Weixin extends \app\common\controller\Base
                     $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
 
                     $content_arr = [
-                            "Title" => $news['title'].'-'.config('global_config.sitename'),
+                        "Title" => $news['title'].'-'.config('global_config.sitename'),
                         "Description" => '点击查看 >>',
                         "PicUrl" => $wechat_info_img,
                         "Url" => $mobile_page
@@ -776,12 +753,13 @@ class Weixin extends \app\common\controller\Base
                 }
 
                 if($empty_bind===true){
-                    $fansCheck = model('WechatFans')->where('openid',$openid)->find();
-                    if($fansCheck===null){
-                        $is_subscribe = 0;
-                    }else{
-                        $is_subscribe = 1;
-                    }
+                    //5.27  zxr   取消粉丝查询，解决扫码绑定无效问题
+//                    $fansCheck = model('WechatFans')->where('openid',$openid)->find();
+//                    if($fansCheck===null){
+//                        $is_subscribe = 0;
+//                    }else{
+//                        $is_subscribe = 1;
+//                    }
                     $sqlarr['uid'] = $uid;
                     $sqlarr['type'] = 'weixin';
                     $sqlarr['openid'] = $openid;
@@ -789,7 +767,7 @@ class Weixin extends \app\common\controller\Base
                     $sqlarr['nickname'] = $nickname;
                     $sqlarr['avatar'] = $avatar;
                     $sqlarr['bindtime'] = time();
-                    $sqlarr['is_subscribe'] = $is_subscribe;
+                    $sqlarr['is_subscribe'] = 1;
                     model('MemberBind')->save($sqlarr);
                     if($is_subscribe==1){
                         model('Task')->doTask($uid, $utype, 'bind_weixin');
@@ -800,7 +778,7 @@ class Weixin extends \app\common\controller\Base
             default:
                 break;
         }
-        exit;
+        return;
     }
     /**
      * 获取微信用户信息
@@ -829,7 +807,6 @@ class Weixin extends \app\common\controller\Base
             }
         }
         $this->outputText($object,$content);
-        exit;
     }
     /**
      * 联系客服
@@ -837,7 +814,6 @@ class Weixin extends \app\common\controller\Base
     protected function clickContact($object) {
         $content = '客服电话：'.config('global_config.contact_tel');
         $this->outputText($object,$content);
-        exit;
     }
     /**
      * 取消关注-解绑
@@ -851,7 +827,6 @@ class Weixin extends \app\common\controller\Base
         }else{
             $this->outputText($object,'您还没有绑定帐号！');
         }
-        exit;
     }
     /**
      * 输出文字消息
@@ -932,7 +907,7 @@ class Weixin extends \app\common\controller\Base
             ];
         }
         if(empty($datatext)){
-            exit;
+            return;
         }
         $datatext = json_encode($datatext,JSON_UNESCAPED_UNICODE);
         https_request($url , $datatext);
@@ -960,7 +935,5 @@ class Weixin extends \app\common\controller\Base
         $content = str_replace("{avatar}",$avatar,$content);
         $this->outputMessage($object,$content,'text');
         $this->outputMessage($object,config('global_config.wechat_welcome_img_mediaid'),'image');
-
-        exit('');
     }
 }

@@ -11,6 +11,7 @@ class Download extends \app\index\controller\Base
     {
         $file_dir = SYS_UPLOAD_PATH;
         $url = request()->get('url/s','','trim');
+        $this->safeCheck($url);
         $ourput_filename = request()->get('name/s','','trim');
         if(file_exists($file_dir . $url)){
             $file = fopen ( $file_dir . $url, "rb"); 
@@ -24,6 +25,10 @@ class Download extends \app\index\controller\Base
         }else{
             abort(404,'页面不存在');
         }
-        
+    }
+    protected function safeCheck($str){
+        if(false !== stripos($str,"../")) {
+            abort(404,'不合法的参数');
+        }
     }
 }

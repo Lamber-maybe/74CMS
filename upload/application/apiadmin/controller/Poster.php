@@ -8,7 +8,7 @@ class Poster extends \app\common\controller\Backend
         $list = model('Poster')->getList(input('get.type/d',1,'intval'));
         $this->ajaxReturn(200,'获取数据成功',$list);
     }
-    
+
     public function add()
     {
         $input_data = [
@@ -128,13 +128,13 @@ class Poster extends \app\common\controller\Backend
         $save_name = '';
         switch($type){
             case 'job':
-                $save_name = '职位-'.$id.'-'.$index.'.jpg';   
+                $save_name = '职位-'.$id.'-'.$index.'.jpg';
                 break;
             case 'company':
-                $save_name = '企业-'.$id.'-'.$index.'.jpg';   
+                $save_name = '企业-'.$id.'-'.$index.'.jpg';
                 break;
             case 'resume':
-                $save_name = '简历-'.$id.'-'.$index.'.jpg';   
+                $save_name = '简历-'.$id.'-'.$index.'.jpg';
                 break;
         }
         header('Content-Disposition:attachment;filename=' . $save_name);

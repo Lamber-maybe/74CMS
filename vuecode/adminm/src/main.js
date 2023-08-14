@@ -10,7 +10,8 @@ import { Icon, Cell, CellGroup, Button, Dialog, Popup, Field, Form, Switch, Date
 import BottomNav from './components/BottomNav'
 import Head from './components/Head'
 import Search from './components/Search'
-
+import md5 from 'js-md5';
+Vue.prototype.$md5 = md5;
 Vue.config.productionTip = false
 
 Vue.use(Icon)

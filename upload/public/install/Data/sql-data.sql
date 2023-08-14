@@ -944,7 +944,8 @@ INSERT INTO `qs_config` VALUES
 (NULL,'im_open','1','1','聊天功能是否开启','0'),
 (NULL,'im_notice_open','1','0','聊天公告是否开启','0'),
 (NULL,'im_notice','1','','聊天公告','0'),
-(NULL,'im_unread','1','0','聊天未读通知开关','0');
+(NULL,'im_unread','1','0','聊天未读通知开关','0'),
+(NULL, 'rand_click_article', 0, 0, '资讯浏览量随机值', 0);
 
 
 INSERT INTO `qs_cron` VALUES

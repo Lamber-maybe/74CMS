@@ -1090,8 +1090,9 @@ class Validate
         } elseif ($value instanceof File) {
             $length = $value->getSize();
         } else {
-            $length = mb_strlen((string) $value);
+            $length = mb_strlen((string) $value,'utf8');
         }
+        
         return $length <= $rule;
     }
 

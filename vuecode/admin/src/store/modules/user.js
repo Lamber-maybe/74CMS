@@ -4,6 +4,7 @@ import {
   getInfo,
   loginScan
 } from '@/api/user'
+import md5 from 'js-md5'
 import {
   getToken,
   setToken,
@@ -88,7 +89,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({
         username: username.trim(),
-        password: password,
+        password: md5(password),
         code: code,
         secret_str: secret_str
       }).then(response => {
