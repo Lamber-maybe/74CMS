@@ -78,8 +78,8 @@ class ImToken extends \app\common\model\BaseModel
             $info = $this->where('uid', $uid)->find();
         }
         $return = [
-            'userid' => $info['im_userid'],
-            'user_token' => $info['token']
+            'userid' => isset($info['im_userid'])?$info['im_userid']:'',
+            'user_token' => isset($info['token'])?$info['token']:''
         ];
         return $return;
     }

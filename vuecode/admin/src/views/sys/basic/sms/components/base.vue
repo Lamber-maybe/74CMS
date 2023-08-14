@@ -149,9 +149,9 @@ export default {
         sendsms_type: that.form.sendsms_type
       }
       if (insertData.sendsms_type == 'qscms') {
-        insertData.sms = that.form.qscms
+        insertData.account_sms = that.form.qscms
       } else {
-        insertData.sms = that.form.alisms
+        insertData.account_alisms = that.form.alisms
       }
       this.$refs[formName].validate(valid => {
         if (valid) {

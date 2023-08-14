@@ -341,7 +341,7 @@
         -这还有一些相似职位-
       </div>
       <div class="box_11" v-if="similar != undefined && similar.length > 0">
-        <div v-for="(item, index) in similar" :key="index">
+        <div v-for="(item, index) in similar" :key="index" @click="toDetail(item.id)">
           <div class="list">
             <div class="tx1">
               <div class="name">{{ item.jobname }}</div>
@@ -500,8 +500,19 @@ export default {
     // 请求数据
     this.fetchData()
   },
+  watch: {
+    '$route' (to, from) {
+      this.query_id = to.params.id
+      // 请求数据
+      this.fetchData()
+      document.body.scrollTop = document.documentElement.scrollTop = 0
+    }
+  },
   mounted () {},
   methods: {
+    toDetail (id) {
+      this.$router.push('/job/' + id)
+    },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap
     },

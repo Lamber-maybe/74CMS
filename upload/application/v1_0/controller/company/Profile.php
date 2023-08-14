@@ -402,8 +402,9 @@ class Profile extends \app\v1_0\controller\common\Base
                     if (config('global_config.audit_edit_com') == 1) {
                         $input_data['basic']['audit'] = 0;
                     }
-                    $input_data['basic']['companyname'] =
-                        $company_profile['companyname'];
+                    if($company_profile['companyname']!=''){
+                        $input_data['basic']['companyname'] = $company_profile['companyname'];
+                    }
                     $input_data['basic']['uid'] = $company_profile['uid'];
                     if($company_profile['cs_id']==0){
                         $input_data['basic']['cs_id'] = model('Member')->distributionCustomerService();

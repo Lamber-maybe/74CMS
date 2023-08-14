@@ -16,6 +16,7 @@
                position="bottom"
                :style="{ 'max-height': '70%' }"
                ref="dropDistrict"
+               :lock-scroll="false"
                @click-overlay="handleDistrictOverlay"
                @opened="openedDistrict"
     >
@@ -40,6 +41,7 @@
       position="bottom"
       :style="{ 'max-height': '70%' }"
       ref="dropCategory"
+      :lock-scroll="false"
       @click-overlay="handleCategoryOverlay"
       @opened="openedCategory"
     >

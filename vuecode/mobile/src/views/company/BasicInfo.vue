@@ -327,6 +327,7 @@
     <van-popup
       v-model="showPickerDistrict"
       position="bottom"
+      :lock-scroll="false"
       :style="{ 'max-height': '70%' }"
       ref="dropDistrict"
       @opened="openedDistrict"

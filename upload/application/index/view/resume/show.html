@@ -38,37 +38,49 @@
                                             <span class="top_triangle"></span>
                                             <div class="hover_text">
                                                 <p class="hover_text1">
-                                                    {#if condition="$return.field_rule.basic.marriage.is_display==1 && $return.base_info.marriage_text!=''"#}
+                                                    {#if condition="$return.field_rule.basic.marriage.is_display==1 &&
+                                                    $return.base_info.marriage_text!=''"#}
                                                     <span
-                                                            class="item_text1">婚姻状况：<span>{#$return.base_info.marriage_text#}</span></span>
+                                                        class="item_text1">婚姻状况：<span>{#$return.base_info.marriage_text#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.height.is_display==1 && $return.base_info.height!=''"#}
+                                                    {#if condition="$return.field_rule.basic.height.is_display==1 &&
+                                                    $return.base_info.height!=''"#}
                                                     <span
-                                                            class="item_text1">身高：<span>{#$return.base_info.height#}CM</span></span>
+                                                        class="item_text1">身高：<span>{#$return.base_info.height#}CM</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.major.is_display==1 && $return.base_info.major_text!=''"#}
+                                                    {#if condition="$return.field_rule.basic.major.is_display==1 &&
+                                                    $return.base_info.major_text!=''"#}
                                                     <span
-                                                            class="item_text1">专业：<span>{#$return.base_info.major_text#}</span></span>
+                                                        class="item_text1">专业：<span>{#$return.base_info.major_text#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.householdaddress.is_display==1 && $return.base_info.householdaddress!=''"#}
+                                                    {#if
+                                                    condition="$return.field_rule.basic.householdaddress.is_display==1
+                                                    && $return.base_info.householdaddress!=''"#}
                                                     <span
-                                                            class="item_text1">籍贯：<span>{#$return.base_info.householdaddress#}</span></span>
+                                                        class="item_text1">籍贯：<span>{#$return.base_info.householdaddress#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.residence.is_display==1 && $return.base_info.residence!=''"#}
+                                                    {#if condition="$return.field_rule.basic.residence.is_display==1 &&
+                                                    $return.base_info.residence!=''"#}
                                                     <span
-                                                            class="item_text1">现居住地：<span>{#$return.base_info.residence#}</span></span>
+                                                        class="item_text1">现居住地：<span>{#$return.base_info.residence#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.custom_field_1.is_display==1 && $return.base_info.custom_field_1!=''"#}
+                                                    {#if
+                                                    condition="$return.field_rule.basic.custom_field_1.is_display==1 &&
+                                                    $return.base_info.custom_field_1!=''"#}
                                                     <span
-                                                            class="item_text1">{#$return.field_rule.basic.custom_field_1.field_cn#}：<span>{#$return.base_info.custom_field_1#}</span></span>
+                                                        class="item_text1">{#$return.field_rule.basic.custom_field_1.field_cn#}：<span>{#$return.base_info.custom_field_1#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.custom_field_2.is_display==1 && $return.base_info.custom_field_2!=''"#}
+                                                    {#if
+                                                    condition="$return.field_rule.basic.custom_field_2.is_display==1 &&
+                                                    $return.base_info.custom_field_2!=''"#}
                                                     <span
-                                                            class="item_text1">{#$return.field_rule.basic.custom_field_2.field_cn#}：<span>{#$return.base_info.custom_field_2#}</span></span>
+                                                        class="item_text1">{#$return.field_rule.basic.custom_field_2.field_cn#}：<span>{#$return.base_info.custom_field_2#}</span></span>
                                                     {#/if#}
-                                                    {#if condition="$return.field_rule.basic.custom_field_3.is_display==1 && $return.base_info.custom_field_3!=''"#}
+                                                    {#if
+                                                    condition="$return.field_rule.basic.custom_field_3.is_display==1 &&
+                                                    $return.base_info.custom_field_3!=''"#}
                                                     <span
-                                                            class="item_text1">{#$return.field_rule.basic.custom_field_3.field_cn#}：<span>{#$return.base_info.custom_field_3#}</span></span>
+                                                        class="item_text1">{#$return.field_rule.basic.custom_field_3.field_cn#}：<span>{#$return.base_info.custom_field_3#}</span></span>
                                                     {#/if#}
                                                 </p>
                                             </div>
@@ -107,7 +119,9 @@
                             <div class="intention_item">
                                 <p class="intention_item_text1">[{#$vo.district_text#}] {#$vo.category_text#}</p>
                                 <p class="intention_item_text2">
-                                    {#$vo.wage_text#}，{#$vo.nature_text#}{#if condition="$return.field_rule.intention.trade.is_display==1 && $vo.trade_text!=''"#}，{#$vo.trade_text#}{#/if#}
+                                    {#$vo.wage_text#}，{#$vo.nature_text#}{#if
+                                    condition="$return.field_rule.intention.trade.is_display==1 &&
+                                    $vo.trade_text!=''"#}，{#$vo.trade_text#}{#/if#}
                                 </p>
                             </div>
                             {#/volist#}
@@ -242,7 +256,8 @@
                                     {#$vo.school#}<span>{#:date('Y-m',$vo.starttime)#}{#if condition="$vo.todate==1"#}
                                         至今{#else#} 至 {#:date('Y-m',$vo.endtime)#}{#/if#}</span></p>
                                 <p class="school_text2">
-                                    {#$vo.education_text#}{#if condition="$return.field_rule.education.major.is_display==1"#}，{#$vo.major#}{#/if#}
+                                    {#$vo.education_text#}{#if
+                                    condition="$return.field_rule.education.major.is_display==1"#}，{#$vo.major#}{#/if#}
                                 </p>
                             </div>
                             {#/volist#}
@@ -301,7 +316,8 @@
                     </div>
                     {#/if#}
 
-                    {#if condition="$return.resume_module.certificate.is_display==1 && count($return.certificate_list) gt 0"#}
+                    {#if condition="$return.resume_module.certificate.is_display==1 && count($return.certificate_list)
+                    gt 0"#}
                     <div class="certificate_wrapper">
                         <div class="educate_padding tag_title">获得证书</div>
                         <ul class="certificate_list clearfix">
@@ -369,7 +385,7 @@
                         </div>
                         <div @click="handlerDownPdf">
                             <img src="__ROOT__/assets/images/resume_icon2.png">
-                            <p>导出word简历</p>
+                            <p>导出简历</p>
                         </div>
                         <el-popover placement="left" width="200" trigger="hover">
                             <span>

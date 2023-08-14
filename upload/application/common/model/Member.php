@@ -350,6 +350,7 @@ class Member extends \app\common\model\BaseModel
                 $insert_data_company_info['website'] = '';
                 $insert_data_company_info['short_desc'] = '';
                 $insert_data_company_info['content'] = '';
+                $insert_data_company_info['address'] = '';
                 if (
                     false ===
                     model('CompanyInfo')

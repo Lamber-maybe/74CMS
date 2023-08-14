@@ -113,7 +113,30 @@ class Member extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('Member')->getError());
         }
-        model('Company')->save(['uid'=>model('Member')->uid,'setmeal_id'=>config('global_config.reg_service')]);
+        $insert_data_company['uid'] = model('Member')->uid;
+        $insert_data_company['companyname'] = '';
+        $insert_data_company['short_name'] = '';
+        $insert_data_company['nature'] = 0;
+        $insert_data_company['trade'] = 0;
+        $insert_data_company['district1'] = 0;
+        $insert_data_company['district2'] = 0;
+        $insert_data_company['district3'] = 0;
+        $insert_data_company['district'] = 0;
+        $insert_data_company['scale'] = 0;
+        $insert_data_company['registered'] = 0;
+        $insert_data_company['currency'] = 0;
+        $insert_data_company['tag'] = '';
+        $insert_data_company['map_lat'] = 0.0;
+        $insert_data_company['map_lng'] = 0.0;
+        $insert_data_company['map_zoom'] = 0;
+        $insert_data_company['logo'] = 0;
+        $insert_data_company['addtime'] = time();
+        $insert_data_company['refreshtime'] =
+            $insert_data_company['addtime'];
+        $insert_data_company[
+            'cs_id'
+        ] = model('Member')->distributionCustomerService();
+        model('Company')->save($insert_data_company);
         //赠送套餐
         $data_setmeal['uid'] = model('Member')->uid;
         $data_setmeal['note'] = '';

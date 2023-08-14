@@ -121,6 +121,7 @@
                position="bottom"
                :style="{ 'max-height': '70%' }"
                ref="dropCategory"
+               :lock-scroll="false"
                @click-overlay="handleCategoryOverlay"
                @opened="openedCategory"
     >
@@ -163,6 +164,7 @@
     <van-popup v-model="showPickerDistrict"
                position="bottom"
                :style="{ 'max-height': '70%' }"
+               :lock-scroll="false"
                ref="dropDistrict"
                @click-overlay="handleDistrictOverlay"
                @opened="openedDistrict">

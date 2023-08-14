@@ -76,10 +76,11 @@
                                         <span class="post_box1_font">
                                             年龄要求
                                         </span>
-                                        {#if condition="$return.base_info.age_text == '不限' || $return.base_info.age_text == ''"#}
-                                            不限
+                                        {#if condition="$return.base_info.age_text == '不限' || $return.base_info.age_text
+                                        == ''"#}
+                                        不限
                                         {#else#}
-                                            {#$return.base_info.age_text#}岁
+                                        {#$return.base_info.age_text#}岁
                                         {#/if#}
                                     </div>
                                     {#/if#}
@@ -258,15 +259,15 @@
                         </div>
                         <div class="similar_list clearfix">
                             {#volist name="return.similar" id="vo"#}
-                            <div>
+                            <div onclick="javascript:location.href='{#:url(\'index/job/show\',[\'id\'=>$vo.id])#}'">
                                 <p class="similar_post_name clearfix">
                                     <a href="{#:url('index/job/show',['id'=>$vo.id])#}"
                                         target="_blank">{#$vo.jobname#}</a>
                                     <span class="similar_right_text">{#$vo.refreshtime#}</span>
                                 </p>
                                 <p class="similar_data">
-                                    <span
-                                        class="color similar_font">{#$vo.wage_text#}{#eq name="vo.negotiable" value="0"#}/月{#/eq#}</span>
+                                    <span class="color similar_font">{#$vo.wage_text#}{#eq name="vo.negotiable"
+                                        value="0"#}/月{#/eq#}</span>
                                     <span class="similar_text">{#$vo.district_text#}</span>
                                     <span class="similar_text similar_border">{#$vo.education_text#}</span>
                                     <span class="similar_text  similar_border">{#$vo.experience_text#}</span>
@@ -288,7 +289,8 @@
                                 <a class="img" target="_blank" :href="item.link_url">
                                     <img :src="item.logo">
                                 </a>
-                                <a class="c_name substring" target="_blank" :title="item.companyname" :href="item.link_url">{{item.companyname}}</a>
+                                <a class="c_name substring" target="_blank" :title="item.companyname"
+                                    :href="item.link_url">{{item.companyname}}</a>
                             </div>
                         </div>
                     </div>
@@ -395,7 +397,7 @@
                     </div>
                     {#volist name="return.hotjob_list" id="vo"#}
                     <div class="right_box2_text">
-                        <a class="box2_text1 {#eq name="vo.emergency" value="1"#}emergency{#/eq#}" target="_blank"
+                        <a class="box2_text1 {#eq name="vo.emergency" value="1" #}emergency{#/eq#}" target="_blank"
                             href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}</a>
                         <p class="box2_text2">{#$vo.companyname#}</p>
                         <p class="box2_text3">{#$vo.wage_text#}{#eq name="vo.negotiable" value="0"#}/月{#/eq#}</p>

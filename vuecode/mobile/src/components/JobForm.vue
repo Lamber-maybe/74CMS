@@ -34,6 +34,7 @@
         v-model="showPickerJobCategory"
         :lazy-render="false"
         position="bottom"
+        :lock-scroll="false"
         :style="{ 'max-height': '70%' }"
         ref="dropCategory"
         @click-overlay="handleCategoryOverlay"
@@ -128,6 +129,7 @@
         position="bottom"
         :style="{ 'max-height': '70%' }"
         ref="dropDistrict"
+        :lock-scroll="false"
         @click-overlay="handleDistrictOverlay"
         @opened="openedDistrict"
       >
