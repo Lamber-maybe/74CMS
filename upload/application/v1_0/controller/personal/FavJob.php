@@ -62,8 +62,8 @@ class FavJob extends \app\v1_0\controller\common\Base
                 $value['negotiable']
             );
             $tmp_arr['click'] = $value['click'];
-            $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
-            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['company_id']]);
+            $tmp_arr['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']], true, $this->sub_site_domain);
+            $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $value['company_id']], true, $this->sub_site_domain);
             $returnlist[] = $tmp_arr;
         }
 

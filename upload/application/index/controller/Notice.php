@@ -6,7 +6,7 @@ class Notice extends \app\index\controller\Base
     public function index()
     {
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'noticelist',302);
+            $this->redirect($this->sub_site_domain_m.'noticelist',302);
             exit;
         }
         $current_page = request()->get('page/d',1,'intval');
@@ -30,7 +30,7 @@ class Notice extends \app\index\controller\Base
         foreach ($list as $key => $value) {
             $list[$key]['content'] = strip_tags(htmlspecialchars_decode($value['content'],ENT_QUOTES));
             $list[$key]['content'] = cut_str($list[$key]['content'],200,0,'...');
-            $list[$key]['link_url'] = $value['link_url']==''?url('index/notice/show',['id'=>$value['id']]):$value['link_url'];
+            $list[$key]['link_url'] = $value['link_url']==''?url('index/notice/show',['id'=>$value['id']],true,$this->sub_site_domain):$value['link_url'];
         }
         $this->initPageSeo('noticelist');
         $this->assign('list',$list);
@@ -42,7 +42,7 @@ class Notice extends \app\index\controller\Base
     {
         $id = request()->route('id/d',0,'intval');
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'notice/'.$id,302);
+            $this->redirect($this->sub_site_domain_m.'notice/'.$id,302);
             exit;
         }
         //读取页面缓存配置
@@ -74,7 +74,7 @@ class Notice extends \app\index\controller\Base
             ->field('id,title,link_url')
             ->find();
         if($prev!==null){
-            $prev['link_url'] = $prev['link_url']==''?url('index/notice/show',['id'=>$prev['id']]):$prev['link_url'];
+            $prev['link_url'] = $prev['link_url']==''?url('index/notice/show',['id'=>$prev['id']],true,$this->sub_site_domain):$prev['link_url'];
         }
         $next = model('Notice')
             ->where('id', '<', $info['id'])
@@ -83,9 +83,9 @@ class Notice extends \app\index\controller\Base
             ->field('id,title,link_url')
             ->find();
         if($next!==null){
-            $next['link_url'] = $next['link_url']==''?url('index/notice/show',['id'=>$next['id']]):$next['link_url'];
+            $next['link_url'] = $next['link_url']==''?url('index/notice/show',['id'=>$next['id']],true,$this->sub_site_domain):$next['link_url'];
         }
-        $info['share_url'] = config('global_config.mobile_domain').'notice/'.$info['id'];
+        $info['share_url'] = $this->sub_site_domain_m.'notice/'.$info['id'];
         $newNoticeList = $this->getNewNoticeList($id);
         $seoData['title'] = $info['title'];
         if($info['seo_keywords']!=''){
@@ -125,7 +125,7 @@ class Notice extends \app\index\controller\Base
     protected function getNewNoticeList($id){
         $list = model('Notice')->where('id','neq',$id)->limit(10)->order('id desc')->select();
         foreach ($list as $key => $value) {
-            $list[$key]['link_url'] = $value['link_url']==''?url('index/notice/show',['id'=>$value['id']]):$value['link_url'];
+            $list[$key]['link_url'] = $value['link_url']==''?url('index/notice/show',['id'=>$value['id']],true,$this->sub_site_domain):$value['link_url'];
         }
         return $list;
     }

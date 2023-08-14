@@ -9,7 +9,7 @@
       </div>
       <el-form
         ref="form"
-        v-loading="infoLoading"
+        :v-loading="infoLoading"
         class="common-form"
         label-width="120px"
         :inline-message="true"
@@ -20,12 +20,22 @@
             <el-radio :label="0">不开启</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item
+          label="顶级域名"
+          prop="subsite_domain"
+        >
+          <el-input v-model="form.subsite_domain" class="ipt_width" />
+          <span class="smalltip">
+            <i class="el-icon-info" />
+            如：74cms.com(不带http://)
+          </span>
+        </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit()">保存</el-button>
         </el-form-item>
       </el-form>
       <el-table
-        v-loading="listLoading"
+        :v-loading="listLoading"
         :data="list"
         element-loading-text="Loading"
         fit
@@ -36,9 +46,10 @@
         <el-table-column label="模板" prop="tpl" min-width="150" />
         <el-table-column label="是否显示" prop="is_display" min-width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.is_display | displayFilter">
-              {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.is_display"
+              @change="modifyState(scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column label="排序" prop="sort_id" min-width="80" />
@@ -87,7 +98,7 @@
 
 <script>
 import { setConfig } from '@/api/configuration'
-import { subsiteList, subsiteDelete } from '@/api/subsite'
+import { subsiteList, subsiteDelete, subsiteIsDisplay } from '@/api/subsite'
 export default {
   filters: {
     displayFilter(is_display) {
@@ -102,7 +113,8 @@ export default {
     return {
       infoLoading: false,
       form: {
-        subsite_open: 0
+        subsite_open: 0,
+        subsite_domain: ''
       },
       list: null,
       listLoading: true,
@@ -167,6 +179,12 @@ export default {
         .catch(() => {})
     },
     onSubmit () {
+      if (this.form.subsite_open === 1) {
+        if (this.form.subsite_domain === '') {
+          this.$message.error('开启分站请配置顶级域')
+          return false
+        }
+      }
       const insertData = { ...this.form }
       setConfig(insertData)
         .then(response => {
@@ -181,10 +199,24 @@ export default {
       setConfig(param, 'get')
         .then(response => {
           const {
-            subsite_open
+            subsite_open,
+            subsite_domain
           } = { ...response.data }
           this.form.subsite_open = parseInt(subsite_open)
+          this.form.subsite_domain = subsite_domain
           this.infoLoading = false
+        })
+        .catch(() => {})
+    },
+    modifyState(row){
+      const param = {
+        id: row.id,
+        is_display: row.is_display === true ? 1 : 0
+      }
+      subsiteIsDisplay(param)
+        .then(response => {
+          this.$message.success(response.message)
+          return true
         })
         .catch(() => {})
     }
@@ -192,5 +224,8 @@ export default {
 }
 </script>
 <style scoped>
+.ipt_width {
+  width: 410px;
+}
 </style>
 

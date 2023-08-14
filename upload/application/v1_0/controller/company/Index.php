@@ -245,7 +245,7 @@ class Index extends \app\v1_0\controller\common\Base
         $return['enable_num'] = $enable_num;
         $return['message_list'] = $message_list;
         $return['mypoints'] = model('Member')->getMemberPoints($this->userinfo->uid);
-        $return['resumelist_url_web'] = url('index/resume/index');
+        $return['resumelist_url_web'] = url('index/resume/index', '', true, $this->sub_site_domain);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     public function joball()

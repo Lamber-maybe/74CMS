@@ -1,427 +1,437 @@
 <template>
-  <div class="app-container">
-    <div v-if="baseinfo.warning.rewrite == 1" class="tip danger">
-      <p>
-        系统检测到您的伪静态还没配置完成，将影响系统的正常运行，请先配置 >>
-        <a
-          style="color: #1e88e5"
-          href="http://doc.74cms.com/#/se/quickstart?id=%e9%85%8d%e7%bd%aeurl%e9%87%8d%e5%86%99%e8%a7%84%e5%88%99"
-          target="_blank"
-        >配置教程</a>
-      </p>
+  <div>
+    <div v-if="power === 0">
+      <div class="no_power">
+        <img src="../../assets/images/nopower.png" alt="">
+      </div>
+      <span class="power_span">
+        欢迎来到{{ $store.state.config.sitename }}管理中心！
+      </span>
     </div>
-    <div v-if="baseinfo.warning.install == 1" class="tip danger">
-      <p>您还没有删除 install 文件夹，出于安全的考虑，我们建议您删除 install 文件夹。install文件夹位于 /public/ 目录下</p>
-    </div>
-    <div v-if="new_version_notice == 1" class="tip">
-      <p>
-        系统检测到新版本，为了更好的使用体验，建议您立即升级程序
-        <a style="color: #1e88e5" href="javascript:" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</a>
-      </p>
-    </div>
-    <el-row :gutter="20">
-      <el-col :span="18">
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <div v-loading="newInitDataGeneralLoading" class="topBox">
-              <img class="icon" src="../../assets/images/dashboard/incomeIcon.png" alt="">
-              <div class="topBox1">收入（总/月）元</div>
-              <div class="topBox2">
-                <span>{{ revenue.total }}</span>
-                /
-                <span>{{ revenue.month }}</span>
+    <div v-else class="app-container">
+      <div v-if="baseinfo.warning.rewrite == 1" class="tip danger">
+        <p>
+          系统检测到您的伪静态还没配置完成，将影响系统的正常运行，请先配置 >>
+          <a
+            style="color: #1e88e5"
+            href="http://doc.74cms.com/#/se/quickstart?id=%e9%85%8d%e7%bd%aeurl%e9%87%8d%e5%86%99%e8%a7%84%e5%88%99"
+            target="_blank"
+          >配置教程</a>
+        </p>
+      </div>
+      <div v-if="baseinfo.warning.install == 1" class="tip danger">
+        <p>您还没有删除 install 文件夹，出于安全的考虑，我们建议您删除 install 文件夹。install文件夹位于 /public/ 目录下</p>
+      </div>
+      <div v-if="new_version_notice == 1" class="tip">
+        <p>
+          系统检测到新版本，为了更好的使用体验，建议您立即升级程序
+          <a style="color: #1e88e5" href="javascript:" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</a>
+        </p>
+      </div>
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <el-row :gutter="20">
+            <el-col :span="6">
+              <div v-loading="newInitDataGeneralLoading" class="topBox">
+                <img class="icon" src="../../assets/images/dashboard/incomeIcon.png" alt="">
+                <div class="topBox1">收入（总/月）元</div>
+                <div class="topBox2">
+                  <span>{{ revenue.total }}</span>
+                  /
+                  <span>{{ revenue.month }}</span>
+                </div>
+                <div id="top_line1" style="height:100px;" />
+                <div class="topBox3">
+                  <span>今日收入</span>
+                  <span>{{ revenue.today }}</span>
+                </div>
               </div>
-              <div id="top_line1" style="height:100px;" />
-              <div class="topBox3">
-                <span>今日收入</span>
-                <span>{{ revenue.today }}</span>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div v-loading="newInitDataGeneralLoading" class="topBox">
-              <img class="icon" src="../../assets/images/dashboard/OrderIcon.png" alt="">
-              <div class="topBox1">支付订单（总/月）</div>
-              <div class="topBox2">
-                <span>{{ order_num.total }}</span>
-                /
-                <span>{{ order_num.month }}</span>
-              </div>
-              <div id="top_line2" style="height:100px;" />
-              <div class="topBox3">
-                <span>今日订单</span>
-                <span>{{ order_num.today }}</span>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div v-loading="newInitDataGeneralLoading" class="topBox">
-              <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
-              <div class="topBox1">企业会员数</div>
-              <div class="topBox2">
-                <span>{{ company.total }}</span>
-                <span class="label_small">{{ company.total_job }}职位</span>
-              </div>
-              <div id="top_line3" style="height:100px;" />
-              <div class="topBox3">
-                <span>本月新增会员</span>
-                <span>{{ company.month }}</span>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div v-loading="newInitDataGeneralLoading" class="topBox">
-              <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
-              <div class="topBox1">个人会员数</div>
-              <div class="topBox2">
-                <span>{{ personal.total }}</span>
-                <span class="label_small">{{ personal.total_resume }}简历</span>
-              </div>
-              <div id="top_line4" style="height:100px;" />
-              <div class="topBox3">
-                <span>本月新增会员</span>
-                <span>{{ personal.month }}</span>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row style="margin-top: 20px;margin-bottom: 20px;">
-          <el-card>
-            <div slot="header" class="clearfix"><span>快捷菜单</span></div>
-            <div class="shortcutMenu">
-              <div class="shortcutMenuItem" @click="jumpPath('/user/company/crm/myClient')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon1.png" alt="">
-                <span class="text">我的客户</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/user/job/list')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon2.png" alt="">
-                <span class="text">职位管理</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/user/urmList')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon3.png" alt="">
-                <span class="text">简历管理</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/sys/company/setmeal')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon4.png" alt="">
-                <span class="text">套餐管理</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/tool/marketing/wx_offiaccount/index')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon5.png" alt="">
-                <span class="text">公众号营销</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/content/ad/list')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon6.png" alt="">
-                <span class="text">广告管理</span>
-              </div>
-              <div class="shortcutMenuItem" @click="jumpPath('/sys/basic/config')">
-                <img class="icon" src="../../assets/images/dashboard/shortMenuIcon7.png" alt="">
-                <span class="text">系统配置</span>
-              </div>
-            </div>
-          </el-card>
-        </el-row>
-        <el-row>
-          <el-card>
-            <div slot="header" class="clearfix refreshBox">
-              <span class="refreshBoxData">实时数据</span>
-              <div class="refresh">
-                <span class="refreshBtnTime">更新时间：{{ nowTime }}</span>
-                <span class="refreshBtn" @click="newInitDataRealTime()">刷新</span>
-              </div>
-            </div>
-            <div v-loading="newInitDataRealTimeLoading">
-              <el-row :gutter="20">
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/member/personal')">
-                      <div class="tit1">新增个人会员</div>
-                      <div class="num">{{ baseinfo.today_data.reg_personal_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.reg_personal_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/urmList')">
-                      <div class="tit1">新增简历</div>
-                      <div class="num">{{ baseinfo.today_data.resume_add_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.resume_add_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/urmList')">
-                      <div class="tit1">简历刷新数</div>
-                      <div class="num">{{ baseinfo.today_data.resume_refresh_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.resume_refresh_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/job_apply')">
-                      <div class="tit1">投递数</div>
-                      <div class="num">{{ baseinfo.today_data.job_apply_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.job_apply_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/business/personal/order')">
-                      <div class="tit1">个人完成订单</div>
-                      <div class="num">{{ baseinfo.today_data.orderpay_personal_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_personal_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20" style="margin-top: 20px">
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/member/company')">
-                      <div class="tit1">新增企业会员</div>
-                      <div class="num">{{ baseinfo.today_data.reg_company_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.reg_company_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/job/list')">
-                      <div class="tit1">新增职位</div>
-                      <div class="num">{{ baseinfo.today_data.job_add_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.job_add_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/job/list')">
-                      <div class="tit1">职位刷新数</div>
-                      <div class="num">{{ baseinfo.today_data.job_refresh_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.job_refresh_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/user/company_down')">
-                      <div class="tit1">下载数</div>
-                      <div class="num">{{ baseinfo.today_data.down_resume_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.down_resume_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-                <el-col :span="4 - 8" class="bg_card">
-                  <el-card shadow="never" class="no-border">
-                    <div class="today-info" @click="jumpPath('/business/company/order')">
-                      <div class="tit1">企业完成订单</div>
-                      <div class="num">{{ baseinfo.today_data.orderpay_company_today }}</div>
-                      <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_company_yesterday }}</div>
-                    </div>
-                  </el-card>
-                </el-col>
-              </el-row>
-            </div>
-          </el-card>
-        </el-row>
-        <el-row style="margin-top: 20px" class="chartTableBox">
-          <el-card>
-            <el-col :span="18">
-              <el-tabs v-model="chartTabSelected">
-                <el-tab-pane label="注册趋势" name="0" />
-                <el-tab-pane label="收入趋势" name="1" />
-                <el-tab-pane label="个人活跃度" name="2" />
-                <el-tab-pane label="企业活跃度" name="3" />
-              </el-tabs>
             </el-col>
-            <el-col :span="6" />
-            <reg_line :date7="date7" :date30="date30" :tab-val="chartTabSelected" />
-          </el-card>
-        </el-row>
-      </el-col>
-      <el-col :span="6">
-        <el-row class="pending_data" style="margin-bottom: 20px;">
-          <el-card>
-            <div slot="header" class="clearfix"><span>短信充值</span></div>
-            <div v-loading="newInitDataOfficialLoading" class="messageBox">
-              <div class="messageBox1">
-                <div class="messageBoxTxt1">短信剩余数/条</div>
-                <div class="messageBoxTxt2">{{ sms_count }}</div>
+            <el-col :span="6">
+              <div v-loading="newInitDataGeneralLoading" class="topBox">
+                <img class="icon" src="../../assets/images/dashboard/OrderIcon.png" alt="">
+                <div class="topBox1">支付订单（总/月）</div>
+                <div class="topBox2">
+                  <span>{{ order_num.total }}</span>
+                  /
+                  <span>{{ order_num.month }}</span>
+                </div>
+                <div id="top_line2" style="height:100px;" />
+                <div class="topBox3">
+                  <span>今日订单</span>
+                  <span>{{ order_num.today }}</span>
+                </div>
               </div>
-              <div class="messageBox2">
-                <span class="messageBoxTxt3" @click="$router.push('/tool/marketing/messageList/index')">群发</span>
-                <span class="messageBoxTxt4"><a href="http://sms.74cms.com" target="_blank">充值</a></span>
+            </el-col>
+            <el-col :span="6">
+              <div v-loading="newInitDataGeneralLoading" class="topBox">
+                <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
+                <div class="topBox1">企业会员数</div>
+                <div class="topBox2">
+                  <span>{{ company.total }}</span>
+                  <span class="label_small">{{ company.total_job }}职位</span>
+                </div>
+                <div id="top_line3" style="height:100px;" />
+                <div class="topBox3">
+                  <span>本月新增会员</span>
+                  <span>{{ company.month }}</span>
+                </div>
               </div>
-            </div>
-          </el-card>
-        </el-row>
-        <el-row class="pending_data pending_data_box">
-          <el-card>
-            <div slot="header" class="clearfix"><span>待办事项</span></div>
-            <div v-loading="newInitDataLoading" class="pending_data_lists">
-              <div class="leftOrRight">
-                <img v-if="arrowVal == 'left'" class="el_lf" src="../../assets/images/dashboard/el_lf.png" alt="">
-                <img
-                  v-if="arrowVal == 'left'"
-                  class="el_rt"
-                  src="../../assets/images/dashboard/el_rt_act.png"
-                  alt=""
-                  @click="arrowClick('right')"
-                >
-                <img
-                  v-if="arrowVal == 'right'"
-                  class="el_lf"
-                  src="../../assets/images/dashboard/el_lf_act.png"
-                  alt=""
-                  @click="arrowClick('left')"
-                >
-                <img v-if="arrowVal == 'right'" class="el_rt" src="../../assets/images/dashboard/el_rt.png" alt="">
+            </el-col>
+            <el-col :span="6">
+              <div v-loading="newInitDataGeneralLoading" class="topBox">
+                <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
+                <div class="topBox1">个人会员数</div>
+                <div class="topBox2">
+                  <span>{{ personal.total }}</span>
+                  <span class="label_small">{{ personal.total_resume }}简历</span>
+                </div>
+                <div id="top_line4" style="height:100px;" />
+                <div class="topBox3">
+                  <span>本月新增会员</span>
+                  <span>{{ personal.month }}</span>
+                </div>
               </div>
-              <el-carousel
-                ref="cardShow"
-                class="el_carousel"
-                :interval="5000"
-                arrow="never"
-                :autoplay="false"
-                indicator-position="outside"
-              >
-                <el-carousel-item v-for="(item, index) in baseinfo.pending_data" :key="index" :autoplay="false">
-                  <div
-                    v-for="(items, index1) in item"
-                    :key="index1"
-                    class="pending_data_item"
-                    @click="handlerClickPending(items)"
+            </el-col>
+          </el-row>
+          <el-row style="margin-top: 20px;margin-bottom: 20px;">
+            <el-card>
+              <div slot="header" class="clearfix"><span>快捷菜单</span></div>
+              <div class="shortcutMenu">
+                <div class="shortcutMenuItem" @click="jumpPath('/user/company/crm/myClient')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon1.png" alt="">
+                  <span class="text">我的客户</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/user/job/list')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon2.png" alt="">
+                  <span class="text">职位管理</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/user/urmList')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon3.png" alt="">
+                  <span class="text">简历管理</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/sys/company/setmeal')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon4.png" alt="">
+                  <span class="text">套餐管理</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/tool/marketing/wx_offiaccount/index')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon5.png" alt="">
+                  <span class="text">公众号营销</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/content/ad/list')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon6.png" alt="">
+                  <span class="text">广告管理</span>
+                </div>
+                <div class="shortcutMenuItem" @click="jumpPath('/sys/basic/config')">
+                  <img class="icon" src="../../assets/images/dashboard/shortMenuIcon7.png" alt="">
+                  <span class="text">系统配置</span>
+                </div>
+              </div>
+            </el-card>
+          </el-row>
+          <el-row>
+            <el-card>
+              <div slot="header" class="clearfix refreshBox">
+                <span class="refreshBoxData">实时数据</span>
+                <div class="refresh">
+                  <span class="refreshBtnTime">更新时间：{{ nowTime }}</span>
+                  <span class="refreshBtn" @click="newInitDataRealTime()">刷新</span>
+                </div>
+              </div>
+              <div v-loading="newInitDataRealTimeLoading">
+                <el-row :gutter="20">
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/member/personal')">
+                        <div class="tit1">新增个人会员</div>
+                        <div class="num">{{ baseinfo.today_data.reg_personal_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.reg_personal_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/urmList')">
+                        <div class="tit1">新增简历</div>
+                        <div class="num">{{ baseinfo.today_data.resume_add_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.resume_add_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/urmList')">
+                        <div class="tit1">简历刷新数</div>
+                        <div class="num">{{ baseinfo.today_data.resume_refresh_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.resume_refresh_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/job_apply')">
+                        <div class="tit1">投递数</div>
+                        <div class="num">{{ baseinfo.today_data.job_apply_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.job_apply_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/business/personal/order')">
+                        <div class="tit1">个人完成订单</div>
+                        <div class="num">{{ baseinfo.today_data.orderpay_personal_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_personal_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="margin-top: 20px">
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/member/company')">
+                        <div class="tit1">新增企业会员</div>
+                        <div class="num">{{ baseinfo.today_data.reg_company_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.reg_company_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/job/list')">
+                        <div class="tit1">新增职位</div>
+                        <div class="num">{{ baseinfo.today_data.job_add_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.job_add_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/job/list')">
+                        <div class="tit1">职位刷新数</div>
+                        <div class="num">{{ baseinfo.today_data.job_refresh_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.job_refresh_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/user/company_down')">
+                        <div class="tit1">下载数</div>
+                        <div class="num">{{ baseinfo.today_data.down_resume_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.down_resume_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="4 - 8" class="bg_card">
+                    <el-card shadow="never" class="no-border">
+                      <div class="today-info" @click="jumpPath('/business/company/order')">
+                        <div class="tit1">企业完成订单</div>
+                        <div class="num">{{ baseinfo.today_data.orderpay_company_today }}</div>
+                        <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_company_yesterday }}</div>
+                      </div>
+                    </el-card>
+                  </el-col>
+                </el-row>
+              </div>
+            </el-card>
+          </el-row>
+          <el-row style="margin-top: 20px" class="chartTableBox">
+            <el-card>
+              <el-col :span="18">
+                <el-tabs v-model="chartTabSelected">
+                  <el-tab-pane label="注册趋势" name="0" />
+                  <el-tab-pane label="收入趋势" name="1" />
+                  <el-tab-pane label="个人活跃度" name="2" />
+                  <el-tab-pane label="企业活跃度" name="3" />
+                </el-tabs>
+              </el-col>
+              <el-col :span="6" />
+              <reg_line :date7="date7" :date30="date30" :tab-val="chartTabSelected" />
+            </el-card>
+          </el-row>
+        </el-col>
+        <el-col :span="6">
+          <el-row class="pending_data" style="margin-bottom: 20px;">
+            <el-card>
+              <div slot="header" class="clearfix"><span>短信充值</span></div>
+              <div v-loading="newInitDataOfficialLoading" class="messageBox">
+                <div class="messageBox1">
+                  <div class="messageBoxTxt1">短信剩余数/条</div>
+                  <div class="messageBoxTxt2">{{ sms_count }}</div>
+                </div>
+                <div class="messageBox2">
+                  <span class="messageBoxTxt3" @click="$router.push('/tool/marketing/messageList/index')">群发</span>
+                  <span class="messageBoxTxt4"><a href="http://sms.74cms.com" target="_blank">充值</a></span>
+                </div>
+              </div>
+            </el-card>
+          </el-row>
+          <el-row class="pending_data pending_data_box">
+            <el-card>
+              <div slot="header" class="clearfix"><span>待办事项</span></div>
+              <div v-loading="newInitDataLoading" class="pending_data_lists">
+                <div class="leftOrRight">
+                  <img v-if="arrowVal == 'left'" class="el_lf" src="../../assets/images/dashboard/el_lf.png" alt="">
+                  <img
+                    v-if="arrowVal == 'left'"
+                    class="el_rt"
+                    src="../../assets/images/dashboard/el_rt_act.png"
+                    alt=""
+                    @click="arrowClick('right')"
                   >
-                    <div class="title">
-                      {{ items.title }}
-                      <img class="rtIcon" src="../../assets/images/dashboard/rt.png" alt="">
+                  <img
+                    v-if="arrowVal == 'right'"
+                    class="el_lf"
+                    src="../../assets/images/dashboard/el_lf_act.png"
+                    alt=""
+                    @click="arrowClick('left')"
+                  >
+                  <img v-if="arrowVal == 'right'" class="el_rt" src="../../assets/images/dashboard/el_rt.png" alt="">
+                </div>
+                <el-carousel
+                  ref="cardShow"
+                  class="el_carousel"
+                  :interval="5000"
+                  arrow="never"
+                  :autoplay="false"
+                  indicator-position="outside"
+                >
+                  <el-carousel-item v-for="(item, index) in baseinfo.pending_data" :key="index" :autoplay="false">
+                    <div
+                      v-for="(items, index1) in item"
+                      :key="index1"
+                      class="pending_data_item"
+                      @click="handlerClickPending(items)"
+                    >
+                      <div class="title">
+                        {{ items.title }}
+                        <img class="rtIcon" src="../../assets/images/dashboard/rt.png" alt="">
+                      </div>
+                      <div class="num">{{ items.num }}</div>
                     </div>
-                    <div class="num">{{ items.num }}</div>
-                  </div>
-                </el-carousel-item>
-              </el-carousel>
-            </div>
-          </el-card>
-        </el-row>
-        <el-row class="pending_data_log" style="margin-top: 20px">
-          <el-card>
-            <div slot="header" class="clearfix logHeader">
-              <span>最近更新</span>
-              <span class="moreLog"><a href="https://www.74cms.com/download.html">查看更多</a></span>
-            </div>
-            <div v-if="upgradeLog.length>0" class="upgradeLogLists">
-              <div v-for="(item, index) in upgradeLog" :key="index" class="upgradeLogItem">
-                <el-link class="linkUrl" target="_blank" :href="item.url">
-                  <span>{{ item.time_cn }}更新日志</span>
-                  <span>详情</span>
-                </el-link>
+                  </el-carousel-item>
+                </el-carousel>
               </div>
-            </div>
-            <div v-if="upgradeLog.length==0" class="upgradeLogLists upgradeLogListsNodata">暂无数据</div>
-          </el-card>
-        </el-row>
-        <el-row class="pending_data pending_data_menu" style="margin-top: 20px;margin-bottom: 20px;">
-          <el-card>
-            <div slot="header" class="clearfix"><span>售后工单服务</span></div>
-            <div class="descBox">
-              <img class="icon_p" src="../../assets/images/dashboard/pending_data_bg.png" alt="">
-              <div class="desc">快速准确记录、跟踪、处理和反馈问题</div>
-              <div class="btns">
-                <span class="btns1"><a href="https://gongdan.74cms.com" target="_blank">提交工单</a></span>
-                <span class="btns2"><a href="http://doc.74cms.com/#/" target="_blank">帮助手册</a></span>
-              </div>
-            </div>
-          </el-card>
-        </el-row>
-        <el-row class="pending_data pending_data_qrcode" style="margin-top: 20px;">
-          <el-card>
-            <div class="descBox">
-              <img class="qrcode" src="../../assets/images/dashboard/Wechat.png">
-              <div class="descBoxTxt">
-                <div>扫码关注公众号</div>
-                <div>获取更多官方动态</div>
-              </div>
-            </div>
-          </el-card>
-        </el-row>
-      </el-col>
-    </el-row>
-    <el-row style="margin-top:20px;">
-      <el-card>
-        <div slot="header" class="clearfix"><span>服务器信息</span></div>
-        <div v-loading="newInitDataLoading">
-          <el-row :gutter="20" style="font-size: 13px">
-            <el-col :span="6">操作系统：{{ baseinfo.system_info.os }}</el-col>
-            <el-col :span="6">PHP版本：{{ baseinfo.system_info.php_version }}</el-col>
-            <el-col :span="6">MySQL版本：{{ baseinfo.system_info.mysql_version }}</el-col>
-            <el-col :span="6">web服务器：{{ baseinfo.system_info.web_server }}</el-col>
+            </el-card>
           </el-row>
-          <el-row :gutter="20" style="font-size: 13px; margin-top: 20px">
-            <el-col :span="6">允许最大上传文件：{{ baseinfo.system_info.upload_max }}</el-col>
-            <el-col :span="6">curl版本：{{ baseinfo.system_info.curl_version }}</el-col>
-            <el-col :span="6">ThinkPHP框架版本：{{ baseinfo.system_info.framework_version }}</el-col>
-            <el-col :span="6">服务器当前时间：{{ baseinfo.system_info.server_time }}</el-col>
+          <el-row class="pending_data_log" style="margin-top: 20px">
+            <el-card>
+              <div slot="header" class="clearfix logHeader">
+                <span>最近更新</span>
+                <span class="moreLog"><a href="https://www.74cms.com/download.html">查看更多</a></span>
+              </div>
+              <div v-if="upgradeLog.length>0" class="upgradeLogLists">
+                <div v-for="(item, index) in upgradeLog" :key="index" class="upgradeLogItem">
+                  <el-link class="linkUrl" target="_blank" :href="item.url">
+                    <span>{{ item.time_cn }}更新日志</span>
+                    <span>详情</span>
+                  </el-link>
+                </div>
+              </div>
+              <div v-if="upgradeLog.length==0" class="upgradeLogLists upgradeLogListsNodata">暂无数据</div>
+            </el-card>
           </el-row>
-        </div>
-      </el-card>
-    </el-row>
-    <el-row class="systemInfo" style="margin-top: 20px">
-      <el-card>
-        <div slot="header" class="clearfix"><span>系统信息</span></div>
-        <el-row v-loading="newInitDataOfficialLoading" :gutter="20" style="font-size: 13px;line-height: 34px;">
-          <el-col :span="8">
-            当前版本：
-            <span class="color-link">v{{ baseinfo.version }}</span>
-          </el-col>
-          <el-col :span="8">
-            最新版本：
-            <span class="color-link2">v{{ latest_version }}</span>
-            <!-- <span style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3"
-                @click="$router.push('/upgrade')">立即升级</span></span> -->
-            <span v-if="new_version_notice == 1" style="margin-left:10px;">
+          <el-row class="pending_data pending_data_menu" style="margin-top: 20px;margin-bottom: 20px;">
+            <el-card>
+              <div slot="header" class="clearfix"><span>售后工单服务</span></div>
+              <div class="descBox">
+                <img class="icon_p" src="../../assets/images/dashboard/pending_data_bg.png" alt="">
+                <div class="desc">快速准确记录、跟踪、处理和反馈问题</div>
+                <div class="btns">
+                  <span class="btns1"><a href="https://gongdan.74cms.com" target="_blank">提交工单</a></span>
+                  <span class="btns2"><a href="http://doc.74cms.com/#/" target="_blank">帮助手册</a></span>
+                </div>
+              </div>
+            </el-card>
+          </el-row>
+          <el-row class="pending_data pending_data_qrcode" style="margin-top: 20px;">
+            <el-card>
+              <div class="descBox">
+                <img class="qrcode" src="../../assets/images/dashboard/Wechat.png">
+                <div class="descBoxTxt">
+                  <div>扫码关注公众号</div>
+                  <div>获取更多官方动态</div>
+                </div>
+              </div>
+            </el-card>
+          </el-row>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top:20px;">
+        <el-card>
+          <div slot="header" class="clearfix"><span>服务器信息</span></div>
+          <div v-loading="newInitDataLoading">
+            <el-row :gutter="20" style="font-size: 13px">
+              <el-col :span="6">操作系统：{{ baseinfo.system_info.os }}</el-col>
+              <el-col :span="6">PHP版本：{{ baseinfo.system_info.php_version }}</el-col>
+              <el-col :span="6">MySQL版本：{{ baseinfo.system_info.mysql_version }}</el-col>
+              <el-col :span="6">web服务器：{{ baseinfo.system_info.web_server }}</el-col>
+            </el-row>
+            <el-row :gutter="20" style="font-size: 13px; margin-top: 20px">
+              <el-col :span="6">允许最大上传文件：{{ baseinfo.system_info.upload_max }}</el-col>
+              <el-col :span="6">curl版本：{{ baseinfo.system_info.curl_version }}</el-col>
+              <el-col :span="6">ThinkPHP框架版本：{{ baseinfo.system_info.framework_version }}</el-col>
+              <el-col :span="6">服务器当前时间：{{ baseinfo.system_info.server_time }}</el-col>
+            </el-row>
+          </div>
+        </el-card>
+      </el-row>
+      <el-row class="systemInfo" style="margin-top: 20px">
+        <el-card>
+          <div slot="header" class="clearfix"><span>系统信息</span></div>
+          <el-row v-loading="newInitDataOfficialLoading" :gutter="20" style="font-size: 13px;line-height: 34px;">
+            <el-col :span="8">
+              当前版本：
+              <span class="color-link">v{{ baseinfo.version }}</span>
+            </el-col>
+            <el-col :span="8">
+              最新版本：
+              <span class="color-link2">v{{ latest_version }}</span>
+              <!-- <span style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3"
+                  @click="$router.push('/upgrade')">立即升级</span></span> -->
+              <span v-if="new_version_notice == 1" style="margin-left:10px;">
               <span class="color-link3" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</span>
             </span>
-          </el-col>
-          <el-col :span="8">
-            授权类型：
-            <a class="a-link color-link" href="https://www.74cms.com" target="_blank">{{ authorize.authorize }}</a>
-          </el-col>
-          <el-col :span="8">
-            骑士人才系统官网：
-            <a class="a-link" href="https://www.74cms.com" target="_blank">www.74cms.com</a>
-          </el-col>
-          <el-col :span="8">程序开发：74CMS程序开发组</el-col>
-        </el-row>
-        <el-row :gutter="20" style="font-size: 13px; margin-top: 10px">
-          <el-col>
-            <div class="htmlInner" v-html="authorize.copyright" />
-          </el-col>
-        </el-row>
-      </el-card>
-    </el-row>
-    <!-- <el-row style="margin-top: 20px">
-      <el-card>
-        <div slot="header" class="clearfix">
-          <span>官方动态</span>
-        </div>
-        <el-col :span="14">
-          <div class="official-news-list">
-            <div v-for="(item, index) in officialNews" :key="index" class="item">
-              <a class="a-link" :href="item.link" target="_blank">{{
-                item.title
-              }}</a><span class="time">{{ item.addtime }}</span>
-            </div>
+            </el-col>
+            <el-col :span="8">
+              授权类型：
+              <a class="a-link color-link" href="https://www.74cms.com" target="_blank">{{ authorize.authorize }}</a>
+            </el-col>
+            <el-col :span="8">
+              骑士人才系统官网：
+              <a class="a-link" href="https://www.74cms.com" target="_blank">www.74cms.com</a>
+            </el-col>
+            <el-col :span="8">程序开发：74CMS程序开发组</el-col>
+          </el-row>
+          <el-row :gutter="20" style="font-size: 13px; margin-top: 10px">
+            <el-col>
+              <div class="htmlInner" v-html="authorize.copyright" />
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <!-- <el-row style="margin-top: 20px">
+        <el-card>
+          <div slot="header" class="clearfix">
+            <span>官方动态</span>
           </div>
-          <div class="clearfix" />
-        </el-col>
-        <el-col :span="10" style="text-align: center">
-          <img class="qrcode" src="static/wechat.png">
-        </el-col>
-      </el-card>
-    </el-row> -->
+          <el-col :span="14">
+            <div class="official-news-list">
+              <div v-for="(item, index) in officialNews" :key="index" class="item">
+                <a class="a-link" :href="item.link" target="_blank">{{
+                  item.title
+                }}</a><span class="time">{{ item.addtime }}</span>
+              </div>
+            </div>
+            <div class="clearfix" />
+          </el-col>
+          <el-col :span="10" style="text-align: center">
+            <img class="qrcode" src="static/wechat.png">
+          </el-col>
+        </el-card>
+      </el-row> -->
+    </div>
   </div>
 </template>
 
@@ -453,6 +463,7 @@ export default {
   },
   data() {
     return {
+      power: 0,
       baseinfo: {
         general_statistics: {},
         today_data: {},
@@ -487,6 +498,18 @@ export default {
     }
   },
   computed: {},
+  created() {
+    if (this.$store.state.user.access == 'all') {
+      this.power = 1
+    } else {
+      if (this.$store.state.user.access.checkedKeys != undefined && this.$store.state.user.access.checkedKeys != null) {
+        const is_exist = this.$store.state.user.access.checkedKeys.findIndex((v) => (v === 'dashboard'))
+        if (is_exist > -1) {
+          this.power = 1
+        }
+      }
+    }
+  },
   mounted() {
     this.newInitData()
     this.newInitDataOfficial()
@@ -1588,5 +1611,18 @@ export default {
   }
   ::v-deep .el-loading-mask {
     z-index: 1 !important;
+  }
+  .no_power{
+    width: 239px;
+    height: 165px;
+    margin: 0 auto;
+    margin-top: 16%;
+    font-size: 14px;
+  }
+  .power_span{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 17px;
   }
 </style>

@@ -40,3 +40,5 @@ Route::rule('jobfairol','index/jobfairol/index');
 Route::rule('shortvideo','index/video_recruitment/index');// 视频招聘
 //IM短链接
 Route::get('ims/:code','v1_0/home.ImShortUrl/index');// IM短链接
+// 分站
+Route::get('subsitelist','index/subsitelist/show');// 选择分站

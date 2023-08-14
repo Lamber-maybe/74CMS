@@ -86,103 +86,115 @@
 </template>
 
 <script>
-import http from "@/utils/http";
-import api from "@/api";
+import http from '@/utils/http'
+import api from '@/api'
 export default {
-  name: "JobOne",
-  data() {
+  name: 'JobOne',
+  data () {
     return {
       currentTab: 1,
-      firstIntentionText: "",
+      firstIntentionText: '',
       intentionSelShow: false,
-      firstTabText: "推荐",
+      firstTabText: '推荐',
       intentionList: [],
       joblist: [],
       currentIntentionItem: {},
-      mobile_company_show_tpl: "def",
-    };
+      mobile_company_show_tpl: 'def'
+    }
   },
-  created() {
+  created () {
     this.mobile_company_show_tpl =
-      this.$store.state.config.mobile_company_show_tpl;
-    this.fetchListData(true);
+      this.$store.state.config.mobile_company_show_tpl
+    this.fetchListData(true)
   },
   methods: {
-    fetchListData(first_request) {
+    fetchListData (first_request) {
       if (
         this.$store.state.LoginOrNot === true &&
         this.$store.state.LoginType == 2
       ) {
-        this.firstTabText = "推荐";
+        this.firstTabText = '推荐'
         if (first_request === true) {
-          this.fetchDataIntention();
+          this.fetchDataIntention()
         } else {
-          this.fetchDataRecommend();
+          this.fetchDataRecommend()
         }
       } else {
-        this.firstTabText = "紧急";
-        this.fetchDataEmergency();
+        this.firstTabText = '紧急'
+        this.fetchDataEmergency()
       }
     },
-    fetchDataIntention() {
+    fetchDataIntention () {
       http
         .get(api.get_intentions, {})
         .then((res) => {
-          this.intentionList = [...res.data.items];
+          this.intentionList = [...res.data.items]
           if (this.intentionList.length > 0) {
             for (const key in this.intentionList) {
               this.intentionList[key].name =
-                this.intentionList[key].category_text;
+                this.intentionList[key].category_text
             }
-            this.currentIntentionItem = { ...this.intentionList[0] };
-            this.fetchDataRecommend();
+            this.currentIntentionItem = { ...this.intentionList[0] }
+            this.fetchDataRecommend()
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    fetchDataRecommend() {
-      const { category_text, id } = this.currentIntentionItem;
-      this.firstIntentionText = category_text;
+    fetchDataRecommend () {
+      const { category_text, id } = this.currentIntentionItem
+      this.firstIntentionText = category_text
       http
         .get(api.recommend_joblist, { id, page: 1, pagesize: 5 })
         .then((res) => {
-          this.joblist = [...res.data.items];
+          this.joblist = [...res.data.items]
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    fetchDataNew() {
+    fetchDataNew () {
       http
-        .get(api.joblist, { sort: "rtime", page: 1, pagesize: 5 })
+        .get(api.joblist, { sort: 'rtime', page: 1, pagesize: 5 })
         .then((res) => {
-          this.joblist = [...res.data.items];
+          this.joblist = [...res.data.items]
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    fetchDataEmergency() {
+    fetchDataEmergency () {
+      var that = this
       http
         .get(api.joblist, { emergency: 1, page: 1, pagesize: 5 })
         .then((res) => {
-          this.joblist = [...res.data.items];
+          this.joblist = [...res.data.items]
+          if (res.data.items.length < 5) {
+            let pagesize = 5 - res.data.items.length
+            http
+              .get(api.joblist, { sort: 'rtime', page: 1, pagesize: pagesize, emergency: 0})
+              .then(resr => {
+                resr.data.items.forEach(function (value, index) {
+                  that.joblist.push(value)
+                })
+              })
+              .catch(() => {})
+          }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    onIntentionSelected(item) {
-      this.intentionSelShow = false;
-      item.name = item.category_text;
-      this.currentIntentionItem = item;
-      this.fetchDataRecommend();
+    onIntentionSelected (item) {
+      this.intentionSelShow = false
+      item.name = item.category_text
+      this.currentIntentionItem = item
+      this.fetchDataRecommend()
     },
-    changeTab(tabId) {
-      this.currentTab = tabId;
+    changeTab (tabId) {
+      this.currentTab = tabId
       if (tabId == 1) {
-        this.fetchListData(false);
+        this.fetchListData(false)
       } else {
-        this.firstIntentionText = "";
-        this.fetchDataNew();
+        this.firstIntentionText = ''
+        this.fetchDataNew()
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

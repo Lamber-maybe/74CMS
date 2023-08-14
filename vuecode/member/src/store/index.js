@@ -109,6 +109,9 @@ const store = new Vuex.Store({
             state.userMobile = data.mobile
             state.userIminfo = data.userIminfo
             if (data.whether !== true) {
+                if (parseInt(state.config.subsite_open) === 1 && state.config.subsite_domain != '') {
+                    Cookies.remove('qscms_visitor', {domain: '.' + state.config.subsite_domain})
+                }
                 Cookies.remove('qscms_visitor')
                 service({
                         method: 'POST',
@@ -122,12 +125,30 @@ const store = new Vuex.Store({
                     .then(() => {})
                     .catch(() => {})
             } else {
-                Cookies.set('qscms_visitor', {
-                    utype: data.utype,
-                    mobile: data.mobile,
-                    token: data.token,
-                    userIminfo: data.userIminfo
-                }, { expires: 7 })
+                if (parseInt(state.config.subsite_open) === 1 && state.config.subsite_domain != '') {
+                  Cookies.set('qscms_visitor',
+                      {
+                        utype: data.utype,
+                        mobile: data.mobile,
+                        token: data.token,
+                        userIminfo: data.userIminfo
+                      },
+                      {
+                        expires: 7,
+                        domain: '.' + state.config.subsite_domain
+                      }
+                    )
+                } else {
+                    Cookies.set('qscms_visitor',
+                      {
+                        utype: data.utype,
+                        mobile: data.mobile,
+                        token: data.token,
+                        userIminfo: data.userIminfo
+                      },
+                      { expires: 7 }
+                    )
+                }
             }
         },
         // 更改是否显示头部的状态

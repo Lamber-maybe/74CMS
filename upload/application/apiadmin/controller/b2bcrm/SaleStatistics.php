@@ -121,18 +121,58 @@ class SaleStatistics extends Backend
             ->where('admin_id', $user_id)
             ->where('last_visit_time', '>', $time)
             ->count();//15日内未跟进客户
+
+        // 即将转入公海客户
+        $fall_time = 0;
         $customer_fall_seas = model('b2bcrm.CrmSysConfig')
             ->getConfigByKey('customer_fall_seas');
         if (isset($customer_fall_seas) && !empty($customer_fall_seas)) {
-            $day = $customer_fall_seas - 7;
-            $time = strtotime(date("Y-m-d", strtotime("-$day day")));
-            $international_waters = model('Company')
-                ->where('admin_id', $user_id)
-                ->where('last_visit_time', '>', $time)
-                ->count();//即将转入公海客户
-        } else {
-            $international_waters = 0;
+            $fall_day = $customer_fall_seas > 7
+                ? ($customer_fall_seas - 7)
+                : $customer_fall_seas;
+            $fall_time = strtotime(date("Y-m-d", strtotime("-$fall_day day")));
         }
+
+        $unsettled_time = 0;
+        $customer_unsettled_fall_seas = model('b2bcrm.CrmSysConfig')
+            ->getConfigByKey('customer_unsettled_fall_seas');
+        if (isset($customer_unsettled_fall_seas) && !empty($customer_unsettled_fall_seas)) {
+            $unsettled_day = $customer_unsettled_fall_seas > 7
+                ? ($customer_unsettled_fall_seas - 7)
+                : $customer_unsettled_fall_seas;
+            $unsettled_time = strtotime(date("Y-m-d", strtotime("-$unsettled_day day")));
+        }
+
+        if ($fall_time > 0) {
+            if ($unsettled_time > 0) {
+                $international_waters = model('Company')
+                    ->where('admin_id', $user_id)
+                    ->where(function ($query) use ($fall_time, $unsettled_time) {
+                        $query->where('last_visit_time', '<', $fall_time)
+                            ->whereOr([
+                                'life_cycle_id' => ['neq', 7],
+                                'collection_time' => ['<', $unsettled_time]
+                            ]);
+                    })
+                    ->count();
+            } else {
+                $international_waters = model('Company')
+                    ->where('admin_id', $user_id)
+                    ->where('last_visit_time', '<', $fall_time)
+                    ->count();
+            }
+        } else {
+            if ($unsettled_time > 0) {
+                $international_waters = model('Company')
+                    ->where('admin_id', $user_id)
+                    ->where('last_visit_time', '<', $unsettled_time)
+                    ->where('life_cycle_id', 'neq', 7)
+                    ->count();//即将转入公海客户
+            } else {
+                $international_waters = 0;
+            }
+        }
+
         $total_clue = model('b2bcrm.CrmClue')
             ->where('admin_id', $user_id)
             ->count();//累计总线索统计

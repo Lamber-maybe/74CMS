@@ -26,13 +26,13 @@ INSERT INTO `qs_admin_role` VALUES
 (1, '超级管理员', 'all','all',1,1,1);
 
 INSERT INTO `qs_article_category` VALUES
-(1, '招聘动态', 0, '', '', 1),
-(2, '职业指导', 0, '', '', 1),
-(3, '简历指南', 0, '', '', 1),
-(4, '面试宝典', 0, '', '', 1),
-(5, '职场八卦', 0, '', '', 1),
-(6, '劳动法苑', 0, '', '', 1),
-(7, '职场观察', 0, '', '', 1);
+(1, '招聘动态', 0, '', '', '', 1),
+(2, '职业指导', 0, '', '', '', 1),
+(3, '简历指南', 0, '', '', '', 1),
+(4, '面试宝典', 0, '', '', '', 1),
+(5, '职场八卦', 0, '', '', '', 1),
+(6, '劳动法苑', 0, '', '', '', 1),
+(7, '职场观察', 0, '', '', '', 1);
 
 INSERT INTO `qs_category` VALUES
 (1,'QS_trade','计算机软件/硬件',0),
@@ -965,26 +965,26 @@ INSERT INTO `qs_config` VALUES
 (null,'is_open_map',1,'1','是否开启电子地图',0),
 (null,'map_type',1,'1','地图类型 1-百度地图 2-天地图',0),
 (null,'tian_map_ak',1,'','天地图ak',0),
-(null,'tian_map_server_ak',0,'','天地图服务端ak',0);
-
+(null,'tian_map_server_ak',0,'','天地图服务端ak',0),
+(null,'subsite_domain',1,'','分站顶级域名',0);
 
 INSERT INTO `qs_cron` VALUES
-(NULL,'清除过期服务','ServiceClear',-1,-1,-1,'1',0,0,1,1,0),
-(NULL,'自动刷新职位','RefreshJob',-1,-1,1,'*/5',0,0,1,1,0),
-(NULL,'面试邀请提醒','InterviewNotice',-1,-1,8,'1',0,0,0,1,0),
-(NULL,'套餐即将过期提醒','SetmealOvertimeNotice',-1,-1,8,'1',0,0,0,1,0),
-(NULL,'视频面试提醒','InterviewVideoNotice',-1,-1,8,'1',0,0,0,1,0),
-(NULL,'职位订阅推送','PushSubscribeJob',-1,-1,-1,'*/5',0,0,1,1,0),
-(NULL,'休眠用户提醒','NologinNotice',-1,-1,7,'1',0,0,1,1,1),
-(NULL,'点击量/浏览量少提醒','FewViewNotice',-1,-1,7,'1',0,0,0,1,0),
-(NULL,'简历点不足100提醒','FewResumePointNotice',-1,-1,7,'1',0,0,0,1,0),
-(NULL,'生成百度百聘xml','Baiduxml','-1','-1','0','1','0','0','0','1','0'),
-(NULL,'清除过期套餐','SetmealClear','-1','-1','-1','1','0','0','0','1','0'),
-(NULL, 'Sitemap', 'Sitemap', -1, -1, 0, '1', 0, 0, 1, 1, 0),
-(NULL, 'CRM线索未跟进自动释放', 'CrmClue', 0, 0, 0, 0, 0, 0, 1, 1, 0),
-(NULL, 'CRM企业未跟进自动释放', 'CrmCompany', 0, 0, 0, 0, 0, 0, 1, 1, 0),
-(NULL, 'CRM客户未成交自动释放', 'CrmCustomerUnsettledFallSeas', -1, 1, 0, 0, 0, 0, 1, 1, 0);
-
+(NULL, '清除过期服务', 'ServiceClear', -1, -1, -1, '1', 0, 0, 1, 1, 0, 0),
+(NULL, '自动刷新职位', 'RefreshJob', -1, -1, 1, '*/5', 0, 0, 1, 1, 0, 0),
+(NULL, '面试邀请提醒', 'InterviewNotice', -1, -1, 8, '1', 0, 0, 0, 1, 0, 0),
+(NULL, '套餐即将过期提醒', 'SetmealOvertimeNotice', -1, -1, 8, '1', 0, 0, 0, 1, 0, 0),
+(NULL, '视频面试提醒', 'InterviewVideoNotice', -1, -1, 8, '1', 0, 0, 0, 1, 0, 0),
+(NULL, '职位订阅推送', 'PushSubscribeJob', -1, -1, -1, '*/5', 0, 0, 1, 1, 0, 0),
+(NULL, '休眠用户提醒', 'NologinNotice', -1, -1, 7, '1', 0, 0, 1, 1, 1, 0),
+(NULL, '点击量/浏览量少提醒', 'FewViewNotice', -1, -1, 7, '1', 0, 0, 0, 1, 0, 0),
+(NULL, '简历点不足100提醒', 'FewResumePointNotice', -1, -1, 7, '1', 0, 0, 0, 1, 0, 0),
+(NULL, '生成百度百聘xml', 'Baiduxml', '-1', '-1', '0', '1', '0', '0', '0', '1', '0', 0),
+(NULL, '清除过期套餐', 'SetmealClear', '-1', '-1', '-1', '1', '0', '0', '0', '1', '0', 0),
+(NULL, 'Sitemap', 'Sitemap', -1, -1, 0, '1', 0, 0, 1, 1, 0, 0),
+(NULL, 'CRM线索未跟进自动释放', 'CrmClue', 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
+(NULL, 'CRM企业未跟进自动释放', 'CrmCompany', 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
+(NULL, 'CRM客户未成交自动释放', 'CrmCustomerUnsettledFallSeas', -1, 1, 0, 0, 0, 0, 1, 1, 0, 0),
+(NULL, '自动刷新简历', 'RefreshResume', '-1', '-1', '-1', '*/60', 0, 0, 1, 1, 0, 15);
 
 INSERT INTO `qs_explain` VALUES
 (NULL, '网站介绍', '', '', 1, '', '', '', 1264332774, 0),
@@ -1128,7 +1128,7 @@ INSERT INTO `qs_mobile_index_menu` VALUES
 (NUll,'company','搜企业','',0,'',0,1),
 (NUll,'nearby','附近职位','',0,'',0,1),
 (NUll,'high_wage','高薪职位','',0,'',0,1),
-(NUll,'article','新闻资讯','',0,'',0,1),
+(NUll,'article','职场资讯','',0,'',0,1),
 (NUll,'online_jobfair','网络招聘会','',0,'',0,1),
 (NULL, 'shortvideo', '视频招聘', '', '0', '', '1', '1');
 
@@ -1147,7 +1147,7 @@ INSERT INTO `qs_navigation` VALUES
 (NUll,1,'找企业',1,'company','','_self',0),
 (NUll,1,'简历库',1,'resume','','_self',0),
 (NUll,1,'名企直聘',2,'','{domain}job/famous/1','_self',0),
-(NUll,1,'新闻资讯',1,'article','','_self',0),
+(NUll,1,'职场资讯',1,'article','','_self',0),
 (NUll,1,'HR工具箱',1,'hrtool','','_self',0),
 (NUll,1,'地图找工作',1,'map','','_self',0),
 (NUll,1,'帮助中心',1,'help','','_self',0),

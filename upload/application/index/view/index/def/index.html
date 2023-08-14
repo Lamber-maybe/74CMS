@@ -745,10 +745,14 @@
 			sendSmsLimit: false,
 			wechat_login_open:0,
 			scan: false,
+			subsite_open: 0,
+			subsite_domain: ''
 		},
 		created: function() {
 			this.wechat_login_open = parseInt("{#$global_config.wechat_login_open#}")
 			this.account_qqlogin_open = parseInt("{#$global_config.account_qqlogin_open#}")
+			this.subsite_open = parseInt("{#$global_config.subsite_open#}")
+			this.subsite_domain = "{#$global_config.subsite_domain#}"
 			this.getUserInfo()
 			this.captcha_open = captcha_open
 			this.captcha_type = captcha_type
@@ -773,14 +777,15 @@
 		},
 		methods: {
 			showScan(){
-				let that = this
 				this.scan = !this.scan
 				if(this.scan===true){
+					let login_type = this.formUtype === 1 ? '/member/login/company' : '/member/login/personal'
+					let redirect_uri = '{#$global_config.sitedomain#}' + login_type
 					new window.WxLogin({
 						id:"wxlogin",
-						appid: '{#$global_config.wechat_open_appid#}',
+						appid: "{#$global_config.wechat_open_appid#}",
 						scope: "snsapi_login",
-						redirect_uri: location.href,
+						redirect_uri: redirect_uri,
 						state: "",
 						style: "",
 						href: "data:text/css;base64,LmxvZ2luUGFuZWwgewogICAgd2lkdGg6IDIyNnB4OwogICAgcGFkZGluZy10b3A6IDMxcHg7Cn0KLmltcG93ZXJCb3ggLnFyY29kZSB7CiAgd2lkdGg6IDEyMHB4Owp9Ci5pbXBvd2VyQm94IC5pbmZvIHsKICB3aWR0aDogMjAwcHg7Cn0KLmltcG93ZXJCb3ggLnN0YXR1cyB7CiAgdGV4dC1hbGlnbjogY2VudGVyOwp9Cgo="
@@ -1033,9 +1038,15 @@
 						mobile: res.data.mobile,
 						userIminfo: res.data.user_iminfo
 					}
-					Cookies.set('qscms_visitor', JSON.stringify(visitor), {
-						expires: 7
-					});
+					if (that.subsite_open === 1 && that.subsite_domain != '') {
+						Cookies.set('qscms_visitor', JSON.stringify(visitor),
+								{expires: 7, domain: '.' + this.subsite_domain}
+						)
+					} else {
+						Cookies.set('qscms_visitor', JSON.stringify(visitor),
+								{expires: 7}
+						)
+					}
 					window.location.reload()
 				}).catch(function() {})
 			},
@@ -1054,9 +1065,15 @@
 						mobile: res.data.mobile,
 						userIminfo: res.data.user_iminfo
 					}
-					Cookies.set('qscms_visitor', JSON.stringify(visitor), {
-						expires: 7
-					});
+					if (that.subsite_open === 1 && that.subsite_domain != '') {
+						Cookies.set('qscms_visitor', JSON.stringify(visitor),
+								{expires: 7, domain: '.' + this.subsite_domain}
+						)
+					} else {
+						Cookies.set('qscms_visitor', JSON.stringify(visitor),
+								{expires: 7}
+						)
+					}
 					window.location.reload()
 				}).catch(function() {})
 			},

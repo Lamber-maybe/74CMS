@@ -1,0 +1,252 @@
+{#layout name="public/layoutsubsite" /#}
+<div class="content_wrapper" id="subsiteList">
+	<div class="top_box">
+		<div class="absolute_box">
+			<div class="text_lf">
+				切换城市分站，让我们为您提供更准确的信息
+			</div>
+			<div class="qr_code">
+				<img class="img" src="__ROOT__/assets/images/subsite/qrcode.png">
+				<div class="qr_text">微信扫一扫，发现好工作</div>
+			</div>
+		</div>
+	</div>
+	<div class="content clearfix">
+		<div class="line1">
+			<div class="line11">
+				<span>当前城市：</span>
+				<a class="site_link active_item" href="{#:url('index/index/index')#}">{#$subsite.sitename|default="总站"#}</a>
+				<div class="item {#if condition="$subsiteid==0"#}displayNone{#/if#}"
+					@click.stop="setSubsite(0,sitedomain)">点击进入：<span
+						class="{#if condition="$subsiteid!=0"#}active_item{#/if#}">[总站]</span></div>
+			</div>
+			<div>
+				<input class="siteNameinput" v-model.trim="siteName" placeholder="请输入城市名称搜索" @input="handlerSearch"
+					@keyup.enter="handlerSearch" type="text" />
+			</div>
+		</div>
+		<div class="siteNameList" v-loading="loading">
+			<div class="siteListTitle">按首字母选择</div>
+			<div class="site-list" v-if="siteName&&siteName!=''">
+				<div class="site-item" v-for="(item,index) in newArr" :key="index">
+					<div class="site-en">{{item.initial}}</div>
+					<div class="site-content">
+						<span class="site-con-item" v-for="(item1,index1) in item.items" :key="index1"
+							@click.stop="setSubsite(item1.id,item1.site_url)">{{item1.sitename}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="site-list" v-if="siteName==''">
+				<div class="site-item" v-for="(item,index) in subsite_list" :key="index">
+					<div class="site-en">{{item.initial}}</div>
+					<div class="site-content">
+						<span class="site-con-item" v-for="(item1,index1) in item.items" :key="index1"
+							@click.stop="setSubsite(item1.id,item1.site_url)">{{item1.sitename}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var app = new Vue({
+		el: '#subsiteList',
+		data: {
+			subsite_list: [],
+			newArr: [],
+			subsite_open: 0,
+			subsite_domain: '',
+			siteName: '',
+			sitedomain: '',
+			loading: false
+		},
+		created: function() {
+			this.subsite_open = "{#$global_config.subsite_open#}"
+			this.subsite_domain = "{#$global_config.subsite_domain#}"
+			this.sitedomain = "{#$global_config.sitedomain#}"
+			this.getConfig()
+		},
+		methods: {
+			getConfig: function() {
+				var that = this
+				that.loading = true
+				httpget(qscms.apiList.config)
+					.then(function(res) {
+						that.subsite_list = res.data.subsite_list_initial
+						that.loading = false
+					})
+					.catch(function() {that.loading = false})
+			},
+			setSubsite: function(subsiteid, url = '') {
+				if (this.subsite_open === 1 && this.subsite_domain != '') {
+					Cookies.set('qscms_subsiteid', subsiteid, {
+						domain: '.' + this.subsite_domain
+					})
+				} else {
+					Cookies.set('qscms_subsiteid', subsiteid, )
+				}
+				location.replace(url);
+			},
+			handlerSearch: function() {
+				let newList = [...this.subsite_list],
+					newArr = [];
+				newList.forEach(item => {
+					if (item.items && item.items.length > 0) {
+						let newCityInfo = [...item.items],
+							newCityInfoObj = {},
+							itemCity = {};
+						itemCity.items = [];
+						newCityInfo.forEach(items => {
+							if (items.sitename.indexOf(this.siteName) != -1) {
+								newCityInfoObj.initial = item.initial
+								newCityInfoObj.items = []
+								newCityInfoObj.items.push(items)
+							}
+							itemCity.initial = newCityInfoObj.initial
+							if (newCityInfoObj.items) {
+								itemCity.items.push(newCityInfoObj.items[0])
+							}
+						})
+						if (itemCity.items.length > 0 && itemCity.initial) {
+							newArr.push(itemCity)
+						}
+					}
+				})
+				this.newArr = newArr
+			}
+		}
+	})
+</script>
+<style type="text/css">
+	.top_box {
+		width: 100%;
+		height: 154px;
+		background: url('__ROOT__/assets/images/subsite/bj.png') left center no-repeat;
+		background-size: 100% 100%;
+	}
+
+	.top_box .absolute_box {
+		width: 1200px;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.top_box .absolute_box .text_lf {
+		font-size: 14px;
+		color: #fff;
+		background: url('__ROOT__/assets/images/subsite/choseCityIcon.png') left top no-repeat;
+		background-size: 103px 26px;
+		padding-top: 44px;
+	}
+
+	.top_box .absolute_box .qr_code {}
+
+	.top_box .absolute_box .qr_code .img {
+		display: block;
+		width: 172px;
+		height: 131px;
+	}
+
+	.top_box .absolute_box .qr_code .qr_text {
+		text-align: center;
+		font-size: 12px;
+		color: #fff;
+	}
+
+	.active_item {
+		color: #1787fb;
+		cursor: pointer;
+	}
+
+	.displayNone {
+		display: none;
+	}
+
+	.content_wrapper {
+		background: #fff;
+	}
+
+	.content {
+		padding: 20px 0 10px;
+	}
+
+	.line1 {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.line11 {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		color: #333;
+		font-size: 14px;
+	}
+
+	.line11 .site_link {
+		margin-right: 20px;
+		cursor: pointer;
+	}
+
+	.siteNameinput {
+		width: 280px;
+		height: 35px;
+		line-height: 35px;
+		border: 1px solid #E7E7E7;
+		border-radius: 4px;
+		box-sizing: border-box;
+		padding: 0 38px 0 15px;
+		background: url('__ROOT__/assets/images/subsite/searchIcon.png') 250px center no-repeat;
+		background-size: 18px 18px;
+	}
+
+	.siteListTitle {
+		color: #333;
+		font-size: 16px;
+		padding: 18px 0 12px;
+		border-bottom: 1px solid #EEEEEE;
+	}
+
+	.site-list .site-item {
+		display: flex;
+		align-items: self-start;
+		justify-content: flex-start;
+		padding: 16px 0;
+		border-bottom: 1px solid #EEEEEE;
+	}
+
+	.site-list .site-item .site-en {
+		width: 50px;
+		height: 50px;
+		background: #F5F5F5;
+		border-radius: 4px;
+		line-height: 50px;
+		text-align: center;
+		color: #999999;
+		font-size: 20px;
+	}
+
+	.site-list .site-item .site-content {
+		box-sizing: border-box;
+		padding-left: 44px;
+	}
+
+	.site-list .site-item .site-content .site-con-item {
+		display: inline-block;
+		height: 50px;
+		line-height: 50px;
+		color: #333;
+		font-size: 14px;
+		margin-right: 20px;
+		cursor: pointer;
+	}
+	.site-list .site-item .site-content .site-con-item:hover{
+		color: #1787FB;
+	}
+	.site-list .site-item .site-content .site-con-item-act{
+		color: #1787FB;
+	}
+</style>

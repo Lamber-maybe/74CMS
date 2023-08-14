@@ -13,7 +13,7 @@ class Resume extends \app\index\controller\Base
     public function index()
     {
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'resumelist', 302);
+            $this->redirect($this->sub_site_domain_m . 'resumelist', 302);
             exit;
         }
         $keyword = request()->route('keyword/s', '', 'trim,addslashes');
@@ -330,7 +330,7 @@ class Resume extends \app\index\controller\Base
     {
         $id = request()->route('id/d', 0, 'intval');
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'resume/' . $id, 302);
+            $this->redirect($this->sub_site_domain_m . 'resume/' . $id, 302);
             exit;
         }
         $field_rule_data = model('FieldRule')->getCache();
@@ -380,7 +380,7 @@ class Resume extends \app\index\controller\Base
         }
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
-        $return['share_url'] = config('global_config.mobile_domain') . 'resume/' . $return['base_info']['id'];
+        $return['share_url'] = $this->sub_site_domain_m . 'resume/' . $return['base_info']['id'];
         $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']], $this->visitor, true);
         $this->pageHeader['title'] = $return['base_info']['fullname'] . '的简历 - ' . $this->pageHeader['title'];
         $this->pageHeader['keywords'] = $return['base_info']['fullname'] . '的简历,' . $this->pageHeader['keywords'];

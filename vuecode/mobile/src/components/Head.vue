@@ -2,7 +2,7 @@
   <div class="public_head" v-if="$store.state.isHeadShow">
     <div :class="classname" :style="bgColor!==undefined?'background-color:'+bgColor:''">
       <router-link class="head_substation" v-if="showSubstationName" to="/subsitelist">
-        {{ $store.state.config.subsite_info.district_text }}
+        {{ $store.state.config.subsite_info.sitename }}
       </router-link>
       <div class="head_back" v-if="showBackArrow" @click="goBack"></div>
       <div class="substring"><slot></slot></div>

@@ -24,6 +24,8 @@ class CompanySetmeal extends Backend
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $setmeal = input('get.setmeal/d', 0, 'intval');
         $expire = input('get.expire/d', 0, 'intval');
+        $admin_id = input('get.admin/d',0,'intval');
+        $order = input('get.order/d',0,'intval');
 
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -61,6 +63,20 @@ class CompanySetmeal extends Backend
                 $where['c.deadline'] = [['gt', time()], ['lt', strtotime('+' . config('global_config.meal_min_remind') . 'day')], 'and'];
             }
         }
+        if ($admin_id > 0) {
+            $where['a.admin_id'] = $admin_id;
+        }
+        switch ($order){
+            case 1: // 开通时间
+                $order = 'opening_time desc, a.id desc';
+                break;
+            case 2: // 结束时间
+                $order = 'deadline desc, a.id desc';
+                break;
+            default: // id降序排序
+                $order = 'a.id desc';
+                break;
+        }
         $total = model('Company')
             ->alias('a')
             ->join(config('database.prefix') . 'member_setmeal c', 'a.uid=c.uid', 'LEFT')
@@ -71,23 +87,30 @@ class CompanySetmeal extends Backend
             ->join(config('database.prefix') . 'company_contact b', 'a.uid=b.uid', 'LEFT')
             ->join(config('database.prefix') . 'member_setmeal c', 'a.uid=c.uid', 'LEFT')
             ->join(config('database.prefix') . 'setmeal d', 'd.id=c.setmeal_id', 'LEFT')
-            ->field('a.id,a.uid,a.companyname,b.contact,b.mobile,c.setmeal_id,c.deadline,c.download_resume_point,d.name as setmeal_name')
+            ->join(config('database.prefix') . 'admin e', 'e.id=a.admin_id', 'LEFT')
+            ->field('a.id,a.uid,a.companyname,b.contact,b.mobile,c.setmeal_id,c.deadline,c.download_resume_point,d.name as setmeal_name,c.opening_time,e.username')
             ->where($where)
-            ->order('a.id desc')
+            ->order($order)
             ->page($current_page . ',' . $pagesize)
             ->select();
 
         foreach ($list as $key => $value) {
+            if ($value['opening_time'] > 0) {
+                $value['opening_time'] = date('Y-m-d H:i:s',$value['opening_time']);
+            }
+            if (empty($value['username'])) {
+                $value['username'] = '-';
+            }
             if ($value['deadline'] == 0) {
                 $value['deadline_cn'] = '无限期';
                 $value['surplus_days'] = '-';
                 $value['expire'] = 0;
             } else if ($value['deadline'] < time()) {
-                $value['deadline_cn'] = date('Y-m-d', $value['deadline']);
+                $value['deadline_cn'] = date('Y-m-d H:i:s', $value['deadline']);
                 $value['surplus_days'] = '0天';
                 $value['expire'] = 1;
             } else {
-                $value['deadline_cn'] = date('Y-m-d', $value['deadline']);
+                $value['deadline_cn'] = date('Y-m-d H:i:s', $value['deadline']);
                 $surplus_seconds = $value['deadline'] - time();
                 $surplus_days = ceil($surplus_seconds / 3600 / 24);
                 $value['surplus_days'] = $surplus_days . '天';
@@ -532,5 +555,21 @@ class CompanySetmeal extends Backend
         $return['pagesize'] = $pagesize;
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    public function setOpeningTime(){
+        $uid = input('get.uid/d',0,'intval');
+        $member_setmeal = model('MemberSetmeal')->where('uid',$uid)->find();
+
+        if ($member_setmeal === null){
+            $this->ajaxReturn(500, '企业uid参数错误');
+        }
+        $addtime = model('MemberSetmealLog')->where('uid',$uid)->order('addtime','desc')->value('addtime');
+        if (!empty($addtime)) {
+            $set_opening_time = model('MemberSetmeal')->save(['opening_time'=>$addtime],['uid'=>$uid]);
+            if ($set_opening_time === 0) {
+                $this->ajaxReturn(500, '修改失败');
+            }
+        }
+        $this->ajaxReturn(200, '设置成功');
     }
 }

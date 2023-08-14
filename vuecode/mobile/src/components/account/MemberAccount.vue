@@ -224,6 +224,7 @@ import BindEmail from '@/components/account/BindEmail'
 import AccountCancellation from '@/components/account/AccountCancellation'
 import http from '@/utils/http'
 import api from '@/api'
+import VueCookies from 'vue-cookies'
 export default {
   name: 'MemberAccount',
   props: ['utype'],
@@ -306,6 +307,12 @@ export default {
             mobile: '',
             userIminfo: {}
           })
+
+          if (parseInt(this.$store.state.config.subsite_open) === 1 && this.$store.state.config.subsite_domain != '') {
+            VueCookies.remove('qscms_visitor', null, this.$store.state.config.subsite_domain)
+          }
+          VueCookies.remove('qscms_visitor')
+
           this.$router.push('/')
         })
         .catch(() => {

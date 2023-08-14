@@ -2,7 +2,7 @@
   <div>
     <div class="b1">
       <div class="title">
-        新闻资讯
+        职场资讯
         <div class="more" @click="goto('/newslist')">更多</div>
       </div>
       <div class="content">

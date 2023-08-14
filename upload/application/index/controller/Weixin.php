@@ -5,6 +5,7 @@ namespace app\index\controller;
 use app\common\model\shortvideo\SvCompanyVideo;
 use app\common\model\shortvideo\SvPersonalVideo;
 use Think\Exception;
+use think\Log;
 
 \think\Loader::import('wechat.wxBizMsgCrypt');
 
@@ -307,7 +308,7 @@ class Weixin extends \app\common\controller\Base
                 if (count($searchResult['items']) > 0) {
                     $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
                     $wechat_info_img = $wechat_info_img ? $wechat_info_img : make_file_url('resource/wechat_info_img.jpg');
-                    $link_url = config('global_config.mobile_domain') . 'joblist?keyword=' . $keyword;
+                    $link_url = $this->sub_site_domain_m . 'joblist?keyword=' . $keyword;
                     $content_arr = [
                         'Title' => '符合“' . $keyword . '”的职位',
                         'Description' => '点击查看符合条件的最新信息',
@@ -374,7 +375,7 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object, '职位不存在或已删除');
                     break;
                 }
-                $content = $jobinfo['companyname'] . '高薪诚聘' . $jobinfo['jobname'] . "<a href='" . config('global_config.mobile_domain') . 'job/' . $jobid . "'>点击详情</a>";
+                $content = $jobinfo['companyname'] . '高薪诚聘' . $jobinfo['jobname'] . "<a href='" . $this->sub_site_domain_m . 'job/' . $jobid . "'>点击详情</a>";
                 $this->outputMessage($object, $content, 'text');
                 $url = 'http://api.map.baidu.com/marker?location=' . $jobinfo['map_lat'] . ',' . $jobinfo['map_lng'] . '&title=' . $jobinfo['companyname'] . '&content=' . $jobinfo['address'] . '&output=html';
                 $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
@@ -404,9 +405,9 @@ class Weixin extends \app\common\controller\Base
                     break;
                 }
                 if ($sceneQrcodeInfo !== null) {
-                    $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                 } else {
-                    $mobile_page = config('global_config.mobile_domain') . 'job/' . $jobinfo['id'];
+                    $mobile_page = $this->sub_site_domain_m . 'job/' . $jobinfo['id'];
                 }
                 $mobile_page = str_replace(":id", $jobid, $mobile_page);
                 if (isset($event['scene_uuid'])) {
@@ -439,9 +440,9 @@ class Weixin extends \app\common\controller\Base
                     break;
                 }
                 if ($sceneQrcodeInfo !== null) {
-                    $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                 } else {
-                    $mobile_page = config('global_config.mobile_domain') . 'resume/' . $resumeinfo['id'];
+                    $mobile_page = $this->sub_site_domain_m . 'resume/' . $resumeinfo['id'];
                 }
                 $mobile_page = str_replace(":id", $resumeid, $mobile_page);
                 if (isset($event['scene_uuid'])) {
@@ -522,9 +523,9 @@ class Weixin extends \app\common\controller\Base
                 if ($company_id = $event['comid']) $company = model('Company')->find($company_id);
                 if (isset($company)) {
                     if ($sceneQrcodeInfo !== null) {
-                        $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                        $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                     } else {
-                        $mobile_page = config('global_config.mobile_domain') . 'company/' . $company['id'];
+                        $mobile_page = $this->sub_site_domain_m . 'company/' . $company['id'];
                     }
                     $mobile_page = str_replace(":id", $company_id, $mobile_page);
                     if (isset($event['scene_uuid'])) {
@@ -548,9 +549,9 @@ class Weixin extends \app\common\controller\Base
                 break;
             case 'subscribe_index':
                 if ($sceneQrcodeInfo !== null) {
-                    $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                 } else {
-                    $mobile_page = config('global_config.mobile_domain');
+                    $mobile_page = $this->sub_site_domain_m;
                 }
                 if (isset($event['scene_uuid'])) {
                     $mobile_page .= '?scene_uuid=' . $event['scene_uuid'];
@@ -568,9 +569,9 @@ class Weixin extends \app\common\controller\Base
                 break;
             case 'subscribe_reg_personal':
                 if ($sceneQrcodeInfo !== null) {
-                    $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                 } else {
-                    $mobile_page = config('global_config.mobile_domain') . 'member/reg/personal';
+                    $mobile_page = $this->sub_site_domain_m . 'member/reg/personal';
                 }
                 if (isset($event['scene_uuid'])) {
                     $mobile_page .= '?scene_uuid=' . $event['scene_uuid'];
@@ -588,9 +589,9 @@ class Weixin extends \app\common\controller\Base
                 break;
             case 'subscribe_reg_company':
                 if ($sceneQrcodeInfo !== null) {
-                    $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                    $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                 } else {
-                    $mobile_page = config('global_config.mobile_domain') . 'member/reg/company';
+                    $mobile_page = $this->sub_site_domain_m . 'member/reg/company';
                 }
                 if (isset($event['scene_uuid'])) {
                     $mobile_page .= '?scene_uuid=' . $event['scene_uuid'];
@@ -609,9 +610,9 @@ class Weixin extends \app\common\controller\Base
                 if ($notice_id = $event['noticeid']) $notice = model('Notice')->find($notice_id);
                 if (isset($notice)) {
                     if ($sceneQrcodeInfo !== null) {
-                        $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                        $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                     } else {
-                        $mobile_page = config('global_config.mobile_domain') . 'notice/' . $notice['id'];
+                        $mobile_page = $this->sub_site_domain_m . 'notice/' . $notice['id'];
                     }
                     $mobile_page = str_replace(":id", $notice_id, $mobile_page);
                     if (isset($event['scene_uuid'])) {
@@ -635,9 +636,9 @@ class Weixin extends \app\common\controller\Base
                 if ($news_id = $event['newsid']) $news = model('Article')->find($news_id);
                 if (isset($news_id)) {
                     if ($sceneQrcodeInfo !== null) {
-                        $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                        $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                     } else {
-                        $mobile_page = config('global_config.mobile_domain') . 'news/' . $news['id'];
+                        $mobile_page = $this->sub_site_domain_m . 'news/' . $news['id'];
                     }
                     $mobile_page = str_replace(":id", $news_id, $mobile_page);
                     if (isset($event['scene_uuid'])) {
@@ -661,9 +662,9 @@ class Weixin extends \app\common\controller\Base
                 if ($jobfairol_id = $event['jobfairolid']) $jobfairol = model('JobfairOnline')->find($jobfairol_id);
                 if (isset($jobfairol)) {
                     if ($sceneQrcodeInfo !== null) {
-                        $mobile_page = config('global_config.mobile_domain') . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
+                        $mobile_page = $this->sub_site_domain_m . model('SceneQrcode')->type_arr[$sceneQrcodeInfo['type']]['mobile_page'];
                     } else {
-                        $mobile_page = config('global_config.mobile_domain') . 'jobfairol/' . $jobfairol['id'];
+                        $mobile_page = $this->sub_site_domain_m . 'jobfairol/' . $jobfairol['id'];
                     }
                     $mobile_page = str_replace(":id", $jobfairol_id, $mobile_page);
                     if (isset($event['scene_uuid'])) {
@@ -750,7 +751,7 @@ class Weixin extends \app\common\controller\Base
                     "Title" => $title,
                     "Description" => $info['title'],
                     "PicUrl" => $info['video_src'] . '?vframe/jpg/offset/1/w/100/h/100',
-                    "Url" => config('global_config.mobile_domain') . 'shortvideo/videoplay?id=' . $vid . '&gointype=playlist&videotype=' . $vtype
+                    "Url" => $this->sub_site_domain_m . 'shortvideo/videoplay?id=' . $vid . '&gointype=playlist&videotype=' . $vtype
                 ];
                 $this->outputArticle($object, $content_arr);
                 break;
@@ -846,7 +847,7 @@ class Weixin extends \app\common\controller\Base
                     $this->outputText($object, '企业不存在或已删除');
                     break;
                 }
-                $content = $companyInfo['companyname'] . "<a href='" . config('global_config.mobile_domain') . 'company/' . $comid . "'>点击详情</a>";
+                $content = $companyInfo['companyname'] . "<a href='" . $this->sub_site_domain_m . 'company/' . $comid . "'>点击详情</a>";
                 $this->outputMessage($object, $content, 'text');
                 $url = 'http://api.map.baidu.com/marker?location=' . $companyInfo['map_lat'] . ',' . $companyInfo['map_lng'] . '&title=' . $companyInfo['companyname'] . '&output=html';
                 $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
@@ -891,7 +892,7 @@ class Weixin extends \app\common\controller\Base
                 $openid = $weixin_userinfo['openid'];
                 $unionid = isset($weixin_userinfo['unionid']) ? $weixin_userinfo['unionid'] : '';
                 $query = '?bindType=weixin&openid=' . $openid . '&unionid=' . $unionid;
-                $content = "您还未绑定" . config('global_config.sitename') . "帐号，现在开始绑定：<a href='" . config('global_config.mobile_domain') . "member/bind" . $query . "'>点击开始注册/绑定帐号</a>";
+                $content = "您还未绑定" . config('global_config.sitename') . "帐号，现在开始绑定：<a href='" . $this->sub_site_domain_m . "member/bind" . $query . "'>点击开始注册/绑定帐号</a>";
             }
         }
         $this->outputText($object, $content);
@@ -921,7 +922,7 @@ class Weixin extends \app\common\controller\Base
                 $openid = $weixin_userinfo['openid'];
                 $unionid = isset($weixin_userinfo['unionid']) ? $weixin_userinfo['unionid'] : '';
                 $query = '?bindType=weixin&openid=' . $openid . '&unionid=' . $unionid;
-                $content = "您还未绑定" . config('global_config.sitename') . "帐号，现在开始绑定：<a href='" . config('global_config.mobile_domain') . "member/bind" . $query . "'>点击开始注册/绑定帐号</a>";
+                $content = "您还未绑定" . config('global_config.sitename') . "帐号，现在开始绑定：<a href='" . $this->sub_site_domain_m . "member/bind" . $query . "'>点击开始注册/绑定帐号</a>";
             }
             $this->outputText($object, $content);
         } else {
@@ -1088,7 +1089,7 @@ class Weixin extends \app\common\controller\Base
         }
         $nickname = '';
         $avatar = '';
-        $content = str_replace("{domain}", config('global_config.mobile_domain'), $content);
+        $content = str_replace("{domain}", $this->sub_site_domain_m, $content);
         $content = str_replace("{openid}", $openid, $content);
         $content = str_replace("{unionid}", $unionid, $content);
         $content = str_replace("{nickname}", $nickname, $content);

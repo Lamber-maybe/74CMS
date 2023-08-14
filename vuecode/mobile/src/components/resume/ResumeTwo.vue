@@ -371,7 +371,7 @@
             </div> -->
 						<div class="box_content">
 							<div class="swiper-duo">
-								<div class="swiper-item" v-for="(item, index) in img_list" :key="index"><img :src="item.img_src" alt="" /></div>
+								<div class="swiper-item" v-for="(item, index) in img_list" :key="index"><img :src="item.img_src" alt="" @click="previewImg(index)"/></div>
 							</div>
 						</div>
 					</div>

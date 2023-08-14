@@ -526,18 +526,28 @@ class NewDataStatistics extends \app\common\controller\Backend
          * [旧]：
          * $tipoff_num = model('Tipoff')->where('status', 0)->->count();
          */
-        $tipoff_num = model('Tipoff')
-            ->alias('t')
-            ->join('resume_search_rtime r', 'r.id = t.target_id', 'LEFT')
-            ->join('job_search_rtime j', 'j.id = t.target_id', 'LEFT')
-            ->where('status', 0)
-            ->where(function ($query) {
-                $query->where('status', 0);
-            })->where(function ($query) {
-                $query->where('r.id', 'not null')->whereOr('j.id', 'not null');
-            })
-            ->group('t.id')
-            ->count('t.id');
+
+        $join_tablename = 'job';
+        $tipoff_job_num = model('Tipoff')->alias('a')
+            ->join(config('database.prefix').$join_tablename.' b','a.target_id=b.id','LEFT')
+            ->join(config('database.prefix').'member c','a.uid=c.uid','LEFT')
+            ->where('a.status', 0)
+            ->where('a.type',1)
+            ->where('b.id','not null')
+            ->where('c.uid','not null')
+            ->count();
+        $join_tablename = 'resume';
+        $tipoff_resume_num = model('Tipoff')->alias('a')
+            ->join(config('database.prefix').$join_tablename.' b','a.target_id=b.id','LEFT')
+            ->join(config('database.prefix').'member c','a.uid=c.uid','LEFT')
+            ->where('a.status', 0)
+            ->where('a.type',2)
+            ->where('b.id','not null')
+            ->where('c.uid','not null')
+            ->count();
+
+        $tipoff_num = $tipoff_job_num + $tipoff_resume_num;
+
         $return = [
             ['title' => '全部待审核企业', 'num' => model('Company')->alias('a')->join(config('database.prefix') . 'company_auth b', 'b.uid=a.uid', 'LEFT')->where('a.audit', 0)->where('b.id', 'not null')->count(), 'alias' => 'all_company_audit'],
             ['title' => '我的待审核企业', 'num' => model('Company')->alias('a')->join(config('database.prefix') . 'company_auth b', 'b.uid=a.uid', 'LEFT')->where('admin_id', $this->admininfo->id)->where('a.audit', 0)->where('b.id', 'not null')->count(), 'alias' => 'my_company_audit'],

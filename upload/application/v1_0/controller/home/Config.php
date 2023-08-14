@@ -18,40 +18,69 @@ class Config extends \app\v1_0\controller\common\Base
         $list['logo'] = isset($img_arr[$list['logo']])?$img_arr[$list['logo']]:make_file_url('resource/logo.png');
         $list['square_logo'] = isset($img_arr[$list['square_logo']])?$img_arr[$list['square_logo']]:make_file_url('resource/square_logo.png');
         $list['wechat_qrcode'] = isset($img_arr[$list['wechat_qrcode']])?$img_arr[$list['wechat_qrcode']]:make_file_url('resource/weixin_img.jpg');
+        $site_domain = config('global_config.sitedomain');
+        if (\think\Config::has('sub_site_domain')) {
+            $site_domain = \think\Config::get('sub_site_domain');
+        }
         $list['link_url_web'] = [
-            'index'=>url('index/index/index'),
-            'joblist'=>url('index/job/index'),
-            'famous_joblist'=>url('index/job/index',['famous'=>1]),
-            'emergency_joblist'=>url('index/job/index',['listtype'=>'emergency']),
-            'companylist'=>url('index/company/index'),
-            'resumelist'=>url('index/resume/index'),
-            'map'=>url('index/map/index'),
-            'articlelist'=>url('index/article/index'),
-            'noticelist'=>url('index/notice/index'),
-            'hrtoollist'=>url('index/hrtool/index'),
-            'helplist'=>url('index/help/show'),
-            'resumelist_search_key'=>url('index/resume/index',['keyword'=>'_key_']),
-            'joblist_search_key'=>url('index/job/index',['keyword'=>'_key_']),
-            'companylist_search_key'=>url('index/company/index',['keyword'=>'_key_']),
-            'resumeshow'=>url('index/resume/show',['id'=>'_id_']),
-            'companyshow'=>url('index/company/show',['id'=>'_id_']),
-            'jobshow'=>url('index/job/show',['id'=>'_id_']),
-            'jobfairollist'=>url('index/jobfairol/index')
+            'index'=>url('index/index/index','',true,$site_domain),
+            'joblist'=>url('index/job/index','',true,$site_domain),
+            'famous_joblist'=>url('index/job/index',['famous'=>1],true,$site_domain),
+            'emergency_joblist'=>url('index/job/index',['listtype'=>'emergency'],true,$site_domain),
+            'companylist'=>url('index/company/index','',true,$site_domain),
+            'resumelist'=>url('index/resume/index','',true,$site_domain),
+            'map'=>url('index/map/index','',true,$site_domain),
+            'articlelist'=>url('index/article/index','',true,$site_domain),
+            'noticelist'=>url('index/notice/index','',true,$site_domain),
+            'hrtoollist'=>url('index/hrtool/index','',true,$site_domain),
+            'helplist'=>url('index/help/show','',true,$site_domain),
+            'resumelist_search_key'=>url('index/resume/index',['keyword'=>'_key_'],true,$site_domain),
+            'joblist_search_key'=>url('index/job/index',['keyword'=>'_key_'],true,$site_domain),
+            'companylist_search_key'=>url('index/company/index',['keyword'=>'_key_'],true,$site_domain),
+            'resumeshow'=>url('index/resume/show',['id'=>'_id_'],true,$site_domain),
+            'companyshow'=>url('index/company/show',['id'=>'_id_'],true,$site_domain),
+            'jobshow'=>url('index/job/show',['id'=>'_id_'],true,$site_domain),
+            'jobfairollist'=>url('index/jobfairol/index','',true,$site_domain)
         ];
         $list['subsite_list'] = [];
+        $subsite_list_initial = [];
+        $subsite_list_initial_list = [];
         if(config('global_config.subsite_open')==1){
-            $subsite_list = model('Subsite')->where('is_display',1)->field('id,sitename,district')->order('sort_id desc,id asc')->select();
+            $subsite_list = model('Subsite')->where('is_display',1)->field('id,sitename,district,initial,url_type,second_domain,directory')->order('sort_id desc,id asc')->select();
             if(!empty($subsite_list)){
                 $category_district_data = model('CategoryDistrict')->getCache();
                 foreach ($subsite_list as $key => $value) {
+                    $list['subsite_list_initial']['initial']['item'] =
                     $arr = [
                         'id'=>$value['id'],
-                        'sitename'=>$value['sitename']
+                        'sitename'=>$value['sitename'],
+                        'initial'=>$value['initial']
                     ];
                     $arr['district_text'] = isset($category_district_data[$value['district']]) ? $category_district_data[$value['district']] : '';
+                    switch ($value['url_type']) {
+                        case 1:
+                            $arr['site_url'] = $value['second_domain'];
+                            $arr['m_site_url'] = $value['second_domain'] . '/m';
+                            break;
+                        case 2:
+                            $arr['site_url'] = config('global_config.sitedomain') . '/' . $value['directory'];
+                            $arr['m_site_url'] = config('global_config.sitedomain') . '/' . $value['directory'] . '/m';
+                            break;
+                        default:
+                            break;
+                    }
                     $list['subsite_list'][] = $arr;
+                    $subsite_list_initial[$value['initial']][] = $arr;
+                }
+                ksort($subsite_list_initial);
+                foreach ($subsite_list_initial as $i_key=>$i_value){
+                    $subsite_list_initial_list[] = [
+                        'initial' => $i_key,
+                        'items' => $i_value
+                    ];
                 }
             }
+            $list['subsite_list_initial'] = $subsite_list_initial_list;
         }
         if($this->subsite===null){
             $list['subsite_info'] = [
@@ -141,6 +170,11 @@ class Config extends \app\v1_0\controller\common\Base
                 }
             }
             if($error===0){
+                $site_domain = config('global_config.sitedomain');
+                if (\think\Config::has('sub_site_domain')) {
+                    $site_domain = \think\Config::get('sub_site_domain');
+                }
+
                 $userid = $this->userinfo->uid;
                 $userid = 'user_' . $userid . '_splmobile';
                 $config = config('global_config');
@@ -157,12 +191,12 @@ class Config extends \app\v1_0\controller\common\Base
                     'roomid' => $interview_id,
                     'sig' => $sig,
                     'jobname'=>$interview_info['jobname'],
-                    'joburl'=>url('index/job/show',['id'=>$interview_info['jobid']]),
+                    'joburl'=>url('index/job/show',['id'=>$interview_info['jobid']],true,$site_domain),
                     'wage_text'=>$jobinfo===null?'':model('BaseModel')->handle_wage($jobinfo['minwage'],$jobinfo['maxwage'],$jobinfo['negotiable']),
                     'companyname'=>$interview_info['companyname'],
                     'interview_time'=>date('Y-m-d H:i',$interview_info['interview_time']),
                     'fullname'=>$interview_info['fullname'],
-                    'resumeurl'=>url('index/resume/show',['id'=>$interview_info['resume_id']]),
+                    'resumeurl'=>url('index/resume/show',['id'=>$interview_info['resume_id']],true,$site_domain),
                     'sex_text'=>$resumeinfo['sex']==1?'男':'女',
                     'age_text'=>date('Y') - intval($resumeinfo['birthday']),
                     'education_text'=>isset(model('BaseModel')->map_education[$resumeinfo['education']]) ? model('BaseModel')->map_education[$resumeinfo['education']] : '',

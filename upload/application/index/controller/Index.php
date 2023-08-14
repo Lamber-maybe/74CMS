@@ -12,7 +12,7 @@ class Index extends Base
     public function index()
     {
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain'), 302);
+            $this->redirect($this->sub_site_domain_m, 302);
             exit;
         }
         if ($this->subsite !== null) {

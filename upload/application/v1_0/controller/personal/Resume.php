@@ -339,8 +339,10 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(200, '获取数据成功', null);
         }
 //        $info['basic']['experience_text'] = $info['basic']['experience_text']=='无'?'无经验':$info['basic']['experience_text'];
-        $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['basic']['id'];
-        $info['preview_url'] = url('index/resume/show',['id'=>$info['basic']['id']]);
+//        $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['basic']['id'];
+        $info['share_url'] = $this->sub_site_domain_m . 'resume/' . $info['basic']['id'];
+//        $info['preview_url'] = url('index/resume/show',['id'=>$info['basic']['id']]);
+        $info['preview_url'] = url('index/resume/show', ['id' => $info['basic']['id']], true, $this->sub_site_domain);
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
     /**

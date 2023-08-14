@@ -37,3 +37,10 @@ export function subsiteDelete(data) {
     data
   })
 }
+export function subsiteIsDisplay(data) {
+  return request({
+    url: apiArr.subsiteIsDisplay,
+    method: 'post',
+    data
+  })
+}

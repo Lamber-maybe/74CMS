@@ -231,6 +231,14 @@ export default {
     }
   },
   created () {
+    let params = new URLSearchParams(window.location.search)
+    let job_id = parseInt(params.get('job_id'))
+    let options_look = parseInt(params.get('options_look'))
+    if (job_id) {
+      this.jobid = job_id
+      this.params.jobid = job_id
+      this.params.is_look = options_look
+    }
     this.fetchData(true)
   },
   methods: {
@@ -436,7 +444,7 @@ export default {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      padding-bottom: 16px;
+      padding-bottom: 8px;
     }
     .tx2 {
       .text {

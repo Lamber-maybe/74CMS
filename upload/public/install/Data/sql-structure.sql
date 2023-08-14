@@ -577,6 +577,7 @@ CREATE TABLE `qs_cron` (
   `status` tinyint(1) unsigned NOT NULL,
   `is_sys` tinyint(1) unsigned NOT NULL,
   `disable_edit` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `refresh_quantity` int(10) NOT NULL DEFAULT '0' COMMENT '简历刷新数量',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_cron||-_-||
@@ -1166,6 +1167,7 @@ CREATE TABLE `qs_member_setmeal` (
   `im_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一共可发起聊天次数',
   `purchase_resume_point` int(10) NOT NULL DEFAULT '0' COMMENT '购买增值简历包',
   `resume_view_num` int(10) NOT NULL DEFAULT '0' COMMENT '收到简历免费查看数',
+  `opening_time` int(10) NOT NULL DEFAULT '0' COMMENT '套餐开通时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_setmeal_id` (`setmeal_id`)
@@ -2342,6 +2344,10 @@ CREATE TABLE `qs_subsite` (
   `tpl` varchar(30) NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL,
   `sort_id` int(10) unsigned NOT NULL,
+  `initial` CHAR (1) DEFAULT '' NOT NULL COMMENT '分站首字母',
+  `url_type` TINYINT (1) UNSIGNED DEFAULT 1 NOT NULL COMMENT 'URL类型:1|二级域名;2:|首页目录',
+  `second_domain` VARCHAR (255) DEFAULT '' NOT NULL COMMENT '绑定域名',
+  `directory` VARCHAR (255) DEFAULT '' NOT NULL COMMENT '分站目录',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_subsite||-_-||

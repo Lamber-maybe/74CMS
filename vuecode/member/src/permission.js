@@ -1,8 +1,20 @@
 import router from './router'
 import store from './store'
 import Cookies from 'js-cookie'
+import {message} from "./utils/resetMessage";
 
 router.beforeEach(async (to, from, next) => {
+  // 解决MVC跳转vue，没有config的情况
+  const hasGetConfig = store.state.config
+  if (!hasGetConfig) {
+    try {
+      await store.dispatch('getConfig')
+    } catch (error) {
+      console.log(error)
+      message.error(error.message || 'Has Error')
+      next(false)
+    }
+  }
   // 每次打开应用时检查是否有存储的登录信息
   let visitor = Cookies.get('qscms_visitor')
   if(visitor===undefined || visitor===null || !visitor){

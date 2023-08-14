@@ -25,7 +25,7 @@ class ShortUrl extends \app\v1_0\controller\common\Base
     public function genJobShow(){
         $jobId = input('get.jobId/d', 0, 'intval');
         $m = new \app\common\model\ShortUrl();
-        $url = trim(config('global_config.mobile_domain'), '/'). '/job/'. $jobId;
+        $url = $this->sub_site_domain_m . '/job/' . $jobId;
         try{
             $s = $m->gen($url, '系统生成触屏版职位详情短链');
             $this->ajaxReturn(200, 'ok', $s);

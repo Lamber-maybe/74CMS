@@ -13,8 +13,8 @@
         <el-button
           style="float: right; padding: 0;"
           type="text"
-          @click="onSubmit('form')"
           :disabled="issubmit"
+          @click="onSubmit('form')"
         >
           保存
         </el-button>
@@ -31,6 +31,35 @@
         <el-form-item label="分站名称" prop="sitename">
           <el-input v-model="form.sitename" />
         </el-form-item>
+<!--        <el-form-item label="分站形式" prop="url_type">-->
+<!--          <el-radio-group v-model="form.url_type">-->
+<!--            <el-radio :label="1">二级域名</el-radio>-->
+<!--            <el-radio :label="2">首页目录</el-radio>-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
+        <el-form-item
+          v-if="form.url_type=='1'"
+          label="绑定域名"
+          prop="second_domain"
+        >
+          <el-input v-model="form.second_domain" />
+          <br>
+          <span class="smalltip">
+            <i class="el-icon-info" />
+            如：https://taiyuan.tywangcai.com（结尾不要加“/”）
+          </span>
+        </el-form-item>
+<!--        <el-form-item-->
+<!--          v-if="form.url_type=='2'"-->
+<!--          label="分站目录"-->
+<!--          prop="directory"-->
+<!--        >-->
+<!--          <el-input v-model="form.directory" />-->
+<!--          <span class="smalltip">-->
+<!--            <i class="el-icon-info" />-->
+<!--            如：taiyuan(自定义拼音目录)-->
+<!--          </span>-->
+<!--        </el-form-item>-->
         <el-form-item label="绑定地区" prop="citycategory_arr">
           <el-cascader
             v-model="form.citycategory_arr"
@@ -41,15 +70,15 @@
             :show-all-levels="false"
           />
         </el-form-item>
-        <el-form-item label="seo标题" prop="title">
-          <el-input v-model="form.title" />
-        </el-form-item>
-        <el-form-item label="seo关键词" prop="keywords">
-          <el-input v-model="form.keywords" />
-        </el-form-item>
-        <el-form-item label="seo描述" prop="description">
-          <el-input v-model="form.description" type="textarea" />
-        </el-form-item>
+<!--        <el-form-item label="seo标题" prop="title">-->
+<!--          <el-input v-model="form.title" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="seo关键词" prop="keywords">-->
+<!--          <el-input v-model="form.keywords" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="seo描述" prop="description">-->
+<!--          <el-input v-model="form.description" type="textarea" />-->
+<!--        </el-form-item>-->
         <el-form-item label="模板" prop="tpl">
           <el-select v-model="form.tpl" placeholder="请选择模板">
             <el-option
@@ -70,7 +99,7 @@
           <el-input v-model="form.sort_id" />
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
+          <el-button type="primary" :disabled="issubmit" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/subsite/index')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -98,7 +127,10 @@ export default {
         keywords: '',
         description: '',
         is_display: 1,
-        sort_id: 0
+        sort_id: 0,
+        url_type: 1,
+        second_domain: '',
+        directory: ''
       },
       options_citycategory: [],
       options_tpl: [],
@@ -107,6 +139,20 @@ export default {
           {
             required: true,
             message: '请输入分站名称',
+            trigger: 'blur'
+          }
+        ],
+        url_type: [
+          {
+            required: true,
+            message: '请选择分站形式',
+            trigger: 'change'
+          }
+        ],
+        second_domain: [
+          {
+            required: true,
+            message: '请输入分站绑定域名',
             trigger: 'blur'
           }
         ],

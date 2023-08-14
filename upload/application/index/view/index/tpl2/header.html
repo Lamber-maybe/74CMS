@@ -9,10 +9,14 @@
 	<div class="header_wrapper" v-cloak>
 		<div class="header clearfix">
 			<div class="header_left clearfix">
-                <div class="subsite_btn left" v-if="subsite_open==1" @click.stop="subsite_sel = 1">
-                    <a class="current_city">{#$subsite.district_text|default="总站"#}</a>
+                <div class="subsite_btn left" v-if="subsite_open==1&&subsite_list.length<10" @click.stop="subsite_sel = 1">
+                    <a class="current_city">{#$subsite.sitename|default="总站"#}</a>
                     <span class="switch_city">[切换城市]</span>
                 </div>
+				<a class="subsite_btn left" v-if="subsite_open==1&&subsite_list.length>9" href="{#:url('index/subsitelist/show')#}">
+					<span class="current_city">{#$subsite.sitename|default="总站"#}</span>
+					<span class="switch_city">[切换城市]</span>
+				</a>
                 <a class="left_item homeImg" href="{#:url('index/index/index')#}" v-if="subsite_open==0">网站首页</a>
                 <a class="left_item" href="javascript:;" @click="AddFavorite" v-if="subsite_open==0">设为收藏</a>
                 <a class="left_item" href="{#:url('index/shortcut/index')#}" v-if="subsite_open==0">保存桌面</a>
@@ -139,11 +143,11 @@
             </div>
             <hr>
             <div class="subsite_list">
-                <div class="current_site">当前选择城市：<a class="site_link">{#$subsite.district_text|default="总站"#}</a></div>
+                <div class="current_site">当前选择城市：<a class="site_link">{#$subsite.sitename|default="总站"#}</a></div>
                 <div class="lsit_box clearfix">
-                    <span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}" @click.stop="setSubsite(0)">总站</span>
+                    <span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}" @click.stop="setSubsite(0,sitedomain)">总站</span>
                     <span class="item" :class="item.id==current_subsiteid?'active_item':''" v-for="(item,index) in subsite_list" :key="index"
-                        @click.stop="setSubsite(item.id)">{{item.district_text}}</span>
+                        @click.stop="setSubsite(item.id,item.site_url)">{{item.sitename}}</span>
                 </div>
             </div>
         </div>
@@ -200,7 +204,9 @@
             current_subsiteid:0,
             subsite_open: 0,
             subsite_sel: 0,
-            subsite_list: []
+            subsite_list: [],
+			sitedomain: "{#$global_config.sitedomain#}",
+			subsite_domain: ''
 		},
 		created: function () {
 			this.keyword = "{#$Request.param.keyword#}"
@@ -210,13 +216,21 @@
 			this.cronRun()
             this.current_subsiteid = parseInt(qscms.subsiteid)
             this.subsite_open = parseInt("{#$global_config.subsite_open#}")
+			this.sitedomain = "{#$global_config.sitedomain#}"
+			this.subsite_domain = "{#$global_config.subsite_domain#}"
             this.getConfig()
 		},
 		methods: {
-            setSubsite:function(subsiteid) {
-                Cookies.set('qscms_subsiteid', subsiteid)
-                location.reload();
-            },
+			setSubsite: function (subsiteid, url = '') {
+				if (this.subsite_open === 1 && this.subsite_domain != '') {
+					Cookies.set('qscms_subsiteid', subsiteid,
+							{domain: '.' + this.subsite_domain}
+					)
+				} else {
+					Cookies.set('qscms_subsiteid', subsiteid,)
+				}
+				location.replace(url)
+			},
             getConfig: function () {
                 var that = this
                 httpget(qscms.apiList.config)
@@ -275,12 +289,16 @@
 				this.searchAliasCn = aliasCn
 			},
 			handlerLogout: function () {
+				var that = this
 				this.$confirm('确定退出当前账号吗?', '提示', {
 					type: 'warning'
 				}).then(function () {
-					Cookies.remove('qscms_visitor');
+					if (that.subsite_open === 1 && that.subsite_domain != '') {
+						Cookies.remove('qscms_visitor', {domain: '.' + that.subsite_domain})
+					}
+					Cookies.remove('qscms_visitor')
 					window.location.reload()
-				}).catch(function () { });
+				}).catch(function () { })
 			},
 			handlerLogin: function (utype) {
 				if (utype == 1) {

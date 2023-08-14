@@ -106,14 +106,45 @@ class Company extends Backend
                     $where['c.last_visit_time'] = 0;
                     break;
                 case 7: // 即将转为公客
+                    $fall_time = 0;
                     $customer_fall_seas = model('b2bcrm.CrmSysConfig')
                         ->getConfigByKey('customer_fall_seas');
                     if (isset($customer_fall_seas) && !empty($customer_fall_seas)) {
-                        $day = $customer_fall_seas - 7;
-                        $time = strtotime(date("Y-m-d", strtotime("-$day day")));
-                        $where['c.last_visit_time'] = ['lt', $time];
+                        $fall_day = $customer_fall_seas > 7
+                            ? ($customer_fall_seas - 7)
+                            : $customer_fall_seas;
+                        $fall_time = strtotime(date("Y-m-d", strtotime("-$fall_day day")));
+                    }
+
+                    $unsettled_time = 0;
+                    $customer_unsettled_fall_seas = model('b2bcrm.CrmSysConfig')
+                        ->getConfigByKey('customer_unsettled_fall_seas');
+                    if (isset($customer_unsettled_fall_seas) && !empty($customer_unsettled_fall_seas)) {
+                        $unsettled_day = $customer_unsettled_fall_seas > 7
+                            ? ($customer_unsettled_fall_seas - 7)
+                            : $customer_unsettled_fall_seas;
+                        $unsettled_time = strtotime(date("Y-m-d", strtotime("-$unsettled_day day")));
+                    }
+
+                    if ($fall_time > 0) {
+                        if ($unsettled_time > 0) {
+                            $whereQuery = function ($query) use ($fall_time, $unsettled_time) {
+                                $query->where('last_visit_time', '<', $fall_time)
+                                    ->whereOr([
+                                        'life_cycle_id' => ['neq', 7],
+                                        'collection_time' => ['<', $unsettled_time]
+                                    ]);
+                            };
+                        } else {
+                            $where['c.last_visit_time'] = ['<', $fall_time];
+                        }
                     } else {
-                        $where['c.last_visit_time'] = ['lt', 0];
+                        if ($unsettled_time > 0) {
+                            $where['c.last_visit_time'] = ['<', $unsettled_time];
+                            $where['c.life_cycle_id'] = ['neq', 7];
+                        } else {
+                            $where['c.last_visit_time'] = ['<', 0];
+                        }
                     }
                     break;
             }
@@ -345,6 +376,9 @@ class Company extends Backend
                 ->field('count(DISTINCT j.id) as jobs_num')
                 ->group('c.id')
                 ->having($having_where);
+        }
+        if (isset($whereQuery) && !empty($whereQuery)) {
+            $total = $total->where($whereQuery);
         }
         // 统计数据总条数
         $total = $total->where($where)->count();

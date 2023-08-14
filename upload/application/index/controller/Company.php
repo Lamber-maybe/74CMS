@@ -13,7 +13,7 @@ class Company extends \app\index\controller\Base
     public function index()
     {
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'companylist', 302);
+            $this->redirect($this->sub_site_domain_m . 'companylist', 302);
             exit;
         }
         $where = ['a.district1' => ['gt', 0]];
@@ -249,7 +249,7 @@ class Company extends \app\index\controller\Base
     {
         $id = request()->route('id/d', 0, 'intval');
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'company/' . $id, 302);
+            $this->redirect($this->sub_site_domain_m . 'company/' . $id, 302);
             exit;
         }
         $field_rule_data = model('FieldRule')->getCache();
@@ -318,7 +318,7 @@ class Company extends \app\index\controller\Base
         $this->assign('logo', $logo);
 	
         $return['field_rule'] = $field_rule;
-        $return['share_url'] = config('global_config.mobile_domain') . 'company/' . $return['base_info']['id'];
+        $return['share_url'] = $this->sub_site_domain_m . 'company/' . $return['base_info']['id'];
         $seoData['companyname'] = $return['base_info']['companyname'];
         $seoData['content'] = $return['base_info']['short_desc'] == '' ? cut_str(strip_tags($return['base_info']['content']), 100) : $return['base_info']['short_desc'];
 

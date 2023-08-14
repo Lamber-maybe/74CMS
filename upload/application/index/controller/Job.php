@@ -15,7 +15,7 @@ class Job extends \app\index\controller\Base
         if (is_mobile_request() === true) {
             $request_param = request()->param();
             $m_params = [];
-            $redirect_url = config('global_config.mobile_domain') . 'joblist';
+            $redirect_url = $this->sub_site_domain_m . 'joblist';
 
             if (isset($request_param) && !empty($request_param)) {
                 $replace_param = [
@@ -339,7 +339,7 @@ class Job extends \app\index\controller\Base
     {
         $id = request()->route('id/d', 0, 'intval');
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'job/' . $id, 302);
+            $this->redirect($this->sub_site_domain_m . 'job/' . $id, 302);
             exit;
         }
         $field_rule_data = model('FieldRule')->getCache();
@@ -368,8 +368,8 @@ class Job extends \app\index\controller\Base
             }
         }
         $return['field_rule'] = $field_rule;
-        $return['share_url'] = config('global_config.mobile_domain') . 'job/' . $return['base_info']['id'];
-        $return['im_url'] = config('global_config.mobile_domain') . 'im/imlist';
+        $return['share_url'] = $this->sub_site_domain_m . 'job/' . $return['base_info']['id'];
+        $return['im_url'] = $this->sub_site_domain_m . 'im/imlist';
         $seoData['jobname'] = $return['base_info']['jobname'];
         $seoData['companyname'] = $return['com_info']['companyname'];
         $seoData['nature'] = $return['base_info']['nature_text'];
@@ -841,7 +841,7 @@ class Job extends \app\index\controller\Base
                 );
                 $tmp_arr['map_lat'] = $val['map_lat'];
                 $tmp_arr['map_lng'] = $val['map_lng'];
-                $tmp_arr['share_url'] = config('global_config.mobile_domain') . 'job/' . $val['id'];
+                $tmp_arr['share_url'] = $this->sub_site_domain_m . 'job/' . $val['id'];
                 $tmp_arr['qrcode_url'] = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/qrcode/index?alias=subscribe_job&url=' . $tmp_arr['share_url'] . '&jobid=' . $val['id'];
                 $result_data_list[] = $tmp_arr;
             }

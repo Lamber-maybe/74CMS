@@ -801,6 +801,8 @@ if (captcha_open == 1) {
         },
         mapType:"{#$global_config.map_type#}",
         isOpenMap:"{#$global_config.is_open_map#}",
+        subsite_open: 0,
+        subsite_domain: ''
       },
       created: function () {
         this.getUserInfo()
@@ -820,6 +822,8 @@ if (captcha_open == 1) {
           this.contentHeight = document.getElementById('jobContent').clientHeight
           this.contentAll = this.contentHeight > 450
         }
+        this.subsite_domain = "{#$global_config.subsite_domain#}"
+        this.subsite_open = parseInt("{#$global_config.subsite_open#}")
       },
       mounted: function () {
         // 滚动条的获取
@@ -1044,7 +1048,15 @@ if (captcha_open == 1) {
                 mobile: res.data.mobile,
                 userIminfo: res.data.user_iminfo
               }
-              Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 })
+              if (that.subsite_open === 1 && that.subsite_domain != '') {
+                  Cookies.set('qscms_visitor', JSON.stringify(visitor),
+                          {expires: 7, domain: '.' + this.subsite_domain}
+                  )
+              } else {
+                  Cookies.set('qscms_visitor', JSON.stringify(visitor),
+                          {expires: 7}
+                  )
+              }
               that.showRegQuick = false
               setTimeout(function() {
                 if (parseInt(res.data.next_code) === 50005) {

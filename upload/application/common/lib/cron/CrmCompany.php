@@ -53,7 +53,8 @@ class CrmCompany
                 // 掉入公海企业查询条件
                 $company_where = [
                     'admin_id' => ['gt', 0],
-                    'last_visit_time' => [['lt', $time], ['gt', 0]],
+                    'last_visit_time' => ['lt', $time],
+                    'collection_time' => ['lt', $time]
                 ];
 
                 $companies = model('Company')

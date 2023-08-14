@@ -385,4 +385,55 @@ class Order extends \app\common\controller\Backend
         }
         $this->ajaxReturn(200, '获取数据成功',$order);
     }
+    public function order_export(){
+        $order_time = input('order_time/a',[]);
+        $pay_status = input('pay_status/d',1,'intval');
+        $where = [];
+        $where['utype'] = 1;
+        if (isset($order_time[0]) && isset($order_time[1]))
+        {
+            $where['a.addtime'] = ['between', [strtotime($order_time[0]), strtotime($order_time[1])]];
+        }
+        if ($pay_status === 2)
+        {
+            $where['a.status'] = 1;
+        }
+        $order = 'a.addtime desc';
+        $list = model('Order')
+            ->alias('a')
+            ->join(
+                config('database.prefix') . 'company_contact m',
+                'a.uid=m.uid',
+                'LEFT'
+            )
+            ->join(
+                config('database.prefix') . 'company c',
+                'a.uid=c.uid',
+                'LEFT'
+            )
+            ->where($where)
+            ->field('a.service_amount,a.service_type,a.oid,a.service_name,a.payment,a.addtime,a.paytime,c.companyname,m.mobile,a.status')
+            ->order($order)
+            ->select();
+        $map_payment = model('Order')->map_payment;
+        $service_type_company = model('Order')->map_service_type_company;
+        $map_status = model('Order')->map_status;
+        foreach ($list as $k=>$v){
+            $list[$k]['addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+            $list[$k]['paytime'] = $v['paytime'] > 0 ? date('Y-m-d H:i:s',$v['paytime']) : '';
+            $list[$k]['service_type'] = isset($service_type_company[$v['service_type']]) ? $service_type_company[$v['service_type']] : '';
+            $list[$k]['payment'] = isset($map_payment[$v['payment']]) ? $map_payment[$v['payment']] : '';
+            $list[$k]['status_text'] = isset($map_status[$v['status']]) ? $map_status[$v['status']] : '';
+            $list[$k]['companyname'] = !empty($v['companyname']) ? $v['companyname'] : '该企业已删除';
+        }
+        if (!empty($list)) {
+            model('AdminLog')->writeLog(
+                '列表导出订单信息' . count($list) . '条',
+                $this->admininfo,
+                0,
+                8
+            );
+        }
+        $this->ajaxReturn(200, '获取数据成功',$list);
+    }
 }

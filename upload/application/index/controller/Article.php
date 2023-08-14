@@ -11,7 +11,7 @@ class Article extends \app\index\controller\Base
     public function index()
     {
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'newslist',302);
+            $this->redirect($this->sub_site_domain_m.'newslist',302);
             exit;
         }
 
@@ -62,7 +62,7 @@ class Article extends \app\index\controller\Base
             $list[$key]['content'] = strip_tags(htmlspecialchars_decode($value['content'],ENT_QUOTES));
             $list[$key]['content'] = cut_str($list[$key]['content'],200,0,'...');
             $list[$key]['thumb_src'] = isset($thumb_arr[$value['thumb']]) ? $thumb_arr[$value['thumb']] : default_empty('thumb');
-            $list[$key]['link_url'] = $value['link_url']==''?url('index/article/show',['id'=>$value['id']]):$value['link_url'];
+            $list[$key]['link_url'] = $value['link_url']==''?url('index/article/show',['id'=>$value['id']],true,$this->sub_site_domain):$value['link_url'];
         }
         $options = model('ArticleCategory')->getCache();
         $options1 = $options2 = [];
@@ -88,7 +88,7 @@ class Article extends \app\index\controller\Base
     {
         $id = request()->route('id/d',0,'intval');
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'news/'.$id,302);
+            $this->redirect($this->sub_site_domain_m.'news/'.$id,302);
             exit;
         }
         //读取页面缓存配置
@@ -113,7 +113,7 @@ class Article extends \app\index\controller\Base
             ->field('id,title,link_url,source_reprint')
             ->find();
         if($prev!==null){
-            $prev['link_url'] = $prev['link_url']==''?url('index/article/show',['id'=>$prev['id']]):$prev['link_url'];
+            $prev['link_url'] = $prev['link_url']==''?url('index/article/show',['id'=>$prev['id']],true,$this->sub_site_domain):$prev['link_url'];
         }
         
         $next = model('Article')
@@ -123,11 +123,11 @@ class Article extends \app\index\controller\Base
             ->field('id,title,link_url,source_reprint')
             ->find();
         if($next!==null){
-            $next['link_url'] = $next['link_url']==''?url('index/article/show',['id'=>$next['id']]):$next['link_url'];
+            $next['link_url'] = $next['link_url']==''?url('index/article/show',['id'=>$next['id']],true,$this->sub_site_domain):$next['link_url'];
         }
         $options = model('ArticleCategory')->getCache();
         $info['category_text'] = isset($options[$info['cid']])?$options[$info['cid']]:'最新资讯';
-        $info['share_url'] = config('global_config.mobile_domain').'news/'.$info['id'];
+        $info['share_url'] = $this->sub_site_domain_m.'news/'.$info['id'];
         $hotArticleList = $this->getHotArticleList($id);
         $seoData['title'] = $info['title'];
         if($info['seo_keywords']!=''){
@@ -173,7 +173,7 @@ class Article extends \app\index\controller\Base
     protected function getHotArticleList($id){
         $list = model('Article')->where('id','neq',$id)->limit(10)->order('click desc')->select();
         foreach ($list as $key => $value) {
-            $list[$key]['link_url'] = $value['link_url']==''?url('index/article/show',['id'=>$value['id']]):$value['link_url'];
+            $list[$key]['link_url'] = $value['link_url']==''?url('index/article/show',['id'=>$value['id']],true,$this->sub_site_domain):$value['link_url'];
         }
         return $list;
     }

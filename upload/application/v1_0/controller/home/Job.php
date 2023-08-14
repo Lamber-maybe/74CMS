@@ -11,7 +11,7 @@ class Job extends \app\v1_0\controller\common\Base
     {
         $search_type = input('get.search_type/s', '', 'trim');
         $keyword = input('get.keyword/s', '', 'trim,addslashes');
-        $emergency = input('get.emergency/d', 0, 'intval');
+        $emergency = input('get.emergency/d', -1, 'intval');
         $famous = input('get.famous/d', 0, 'intval');
         $company_id = input('get.company_id/d', 0, 'intval');
         $category1 = input('get.category1/d', 0, 'intval');
@@ -112,7 +112,7 @@ class Job extends \app\v1_0\controller\common\Base
         if ($category3 > 0) {
             $params['category3'] = $category3;
         }
-        if ($emergency > 0) {
+        if ($emergency > -1) {
             $params['emergency'] = $emergency;
         }
         if ($famous > 0) {
@@ -186,7 +186,6 @@ class Job extends \app\v1_0\controller\common\Base
             $params['current_page'] = $current_page;
             $params['pagesize'] = $pagesize;
         }
-
         $instance = new \app\common\lib\JobSearchEngine($params);
 
         $searchResult = $instance->run();
@@ -499,8 +498,8 @@ class Job extends \app\v1_0\controller\common\Base
                 }else{
                     $tmp_arr['distance'] = '';
                 }
-                $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$tmp_arr['id']]);
-                $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$tmp_arr['company_id']]);
+                $tmp_arr['job_link_url_web'] = url('index/job/show', ['id' => $tmp_arr['id']], true, $this->sub_site_domain);
+                $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $tmp_arr['company_id']], true, $this->sub_site_domain);
                 $result_data_list[] = $tmp_arr;
             }
         }
@@ -811,7 +810,7 @@ class Job extends \app\v1_0\controller\common\Base
             $return['has_fav'] = 0;
         }
         $return['base_info']['im_userid'] = '';
-        $return['share_url'] = config('global_config.mobile_domain').'job/'.$return['base_info']['id'];
+        $return['share_url'] = $this->sub_site_domain_m.'job/'.$return['base_info']['id'];
         model('Job')->addViewLog(
             $return['base_info']['id'],
             $return['base_info']['uid'],
@@ -1567,7 +1566,7 @@ class Job extends \app\v1_0\controller\common\Base
             $arr['logo'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$arr['logo']]
                 : default_empty('logo');
-            $arr['link_url'] = url('index/company/show',['id'=>$arr['id']]);
+            $arr['link_url'] = url('index/company/show', ['id' => $arr['id']], true, $this->sub_site_domain);
             $return[] = $arr;
         }
         return $return;

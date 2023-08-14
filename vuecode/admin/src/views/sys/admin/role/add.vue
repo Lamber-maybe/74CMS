@@ -75,6 +75,7 @@ import statRouter from '@/router/modules/stat'
 import applicationRouter from '@/router/modules/application'
 import toolRouter from '@/router/modules/tool'
 import systemRouter from '@/router/modules/system'
+import dashboardRouter from '@/router/modules/dashboard'
 export default {
   data() {
     return {
@@ -137,6 +138,7 @@ export default {
   },
   created() {
     let routeList = [
+      { ...dashboardRouter },
       { ...userRouter },
       { ...businessRouter },
       { ...contentRouter },

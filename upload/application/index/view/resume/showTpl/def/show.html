@@ -1,4 +1,6 @@
 {#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/highslide.css" /#}
+{#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
 {#load href="__ROOT__/assets/css/show_tpl/def/resumeshow.css" /#}
 <div class="content_wrapper" id="app">
     <div class="content_box clearfix">
@@ -376,7 +378,9 @@
                         <div class="tag_title img_padding">我的作品</div>
                         <ul class="img_list clearfix">
                             <li v-for="(item,index) in supplementary.img_list" :key="index">
+                                <a :href="item.img_src" class="highslide" onclick="return hs.expand(this)">
                                 <img :src="item.img_src">
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -557,6 +561,26 @@
     </el-dialog>
 </div>
 <script>
+    $(document).ready(function () {
+        $(function () {
+            hs.graphicsDir = "__ROOT__/assets/js/graphics/";
+            hs.align = 'center';
+            hs.transitions = ['expand', 'crossfade'];
+            hs.outlineType = 'rounded-white';
+            hs.fadeInOut = true;
+            hs.addSlideshow({
+                interval: 5000,
+                repeat: false,
+                useControls: true,
+                fixedControls: 'fit',
+                overlayOptions: {
+                    opacity: 0.75,
+                    position: 'bottom center',
+                    hideOnMouseOut: true
+                }
+            });
+        })
+    })
     var id = parseInt("{#$return.base_info.id#}")
     var fullName = "{#$return.base_info.fullname#}"
     var isWxOpen = !!parseInt("{#$global_config.wechat_open#}")

@@ -68,8 +68,8 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
                     $value['room_status'] = 'opened';
                 }
             }
-            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
-            $value['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
+            $value['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']], true, $this->sub_site_domain);
+            $value['company_link_url_web'] = url('index/company/show', ['id' => $value['comid']], true, $this->sub_site_domain);
 
             $list[$key] = $value;
         }

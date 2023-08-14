@@ -1222,6 +1222,15 @@ cursor: pointer;
 .subsite_btn{
 	cursor: pointer;
   }
+.subsite_btn_tpl4{
+	color: #fff;
+}
+.subsite_btn_tpl4 .switch_city{
+	color: #fff;
+}
+.subsite_btn_tpl4:hover{
+	color: #fff;
+}
   .subsite_btn .current_city{
 	  margin-right: 0 !important;
 	  padding-left: 13px;
@@ -1233,6 +1242,9 @@ cursor: pointer;
 	  margin-right: 20px;
 	  margin-left: 10px;
   }
+.subsite_btn_tpl4 .switch_city{
+	color: #fff;
+}
   /* 分站弹窗 */
   .subsite_pupop {
 	position: fixed;

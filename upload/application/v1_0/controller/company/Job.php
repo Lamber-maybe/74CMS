@@ -807,7 +807,7 @@ class Job extends \app\v1_0\controller\common\Base
                 $value['job_status_cn'] = '发布中';
             }
             $value['refreshtime'] = daterange(time(), $value['refreshtime']);
-            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['id']]);
+            $value['job_link_url_web'] = url('index/job/show', ['id' => $value['id']], true, $this->sub_site_domain);
             // app新增字段 zch
             $value['district'] = isset($category_district_data[$value['district']]) ? $category_district_data[$value['district']] : '';
             $value['education_text'] = isset(

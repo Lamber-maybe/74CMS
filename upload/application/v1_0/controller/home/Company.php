@@ -376,7 +376,7 @@ class Company extends \app\v1_0\controller\common\Base
                 ->where('audit', 1)
                 ->select();
         $return['base_info']['jobnum'] = count($job_list);
-        $return['share_url'] = config('global_config.mobile_domain').'company/'.$base_info['id'];
+        $return['share_url'] = $this->sub_site_domain_m.'company/'.$base_info['id'];
         model('Job')->addViewLog($base_info['id']);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
@@ -540,8 +540,8 @@ class Company extends \app\v1_0\controller\common\Base
         foreach ($list as $key => $value) {
             $arr['id'] = $key;
             $arr['companyname'] = $value;
-            $arr['web_link'] = url('index/company/show',['id'=>$key]);
-            $arr['mobile_link'] = config('global_config.mobile_domain').'company/'.$key;
+            $arr['web_link'] = url('index/company/show', ['id' => $key], true, $this->sub_site_domain);
+            $arr['mobile_link'] = $this->sub_site_domain_m.'company/'.$key;
             $return[] = $arr;
         }
         $this->ajaxReturn(200, '获取数据成功',['items'=>$return,'trade'=>$trade]);

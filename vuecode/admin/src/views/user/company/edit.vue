@@ -244,7 +244,7 @@
               <span class="custom_text">自定义LOGO文字：</span>
             </div>
             <div class="input">
-              <el-input v-model="logo_name" class="custom_text_input" style="width: 291px;" placeholder="请输入LOGO文字（2-4个汉子）" maxlength="4" minlength="2" />
+              <el-input v-model="logo_name" class="custom_text_input" style="width: 291px;" placeholder="请输入LOGO文字（2-4个汉字）" maxlength="4" minlength="2" />
             </div>
             <div class="color_box2">
               <div>

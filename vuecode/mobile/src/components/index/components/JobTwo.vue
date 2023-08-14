@@ -134,10 +134,22 @@ export default {
         .catch(() => {})
     },
     fetchDataEmergency () {
+      var that = this
       http
         .get(api.joblist, { emergency: 1 })
         .then(res => {
           this.joblist = [...res.data.items]
+          if (res.data.items.length < 5) {
+            let pagesize = 5 - res.data.items.length
+            http
+              .get(api.joblist, { sort: 'rtime', page: 1, pagesize: pagesize, emergency: 0})
+              .then(resr => {
+                resr.data.items.forEach(function (value, index) {
+                  that.joblist.push(value)
+                })
+              })
+              .catch(() => {})
+          }
         })
         .catch(() => {})
     },

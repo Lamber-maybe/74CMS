@@ -55,6 +55,16 @@ class Config extends \app\common\controller\Backend
                 $inputdata['map_lng'] = $coordinate['lng'];
                 $inputdata['map_lat'] = $coordinate['lat'];
             }
+            /**
+             * 分站顶级域名，修改config-cookie配置
+             */
+            if (isset($inputdata['subsite_domain']) || isset($inputdata['subsite_open'])) {
+                if (intval($inputdata['subsite_open']) === 1) {
+                    setConfigPHP(['domain'], [$inputdata['subsite_domain']]);
+                } else {
+                    setConfigPHP(['domain'], ['']);
+                }
+            }
             try {
                 // 开启事务
                 Db::startTrans();

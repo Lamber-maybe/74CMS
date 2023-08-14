@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Meta pagealias="articlelist" :query_data="{article_cid:cid}" />
-    <Head>新闻资讯</Head>
+    <Head>职场资讯</Head>
     <div class="inv-top-menu-bar">
       <div class="top-menu" ref="manageNav">
         <div class="top-menu-list">

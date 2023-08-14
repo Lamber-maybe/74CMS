@@ -172,6 +172,32 @@
   animation: searchLights 1.5s ease-in 1s infinite;
 }
 
+/* 分站页面头部样式 */
+.subsite_header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.subsite_header .nav_wrapper{
+	background: #fff;
+	width: calc(100% - 280px);
+}
+.subsite_header .nav_wrapper .nav{
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+}
+.subsite_header .nav_wrapper .nav .nav_item .item{
+	color: #333;
+}
+.subsite_header .nav_wrapper .nav .nav_item:hover {
+	background-color: #fff;
+}
+
+.subsite_header .nav_wrapper .nav .nav_item:hover a{
+    color: #1070d4;
+}
 @-webkit-keyframes searchLights {
   0% {
     left: -80px;

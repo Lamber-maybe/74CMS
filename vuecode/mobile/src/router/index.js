@@ -748,7 +748,7 @@ const routes = [{
   name: 'newsList',
   component: News,
   meta: {
-    title: '新闻资讯',
+    title: '职场资讯',
     keepAlive: true,
     loginCheck: false
   }

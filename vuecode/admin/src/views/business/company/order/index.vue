@@ -189,6 +189,11 @@
       </el-table>
       <div class="spaceline" />
       <el-row :gutter="20">
+        <el-col :span="8">
+          <el-button size="small" type="primary" @click="batch_export()">
+            批量导出
+          </el-button>
+        </el-col>
         <el-col :span="8" />
         <el-col :offset="8" :span="16" style="text-align: right;">
           <el-pagination
@@ -241,13 +246,45 @@
         <el-col :span="24" style="line-height:26px;">备注：{{ dialogContent.note }}</el-col>
       </el-row>
     </el-dialog>
+    <el-dialog
+      v-if="dialogVisible"
+      title="批量导出筛选"
+      :visible.sync="dialogVisible"
+      width="27%"
+      :before-close="handleClose"
+    >
+      <div style="margin: 8px 0 0 24px;">
+        <span>订单时间：</span>
+        <el-date-picker
+          v-model="order_time"
+          style="margin-left: 10px"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
+        />
+      </div>
+      <div style="margin: 31px 0 0 24px;">
+        <span style="display: block;float: left;padding-right: 10px;">支付状态：</span>
+        <div>
+          <el-radio v-model="pay_status" label="1">不限</el-radio>
+          <el-radio v-model="pay_status" label="2">已支付</el-radio>
+        </div>
+      </div>
+      <div style="margin: 30px 0 0 104px;">
+        <el-button type="primary" @click="exportOrder()">保 存</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getClassify } from '@/api/classify'
-import { orderList, orderConfirm, orderCancel } from '@/api/order'
+import { orderList, orderConfirm, orderCancel, orderExport } from '@/api/order'
 import { parseTime } from '@/utils/index'
+import { export_json_to_excel } from '@/excel/Export2Excel'
 
 export default {
   filters: {
@@ -298,13 +335,76 @@ export default {
       pagesize: 10,
       key_type: '1',
       keyword: '',
-      sort: ''
+      sort: '',
+      dialogVisible: false,
+      order_time: '',
+      pay_status: '1'
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    exportExcel(list) {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('@/excel/Export2Excel')
+        const tHeader = [
+          '企业名称',
+          '订单金额',
+          '订单类型',
+          '订单号',
+          '企业联系方式',
+          '服务内容',
+          '支付方式',
+          '订单状态',
+          '下单时间',
+          '付款时间'
+        ] // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          'companyname',
+          'service_amount',
+          'service_type',
+          'oid',
+          'mobile',
+          'service_name',
+          'payment',
+          'status_text',
+          'addtime',
+          'paytime'
+        ]
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(
+          tHeader,
+          data,
+          '订单导出'
+        )
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    exportOrder() {
+      this.dialogVisible = false
+      var that = this
+      if (that.$store.state.user.access_export == 0) {
+        that.$message.error('当前管理员没有导出权限')
+        this.order_time = ''
+        return false
+      }
+      orderExport({ order_time: this.order_time, pay_status: parseInt(this.pay_status) })
+        .then(res => {
+          that.exportExcel(res.data)
+        })
+      this.order_time = ''
+    },
+    handleClose(done) {
+      this.dialogVisible = false
+      this.order_time = ''
+    },
+    batch_export() {
+      this.dialogVisible = true
+      this.order_time = ''
+    },
     fetchData() {
       this.listLoading = true
 
@@ -375,7 +475,7 @@ export default {
             : parseTime(info.paytime, '{y}-{m}-{d} {h}:{i}'),
         status: this.options_status[info.status],
         amount_detail: info.amount_detail,
-        note:info.note
+        note: info.note
       }
       if (info.payment == '') {
         this.dialogContent.payment = '-'
@@ -456,5 +556,9 @@ export default {
   &:last-child {
     margin-bottom: 0;
   }
+}
+.el-dialog__footer {
+  padding: 26px 20px 20px;
+  margin-left: 106px;
 }
 </style>

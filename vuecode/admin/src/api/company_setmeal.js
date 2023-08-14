@@ -44,3 +44,10 @@ export function companySetmealOpenLog(params) {
     params
   })
 }
+export function getOpeningTime(params) {
+  return request({
+    url: apiArr.setOpeningTime,
+    method: 'get',
+    params
+  })
+}

@@ -1,204 +1,212 @@
 <div class="brw_tip">
-    <div class="t_con">
-        系统检测到您的浏览器版本过低，无法获得最佳的使用体验，建议您更换其他浏览器或 <a href="https://www.google.cn/intl/zh-CN/chrome/"
-            target="_blank">升级您的浏览器</a>。(使用360浏览器访问请选择极速模式)
-        <div class="b_close J_bw_close">关闭</div>
-    </div>
+	<div class="t_con">
+		系统检测到您的浏览器版本过低，无法获得最佳的使用体验，建议您更换其他浏览器或 <a href="https://www.google.cn/intl/zh-CN/chrome/"
+			target="_blank">升级您的浏览器</a>。(使用360浏览器访问请选择极速模式)
+		<div class="b_close J_bw_close">关闭</div>
+	</div>
 </div>
 <div id="headerContent">
-    <div class="header_wrapper" v-cloak>
-        <div class="header clearfix">
-            <div class="header_left clearfix">
-                <div class="subsite_btn left" v-if="subsite_open==1" @click.stop="subsite_sel = 1">
-                    <a class="current_city">{#$subsite.district_text|default="总站"#}</a>
-                    <span class="switch_city">[切换城市]</span>
-                </div>
-                <a class="left_item homeImg" href="{#:url('index/index/index')#}" v-if="subsite_open==0">网站首页</a>
-                <a class="left_item" href="javascript:;" @click="AddFavorite" v-if="subsite_open==0">设为收藏</a>
-                <a class="left_item" href="{#:url('index/shortcut/index')#}" v-if="subsite_open==0">保存桌面</a>
-                <a href="{#:url('index/job/index')#}" v-if="subsite_open==0">搜职位</a>
-            </div>
-            <div class="header_right clearfix">
-                <span class="right_item" v-if="isLogin===true">
-                    <span>欢迎 <span class="header_color1 member_center"
-                            @click="handlerMemberCenter">{{loginUsername}}</span> <span>登录，</span><span
-                            class="header_color2" @click="handlerLogout">退出</span></span>
-                </span>
-                <span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===true">职聊</span>
-                <el-dropdown class="drop" @command="handleManageClick" v-if="isLogin===true">
-                    <a class="right_item header_login" href="javascript:;" @click="handlerMemberCenter">管理中心<i
-                            class="el-icon-arrow-down el-icon--right"></i></a>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-if="utype==2" command="handlerRefreshResume">刷新简历</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==2" command="handlerResumeIndex">我的简历</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==2" command="handlerResumePreview">简历预览</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==2" command="handlerPersonalRecommend">智能推荐</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==2" command="handlerPersonalService">增值服务</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==2" command="handlerPersonalPwd">修改密码</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerRefreshJob">刷新职位</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerAddJob">发布职位</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerCompanyPreview">预览主页</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerJobApplyList">收到简历</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerCompanyRecommend">智能推荐</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerCompanyService">会员服务</el-dropdown-item>
-                        <el-dropdown-item v-if="utype==1" command="handlerCompanyPwd">修改密码</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <el-dropdown v-if="isLogin===false" @command="handlerLogin">
-                    <a class="header_login right_item" href="javascript:;">会员登录<i
-                            class="el-icon-arrow-down el-icon--right"></i></a>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="2">求职者登录</el-dropdown-item>
-                        <el-dropdown-item command="1">招聘登录</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <el-dropdown v-if="isLogin===false" @command="handlerReg">
-                    <a class="right_item" href="javascript:;">会员注册<i class="el-icon-arrow-down el-icon--right"></i></a>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="2">求职者注册</el-dropdown-item>
-                        <el-dropdown-item command="1">招聘注册</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===false">职聊</span>
-                <el-popover placement="bottom-end" trigger="hover">
-                    <span class="top-qrcode-item">
-                        <span class="img"><img :src="mobileQrcode" /></span>
-                        <span class="txt">触屏版</span>
-                    </span>
-                    <span class="top-qrcode-item" v-if="wechatQrcode">
-                        <span class="img"><img :src="wechatQrcode" /></span>
-                        <span class="txt">微信公众号</span>
-                    </span>
-                    <a class="item_phone right_item phon" href="javascript:;" slot="reference">手机端<i
-                            class="el-icon-arrow-down el-icon--right"></i></a>
-                </el-popover>
-                <a class="right_item " href="{#:url('index/help/show')#}">
-                    使用帮助
-                </a>
-                <el-popover placement="bottom-end" width="1200" trigger="hover">
-                    <a class="right_item" href="javascript:;" slot="reference">网站导航<i
-                            class="el-icon-arrow-down el-icon--right"></i></a>
-                    <div class="nav_drop">
-                        <div class="dr_g">
-                            <div class="g_t">求职找工作</div>
-                            <div class="g_teg">
-                                <a href="javascript:;" class="g_it" @click="handlerResumeIndex">登记简历</a>
-                                <a href="{#:url('index/job/index')#}" class="g_it">找工作</a>
-                                <a href="{#:url('index/company/index')#}" class="g_it">搜企业</a>
-                                <a href="{#:url('index/map/index')#}" class="g_it">地图找工作</a>
-                                <a href="{#:url('index/job/index',['famous'=>1])#}" class="g_it">名企直聘</a>
-                                <a href="{#:url('index/job/index')#}" class="g_it">最新职位</a>
-                                <a href="{#:url('index/job/index',['listtype'=>'emergency'])#}" class="g_it">紧急招聘</a>
-                                <a href="javascript:;" class="g_it" @click="handlerPersonalRecommend">智能匹配</a>
-                                <div class="clear"></div>
-                            </div>
-                        </div>
-                        <div class="dr_g">
-                            <div class="g_t">企业招人才</div>
-                            <div class="g_teg">
-                                <a href="javascript:;" class="g_it" @click="handlerCompanyIndex">企业入驻</a>
-                                <a href="javascript:;" class="g_it" @click="handlerAddJob">发布职位</a>
-                                <a href="{#:url('index/resume/index')#}" class="g_it">搜索简历</a>
-                                <a href="javascript:;" class="g_it" @click="handlerCompanyJoblist">职位管理</a>
-                                <a href="javascript:;" class="g_it" @click="handlerCompanyRecommend">人才推荐</a>
-                                <a href="javascript:;" class="g_it" @click="handlerCompanyService">会员服务</a>
-                                <div class="clear"></div>
-                            </div>
-                        </div>
-                        <div class="dr_g">
-                            <div class="g_t">信息专栏</div>
-                            <div class="g_teg">
-                                <a href="{#:url('index/jobfairol/index')#}" class="g_it">网络招聘会</a>
-                                <a href="{#:url('index/notice/index')#}" class="g_it">网站公告</a>
-                                <a href="{#:url('index/hrtool/index')#}" class="g_it">HR工具箱</a>
-                                <a href="{#:url('index/article/index')#}" class="g_it">职场资讯</a>
-                                <div class="clear"></div>
-                            </div>
-                        </div>
-                        <div class="dr_g">
-                            <div class="g_t">自助工具</div>
-                            <div class="g_teg">
-                                <a href="javascript:;" class="g_it" @click="handlerPersonalLogin">求职会员登录</a>
-                                <a href="javascript:;" class="g_it" @click="handlerCompanyLogin">招聘会员登录</a>
-                                <a href="javascript:;" class="g_it" @click="handlerForget">忘记密码</a>
-                                <a href="javascript:;" class="g_it" @click="handlerAppeal">账号申诉</a>
-                                <a href="{#:url('index/help/show')#}" class="g_it">帮助中心</a>
-                                <div class="clear"></div>
-                            </div>
-                        </div>
-                    </div>
-                </el-popover>
-            </div>
-        </div>
-    </div>
+	<div class="header_wrapper" v-cloak>
+		<div class="header clearfix">
+			<div class="header_left clearfix">
+				<div class="subsite_btn left" v-if="subsite_open==1&&subsite_list.length<10" @click.stop="subsite_sel = 1">
+					<a class="current_city">{#$subsite.district_text|default="总站"#}</a>
+					<span class="switch_city">[切换城市]</span>
+				</div>
+				<a class="subsite_btn left" v-if="subsite_open==1&&subsite_list.length>9" href="{#:url('index/subsitelist/show')#}">
+					<span class="current_city">{#$subsite.district_text|default="总站"#}</span>
+					<span class="switch_city">[切换城市]</span>
+				</a>
+				<a class="left_item homeImg" href="{#:url('index/index/index')#}" v-if="subsite_open==0">网站首页</a>
+				<a class="left_item" href="javascript:;" @click="AddFavorite" v-if="subsite_open==0">设为收藏</a>
+				<a class="left_item" href="{#:url('index/shortcut/index')#}" v-if="subsite_open==0">保存桌面</a>
+				<a href="{#:url('index/job/index')#}" v-if="subsite_open==0">搜职位</a>
+			</div>
+			<div class="header_right clearfix">
+				<span class="right_item" v-if="isLogin===true">
+					<span>欢迎 <span class="header_color1 member_center"
+							@click="handlerMemberCenter">{{loginUsername}}</span> <span>登录，</span><span
+							class="header_color2" @click="handlerLogout">退出</span></span>
+				</span>
+				<span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===true">职聊</span>
+				<el-dropdown class="drop" @command="handleManageClick" v-if="isLogin===true">
+					<a class="right_item header_login" href="javascript:;" @click="handlerMemberCenter">管理中心<i
+							class="el-icon-arrow-down el-icon--right"></i></a>
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item v-if="utype==2" command="handlerRefreshResume">刷新简历</el-dropdown-item>
+						<el-dropdown-item v-if="utype==2" command="handlerResumeIndex">我的简历</el-dropdown-item>
+						<el-dropdown-item v-if="utype==2" command="handlerResumePreview">简历预览</el-dropdown-item>
+						<el-dropdown-item v-if="utype==2" command="handlerPersonalRecommend">智能推荐</el-dropdown-item>
+						<el-dropdown-item v-if="utype==2" command="handlerPersonalService">增值服务</el-dropdown-item>
+						<el-dropdown-item v-if="utype==2" command="handlerPersonalPwd">修改密码</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerRefreshJob">刷新职位</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerAddJob">发布职位</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerCompanyPreview">预览主页</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerJobApplyList">收到简历</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerCompanyRecommend">智能推荐</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerCompanyService">会员服务</el-dropdown-item>
+						<el-dropdown-item v-if="utype==1" command="handlerCompanyPwd">修改密码</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
+				<el-dropdown v-if="isLogin===false" @command="handlerLogin">
+					<a class="header_login right_item" href="javascript:;">会员登录<i
+							class="el-icon-arrow-down el-icon--right"></i></a>
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item command="2">求职者登录</el-dropdown-item>
+						<el-dropdown-item command="1">招聘登录</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
+				<el-dropdown v-if="isLogin===false" @command="handlerReg">
+					<a class="right_item" href="javascript:;">会员注册<i class="el-icon-arrow-down el-icon--right"></i></a>
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item command="2">求职者注册</el-dropdown-item>
+						<el-dropdown-item command="1">招聘注册</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
+				<span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===false">职聊</span>
+				<el-popover placement="bottom-end" trigger="hover">
+					<span class="top-qrcode-item">
+						<span class="img"><img :src="mobileQrcode" /></span>
+						<span class="txt">触屏版</span>
+					</span>
+					<span class="top-qrcode-item" v-if="wechatQrcode">
+						<span class="img"><img :src="wechatQrcode" /></span>
+						<span class="txt">微信公众号</span>
+					</span>
+					<a class="item_phone right_item phon" href="javascript:;" slot="reference">手机端<i
+							class="el-icon-arrow-down el-icon--right"></i></a>
+				</el-popover>
+				<a class="right_item " href="{#:url('index/help/show')#}">
+					使用帮助
+				</a>
+				<el-popover placement="bottom-end" width="1200" trigger="hover">
+					<a class="right_item" href="javascript:;" slot="reference">网站导航<i
+							class="el-icon-arrow-down el-icon--right"></i></a>
+					<div class="nav_drop">
+						<div class="dr_g">
+							<div class="g_t">求职找工作</div>
+							<div class="g_teg">
+								<a href="javascript:;" class="g_it" @click="handlerResumeIndex">登记简历</a>
+								<a href="{#:url('index/job/index')#}" class="g_it">找工作</a>
+								<a href="{#:url('index/company/index')#}" class="g_it">搜企业</a>
+								<a href="{#:url('index/map/index')#}" class="g_it">地图找工作</a>
+								<a href="{#:url('index/job/index',['famous'=>1])#}" class="g_it">名企直聘</a>
+								<a href="{#:url('index/job/index')#}" class="g_it">最新职位</a>
+								<a href="{#:url('index/job/index',['listtype'=>'emergency'])#}" class="g_it">紧急招聘</a>
+								<a href="javascript:;" class="g_it" @click="handlerPersonalRecommend">智能匹配</a>
+								<div class="clear"></div>
+							</div>
+						</div>
+						<div class="dr_g">
+							<div class="g_t">企业招人才</div>
+							<div class="g_teg">
+								<a href="javascript:;" class="g_it" @click="handlerCompanyIndex">企业入驻</a>
+								<a href="javascript:;" class="g_it" @click="handlerAddJob">发布职位</a>
+								<a href="{#:url('index/resume/index')#}" class="g_it">搜索简历</a>
+								<a href="javascript:;" class="g_it" @click="handlerCompanyJoblist">职位管理</a>
+								<a href="javascript:;" class="g_it" @click="handlerCompanyRecommend">人才推荐</a>
+								<a href="javascript:;" class="g_it" @click="handlerCompanyService">会员服务</a>
+								<div class="clear"></div>
+							</div>
+						</div>
+						<div class="dr_g">
+							<div class="g_t">信息专栏</div>
+							<div class="g_teg">
+								<a href="{#:url('index/jobfairol/index')#}" class="g_it">网络招聘会</a>
+								<a href="{#:url('index/notice/index')#}" class="g_it">网站公告</a>
+								<a href="{#:url('index/hrtool/index')#}" class="g_it">HR工具箱</a>
+								<a href="{#:url('index/article/index')#}" class="g_it">职场资讯</a>
+								<div class="clear"></div>
+							</div>
+						</div>
+						<div class="dr_g">
+							<div class="g_t">自助工具</div>
+							<div class="g_teg">
+								<a href="javascript:;" class="g_it" @click="handlerPersonalLogin">求职会员登录</a>
+								<a href="javascript:;" class="g_it" @click="handlerCompanyLogin">招聘会员登录</a>
+								<a href="javascript:;" class="g_it" @click="handlerForget">忘记密码</a>
+								<a href="javascript:;" class="g_it" @click="handlerAppeal">账号申诉</a>
+								<a href="{#:url('index/help/show')#}" class="g_it">帮助中心</a>
+								<div class="clear"></div>
+							</div>
+						</div>
+					</div>
+				</el-popover>
+			</div>
+		</div>
+	</div>
 
-    {#if condition="$navSelTag eq 'index'"#}
-        <!-- 头部下拉广告位 -->
-        {#if condition="isset($banner_list['QS_index_top_dropdown@web']) && count($banner_list['QS_index_top_dropdown@web']) gt 0"#}
-        <div class="down_source w1200">
-            <div class="source_box">
-            <a class="img_link" {#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
-                <span class="close">X</span>
-                <img src="{#$banner_list['QS_index_top_dropdown@web'][0]['image_src']#}">
-            </a>
-            </div>
-            <button disabled='true' class="source_btn">重播</button>
-        </div>
-        {#/if#}
-        <!-- 弹窗居中广告位 -->
-        {#if condition="isset($banner_list['QS_index_popup@web']) && count($banner_list['QS_index_popup@web']) gt 0"#}
-        <div class="popup_source">
-            <span class="popup_close">关闭</span>
-            <a class="popup_source_link" {#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
-            <img src="{#$banner_list['QS_index_popup@web'][0]['image_src']#}">
-        </a>
-    </div>
-    {#/if#}
-    {#/if#}
+	{#if condition="$navSelTag eq 'index'"#}
+	<!-- 头部下拉广告位 -->
+	{#if condition="isset($banner_list['QS_index_top_dropdown@web']) && count($banner_list['QS_index_top_dropdown@web']) gt 0"#}
+	<div class="down_source w1200">
+		<div class="source_box">
+			<a class="img_link"
+				{#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}"
+				target="_blank" {#/if#}>
+				<span class="close">X</span>
+				<img src="{#$banner_list['QS_index_top_dropdown@web'][0]['image_src']#}">
+			</a>
+		</div>
+		<button disabled='true' class="source_btn">重播</button>
+	</div>
+	{#/if#}
+	<!-- 弹窗居中广告位 -->
+	{#if condition="isset($banner_list['QS_index_popup@web']) && count($banner_list['QS_index_popup@web']) gt 0"#}
+	<div class="popup_source">
+		<span class="popup_close">关闭</span>
+		<a class="popup_source_link"
+			{#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}"
+			target="_blank" {#/if#}>
+			<img src="{#$banner_list['QS_index_popup@web'][0]['image_src']#}">
+		</a>
+	</div>
+	{#/if#}
+	{#/if#}
 
-    <div class="handle_wrapper">
-        <div class="handle clearfix">
-            <div class="logo">
-                <a class="logo_link" href="{#:url('index/index/index')#}">
-                    <img class="handLe_img" src="{#$global_config.logo#}" />
-                </a>
-            </div>
-            <div class="handle_search clearfix">
-                <div class="search_box clearfix">
+	<div class="handle_wrapper">
+		<div class="handle clearfix">
+			<div class="logo">
+				<a class="logo_link" href="{#:url('index/index/index')#}">
+					<img class="handLe_img" src="{#$global_config.logo#}" />
+				</a>
+			</div>
+			<div class="handle_search clearfix">
+				<div class="search_box clearfix">
 
-                    <div class="search_select">
-                        <div class="select_con" v-cloak>
-                            {{searchAliasCn}}
-                            <ul class="search_hover">
-                                <li @click="changeSearchType('joblist','找工作')">找工作</li>
-                                <li @click="changeSearchType('companylist','找企业')">找企业</li>
-                                <li @click="changeSearchType('resumelist','找人才')">找人才</li>
-                                <li @click="changeSearchType('articlelist','找资讯')">找资讯</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="search_input">
-                        <input class="inputWidth inputWidth1 inputBorder top_search" v-model="keyword"
-                            placeholder="请输入搜索关键字" @keyup.enter="handlerSearch" type="text" />
-                    </div>
-                    <div class="search_btn1" @click="handlerSearch"></div>
-                </div>
-                <div class="search_right">
-                    {#if condition="$global_config.is_open_map eq 1"#}
-                        <span><a href="{#:url('index/job/index')#}">高级搜索</a></span><br />
-                        <span><a href="{#:url('index/map/index')#}">地图搜索</a></span>
-                    {#else /#}
-                        <span><a href="{#:url('index/job/index')#}" style="line-height: 44px">高级搜索</a></span>
-                    {#/if#}
-                </div>
-            </div>
-            <div class="right_btn">
-                <button class="btn1" @click="handlerCompanyLogin">发布职位</button>
-                <button class="btn2" @click="handlerPersonalLogin">登记简历</button>
-            </div>
-        </div>
-    </div>
-    <?php
+					<div class="search_select">
+						<div class="select_con" v-cloak>
+							{{searchAliasCn}}
+							<ul class="search_hover">
+								<li @click="changeSearchType('joblist','找工作')">找工作</li>
+								<li @click="changeSearchType('companylist','找企业')">找企业</li>
+								<li @click="changeSearchType('resumelist','找人才')">找人才</li>
+								<li @click="changeSearchType('articlelist','找资讯')">找资讯</li>
+							</ul>
+						</div>
+					</div>
+					<div class="search_input">
+						<input class="inputWidth inputWidth1 inputBorder top_search" v-model="keyword"
+							placeholder="请输入搜索关键字" @keyup.enter="handlerSearch" type="text" />
+					</div>
+					<div class="search_btn1" @click="handlerSearch"></div>
+				</div>
+				<div class="search_right">
+					{#if condition="$global_config.is_open_map eq 1"#}
+					<span><a href="{#:url('index/job/index')#}">高级搜索</a></span><br />
+					<span><a href="{#:url('index/map/index')#}">地图搜索</a></span>
+					{#else /#}
+					<span><a href="{#:url('index/job/index')#}" style="line-height: 44px">高级搜索</a></span>
+					{#/if#}
+				</div>
+			</div>
+			<div class="right_btn">
+				<button class="btn1" @click="handlerCompanyLogin">发布职位</button>
+				<button class="btn2" @click="handlerPersonalLogin">登记简历</button>
+			</div>
+		</div>
+	</div>
+	<?php
         $navlist = model('Navigation')->getList();
         foreach($navlist as $key=>$value){
             if($value['url']==''){
@@ -238,524 +246,577 @@
         $navlist1 = array_slice($navlist,0,7);
         $navlist2 = array_slice($navlist,7);
     ?>
-    <div class="nav_wrapper">
-        <ul class="nav clearfix">
-            <li class="nav_item {#if condition="$navSelTag eq 'index'"#}active{#/if#}">
-                <a class="item" href="{#:url('index/index/index')#}">网站首页</a>
-            </li>
-            <?php
+	<div class="nav_wrapper">
+		<ul class="nav clearfix">
+			<li class="nav_item {#if condition="$navSelTag eq 'index'"#}active{#/if#}">
+				<a class="item" href="{#:url('index/index/index')#}">网站首页</a>
+			</li>
+			<?php
                 foreach($navlist1 as $key=>$value){
             ?>
-            <li class="nav_item <?php if($navSelTag==$value['page']){?>active<?php }?>"><a class="item"
-                    href="<?php echo $value['url'];?>" target="<?php echo $value['target'];?>">
-                    <?php echo $value['title'];?>
-                </a></li>
-            <?php }?>
-            {#if condition="count($navlist2) gt 0"#}
-            <li class="nav_item nav_more">
-                <a class="item" href="javascript:;">更多服务</a>
-                <ul class="nav_hover">
-                    {#volist name="navlist2" id="vo"#}
-                    <li><a class="item2" href="{#$vo.url#}" target="{#$vo.target#}">{#$vo.title#}</a></li>
-                    {#/volist#}
-                </ul>
-            </li>
-            {#/if#}
-            <li class="nav_item nav_right"><a class="item" href="javascript:;" @click="handlerMemberCenter">管理中心</a>
-            </li>
-        </ul>
-    </div>
-    <!-- 分站弹窗 -->
-    <div class="subsite_pupop" v-show="subsite_sel==1" v-cloak>
-        <div class="subsite_box">
-            <span class="close_icon" @click.stop="subsite_sel=0"></span>
-            <div class="subsite_title">
-                <div class="text_1">选择城市</div>
-                <div class="text_2">切换城市分站，让我们为您提供更准确的信息</div>
-            </div>
-            <hr>
-            <div class="subsite_list">
-                <div class="current_site">当前选择城市：<a class="site_link">{#$subsite.district_text|default="总站"#}</a></div>
-                <div class="lsit_box clearfix">
-                    <span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}" @click.stop="setSubsite(0)">总站</span>
-                    <span class="item" :class="item.id==current_subsiteid?'active_item':''" v-for="(item,index) in subsite_list" :key="index"
-                        @click.stop="setSubsite(item.id)">{{item.district_text}}</span>
-                </div>
-            </div>
-        </div>
-    </div>
+			<li class="nav_item <?php if($navSelTag==$value['page']){?>active<?php }?>"><a class="item"
+					href="<?php echo $value['url'];?>" target="<?php echo $value['target'];?>">
+					<?php echo $value['title'];?>
+				</a></li>
+			<?php }?>
+			{#if condition="count($navlist2) gt 0"#}
+			<li class="nav_item nav_more">
+				<a class="item" href="javascript:;">更多服务</a>
+				<ul class="nav_hover">
+					{#volist name="navlist2" id="vo"#}
+					<li><a class="item2" href="{#$vo.url#}" target="{#$vo.target#}">{#$vo.title#}</a></li>
+					{#/volist#}
+				</ul>
+			</li>
+			{#/if#}
+			<li class="nav_item nav_right"><a class="item" href="javascript:;" @click="handlerMemberCenter">管理中心</a>
+			</li>
+		</ul>
+	</div>
+	<!-- 分站弹窗 -->
+	<div class="subsite_pupop" v-show="subsite_sel==1" v-cloak>
+		<div class="subsite_box">
+			<span class="close_icon" @click.stop="subsite_sel=0"></span>
+			<div class="subsite_title">
+				<div class="text_1">选择城市</div>
+				<div class="text_2">切换城市分站，让我们为您提供更准确的信息</div>
+			</div>
+			<hr>
+			<div class="subsite_list">
+				<div class="current_site">当前选择城市：<a class="site_link">{#$subsite.district_text|default="总站"#}</a></div>
+				<div class="lsit_box clearfix">
+					<span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}"
+						@click.stop="setSubsite(0,sitedomain)">总站</span>
+					<span class="item" :class="item.id==current_subsiteid?'active_item':''"
+						v-for="(item,index) in subsite_list" :key="index"
+						@click.stop="setSubsite(item.id,item.site_url)">{{item.sitename}}</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <script>
+	function isJSON(str) {
+		if (typeof str === "string") {
+			try {
+				var obj = JSON.parse(str);
+				if (typeof obj === "object" && obj) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (e) {
+				return false;
+			}
+		}
+	}
+	$(document).ready(function() {
+		// 判断浏览器是否支持placeholder属性
+		function isSupportPlaceholder() {
+			var input = document.createElement('input');
+			return 'placeholder' in input;
+		}
+		(function() {
+			//判断是否是IE浏览器，包括Edge浏览器
+			function IEVersion() {
+				//取得浏览器的userAgent字符串
+				var userAgent = navigator.userAgent;
+				//判断是否IE浏览器
+				var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1;
+				if (isIE) {
+					var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+					reIE.test(userAgent);
+					var fIEVersion = parseFloat(RegExp["$1"]);
+					if (fIEVersion <= 10 || !isSupportPlaceholder()) {
+						return true;
+					}
+				} else {
+					return false;
+				}
+			}
+			window.onload = function() {
+				if (IEVersion()) {
+					$('.brw_tip').show();
+				}
+			};
+		})();
+		$('.J_bw_close').click(function() {
+			$(this).closest('.brw_tip').remove();
+		});
+	})
+	var app = new Vue({
+		el: '#headerContent',
+		data: {
+			imUnreaded: false,
+			imToken: '',
+			isLogin: false,
+			utype: 0,
+			memberUrl: '',
+			loginUsername: '',
+			preview_id: 0,
+			keyword: '',
+			searchAlias: 'joblist',
+			searchAliasCn: '找工作',
+			mobileQrcode: '',
+			wechatQrcode: '',
+			current_subsiteid: 0,
+			subsite_open: 0,
+			subsite_sel: 0,
+			subsite_list: [],
+			sitedomain: '',
+			subsite_domain: ''
+		},
+		created: function() {
+			this.keyword = "{#$Request.param.keyword#}"
+			this.getUserInfo()
+			this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode +
+				"?type=normal&url={#$global_config.mobile_domain#}"
+			this.wechatQrcode = "{#$global_config.wechat_qrcode#}"
 
-function isJSON(str) {
-    if (typeof str === "string") {
-        try {
-            var obj = JSON.parse(str);
-            if (typeof obj === "object" && obj) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (e) {
-            return false;
-        }
-    }
-}
-    $(document).ready(function () {
-        // 判断浏览器是否支持placeholder属性
-        function isSupportPlaceholder() {
-            var input = document.createElement('input');
-            return 'placeholder' in input;
-        }
-        (function () {
-            //判断是否是IE浏览器，包括Edge浏览器
-            function IEVersion() {
-                //取得浏览器的userAgent字符串
-                var userAgent = navigator.userAgent;
-                //判断是否IE浏览器
-                var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1;
-                if (isIE) {
-                    var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
-                    reIE.test(userAgent);
-                    var fIEVersion = parseFloat(RegExp["$1"]);
-                    if (fIEVersion <= 10 || !isSupportPlaceholder()) {
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            window.onload = function () {
-                if (IEVersion()) {
-                    $('.brw_tip').show();
-                }
-            };
-        })();
-        $('.J_bw_close').click(function () {
-            $(this).closest('.brw_tip').remove();
-        });
-    })
-    var app = new Vue({
-        el: '#headerContent',
-        data: {
-            imUnreaded:false,
-            imToken:'',
-            isLogin: false,
-            utype: 0,
-            memberUrl: '',
-            loginUsername: '',
-            preview_id: 0,
-            keyword: '',
-            searchAlias: 'joblist',
-            searchAliasCn: '找工作',
-            mobileQrcode: '',
-            wechatQrcode: '',
-            current_subsiteid:0,
-            subsite_open: 0,
-            subsite_sel: 0,
-            subsite_list: []
-        },
-        created: function () {
-            this.keyword = "{#$Request.param.keyword#}"
-            this.getUserInfo()
-            this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
-            this.wechatQrcode = "{#$global_config.wechat_qrcode#}"
+			this.cronRun()
+			// 头部搜索默认选中
+			var locationArr = location.pathname.split('/');
+			/**
+			 * 【优化】顶部搜索条件默认搜索项与列表一致
+			 * zch 2022.10.9
+			 * 【新增】
+			 * .html
+			 * */
+			if (locationArr[1] === '' || locationArr[1] === 'job' || locationArr[1] === 'job.html') {
+				this.searchAliasCn = '找工作'
+				this.searchAlias = 'joblist'
+			} else if (locationArr[1] === 'resume' || locationArr[1] === 'resume.html') {
+				this.searchAliasCn = '找人才'
+				this.searchAlias = 'resumelist'
+			} else if (locationArr[1] === 'company' || locationArr[1] === 'company.html') {
+				this.searchAliasCn = '找企业'
+				this.searchAlias = 'companylist'
+			} else if (locationArr[1] === 'article' || locationArr[1] === 'article.html') {
+				this.searchAliasCn = '找资讯'
+				this.searchAlias = 'articlelist'
+			}
+			this.current_subsiteid = parseInt(qscms.subsiteid)
+			this.subsite_open = parseInt("{#$global_config.subsite_open#}")
+			this.sitedomain = "{#$global_config.sitedomain#}"
+			this.subsite_domain = "{#$global_config.subsite_domain#}"
+			this.getConfig()
+		},
+		methods: {
+			imWindowGlobal: function() {
+				var that = this
+				httpget(qscms.apiList.imGlobal, {})
+					.then(function(res) {
+						if (res.code == 200) {
+							//检测通过
+							if (res.data.next == '') {
+								that.initWebSocket()
+							}
+						} else {
+							console.log(res.message)
+						}
+					})
+					.catch(() => {});
+			},
+			initWebSocket: function() {
+				var that = this
+				httpget(qscms.apiList.imGetToken, {})
+					.then(function(res) {
+						if (res.data != '') {
+							qscms.imToken = res.data
+							window.ws = new WebSocket('wss://imserv.v2.74cms.com');
+							window.ws.onopen = that.websocketonopen;
+							window.ws.onmessage = that.websocketonmessage;
+							window.ws.onerror = that.websocketonerror;
+							window.ws.onclose = that.websocketclose;
+						}
 
-            this.cronRun()
-            // 头部搜索默认选中
-            var locationArr = location.pathname.split('/');
-            /**
-             * 【优化】顶部搜索条件默认搜索项与列表一致
-             * zch 2022.10.9
-             * 【新增】
-             * .html
-             * */
-            if (locationArr[1] === '' || locationArr[1] === 'job' || locationArr[1] === 'job.html') {
-                this.searchAliasCn = '找工作'
-                this.searchAlias = 'joblist'
-            } else if (locationArr[1] === 'resume' || locationArr[1] === 'resume.html') {
-                this.searchAliasCn = '找人才'
-                this.searchAlias = 'resumelist'
-            } else if (locationArr[1] === 'company' || locationArr[1] === 'company.html') {
-                this.searchAliasCn = '找企业'
-                this.searchAlias = 'companylist'
-            } else if (locationArr[1] === 'article' || locationArr[1] === 'article.html') {
-                this.searchAliasCn = '找资讯'
-                this.searchAlias = 'articlelist'
-            }
-            this.current_subsiteid = parseInt(qscms.subsiteid)
-            this.subsite_open = parseInt("{#$global_config.subsite_open#}")
-            this.getConfig()
-        },
-        methods: {
-            imWindowGlobal:function(){
-                var that = this
-                httpget(qscms.apiList.imGlobal, {})
-                .then(function(res){
-                    if(res.code==200){
-                    //检测通过
-                    if(res.data.next==''){
-                        that.initWebSocket()
-                    }
-                    }else{
-                        console.log(res.message)
-                    }
-                })
-                .catch(() => {});
-            },
-            initWebSocket:function() {
-                var that = this
-                httpget(qscms.apiList.imGetToken, {})
-                    .then(function(res){
-                        if(res.data!=''){
-                            qscms.imToken = res.data
-                            window.ws = new WebSocket('wss://imserv.v2.74cms.com');
-                            window.ws.onopen = that.websocketonopen;
-                            window.ws.onmessage = that.websocketonmessage;
-                            window.ws.onerror = that.websocketonerror;
-                            window.ws.onclose = that.websocketclose;
-                        }
+					}).catch(() => {})
+			},
+			websocketonopen: function() {
+				var that = this
+				var msgObj = {
+					controller: "Connect",
+					action: "index",
+					args: {
+						token: qscms.imToken
+					}
+				};
+				var msgStr = JSON.stringify(msgObj);
+				window.ws.send(msgStr);
+				that.getImUnreaded()
+			},
+			websocketonerror: function() {
+				console.log('client：连接websocket失败，请刷新页面重试')
+			},
+			websocketonmessage: function(e) {
+				var that = this
+				if (isJSON(e.data)) {
+					var data = JSON.parse(e.data);
+					if (data.error === undefined) {
+						that.imUnreaded = true
+					}
+				} else {
+					console.log('client：' + e.data);
+				}
+			},
+			websocketclose: function() {
+				console.log("client：关闭连接");
+			},
+			getImUnreaded: function() {
+				var that = this
+				httppost(qscms.apiList.imChatlist, {
+						token: qscms.imToken
+					})
+					.then(function(res) {
+						for (var i = 0; i < res.data.items.length; i++) {
+							if (res.data.items[i].new > 0) {
+								that.imUnreaded = true
+							}
+						}
 
-                    }).catch(()=>{})
-            },
-            websocketonopen:function() {
-                var that = this
-                var msgObj = {
-                    controller: "Connect",
-                    action: "index",
-                    args: {
-                        token:qscms.imToken
-                    }
-                };
-                var msgStr = JSON.stringify(msgObj);
-                window.ws.send(msgStr);
-                that.getImUnreaded()
-            },
-            websocketonerror:function() {
-                console.log('client：连接websocket失败，请刷新页面重试')
-            },
-            websocketonmessage:function(e) {
-                var that = this
-                if (isJSON(e.data)) {
-                var data = JSON.parse(e.data);
-                if(data.error===undefined){
-                    that.imUnreaded = true
-                }
-                }else{
-                    console.log('client：'+e.data);
-                }
-            },
-            websocketclose:function() {
-                console.log("client：关闭连接");
-            },
-            getImUnreaded: function (){
-                var that = this
-                httppost(qscms.apiList.imChatlist,{token:qscms.imToken})
-                    .then(function (res) {
-                        for(var i=0;i<res.data.items.length;i++){
-                            if(res.data.items[i].new>0){
-                                that.imUnreaded = true
-                            }
-                        }
-                        
-                    })
-                    .catch(function () { })
-            },
-            setSubsite: function (subsiteid) {
-                Cookies.set('qscms_subsiteid', subsiteid)
-                location.reload();
-            },
-            getConfig: function () {
-                var that = this
-                httpget(qscms.apiList.config)
-                    .then(function (res) {
-                        that.subsite_list = res.data.subsite_list
-                    })
-                    .catch(function () { })
-            },
-            cronRun: function () {
-                httpget(qscms.apiList.cronRun)
-                    .then(function () {
-                    })
-                    .catch(function () { })
-            },
-            AddFavorite: function () {
-                var sURL = window.location
-                var sTitle = document.title
-                try {
-                    window.external.addFavorite(sURL, sTitle);
-                } catch (e) {
-                    try {
-                        window.sidebar.addPanel(sTitle, sURL, "");
-                    } catch (e) {
-                        this.$confirm('加入收藏失败，请使用Ctrl+D进行添加', '提示', {
-                            type: 'warning',
-                            showCancelButton: false
-                        }).then(function () {
-                        }).catch(function () { });
-                    }
-                }
-            },
-            getUserInfo: function () {
-                var that = this
-                httpget(qscms.apiList.userinfo).then(function (res) {
-                    if (res.data.login === true) {
-                        that.isLogin = res.data.login
-                        that.utype = res.data.userinfo.utype
-                        if (that.utype == 1) {
-                            that.memberUrl = qscms.locationList.indexCompany
-                        } else {
-                            that.memberUrl = qscms.locationList.indexPersonal
-                        }
-                        that.loginUsername = res.data.show_username
-                        that.preview_id = res.data.preview_id
-                        that.imWindowGlobal()
-                    }
-                }).catch(function () { })
-            },
-            handlerSearch: function () {
-                var that = this
-                httpget(qscms.apiList.searchLocation, { alias: that.searchAlias, keyword: that.keyword }).then(function (res) {
-                    location.href = res.data
-                }).catch(function () { })
-            },
-            changeSearchType: function (alias, aliasCn) {
-                this.searchAlias = alias
-                this.searchAliasCn = aliasCn
-            },
-            handlerLogout: function () {
-                this.$confirm('确定退出当前账号吗?', '提示', {
-                    type: 'warning'
-                }).then(function () {
-                    Cookies.remove('qscms_visitor');
-                    window.location.reload()
-                }).catch(function () { });
-            },
-            handlerLogin: function (utype) {
-                if (utype == 1) {
-                    location.href = qscms.locationList.loginCompany
-                } else {
-                    location.href = qscms.locationList.loginPersonal
-                }
-            },
-            handlerReg: function (utype) {
-                if (parseInt("{#$global_config.closereg#}") === 1){
-                    this.$message.error('网站已关闭会员注册')
-                    return false
-                }
-                if (utype == 1) {
-                    location.href = qscms.locationList.regCompany
-                } else {
-                    location.href = qscms.locationList.regPersonal
-                }
-            },
-            handleManageClick: function (func) {
-                this[func]()
-            },
-            handlerRefreshResume: function () {
-                httppost(qscms.apiList.resumeRefresh).then(function (res) {
-                    if (parseInt(res.code) === 200) {
-                        this.$message({ type: 'success', message: res.message })
-                    } else {
-                        this.$message.error(res.message)
-                    }
-                }).catch(function () { })
-            },
-            handlerResumeIndex: function () {
-                location.href = qscms.locationList.personalResume
-            },
-            handlerResumePreview: function () {
-                var url = "{#:url('index/resume/show',['id'=>'_id_'])#}"
-                url = url.replace('_id_', this.preview_id)
-                window.open(url)
-            },
-            handlerPersonalRecommend: function () {
-                location.href = qscms.locationList.recommendJob
-            },
-            handlerPersonalService: function () {
-                location.href = qscms.locationList.personalService
-            },
-            handlerPersonalPwd: function () {
-                location.href = qscms.locationList.personalPassword
-            },
-            handlerRefreshJob: function () {
-                this.$confirm('确定刷新所有发布中的职位吗？', '系统提示', {
-                    type: 'warning'
-                })
-                    .then(function () {
-                        httppost(qscms.apiList.companyJobRefreshBatch, {}).then(function (res) {
-                            if (res.data.done === 0) {
-                                this.$confirm(res.message, '系统提示', { type: 'warning' })
-                                    .then(function () {
-                                        location.href = qscms.locationList.companyJoblist
-                                    })
-                                    .catch(function () { })
-                                return false
-                            } else {
-                                this.$message({ type: 'success', message: res.message })
-                            }
-                        }).catch(function () { })
-                    })
-                    .catch(function () { })
-            },
-            handlerAddJob: function () {
-                var that = this
-                httpget(qscms.apiList.companyCheckJobaddNum, {}).then(function (res) {
-                    if (res.data.enable_addjob_num <= 0) {
-                        that.$confirm('您当前是' +
-                            res.data.setmeal_name +
-                            '，当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！', '系统提示', {
-                            confirmButtonText: '升级套餐',
-                            type: 'warning'
-                        })
-                            .then(function () {
-                                location.href = qscms.locationList.companySetmealAdd
-                            })
-                            .catch(function () { })
-                        return false
-                    } else {
-                        location.href = qscms.locationList.companyJobAdd
-                    }
-                }).catch(function () { })
-            },
-            handlerCompanyPreview: function () {
-                var url = "{#:url('index/company/show',['id'=>'_id_'])#}"
-                url = url.replace('_id_', this.preview_id)
-                window.open(url)
-            },
-            handlerJobApplyList: function () {
-                location.href = qscms.locationList.companyJobApplyList
-            },
-            handlerCompanyRecommend: function () {
-                location.href = qscms.locationList.recommendResume
-            },
-            handlerCompanyService: function () {
-                location.href = qscms.locationList.companyService
-            },
-            handlerCompanyPwd: function () {
-                location.href = qscms.locationList.companyPassword
-            },
-            handlerCompanyIndex: function () {
-                location.href = qscms.locationList.indexCompany
-            },
-            handlerCompanyLogin: function () {
-                location.href = qscms.locationList.loginCompany
-            },
-            handlerPersonalLogin: function () {
-                location.href = qscms.locationList.loginPersonal
-            },
-            handlerForget: function () {
-                location.href = qscms.locationList.forget
-            },
-            handlerAppeal: function () {
-                location.href = qscms.locationList.appeal
-            },
-            handlerCompanyJoblist: function () {
-                location.href = qscms.locationList.companyJoblist
-            },
-            handlerMemberCenter: function () {
-                if (this.utype == 1) {
-                    location.href = qscms.locationList.indexCompany
-                } else {
-                    location.href = qscms.locationList.indexPersonal
-                }
-            },
-            locationTo: function(){
-                if(this.utype==1){
-                    location.href = qscms.locationList.companyIm
-                }else{
-                    location.href = qscms.locationList.personalIm
-                }
-            }
-        }
-    })
+					})
+					.catch(function() {})
+			},
+			setSubsite: function(subsiteid, url = '') {
+				if (this.subsite_open === 1 && this.subsite_domain != '') {
+					Cookies.set('qscms_subsiteid', subsiteid, {
+						domain: '.' + this.subsite_domain
+					})
+				} else {
+					Cookies.set('qscms_subsiteid', subsiteid, )
+				}
+				location.replace(url);
+			},
+			getConfig: function() {
+				var that = this
+				httpget(qscms.apiList.config)
+					.then(function(res) {
+						that.subsite_list = res.data.subsite_list
+					})
+					.catch(function() {})
+			},
+			cronRun: function() {
+				httpget(qscms.apiList.cronRun)
+					.then(function() {})
+					.catch(function() {})
+			},
+			AddFavorite: function() {
+				var sURL = window.location
+				var sTitle = document.title
+				try {
+					window.external.addFavorite(sURL, sTitle);
+				} catch (e) {
+					try {
+						window.sidebar.addPanel(sTitle, sURL, "");
+					} catch (e) {
+						this.$confirm('加入收藏失败，请使用Ctrl+D进行添加', '提示', {
+							type: 'warning',
+							showCancelButton: false
+						}).then(function() {}).catch(function() {});
+					}
+				}
+			},
+			getUserInfo: function() {
+				var that = this
+				httpget(qscms.apiList.userinfo).then(function(res) {
+					if (res.data.login === true) {
+						that.isLogin = res.data.login
+						that.utype = res.data.userinfo.utype
+						if (that.utype == 1) {
+							that.memberUrl = qscms.locationList.indexCompany
+						} else {
+							that.memberUrl = qscms.locationList.indexPersonal
+						}
+						that.loginUsername = res.data.show_username
+						that.preview_id = res.data.preview_id
+						that.imWindowGlobal()
+					}
+				}).catch(function() {})
+			},
+			handlerSearch: function() {
+				var that = this
+				httpget(qscms.apiList.searchLocation, {
+					alias: that.searchAlias,
+					keyword: that.keyword
+				}).then(function(res) {
+					location.href = res.data
+				}).catch(function() {})
+			},
+			changeSearchType: function(alias, aliasCn) {
+				this.searchAlias = alias
+				this.searchAliasCn = aliasCn
+			},
+			handlerLogout: function() {
+				var that = this
+				this.$confirm('确定退出当前账号吗?', '提示', {
+					type: 'warning'
+				}).then(function() {
+					if (that.subsite_open === 1 && that.subsite_domain != '') {
+						Cookies.remove('qscms_visitor', {
+							domain: '.' + that.subsite_domain
+						})
+					}
+					Cookies.remove('qscms_visitor')
+					window.location.reload()
+				}).catch(function() {});
+			},
+			handlerLogin: function(utype) {
+				if (utype == 1) {
+					location.href = qscms.locationList.loginCompany
+				} else {
+					location.href = qscms.locationList.loginPersonal
+				}
+			},
+			handlerReg: function(utype) {
+				if (parseInt("{#$global_config.closereg#}") === 1) {
+					this.$message.error('网站已关闭会员注册')
+					return false
+				}
+				if (utype == 1) {
+					location.href = qscms.locationList.regCompany
+				} else {
+					location.href = qscms.locationList.regPersonal
+				}
+			},
+			handleManageClick: function(func) {
+				this[func]()
+			},
+			handlerRefreshResume: function() {
+				httppost(qscms.apiList.resumeRefresh).then(function(res) {
+					if (parseInt(res.code) === 200) {
+						this.$message({
+							type: 'success',
+							message: res.message
+						})
+					} else {
+						this.$message.error(res.message)
+					}
+				}).catch(function() {})
+			},
+			handlerResumeIndex: function() {
+				location.href = qscms.locationList.personalResume
+			},
+			handlerResumePreview: function() {
+				var url = "{#:url('index/resume/show',['id'=>'_id_'])#}"
+				url = url.replace('_id_', this.preview_id)
+				window.open(url)
+			},
+			handlerPersonalRecommend: function() {
+				location.href = qscms.locationList.recommendJob
+			},
+			handlerPersonalService: function() {
+				location.href = qscms.locationList.personalService
+			},
+			handlerPersonalPwd: function() {
+				location.href = qscms.locationList.personalPassword
+			},
+			handlerRefreshJob: function() {
+				this.$confirm('确定刷新所有发布中的职位吗？', '系统提示', {
+						type: 'warning'
+					})
+					.then(function() {
+						httppost(qscms.apiList.companyJobRefreshBatch, {}).then(function(res) {
+							if (res.data.done === 0) {
+								this.$confirm(res.message, '系统提示', {
+										type: 'warning'
+									})
+									.then(function() {
+										location.href = qscms.locationList.companyJoblist
+									})
+									.catch(function() {})
+								return false
+							} else {
+								this.$message({
+									type: 'success',
+									message: res.message
+								})
+							}
+						}).catch(function() {})
+					})
+					.catch(function() {})
+			},
+			handlerAddJob: function() {
+				var that = this
+				httpget(qscms.apiList.companyCheckJobaddNum, {}).then(function(res) {
+					if (res.data.enable_addjob_num <= 0) {
+						that.$confirm('您当前是' +
+								res.data.setmeal_name +
+								'，当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！', '系统提示', {
+									confirmButtonText: '升级套餐',
+									type: 'warning'
+								})
+							.then(function() {
+								location.href = qscms.locationList.companySetmealAdd
+							})
+							.catch(function() {})
+						return false
+					} else {
+						location.href = qscms.locationList.companyJobAdd
+					}
+				}).catch(function() {})
+			},
+			handlerCompanyPreview: function() {
+				var url = "{#:url('index/company/show',['id'=>'_id_'])#}"
+				url = url.replace('_id_', this.preview_id)
+				window.open(url)
+			},
+			handlerJobApplyList: function() {
+				location.href = qscms.locationList.companyJobApplyList
+			},
+			handlerCompanyRecommend: function() {
+				location.href = qscms.locationList.recommendResume
+			},
+			handlerCompanyService: function() {
+				location.href = qscms.locationList.companyService
+			},
+			handlerCompanyPwd: function() {
+				location.href = qscms.locationList.companyPassword
+			},
+			handlerCompanyIndex: function() {
+				location.href = qscms.locationList.indexCompany
+			},
+			handlerCompanyLogin: function() {
+				location.href = qscms.locationList.loginCompany
+			},
+			handlerPersonalLogin: function() {
+				location.href = qscms.locationList.loginPersonal
+			},
+			handlerForget: function() {
+				location.href = qscms.locationList.forget
+			},
+			handlerAppeal: function() {
+				location.href = qscms.locationList.appeal
+			},
+			handlerCompanyJoblist: function() {
+				location.href = qscms.locationList.companyJoblist
+			},
+			handlerMemberCenter: function() {
+				if (this.utype == 1) {
+					location.href = qscms.locationList.indexCompany
+				} else {
+					location.href = qscms.locationList.indexPersonal
+				}
+			},
+			locationTo: function() {
+				if (this.utype == 1) {
+					location.href = qscms.locationList.companyIm
+				} else {
+					location.href = qscms.locationList.personalIm
+				}
+			}
+		}
+	})
 
-    $(function () {
-        // 头部下拉广告位
-        var showPopup = false
-        var current = new Date()
-        var expire_time = localStorage.getItem('index_popup_expire_time')
-        if (expire_time === undefined || !expire_time || current.getTime() > new Date(expire_time)) {
-            showPopup = true
-            expire_time = new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
-            localStorage.setItem('index_popup_expire_time', expire_time)
-        }
-        var header_source_time = 6;
-        var header_time = null;
-        var distinguish_source = true;
+	$(function() {
+		// 头部下拉广告位
+		var showPopup = false
+		var current = new Date()
+		var expire_time = localStorage.getItem('index_popup_expire_time')
+		if (expire_time === undefined || !expire_time || current.getTime() > new Date(expire_time)) {
+			showPopup = true
+			expire_time = new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
+			localStorage.setItem('index_popup_expire_time', expire_time)
+		}
+		var header_source_time = 6;
+		var header_time = null;
+		var distinguish_source = true;
 
-        if ($(".down_source")[0]) {
-            down_source();
-        } else {
-            if ($(".popup_source")[0] && showPopup === true) {
-                $('<div>').attr({ 'class': 'mantle_box' }).appendTo('body')
-                $(".popup_source").show();
-                popup_source();
-            }
-        }
+		if ($(".down_source")[0]) {
+			down_source();
+		} else {
+			if ($(".popup_source")[0] && showPopup === true) {
+				$('<div>').attr({
+					'class': 'mantle_box'
+				}).appendTo('body')
+				$(".popup_source").show();
+				popup_source();
+			}
+		}
 
-        function down_source() {
-            $(".source_box .img_link").animate({ height: "500px" });
-            $(".source_box").animate({ height: "500px" });
-            $(".down_source .source_btn").html(header_source_time);
-            header_time = setInterval(function () {
-                header_source_time--;
-                $(".down_source .source_btn").html(header_source_time);
-                if (header_source_time == 0) {
-                    $(".source_box .img_link").animate({ height: "0px" });
-                    $(".source_box").animate({ height: "0px" });
-                    $(".down_source .source_btn").html("重播");
-                    header_source_time = 6;
-                    $(".source_btn").attr({ disabled: false });
-                    clearInterval(header_time);
-                    if ($(".popup_source")[0] && showPopup === true) {
-                        if (distinguish_source) {
-                            $('<div>').attr({ 'class': 'mantle_box' }).appendTo('body')
-                            $(".popup_source").show();
-                            $(".source_btn").attr({ disabled: false });
-                            popup_source();
-                        }
-                    }
-                }
-            }, 1000);
-        }
-        // 重播点击事件
-        $(".down_source .source_btn").click(function () {
-            distinguish_source = false;
-            $(this).attr({ disabled: true });
-            down_source();
-        });
-        // 关闭按钮
-        $(".down_source .source_box .img_link .close").click(function (event) {
-            var e = window.event || event;
-            e.preventDefault();
-            distinguish_source = false;
-            $(".source_box .img_link").animate({ height: "0px" });
-            $(".source_box").animate({ height: "0px" });
-            header_source_time = 6;
-            $(".down_source .source_btn").html("重播");
-            clearInterval(header_time);
-            $(".source_btn").attr({ disabled: false });
-            if (distinguish_source && showPopup === true) {
-                $(".popup_source").show();
-                popup_source();
-            }
-        });
+		function down_source() {
+			$(".source_box .img_link").animate({
+				height: "500px"
+			});
+			$(".source_box").animate({
+				height: "500px"
+			});
+			$(".down_source .source_btn").html(header_source_time);
+			header_time = setInterval(function() {
+				header_source_time--;
+				$(".down_source .source_btn").html(header_source_time);
+				if (header_source_time == 0) {
+					$(".source_box .img_link").animate({
+						height: "0px"
+					});
+					$(".source_box").animate({
+						height: "0px"
+					});
+					$(".down_source .source_btn").html("重播");
+					header_source_time = 6;
+					$(".source_btn").attr({
+						disabled: false
+					});
+					clearInterval(header_time);
+					if ($(".popup_source")[0] && showPopup === true) {
+						if (distinguish_source) {
+							$('<div>').attr({
+								'class': 'mantle_box'
+							}).appendTo('body')
+							$(".popup_source").show();
+							$(".source_btn").attr({
+								disabled: false
+							});
+							popup_source();
+						}
+					}
+				}
+			}, 1000);
+		}
+		// 重播点击事件
+		$(".down_source .source_btn").click(function() {
+			distinguish_source = false;
+			$(this).attr({
+				disabled: true
+			});
+			down_source();
+		});
+		// 关闭按钮
+		$(".down_source .source_box .img_link .close").click(function(event) {
+			var e = window.event || event;
+			e.preventDefault();
+			distinguish_source = false;
+			$(".source_box .img_link").animate({
+				height: "0px"
+			});
+			$(".source_box").animate({
+				height: "0px"
+			});
+			header_source_time = 6;
+			$(".down_source .source_btn").html("重播");
+			clearInterval(header_time);
+			$(".source_btn").attr({
+				disabled: false
+			});
+			if (distinguish_source && showPopup === true) {
+				$(".popup_source").show();
+				popup_source();
+			}
+		});
 
-        // 弹窗广告位
-        var popup_time = null;
+		// 弹窗广告位
+		var popup_time = null;
 
-        function popup_source() {
-            popup_time = setTimeout(function () {
-                $('.mantle_box').hide()
-                $(".popup_source").hide();
-            }, 6000);
-        }
-        // 关闭
-        $(".popup_close").click(function () {
-            $(".popup_source").hide();
-            $('.mantle_box').hide()
-            clearTimeout(popup_time);
-        });
-    })
+		function popup_source() {
+			popup_time = setTimeout(function() {
+				$('.mantle_box').hide()
+				$(".popup_source").hide();
+			}, 6000);
+		}
+		// 关闭
+		$(".popup_close").click(function() {
+			$(".popup_source").hide();
+			$('.mantle_box').hide()
+			clearTimeout(popup_time);
+		});
+	})
 </script>

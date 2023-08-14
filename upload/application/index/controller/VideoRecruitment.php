@@ -12,12 +12,12 @@ class VideoRecruitment extends \app\index\controller\Base{
     public function index()
     {
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'shortvideo/companylist',302);
+            $this->redirect($this->sub_site_domain_m.'shortvideo/companylist',302);
             exit;
         }
         $input_data['uuid'] = uuid();
         $mobile_page = 'shortvideo/companylist';
-        $locationUrl = config('global_config.mobile_domain').$mobile_page.'?scene_uuid='.$input_data['uuid'];
+        $locationUrl = $this->sub_site_domain_m.$mobile_page.'?scene_uuid='.$input_data['uuid'];
         $locationUrl = urlencode($locationUrl);
         $qrcodeSrc = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?type=normal&url='.$locationUrl;
         $this->assign('qrcodeSrc',$qrcodeSrc);

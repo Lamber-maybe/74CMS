@@ -101,7 +101,7 @@ class WorkStatistics  extends Backend
             ->field('
                 a.username,
                 count(c.id) as company_total,
-                count(if(c.addtime > '.$timestampToday.',true,null)) as today_num,
+                count(if(c.collection_time > '.$timestampToday.',true,null)) as today_num,
                 count(if(s.deadline > '.time().' && deadline < '.strtotime('+'.config('global_config.meal_min_remind').'day').',true,null)) as expiring_soon,
                 count(if(s.deadline > 0 && deadline < '.time().',true,null))  as no_renewal,
                 count(if(life_cycle_id=1,true,null)) as new_customers,

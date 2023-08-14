@@ -123,13 +123,18 @@ import Captcha from '@/components/captcha/index'
     methods:{
       showScan(){
         let that = this
+        // 分站三方登录因为域名配置限制，只能跳转至总站
+        // let redirect_uri = location.href
+        let login_type = that.utype === 1 ? '/member/login/company' : '/member/login/personal'
+        let redirect_uri = this.$store.state.config.sitedomain + login_type
+
         this.scan = !this.scan
         if(this.scan===true){
           new window.WxLogin({
             id:"wxlogin",
             appid: that.$store.state.config.wechat_open_appid,
             scope: "snsapi_login",
-            redirect_uri: location.href,
+            redirect_uri: redirect_uri,
             state: "",
             style: "",
             href: "data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7DQogIHdpZHRoOiAyMDBweDsNCn0NCi5pbXBvd2VyQm94IC5pbmZvIHsNCiAgd2lkdGg6IDIwMHB4Ow0KfQ0KLmltcG93ZXJCb3ggLnN0YXR1cyB7DQogIHRleHQtYWxpZ246IGNlbnRlcjsNCn0="

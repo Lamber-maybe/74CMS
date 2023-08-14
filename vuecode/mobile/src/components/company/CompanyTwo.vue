@@ -189,7 +189,7 @@
               v-for="(item, index) in img_list"
               :key="index"
             >
-              <img :src="item.img_src" alt="" />
+              <img :src="item.img_src" alt="" @click="previewImg(index)"/>
             </div>
           </div>
         </div>
@@ -358,6 +358,8 @@ import Report from '@/components/Report'
 import FloatBall from '@/components/floatBall'
 import {mapState} from 'vuex'
 import TianMap from '@/components/map/TianMap/TianMap'
+import {ImagePreview} from 'vant'
+Vue.use(ImagePreview)
 let isSpider = new RegExp(
   '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
 ).test(navigator.userAgent)
@@ -427,7 +429,8 @@ export default {
       companySupplementary: {},
       itemWidth: 50,
       textAlign: 'right',
-      TMap: {}
+      TMap: {},
+      previewImgList: [],
     }
   },
   created () {
@@ -452,6 +455,17 @@ export default {
     ...mapState(['config'])
   },
   methods: {
+    // 预览作品
+    previewImg (index) {
+      ImagePreview({
+        images: this.previewImgList,
+        showIndex: true,
+        loop: false,
+        startPosition: index,
+        closeOnPopstate: true,
+        closeable: true
+      })
+    },
     widthAuto () {
       this.putAway = !this.putAway
       // this.itemWidth = 150;
@@ -633,6 +647,9 @@ export default {
       } else {
         this.getJoblist()
       }
+      this.previewImgList = this.img_list.map(function (item) {
+        return item.img_src
+      })
     },
     getCompanySupplementary () {
       http

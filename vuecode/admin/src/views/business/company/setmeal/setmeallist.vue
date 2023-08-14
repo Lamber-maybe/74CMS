@@ -1,6 +1,29 @@
 <template>
   <div class="app-container">
     <div class="list-search">
+      <el-input
+        v-model="keyword"
+        placeholder="请输入搜索内容"
+        class="input_search"
+        @keyup.enter.native="funSearchKeyword"
+      >
+        <el-select
+          slot="prepend"
+          v-model="key_type"
+          placeholder="请选择"
+          class="input-sel"
+        >
+          <el-option label="公司名称" value="1" />
+          <el-option label="公司ID" value="2" />
+          <el-option label="会员手机号" value="3" />
+          <el-option label="会员ID" value="4" />
+        </el-select>
+        <el-button
+          slot="append"
+          icon="el-icon-search"
+          @click="funSearchKeyword"
+        />
+      </el-input>
       <el-select
         v-model="setmeal"
         placeholder="不限套餐类型"
@@ -25,29 +48,29 @@
         <el-option label="即将到期" value="2" />
         <el-option label="已到期" value="1" />
       </el-select>
-      <el-input
-        v-model="keyword"
-        placeholder="请输入搜索内容"
-        class="input-with-select"
-        @keyup.enter.native="funSearchKeyword"
+      <el-select
+        v-model="admin"
+        placeholder="不限所属销售"
+        class="list-options"
+        @change="funSearch"
       >
-        <el-select
-          slot="prepend"
-          v-model="key_type"
-          placeholder="请选择"
-          class="input-sel"
-        >
-          <el-option label="公司名称" value="1" />
-          <el-option label="公司ID" value="2" />
-          <el-option label="会员手机号" value="3" />
-          <el-option label="会员ID" value="4" />
-        </el-select>
-        <el-button
-          slot="append"
-          icon="el-icon-search"
-          @click="funSearchKeyword"
+        <el-option label="不限所属销售" value="" />
+        <el-option
+          v-for="(item, index) in adminList"
+          :key="index"
+          :label="item.name"
+          :value="item.id"
         />
-      </el-input>
+      </el-select>
+      <el-select
+        v-model="order"
+        placeholder="开通时间"
+        class="list-options"
+        @change="funSearch"
+      >
+        <el-option label="按开通时间排序" value="1" />
+        <el-option label="按到期时间排序" value="2" />
+      </el-select>
     </div>
     <div class="spaceline" />
     <el-table
@@ -57,15 +80,19 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="企业名称" min-width="250">
+      <el-table-column label="企业ID" min-width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="企业名称" min-width="150" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{
             scope.row.companyname ? scope.row.companyname : "未完善企业资料"
-          }}【uid:{{ scope.row.uid }}】</span>
+          }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="套餐名称" prop="setmeal_name" min-width="120" />
-      <el-table-column label="联系人" min-width="180">
+      <el-table-column label="联系人" min-width="150" show-overflow-tooltip>
         <template slot-scope="scope">
           <span
             v-if="scope.row.contact"
@@ -73,7 +100,18 @@
           <span v-else>-</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="到期时间" min-width="100">
+      <el-table-column label="套餐名称" prop="setmeal_name" min-width="80" />
+      <el-table-column align="center" label="开通时间" min-width="150">
+        <template slot-scope="scope">
+          <span v-if="scope.row.opening_time == 0" style="cursor: pointer;color: #409EFF" @click="getOpeningTime(scope.row)">
+            点击查看
+          </span>
+          <span v-else>{{
+            scope.row.opening_time
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="到期时间" min-width="150">
         <template slot-scope="scope">
           <span v-if="scope.row.expire == 0">{{ scope.row.deadline_cn }}</span>
           <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{
@@ -96,6 +134,7 @@
           >{{ scope.row.surplus_days }}(已过期)</span>
         </template>
       </el-table-column>
+      <el-table-column label="所属销售" prop="username" min-width="120" />
       <el-table-column fixed="right" label="操作" min-width="240">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="funAdd(scope.row)">
@@ -171,7 +210,8 @@ import diaadd from './add.vue'
 import diaform from './form.vue'
 import dialist from './loglist.vue'
 import { getClassify } from '@/api/classify'
-import { companySetmealList } from '@/api/company_setmeal'
+import { clueAdminLists } from '@/api/company_crm'
+import { companySetmealList, getOpeningTime } from '@/api/company_setmeal'
 
 export default {
   components: {
@@ -194,13 +234,30 @@ export default {
       dialogListVisible: false,
       dialogFormVisible: false,
       dialogAddVisible: false,
-      listUid: 0
+      listUid: 0,
+      adminList: [],
+      admin: '',
+      order: '1'
     }
   },
   created() {
     this.fetchData()
+    this.clueAdminLists()
   },
   methods: {
+    getOpeningTime(item){
+      getOpeningTime({ uid: item.uid })
+        .then(response => {
+          this.fetchData()
+        })
+        .catch(() => { })
+    },
+    clueAdminLists() {
+      clueAdminLists()
+        .then(res => {
+          this.adminList = res.data
+        })
+    },
     fetchData() {
       this.listLoading = true
       getClassify({ type: 'setmealList' })
@@ -212,7 +269,9 @@ export default {
             setmeal: this.setmeal,
             expire: this.expire,
             page: this.currentPage,
-            pagesize: this.pagesize
+            pagesize: this.pagesize,
+            admin: this.admin,
+            order: this.order
           }
           return companySetmealList(param)
         })
@@ -270,5 +329,9 @@ export default {
   &:last-child {
     margin-bottom: 0;
   }
+}
+.input_search{
+  width: 424px;
+  padding-right: 10px;
 }
 </style>

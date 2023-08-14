@@ -12,7 +12,7 @@ class Jobfairol extends \app\index\controller\Base{
     public function index()
     {
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'jobfairol',302);
+            $this->redirect($this->sub_site_domain_m.'jobfairol',302);
             exit;
         }
         $current_page = input('get.page/d', 1, 'intval');
@@ -96,7 +96,7 @@ class Jobfairol extends \app\index\controller\Base{
     public function show(){
         $id = request()->route('id/d',0,'intval');
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'jobfairol/'.$id,302);
+            $this->redirect($this->sub_site_domain_m.'jobfairol/'.$id,302);
             exit;
         }
         if(!$id){
@@ -154,7 +154,7 @@ class Jobfairol extends \app\index\controller\Base{
     public function details(){
         $id = request()->route('id/d',0,'intval');
         if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'jobfairol/'.$id,302);
+            $this->redirect($this->sub_site_domain_m.'jobfairol/'.$id,302);
             exit;
         }
         if(!$id){

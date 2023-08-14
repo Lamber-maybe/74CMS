@@ -112,6 +112,31 @@ const store = new Vuex.Store({
       state.userToken = data.token
       state.userMobile = data.mobile
       state.userIminfo = data.userIminfo
+      if (data.whether === true) {
+        if (parseInt(state.config.subsite_open) === 1 && state.config.subsite_domain != '') {
+          VueCookies.set('qscms_visitor',
+            {
+              utype: data.utype,
+              mobile: data.mobile,
+              token: data.token,
+              userIminfo: data.userIminfo
+            },
+            7,
+            null,
+            state.config.subsite_domain
+          )
+        } else {
+          VueCookies.set('qscms_visitor',
+            {
+              utype: data.utype,
+              mobile: data.mobile,
+              token: data.token,
+              userIminfo: data.userIminfo
+            },
+            7
+          )
+        }
+      }
     },
     // 更改是否显示头部的状态
     toggleHeadShow (state, data) {
@@ -433,7 +458,7 @@ const store = new Vuex.Store({
       state.isInBlackObj = data
     },
     setShowAlipay (state) {
-      state.showAlipay = isWeiXin() ? false : true
+      state.showAlipay = !isWeiXin()
     }
   },
   actions: {
@@ -445,7 +470,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': this.state.userToken,
             platform: this.state.platform,
-            'subsiteid': localStorage.getItem('qscms_subsiteid')
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: api.global_config,
           data: {}
@@ -467,7 +492,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': localStorage.getItem('qscms_subsiteid')
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -499,7 +524,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': localStorage.getItem('qscms_subsiteid')
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -586,7 +611,7 @@ const store = new Vuex.Store({
           headers: {
             'user-token': context.state.userToken,
             platform: context.state.platform,
-            'subsiteid': localStorage.getItem('qscms_subsiteid')
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: api.classify,
           params: {type: value}

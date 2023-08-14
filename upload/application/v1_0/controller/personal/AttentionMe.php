@@ -80,7 +80,7 @@ class AttentionMe extends \app\v1_0\controller\common\Base
             $tmp_arr['first_jobname'] = isset($job_list[$value['company_uid']])
                 ? $job_list[$value['company_uid']][0]
                 : '';
-            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['company_id']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $value['company_id']], true, $this->sub_site_domain);
             $returnlist[] = $tmp_arr;
         }
 

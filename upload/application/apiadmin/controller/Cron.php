@@ -162,7 +162,8 @@ class Cron extends \app\common\controller\Backend
                 'day' => input('post.day/d', 0, 'intval'),
                 'hour' => input('post.hour/d', 0, 'intval'),
                 'minute' => input('post.minute/s', '', 'trim'),
-                'status' => input('post.status/d', 1, 'intval')
+                'status' => input('post.status/d', 1, 'intval'),
+                'refresh_quantity' => input('post.refresh_quantity/d',0,'intval')
             ];
             $instance = new \app\common\lib\Cron();
             $input_data['next_execute_time'] = $instance->getNextExecuteTime(

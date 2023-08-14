@@ -74,13 +74,14 @@ export default {
               }else if(this.type=='bind'){
                 this.doBind(res.data)
               }
-              
             })
             .catch(() => {})
       },
     init () {
       if (window.location.hash.length === 0) {
-        let redirect_uri = location.href
+        // 分站三方登录因为域名配置限制，只能跳转至总站
+        // let redirect_uri = location.href
+        let redirect_uri = this.$store.state.config.sitedomain + '/member/oauth/qq/login'
         let url =
           'https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=' +
           this.$store.state.config.account_qqlogin_appid +

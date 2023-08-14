@@ -23,3 +23,10 @@ export function orderCancel(data) {
     data
   })
 }
+export function orderExport(data) {
+  return request({
+    url: apiArr.orderExport,
+    method: 'post',
+    data
+  })
+}

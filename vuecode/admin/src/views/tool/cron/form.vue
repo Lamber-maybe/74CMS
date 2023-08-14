@@ -176,6 +176,26 @@
         </el-tooltip>
       </el-form-item>
       <el-form-item
+        label="刷新简历条数"
+        prop="day"
+        v-if="form.action == 'RefreshResume'"
+      >
+        <el-input v-model.number="form.refresh_quantity" label="刷新简历条数"></el-input>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          placement="top-start"
+        >
+          <div slot="content">
+            指计划任务执行时要刷新的简历数量<br>
+            简历数越小计划任务频率应越高，刷新<br>数越大计划任务频率应越低
+          </div>
+          <span class="smalltip">
+            <i class="el-icon-info" />
+          </span>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item
         label="可用"
         prop="status"
       >
@@ -229,7 +249,8 @@ export default {
         day: '-1',
         hour: '-1',
         minute: '',
-        status: true
+        status: true,
+        refresh_quantity: 1
       },
       rules: {}
     }

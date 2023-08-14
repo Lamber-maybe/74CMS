@@ -44,9 +44,9 @@
 				</el-table-column>
 				<el-table-column header-align="center" align="center" label="收到简历">
 					<template slot-scope='scope'>
-						<div class="receivedNumber">
+						<div class="receivedNumber" style="cursor: pointer" @click="$router.push('/company/resume/jobapply?job_id='+scope.row.id+'&options_look=0')">
 							<span>{{scope.row.resume_nolook}}</span>/{{scope.row.resume_all}}份
-							<p>待处理简历</p>
+							<p>未查看简历</p>
 						</div>
 					</template>
 				</el-table-column>
@@ -82,9 +82,9 @@
 				</el-table-column>
 				<el-table-column header-align="center" align="center" label="收到简历">
 					<template slot-scope='scope'>
-						<div class="receivedNumber">
+						<div class="receivedNumber"  style="cursor: pointer" @click="$router.push('/company/resume/jobapply?job_id='+scope.row.id+'&options_look=0')">
 							<span>{{scope.row.resume_nolook}}</span>/{{scope.row.resume_all}}份
-							<p>待处理简历</p>
+							<p>未查看简历</p>
 						</div>
 					</template>
 				</el-table-column>
@@ -116,9 +116,9 @@
 				</el-table-column>
 				<el-table-column header-align="center" align="center" label="收到简历">
 					<template slot-scope='scope'>
-						<div class="receivedNumber">
+						<div class="receivedNumber"  style="cursor: pointer" @click="$router.push('/company/resume/jobapply?job_id='+scope.row.id+'&options_look=0')">
 							<span>{{scope.row.resume_nolook}}</span>/{{scope.row.resume_all}}份
-							<p>待处理简历</p>
+							<p>未查看简历</p>
 						</div>
 					</template>
 				</el-table-column>

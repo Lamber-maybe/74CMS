@@ -406,11 +406,13 @@ export default {
   companySetmealEdit: '/company_setmeal/edit',
   companySetmealAdd: '/company_setmeal/add',
   companySetmealOpenLog: '/company_setmeal/openlog',
+  setOpeningTime: '/company_setmeal/setOpeningTime',
 
   // 订单列表
   orderList: '/order/index',
   orderConfirm: '/order/confirm',
   orderCancel: '/order/cancel',
+  orderExport: '/order/order_export',
   // 积分管理
   memberPointsList: '/member/points_list',
   memberPointsEdit: '/member/points_set',
@@ -809,6 +811,7 @@ export default {
   subsiteAdd: '/subsite/add',
   subsiteEdit: '/subsite/edit',
   subsiteDelete: '/subsite/delete',
+  subsiteIsDisplay: '/subsite/modifyIsDisplay',
 
   // 系统工具箱
   sysToolSyncSetmeal: '/sys_tool/syncSetmeal',

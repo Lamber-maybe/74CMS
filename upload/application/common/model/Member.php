@@ -141,6 +141,7 @@ class Member extends \app\common\model\BaseModel
         $data['show_apply_contact'] = $setmeal_info['show_apply_contact'];
         $data['resume_view_num'] = $setmeal_info['resume_view_num'];
         $data['expired'] = 0;
+        $data['opening_time'] = time();
         $check_setmeal = model('MemberSetmeal')
             ->where('uid', $data['uid'])
             ->find();

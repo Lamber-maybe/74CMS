@@ -48,7 +48,7 @@
           <div class="list">
             <div class="tx1" v-if="item.resume_nolook > 0" >
               <span @click="$router.push('/job/'+item.id)">{{ item.jobname }}</span>
-              <div class="right_txt" @click="$router.push('/member/company/jobapply')">
+              <div class="right_txt" @click="$router.push('/member/company/jobapply?job_id='+item.id+'&options_look=0')">
                 简历
                 <span :class="item.resume_nolook > 0 ? 'not' : ''">
                   {{ item.resume_nolook }}
@@ -58,8 +58,7 @@
             </div>
             <div class="tx1" v-else>
               <span @click="$router.push('/job/'+item.id)">{{ item.jobname }}</span>
-              <div class="right_txt" @click="$router.push('/member/company/jobapply')">
-                简历
+              <div class="right_txt" @click="$router.push('/member/company/jobapply?job_id='+item.id+'&options_look=0')">
                 <span :class="item.resume_nolook > 0 ? 'not' : ''">
                   {{ item.resume_nolook }}
                 </span>
@@ -552,6 +551,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 12;
   }
   position: relative;
   height: 68px;

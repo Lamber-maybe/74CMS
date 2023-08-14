@@ -4270,4 +4270,20 @@ return [
             '电子地图'
         ]
     ],
+    'subsite_domain' => [
+        'name' => 'subsite_domain',
+        'is_log' => 1,
+        'is_frontend' => '1',
+        'value' => 'subsite_domain',
+        'is_secret' => '0',
+        'is_json' => [],
+        'association' => '',
+        'map' => [],
+        'field_name' => '分站顶级域名',
+        'menu_zh' => [
+            '应用',
+            '地区分站',
+            '分站管理'
+        ]
+    ]
 ];

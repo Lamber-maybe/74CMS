@@ -56,7 +56,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['score'] = intval($value['score']);
             $tmp_arr['total_company'] = isset($participate_company[$value['id']])?$participate_company[$value['id']]:0;
             $tmp_arr['total_personal'] = isset($participate_personal[$value['id']])?$participate_personal[$value['id']]:0;
-            $tmp_arr['jobfair_url'] = url('index/jobfairol/show',['id'=>$value['id']]);
+            $tmp_arr['jobfair_url'] = url('index/jobfairol/show', ['id' => $value['id']], true, $this->sub_site_domain);
             $tmp_arr['total_job'] = model('Job')
                 ->alias('a')
                 ->join(config('database.prefix') . 'jobfair_online_participate b', 'a.uid=b.uid', 'left')
@@ -225,7 +225,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['joblist'] = isset($job_list[$value['id']])
                 ? $job_list[$value['id']]
                 : [];
-            $tmp_arr['company_url'] = url('index/company/show',['id'=>$value['id']]);
+            $tmp_arr['company_url'] = url('index/company/show', ['id' => $value['id']], true, $this->sub_site_domain);
             $tmp_arr['scale_name'] = $value['scale_name'];
             $tmp_arr['trade_name'] = $value['trade_name'];
             $tmp_arr['district1_text'] = isset($category_district_data[$value['district1']]) ? $category_district_data[$value['district1']] : '';
@@ -331,7 +331,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['id'] = $value['id'];
             $tmp_arr['company_id'] = $value['company_id'];
             $tmp_arr['jobname'] = $value['jobname'];
-            $tmp_arr['job_url'] = url('index/job/show',['id'=>$value['id']]);
+            $tmp_arr['job_url'] = url('index/job/show', ['id' => $value['id']], true, $this->sub_site_domain);
             if (isset($cominfo_arr[$value['company_id']])) {
                 $tmp_arr['company_id'] = $value['company_id'];
                 $tmp_arr['companyname'] =
@@ -578,7 +578,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['stick'] = $val['stick'];
             $tmp_arr['high_quality'] = $val['high_quality'];
             $tmp_arr['fullname'] = $val['fullname'];
-            $tmp_arr['resume_url'] = url('index/resume/show',['id'=>$value['id']]);
+            $tmp_arr['resume_url'] = url('index/resume/show', ['id' => $value['id']], true, $this->sub_site_domain);
             if ($val['display_name'] == 0) {
                 if ($val['sex'] == 1) {
                     $tmp_arr['fullname'] = cut_str(

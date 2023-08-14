@@ -101,7 +101,7 @@
         <div class="content">
           <swiper :options="swiperOption" :class="swiperClass" v-if="$store.state.swiperLoaded">
             <swiper-slide v-for="(item, index) in img_list" :key="index">
-              <img :src="item.img_src" :alt="item.title" />
+              <img :src="item.img_src" :alt="item.title" @click="previewImg(index)"/>
             </swiper-slide>
             <div
               class="swiper-pagination my_pagination"
@@ -213,6 +213,8 @@ import SharePoster from '@/components/share/SharePoster'
 import Report from '@/components/Report'
 import TianMap from '@/components/map/TianMap/TianMap'
 import { mapState } from 'vuex'
+import {ImagePreview} from 'vant'
+Vue.use(ImagePreview)
 
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
@@ -274,7 +276,8 @@ export default {
       reportInfo: {},
       finished_text: '',
       jobnum: 0,
-      videonum: 0
+      videonum: 0,
+      previewImgList: []
     }
   },
   created () {
@@ -297,6 +300,17 @@ export default {
     ...mapState(['config'])
   },
   methods: {
+    // 预览作品
+    previewImg (index) {
+      ImagePreview({
+        images: this.previewImgList,
+        showIndex: true,
+        loop: false,
+        startPosition: index,
+        closeOnPopstate: true,
+        closeable: true
+      })
+    },
     gettab (comShow) {
       this.comShow = comShow
       this.page = 1
@@ -426,6 +440,9 @@ export default {
       } else {
         this.getJoblist()
       }
+      this.previewImgList = this.img_list.map(function (item) {
+        return item.img_src
+      })
     },
     onLoad () {
       if (this.comShow === 'video') {

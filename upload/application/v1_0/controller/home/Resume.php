@@ -715,7 +715,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
 
         unset($info['base_info']['uid']);
-        $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['base_info']['id'];
+        $info['share_url'] = $this->sub_site_domain_m.'resume/'.$info['base_info']['id'];
         $info['phone_protect_open'] =  false;
         $info['phone_protect_timeout'] = 180;
         $info['phone_protect_type'] = '';
