@@ -72,3 +72,31 @@ export function adminBindQrcodeCancel(data) {
     data
   })
 }
+export function adminIsBindWechat(data) {
+  return request({
+    url: apiArr.adminIsBindWechat,
+    method: 'post',
+    data
+  })
+}
+export function getAdminCrmData(data) {
+  return request({
+    url: apiArr.getAdminCrmData,
+    method: 'post',
+    data
+  })
+}
+export function adminLock(data) {
+  return request({
+    url: apiArr.adminLock,
+    method: 'post',
+    data
+  })
+}
+export function adminDeblocking(data) {
+  return request({
+    url: apiArr.adminDeblocking,
+    method: 'post',
+    data
+  })
+}

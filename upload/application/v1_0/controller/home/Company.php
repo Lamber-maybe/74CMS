@@ -77,7 +77,7 @@ class Company extends \app\v1_0\controller\common\Base
         $list = model('Company')
             ->alias('a')
             ->field(
-                'distinct a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
+                'distinct a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline,a.tag'
             )
             ->join(
                 config('database.prefix') . 'member_setmeal b',
@@ -192,6 +192,22 @@ class Company extends \app\v1_0\controller\common\Base
                         : model('Setmeal')->getSysIcon($value['setmeal_id']);
             } else {
                 $tmp_arr['setmeal_icon'] = '';
+            }
+
+            /**
+             * 【新增】企业福利标签
+             */
+            $tmp_arr['tag_text_arr'] = [];
+            if ($value['tag'] != '') {
+                $tag_arr = explode(',', $value['tag']);
+                foreach ($tag_arr as $tag_id) {
+                    if (is_numeric($tag_id) && isset($category_data['QS_jobtag'][$tag_id])) {
+                        $tmp_arr['tag_text_arr'][] =
+                            $category_data['QS_jobtag'][$tag_id];
+                    } else {
+                        $tmp_arr['tag_text_arr'][] = $tag_id;
+                    }
+                }
             }
 
             $returnlist[] = $tmp_arr;

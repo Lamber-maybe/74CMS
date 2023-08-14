@@ -52,7 +52,7 @@
 								<div :class="item.select ? 'item select' : 'item'"
 									v-for="(item, index) in optionResumeTag" :key="index"
 									@click="handleCheckResumeTag(item)">
-									{{ item.text }}
+                  <p class="item_name">{{ item.text }}</p>
 								</div>
 								<div class="clear"></div>
 							</div>
@@ -943,6 +943,13 @@ export default {
 					&:nth-of-type(4n) {
 						margin-right: 0;
 					}
+
+          .item_name {
+            margin: 0 8px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+          }
 				}
 			}
 

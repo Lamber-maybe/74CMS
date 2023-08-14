@@ -37,12 +37,12 @@
             />
           </el-select>
         </el-form-item>
-<!--        <el-form-item label="是否是销售" prop="is_sc">-->
-<!--          <el-radio-group v-model.number="form.is_sc">-->
-<!--            <el-radio :label="1">是</el-radio>-->
-<!--            <el-radio :label="0">否</el-radio>-->
-<!--          </el-radio-group>-->
-<!--        </el-form-item>-->
+        <el-form-item label="账号状态" prop="status" required>
+          <el-radio-group v-model.number="form.status" :disabled="form.id === 1">
+            <el-radio :label="1">正常</el-radio>
+            <el-radio :label="2">锁定</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="登录名" prop="username">
           <el-input v-model="form.username" class="middle" />
         </el-form-item>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { apiEdit, apiRoleOptions } from '@/api/admin'
+import { adminLock, apiEdit, apiRoleOptions, getAdminCrmData } from '@/api/admin'
 
 export default {
   data() {
@@ -74,11 +74,13 @@ export default {
       form: {
         username: '',
         password: '',
-        role_id: ''
+        role_id: '',
+        status: 1
         // is_sc: 0
       },
       rules: {
         role_id: [{ required: true, message: '请选择角色', trigger: 'change' }],
+        status: [{ required: true, message: '请选择账号状态', trigger: 'change' }],
         username: [
           {
             required: true,
@@ -98,7 +100,8 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      current_status: ''
     }
   },
   computed: {},
@@ -122,6 +125,7 @@ export default {
           this.form = { ...response.data }
           // this.form.is_sc = parseInt(this.form.is_sc)
           this.infoLoading = false
+          this.current_status = this.form.status
         })
         .catch(() => {})
     },
@@ -130,16 +134,57 @@ export default {
       const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          apiEdit(insertData)
-            .then(response => {
-              this.$message.success(response.message)
-              this.$store.dispatch('crm/getAdminList')
-              setTimeout(function() {
-                that.$router.push('/sys/admin/list')
-              }, 1500)
-              return true
-            })
-            .catch(() => {})
+          if (insertData.status === 1) {
+            apiEdit(insertData)
+              .then(response => {
+                this.$message.success(response.message)
+                this.$store.dispatch('crm/getAdminList')
+                setTimeout(function() {
+                  that.$router.push('/sys/admin/list')
+                }, 1500)
+                return true
+              })
+              .catch(() => {})
+          } else if (insertData.status === 2) {
+            if (this.current_status != 2) {
+              getAdminCrmData({ id: insertData.id }).then(response => {
+                this
+                  .$confirm('当前管理员 ' + insertData.username + ' 有 ' + response.data.total_company + ' 线索, ' + response.data.total_clue + ' 客户,锁定后将自动释放且无法登录管理后台,是否继续？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  })
+                  .then(() => {
+                    insertData.is_release = 1
+                    apiEdit(insertData)
+                      .then(response => {
+                        this.$message.success(response.message)
+                        this.$store.dispatch('crm/getAdminList')
+                        setTimeout(function() {
+                          that.$router.push('/sys/admin/list')
+                        }, 1500)
+                        return true
+                      })
+                      .catch(() => {})
+                  })
+                  .catch(() => {})
+              }).catch(() => {})
+            } else {
+              apiEdit(insertData)
+                .then(response => {
+                  this.$message.success(response.message)
+                  this.$store.dispatch('crm/getAdminList')
+                  setTimeout(function() {
+                    that.$router.push('/sys/admin/list')
+                  }, 1500)
+                  return true
+                })
+                .catch(() => {})
+            }
+          } else {
+            this.$message.error('账号状态选择错误')
+            return false
+          }
         } else {
           return false
         }

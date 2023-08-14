@@ -80,4 +80,39 @@ class Admin extends \app\common\model\BaseModel
     public function makeMd5Password($md5Password, $randstr) {
         return md5($md5Password.$randstr.config('sys.safecode'));
     }
+
+
+    /**
+     * @Purpose: 设置管理员销售客户总数上限
+     * @Method setCustomerExceed()
+     *
+     * @param integer $adminId 管理员ID
+     *
+     * @return void
+     *
+     * @throws \think\Exception
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2023年4月6日10:56:30
+     */
+    public function setCustomerExceed($adminId) {
+        $customer_total_now = model('Company')
+            ->where([
+                'admin_id' => $adminId
+            ])
+            ->count();
+        $customer_total_limit = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_total_limit');
+        if ($customer_total_now >= $customer_total_limit) {
+            $this->save(
+                ['customer_exceed' => 1],
+                ['id' => $adminId]
+            );
+        } else {
+            $this->save(
+                ['customer_exceed' => 0],
+                ['id' => $adminId]
+            );
+        }
+    }
 }

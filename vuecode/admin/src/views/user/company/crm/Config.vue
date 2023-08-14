@@ -133,6 +133,13 @@
               表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户，0为不允许领取。
             </span>
           </el-form-item>
+          <el-form-item label="销售客户总数上限">
+            <el-input-number v-model="configureData.customer_total_limit.value" :min="0" :max="9999" />
+            <span class="smalltip">
+              <i class="el-icon-info" />
+              表示单个销售最多能拥有的客户总数，超过设定值后将不能领取客户，0为不允许领取。
+            </span>
+          </el-form-item>
           <el-form-item label="客户分配销售规则">
             <el-radio-group v-model="configureData.customer_allocation_rule.value">
               <el-radio label="0">不分配</el-radio>
@@ -182,6 +189,13 @@
             <span class="smalltip">
               <i class="el-icon-info" />
               表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户，0为不允许领取。
+            </span>
+          </el-form-item>
+          <el-form-item label="销售线索总数上限">
+            <el-input-number v-model="threadeData.thread_total_limit.value" :min="0" :max="9999" />
+            <span class="smalltip">
+              <i class="el-icon-info" />
+              表示单个销售最多能拥有的线索总数，超过设定值后将不能领取线索，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="是否允许线索名称重复">
@@ -298,9 +312,25 @@ export default {
       title: '添加',
       dialog_type: 'add',
       dialogVisible: false,
-      configureData: [],
+      configureData: {
+        customer_allocation_rule: { value: '' },
+        customer_fall_seas: { value: '' },
+        customer_forbidden_sale: { value: '' },
+        customer_forbidden_sys: { value: '' },
+        customer_receive_limit: { value: '' },
+        customer_total_limit: { value: '' },
+        customer_unsettled_fall_seas: { value: '' }
+      },
       labelTableData: [],
-      threadeData: [],
+      threadeData: {
+        thread_allocation_rule: { value: '' },
+        thread_duplicate_name: { value: '' },
+        thread_fall_seas: { value: '' },
+        thread_forbidden_sale: { value: '' },
+        thread_forbidden_sys: { value: '' },
+        thread_receive_limit: { value: '' },
+        thread_total_limit: { value: '' }
+      },
       step1_button: true,
       step2_button: true,
       step3_button: true,

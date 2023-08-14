@@ -131,6 +131,41 @@ class Job extends \app\common\model\BaseModel
             )
                 ? $category_company_nature[$companyinfo['nature']]
                 : '';
+
+            /**
+             * 【ID1000568】
+             * 【排查】模糊搜索，没关联职位类型
+             * 【说明】：数据库新增`job_category`字段，记录`jobcategory`
+             * yx - 2023.03.14
+             * [新增]:
+             * $search_key_data['job_category'] = implode(' ', $job_category);
+             */
+            $job_category = [];
+            $category_job_data = model('CategoryJob')->getCache();
+
+            $category_cn_1 = !empty($category_job_data[$jobinfo['category1']])
+                ? $category_job_data[$jobinfo['category1']]
+                : '';
+            $category_cn_2 = !empty($category_job_data[$jobinfo['category2']])
+                ? $category_job_data[$jobinfo['category2']]
+                : '';
+            $category_cn_3 = !empty($category_job_data[$jobinfo['category3']])
+                ? $category_job_data[$jobinfo['category3']]
+                : '';
+
+            if (isset($category_cn_1) && !empty($category_cn_1)) {
+                $job_category[] = $category_cn_1;
+            }
+            if (isset($category_cn_2) && !empty($category_cn_2)) {
+                $job_category[] = $category_cn_2;
+            }
+            if (isset($category_cn_3) && !empty($category_cn_3)) {
+                $job_category[] = $category_cn_3;
+            }
+
+            $job_category = array_unique($job_category);
+
+            $search_key_data['job_category'] = implode(' ', $job_category);
         }
 
         \think\Db::startTrans();

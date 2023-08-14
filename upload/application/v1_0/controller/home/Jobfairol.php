@@ -57,6 +57,15 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['total_company'] = isset($participate_company[$value['id']])?$participate_company[$value['id']]:0;
             $tmp_arr['total_personal'] = isset($participate_personal[$value['id']])?$participate_personal[$value['id']]:0;
             $tmp_arr['jobfair_url'] = url('index/jobfairol/show',['id'=>$value['id']]);
+            $tmp_arr['total_job'] = model('Job')
+                ->alias('a')
+                ->join(config('database.prefix') . 'jobfair_online_participate b', 'a.uid=b.uid', 'left')
+                ->where('b.jobfair_id', $value['id'])
+                ->where('b.utype', 1)
+                ->where('b.audit', 1)
+                ->where('a.is_display', 1)
+                ->where('a.audit', 1)
+                ->count();
             $returnlist[] = $tmp_arr;
         }
         $return['items'] = $returnlist;
@@ -88,14 +97,14 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         $info = $info->toArray();
         $info['total_company'] = model('JobfairOnlineParticipate')->where('jobfair_id',$id)->where('utype',1)->where('audit',1)->count();
         $info['total_job'] = model('Job')
-                            ->alias('a')
-                            ->join(config('database.prefix') . 'jobfair_online_participate b', 'a.uid=b.uid', 'left')
-                            ->where('b.jobfair_id',$id)
-                            ->where('b.utype',1)
-                            ->where('b.audit',1)
-                            ->where('a.is_display', 1)
-                            ->where('a.audit',1)
-                            ->count();
+            ->alias('a')
+            ->join(config('database.prefix') . 'jobfair_online_participate b', 'a.uid=b.uid', 'left')
+            ->where('b.jobfair_id', $id)
+            ->where('b.utype', 1)
+            ->where('b.audit', 1)
+            ->where('a.is_display', 1)
+            ->where('a.audit', 1)
+            ->count();
         model('JobfairOnline')->where('id',$id)->setInc('click',1);
         $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $info['status'] = 0;
@@ -123,17 +132,17 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $this->ajaxReturn(500,'请选择招聘会');
         }
         $list = model('JobfairOnlineParticipate')
-                ->alias('a')
-                ->field('a.qrcode,a.stick,b.*,d.qrcode as wx_qrcode,c.name as trade_name,e.name as scale_name')
-                ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
-                ->join(config('database.prefix') . 'category e', 'b.scale=e.id', 'left')
-                ->join(config('database.prefix') . 'category c', 'b.trade=c.id', 'left')
-                ->join(config('database.prefix') . 'jobfair_online d', 'd.id=a.jobfair_id', 'left')
-                ->where('a.jobfair_id',$jobfair_id)
-                ->where('a.utype',1)
-                ->where('a.audit',1)
-                ->where('b.district1','gt',0)
-                ->where('b.companyname','not null');
+            ->alias('a')
+            ->field('a.qrcode,a.stick,b.*,d.qrcode as wx_qrcode,c.name as trade_name,e.name as scale_name')
+            ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
+            ->join(config('database.prefix') . 'category e', 'b.scale=e.id', 'left')
+            ->join(config('database.prefix') . 'category c', 'b.trade=c.id', 'left')
+            ->join(config('database.prefix') . 'jobfair_online d', 'd.id=a.jobfair_id', 'left')
+            ->where('a.jobfair_id', $jobfair_id)
+            ->where('a.utype', 1)
+            ->where('a.audit', 1)
+            ->where('b.district1', 'gt', 0)
+            ->where('b.companyname', 'not null');
         if($keyword!=''){
             $list = $list->where('b.companyname','like','%'.$keyword.'%');
         }
@@ -167,6 +176,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 ->where('j.company_id', 'in', $comid_arr)
                 ->where('j.is_display', 1)
                 ->where('j.audit', 1)
+                ->order('j.refreshtime DESC,j.id DESC') // 【ID1000570】【优化】网络招聘会企业的岗位排序按刷新先后排序 yx - 2023.03.03
                 ->column('j.id,j.company_id,j.jobname,j.minwage,j.maxwage,j.negotiable,b.name as district1_name,c.name as district2_name,d.name as district3_name,j.experience,j.education', 'j.id');
             foreach ($job_data as $key => $value) {
                 if(isset($job_list[$value['company_id']]) && count($job_list[$value['company_id']])>=3){
@@ -195,7 +205,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $job_list[$value['company_id']][] = $job_tmp_arr;
             }
         }
-
+        $category_district_data = model('CategoryDistrict')->getCache();
         $returnlist = [];
         foreach ($list as $key => $value) {
             $tmp_arr = [];
@@ -218,7 +228,9 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['company_url'] = url('index/company/show',['id'=>$value['id']]);
             $tmp_arr['scale_name'] = $value['scale_name'];
             $tmp_arr['trade_name'] = $value['trade_name'];
-
+            $tmp_arr['district1_text'] = isset($category_district_data[$value['district1']]) ? $category_district_data[$value['district1']] : '';
+            $tmp_arr['district2_text'] = isset($category_district_data[$value['district2']]) ? $category_district_data[$value['district2']] : '';
+            $tmp_arr['district3_text'] = isset($category_district_data[$value['district3']]) ? $category_district_data[$value['district3']] : '';
             $returnlist[] = $tmp_arr;
         }
         $return['items'] = $returnlist;
@@ -249,14 +261,16 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $this->ajaxReturn(500,'请选择招聘会');
         }
         $list = model('JobfairOnlineParticipate')
-                ->alias('a')
-                ->field('a.qrcode,b.*')
-                ->join(config('database.prefix') . 'job b', 'a.uid=b.uid', 'right')
-                ->where('a.jobfair_id',$jobfair_id)
-                ->where('a.utype',1)
-                ->where('a.audit',1)
-                ->where('b.is_display',1)
-                ->where('b.audit',1);
+            ->alias('a')
+            ->field('a.qrcode,c.contact,c.use_company_contact,d.contact as company_contact,b.*')
+            ->join(config('database.prefix') . 'job b', 'a.uid=b.uid', 'right')
+            ->join(config('database.prefix') . 'job_contact c', 'b.id=c.jid', 'left')
+            ->join(config('database.prefix') . 'company_contact d', 'd.comid=b.company_id', 'left')
+            ->where('a.jobfair_id', $jobfair_id)
+            ->where('a.utype', 1)
+            ->where('a.audit', 1)
+            ->where('b.is_display', 1)
+            ->where('b.audit', 1);
         if($keyword!=''){
             $list = $list->where('b.jobname','like','%'.$keyword.'%');
         }
@@ -327,8 +341,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $tmp_arr['company_logo'] = isset(
                     $logo_arr[$cominfo_arr[$value['company_id']]['logo']]
                 )
-                ? $logo_arr[$cominfo_arr[$value['company_id']]['logo']]
-                : default_empty('logo');
+                    ? $logo_arr[$cominfo_arr[$value['company_id']]['logo']]
+                    : default_empty('logo');
                 if(isset($qrcode_arr[$value['qrcode']])){
                     $tmp_arr['qrcode_src'] = $qrcode_arr[$value['qrcode']];
                 }else if(isset($cs_arr[$cominfo_arr[$value['company_id']]['wx_qrcode']])){
@@ -339,8 +353,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $tmp_arr['setmeal_icon'] = isset(
                     $icon_arr[$cominfo_arr[$value['company_id']]['icon']]
                 )
-                ? $icon_arr[$cominfo_arr[$value['company_id']]['icon']]
-                : model('Setmeal')->getSysIcon($value['setmeal_id']);
+                    ? $icon_arr[$cominfo_arr[$value['company_id']]['icon']]
+                    : model('Setmeal')->getSysIcon($value['setmeal_id']);
 
                 $tmp_arr['scale'] = isset($category['QS_scale'][$cominfo_arr[$value['company_id']]['scale']])?$category['QS_scale'][$cominfo_arr[$value['company_id']]['scale']]:'';
                 $tmp_arr['district'] = '';
@@ -379,8 +393,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $tmp_arr['district_text'] = isset(
                     $category_district_data[$value['district']]
                 )
-                ? $category_district_data[$value['district']]
-                : '';
+                    ? $category_district_data[$value['district']]
+                    : '';
             } else {
                 $tmp_arr['district_text'] = '';
             }
@@ -403,13 +417,17 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['education_text'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )
-            ? model('BaseModel')->map_education[$value['education']]
-            : '学历不限';
+                ? model('BaseModel')->map_education[$value['education']]
+                : '学历不限';
             $tmp_arr['experience_text'] = isset(
                 model('BaseModel')->map_experience[$value['experience']]
             )
-            ? model('BaseModel')->map_experience[$value['experience']]
-            : '经验不限';
+                ? model('BaseModel')->map_experience[$value['experience']]
+                : '经验不限';
+            $tmp_arr['contact'] = $value['contact'];
+            if ($value['use_company_contact'] == 1) {
+                $tmp_arr['contact'] = $value['company_contact'];
+            }
             $returnlist[] = $tmp_arr;
         }
 
@@ -426,7 +444,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $total = $total->where('b.jobname','like','%'.$keyword.'%');
         }
         $total = $total->count();
-            
+
         $return['total'] = $total;
         $return['total_page'] = $total == 0 ? 0 : ceil($total / $pagesize);
         $this->ajaxReturn(200,'获取数据成功',$return);
@@ -490,10 +508,10 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $this->ajaxReturn(500,'请选择招聘会');
         }
         $list = model('JobfairOnlineParticipate')
-                ->alias('a')
-                ->where('a.jobfair_id',$jobfair_id)
-                ->where('a.utype',2)
-                ->where('a.audit',1);
+            ->alias('a')
+            ->where('a.jobfair_id', $jobfair_id)
+            ->where('a.utype', 2)
+            ->where('a.audit', 1);
         $against = '';
         if($keyword!=''){
             if (false !== stripos($keyword, ' ')) {
@@ -521,7 +539,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         $photo_arr = $photo_id_arr = [];
         foreach ($resume as $key => $value) {
             $value['photo_img'] > 0 &&
-                ($photo_id_arr[] = $value['photo_img']);
+            ($photo_id_arr[] = $value['photo_img']);
         }
         if (!empty($photo_id_arr)) {
             $photo_arr = model('Uploadfile')->getFileUrlBatch(

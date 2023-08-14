@@ -55,7 +55,8 @@ class JobApply extends \app\v1_0\controller\common\Base
         $list = model('JobApply')
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
-            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.note,a.addtime,a.is_look,a.handle_status,a.source,a.platform,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.remark,b.audit')
+            ->join(config('database.prefix') . 'resume_remark rr', 'a.resume_id=rr.resume_id and a.comid=rr.comid', 'left')
+            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.note,a.addtime,a.is_look,a.handle_status,a.source,a.platform,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,IFNULL(rr.remark,"") as remark,b.audit')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -333,15 +334,26 @@ class JobApply extends \app\v1_0\controller\common\Base
             'tel' => input('post.tel/s', '', 'trim'),
             'note' => input('post.note/s', '', 'trim')
         ];
-        $validate = new \think\Validate([
-            'apply_id' => 'require|number|gt:0',
-            'interview_date' => 'require',
-            'interview_time' => 'require',
-            'address' => 'require|max:100',
-            'contact' => 'require|max:10',
-            'tel' => 'require|max:15',
-            'note' => 'max:100'
-        ]);
+        $validate = new \think\Validate(
+            [
+                'apply_id' => 'require|number|gt:0',
+                'interview_date' => 'require',
+                'interview_time' => 'require',
+                'address' => 'require|max:50',
+                'contact' => 'require|max:10',
+                'tel' => 'require|max:15',
+                'note' => 'max:50'
+            ],
+            [
+                'apply_id' => '请选择要面试的简历',
+                'interview_date' => '请选择面试日期',
+                'interview_time' => '请选择面试时间',
+                'address' => '请输入50字内的面试地点',
+                'contact' => '请输入6字内的联系人',
+                'tel' => '请输入最多15位的联系电话',
+                'note' => '备注最多50字'
+            ]
+        );
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }

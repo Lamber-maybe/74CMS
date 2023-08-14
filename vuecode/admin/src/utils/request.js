@@ -69,6 +69,11 @@ service.interceptors.response.use(
           })
         })
       }
+      if (res.code === 50003) {
+        store.dispatch('user/resetToken').then(() => {
+          location.reload()
+        })
+      }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res

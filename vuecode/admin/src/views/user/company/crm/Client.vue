@@ -1,104 +1,106 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>{{ title }}</span>
-      </div>
-      <div class="list-search">
-        <el-input v-model="keyword" placeholder="请输入搜索内容" class="input-with-select" @keyup.enter.native="funSearchKeyword">
-          <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
-            <el-option label="公司名称" value="1" />
-            <el-option label="会员联系方式" value="2" />
-            <el-option label="企业联系方式" value="3" />
-          </el-select>
-          <el-button slot="append" icon="el-icon-search" @click="funSearchKeyword" />
-        </el-input>
-        <div style="float:right;z-index: 1;position: relative;"><el-button size="small" type="primary" @click="goto('/user/company/add')">新增企业</el-button></div>
-      </div>
-      <div
-        v-if="
-          weixinFilter != '' ||
-            gradeFilter != '' ||
-            examineFilter != '' ||
-            mealFilter != '' ||
-            followupFilter != '' ||
-            authenticationFilter != '' ||
-            positionFilter != '' ||
-            saleFilter != '' ||
-            deadlineFilter != '' ||
-            districtFilter != '' ||
-            collectionFilter != '' ||
-            tradeFilter != '' ||
-            regScreenFilter != ''
-        "
-        class="filterCriteria"
-      >
-        <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
-        <div style="float:left;display: inline-block;width: 80%">
-          <div v-if="weixinFilter != ''" class="selected">
-            <div class="name">绑定微信：{{ weixinFilter.name }}</div>
-            <div class="closes" @click="reset(weixinFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="gradeFilter != ''" class="selected">
-            <div class="name">客户等级：{{ gradeFilter.name }}</div>
-            <div class="closes" @click="reset(gradeFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="examineFilter != ''" class="selected">
-            <div class="name">显示状态：{{ examineFilter.name }}</div>
-            <div class="closes" @click="reset(examineFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="mealFilter != ''" class="selected">
-            <div class="name">企业套餐：{{ mealFilter.name }}</div>
-            <div class="closes" @click="reset(mealFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="followupFilter != ''" class="selected">
-            <div class="name">未跟进：{{ followupFilter.name }}</div>
-            <div class="closes" @click="reset(followupFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="authenticationFilter != ''" class="selected">
-            <div class="name">认证状态：{{ authenticationFilter.name }}</div>
-            <div class="closes" @click="reset(authenticationFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="positionFilter != ''" class="selected">
-            <div class="name">在招职位：{{ positionFilter.name }}</div>
-            <div class="closes" @click="reset(positionFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="saleFilter != ''" class="selected">
-            <div class="name">所属销售：{{ saleFilter.name }}</div>
-            <div class="closes" @click="reset(saleFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="deadlineFilter != ''" class="selected">
-            <div class="name">套餐剩余：{{ deadlineFilter.name }}</div>
-            <div class="closes" @click="reset(deadlineFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="tradeFilter != ''" class="selected">
-            <div class="name">所属行业：{{ tradeFilter.name }}</div>
-            <div class="closes" @click="reset(tradeFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="districtFilter != ''" class="selected">
-            <div class="name">所在地区：{{ districtFilter.name }}</div>
-            <div class="closes" @click="reset(districtFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="collectionFilter != ''" class="selected">
-            <div class="name">领取时间：{{ collectionFilter.name }}</div>
-            <div class="closes" @click="reset(collectionFilter.field)"><i class="el-icon-close" /></div>
-          </div>
-          <div v-if="regScreenFilter != ''" class="selected">
-            <div class="name">注册时间：{{ regScreenFilter.name }}</div>
-            <div class="closes" @click="reset(regScreenFilter.field)"><i class="el-icon-close" /></div>
-          </div>
+    <el-tabs type="border-card">
+      <el-tab-pane label="全部客户" :lazy="true">
+        <!-- <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>{{ title }}</span>
+          </div> -->
+        <div class="list-search">
+          <el-input v-model="keyword" placeholder="请输入搜索内容" class="input-with-select" @keyup.enter.native="funSearchKeyword">
+            <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
+              <el-option label="公司名称" value="1" />
+              <el-option label="会员联系方式" value="2" />
+              <el-option label="企业联系方式" value="3" />
+            </el-select>
+            <el-button slot="append" icon="el-icon-search" @click="funSearchKeyword" />
+          </el-input>
+          <div style="float:right;z-index: 1;position: relative;"><el-button size="small" type="primary" @click="goto('/user/company/add')">新增企业</el-button></div>
         </div>
-        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
-          <i class="el-icon-delete" />
-          清空条件
-        </div>
-        <div style="clear:both;" />
-      </div>
-      <div style="position: relative; padding-top: 15px">
-        <span class="checkboxName">ID</span>
         <div
-          :class="
+          v-if="
             weixinFilter != '' ||
+              gradeFilter != '' ||
+              examineFilter != '' ||
+              mealFilter != '' ||
+              followupFilter != '' ||
+              authenticationFilter != '' ||
+              positionFilter != '' ||
+              saleFilter != '' ||
+              deadlineFilter != '' ||
+              districtFilter != '' ||
+              collectionFilter != '' ||
+              tradeFilter != '' ||
+              regScreenFilter != ''
+          "
+          class="filterCriteria"
+        >
+          <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
+          <div style="float:left;display: inline-block;width: 80%">
+            <div v-if="weixinFilter != ''" class="selected">
+              <div class="name">绑定微信：{{ weixinFilter.name }}</div>
+              <div class="closes" @click="reset(weixinFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="gradeFilter != ''" class="selected">
+              <div class="name">客户等级：{{ gradeFilter.name }}</div>
+              <div class="closes" @click="reset(gradeFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="examineFilter != ''" class="selected">
+              <div class="name">显示状态：{{ examineFilter.name }}</div>
+              <div class="closes" @click="reset(examineFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="mealFilter != ''" class="selected">
+              <div class="name">企业套餐：{{ mealFilter.name }}</div>
+              <div class="closes" @click="reset(mealFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="followupFilter != ''" class="selected">
+              <div class="name">未跟进：{{ followupFilter.name }}</div>
+              <div class="closes" @click="reset(followupFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="authenticationFilter != ''" class="selected">
+              <div class="name">认证状态：{{ authenticationFilter.name }}</div>
+              <div class="closes" @click="reset(authenticationFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="positionFilter != ''" class="selected">
+              <div class="name">在招职位：{{ positionFilter.name }}</div>
+              <div class="closes" @click="reset(positionFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="saleFilter != ''" class="selected">
+              <div class="name">所属销售：{{ saleFilter.name }}</div>
+              <div class="closes" @click="reset(saleFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="deadlineFilter != ''" class="selected">
+              <div class="name">套餐剩余：{{ deadlineFilter.name }}</div>
+              <div class="closes" @click="reset(deadlineFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="tradeFilter != ''" class="selected">
+              <div class="name">所属行业：{{ tradeFilter.name }}</div>
+              <div class="closes" @click="reset(tradeFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="districtFilter != ''" class="selected">
+              <div class="name">所在地区：{{ districtFilter.name }}</div>
+              <div class="closes" @click="reset(districtFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="collectionFilter != ''" class="selected">
+              <div class="name">领取时间：{{ collectionFilter.name }}</div>
+              <div class="closes" @click="reset(collectionFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+            <div v-if="regScreenFilter != ''" class="selected">
+              <div class="name">注册时间：{{ regScreenFilter.name }}</div>
+              <div class="closes" @click="reset(regScreenFilter.field)"><i class="el-icon-close" /></div>
+            </div>
+          </div>
+          <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
+            <i class="el-icon-delete" />
+            清空条件
+          </div>
+          <div style="clear:both;" />
+        </div>
+        <div style="position: relative; padding-top: 15px">
+          <span class="checkboxName">ID</span>
+          <div
+            :class="
+              weixinFilter != '' ||
               gradeFilter != '' ||
               examineFilter != '' ||
               mealFilter != '' ||
@@ -111,778 +113,752 @@
               tradeFilter != '' ||
               collectionFilter != '' ||
               regScreenFilter != ''
-              ? 'setField_s'
-              : 'setField'
-          "
-        >
-          <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
-            <div class="setField_h">
-              <div v-for="item in fieldData" class="setFields">
-                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)">
-                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)">
-                <span style="margin-left: 10px;">{{ item.name }}</span>
-              </div>
-            </div>
-            <el-button slot="reference" :class="menu_icon == 'menu' ? 'field_s' : 'field_s_select'" @click="menu">
-              <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="">
-              <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="">
-            </el-button>
-            <div style="margin-top:10px;margin-right: 10px;">
-              <el-button class="filterOperation" type="text" size="small" @click="setFieldClose()">关闭</el-button>
-              <el-button class="filterOperation" type="text" size="small" @click="setFieldConfirm()">确认</el-button>
-            </div>
-          </el-popover>
-        </div>
-        <el-table
-          ref="multipleTable"
-          v-loading="loading"
-          :data="tableData"
-          tooltip-effect="dark"
-          :header-cell-style="{ background: '#f9f9f9', 'border-right': '1px solid #e4e6eb' }"
-          border
-          stripe
-          :height="tabelHeight"
-          :default-sort="{ prop: 'addtime' }"
-          style="width: 100%;"
-          @sort-change="sortTable"
-          @selection-change="handleSelectionChange"
-          @cell-mouse-enter="cellEnter"
-          @cell-mouse-leave="cellLeave"
-          @select-all="cellEnter"
-        >
-          <el-table-column type="selection" width="80" align="left">
-            <template #default="{ row, $index }">
-              <div
-                v-if="columnCheckedId == row.id || checkedList[$index]"
-                @click.stop
-              >
-                <el-checkbox
-                  v-model="checkedList[$index]"
-                  @change="cellCheckbox(row, $index)"
-                />
-              </div>
-              <span v-else>{{ row.id }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column fixed type="text" width="200" label="企业名称">
-            <template slot="header" slot-scope="scope">
-              <div>
-                <span>企业名称</span>
-                <el-popover placement="bottom" trigger="hover">
-                  <!-- 绑定微信-->
-                  <div class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in weixinData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 绑定微信-->
-                  <div style="margin-top: 10px;">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset('is_bind')">重置
-                    </el-button>
-                    <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
-                  </div>
-                  <div slot="reference" class="drop_down" />
-                </el-popover>
-              </div>
-            </template>
-            <template slot-scope="scope">
-              <div class="list_name_box_self">
-                &nbsp;&nbsp;
-                <span class="list_name_item">
-                  <span v-if="scope.row.companyname == ''">未完善企业资料</span>
-                  <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)">{{ scope.row.companyname }}</span>
-                  <img v-if="scope.row.is_bind == '已绑定'" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="" title="已绑定微信">
-                </span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="items in fieldData"
-            v-if="items.is_locking == true && items.select == true"
-            fixed
-            :sortable="items.is_sortable"
-            :prop="items.field"
-            :width="items.width"
+                ? 'setField_s'
+                : 'setField'
+            "
           >
-            <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
-                <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
-                <span v-else>{{ items.name }}</span>
-                <el-popover placement="bottom" trigger="hover">
-                  <!-- 所属行业-->
-                  <div v-if="items.field == 'trade'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in trade_list" class="screenStyle">
-                        <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 所属行业-->
-                  <!-- 所在地区-->
-                  <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
-                  <!-- 所在地区-->
-                  <!-- 等级-->
-                  <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in gradeScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="gradeScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 等级-->
-                  <!-- 审核-->
-                  <div v-if="items.field == 'is_display'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in examineScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="examineScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 审核-->
-                  <!-- 套餐-->
-                  <div v-if="items.field == 'setmeal_name'" class="screen_s">
-                    <el-checkbox-group style="height: 250px;">
-                      <div v-for="item in mealScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="mealScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 套餐-->
-                  <!-- 未跟进-->
-                  <div v-if="items.field == 'not_following_day'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in followupScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 未跟进-->
-                  <!-- 在招职位-->
-                  <div v-if="items.field == 'jobs_num'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in positionScreenData" class="screenStyle">
-                        <el-radio v-model="positionScreen" :label="item.id">{{ item.name }}</el-radio>
-                        <!--                        <el-checkbox :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>-->
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 在招职位-->
-                  <!-- 认证状态-->
-                  <div v-if="items.field == 'audit'" class="screen_s">
-                    <el-checkbox-group v-model="authenticationScreen">
-                      <div v-for="item in authenticationScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="authenticationScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 认证状态-->
-                  <!-- 销售-->
-                  <div v-if="items.field == 'admin_username'" class="screen_s">
-                    <el-checkbox-group v-model="saleScreen">
-                      <div v-for="item in saleScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="saleScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 销售-->
-                  <!-- 套餐剩余时间-->
-                  <div v-if="items.field == 'deadline'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in setmealDeadlineData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 套餐剩余时间-->
-                  <!-- 领取时间-->
-                  <div v-if="items.field == 'collection_time'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in collectionData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 领取时间-->
-                  <!-- 注册时间-->
-                  <div v-if="items.field == 'addtime'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in regScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 注册时间-->
-                  <div style="margin-top: 10px">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
-                    <el-button class="filterOperation" type="text" size="small" @click="confirm(items.field)">确认</el-button>
-                  </div>
-                  <div
-                    v-if="
-                      items.field == 'life_cycle_txt' ||
-                        items.field == 'is_display' ||
-                        items.field == 'setmeal_name' ||
-                        items.field == 'not_following_day' ||
-                        items.field == 'jobs_num' ||
-                        items.field == 'audit' ||
-                        items.field == 'admin_username' ||
-                        items.field == 'deadline' ||
-                        items.field == 'is_bind' ||
-                        items.field == 'trade' ||
-                        items.field == 'district' ||
-                        items.field == 'collection_time' ||
-                        items.field == 'addtime'
-                    "
-                    slot="reference"
-                    class="drop_down"
-                    @click.stop="funPopover(items.field)"
-                  />
-                </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
+            <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
+              <div class="setField_h">
+                <div v-for="item in fieldData" class="setFields">
+                  <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)" />
+                  <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)" />
+                  <span style="margin-left: 10px;">{{ item.name }}</span>
+                </div>
               </div>
-            </template>
-            <template slot-scope="scope">
-              <div v-if="items.field == 'trade'">
-                <span v-if="scope.row.trade == ''">-</span>
-                <span v-else>{{ scope.row.trade }}</span>
+              <el-button slot="reference" :class="menu_icon == 'menu' ? 'field_s' : 'field_s_select'" @click="menu">
+                <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="" />
+                <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="" />
+              </el-button>
+              <div style="margin-top:10px;margin-right: 10px;">
+                <el-button class="filterOperation" type="text" size="small" @click="setFieldClose()">关闭</el-button>
+                <el-button class="filterOperation" type="text" size="small" @click="setFieldConfirm()">确认</el-button>
               </div>
-              <div v-if="items.field == 'district'">
-                <span v-if="scope.row.district == ''">-</span>
-                <span v-else>{{ scope.row.district }}</span>
-              </div>
-              <div v-if="items.field == 'life_cycle_txt'">
-                <span v-if="scope.row.life_cycle_txt == ''">-</span>
-                <span v-else>{{ scope.row.life_cycle_txt }}</span>
-              </div>
-              <div v-if="items.field == 'contact'">
-                <span v-if="scope.row.contact == ''">-</span>
-                <span v-else>{{ scope.row.contact }}</span>
-              </div>
-              <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == '' || scope.row.mobile == null">-</span>
-                <span v-else>
-                  {{ scope.row.mobile }}
-                  <div class="dial" title="拨打会员联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
-                </span>
-              </div>
-              <div v-if="items.field == 'contact_mobile'">
-                <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
-                <span v-else>
-                  {{ scope.row.contact_mobile }}
-                  <div class="dial" title="拨打企业联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
-                </span>
-              </div>
-              <div v-if="items.field == 'jobs_num'">
-                <span v-if="scope.row.jobs_num == ''">0</span>
-                <span v-else>{{ scope.row.jobs_num }}</span>
-              </div>
-              <div v-if="items.field == 'job_apply_count'">
-                <span v-if="scope.row.job_apply_count == ''">0</span>
-                <span v-else>{{ scope.row.job_apply_count }}</span>
-              </div>
-              <div v-if="items.field == 'setmeal_name'">
-                <span v-if="scope.row.setmeal_name == ''">-</span>
-                <span v-else>{{ scope.row.setmeal_name }}</span>
-              </div>
-              <div v-if="items.field == 'refreshtime'">
-                <span v-if="scope.row.refreshtime == ''">-</span>
-                <span v-else>{{ scope.row.refreshtime }}</span>
-              </div>
-              <div v-if="items.field == 'deadline'">
-                <span v-if="scope.row.expire == 0">无限期</span>
-                <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
-                <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
-                <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
-              </div>
-              <div v-if="items.field == 'addtime'">
-                <span v-if="scope.row.addtime == ''">-</span>
-                <span v-else>{{ scope.row.addtime }}</span>
-              </div>
-              <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
-              <div v-if="items.field == 'last_login_time'">
-                <span v-if="scope.row.last_login_time == ''">-</span>
-                <span v-else>{{ scope.row.last_login_time }}</span>
-              </div>
-              <div v-if="items.field == 'admin_username'">
-                <span v-if="scope.row.admin_username == ''">-</span>
-                <span v-else>{{ scope.row.admin_username }}</span>
-              </div>
-              <div v-if="items.field == 'audit'">
-                <span v-if="scope.row.audit == ''">-</span>
-                <span v-else>
-                  <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
-                </span>
-                <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
-              </div>
-              <div v-if="items.field == 'is_display'">
-                <span v-if="scope.row.is_display == ''">-</span>
-                <span v-else>
-                  <span v-if="scope.row.display == 1" style="color:#67c23a">{{ scope.row.is_display }}</span>
-                  <span v-if="scope.row.display == 0" style="color:#f56c6c">{{ scope.row.is_display }}</span>
-                </span>
-              </div>
-              <div v-if="items.field == 'last_visit_time'">
-                <span v-if="scope.row.last_visit_time == ''">-</span>
-                <span v-else>{{ scope.row.last_visit_time }}</span>
-              </div>
-              <div v-if="items.field == 'collection_time'">
-                <span v-if="scope.row.collection_time == ''">-</span>
-                <span v-else>{{ scope.row.collection_time }}</span>
-              </div>
-              <div v-if="items.field == 'not_following_day'">
-                <span v-if="scope.row.not_following_day == -1">-</span>
-                <span v-else-if="scope.row.not_following_day == 0">0</span>
-                <span v-else>{{ scope.row.not_following_day }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="items in fieldData"
-            v-if="items.is_locking == false && items.select == true"
-            :sortable="items.is_sortable"
-            :prop="items.field"
-            :width="items.width"
+            </el-popover>
+          </div>
+          <el-table
+            ref="multipleTable"
+            v-loading="loading"
+            :data="tableData"
+            tooltip-effect="dark"
+            :header-cell-style="{ background: '#f9f9f9', 'border-right': '1px solid #e4e6eb' }"
+            border
+            stripe
+            :height="tabelHeight"
+            :default-sort="{ prop: 'addtime' }"
+            style="width: 100%;"
+            @sort-change="sortTable"
+            @selection-change="handleSelectionChange"
+            @cell-mouse-enter="cellEnter"
+            @cell-mouse-leave="cellLeave"
+            @select-all="cellEnter"
           >
-            <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
-                <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
-                <span v-else>{{ items.name }}</span>
-                <el-popover placement="bottom" trigger="hover">
-                  <!-- 等级-->
-                  <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in gradeScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="gradeScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 等级-->
-                  <!-- 审核-->
-                  <div v-if="items.field == 'is_display'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in examineScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="examineScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 审核-->
-                  <!-- 套餐-->
-                  <div v-if="items.field == 'setmeal_name'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in mealScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="mealScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 套餐-->
-                  <!-- 未跟进-->
-                  <div v-if="items.field == 'not_following_day'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in followupScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 未跟进-->
-                  <!-- 在招职位-->
-                  <div v-if="items.field == 'jobs_num'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in positionScreenData" class="screenStyle">
-                        <el-radio v-model="positionScreen" :label="item.id">{{ item.name }}</el-radio>
-                        <!--                        <el-checkbox :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>-->
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 在招职位-->
-                  <!-- 认证状态-->
-                  <div v-if="items.field == 'audit'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in authenticationScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="authenticationScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 认证状态-->
-                  <!-- 销售-->
-                  <div v-if="items.field == 'admin_username'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in saleScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="saleScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 销售-->
-                  <!-- 套餐剩余时间-->
-                  <div v-if="items.field == 'deadline'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in setmealDeadlineData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 套餐剩余时间-->
-                  <!-- 所属行业-->
-                  <div v-if="items.field == 'trade'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in trade_list" class="screenStyle">
-                        <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 所属行业-->
-                  <!-- 所在地区-->
-                  <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
-                  <!-- 所在地区-->
-                  <!-- 领取时间-->
-                  <div v-if="items.field == 'collection_time'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in collectionData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 领取时间-->
-                  <!-- 注册时间-->
-                  <div v-if="items.field == 'addtime'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in regScreenData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 注册时间-->
-                  <div style="margin-top: 10px">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
-                    <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
-                  </div>
-                  <div
-                    v-if="
-                      items.field == 'life_cycle_txt' ||
-                        items.field == 'is_display' ||
-                        items.field == 'setmeal_name' ||
-                        items.field == 'not_following_day' ||
-                        items.field == 'jobs_num' ||
-                        items.field == 'audit' ||
-                        items.field == 'admin_username' ||
-                        items.field == 'deadline' ||
-                        items.field == 'is_bind' ||
-                        items.field == 'trade' ||
-                        items.field == 'district' ||
-                        items.field == 'collection_time' ||
-                        items.field == 'addtime'
-                    "
-                    slot="reference"
-                    class="drop_down"
-                    @click.stop="funPopover(items.field)"
-                  />
-                </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
-              </div>
-            </template>
-            <template slot-scope="scope">
-              <div v-if="items.field == 'trade'">
-                <span v-if="scope.row.trade == ''">-</span>
-                <span v-else>{{ scope.row.trade }}</span>
-              </div>
-              <div v-if="items.field == 'district'">
-                <span v-if="scope.row.district == ''">-</span>
-                <span v-else>{{ scope.row.district }}</span>
-              </div>
-              <div v-if="items.field == 'life_cycle_txt'">
-                <span v-if="scope.row.life_cycle_txt == ''">-</span>
-                <span v-else>{{ scope.row.life_cycle_txt }}</span>
-              </div>
-              <div v-if="items.field == 'contact'">
-                <span v-if="scope.row.contact == ''">-</span>
-                <span v-else>{{ scope.row.contact }}</span>
-              </div>
-              <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == '' || scope.row.mobile == null">-</span>
-                <span v-else>
-                  {{ scope.row.mobile }}
-                  <div class="dial" title="拨打会员联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
-                </span>
-              </div>
-              <div v-if="items.field == 'contact_mobile'">
-                <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
-                <span v-else>
-                  {{ scope.row.contact_mobile }}
-                  <div class="dial" title="拨打企业联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
-                </span>
-              </div>
-              <div v-if="items.field == 'jobs_num'">
-                <span v-if="scope.row.jobs_num == ''">0</span>
-                <span v-else>{{ scope.row.jobs_num }}</span>
-              </div>
-              <div v-if="items.field == 'job_apply_count'">
-                <span v-if="scope.row.job_apply_count == ''">0</span>
-                <span v-else>{{ scope.row.job_apply_count }}</span>
-              </div>
-              <div v-if="items.field == 'setmeal_name'">
-                <span v-if="scope.row.setmeal_name == ''">-</span>
-                <span v-else>{{ scope.row.setmeal_name }}</span>
-              </div>
-              <div v-if="items.field == 'refreshtime'">
-                <span v-if="scope.row.refreshtime == ''">-</span>
-                <span v-else>{{ scope.row.refreshtime }}</span>
-              </div>
-              <div v-if="items.field == 'deadline'">
-                <span v-if="scope.row.expire == 0">无限期</span>
-                <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
-                <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
-                <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
-              </div>
-              <div v-if="items.field == 'addtime'">
-                <span v-if="scope.row.addtime == ''">-</span>
-                <span v-else>{{ scope.row.addtime }}</span>
-              </div>
-              <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
-              <div v-if="items.field == 'last_login_time'">
-                <span v-if="scope.row.last_login_time == ''">-</span>
-                <span v-else>{{ scope.row.last_login_time }}</span>
-              </div>
-              <div v-if="items.field == 'admin_username'">
-                <span v-if="scope.row.admin_username == ''">-</span>
-                <span v-else>{{ scope.row.admin_username }}</span>
-              </div>
-              <div v-if="items.field == 'audit'">
-                <span v-if="scope.row.audit == ''">-</span>
-                <span v-else>
-                  <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
-                  <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
-                </span>
-                <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
-              </div>
-              <div v-if="items.field == 'is_display'">
-                <span v-if="scope.row.is_display == ''">-</span>
-                <span v-else>
-                  <span v-if="scope.row.display == 1" style="color:#67c23a">{{ scope.row.is_display }}</span>
-                  <span v-if="scope.row.display == 0" style="color:#f56c6c">{{ scope.row.is_display }}</span>
-                </span>
-              </div>
-              <div v-if="items.field == 'last_visit_time'">
-                <span v-if="scope.row.last_visit_time == ''">-</span>
-                <span v-else>{{ scope.row.last_visit_time }}</span>
-              </div>
-              <div v-if="items.field == 'collection_time'">
-                <span v-if="scope.row.collection_time == ''">-</span>
-                <span v-else>{{ scope.row.collection_time }}</span>
-              </div>
-              <div v-if="items.field == 'not_following_day'">
-                <span v-if="scope.row.not_following_day == -1">-</span>
-                <span v-else-if="scope.row.not_following_day == 0">0</span>
-                <span v-else>{{ scope.row.not_following_day }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" fixed="right" width="160">
-            <template slot-scope="scope">
-              <el-button class="operation" type="text" size="small" @click="see(scope)">查看</el-button>
-              <el-button v-if="currentNav == 'myClient'" class="operation" type="text" size="small" @click="release(scope.row.uid)">释放</el-button>
-              <el-button v-if="currentNav == 'myClient'" class="operation" type="text" size="small" @click="see(scope)">跟进</el-button>
-              <el-button v-if="currentNav == 'pubilceClient'" class="operation" type="text" size="small" @click="receive(scope.row.uid)">领取</el-button>
-              <el-button v-if="currentNav == 'pubilceClient'" class="operation" type="text" size="small" @click="del(scope.row.id)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="bortton-page">
-          <el-col :span="10">
-            <el-button size="small" type="primary" @click="choose">全选/反选</el-button>
-            <el-button v-if="currentNav == 'myClient'" size="small" type="primary" @click="funRelease">释放</el-button>
-            <el-button v-if="currentNav == 'pubilceClient'" size="small" type="primary" @click="funReceive">领取</el-button>
-            <el-button size="small" type="primary" @click="funAuditBatch">认证</el-button>
-            <el-button size="small" type="primary" @click="displayBatch">显示</el-button>
-            <el-button size="small" type="primary" @click="handlerRefreshJobBatch">刷新职位</el-button>
-            <el-button size="small" type="primary" @click="funExport">导出</el-button>
-          </el-col>
-          <el-col :span="14" style="text-align: right">
-            <el-pagination
-              background
-              :current-page="currentPage"
-              :page-sizes="[10, 20, 50, 100]"
-              :page-size="pagesize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </el-col>
+            <el-table-column type="selection" width="80" align="left">
+              <template #default="{ row, $index }">
+                <div v-if="columnCheckedId == row.id || checkedList[$index]" @click.stop><el-checkbox v-model="checkedList[$index]" @change="cellCheckbox(row, $index)" /></div>
+                <span v-else>{{ row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed type="text" width="200" label="企业名称">
+              <template slot="header" slot-scope="scope">
+                <div>
+                  <span>企业名称</span>
+                  <el-popover placement="bottom" trigger="hover">
+                    <!-- 绑定微信-->
+                    <div class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in weixinData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 绑定微信-->
+                    <div style="margin-top: 10px;">
+                      <el-button class="filterOperation" type="text" size="small" @click="reset('is_bind')">重置</el-button>
+                      <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
+                    </div>
+                    <div slot="reference" class="drop_down" />
+                  </el-popover>
+                </div>
+              </template>
+              <template slot-scope="scope">
+                <div class="list_name_box_self">
+                  &nbsp;&nbsp;
+                  <span class="list_name_item">
+                    <span v-if="scope.row.companyname == ''">未完善企业资料</span>
+                    <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)">{{ scope.row.companyname }}</span>
+                    <img v-if="scope.row.is_bind == '已绑定'" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="" title="已绑定微信" />
+                  </span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="items in fieldData"
+              v-if="items.is_locking == true && items.select == true"
+              fixed
+              :sortable="items.is_sortable"
+              :prop="items.field"
+              :width="items.width"
+            >
+              <template slot="header" slot-scope="scope">
+                <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+                  <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
+                  <span v-else>{{ items.name }}</span>
+                  <el-popover placement="bottom" trigger="hover">
+                    <!-- 所属行业-->
+                    <div v-if="items.field == 'trade'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in trade_list" class="screenStyle">
+                          <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 所属行业-->
+                    <!-- 所在地区-->
+                    <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
+                    <!-- 所在地区-->
+                    <!-- 等级-->
+                    <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in gradeScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="gradeScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 等级-->
+                    <!-- 审核-->
+                    <div v-if="items.field == 'is_display'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in examineScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="examineScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 审核-->
+                    <!-- 套餐-->
+                    <div v-if="items.field == 'setmeal_name'" class="screen_s">
+                      <el-checkbox-group style="height: 250px;">
+                        <div v-for="item in mealScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="mealScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 套餐-->
+                    <!-- 未跟进-->
+                    <div v-if="items.field == 'not_following_day'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in followupScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 未跟进-->
+                    <!-- 在招职位-->
+                    <div v-if="items.field == 'jobs_num'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in positionScreenData" class="screenStyle">
+                          <el-radio v-model="positionScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <!--                        <el-checkbox :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>-->
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 在招职位-->
+                    <!-- 认证状态-->
+                    <div v-if="items.field == 'audit'" class="screen_s">
+                      <el-checkbox-group v-model="authenticationScreen">
+                        <div v-for="item in authenticationScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="authenticationScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 认证状态-->
+                    <!-- 销售-->
+                    <div v-if="items.field == 'admin_username'" class="screen_s">
+                      <el-checkbox-group v-model="saleScreen">
+                        <div v-for="item in saleScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="saleScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 销售-->
+                    <!-- 套餐剩余时间-->
+                    <div v-if="items.field == 'deadline'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in setmealDeadlineData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 套餐剩余时间-->
+                    <!-- 领取时间-->
+                    <div v-if="items.field == 'collection_time'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in collectionData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 领取时间-->
+                    <!-- 注册时间-->
+                    <div v-if="items.field == 'addtime'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in regScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 注册时间-->
+                    <div style="margin-top: 10px">
+                      <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                      <el-button class="filterOperation" type="text" size="small" @click="confirm(items.field)">确认</el-button>
+                    </div>
+                    <div
+                      v-if="
+                        items.field == 'life_cycle_txt' ||
+                          items.field == 'is_display' ||
+                          items.field == 'setmeal_name' ||
+                          items.field == 'not_following_day' ||
+                          items.field == 'jobs_num' ||
+                          items.field == 'audit' ||
+                          items.field == 'admin_username' ||
+                          items.field == 'deadline' ||
+                          items.field == 'is_bind' ||
+                          items.field == 'trade' ||
+                          items.field == 'district' ||
+                          items.field == 'collection_time' ||
+                          items.field == 'addtime'
+                      "
+                      slot="reference"
+                      class="drop_down"
+                      @click.stop="funPopover(items.field)"
+                    />
+                  </el-popover>
+                  <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
+                  <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
+                </div>
+              </template>
+              <template slot-scope="scope">
+                <div v-if="items.field == 'trade'">
+                  <span v-if="scope.row.trade == ''">-</span>
+                  <span v-else>{{ scope.row.trade }}</span>
+                </div>
+                <div v-if="items.field == 'district'">
+                  <span v-if="scope.row.district == ''">-</span>
+                  <span v-else>{{ scope.row.district }}</span>
+                </div>
+                <div v-if="items.field == 'life_cycle_txt'">
+                  <span v-if="scope.row.life_cycle_txt == ''">-</span>
+                  <span v-else>{{ scope.row.life_cycle_txt }}</span>
+                </div>
+                <div v-if="items.field == 'contact'">
+                  <span v-if="scope.row.contact == ''">-</span>
+                  <span v-else>{{ scope.row.contact }}</span>
+                </div>
+                <div v-if="items.field == 'mobile'">
+                  <span v-if="scope.row.mobile == '' || scope.row.mobile == null">-</span>
+                  <span v-else>
+                    {{ scope.row.mobile }}
+                    <div class="dial" title="拨打会员联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
+                  </span>
+                </div>
+                <div v-if="items.field == 'contact_mobile'">
+                  <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
+                  <span v-else>
+                    {{ scope.row.contact_mobile }}
+                    <div class="dial" title="拨打企业联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
+                  </span>
+                </div>
+                <div v-if="items.field == 'jobs_num'">
+                  <span v-if="scope.row.jobs_num == ''">0</span>
+                  <span v-else>{{ scope.row.jobs_num }}</span>
+                </div>
+                <div v-if="items.field == 'job_apply_count'">
+                  <span v-if="scope.row.job_apply_count == ''">0</span>
+                  <span v-else>{{ scope.row.job_apply_count }}</span>
+                </div>
+                <div v-if="items.field == 'setmeal_name'">
+                  <span v-if="scope.row.setmeal_name == ''">-</span>
+                  <span v-else>{{ scope.row.setmeal_name }}</span>
+                </div>
+                <div v-if="items.field == 'refreshtime'">
+                  <span v-if="scope.row.refreshtime == ''">-</span>
+                  <span v-else>{{ scope.row.refreshtime }}</span>
+                </div>
+                <div v-if="items.field == 'deadline'">
+                  <span v-if="scope.row.expire == 0">无限期</span>
+                  <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
+                  <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
+                  <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
+                </div>
+                <div v-if="items.field == 'addtime'">
+                  <span v-if="scope.row.addtime == ''">-</span>
+                  <span v-else>{{ scope.row.addtime }}</span>
+                </div>
+                <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
+                <div v-if="items.field == 'last_login_time'">
+                  <span v-if="scope.row.last_login_time == ''">-</span>
+                  <span v-else>{{ scope.row.last_login_time }}</span>
+                </div>
+                <div v-if="items.field == 'admin_username'">
+                  <span v-if="scope.row.admin_username == ''">-</span>
+                  <span v-else>{{ scope.row.admin_username }}</span>
+                </div>
+                <div v-if="items.field == 'audit'">
+                  <span v-if="scope.row.audit == ''">-</span>
+                  <span v-else>
+                    <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
+                  </span>
+                  <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
+                </div>
+                <div v-if="items.field == 'is_display'">
+                  <span v-if="scope.row.is_display == ''">-</span>
+                  <span v-else>
+                    <span v-if="scope.row.display == 1" style="color:#67c23a">{{ scope.row.is_display }}</span>
+                    <span v-if="scope.row.display == 0" style="color:#f56c6c">{{ scope.row.is_display }}</span>
+                  </span>
+                </div>
+                <div v-if="items.field == 'last_visit_time'">
+                  <span v-if="scope.row.last_visit_time == ''">-</span>
+                  <span v-else>{{ scope.row.last_visit_time }}</span>
+                </div>
+                <div v-if="items.field == 'collection_time'">
+                  <span v-if="scope.row.collection_time == ''">-</span>
+                  <span v-else>{{ scope.row.collection_time }}</span>
+                </div>
+                <div v-if="items.field == 'not_following_day'">
+                  <span v-if="scope.row.not_following_day == -1">-</span>
+                  <span v-else-if="scope.row.not_following_day == 0">0</span>
+                  <span v-else>{{ scope.row.not_following_day }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="items in fieldData"
+              v-if="items.is_locking == false && items.select == true"
+              :sortable="items.is_sortable"
+              :prop="items.field"
+              :width="items.width"
+            >
+              <template slot="header" slot-scope="scope">
+                <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+                  <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
+                  <span v-else>{{ items.name }}</span>
+                  <el-popover placement="bottom" trigger="hover">
+                    <!-- 等级-->
+                    <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in gradeScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="gradeScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 等级-->
+                    <!-- 审核-->
+                    <div v-if="items.field == 'is_display'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in examineScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="examineScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 审核-->
+                    <!-- 套餐-->
+                    <div v-if="items.field == 'setmeal_name'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in mealScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="mealScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 套餐-->
+                    <!-- 未跟进-->
+                    <div v-if="items.field == 'not_following_day'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in followupScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 未跟进-->
+                    <!-- 在招职位-->
+                    <div v-if="items.field == 'jobs_num'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in positionScreenData" class="screenStyle">
+                          <el-radio v-model="positionScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <!--                        <el-checkbox :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>-->
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 在招职位-->
+                    <!-- 认证状态-->
+                    <div v-if="items.field == 'audit'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in authenticationScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="authenticationScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 认证状态-->
+                    <!-- 销售-->
+                    <div v-if="items.field == 'admin_username'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in saleScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="saleScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 销售-->
+                    <!-- 套餐剩余时间-->
+                    <div v-if="items.field == 'deadline'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in setmealDeadlineData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 套餐剩余时间-->
+                    <!-- 所属行业-->
+                    <div v-if="items.field == 'trade'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in trade_list" class="screenStyle">
+                          <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 所属行业-->
+                    <!-- 所在地区-->
+                    <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
+                    <!-- 所在地区-->
+                    <!-- 领取时间-->
+                    <div v-if="items.field == 'collection_time'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in collectionData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 领取时间-->
+                    <!-- 注册时间-->
+                    <div v-if="items.field == 'addtime'" class="screen_s">
+                      <el-checkbox-group>
+                        <div v-for="item in regScreenData" class="screenStyle">
+                          <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
+                        </div>
+                      </el-checkbox-group>
+                    </div>
+                    <!-- 注册时间-->
+                    <div style="margin-top: 10px">
+                      <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                      <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
+                    </div>
+                    <div
+                      v-if="
+                        items.field == 'life_cycle_txt' ||
+                          items.field == 'is_display' ||
+                          items.field == 'setmeal_name' ||
+                          items.field == 'not_following_day' ||
+                          items.field == 'jobs_num' ||
+                          items.field == 'audit' ||
+                          items.field == 'admin_username' ||
+                          items.field == 'deadline' ||
+                          items.field == 'is_bind' ||
+                          items.field == 'trade' ||
+                          items.field == 'district' ||
+                          items.field == 'collection_time' ||
+                          items.field == 'addtime'
+                      "
+                      slot="reference"
+                      class="drop_down"
+                      @click.stop="funPopover(items.field)"
+                    />
+                  </el-popover>
+                  <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
+                  <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
+                </div>
+              </template>
+              <template slot-scope="scope">
+                <div v-if="items.field == 'trade'">
+                  <span v-if="scope.row.trade == ''">-</span>
+                  <span v-else>{{ scope.row.trade }}</span>
+                </div>
+                <div v-if="items.field == 'district'">
+                  <span v-if="scope.row.district == ''">-</span>
+                  <span v-else>{{ scope.row.district }}</span>
+                </div>
+                <div v-if="items.field == 'life_cycle_txt'">
+                  <span v-if="scope.row.life_cycle_txt == ''">-</span>
+                  <span v-else>{{ scope.row.life_cycle_txt }}</span>
+                </div>
+                <div v-if="items.field == 'contact'">
+                  <span v-if="scope.row.contact == ''">-</span>
+                  <span v-else>{{ scope.row.contact }}</span>
+                </div>
+                <div v-if="items.field == 'mobile'">
+                  <span v-if="scope.row.mobile == '' || scope.row.mobile == null">-</span>
+                  <span v-else>
+                    {{ scope.row.mobile }}
+                    <div class="dial" title="拨打会员联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
+                  </span>
+                </div>
+                <div v-if="items.field == 'contact_mobile'">
+                  <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
+                  <span v-else>
+                    {{ scope.row.contact_mobile }}
+                    <div class="dial" title="拨打企业联系号码"><div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname)" /></div>
+                  </span>
+                </div>
+                <div v-if="items.field == 'jobs_num'">
+                  <span v-if="scope.row.jobs_num == ''">0</span>
+                  <span v-else>{{ scope.row.jobs_num }}</span>
+                </div>
+                <div v-if="items.field == 'job_apply_count'">
+                  <span v-if="scope.row.job_apply_count == ''">0</span>
+                  <span v-else>{{ scope.row.job_apply_count }}</span>
+                </div>
+                <div v-if="items.field == 'setmeal_name'">
+                  <span v-if="scope.row.setmeal_name == ''">-</span>
+                  <span v-else>{{ scope.row.setmeal_name }}</span>
+                </div>
+                <div v-if="items.field == 'refreshtime'">
+                  <span v-if="scope.row.refreshtime == ''">-</span>
+                  <span v-else>{{ scope.row.refreshtime }}</span>
+                </div>
+                <div v-if="items.field == 'deadline'">
+                  <span v-if="scope.row.expire == 0">无限期</span>
+                  <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
+                  <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
+                  <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
+                </div>
+                <div v-if="items.field == 'addtime'">
+                  <span v-if="scope.row.addtime == ''">-</span>
+                  <span v-else>{{ scope.row.addtime }}</span>
+                </div>
+                <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
+                <div v-if="items.field == 'last_login_time'">
+                  <span v-if="scope.row.last_login_time == ''">-</span>
+                  <span v-else>{{ scope.row.last_login_time }}</span>
+                </div>
+                <div v-if="items.field == 'admin_username'">
+                  <span v-if="scope.row.admin_username == ''">-</span>
+                  <span v-else>{{ scope.row.admin_username }}</span>
+                </div>
+                <div v-if="items.field == 'audit'">
+                  <span v-if="scope.row.audit == ''">-</span>
+                  <span v-else>
+                    <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
+                    <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
+                  </span>
+                  <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
+                </div>
+                <div v-if="items.field == 'is_display'">
+                  <span v-if="scope.row.is_display == ''">-</span>
+                  <span v-else>
+                    <span v-if="scope.row.display == 1" style="color:#67c23a">{{ scope.row.is_display }}</span>
+                    <span v-if="scope.row.display == 0" style="color:#f56c6c">{{ scope.row.is_display }}</span>
+                  </span>
+                </div>
+                <div v-if="items.field == 'last_visit_time'">
+                  <span v-if="scope.row.last_visit_time == ''">-</span>
+                  <span v-else>{{ scope.row.last_visit_time }}</span>
+                </div>
+                <div v-if="items.field == 'collection_time'">
+                  <span v-if="scope.row.collection_time == ''">-</span>
+                  <span v-else>{{ scope.row.collection_time }}</span>
+                </div>
+                <div v-if="items.field == 'not_following_day'">
+                  <span v-if="scope.row.not_following_day == -1">-</span>
+                  <span v-else-if="scope.row.not_following_day == 0">0</span>
+                  <span v-else>{{ scope.row.not_following_day }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="160">
+              <template slot-scope="scope">
+                <el-button class="operation" type="text" size="small" @click="see(scope)">查看</el-button>
+                <el-button v-if="currentNav == 'myClient'" class="operation" type="text" size="small" @click="release(scope.row.uid)">释放</el-button>
+                <el-button v-if="currentNav == 'myClient'" class="operation" type="text" size="small" @click="see(scope)">跟进</el-button>
+                <el-button v-if="currentNav == 'pubilceClient'" class="operation" type="text" size="small" @click="receive(scope.row.uid)">领取</el-button>
+                <el-button v-if="currentNav == 'pubilceClient'" class="operation" type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="bortton-page">
+            <el-col :span="10">
+              <el-button size="small" type="primary" @click="choose">全选/反选</el-button>
+              <el-button v-if="currentNav == 'myClient'" size="small" type="primary" @click="funRelease">释放</el-button>
+              <el-button v-if="currentNav == 'pubilceClient'" size="small" type="primary" @click="funReceive">领取</el-button>
+              <el-button size="small" type="primary" @click="funAuditBatch">认证</el-button>
+              <el-button size="small" type="primary" @click="displayBatch">显示</el-button>
+              <el-button size="small" type="primary" @click="handlerRefreshJobBatch">刷新职位</el-button>
+              <el-button size="small" type="primary" @click="funExport">导出</el-button>
+            </el-col>
+            <el-col :span="14" style="text-align: right">
+              <el-pagination
+                background
+                :current-page="currentPage"
+                :page-sizes="[10, 20, 50, 100]"
+                :page-size="pagesize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </el-col>
+          </div>
         </div>
-      </div>
-    </el-card>
-    <el-dialog title="显示状态设置" :visible.sync="dialogIsDispay" width="25%">
-      <div class="isDispayBox">
-        显示状态：
-        <el-radio v-model="is_display" label="0">不显示</el-radio>
-        <el-radio v-model="is_display" label="1">显示</el-radio>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogIsDispay = false">取 消</el-button>
-        <el-button type="primary" @click="funIsDisplayBtn">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="将所选企业设置为" :visible.sync="dialogFormVisible" width="25%">
-      <el-form class="common-form" label-width="80px">
-        <el-form-item label="认证状态">
-          <el-radio-group v-model="setAuditVal">
-            <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-if="setAuditVal == 2" label="原因"><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_audit">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-drawer v-if="drawer" size="75%" :show-close="false" :with-header="false" :wrapper-closable="false" :visible.sync="drawer" :before-close="handleClose">
-      <clientShow :row-id="rowId" />
-      <!-- 关闭按钮 -->
-      <div class="close" @click="handleClose"><i class="el-icon-close" /></div>
-    </el-drawer>
-    <div class="call">
-      <el-dialog :visible.sync="callDialogVisible" width="30%" :before-close="callHandleClose">
-        <div class="box-content">
-          <div class="content">
-            <div class="title1">您还尚未开通云呼叫服务</div>
-            <div class="title2">扫码添加客服</div>
-            <div class="title3">快速开通呼叫业务</div>
+        <!-- </el-card> -->
+        <el-dialog title="显示状态设置" :visible.sync="dialogIsDispay" width="25%">
+          <div class="isDispayBox">
+            显示状态：
+            <el-radio v-model="is_display" label="0">不显示</el-radio>
+            <el-radio v-model="is_display" label="1">显示</el-radio>
           </div>
-          <div class="code"><img src="../../../../assets/images/outbound/renew.png" alt=""></div>
-          <div style="clear:both" />
-          <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
-          <div class="advantage">
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">免硬件设备</div>
-            </div>
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">录音清晰无杂音</div>
-            </div>
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">外显销售手机号</div>
-            </div>
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">招聘行业专用线路</div>
-            </div>
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">稳定性更高</div>
-            </div>
-            <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
-              <div class="title">防封强、接通率高</div>
-            </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogIsDispay = false">取 消</el-button>
+            <el-button type="primary" @click="funIsDisplayBtn">确 定</el-button>
           </div>
-        </div>
-      </el-dialog>
-    </div>
-    <div class="meet">
-      <el-dialog :visible.sync="meetDialogVisible" width="30%" :before-close="meetHandleClose">
-        <div class="box-content">
-          <div id="animation" class="img"><!--            <img src="../../../../assets/images/outbound/meet.png" alt="">--></div>
-          <div class="hu">正在呼叫客户</div>
-          <div class="telephone">{{ dialPhone }}</div>
-          <div class="company">{{ dialName }}</div>
-          <div class="tips">请您留意手机来电接听</div>
-        </div>
-      </el-dialog>
-    </div>
-    <!--    企业营业执照-->
-    <div class="comDialog">
-      <el-dialog title="企业营业执照" :visible.sync="dialogAudit" width="600px">
-        <div class="comInfo ">
-          <div class="comInfoName">
-            <span>企业名称：</span><span>{{ comInfoData.companyname }}</span>
+        </el-dialog>
+        <el-dialog title="将所选企业设置为" :visible.sync="dialogFormVisible" width="25%">
+          <el-form class="common-form" label-width="80px">
+            <el-form-item label="认证状态">
+              <el-radio-group v-model="setAuditVal">
+                <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="setAuditVal == 2" label="原因"><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="fun_set_audit">确 定</el-button>
           </div>
-          <div class="comInfoName">
-            <span>当前状态：</span>
-            <span v-if="comInfoData.aduit_id == 1">{{ comInfoData.audit }}</span>
-            <span v-if="comInfoData.aduit_id == 2" style="color:#e6a23c;">{{ comInfoData.audit }}</span>
-            <span v-if="comInfoData.aduit_id == 3" style="color:#67c23a;">{{ comInfoData.audit }}</span>
-            <span v-if="comInfoData.aduit_id == 4" style="color:#f56c6c;">{{ comInfoData.audit }}</span>
-          </div>
-          <div class="comInfoImg">
-            <div class="comInfoImgItem">
-              <div>营业执照：</div>
-              <div>
-                <el-image
-                  v-if="license_src!=''"
-                  class="img"
-                  :src="license_src"
-                  :preview-src-list="previewList"
-                />
-                <div v-else class="img noData">暂无图片</div>
+        </el-dialog>
+        <el-drawer v-if="drawer" size="75%" :show-close="false" :with-header="false" :wrapper-closable="false" :visible.sync="drawer" :before-close="handleClose">
+          <clientShow :row-id="rowId" />
+          <!-- 关闭按钮 -->
+          <div class="close" @click="handleClose"><i class="el-icon-close" /></div>
+        </el-drawer>
+        <div class="call">
+          <el-dialog :visible.sync="callDialogVisible" width="30%" :before-close="callHandleClose">
+            <div class="box-content">
+              <div class="content">
+                <div class="title1">您还尚未开通云呼叫服务</div>
+                <div class="title2">扫码添加客服</div>
+                <div class="title3">快速开通呼叫业务</div>
+              </div>
+              <div class="code"><img src="../../../../assets/images/outbound/renew.png" alt="" /></div>
+              <div style="clear:both" />
+              <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
+              <div class="advantage">
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">免硬件设备</div>
+                </div>
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">录音清晰无杂音</div>
+                </div>
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">外显销售手机号</div>
+                </div>
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">招聘行业专用线路</div>
+                </div>
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">稳定性更高</div>
+                </div>
+                <div class="advantage-box">
+                  <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+                  <div class="title">防封强、接通率高</div>
+                </div>
               </div>
             </div>
-            <div class="comInfoImgItem comInfoImgItemCenter">
-              <div>身份证：</div>
-              <div style="overflow: hidden">
-                <el-image
-                  v-if="legal_person_idcard_front_src!=''"
-                  class="img"
-                  :src="legal_person_idcard_front_src"
-                  :preview-src-list="previewList"
-                />
-                <div v-else class="img noData">暂无图片</div>
-                <el-image
-                  v-if="legal_person_idcard_back_src!=''"
-                  class="img"
-                  :src="legal_person_idcard_back_src"
-                  :preview-src-list="previewList"
-                />
-                <div v-else class="img noData">暂无图片</div>
+          </el-dialog>
+        </div>
+        <div class="meet">
+          <el-dialog :visible.sync="meetDialogVisible" width="30%" :before-close="meetHandleClose">
+            <div class="box-content">
+              <div id="animation" class="img"><!--            <img src="../../../../assets/images/outbound/meet.png" alt="">--></div>
+              <div class="hu">正在呼叫客户</div>
+              <div class="telephone">{{ dialPhone }}</div>
+              <div class="company">{{ dialName }}</div>
+              <div class="tips">请您留意手机来电接听</div>
+            </div>
+          </el-dialog>
+        </div>
+        <!--    企业营业执照-->
+        <div class="comDialog">
+          <el-dialog title="企业营业执照" :visible.sync="dialogAudit" width="600px">
+            <div class="comInfo ">
+              <div class="comInfoName">
+                <span>企业名称：</span>
+                <span>{{ comInfoData.companyname }}</span>
+              </div>
+              <div class="comInfoName">
+                <span>当前状态：</span>
+                <span v-if="comInfoData.aduit_id == 1">{{ comInfoData.audit }}</span>
+                <span v-if="comInfoData.aduit_id == 2" style="color:#e6a23c;">{{ comInfoData.audit }}</span>
+                <span v-if="comInfoData.aduit_id == 3" style="color:#67c23a;">{{ comInfoData.audit }}</span>
+                <span v-if="comInfoData.aduit_id == 4" style="color:#f56c6c;">{{ comInfoData.audit }}</span>
+              </div>
+              <div class="comInfoImg">
+                <div class="comInfoImgItem">
+                  <div>营业执照：</div>
+                  <div>
+                    <el-image v-if="license_src != ''" class="img" :src="license_src" :preview-src-list="previewList" />
+                    <div v-else class="img noData">暂无图片</div>
+                  </div>
+                </div>
+                <div class="comInfoImgItem comInfoImgItemCenter">
+                  <div>身份证：</div>
+                  <div style="overflow: hidden">
+                    <el-image v-if="legal_person_idcard_front_src != ''" class="img" :src="legal_person_idcard_front_src" :preview-src-list="previewList" />
+                    <div v-else class="img noData">暂无图片</div>
+                    <el-image v-if="legal_person_idcard_back_src != ''" class="img" :src="legal_person_idcard_back_src" :preview-src-list="previewList" />
+                    <div v-else class="img noData">暂无图片</div>
+                  </div>
+                </div>
+                <div class="comInfoImgItem">
+                  <div>委托函：</div>
+                  <div>
+                    <el-image v-if="proxy_src != ''" class="img" :src="proxy_src" :preview-src-list="previewList" />
+                    <div v-else class="img noData">暂无图片</div>
+                  </div>
+                </div>
+              </div>
+              <div class="com_opration">
+                <!--          <span class="title"></span>-->
+                <el-form class="common-form">
+                  <el-form-item label="审核操作：">
+                    <el-radio-group v-model="setAuditVal" @change="auditChange">
+                      <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item v-if="setAuditVal == 2" label="原因："><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
+                </el-form>
               </div>
             </div>
-            <div class="comInfoImgItem">
-              <div>委托函：</div>
-              <div>
-                <el-image
-                  v-if="proxy_src!=''"
-                  class="img"
-                  :src="proxy_src"
-                  :preview-src-list="previewList"
-                />
-                <div v-else class="img noData">暂无图片</div>
-              </div>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" :disabled="setAuditVal === ''" :loading="auditSubmitLoading" @click="auditSure">确 定</el-button>
+              <el-button class="cancelBtn" @click="dialogAudit = false">取 消</el-button>
             </div>
-          </div>
-          <div class="com_opration">
-            <!--          <span class="title"></span>-->
-            <el-form class="common-form">
-              <el-form-item label="审核操作：">
-                <el-radio-group v-model="setAuditVal" @change="auditChange">
-                  <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item v-if="setAuditVal == 2" label="原因：">
-                <el-input v-model="setAuditReason" type="textarea" rows="3" />
-              </el-form-item>
-            </el-form>
-          </div>
+          </el-dialog>
         </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button type="primary" :disabled="setAuditVal === ''" :loading="auditSubmitLoading" @click="auditSure">确 定</el-button>
-          <el-button class="cancelBtn" @click="dialogAudit = false">取 消</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <!--    企业营业执照-->
+        <!--    企业营业执照-->
+      </el-tab-pane>
+      <el-tab-pane label="企业风采" :lazy="true"><companyStyleReview :list-type="list_type"></companyStyleReview></el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script>
-import clientShow from '@/views/user/company/crm/components/ClientShow'
+import clientShow from '@/views/user/company/crm/components/ClientShow';
+import companyStyleReview from '@/views/user/company/crm/components/companyStyleReview';
 import {
   classify,
   clueAdminLists,
@@ -897,21 +873,22 @@ import {
   companyRelease,
   companySetDisplay,
   putRecycleBin
-} from '@/api/company_crm'
-import { export_json_to_excel } from '@/excel/Export2Excel'
-import { parseTime, setMemberLogin } from '@/utils'
-import { outboundCall } from '@/api/outbound'
-import { management } from '@/api/member'
+} from '@/api/company_crm';
+import { export_json_to_excel } from '@/excel/Export2Excel';
+import { parseTime, setMemberLogin } from '@/utils';
+import { outboundCall } from '@/api/outbound';
+import { management } from '@/api/member';
 
 export default {
   name: 'Client',
   filters: {
     timeFilter(timestamp) {
-      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
+      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}');
     }
   },
   components: {
-    clientShow
+    clientShow,
+    companyStyleReview
   },
   data() {
     return {
@@ -996,13 +973,7 @@ export default {
       districtFilter: '',
       props: { multiple: false, checkStrictly: true },
       tabelHeight: 0,
-      collectionData: [
-        { id: 0, name: '全部' },
-        { id: 1, name: '今天领取' },
-        { id: 2, name: '3天内领取' },
-        { id: 3, name: '7天内领取' },
-        { id: 4, name: '30天内领取' }
-      ],
+      collectionData: [{ id: 0, name: '全部' }, { id: 1, name: '今天领取' }, { id: 2, name: '3天内领取' }, { id: 3, name: '7天内领取' }, { id: 4, name: '30天内领取' }],
       collection: '',
       collectionFilter: '',
       dialogAudit: false,
@@ -1012,89 +983,83 @@ export default {
       legal_person_idcard_front_src: '',
       proxy_src: '',
       previewList: [], // 放大查看企业认证图片
-      regScreenData: [
-        { id: 0, name: '全部' },
-        { id: 1, name: '今日' },
-        { id: 2, name: '3天内' },
-        { id: 3, name: '7天内' },
-        { id: 4, name: '30天内' }
-      ],
+      regScreenData: [{ id: 0, name: '全部' }, { id: 1, name: '今日' }, { id: 2, name: '3天内' }, { id: 3, name: '7天内' }, { id: 4, name: '30天内' }],
       regScreen: '',
       regScreenFilter: ''
-    }
+    };
   },
   computed: {
     clueTime() {
-      var clueTime = this.$route.query.time
-      return clueTime
+      var clueTime = this.$route.query.time;
+      return clueTime;
     }
   },
   watch: {
     clueTime() {
-      var clue_type = localStorage.getItem('clue_type')
-      var clue_company_id = localStorage.getItem('clue_company_id')
+      var clue_type = localStorage.getItem('clue_type');
+      var clue_company_id = localStorage.getItem('clue_company_id');
       if (clue_type != '' && clue_type == 'follow') {
-        this.drawer = true
-        this.rowId = clue_company_id
-        localStorage.setItem('clue_company_id', '')
-        localStorage.setItem('clue_type', '')
+        this.drawer = true;
+        this.rowId = clue_company_id;
+        localStorage.setItem('clue_company_id', '');
+        localStorage.setItem('clue_type', '');
       }
     }
   },
-  updated(){
+  updated() {
     this.$nextTick(() => {
-      this.$refs.multipleTable.doLayout()
-      if (!this.loading){
+      this.$refs.multipleTable.doLayout();
+      if (!this.loading) {
         setTimeout(() => {
-          var classStr = this.$refs.multipleTable.$el.className
-          var classAry = classStr.split(' ')
-          var a = document.querySelectorAll('.el-table__fixed-right')[0]
-          var b = document.querySelectorAll('.el-table__empty-block')[0]
-          if (b != undefined){
-            b.style.width = 100 + '%'
+          var classStr = this.$refs.multipleTable.$el.className;
+          var classAry = classStr.split(' ');
+          var a = document.querySelectorAll('.el-table__fixed-right')[0];
+          var b = document.querySelectorAll('.el-table__empty-block')[0];
+          if (b != undefined) {
+            b.style.width = 100 + '%';
           }
-          var isClass = classAry.find(function(value, index, arr){
-            return value == 'el-table--scrollable-y'
-          })
-          if (isClass){
-            a.style.right = 10 + 'px'
+          var isClass = classAry.find(function(value, index, arr) {
+            return value == 'el-table--scrollable-y';
+          });
+          if (isClass) {
+            a.style.right = 10 + 'px';
           } else {
-            a.style.right = 0 + 'px'
+            a.style.right = 0 + 'px';
           }
-        }, 100)
+        }, 100);
       }
-    })
+    });
   },
-  mounted(){
+  mounted() {
     this.$nextTick(() => {
-      var docHeight = document.documentElement.clientHeight
-      this.tabelHeight = docHeight - 316 - 60
-    })
+      var docHeight = document.documentElement.clientHeight;
+      this.tabelHeight = docHeight - 316 - 60;
+    });
   },
   created() {
-    this.currentNav = this.$route.name
+    this.currentNav = this.$route.name;
     if (this.currentNav == 'allClient') {
-      this.title = '全部客户'
-      this.list_type = 0
+      this.title = '全部客户';
+      this.list_type = 0;
     } else if (this.currentNav == 'myClient') {
-      this.title = '我的客户'
-      this.list_type = 2
+      this.title = '我的客户';
+      this.list_type = 2;
     } else if (this.currentNav == 'pubilceClient') {
-      this.title = '客户公海'
-      this.list_type = 1
+      this.title = '客户公海';
+      this.list_type = 1;
     }
-    this.crmCustomList()
-    this.clueList()
-    this.classify()
-    this.lifeCycle()
-    this.clueAdminLists()
-    var clue_type = localStorage.getItem('clue_type')
-    var clue_company_id = localStorage.getItem('clue_company_id')
+    this.crmCustomList();
+    this.clueList();
+    this.classify();
+    this.lifeCycle();
+    this.clueAdminLists();
+    var clue_type = localStorage.getItem('clue_type');
+    var clue_company_id = localStorage.getItem('clue_company_id');
     if (clue_type != '' && clue_type == 'follow') {
-      this.drawer = true
-      this.rowId = clue_company_id
-      localStorage.setItem('clue_company_id', '')
-      localStorage.setItem('clue_type', '')
+      this.drawer = true;
+      this.rowId = clue_company_id;
+      localStorage.setItem('clue_company_id', '');
+      localStorage.setItem('clue_type', '');
     }
   },
   // mounted() {
@@ -1115,74 +1080,75 @@ export default {
         .then(() => {
           putRecycleBin({ company_id: id }).then(response => {
             if (response.code == 200) {
-              this.$message.success(response.message)
-              this.clueList()
+              this.$message.success(response.message);
+              this.clueList();
             } else {
-              this.$message.error(response.message)
+              this.$message.error(response.message);
             }
-          })
+          });
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     funIsDisplayBtn() {
       companySetDisplay({ id: this.multipleSelection, is_display: this.is_display }).then(response => {
         if (response.code == 200) {
-          this.$message.success(response.message)
-          this.dialogIsDispay = false
-          this.clueList()
+          this.$message.success(response.message);
+          this.dialogIsDispay = false;
+          this.clueList();
         } else {
-          this.$message.error(response.message)
+          this.$message.error(response.message);
         }
-      })
+      });
     },
-    auditChange(val){
-      if (val == 0 || val == 1){
-        this.setAuditReason = ''
+    auditChange(val) {
+      if (val == 0 || val == 1) {
+        this.setAuditReason = '';
       }
     },
-    auditSure(){
+    auditSure() {
       if (this.auditSubmitLoading == true) {
-        return false
+        return false;
       }
-      this.auditSubmitLoading = true
+      this.auditSubmitLoading = true;
       const params = {
         id: this.comInfoData.id,
         audit: this.setAuditVal,
         reason: this.setAuditReason
-      }
-      companyCrmAudit(params, 'post').then(response => {
-        if (response.code == 200) {
-          this.$message.success(response.message)
-          this.dialogAudit = false
-          this.auditSubmitLoading = false
-          this.clueList()
-          this.closeDialog()
-          return true
-        } else {
-          this.auditSubmitLoading = false
-          this.$message.error(response.message)
-          return false
-        }
-      })
-        .catch(() => {
-          this.auditSubmitLoading = false
+      };
+      companyCrmAudit(params, 'post')
+        .then(response => {
+          if (response.code == 200) {
+            this.$message.success(response.message);
+            this.dialogAudit = false;
+            this.auditSubmitLoading = false;
+            this.clueList();
+            this.closeDialog();
+            return true;
+          } else {
+            this.auditSubmitLoading = false;
+            this.$message.error(response.message);
+            return false;
+          }
         })
+        .catch(() => {
+          this.auditSubmitLoading = false;
+        });
     },
     funReceive() {
-      var that = this
+      var that = this;
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要领取的企业')
-        return false
+        that.$message.error('请选择要领取的企业');
+        return false;
       }
-      this.receive(that.uid_arr)
+      this.receive(that.uid_arr);
     },
     funRelease() {
-      var that = this
+      var that = this;
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要释放的企业')
-        return false
+        that.$message.error('请选择要释放的企业');
+        return false;
       }
-      this.release(that.uid_arr)
+      this.release(that.uid_arr);
     },
     release(id) {
       this.$confirm('确定要释放该企业', '提示', {
@@ -1193,14 +1159,14 @@ export default {
         .then(() => {
           companyRelease({ uid: id }).then(response => {
             if (response.code == 200) {
-              this.$message.success(response.message)
-              this.clueList()
+              this.$message.success(response.message);
+              this.clueList();
             } else {
-              this.$message.error(response.message)
+              this.$message.error(response.message);
             }
-          })
+          });
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     receive(id) {
       this.$confirm('确定要领取该企业吗？', '提示', {
@@ -1209,33 +1175,36 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          companyReceive({ uid: id }).then(response => {
-            if (response.code == 200) {
-              this.$message.success(response.message)
-              this.clueList()
-            } else {
-              this.$message.error(response.message)
-            }
-          }).catch(() => {})
-        }).catch(() => {})
+          companyReceive({ uid: id })
+            .then(response => {
+              if (response.code == 200) {
+                this.$message.success(response.message);
+                this.clueList();
+              } else {
+                this.$message.error(response.message);
+              }
+            })
+            .catch(() => {});
+        })
+        .catch(() => {});
     },
     goto(target) {
-      this.$router.push(target)
+      this.$router.push(target);
     },
     sortTable({ column, order }) {
       if (order == 'ascending') {
-        this.sortType = 'asc'
+        this.sortType = 'asc';
       } else if (order == 'descending') {
-        this.sortType = 'desc'
+        this.sortType = 'desc';
       } else {
-        this.sortType = ''
+        this.sortType = '';
       }
-      this.sort_type = column.property
-      this.sort = this.sortType
-      this.clueList()
+      this.sort_type = column.property;
+      this.sort = this.sortType;
+      this.clueList();
     },
     funExport() {
-      var that = this
+      var that = this;
       /**
        * 【ID1000447】
        * 【bug】子管理员没有导出权限，客户列表可以导出
@@ -1245,20 +1214,20 @@ export default {
        * 判断
        */
       if (that.$store.state.user.access_export == 0) {
-        that.$message.error('当前管理员没有导出权限')
-        return false
+        that.$message.error('当前管理员没有导出权限');
+        return false;
       }
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要导出的企业')
-        return false
+        that.$message.error('请选择要导出的企业');
+        return false;
       }
-      var exportData = this.exportData
+      var exportData = this.exportData;
       for (var i = 0; i <= exportData.length - 1; i++) {
         if (exportData[i].not_following_day == -1) {
-          exportData[i].not_following_day = ''
+          exportData[i].not_following_day = '';
         }
       }
-      that.exportExcel(this.exportData)
+      that.exportExcel(this.exportData);
       // exportCrmCompanyById(param).then(response => {
       //   if (response.code == 200) {
       //     console.log(response.data.items)
@@ -1272,8 +1241,8 @@ export default {
     },
     exportExcel(list) {
       require.ensure([], () => {
-        const { export_json_to_excel } = require('@/excel/Export2Excel')
-        const tHeader = this.export_name // 上面设置Excel的表格第一行的标题
+        const { export_json_to_excel } = require('@/excel/Export2Excel');
+        const tHeader = this.export_name; // 上面设置Excel的表格第一行的标题
         /**
          * 【ID1000513】
          * 【bug】客户/线索列表底部导出后，导出的信息没有名称
@@ -1282,201 +1251,202 @@ export default {
          * 缺少表头及对应字段：tHeader.unshift('企业名称')
          * 缺少数据字段：filterVal.unshift('companyname')
          */
-        tHeader.unshift('企业名称')
-        const filterVal = this.export_field
-        filterVal.unshift('companyname')
-        const data = this.formatJson(filterVal, list)
-        export_json_to_excel(tHeader, data, '企业导出')
-      })
+        tHeader.unshift('企业名称');
+        const filterVal = this.export_field;
+        filterVal.unshift('companyname');
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, '企业导出');
+      });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
+      return jsonData.map(v => filterVal.map(j => v[j]));
     },
     handlerRefreshJobBatch() {
       if (this.multipleSelection.length <= 0) {
-        this.$message({ type: 'error', message: '请选择要刷新的企业' })
-        return false
+        this.$message({ type: 'error', message: '请选择要刷新的企业' });
+        return false;
       }
       this.$confirm('确定要批量刷新所选企业的所有职位？', '系统提示', {
         type: 'warning'
       })
         .then(() => {
-          var companyIdstr = this.multipleSelection.join(',')
+          var companyIdstr = this.multipleSelection.join(',');
           refreshCrmJob({ company_id: companyIdstr, is_batch: 1 })
             .then(res => {
               if (res.code == 200) {
-                this.$message({ type: 'success', message: res.message })
-                this.clueList()
+                this.$message({ type: 'success', message: res.message });
+                this.clueList();
               } else {
-                this.$message({ type: 'error', message: res.message })
+                this.$message({ type: 'error', message: res.message });
               }
             })
-            .catch(() => {})
+            .catch(() => {});
         })
         .catch(() => {
           // on cancel
-        })
+        });
     },
     displayBatch() {
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要设置的企业')
-        return false
+        this.$message.error('请选择要设置的企业');
+        return false;
       }
-      this.dialogIsDispay = true
+      this.dialogIsDispay = true;
     },
     closeDialog() {
-      this.dialogFormVisible = false
+      this.dialogFormVisible = false;
     },
     fun_set_audit() {
       if (this.auditSubmitLoading == true) {
-        return false
+        return false;
       }
-      this.auditSubmitLoading = true
+      this.auditSubmitLoading = true;
       const params = {
         id: this.multipleSelection,
         audit: this.setAuditVal,
         reason: this.setAuditReason
-      }
-      companyCrmAudit(params, 'post').then(response => {
-        if (response.code == 200) {
-          this.$message.success(response.message)
-          this.auditSubmitLoading = false
-          this.clueList()
-          this.closeDialog()
-          return true
-        } else {
-          this.auditSubmitLoading = false
-          this.$message.error(response.message)
-          return false
-        }
-      })
-        .catch(() => {
-          this.auditSubmitLoading = false
+      };
+      companyCrmAudit(params, 'post')
+        .then(response => {
+          if (response.code == 200) {
+            this.$message.success(response.message);
+            this.auditSubmitLoading = false;
+            this.clueList();
+            this.closeDialog();
+            return true;
+          } else {
+            this.auditSubmitLoading = false;
+            this.$message.error(response.message);
+            return false;
+          }
         })
+        .catch(() => {
+          this.auditSubmitLoading = false;
+        });
     },
     choose() {
       this.tableData.forEach(row => {
-        this.$refs.multipleTable.toggleRowSelection(row)
-      })
+        this.$refs.multipleTable.toggleRowSelection(row);
+      });
     },
     handleSelectionChange(val) {
-      var id_arr = []
-      var uid_arr = []
+      var id_arr = [];
+      var uid_arr = [];
       val.forEach(row => {
-        id_arr.push(row.id)
-        uid_arr.push(row.uid)
-      })
-      this.uid_arr = uid_arr
-      this.multipleSelection = id_arr
-      this.exportData = val
+        id_arr.push(row.id);
+        uid_arr.push(row.uid);
+      });
+      this.uid_arr = uid_arr;
+      this.multipleSelection = id_arr;
+      this.exportData = val;
 
-      this.multipleSelectionNew = val
+      this.multipleSelectionNew = val;
       if (this.multipleSelectionNew.length == this.tableData.length) {
         this.multipleSelectionNew.forEach((item, index) => {
-          this.checkedList[index] = true
-        })
+          this.checkedList[index] = true;
+        });
       }
       if (this.multipleSelectionNew.length == 0) {
-        this.checkedList = []
+        this.checkedList = [];
       }
-      this.$forceUpdate()
-      this.$emit('selectList', this.multipleSelectionNew)
+      this.$forceUpdate();
+      this.$emit('selectList', this.multipleSelectionNew);
     },
     // 鼠标移入表格当前行
     cellEnter(row, column, cell, event) {
-      this.columnCheckedId = row.id
+      this.columnCheckedId = row.id;
     },
     // 鼠标移出表格当前行
     cellLeave(row, column, cell, event) {
-      this.columnCheckedId = ''
+      this.columnCheckedId = '';
     },
     // 选中与否塞数据
     cellCheckbox(row, index) {
       if (this.checkedList[index]) {
-        this.$refs.multipleTable.toggleRowSelection(row, true)
+        this.$refs.multipleTable.toggleRowSelection(row, true);
       } else {
-        this.$refs.multipleTable.toggleRowSelection(row, false)
+        this.$refs.multipleTable.toggleRowSelection(row, false);
       }
     },
     funAuditBatch() {
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要认证的企业')
-        return false
+        this.$message.error('请选择要认证的企业');
+        return false;
       }
-      this.setAuditVal = 0
-      this.dialogFormVisible = true
+      this.setAuditVal = 0;
+      this.dialogFormVisible = true;
     },
     setFieldClose() {
-      this.menu_icon = 'menu'
-      this.visiblepop = false
+      this.menu_icon = 'menu';
+      this.visiblepop = false;
     },
     reset(field) {
-      this.tabelHeight = 'calc(100vh - 372px)'
+      this.tabelHeight = 'calc(100vh - 372px)';
       if (field == 'all') {
-        this.authenticationScreen = ''
-        this.positionScreen = ''
-        this.followupScreen = ''
-        this.examineScreen = ''
-        this.mealScreen = ''
-        this.gradeScreen = ''
-        this.saleScreen = ''
-        this.key_type = '1'
-        this.keyword = ''
-        this.setmealDeadline = []
-        this.weixin = []
-        this.trade_name = ''
-        this.trade = ''
-        this.district = ''
-        this.collection = ''
-        this.regScreen = ''
+        this.authenticationScreen = '';
+        this.positionScreen = '';
+        this.followupScreen = '';
+        this.examineScreen = '';
+        this.mealScreen = '';
+        this.gradeScreen = '';
+        this.saleScreen = '';
+        this.key_type = '1';
+        this.keyword = '';
+        this.setmealDeadline = [];
+        this.weixin = [];
+        this.trade_name = '';
+        this.trade = '';
+        this.district = '';
+        this.collection = '';
+        this.regScreen = '';
       }
       if (field == 'audit') {
-        this.authenticationScreen = ''
+        this.authenticationScreen = '';
       }
       if (field == 'jobs_num') {
-        this.positionScreen = ''
+        this.positionScreen = '';
       }
       if (field == 'not_following_day') {
-        this.followupScreen = ''
+        this.followupScreen = '';
       }
       if (field == 'is_display') {
-        this.examineScreen = ''
+        this.examineScreen = '';
       }
       if (field == 'setmeal_name') {
-        this.mealScreen = ''
+        this.mealScreen = '';
       }
       if (field == 'is_bind') {
-        this.weixin = ''
+        this.weixin = '';
       }
       if (field == 'life_cycle_txt') {
-        this.gradeScreen = ''
+        this.gradeScreen = '';
       }
       if (field == 'admin_username') {
-        this.saleScreen = ''
+        this.saleScreen = '';
       }
       if (field == 'deadline') {
-        this.setmealDeadline = ''
+        this.setmealDeadline = '';
       }
       if (field == 'trade_name' || field == 'trade') {
-        this.trade = ''
+        this.trade = '';
       }
       if (field == 'district') {
-        this.district = ''
+        this.district = '';
       }
       if (field == 'collection_time') {
-        this.collection = ''
+        this.collection = '';
       }
-      if (field == 'addtime'){
-        this.regScreen = ''
+      if (field == 'addtime') {
+        this.regScreen = '';
       }
-      this.confirm('reset')
+      this.confirm('reset');
     },
     confirm(type) {
-      if (type != 'reset'){
-        this.tabelHeight = 'calc(100vh - 446px)'
+      if (type != 'reset') {
+        this.tabelHeight = 'calc(100vh - 446px)';
         this.$nextTick(() => {
-          this.$refs.multipleTable.doLayout()
-        })
+          this.$refs.multipleTable.doLayout();
+        });
       }
       if (this.weixin != '') {
         for (var i = 0; i <= this.weixinData.length - 1; i++) {
@@ -1484,11 +1454,11 @@ export default {
             this.weixinFilter = {
               field: 'is_bind',
               name: this.weixinData[i].name
-            }
+            };
           }
         }
       } else {
-        this.weixinFilter = ''
+        this.weixinFilter = '';
       }
       if (this.gradeScreen != '') {
         for (var i = 0; i <= this.gradeScreenData.length - 1; i++) {
@@ -1496,11 +1466,11 @@ export default {
             this.gradeFilter = {
               field: 'life_cycle_txt',
               name: this.gradeScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.gradeFilter = ''
+        this.gradeFilter = '';
       }
       if (this.examineScreen != '') {
         for (var i = 0; i <= this.examineScreenData.length - 1; i++) {
@@ -1508,11 +1478,11 @@ export default {
             this.examineFilter = {
               field: 'is_display',
               name: this.examineScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.examineFilter = ''
+        this.examineFilter = '';
       }
       if (this.mealScreen != '') {
         for (var i = 0; i <= this.mealScreenData.length - 1; i++) {
@@ -1520,11 +1490,11 @@ export default {
             this.mealFilter = {
               field: 'setmeal_name',
               name: this.mealScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.mealFilter = ''
+        this.mealFilter = '';
       }
       if (this.followupScreen != '') {
         for (var i = 0; i <= this.followupScreenData.length - 1; i++) {
@@ -1532,11 +1502,11 @@ export default {
             this.followupFilter = {
               field: 'not_following_day',
               name: this.followupScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.followupFilter = ''
+        this.followupFilter = '';
       }
       if (this.positionScreen != '') {
         for (var i = 0; i <= this.positionScreenData.length - 1; i++) {
@@ -1544,11 +1514,11 @@ export default {
             this.positionFilter = {
               field: 'jobs_num',
               name: this.positionScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.positionFilter = ''
+        this.positionFilter = '';
       }
       if (this.authenticationScreen !== '') {
         for (var i = 0; i <= this.authenticationScreenData.length - 1; i++) {
@@ -1556,11 +1526,11 @@ export default {
             this.authenticationFilter = {
               field: 'audit',
               name: this.authenticationScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.authenticationFilter = ''
+        this.authenticationFilter = '';
       }
       if (this.saleScreen != '') {
         for (var i = 0; i <= this.saleScreenData.length - 1; i++) {
@@ -1568,11 +1538,11 @@ export default {
             this.saleFilter = {
               field: 'admin_username',
               name: this.saleScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.saleFilter = ''
+        this.saleFilter = '';
       }
       if (this.setmealDeadline != '') {
         for (var i = 0; i <= this.setmealDeadlineData.length - 1; i++) {
@@ -1580,11 +1550,11 @@ export default {
             this.deadlineFilter = {
               field: 'deadline',
               name: this.setmealDeadlineData[i].name
-            }
+            };
           }
         }
       } else {
-        this.deadlineFilter = ''
+        this.deadlineFilter = '';
       }
       if (this.trade != '') {
         for (var i = 0; i <= this.trade_list.length - 1; i++) {
@@ -1592,11 +1562,11 @@ export default {
             this.tradeFilter = {
               field: 'trade_name',
               name: this.trade_list[i].name
-            }
+            };
           }
         }
       } else {
-        this.tradeFilter = ''
+        this.tradeFilter = '';
       }
       if (this.district != '') {
         if (this.district.length == 1) {
@@ -1605,7 +1575,7 @@ export default {
               this.districtFilter = {
                 field: 'district',
                 name: this.districtData[i].label
-              }
+              };
             }
           }
         }
@@ -1616,7 +1586,7 @@ export default {
                 this.districtFilter = {
                   field: 'district',
                   name: this.districtData[i].children[a].label
-                }
+                };
               }
             }
           }
@@ -1629,14 +1599,14 @@ export default {
                   this.districtFilter = {
                     field: 'district',
                     name: this.districtData[i].children[a].children[b].label
-                  }
+                  };
                 }
               }
             }
           }
         }
       } else {
-        this.districtFilter = ''
+        this.districtFilter = '';
       }
       if (this.collection != '') {
         for (var i = 0; i <= this.collectionData.length - 1; i++) {
@@ -1644,11 +1614,11 @@ export default {
             this.collectionFilter = {
               field: 'collection_time',
               name: this.collectionData[i].name
-            }
+            };
           }
         }
       } else {
-        this.collectionFilter = ''
+        this.collectionFilter = '';
       }
       if (this.regScreen != '') {
         for (var i = 0; i <= this.regScreenData.length - 1; i++) {
@@ -1656,116 +1626,116 @@ export default {
             this.regScreenFilter = {
               field: 'addtime',
               name: this.regScreenData[i].name
-            }
+            };
           }
         }
       } else {
-        this.regScreenFilter = ''
+        this.regScreenFilter = '';
       }
-      this.currentPage = 1
-      this.clueList()
-      this.crmCustomList()
+      this.currentPage = 1;
+      this.clueList();
+      this.crmCustomList();
     },
     funSearchKeyword() {
-      this.currentPage = 1
-      this.clueList()
+      this.currentPage = 1;
+      this.clueList();
     },
     classify() {
       classify({ type: 'setmealList,companyAudit,trade,citycategory' })
         .then(res => {
-          this.mealScreenData = res.data.setmealList
-          this.trade_list = res.data.trade
-          this.districtData = res.data.citycategory
-          const options_audit_arr = [...res.data.companyAudit]
+          this.mealScreenData = res.data.setmealList;
+          this.trade_list = res.data.trade;
+          this.districtData = res.data.citycategory;
+          const options_audit_arr = [...res.data.companyAudit];
           options_audit_arr.forEach(el => {
-            this.authenticationScreenData[el.id] = el.name
-          })
-          this.form_options_audit = [...this.authenticationScreenData]
+            this.authenticationScreenData[el.id] = el.name;
+          });
+          this.form_options_audit = [...this.authenticationScreenData];
 
-          this.authenticationScreenData = res.data.companyAudit
-          this.authenticationScreenData.push({ name: '未认证', id: 3 })
+          this.authenticationScreenData = res.data.companyAudit;
+          this.authenticationScreenData.push({ name: '未认证', id: 3 });
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     lifeCycle() {
       lifeCycle()
         .then(res => {
-          this.gradeScreenData = res.data
+          this.gradeScreenData = res.data;
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     clueList() {
-      this.loading = true
+      this.loading = true;
       if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == '1') {
-        this.authenticationScreen = 0
-        this.authenticationFilter = { name: '待审核', field: 'audit' }
-        localStorage.setItem('clue_audit', '')
+        this.authenticationScreen = 0;
+        this.authenticationFilter = { name: '待审核', field: 'audit' };
+        localStorage.setItem('clue_audit', '');
       }
       // 新增客户
       if (localStorage.getItem('gradeScreen') && localStorage.getItem('gradeScreen') == '1') {
-        this.gradeScreen = 1
-        this.gradeFilter = { name: '新客户', field: 'life_cycle_txt' }
-        localStorage.setItem('gradeScreen', '')
+        this.gradeScreen = 1;
+        this.gradeFilter = { name: '新客户', field: 'life_cycle_txt' };
+        localStorage.setItem('gradeScreen', '');
       }
       // 到期未续费客户
       if (localStorage.getItem('setmealDeadline') && localStorage.getItem('setmealDeadline') == '2') {
-        this.setmealDeadline = 2
-        this.deadlineFilter = { name: '已到期', field: 'deadline' }
-        localStorage.setItem('setmealDeadline', '')
+        this.setmealDeadline = 2;
+        this.deadlineFilter = { name: '已到期', field: 'deadline' };
+        localStorage.setItem('setmealDeadline', '');
       }
       // 即将到期客户
       if (localStorage.getItem('setmealDeadline') && localStorage.getItem('setmealDeadline') == '1') {
-        this.setmealDeadline = 1
-        this.deadlineFilter = { name: '即将到期', field: 'deadline' }
-        localStorage.setItem('setmealDeadline', '')
+        this.setmealDeadline = 1;
+        this.deadlineFilter = { name: '即将到期', field: 'deadline' };
+        localStorage.setItem('setmealDeadline', '');
       }
       // 从未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '6') {
-        this.followupScreen = 6
-        this.followupFilter = { name: '从未跟进', field: 'deadline' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 6;
+        this.followupFilter = { name: '从未跟进', field: 'deadline' };
+        localStorage.setItem('followupScreen', '');
       }
       // 今日跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '1') {
-        this.followupScreen = 1
-        this.followupFilter = { name: '今日跟进客户', field: 'not_following_day' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 1;
+        this.followupFilter = { name: '今日跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
       }
       // 即将转入公海客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '7') {
-        this.followupScreen = 7
-        this.followupFilter = { name: '即将转入公海客户', field: 'not_following_day' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 7;
+        this.followupFilter = { name: '即将转入公海客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
       }
       // 30天内跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '2') {
-        this.followupScreen = 2
-        this.followupFilter = { name: '30天内跟进客户', field: 'not_following_day' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 2;
+        this.followupFilter = { name: '30天内跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
       }
       // 15天内未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '4') {
-        this.followupScreen = 4
-        this.followupFilter = { name: '15天内未跟进客户', field: 'not_following_day' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 4;
+        this.followupFilter = { name: '15天内未跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
       }
       // 7天内未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '3') {
-        this.followupScreen = 3
-        this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' }
-        localStorage.setItem('followupScreen', '')
+        this.followupScreen = 3;
+        this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
       }
       // 今日领取
       if (localStorage.getItem('collection_date') && localStorage.getItem('collection_date') == '1') {
-        this.collection = 1
-        this.collectionFilter = { name: '今天领取', field: 'collection_time' }
-        localStorage.setItem('collection_date', '')
+        this.collection = 1;
+        this.collectionFilter = { name: '今天领取', field: 'collection_time' };
+        localStorage.setItem('collection_date', '');
       }
       // 今日注册（今日新增客户）
       if (localStorage.getItem('add_date') && localStorage.getItem('add_date') == '1') {
-        this.regScreen = 1
-        this.regScreenFilter = { name: '今日', field: 'addtime' }
-        localStorage.setItem('add_date', '')
+        this.regScreen = 1;
+        this.regScreenFilter = { name: '今日', field: 'addtime' };
+        localStorage.setItem('add_date', '');
       }
       crmCompanyList({
         page: this.currentPage,
@@ -1791,74 +1761,74 @@ export default {
       })
         .then(res => {
           if (res.data.items.length >= 0) {
-            this.tableData = res.data.items
-            this.total = res.data.total
-            this.currentPage = res.data.current_page
+            this.tableData = res.data.items;
+            this.total = res.data.total;
+            this.currentPage = res.data.current_page;
           } else {
-            this.tableData = []
-            this.total = 0
-            this.currentPage = 1
+            this.tableData = [];
+            this.total = 0;
+            this.currentPage = 1;
           }
-          this.loading = false
+          this.loading = false;
         })
         .catch(() => {
-          this.loading = false
-        })
+          this.loading = false;
+        });
     },
     clueAdminLists() {
       clueAdminLists()
         .then(res => {
-          this.saleScreenData = res.data
+          this.saleScreenData = res.data;
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     handleSizeChange(val) {
-      this.pagesize = val
-      this.clueList()
+      this.pagesize = val;
+      this.clueList();
     },
     handleCurrentChange(val) {
-      this.currentPage = val
-      this.clueList()
+      this.currentPage = val;
+      this.clueList();
     },
     setFieldConfirm() {
-      var list_type = this.list_type
-      var list_type_z = 0
+      var list_type = this.list_type;
+      var list_type_z = 0;
       if (list_type == 0) {
-        list_type_z = 1
+        list_type_z = 1;
       }
       if (list_type == 1) {
-        list_type_z = 2
+        list_type_z = 2;
       }
       if (list_type == 2) {
-        list_type_z = 3
+        list_type_z = 3;
       }
       crmCustomListEdit({ menu: list_type_z, type: 2, value: JSON.stringify(this.fieldData) }, 'post')
         .then(res => {
           if (res.code == 200) {
-            this.$message.success(res.message)
+            this.$message.success(res.message);
           } else {
-            this.$message.error(res.message)
+            this.$message.error(res.message);
           }
-          this.visiblepop = false
-          this.menu_icon = 'menu'
+          this.visiblepop = false;
+          this.menu_icon = 'menu';
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     crmCustomList() {
-      var list_type = this.list_type
-      var list_type_z = 0
+      var list_type = this.list_type;
+      var list_type_z = 0;
       if (list_type == 0) {
-        list_type_z = 1
+        list_type_z = 1;
       }
       if (list_type == 1) {
-        list_type_z = 2
+        list_type_z = 2;
       }
       if (list_type == 2) {
-        list_type_z = 3
+        list_type_z = 3;
       }
       crmCustomList({ menu: list_type_z, type: 2 })
         .then(res => {
-          this.fieldData = JSON.parse(res.data)
+          this.fieldData = JSON.parse(res.data);
           for (var i = 0; i <= this.fieldData.length - 1; i++) {
             // 【优化】客户模块增加登录时间的列 zch 2022.10.12
             // 【新增】
@@ -1870,68 +1840,68 @@ export default {
               this.fieldData[i].field == 'collection_time' ||
               this.fieldData[i].field == 'last_login_time'
             ) {
-              this.fieldData[i].is_sortable = 'custom'
+              this.fieldData[i].is_sortable = 'custom';
             } else {
-              this.fieldData[i].is_sortable = false
+              this.fieldData[i].is_sortable = false;
             }
-            this.fieldData[i].is_popover = false
-            this.export_name.push(this.fieldData[i].name)
-            this.export_field.push(this.fieldData[i].field)
+            this.fieldData[i].is_popover = false;
+            this.export_name.push(this.fieldData[i].name);
+            this.export_field.push(this.fieldData[i].field);
           }
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     locking(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_locking == true) {
-            this.fieldData[i].is_locking = false
-            this.fieldData[i].is_lock_display = false
-            this.fieldData[i].icon = 'el-icon-lock'
+            this.fieldData[i].is_locking = false;
+            this.fieldData[i].is_lock_display = false;
+            this.fieldData[i].icon = 'el-icon-lock';
           } else {
-            this.fieldData[i].icon = 'el-icon-unlock'
-            this.fieldData[i].is_lock_display = false
-            this.fieldData[i].is_locking = true
+            this.fieldData[i].icon = 'el-icon-unlock';
+            this.fieldData[i].is_lock_display = false;
+            this.fieldData[i].is_locking = true;
           }
         }
       }
-      this.setFieldConfirm()
+      this.setFieldConfirm();
     },
     select(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].select == true) {
-            this.fieldData[i].select = false
+            this.fieldData[i].select = false;
           } else {
-            this.fieldData[i].select = true
+            this.fieldData[i].select = true;
           }
         }
       }
     },
     menu() {
       if (this.menu_icon == 'menu') {
-        this.visiblepop = true
-        this.menu_icon = 'menu_select'
+        this.visiblepop = true;
+        this.menu_icon = 'menu_select';
       } else {
-        this.visiblepop = false
-        this.menu_icon = 'menu'
+        this.visiblepop = false;
+        this.menu_icon = 'menu';
       }
     },
     see(value) {
-      this.drawer = true
-      this.rowId = value.row.id
+      this.drawer = true;
+      this.rowId = value.row.id;
     },
     handleClose() {
-      this.drawer = false
-      this.clueList()
+      this.drawer = false;
+      this.clueList();
     },
     funPopover(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_popover == true) {
-            this.fieldData[i].is_popover = false
+            this.fieldData[i].is_popover = false;
           } else {
-            this.fieldData[i].is_popover = true
+            this.fieldData[i].is_popover = true;
           }
         }
       }
@@ -1940,22 +1910,22 @@ export default {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_lock_display == true) {
-            this.fieldData[i].is_lock_display = false
+            this.fieldData[i].is_lock_display = false;
           } else {
-            this.fieldData[i].is_lock_display = true
+            this.fieldData[i].is_lock_display = true;
           }
         }
       }
     },
     add() {
-      this.$router.push('/user/company/add')
+      this.$router.push('/user/company/add');
     },
     clickDial(phone, name) {
-      var company_name = ''
+      var company_name = '';
       if (name == '' || name == null) {
-        company_name = '未完善企业资料'
+        company_name = '未完善企业资料';
       } else {
-        company_name = name
+        company_name = name;
       }
       this.$confirm('是否对【' + company_name + '】' + phone + ' 发起呼叫？', '提示', {
         confirmButtonText: '确定',
@@ -1966,75 +1936,79 @@ export default {
           outboundCall({ mobile: phone })
             .then(res => {
               if (res.code == 200) {
-                this.meetDialogVisible = true
-                this.dialPhone = phone
-                this.dialName = name
+                this.meetDialogVisible = true;
+                this.dialPhone = phone;
+                this.dialName = name;
               }
               if (res.code == 4040) {
-                this.callDialogVisible = true
+                this.callDialogVisible = true;
               }
             })
-            .catch(res => {})
+            .catch(res => {});
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     callHandleClose() {
-      this.callDialogVisible = false
+      this.callDialogVisible = false;
     },
     meetHandleClose() {
-      this.meetDialogVisible = false
+      this.meetDialogVisible = false;
     },
     jumpDetails(url) {
-      window.open(url)
+      window.open(url);
     },
-    handleCompanyAuthAduit (row, companyAuth) {
-      this.dialogAudit = true
-      this.setAuditVal = ''
-      this.setAuditReason = ''
-      this.comInfoData = row
-      this.license_src = row.company_auth.license
-      this.legal_person_idcard_back_src = row.company_auth.legal_person_idcard_back
-      this.legal_person_idcard_front_src = row.company_auth.legal_person_idcard_front
-      this.proxy_src = row.company_auth.proxy
-      if (this.license_src){
-        this.previewList.push(this.license_src)
+    handleCompanyAuthAduit(row, companyAuth) {
+      this.dialogAudit = true;
+      this.setAuditVal = '';
+      this.setAuditReason = '';
+      this.comInfoData = row;
+      this.license_src = row.company_auth.license;
+      this.legal_person_idcard_back_src = row.company_auth.legal_person_idcard_back;
+      this.legal_person_idcard_front_src = row.company_auth.legal_person_idcard_front;
+      this.proxy_src = row.company_auth.proxy;
+      if (this.license_src) {
+        this.previewList.push(this.license_src);
       }
-      if (this.legal_person_idcard_back_src){
-        this.previewList.push(this.legal_person_idcard_back_src)
+      if (this.legal_person_idcard_back_src) {
+        this.previewList.push(this.legal_person_idcard_back_src);
       }
-      if (this.legal_person_idcard_front_src){
-        this.previewList.push(this.legal_person_idcard_front_src)
+      if (this.legal_person_idcard_front_src) {
+        this.previewList.push(this.legal_person_idcard_front_src);
       }
-      if (this.proxy_src){
-        this.previewList.push(this.proxy_src)
+      if (this.proxy_src) {
+        this.previewList.push(this.proxy_src);
       }
     },
-    companyAuthAduit (comId, companyAuth) {
+    companyAuthAduit(comId, companyAuth) {
       if (this.auditSubmitLoading == true) {
-        return false
+        return false;
       }
-      this.dialogAudit = true
+      this.dialogAudit = true;
       const params = {
         id: comId,
         audit: this.setAuditVal,
         reason: this.setAuditReason
-      }
-      companyCrmAudit(params, 'post').then(response => {
-        if (response.code == 200) {
-          this.$message.success(response.message)
-          this.auditSubmitLoading = false
-          this.clueList()
-          this.closeDialog()
-          return true
-        } else {
-          this.auditSubmitLoading = false
-          this.$message.error(response.message)
-          return false
-        }
-      }).catch(() => { this.auditSubmitLoading = false })
+      };
+      companyCrmAudit(params, 'post')
+        .then(response => {
+          if (response.code == 200) {
+            this.$message.success(response.message);
+            this.auditSubmitLoading = false;
+            this.clueList();
+            this.closeDialog();
+            return true;
+          } else {
+            this.auditSubmitLoading = false;
+            this.$message.error(response.message);
+            return false;
+          }
+        })
+        .catch(() => {
+          this.auditSubmitLoading = false;
+        });
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -2096,12 +2070,12 @@ export default {
     }
   }
 }
-.comDialog{
+.comDialog {
   ::v-deep .el-dialog__body {
     padding: 30px 20px 0;
   }
-  ::v-deep .el-dialog__footer{
-    padding: 0 20px 30px
+  ::v-deep .el-dialog__footer {
+    padding: 0 20px 30px;
   }
 }
 .meet {
@@ -2356,7 +2330,7 @@ export default {
   z-index: 1000;
   margin-left: 10px;
 }
-.checkboxName{
+.checkboxName {
   position: absolute;
   top: 15px;
   left: 30px;
@@ -2412,9 +2386,9 @@ export default {
   margin-left: 10px;
 }
 
-.comInfo{
+.comInfo {
   width: 100%;
-  .comInfoName{
+  .comInfoName {
     display: flex;
     align-items: center;
     justify-content: left;
@@ -2422,46 +2396,46 @@ export default {
     color: #333;
     margin: 15px 0 25px 0;
   }
-  .comInfoImg{
+  .comInfoImg {
     display: flex;
     align-items: center;
     justify-content: left;
-    .comInfoImgItem{
+    .comInfoImgItem {
       width: 25%;
-      &.comInfoImgItemCenter{
+      &.comInfoImgItemCenter {
         width: 50%;
-        .img{
+        .img {
           float: left;
           margin-right: 20px;
-          &:last-child{
+          &:last-child {
             margin-right: 0;
           }
         }
       }
-      .img{
+      .img {
         display: block;
         width: 120px;
         height: 120px;
         margin: 10px 0;
         cursor: pointer;
-        &.noData{
-          color: #C0C4CC;
-          background: #F5F7FA;
+        &.noData {
+          color: #c0c4cc;
+          background: #f5f7fa;
           text-align: center;
           line-height: 120px;
         }
       }
     }
   }
-  .com_opration{
-    .el-textarea{
+  .com_opration {
+    .el-textarea {
       width: 80%;
     }
   }
 }
-.dialog-footer{
+.dialog-footer {
   text-align: center;
-  .cancelBtn{
+  .cancelBtn {
     margin-left: 30px;
   }
 }
@@ -2490,7 +2464,7 @@ export default {
 }
 
 #animation {
-  animation:pulse 1s .2s ease both infinite;
+  animation: pulse 1s 0.2s ease both infinite;
 }
 @-webkit-keyframes pulse {
   0% {
@@ -2515,4 +2489,3 @@ export default {
   }
 }
 </style>
-

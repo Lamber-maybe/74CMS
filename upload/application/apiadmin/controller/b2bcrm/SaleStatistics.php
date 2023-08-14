@@ -187,6 +187,7 @@ class SaleStatistics extends Backend
         $month_end = strtotime(getMonthRange(date('Y-m-d',time()),false));
         $deal_ranking_list = model('admin')->alias('a')
             ->join('Company c','a.id = c.admin_id','left')
+            ->where('a.status', 1)
             ->where('c.life_cycle_id',7)
             ->where('c.collection_time','>',$month_stat)
             ->where('c.collection_time','<=',$month_end)
@@ -200,6 +201,7 @@ class SaleStatistics extends Backend
         }
         $new_customersdeal_ranking_list = model('admin')->alias('a')
             ->join('Company c','a.id = c.admin_id','left')
+            ->where('a.status', 1)
             ->where('c.life_cycle_id',1)
             ->where('c.collection_time','>',$month_stat)
             ->where('c.collection_time','<=',$month_end)

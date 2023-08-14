@@ -833,3 +833,19 @@
   left: 0;
   top: 140px;
 }
+.information_box .invalid_resume{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 490px;
+  height: 100%;
+  z-index: 999;
+  background: linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0));
+}
+.information_box .invalid_resume img{
+  display: block;
+  width: 111px;
+  height: 66px;
+  float: right;
+  margin: 34px 42px 0 0;
+}

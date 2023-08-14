@@ -2,7 +2,7 @@
   <ul class="dialog_box">
     <li><span>简历姓名：</span><span class="color_1">{{remark_item.fullname}}</span></li>
     <li><span>基本信息：</span><span class="color_1">{{remark_item.age}}岁 | {{remark_item.sex_text}} | {{remark_item.education_text}} | {{remark_item.experience_text}} </span></li>
-    <li><span>备注：</span> <el-input v-model="content" type="textarea" :rows="8" placeholder="请填写"></el-input> </li>
+    <li><span>备注：</span> <el-input v-model="content" type="textarea" :rows="8" placeholder="请输入备注内容" maxlength="50" show-word-limit></el-input> </li>
   </ul>
 </template>
 

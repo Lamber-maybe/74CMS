@@ -17,7 +17,9 @@
 		<van-skeleton title avatar :row="10" :loading="mainLoading">
 			<div class="box_1">
 				<div class="content">
-					<div class="up">
+          <div class="invalid_resume" v-if="is_invalid===1">
+          </div>
+          <div class="up">
 						<div class="avatar_box">
 							<img :src="base_info.photo_img_src" :alt="base_info.fullname" />
 							<div class="gender" :class="base_info.sex == 1 ? 'male' : 'female'"></div>
@@ -69,12 +71,14 @@
 			</div>
 			<div class="box_resume_some" v-if="resumeShow === 'resume'">
 				<div class="content_wrapper">
+          <!-- 无效职位标识 -->
+          <img v-if="this.is_invalid!=0" class="invalid_img" src="../../assets/images/resumeshow/invalid_resume.png" />
 					<div class="box_3">
 						<div class="box_head">
 							<div class="txt"><span class="title">求职意向</span></div>
 							<div class="right_text">{{ base_info.current_text }}</div>
 						</div>
-						<div class="box_content">
+						<div class="box_content" v-if="intention_list.length > 0">
 							<!-- <div
                 class="tx2"
                 v-for="(item, index) in intention_list"
@@ -686,7 +690,8 @@ export default {
         job_apply_id: ''
       },
       showUpgradePackage: false,
-      LoginType: 0
+      LoginType: 0,
+      is_invalid: 1
     }
   },
   created () {
@@ -761,7 +766,8 @@ export default {
         phone_protect_open,
         phone_protect_timeout,
         cur_com_mobile,
-        phone_protect_type
+        phone_protect_type,
+        is_invalid
       } = {
         ...res.data
       }
@@ -795,6 +801,7 @@ export default {
       this.phone_protect_timeout = phone_protect_timeout
       this.cur_com_mobile = cur_com_mobile
       this.phone_protect_type = phone_protect_type
+      this.is_invalid = is_invalid
       let wechatShareInfo = {
         fullname: base_info.fullname,
         sex: base_info.sex == 1 ? '男' : '女',
@@ -2284,6 +2291,15 @@ export default {
 	width: 100%;
 	background-color: #ffffff;
 	padding: 0 17px;
+  .invalid_img {
+    display: block;
+    width: 79px;
+    height: 47px;
+    position: absolute;
+    right: 45px;
+    top: 330px;
+    z-index: 2;
+  }
 }
 
 .box_nav {
@@ -2387,6 +2403,14 @@ export default {
 
 .box_1 {
 	.content {
+    .invalid_resume{
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 130px;
+      height: 100%;
+      z-index: 10;
+    }
 		.share {
 			width: 20px;
 			height: 20px;

@@ -7,6 +7,10 @@
                 <div>
                     <div class="information_box clearfix">
                         <div class="information_left clearfix">
+                            <!-- 无效简历标识 -->
+                            {#if condition="$return.is_invalid === 1"#}
+                            <div class="invalid_resume"><img src="__ROOT__/assets/images/resumeshow/invalid_resume.png"></div>
+                            {#/if#}
                             <div class="information_img">
                                 <img src="{#$return.base_info.photo_img_src#}">
                             </div>
@@ -651,7 +655,8 @@
             query_id: '',
             payment:'wxpay',
             isPayment:false,
-            showUpgradePackage: false
+            showUpgradePackage: false,
+            preview_id: 0
         },
         watch: {
             'form.interview_date': function (value) {
@@ -904,6 +909,7 @@
                     if (res.data.login === true) {
                         that.isLogin = true
                         that.utype = res.data.userinfo.utype
+                        that.preview_id = res.data.preview_id
                     }
                 }).catch(function () { })
             },
@@ -1055,6 +1061,34 @@
                 }
             },
             handlerDownPdf: function () {
+                var that = this
+                if (that.utype === 0) {
+                    location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                    return false
+                }
+                if (that.preview_id != id) {
+                    if (that.utype === 2) {
+                        that.$confirm('当前操作需要登录企业账号', '提示', {
+                            type: 'warning',
+                            confirmButtonText: '去登录'
+                        })
+                            .then(function() {
+                                location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                            })
+                            .catch(function() {})
+                        return false
+                    }
+                    if(that.contactData.show_contact === 0) {
+                        that.$confirm('当前操作需要先下载简历，确定下载该简历吗？', '提示', {
+                            type: 'warning',
+                        })
+                            .then(function() {
+                                that.downloadResume()
+                            })
+                            .catch(function() {})
+                        return false
+                    }
+                }
                 window.open(qscms.sitedir + qscms.memberDirname + "/resume_save/" + id)
             },
             doTipoff: function () {

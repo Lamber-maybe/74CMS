@@ -1,6 +1,10 @@
 <?php
 namespace app\apiadmin\controller;
 
+use app\common\model\AdminLog;
+use app\common\model\b2bcrm\CrmClueRelease;
+use think\Db;
+
 class Admin extends \app\common\controller\Backend
 {
     public function index()
@@ -70,7 +74,7 @@ class Admin extends \app\common\controller\Backend
         $id = input('get.id/d', 0, 'intval');
         if ($id) {
             $info = model('Admin')
-                ->field('id,username,role_id,is_sc')
+                ->field('id,username,role_id,is_sc,status')
                 ->find($id);
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
@@ -83,9 +87,11 @@ class Admin extends \app\common\controller\Backend
                 'username' => input('post.username/s', '', 'trim'),
                 'password' => input('post.password/s', '', 'trim'),
                 'role_id' => input('post.role_id/d', 0, 'intval'),
-                'is_sc' => input('post.is_sc/d', 0, 'intval')
+                'is_sc' => input('post.is_sc/d', 0, 'intval'),
+                'status' => input('post.status/d', 0, 'intval'),
             ];
             $id = intval($input_data['id']);
+            $is_release = input('post.is_release/d', 0, 'intval');
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
@@ -101,21 +107,36 @@ class Admin extends \app\common\controller\Backend
             } else {
                 $input_data['password'] = $info['password'];
             }
-            $result = model('Admin')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data, ['id' => $id]);
-            if (false === $result) {
-                $this->ajaxReturn(500, model('Admin')->getError());
-            }
-            model('AdminLog')->record(
-                '编辑管理员。管理员ID【' .
+
+            Db::startTrans();
+            try {
+                $result = model('Admin')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data, ['id' => $id]);
+                if (false === $result) {
+                    $this->ajaxReturn(500, model('Admin')->getError());
+                }
+                model('AdminLog')->record(
+                    '编辑管理员。管理员ID【' .
                     $id .
                     '】;管理员登录名【' .
                     $input_data['username'] .
                     '】',
-                $this->admininfo
-            );
+                    $this->admininfo
+                );
+
+                if (isset($is_release) && $is_release ===1){
+                    $this->adminCrmRelease($id);
+                }
+                //提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
+            }
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
@@ -239,5 +260,238 @@ class Admin extends \app\common\controller\Backend
         $info->openid = '';
         $info->save();
         $this->ajaxReturn(200, '解绑成功');
+    }
+
+    /**
+     * 判断当前管理员是否绑定微信
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function isBindWechat()
+    {
+        $admin_info = $this->admininfo;
+        if (!isset($admin_info) || empty($admin_info)) {
+            $this->ajaxReturn(500, '管理员信息缺失');
+        }
+        $adminId = $admin_info->id ? $admin_info->id : 0;
+        if (!isset($adminId) || empty($adminId)) {
+            $this->ajaxReturn(500, '管理员信息错误');
+        }
+
+        $adminInfo = model('Admin')
+            ->where('id', $adminId)
+            ->find();
+
+        if (isset($adminInfo['openid']) && !empty($adminInfo['openid'])) {
+            $this->ajaxReturn(200, '已绑定', ['is_bind' => 1]);
+        }
+        $this->ajaxReturn(200, '未绑定', ['is_bind' => 0]);
+    }
+
+    /**
+     * 锁定系统管理员
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function lock()
+    {
+        $adminId = input('post.id/d', 0, 'intval');
+        if (1 === $adminId) {
+            $this->ajaxReturn(500, '不允许操作内置admin账号');
+        }
+        if (!$adminId) {
+            $this->ajaxReturn(500, '请选择要锁定的管理员');
+        }
+
+        Db::startTrans();
+        try {
+            $this->adminCrmRelease($adminId);
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '管理员锁定失败', ['err_msg' => $e->getMessage()]);
+        }
+
+        $this->ajaxReturn(200, '管理员锁定成功');
+    }
+
+    /**
+     * 解锁系统管理员
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function deblocking()
+    {
+        $adminId = input('post.id/d', 0, 'intval');
+        if (!$adminId) {
+            $this->ajaxReturn(500, '请选择要解锁的管理员');
+        }
+        if (1 === $adminId) {
+            $this->ajaxReturn(500, '不允许操作内置admin账号');
+        }
+        $info = model('Admin')
+            ->where('id', $adminId)
+            ->find();
+        if (null === $info) {
+            $this->ajaxReturn(500, '要解锁的管理员不存在');
+        }
+
+        Db::startTrans();
+        try {
+            # 1.解锁系统管理员
+            $deblocking_result = model('Admin')
+                ->allowField(true)
+                ->save(
+                    ['status' => 1],
+                    ['id' => $adminId]
+                );
+            if (false === $deblocking_result) {
+                throw new \Exception(model('Admin')->getError());
+            }
+
+            # 2.写入管理员操作日志
+            model('AdminLog')->record(
+                '解锁管理员。管理员ID【' .
+                $adminId .
+                '】;管理员登录名【' .
+                $info['username'] .
+                '】',
+                $this->admininfo
+            );
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '管理员解锁失败', ['err_msg' => $e->getMessage()]);
+        }
+
+        $this->ajaxReturn(200, '管理员解锁成功');
+    }
+
+    /**
+     * 获取管理员CRM数据统计
+     * @return void
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getAdminCrmData()
+    {
+        $adminId = input('post.id/d', 0, 'intval');
+        if (!$adminId) {
+            $this->ajaxReturn(500, '请选择要统计的管理员');
+        }
+        $info = model('Admin')
+            ->where('id', $adminId)
+            ->find();
+        if (null === $info) {
+            $this->ajaxReturn(500, '要统计的管理员不存在');
+        }
+
+        $total_company = model('Company')
+            ->where('admin_id', $adminId)
+            ->count('id');//累计总客户
+        $total_clue = model('b2bcrm.CrmClue')
+            ->where('admin_id', $adminId)
+            ->count('id');//累计总线索统计
+
+        $return = [
+            'total_company' => $total_company,
+            'total_clue' => $total_clue,
+        ];
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+
+    /**
+     * 锁定后台管理员执行任务
+     * @param $adminId
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    private function adminCrmRelease($adminId)
+    {
+        $info = model('Admin')
+            ->where('id', $adminId)
+            ->find();
+        if (null === $info) {
+            $this->ajaxReturn(500, '要锁定的管理员不存在');
+        }
+
+        # 1.锁定系统管理员
+        $lock_result = model('Admin')
+            ->allowField(true)
+            ->save(
+                ['status' => 2],
+                ['id' => $adminId]
+            );
+        if (false === $lock_result) {
+            throw new \Exception(model('Admin')->getError());
+        }
+
+        # 2.线索释放公海
+        $clue_ids = model('b2bcrm.CrmClue')
+            ->where(['admin_id' => $adminId])
+            ->column('id');
+
+        if (isset($clue_ids) && !empty($clue_ids)) {
+            $clue_release = model('b2bcrm.CrmClueRelease')->releaseAdd($clue_ids, $adminId, 2, 1);
+            if (false === $clue_release) {
+                throw new \Exception(model('b2bcrm.CrmClueRelease')->getError());
+            }
+
+            $release_clue = model('b2bcrm.CrmClue')
+                ->where(['admin_id' => $adminId])
+                ->update(['admin_id' => 0]);
+            if (false === $release_clue) {
+                throw new \Exception(model('b2bcrm.CrmClue')->getError());
+            }
+        }
+
+        # 3.客户释放公海
+        $company_ids = model('Company')
+            ->where(['admin_id' => $adminId])
+            ->column('id');
+
+        if (isset($company_ids) && !empty($company_ids)) {
+            $crm_release = model('b2bcrm.CrmClueRelease')->releaseCompany($company_ids, 2, 1);
+            if (false === $crm_release) {
+                throw new \Exception(model('b2bcrm.CrmClueRelease')->getError());
+            }
+
+            $release_company = model('Company')
+                ->where(['admin_id' => $adminId])
+                ->update(['admin_id' => 0]);
+            if (false === $release_company) {
+                throw new \Exception(model('Company')->getError());
+            }
+        }
+
+        # 4.清空客户自动分配规则
+        model('b2bcrm.CrmAutoAssign')
+            ->destroy(['admin_id' => $adminId]);
+
+        # 5.写入管理员操作日志
+        $adminLogModel = new AdminLog();
+        $adminLogModel->record(
+            '锁定管理员。管理员ID【' .
+            $adminId .
+            '】;管理员登录名【' .
+            $info['username'] .
+            '】',
+            $this->admininfo
+        );
     }
 }

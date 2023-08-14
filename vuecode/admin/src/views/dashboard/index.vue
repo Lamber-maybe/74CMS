@@ -253,7 +253,7 @@
               </div>
               <div class="messageBox2">
                 <span class="messageBoxTxt3" @click="$router.push('/tool/marketing/messageList/index')">群发</span>
-                <span class="messageBoxTxt4"><a href="https://www.74cms.com/sms.php" target="_blank">充值</a></span>
+                <span class="messageBoxTxt4"><a href="http://sms.74cms.com" target="_blank">充值</a></span>
               </div>
             </div>
           </el-card>
@@ -330,7 +330,7 @@
               <img class="icon_p" src="../../assets/images/dashboard/pending_data_bg.png" alt="">
               <div class="desc">快速准确记录、跟踪、处理和反馈问题</div>
               <div class="btns">
-                <span class="btns1"><a href="https://www.74cms.com/service.php" target="_blank">提交工单</a></span>
+                <span class="btns1"><a href="https://gongdan.74cms.com" target="_blank">提交工单</a></span>
                 <span class="btns2"><a href="http://doc.74cms.com/#/" target="_blank">帮助手册</a></span>
               </div>
             </div>

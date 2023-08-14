@@ -574,7 +574,7 @@ class def
             ->where('a.is_display', 1)
             ->where('a.addtime','lt',time()) // 【优化】发布资讯 发布时间按显示时间出现 zch 2022.9.20
             ->limit(16)
-            ->order('a.sort_id desc,a.id desc')
+            ->order('a.sort_id desc,a.addtime desc,a.id desc')  // 【ID1000555】【bug】首页默认模板资讯页排序方式 yx-2023.02.22 [新增]:a.addtime desc
             ->column('a.id,a.title,a.link_url,a.addtime,a.cid,b.name as cname');
         foreach ($list as $key => $value) {
             $arr = $value;

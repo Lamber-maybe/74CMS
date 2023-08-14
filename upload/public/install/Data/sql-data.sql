@@ -961,7 +961,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'account_zhitoo_document',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','智兔在线文档预览配置',0),
 (NULL,'account_qy_directory',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','企业名录配置',0),
 (NULL,'resume_search_engine',0,'1','简历搜索方式 1全文搜索 2模糊搜索',0),
-(NULL,'resume_search_engine',0,'1','简历搜索方式 1全文搜索 2模糊搜索',0);
+(NULL,'job_search_engine',0,'1','职位搜索方式 1全文搜索 2模糊搜索',0);
 
 
 INSERT INTO `qs_cron` VALUES
@@ -1507,7 +1507,9 @@ INSERT INTO `qs_crm_sys_config` VALUES
 (9,'thread','禁止领取期限(系统)','thread_forbidden_sys',15,1,1,0,'表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户'),
 (10,'thread','是否允许线索名称重复','thread_duplicate_name',0,1,1,0,'表示录入线索时，线索名称是否可以重复'),
 (11,'thread','线索分配销售规则','thread_allocation_rule',0,1,1,0,'[1:自动分配;0:不分配;]'),
-(12,'customer','不成交掉入公海','customer_unsettled_fall_seas',0,1,1,0,'表示销售自领取之日起，指定天数内未成交的客户自动掉入公共客户中，0为不掉入。');
+(12,'customer','不成交掉入公海','customer_unsettled_fall_seas',0,1,1,0,'表示销售自领取之日起，指定天数内未成交的客户自动掉入公共客户中，0为不掉入。'),
+(13,'customer','销售客户总数上限','customer_total_limit','999',1,1,0,'表示单个销售最多能拥有的客户总数，超过设定值后将不能领取客户，0为不允许领取。'),
+(14,'thread','销售线索总数上限','thread_total_limit','999',1,1,0,'表示单个销售最多能拥有的线索总数，超过设定值后将不能领取线索，0为不允许领取。');
 
 
 INSERT INTO `qs_crm_customer_service` VALUES

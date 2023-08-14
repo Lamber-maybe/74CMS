@@ -339,7 +339,7 @@ export default {
       jobfair_list: [],
       total: 0,
       currentPage: 1,
-      pagesize: 15,
+      pagesize: 10,
       listLoading: !1,
       list: [],
       tableIdarr: [],

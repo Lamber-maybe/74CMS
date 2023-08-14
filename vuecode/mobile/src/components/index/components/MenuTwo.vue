@@ -42,6 +42,8 @@ export default {
         initialSlide: 0,
         slidesPerView: 5,
         slidesPerGroup: 5,
+        observer: true,
+        observeParents: true,
         speed: 800
       }
     }
@@ -79,7 +81,7 @@ export default {
   .b2 {
     width: 100%;padding: 20px 0 0;background-color: #ffffff;
     .item {
-      img { display: block;width: 35px;height: 39px;margin: 0 auto; }
+      img { display: block;width: 35px;height: 35px;margin: 0 auto; }
       .des { font-size: 11px;color: #333333;padding: 6.5px 0 15px; }
       text-align: center;float: left;width: 20%;
     }
@@ -94,8 +96,8 @@ export default {
   .item {
     img {
       display: block;
-      width: 39px;  // 修改触屏首页单行5图标长度 zch 2022.9.20
-      height: 39px;
+      width: 35px;
+      height: 35px;
       margin: 0 auto;
     }
     .des {

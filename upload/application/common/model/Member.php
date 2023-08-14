@@ -427,11 +427,7 @@ class Member extends \app\common\model\BaseModel
                  */
                 $is_rule = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_allocation_rule');
                 if (1 === intval($is_rule)) {
-                    $crm_auto_assign = model('b2bcrm.CrmAutoAssign')
-                        ->where('type', 2)
-                        ->order('assign_num asc,id asc')
-                        ->limit(1)
-                        ->value('admin_id');
+                    $crm_auto_assign = model('b2bcrm.CrmAutoAssign')->getAutoAssignAdminId();
                     if (!empty($crm_auto_assign)) {
                         $insert_data_company['admin_id'] = $crm_auto_assign;
                         $insert_data_company['collection_time'] = time(); // 添加领取时间
@@ -449,6 +445,15 @@ class Member extends \app\common\model\BaseModel
                 ) {
                     throw new \Exception(model('Company')->getError());
                 }
+
+                if (isset($insert_data_company['admin_id']) && !empty($insert_data_company['admin_id'])) {
+                    # 设置管理员销售客户总数上限
+                    $exceed_result = model('Admin')->setCustomerExceed($crm_auto_assign);
+                    if (false === $exceed_result) {
+                        throw new \Exception(model('Admin')->getError());
+                    }
+                }
+
                 //新增到企业信息表
                 $insert_data_company_info['comid'] = model('Company')->id;
                 $insert_data_company_info['uid'] = $this->uid;
@@ -654,7 +659,21 @@ class Member extends \app\common\model\BaseModel
      */
     public function deleteMemberByUids($uid)
     {
+        $admin_id_arr = model('Company')
+            ->where('uid', 'in', $uid)
+            ->where('admin_id', '>', 0)
+            ->column('admin_id');
+        $admin_ids = array_unique($admin_id_arr);
+
         model('Company')->where('uid', 'in', $uid)->delete();
+
+        if (!empty($admin_ids)) {
+            foreach ($admin_ids as $adminId) {
+                # 设置管理员销售客户总数上限
+                model('Admin')->setCustomerExceed($adminId);
+            }
+        }
+
         model('CompanyAuth')
             ->where('uid', 'in', $uid)
             ->delete();

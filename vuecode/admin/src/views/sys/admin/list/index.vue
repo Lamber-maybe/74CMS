@@ -17,6 +17,11 @@
           </template>
         </el-table-column>
         <el-table-column label="登录名" prop="username" min-width="120" />
+        <el-table-column label="状态" prop="status" min-width="100" align="center">
+          <template slot-scope="scope">
+            <span v-if="parseInt(scope.row.status) === 1">正常</span><span v-else>锁定</span>
+          </template>
+        </el-table-column>
         <el-table-column label="角色" prop="role_name" min-width="120" />
         <el-table-column label="是否是销售" prop="is_sc" min-width="100" align="center">
           <template slot-scope="scope">
@@ -56,11 +61,20 @@
               操作日志
             </el-button>
             <el-button
+              v-if="parseInt(scope.row.status) === 1"
               size="small"
               type="danger"
-              @click="funDelete(scope.$index, scope.row)"
+              @click="funLock(scope.$index, scope.row)"
             >
-              删除
+              锁定
+            </el-button>
+            <el-button
+              v-else
+              size="small"
+              type="danger"
+              @click="funDeblocking(scope.$index, scope.row)"
+            >
+              解锁
             </el-button>
           </template>
         </el-table-column>
@@ -116,7 +130,7 @@
 
 <script>
 import dialist from './loglist.vue'
-import { apiList, apiDelete, adminBindQrcode, adminBindQrcodeCancel } from '@/api/admin'
+import { apiList, apiDelete, adminBindQrcode, adminBindQrcodeCancel, getAdminCrmData, adminLock, adminDeblocking } from '@/api/admin'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -140,7 +154,9 @@ export default {
       currentPage: 1,
       pagesize: 10,
       qrcodeSrc: '',
-      showQrcode: false
+      showQrcode: false,
+      total_company: 0,
+      total_clue: 0
     }
   },
   created() {
@@ -232,6 +248,51 @@ export default {
           adminBindQrcodeCancel({ id: id }).then(response => {
             that.$message.success(response.message)
             that.fetchData()
+          })
+        })
+        .catch(() => {})
+    },
+    funLock(index, row){
+      const username = row.username
+      const param = {
+        id: row.id
+      }
+      getAdminCrmData(param).then(response => {
+        var that = this
+        that
+          .$confirm('当前管理员 ' + username + ' 有 ' + response.data.total_company + ' 线索, ' + response.data.total_clue + ' 客户,锁定后将自动释放且无法登录管理后台,是否继续？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+          .then(() => {
+            adminLock(param).then(response => {
+              that.$message.success(response.message)
+              that.fetchData()
+              return true
+            })
+              .catch(() => {})
+          })
+          .catch(() => {})
+      }).catch(() => {})
+    },
+    funDeblocking(index, row){
+      const username = row.username
+      var that = this
+      that
+        .$confirm('此操作将解锁管理员【' + username + '】, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            id: row.id
+          }
+          adminDeblocking(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
           })
         })
         .catch(() => {})

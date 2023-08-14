@@ -48,17 +48,17 @@
     <div class="box_nav">
       <div
         class="item "
-        :class="comShow === 'com' ? 'active' : ''"
-        @click="gettab('com')"
-      >
-        公司介绍
-      </div>
-      <div
-        class="item "
         :class="comShow === 'job' ? 'active' : ''"
         @click="gettab('job')"
       >
         在招职位({{jobnum}})
+      </div>
+      <div
+        class="item "
+        :class="comShow === 'com' ? 'active' : ''"
+        @click="gettab('com')"
+      >
+        公司介绍
       </div>
       <div
         class="item "
@@ -225,7 +225,7 @@ export default {
       finished: false,
       page: 1,
       pagesize: 10,
-      comShow: 'com',
+      comShow: 'job',
       showLogin: false,
       is_personal_login: false,
       base_info: {},
@@ -279,19 +279,18 @@ export default {
   },
   mounted () {},
   watch: {
-    // 数据渲染完成之后获取企业介绍的高度
-    'base_info': function () {
-      this.$nextTick(function () {
-        let textHeight = this.$refs.companyContent.scrollHeight
-        let styleHeight = this.$refs.companyContent.clientHeight
-        this.isMore = textHeight > styleHeight
-      })
-    }
   },
   methods: {
     gettab (comShow) {
       this.comShow = comShow
       this.page = 1
+      if (comShow === 'com' && !this.isMore) {
+        this.$nextTick(function () {
+          let textHeight = this.$refs.companyContent.scrollHeight
+          let styleHeight = this.$refs.companyContent.clientHeight
+          this.isMore = textHeight > styleHeight
+        })
+      }
     },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap

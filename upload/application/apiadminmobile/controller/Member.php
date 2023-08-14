@@ -48,7 +48,7 @@ class Member extends \app\apiadmin\controller\Member
             $this->ajaxReturn(500, '请输入密码');
         }
         $input_data['password'] = model('Member')->makePassword(
-            $input_data['new_password'],
+            $input_data['password'],
             $info['pwd_hash']
         );
         $result = model('Member')

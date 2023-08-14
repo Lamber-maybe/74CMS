@@ -57,20 +57,17 @@ class CrmAutoAssign extends BaseModel
      * @param $type
      * @return false|float|mixed|string
      */
-    public function getAutoAssignAdminId($type = 1)
+    public function getAutoAssignAdminId($type = 2)
     {
-        switch ($type) {
-            case 1:
-            case 2:
-                break;
-
-            default:
-                return false;
-        }
-        $adminId = $this->where('type', $type)
-            ->order('assign_num', 'ASC')
+        $adminId = $this->alias('caa')
+            ->join('admin a', 'a.id = caa.admin_id', 'LEFT')
+            ->where('caa.type', $type)
+            ->where('a.customer_exceed', 0)
+            ->where('a.status', 1)
+            ->order('caa.assign_num', 'ASC')
+            ->order('caa.id', 'ASC')
             ->limit(1)
-            ->value('admin_id');
+            ->value('caa.admin_id');
         if ($adminId) {
             return $adminId;
         } else {

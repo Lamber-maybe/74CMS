@@ -370,8 +370,10 @@
             label="操作类型"
           >
             <template scope="scope">
-              <span v-if="scope.row.operation_type == 1">领取</span>
-              <span v-if="scope.row.operation_type == 2">释放</span>
+              <span v-if="scope.row.operation_type == 1 && scope.row.operator == 2">主动领取</span>
+              <span v-if="scope.row.operation_type == 1 && scope.row.operator == 1">系统自动分配</span>
+              <span v-if="scope.row.operation_type == 2 && scope.row.operator == 2">主动释放</span>
+              <span v-if="scope.row.operation_type == 2 && scope.row.operator == 1">系统自动释放</span>
             </template>
           </el-table-column>
         </el-table>

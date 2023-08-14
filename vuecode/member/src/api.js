@@ -496,5 +496,7 @@ export default {
   // 校验简历解析配置
   documentCheck: '/home/zhitoo/documentCheck',
   // 发送注销验证码
-  cancelApply: '/member/sendsms/cancelApply'
+  cancelApply: '/member/sendsms/cancelApply',
+  // 导出PDF简历
+  exportPdfByPhp: '/home/resume/exportPdfByPhp'
 }

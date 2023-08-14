@@ -457,12 +457,17 @@ export default {
           remark:this.$refs.remark.content,
           resume_id:this.remark_item.resume_id
         }
-        this.remark_item.remark = this.$refs.remark.content
         http
           .post(api.remark_resume, data)
-          .then(() => {
-            this.btnLoading = false
-            this.showRemark = false
+          .then((res) => {
+            if (res.code == 200) {
+              this.$message({ type: 'success', message: res.message })
+              this.btnLoading = false
+              this.showRemark = false
+            } else {
+              this.$message({ type: 'error', message: res.message })
+            }
+            this.fetchData(true)
           })
           .catch(() => {
             this.btnLoading = false

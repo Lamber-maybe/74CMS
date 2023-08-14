@@ -52,7 +52,7 @@
               <div class="item_group">
                 <div :class="item.select ? 'item selected' : 'item'"
                      v-for="(item, index) in optionJobTag" :key="index" @click="handleCheckJobTag(item)">
-                  {{ item.text }}
+                  <p class="item_name">{{ item.text }}</p>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -469,9 +469,9 @@ export default {
     restoreJobCategory () {
       let queryData = this.$route.query
       if (queryData['category1']) {
-        this.params.category1 = queryData['category1']
-        this.params.category2 = queryData['category2']
-        this.params.category3 = queryData['category3']
+        this.params.category1 = queryData['category1'] ? queryData['category1'] : 0
+        this.params.category2 = queryData['category2'] ? queryData['category2'] : 0
+        this.params.category3 = queryData['category3'] ? queryData['category3'] : 0
         // 恢复选中项对应的汉字
         let storeCategory = this.$store.state.classifyJobCategory
         let selectText = []
@@ -816,6 +816,12 @@ export default {
         padding: 6.5px 0;
         &:nth-of-type(4n) {
           margin-right: 0;
+        }
+        .item_name {
+          margin: 0 8px;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
         }
       }
     }

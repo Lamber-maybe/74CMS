@@ -467,10 +467,7 @@ class Profile extends \app\v1_0\controller\common\Base
                     $is_rule = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_allocation_rule');
                     if (1 === intval($is_rule)) {
                         // 2.查询当前轮训的客服admin_id
-                        $crm_auto_assign = model('b2bcrm.CrmAutoAssign')
-                            ->where('type', 2)
-                            ->order('assign_num asc,id asc')
-                            ->value('admin_id');
+                        $crm_auto_assign = model('b2bcrm.CrmAutoAssign')->getAutoAssignAdminId();
                         if (!empty($crm_auto_assign)) {
                             $input_data['basic']['admin_id'] = $crm_auto_assign; // 添加客服ID
                             $input_data['basic']['collection_time'] = time(); // 添加领取时间
@@ -478,6 +475,12 @@ class Profile extends \app\v1_0\controller\common\Base
                             model('b2bcrm.CrmAutoAssign')
                                 ->where('admin_id', $crm_auto_assign)
                                 ->setInc('assign_num');
+
+                            # 设置管理员销售客户总数上限
+                            $exceed_result = model('Admin')->setCustomerExceed($crm_auto_assign);
+                            if (false === $exceed_result) {
+                                throw new \Exception(model('Admin')->getError());
+                            }
                         }
                     }
 
@@ -486,6 +489,15 @@ class Profile extends \app\v1_0\controller\common\Base
                         ->allowField(true)
                         ->save($input_data['basic']);
                     $company_id = model('Company')->id;
+
+                    if (isset($input_data['basic']['admin_id']) && !empty($input_data['basic']['admin_id'])) {
+                        # 设置管理员销售客户总数上限
+                        $exceed_result = model('Admin')->setCustomerExceed($crm_auto_assign);
+                        if (false === $exceed_result) {
+                            throw new \Exception(model('Admin')->getError());
+                        }
+                    }
+
                 } else {
                     if ($company_profile['district'] == 0) {
                         //新添加的企业，根据配置赋值审核状态

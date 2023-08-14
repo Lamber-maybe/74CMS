@@ -1,6 +1,8 @@
 <?php
 namespace app\v1_0\controller\home;
 
+use phpService\PdfService;
+
 class Resume extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -29,7 +31,7 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
-        
+
         $subsiteCondition = get_subsite_condition();
         if(!empty($subsiteCondition)){
             foreach ($subsiteCondition as $key => $value) {
@@ -144,7 +146,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
-            
+
             $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
             $photo_arr = $photo_id_arr = [];
@@ -466,7 +468,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $return['base_info']['nature_text_unique'] = !empty($return['base_info']['nature_text_unique']) ? $return['base_info']['nature_text_unique'] : $tmp_arr['nature_text'];
             // 【新增】薪资唯一展示
             $return['base_info']['wage_text_unique'] = !empty($return['base_info']['wage_text_unique']) ? $return['base_info']['wage_text_unique'] : $tmp_arr['wage_text'];
-            
+
             $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
             $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
             $intention_list[] = $tmp_arr;
@@ -627,6 +629,14 @@ class Resume extends \app\v1_0\controller\common\Base
         // 附件简历
         $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['rid' => $id]);
         $return['enclosure_resume'] = $enclosure_resume;
+
+        // 简历审核状态： 0|'待审核';1|'已通过';2|'未通过'
+        if (1 === intval($return['base_info']['audit']) && !empty($return['intention_list'])) {
+            $return['is_invalid'] = 0;
+        } else {
+            $return['is_invalid'] = 1;
+        }
+
         return $return;
     }
     /**
@@ -732,6 +742,20 @@ class Resume extends \app\v1_0\controller\common\Base
                 $info['cur_com_mobile'] = $this->userinfo->mobile;
             }
         }
+        if($this->userinfo != null && $this->userinfo->utype == 2)
+        {
+            $resume = model('Resume')->where('uid',$this->userinfo->uid)->find();
+            $info['logo_resume_id'] = !empty($resume) ? $resume['id'] : 0;
+            if (!empty($resume) && $id ==  $info['logo_resume_id'])
+            {
+                $info['base_info']['fullname'] = $resume['fullname'];
+                $contact_info = model('ResumeContact')
+                    ->field('id,rid,uid', true)
+                    ->where(['rid' => ['eq', $id]])
+                    ->find();
+                $info['contact_info'] = $contact_info;
+            }
+        }
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
     public function getContact(){
@@ -835,5 +859,461 @@ class Resume extends \app\v1_0\controller\common\Base
         $return['interview_num'] = $interview_num + $video_interview_num;
         $return['img_list'] = model('ResumeImg')->getList(['rid'=>$id,'audit'=>1]);
         $this->ajaxReturn(200,'获取数据成功',$return);
+    }
+
+    public function exportPdfByPhp()
+    {
+        $id = input('get.id/d', 0, 'intval');
+        $info = $this->getDetail($id);
+
+        if ($this->userinfo != null && $this->userinfo->uid === $info['base_info']['uid']) {
+            $resume = model('Resume')->where('uid', $this->userinfo->uid)->field('id,uid,fullname')->find();
+            $info['base_info']['fullname'] = $resume['fullname'];
+        }
+
+        $info['base_info']['specialty'] = json_encode($info['base_info']['specialty'], JSON_UNESCAPED_UNICODE);
+        $info['base_info']['specialty'] = json_decode(str_replace('\n', '<br>', $info['base_info']['specialty']), true);
+        if ($info === false) {
+            $this->ajaxReturn(400, '会员id错误', null);
+        }
+        $resume_module_data = model('ResumeModule')->getCache();
+        $resume_module = [];
+        foreach ($resume_module_data as $module_name => $module_attr) {
+            $_arr = [
+                'module_cn' => $module_attr['module_cn'],
+                'is_display' => intval($module_attr['is_display'])
+            ];
+            $resume_module[$module_name] = $_arr;
+        }
+        $info['resume_module'] = $resume_module;
+        $getResumeContact = model('Resume')->getContact($info['base_info'], $this->userinfo);
+        $show_contact = $getResumeContact['show_contact'];
+        $content = '
+        <div id="saveBox" class="resume_preview">
+            <div>
+                <div class="resume_name">' . $info['base_info']['fullname'] . '的个人简历 </div>
+                <div class="data_wrapper">
+                <div class="baseData">
+                <div class="list">
+                        <div>
+                            <span>姓名：</span> ' . $info['base_info']['fullname'] . '
+                        </div>
+                    </div>
+                    <div class="list">
+                        <div>
+                            <span>性别：</span> ' . $info['base_info']['sex_text'] . '
+                        </div>
+                    </div>
+                    <div class="list">
+                        <div>
+                            <span>年龄：</span> ' . $info['base_info']['age'] . '岁 
+                        </div>
+                    </div>
+                    <div class="list">
+                        <div>
+                            <span >工作经验：</span> ' . $info['base_info']['experience_text'] . '
+                        </div>
+                    </div>
+                    <div class="list">
+                        <div>
+                            <span>学历：</span> ' . $info['base_info']['education_text'] . '
+                        </div>
+                    </div>';
+
+        if ($info['field_rule']['basic']['marriage']['is_display'] === 1 && !empty($info['base_info']['marriage_text'])) {
+            $content .= ' <div  class="list">
+                        <div>
+                            <span>婚姻状况：</span> ' . $info['base_info']['marriage_text'] . '
+                        </div>
+                    </div>';
+        }
+
+        if ($info['field_rule']['basic']['height']['is_display'] === 1 && !empty($info['base_info']['height'])) {
+            $content .= '<div class="list">
+                        <div>
+                            <span>身高：</span> ' . $info['base_info']['height'] . ' CM
+                        </div>
+                    </div>';
+        }
+
+        if ($info['field_rule']['basic']['major']['is_display'] === 1 && !empty($info['base_info']['major_text'])) {
+            $content .= '<div class="list">
+                        <div>
+                            <span>专业：</span> ' . $info['base_info']['major_text'] . '
+                        </div>
+                    </div>';
+        }
+
+        if ($info['field_rule']['basic']['householdaddress']['is_display'] === 1 && !empty($info['base_info']['householdaddress'])) {
+            $content .= '<div class="list">
+                        <div>
+                            <span>籍贯：</span> ' . $info['base_info']['householdaddress'] . '
+                        </div>
+                    </div>';
+        }
+
+        if ($info['field_rule']['basic']['residence']['is_display'] === 1 && !empty($info['base_info']['residence'])) {
+            $content .= '<div class="list">
+                        <div>
+                            <span>现居住地：</span> ' . $info['base_info']['residence'] . '
+                        </div>
+                    </div>';
+        }
+
+        # 头像
+        $content .= '<div class="clearfix">
+                    </div>
+                </div>
+                    <div class="photo">
+                        <img style="width: 120px; height: 120px;" src="' . $info['base_info']['photo_img_src'] . '" />
+                    </div>
+                </div>
+            </div>';
+
+
+        # 求职意向
+        if ($info['resume_module']['intention']['is_display'] === 1 && count($info['intention_list']) > 0) {
+            $content .= '<div class="bottom-line">
+                <div class="title">求职意向</div>
+                <div class="intention_list">';
+            for ($i = 0; $i < count($info['intention_list']); $i++) {
+                if ($i < 3) {
+                    $intention = '';
+                    switch ($i) {
+                        case 0:
+                            $intention = '第一意向';
+                            break;
+                        case 1:
+                            $intention = '第二意向';
+                            break;
+                        case 2:
+                            $intention = '第三意向';
+                            break;
+                    }
+                    $content .= ' <p>
+                        <span>
+                            ' . $intention . '：
+                        </span>
+                        [' . $info['intention_list'][$i]['district_text'] . ']' . $info['intention_list'][$i]['category_text'] . '，' . $info['intention_list'][$i]['nature_text'] . '，' . $info['intention_list'][$i]['wage_text'] . '/月
+                    </p>';
+                }
+            }
+
+            $content .= '</div>
+            </div>';
+        }
+
+        # 联系方式
+        $content .= '<div class="bottom-line">
+                <div class="title">
+                    联系方式
+                </div>';
+
+        if ($this->userinfo != null && $this->userinfo->uid === $info['base_info']['uid']) {
+            $show_contact = 1;
+            $resume_contact = model('ResumeContact')->where('rid', $id)->field('mobile,weixin,email,qq')->find();
+            if ($resume_contact != null) {
+                $info['contact_info'] = $resume_contact;
+            }
+        }
+
+        if ($show_contact === 0) {
+            $content .= '<div class="intention_list">
+                    <p>
+                        <span>
+                            下载后查看联系方式
+                        </span>
+                    </p>
+                </div>';
+        } else {
+            $content .= '<div class="intention_list">';
+
+            if (!empty($info['contact_info']['mobile'])) {
+                $content .= '<p><span>手机号：</span>' . $info['contact_info']['mobile'] . '</p>';
+            }
+
+            if (!empty($info['contact_info']['weixin'])) {
+                $content .= '<p><span>微信：</span>' . $info['contact_info']['weixin'] . '</p>';
+            }
+
+            if (!empty($info['contact_info']['email'])) {
+                $content .= '<p><span>邮箱：</span>' . $info['contact_info']['email'] . '</p>';
+            }
+
+            if (!empty($info['contact_info']['qq'])) {
+                $content .= '<p><span>QQ：</span>' . $info['contact_info']['qq'] . '</p>';
+            }
+
+            $content .= '</div>';
+        }
+
+        $content .= '</div>';
+
+        if ($info['resume_module']['specialty']['is_display'] === 1 && !empty($info['base_info']['specialty'])) {
+            $content .= '<div class="bottom-line">
+                <div class="title">
+                    自我描述
+                </div>
+                <div class="intention_list">
+                    <p style="white-space: pre-line;">
+                        ' . $info['base_info']['specialty'] . '
+                    </p>
+                </div>
+            </div>';
+        }
+
+        if ($info['resume_module']['education']['is_display'] === 1 && count($info['education_list']) > 0) {
+            $content .= '<div class="bottom-line">
+                <div class="title">
+                    教育经历
+                </div>
+                <div class="undergo_con">';
+
+            for ($i = 0; $i < count($info['education_list']); $i++) {
+                $content .= '<div class="undergo_title">
+                        <span>' .
+                    date('Y-m', $info['education_list'][$i]['starttime']);
+                if ($info['education_list'][$i]['todate'] === 1) {
+                    $content .= ' ~ 至今';
+                } else {
+                    $content .= ' 至 ' . date('Y-m', $info['education_list'][$i]['endtime']);
+                }
+                $content .= '</span>
+                        <p>
+                            <span class="border">
+                                ' . $info['education_list'][$i]['school'] . '
+                            </span>
+                            <span class="border">
+                                ' . $info['education_list'][$i]['education_text'] . '
+                            </span>
+                            <span class="border">
+                                ' . $info['education_list'][$i]['major'] . '
+                            </span>
+                        </p>
+                    </div>';
+            }
+
+
+            $content .= '</div>
+                </div>';
+        }
+
+        if ($info['resume_module']['work']['is_display'] === 1 && count($info['work_list']) > 0) {
+            $content .= '<div class="bottom-line">
+                <div class="title">
+                    工作经历
+                </div>';
+
+            for ($i = 0; $i < count($info['work_list']); $i++) {
+                $content .= '<div class="undergo_con">
+                    <div class="undergo_title">
+                        <span>
+                            ' . date('Y-m', $info['work_list'][$i]['starttime']);
+                if ($info['work_list'][$i]['todate'] === 1) {
+                    $content .= ' ~ 至今';
+                } else {
+                    $content .= ' 至 ' . date('Y-m', $info['work_list'][$i]['endtime']);
+                }
+
+                $info['work_list'][$i]['duty'] = json_encode($info['work_list'][$i]['duty'], JSON_UNESCAPED_UNICODE);
+                $info['work_list'][$i]['duty'] = json_decode(str_replace('\n', '<br>', $info['work_list'][$i]['duty']), true);
+                $content .= '</span>
+                        <p>
+                            <span class="border">
+                                ' . $info['work_list'][$i]['companyname'] . '
+                            </span>
+                            <span class="border">
+                                ' . $info['work_list'][$i]['jobname'] . '
+                            </span>
+                        </p>
+                    </div>
+                    <div class="undergo_list" style="margin-top: -10px;">
+                        <p>
+                            <span>
+                                工作内容：
+                            </span>
+                            ' . $info['work_list'][$i]['duty'] . '
+                        </p>
+                    </div>
+                </div>';
+            }
+
+            $content .= '</div>';
+
+        }
+
+        if ($info['resume_module']['project']['is_display'] === 1 && count($info['project_list']) > 0) {
+            $content .= '<div class="bottom-line">
+                <div class="title">
+                    项目经历
+                </div>';
+
+
+            for ($i = 0; $i < count($info['project_list']); $i++) {
+                $content .= '<div class="undergo_con">
+                    <div class="undergo_title">
+                        <span>' . date('Y-m', $info['project_list'][$i]['starttime']);
+                if ($info['project_list'][$i]['todate'] === 1) {
+                    $content .= ' ~ 至今';
+                } else {
+                    $content .= ' 至 ' . date('Y-m', $info['project_list'][$i]['endtime']);
+                }
+
+                $info['project_list'][$i]['description'] = json_encode($info['project_list'][$i]['description'], JSON_UNESCAPED_UNICODE);
+                $info['project_list'][$i]['description'] = json_decode(str_replace('\n', '<br>', $info['project_list'][$i]['description']), true);
+                $content .= '</span>
+                        <p>
+                            <span class="border">
+                                ' . $info['project_list'][$i]['projectname'] . '
+                            </span>
+                            <span class="border">
+                                ' . $info['project_list'][$i]['role'] . '
+                            </span>
+                        </p>
+                    </div>
+                    <div class="undergo_list" style="margin-top: -10px;">
+                        <p>
+                            <span>
+                                项目描述：
+                            </span>
+                            ' . $info['project_list'][$i]['description'] . '
+                        </p>
+                    </div>
+                </div>';
+            }
+            $content .= '</div>';
+        }
+
+        if ($info['resume_module']['training']['is_display'] === 1 && count($info['training_list']) > 0) {
+            $content .= '<div class="bottom-line">
+                <div class="title">
+                    培训经历
+                </div>';
+
+            for ($i = 0; $i < count($info['training_list']); $i++) {
+                $content .= '<div class="undergo_con">
+                        <div class="undergo_title">
+                            <span>' . date('Y-m', $info['training_list'][$i]['starttime']);
+                if ($info['training_list'][$i]['todate'] === 1) {
+                    $content .= ' ~ 至今';
+                } else {
+                    $content .= ' 至 ' . date('Y-m', $info['training_list'][$i]['endtime']);
+                }
+                $info['training_list'][$i]['description'] = json_encode($info['training_list'][$i]['description'], JSON_UNESCAPED_UNICODE);
+                $info['training_list'][$i]['description'] = json_decode(str_replace('\n', '<br>', $info['training_list'][$i]['description']), true);
+                $content .= '</span>
+                            <p>
+                                <span class="border">
+                                    ' . $info['training_list'][$i]['agency'] . '
+                                </span>
+                                <span class="border">
+                                    ' . $info['training_list'][$i]['course'] . '
+                                </span>
+                            </p>
+                        </div>
+                        <div class="undergo_list" style="margin-top: -10px;">
+                            <p>
+                                <span>
+                                    培训内容：
+                                </span>
+                                ' . $info['training_list'][$i]['description'] . '
+                            </p>
+                        </div>
+                    </div>';
+            }
+
+
+            $content .= '</div>';
+        }
+
+        if ($info['resume_module']['certificate']['is_display'] === 1 && count($info['certificate_list']) > 0) {
+            $content .= '<div class="certificate bottom-line">
+                <div class="title">
+                    获得证书
+                </div>
+                <div class="certificate_list">';
+
+            for ($i = 0; $i < count($info['certificate_list']); $i++) {
+                $content .= '
+                        <p>
+                            <span class="li-item">
+                                <span class="border2">
+                                    ' . $info['certificate_list'][$i]['name'] . '
+                                </span>
+                                <span class="border2">
+                                        | ' . date('Y-m', $info['certificate_list'][$i]['obtaintime']) . '
+                                </span>
+                            </span>
+                        </p>';
+            }
+
+            $content .= '</div></div>';
+        }
+
+        if ($info['resume_module']['language']['is_display'] === 1 && count($info['language_list']) > 0) {
+            $content .= '<div class="language bottom-line">
+                <div class="title">
+                    语言能力
+                </div>
+                <div class="language_list">';
+
+            for ($i = 0; $i < count($info['language_list']); $i++) {
+                $content .= '
+                            <p><span class="li-item">
+                                <span class="border2">
+                                    ' . $info['language_list'][$i]['language_text'] . '
+                                </span>
+                                <span class="border2">
+                                        |
+                                    ' . $info['language_list'][$i]['level_text'] . '
+                                </span>
+                            </span></p>';
+            }
+
+            $content .= '</div></div>';
+        }
+
+        $content .= '</div>';
+
+
+        $api = new PdfService();
+        //生成pdf
+
+        $pdf_path = 'resumePdf' . DS . date('Ym') . DS;
+        $upload_path = SYS_UPLOAD_PATH . $pdf_path;
+        if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0777, true);
+            chmod($upload_path, 0777);
+        }
+
+        $save_anme = $info['base_info']['fullname'] . '的个人简历-' . config('global_config.sitename');
+        $file_name = $upload_path . $save_anme;
+
+        $css = file_get_contents(PUBLIC_PATH . 'assets/css/download_resume.css');
+        $css = '<style>' . $css . '</style>';
+        $content = $css . html_entity_decode($content);
+
+        $sitename = config('global_config.sitename') . '(' . config('global_config.sitedomain') . ')';
+        $logo = config('global_config.logo');
+        $logo_url = !empty($logo) ? model('Uploadfile')->getFileUrl($logo) : '';
+
+        $data = [
+            'file_name' => $file_name,
+            'content' => $content,
+            'title_header' => $logo_url,
+            'title_footer' => $sitename,
+            'is_down' => 1
+        ];
+
+        $api->strToPdf($data);
+
+        $url = config('global_config.sitedomain') .
+            config('global_config.sitedir') .
+            SYS_UPLOAD_DIR_NAME .
+            DS .
+            $pdf_path .
+            $save_anme . '.pdf';
+
+        $this->ajaxReturn(200, '获取成功', ['url' => $url]);
     }
 }

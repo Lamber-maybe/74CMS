@@ -205,7 +205,7 @@ export default {
     },
     details(val){
       for (const key in val) {
-        this.form[key] = val[key]
+          this.form[key] = val[key]
       }
     }
   },

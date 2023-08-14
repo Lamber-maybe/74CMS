@@ -14,7 +14,7 @@
 
             <div class="user">
               <span>(</span>
-              <span>企业ID:{{ details.id }}；</span>
+              <span>会员ID:{{ details.uid }}；企业ID:{{ details.id }}；</span>
               <span class="logoin" @click="funManagement(details)">一键登录企业会员中心</span>
               <span>；</span>
               <span class="logoin" @click="funPoster(details.id)">生成海报</span>

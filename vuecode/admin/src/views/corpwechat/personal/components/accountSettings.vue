@@ -143,7 +143,7 @@ import {
   personalPassword,
   personalUsername
 } from '@/api/personal'
-import { adminBindQrcode, adminBindQrcodeCancel } from '@/api/admin'
+import { adminBindQrcode, adminBindQrcodeCancel, adminIsBindWechat } from '@/api/admin'
 
 export default {
   name: 'AccountSettings',
@@ -173,7 +173,7 @@ export default {
     }
     return {
       // 初始值
-      form: '',
+      form: {},
       // 上传相关
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -208,7 +208,9 @@ export default {
 
       qrcodeSrc: '',
       showQrcode: false,
-      wxLogin: ''
+      wxLogin: '',
+      // 绑定微信定时器
+      timer: ''
     }
   },
   computed: {
@@ -222,6 +224,9 @@ export default {
     this.getData()
   },
   mounted(){},
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
     delAvatar() {
       this.form.avatar = ''
@@ -412,7 +417,22 @@ export default {
       adminBindQrcode({ id: this.form.id }).then(response => {
         that.qrcodeSrc = response.data
         that.showQrcode = true
+        that.timer = setInterval(this.funBindResult, 3000)
       })
+        .catch(() => {})
+    },
+    // 绑定微信结果
+    funBindResult() {
+      const that = this
+      adminIsBindWechat({}).then(response => {
+        if (response.data.is_bind == 1){
+          that.showQrcode = false
+          that.$message.success('微信绑定成功')
+          clearInterval(that.timer)
+          that.getData()
+        }
+      })
+        .catch(() => {})
     },
     funBindCancel(){
       const that = this
@@ -425,7 +445,7 @@ export default {
         .then(() => {
           adminBindQrcodeCancel({ id: this.form.id }).then(response => {
             that.$message.success(response.message)
-            that.fetchData()
+            that.getData()
           })
         })
         .catch(() => {})

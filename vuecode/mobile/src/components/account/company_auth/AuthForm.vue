@@ -53,21 +53,27 @@
       </div>
 
       <div class="entrust" v-if="auth_type == 1">
-        <div class="upload_txt">委托书(函)</div>
-        <div class="upload">
-          <van-uploader :after-read="handlerUploadProxy">
-            <div class="box_1" v-if="proxy_img != ''">
-              <img
-                :src="proxy_img"
-                width="100"
-                height="100"
-              />
-            </div>
-            <p v-else class="txt">点击上传</p>
-          </van-uploader>
+        <div class="entrust-box">
+          <div class="upload_txt">委托书(函)</div>
+          <div class="upload">
+            <van-uploader :after-read="handlerUploadProxy">
+              <div class="box_1" v-if="proxy_img != ''">
+                <img
+                  :src="proxy_img"
+                  width="100"
+                  height="100"
+                />
+              </div>
+              <p v-else class="txt">点击上传</p>
+            </van-uploader>
+          </div>
+        </div>
+        <div class="downloadProxy">
+          <a class="downloadLink" :href="proxy_docx" :download="proxy_docx">
+            下载委托函模板
+          </a>
         </div>
       </div>
-
       <div class="btn_box">
         <van-button type="info" class="btn" @click="onSubmit">提交</van-button>
       </div>
@@ -98,7 +104,8 @@ export default {
         {
           url: 'https://img01.yzcdn.cn/vant/leaf.jpg'
         }
-      ]
+      ],
+      proxy_docx: ''
     }
   },
   mounted () {
@@ -111,6 +118,8 @@ export default {
     this.proxy_img = this.authinfo.proxy_img
     this.license = this.authinfo.license
     this.license_img = this.authinfo.license_img
+    let { sitedomain } = this.$store.state.config
+    this.proxy_docx = sitedomain + '/upload/' + 'resource/proxy.docx'
   },
   methods: {
     handlerUploadLisence (file) {
@@ -279,10 +288,29 @@ export default {
 }
 
 .certificate,
-.idcard,
-.entrust {
+.idcard{
   padding: 21px 17px 0px;
   display: flex;
+}
+.entrust {
+  padding: 21px 17px 0px;
+}
+.entrust-box{
+  display: flex;
+}
+.downloadProxy {
+  background: url("../../../assets/images/tips_icon.png") no-repeat 88px center;
+  background-size: 13px 13px;
+  box-sizing: border-box;
+  padding-left: 105px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  .downloadLink{
+    font-size: 12px;
+    color: #1989fa;
+    padding-top: 1px;
+  }
 }
 
 .upload_txt {

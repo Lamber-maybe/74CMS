@@ -17,11 +17,9 @@ class CrmClueRelease extends Backend
             $this->ajaxReturn(500, '请选择客户');
         }
         $where = [
-            'a.uid' => $uid,
-            'a.operator' => 2,
-            'a.utype' => 1
+            'a.uid' => $uid
         ];
-        $field = 'a.create_time,a.operation_type,b.username';
+        $field = 'a.create_time,a.operation_type,a.operator,b.username';
 
         $data = model('b2bcrm.CrmClueRelease')
             ->getList($where, ['a.create_time DESC'], $current_page, $pagesize, $field);

@@ -195,7 +195,7 @@ class Wechat {
     public function buildTplMsg($data) {
         $access_token = $this->getAccessToken();
         $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
-        $this->apiRequest($url, $data,true);
+        $result = $this->apiRequest($url, $data,true);
     }
     /**
      * 模板消息

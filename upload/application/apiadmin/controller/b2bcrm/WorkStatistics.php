@@ -93,7 +93,7 @@ class WorkStatistics  extends Backend
         $beginToday = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
         $seven_days_time = strtotime(date("Y-m-d", strtotime("-7 day")));
         $fifteen_days_time = strtotime(date("Y-m-d", strtotime("-15 day")));
-        $total = Db::name('admin')->count();
+        $total = Db::name('admin')->where('status', 1)->count();
         $list = Db::name('admin')
             ->alias('a')
             ->join('Company c','a.id = c.admin_id','LEFT')
@@ -115,6 +115,7 @@ class WorkStatistics  extends Backend
                 count(if(c.last_visit_time > '.$fifteen_days_time.',true,null)) as fifteen_days_no_follow_up,
                 count(if(c.last_visit_time = 0,true,null)) as no_follow_up
             ')
+            ->where('a.status', 1)
             ->group('a.id')
             ->order($order_str)
             ->page($page,$pagesize)
@@ -217,7 +218,7 @@ class WorkStatistics  extends Backend
             $group_arr =  explode(',',$admin_id);
             $admin_list = $admin_list->where('id','in',$group_arr);
         }
-        $admin_list = $admin_list->field('id,username')->select();
+        $admin_list = $admin_list->where('status', 1)->field('id,username')->select();
         $return = [
             'legend' => array_column($admin_list,'username'),
             'xAxis' => [],
@@ -226,45 +227,37 @@ class WorkStatistics  extends Backend
         $endtime = strtotime($end_time);
         $starttime = strtotime($start_time);
         $daterange = [$starttime, $endtime + 86400 - 1];
+
+        switch ($type){
+            case 'newClueFollowStatistics':
+                $db = 'CrmClue';
+                $field = 'last_visit_time';
+                $column = 'UNIX_TIMESTAMP(FROM_UNIXTIME(`last_visit_time`, "%Y%m%d")) as time,count(*) as num';
+                break;
+            case 'newClueStatistics':
+                $db = 'CrmClue';
+                $field = 'collection_time';
+                $column = 'UNIX_TIMESTAMP(FROM_UNIXTIME(`collection_time`, "%Y%m%d")) as time,count(*) as num';
+                break;
+            case 'newCompanyFollowStatistics':
+                $db = 'Company';
+                $field = 'last_visit_time';
+                $column = 'UNIX_TIMESTAMP(FROM_UNIXTIME(`last_visit_time`, "%Y%m%d")) as time,count(*) as num';
+                break;
+            case 'newCompanyStatistics':
+                $db = 'Company';
+                $field = 'collection_time';
+                $column = 'UNIX_TIMESTAMP(FROM_UNIXTIME(`collection_time`, "%Y%m%d")) as time,count(*) as num';
+                break;
+        }
+
         foreach ($admin_list as $k=>$v){
-            switch ($type){
-                case 'newClueFollowStatistics':
-                    $list = Db::name('CrmClue')
-                        ->where('admin_id',$v['id'])
-                        ->where('last_visit_time', 'between time', $daterange)
-                        ->group('time')
-                        ->column(
-                            'UNIX_TIMESTAMP(FROM_UNIXTIME(`last_visit_time`, "%Y%m%d")) as time,count(*) as num'
-                        );
-                    break;
-                case 'newClueStatistics':
-                    $list = Db::name('CrmClue')
-                        ->where('admin_id',$v['id'])
-                        ->where('collection_time', 'between time', $daterange)
-                        ->group('time')
-                        ->column(
-                            'UNIX_TIMESTAMP(FROM_UNIXTIME(`collection_time`, "%Y%m%d")) as time,count(*) as num'
-                        );
-                    break;
-                case 'newCompanyFollowStatistics':
-                    $list = Db::name('Company')
-                        ->where('admin_id',$v['id'])
-                        ->where('last_visit_time', 'between time', $daterange)
-                        ->group('time')
-                        ->column(
-                            'UNIX_TIMESTAMP(FROM_UNIXTIME(`last_visit_time`, "%Y%m%d")) as time,count(*) as num'
-                        );
-                    break;
-                case 'newCompanyStatistics':
-                    $list = Db::name('Company')
-                        ->where('admin_id',$v['id'])
-                        ->where('collection_time', 'between time', $daterange)
-                        ->group('time')
-                        ->column(
-                            'UNIX_TIMESTAMP(FROM_UNIXTIME(`collection_time`, "%Y%m%d")) as time,count(*) as num'
-                        );
-                    break;
-            }
+            $list = Db::name($db)
+                ->where('admin_id',$v['id'])
+                ->where($field, 'between time', $daterange)
+                ->group('time')
+                ->column($column);
+
             $lists = [];
             $date = [];
             for ($i = $starttime; $i <= $endtime; $i += 86400) {

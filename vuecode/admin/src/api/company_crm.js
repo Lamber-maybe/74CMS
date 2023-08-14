@@ -492,4 +492,33 @@ export function companyCrmClueStatistics(data) {
     data
   })
 }
+//企业风采批量审核列表
+export function allCustomersImg(params) {
+  return request({
+    url: apiArr.companyImgList,
+    method: 'get',
+    params
+  })
+}
+export function companyImgAudit(data) {
+  return request({
+    url: apiArr.companyImgAudit,
+    method: 'post',
+    data
+  })
+}
+export function companyImgDelete(data) {
+  return request({
+    url: apiArr.companyImgDeleteOne,
+    method: 'post',
+    data
+  })
+}
+export function companyImgEdit(data) {
+  return request({
+    url: apiArr.companyImgEdit,
+    method: 'post',
+    data
+  })
+}
 //数据看板接口 end

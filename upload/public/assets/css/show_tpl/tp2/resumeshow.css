@@ -1247,3 +1247,20 @@
   .myImg .el-carousel__arrow--right{
     background: rgba(0,0,0,.4);
   }
+
+.information_left .invalid_resume{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 369px;
+  height: 100%;
+  z-index: 999;
+  background: linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0));
+}
+.information_left .invalid_resume img{
+  display: block;
+  width: 111px;
+  height: 66px;
+  float: right;
+  margin: 34px 42px 0 0;
+}

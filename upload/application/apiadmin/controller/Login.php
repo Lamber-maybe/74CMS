@@ -34,6 +34,9 @@ class Login extends \app\common\controller\Backend
             if (!$admininfo) {
                 $this->ajaxReturn(0, '没有找到用户信息');
             }
+            if (isset($admininfo['status']) && $admininfo['status'] != 1) {
+                $this->ajaxReturn(0, '当前管理员账号已被锁定，请联系超级管理员');
+            }
             $loginReturn = model('Admin')->setLogin($admininfo);
             $this->ajaxReturn(200, '登录成功', $loginReturn);
         }

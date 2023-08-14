@@ -9,7 +9,7 @@
         <img
           :src="
             item.icon == ''
-              ? require('../../../assets/images/index/ap2/' +
+              ? require('../../../assets/images/index/ap4/' +
                   item.alias + '.png')
               : item.icon
           "

@@ -138,6 +138,7 @@ class Weixin extends \app\common\controller\Base
     protected function subscribe($object)
     {
         $data['openid'] = addslashes($object->FromUserName);
+        $data['subscribe_time'] = addslashes($object->CreateTime); // 虚拟关注时间（实际为`关注事件`推送时间）
         $check = model('WechatFans')->where('openid', $data['openid'])->find();
         if ($check === null) {
             model('WechatFans')->save($data);
@@ -248,15 +249,30 @@ class Weixin extends \app\common\controller\Base
 
     protected function outputKeyword($object, $keywordInfo)
     {
-        if ($keywordInfo['return_text'] != '') {
-            $this->outputMessage($object, $keywordInfo['return_text'], 'text');
+        /**
+         * 【ID1000575】
+         * 【优化】关键词自动回复带链接时用超链接
+         * yx - 2023.03.03
+         * 【ID1000595】
+         * 【优化】公众号关键词回复链接
+         * yx - 2023.03.20
+         * [新增]:htmlspecialchars_decode过滤
+         * htmlspecialchars_decode($keywordInfo['return_link'])
+         */
+        if ($keywordInfo['return_text'] != '' && $keywordInfo['return_link'] != '') {
+            $content = "<a href='" . htmlspecialchars_decode($keywordInfo['return_link']) . "'>" . $keywordInfo['return_text'] . "</a>";
+            $this->outputMessage($object, $content, 'text');
+        } else {
+            if ($keywordInfo['return_text'] != '') {
+                $this->outputMessage($object, $keywordInfo['return_text'], 'text');
+            }
+            if ($keywordInfo['return_link'] != '') {
+                $content = "<a href='" . htmlspecialchars_decode($keywordInfo['return_link']) . "'>" . htmlspecialchars_decode($keywordInfo['return_link']) . "</a>";
+                $this->outputMessage($object, $content, 'text');
+            }
         }
         if ($keywordInfo['return_img_mediaid'] != '') {
             $this->outputMessage($object, $keywordInfo['return_img_mediaid'], 'image');
-        }
-        if ($keywordInfo['return_link'] != '') {
-            $content = "<a href='" . $keywordInfo['return_link'] . "'>" . $keywordInfo['return_link'] . "</a>";
-            $this->outputMessage($object, $content, 'text');
         }
     }
 

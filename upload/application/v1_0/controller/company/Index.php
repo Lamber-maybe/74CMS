@@ -4,6 +4,9 @@
  */
 namespace app\v1_0\controller\company;
 
+use app\common\model\Company;
+use think\Db;
+
 class Index extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -259,11 +262,38 @@ class Index extends \app\v1_0\controller\common\Base
     {
         $resume_id = input('post.resume_id/d', 0, 'intval');
         $remark = input('post.remark/s', '', 'trim');
-        model('Resume')
-            ->allowField(true)
-            ->save(['remark' => $remark], ['id' => $resume_id]);
-        $this->writeMemberActionLog($this->userinfo->uid,'备注简历【简历id：'.$resume_id.'，备注内容：'.$remark.'】');
-        $this->ajaxReturn(200, '备注成功');
+
+        $comid = (new Company())->where('uid', $this->userinfo->uid)->value('id');
+
+        try {
+            $remark_info = model('ResumeRemark')
+                ->where('comid', $comid)
+                ->where('resume_id', $resume_id)
+                ->find();
+            if (!isset($remark_info) || empty($remark_info)) {
+                model('ResumeRemark')
+                    ->allowField(true)
+                    ->save(
+                        [
+                            'remark' => $remark,
+                            'comid' => $comid,
+                            'resume_id' => $resume_id
+                        ]
+                    );
+            } else {
+                model('ResumeRemark')
+                    ->allowField(true)
+                    ->save(['remark' => $remark], ['id' => $remark_info['id']]);
+            }
+
+            $this->writeMemberActionLog($this->userinfo->uid, '备注简历【简历id：' . $resume_id . '，备注内容：' . $remark . '】');
+
+            Db::commit();
+            $this->ajaxReturn(200, '备注成功');
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '备注失败', ['err_msg' => $e->getMessage()]);
+        }
     }
     /**
      * 会员中心首页招聘效果统计

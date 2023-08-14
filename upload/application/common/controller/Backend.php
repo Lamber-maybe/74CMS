@@ -44,6 +44,12 @@ class Backend extends \app\common\controller\Base
             if (!$adminInfo) {
                 $this->ajaxReturn(50001, '没有找到用户信息');
             }
+
+            # 50003后台锁定管理员
+            if (isset($adminInfo['status']) && $adminInfo['status'] != 1) {
+                $this->ajaxReturn(50003, '当前管理员账号已被锁定，请联系超级管理员');
+            }
+
             // 获取当前角色下的所有权限
             $roleinfo = model('AdminRole')->find($adminInfo['role_id']);
 

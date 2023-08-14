@@ -59,13 +59,13 @@ class Clue extends Backend
         switch ($sort_type) {
             case 'collection_time':
                 // 领取时间
-                $order = 'a.collection_time ' . $sort;
+                $order = 'a.collection_time ' . $sort . ',a.id DESC';
                 break;
             default:
                 if ($list_type === 2) {
-                    $order = 'a.collection_time DESC,a.updatetime DESC';
+                    $order = 'a.collection_time DESC,a.updatetime DESC,a.id DESC';
                 } else {
-                    $order = 'a.updatetime DESC';
+                    $order = 'a.updatetime DESC,a.id DESC';
                 }
                 break;
         }
@@ -211,7 +211,8 @@ class Clue extends Backend
         $district1 = !empty($category_district_data[$crm_clue['district1']]) ? $category_district_data[$crm_clue['district1']] : '';
         $district2 = !empty($category_district_data[$crm_clue['district2']]) ? $category_district_data[$crm_clue['district2']] : '';
         $district3 = !empty($category_district_data[$crm_clue['district3']]) ? $category_district_data[$crm_clue['district3']] : '';
-        $crm_clue['district'] = $district1 . $district2 . $district3;
+        $crm_clue['district'] = [$crm_clue['district1'],$crm_clue['district2'],$crm_clue['district3']];
+        $crm_clue['district_text'] = $district1 . $district2 . $district3;
         $crm_clue['last_visit_time'] = !empty($crm_clue['last_visit_time']) ? date('Y-m-d H:i:s', $crm_clue['last_visit_time']) : '从未跟进';
         $crm_clue['visit_count'] = model('b2bcrm.CrmFollowUp')->where(['clue_id' => $clue_id])->count();
         $crm_clue['scale'] = empty($crm_clue['scale']) ? null : $crm_clue['scale'];
@@ -325,6 +326,32 @@ class Clue extends Backend
                         $can_num = 0;
                     }
                     $this->ajaxReturn(500, '当天领取限制【' . $sys_config['thread_receive_limit'] . '】个，你已领取【' . $count . '】个，还可领取【' . $can_num . '】个！', []);
+                }
+            }
+
+            /**
+             * 【ID1000518】、
+             * 【新增】CRM设置客户总数、线索总数限定
+             * yx - 2023.03.21
+             * [新增]:
+             */
+            if (isset($sys_config['thread_total_limit'])) {
+                if ($sys_config['thread_total_limit'] == 0) {
+                    $this->ajaxReturn(500, '当前销售线索总数上限不允许领取', []);
+                }
+                $thread_total_count = model('b2bcrm.CrmClue')
+                    ->where([
+                        'admin_id' => $this->admininfo->id,
+                        'is_customer' => 0
+                    ])
+                    ->count();
+
+                if (($thread_total_count + $clue_count) > $sys_config['thread_total_limit']) {
+                    $total_can_num = $sys_config['thread_total_limit'] - $thread_total_count;
+                    if ($total_can_num < 0) {
+                        $total_can_num = 0;
+                    }
+                    $this->ajaxReturn(500, '线索最大领取上限【' . $sys_config['thread_total_limit'] . '】个，你已领取【' . $thread_total_count . '】个，还可领取【' . $total_can_num . '】个！', []);
                 }
             }
 
@@ -468,6 +495,29 @@ class Clue extends Backend
         }
         $sale = input('post.sale/d', 0, '');
         if ($sale > 0) {
+            /**
+             * 【ID1000518】、
+             * 【新增】CRM设置客户总数、线索总数限定
+             * yx - 2023.03.21
+             * [新增]:
+             */
+            $thread_total_limit = model('b2bcrm.CrmSysConfig')->getConfigByKey('thread_total_limit');
+            if (isset($thread_total_limit)) {
+                if ($thread_total_limit == 0) {
+                    $this->ajaxReturn(500, '当前销售线索总数上限不允许领取', []);
+                }
+                $thread_total_count = model('b2bcrm.CrmClue')
+                    ->where([
+                        'admin_id' => $this->admininfo->id,
+                        'is_customer' => 0
+                    ])
+                    ->count();
+
+                if (($thread_total_count + 1) > $thread_total_limit) {
+                    $this->ajaxReturn(500, '已达线索总数上限', []);
+                }
+            }
+
             $input_data['admin_id'] = $this->admininfo->id;
             $input_data['collection_time'] = time(); // 添加领取时间
         }
@@ -568,7 +618,7 @@ class Clue extends Backend
                 $this->ajaxReturn(500, '线索名称已存在');
             }
         }
-        if (empty($input['mobile']) && empty($input['telephone'])){
+        if (empty($input['mobile']) && empty($input['telephone'])) {
             $this->ajaxReturn(500, '请填写联系手机或座机二选一');
         }
         if (!empty($input['mobile']) && !fieldRegex($input['mobile'], 'mobile')) {
@@ -692,7 +742,7 @@ class Clue extends Backend
 
     public function adminlist()
     {
-        return model('Admin')->column('id,username', 'id');
+        return model('Admin')->where('status', 1)->column('id,username', 'id');
     }
 
     public function adminlists()
@@ -1031,8 +1081,7 @@ class Clue extends Backend
         if (empty($contactInfo['contact'])) {
             $this->ajaxReturn(500, '请先完善联系人姓名再来设置');
         }
-        if (!$contactInfo['mobile'] && !$contactInfo['telephone'])
-        {
+        if (!$contactInfo['mobile'] && !$contactInfo['telephone']) {
             $this->ajaxReturn(500, '手机号和座机都未填写，不能设置为主要联系方式');
         }
         // 手机号格式正确才可以设为主要
@@ -1159,8 +1208,7 @@ class Clue extends Backend
             'email' => input('post.email/s', '', 'trim'),
             'sex' => input('post.sex/d', 0)
         ];
-        if (empty($inputData['mobile']) && empty($inputData['telephone']))
-        {
+        if (empty($inputData['mobile']) && empty($inputData['telephone'])) {
             $this->ajaxReturn(500, '请填写手机号或公司座机二选一');
         }
         $validate = new Validate($this->rule, $this->message);
@@ -1273,8 +1321,7 @@ class Clue extends Backend
             'email' => input('post.email/s', '', 'trim'),
             'sex' => input('post.sex/d', 0)
         ];
-        if (empty($inputData['mobile']) && empty($inputData['telephone']))
-        {
+        if (empty($inputData['mobile']) && empty($inputData['telephone'])) {
             $this->ajaxReturn(500, '请填写手机号或公司座机二选一');
         }
         $validate = new Validate($this->rule, $this->message);
@@ -1624,9 +1671,9 @@ class Clue extends Backend
             $crmClueRes = model('b2bcrm.CrmClue')->isUpdate('true')
                 ->save(
                     [
-                    'is_customer' => 1,
-                    'utype' => 1,
-                    'uid' => $companyInfo['uid']
+                        'is_customer' => 1,
+                        'utype' => 1,
+                        'uid' => $companyInfo['uid']
                     ],
                     ['id' => $clueId]
                 );
@@ -1637,7 +1684,7 @@ class Clue extends Backend
                 ->isUpdate(true)
                 ->save(
                     [
-                    'uid' => $companyInfo['uid']
+                        'uid' => $companyInfo['uid']
                     ],
                     [
                         'clue_id' => $clueId,

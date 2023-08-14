@@ -13,8 +13,8 @@
         <el-button
           style="float: right; padding: 0;"
           type="text"
-          @click="onSubmit('form')"
           :disabled="issubmit"
+          @click="onSubmit('form')"
         >
           保存
         </el-button>
@@ -49,11 +49,11 @@
             <Toolbar
               style="border-bottom: 1px solid #ccc"
               :editor="editor"
-              :defaultConfig="toolbarConfig"
+              :default-config="toolbarConfig"
             />
             <Editor
-              style="height: 400px; overflow-y: hidden;"
               v-model="form.content"
+              style="height: 400px; overflow-y: hidden;"
               @onCreated="onCreated"
             />
           </div>
@@ -67,8 +67,15 @@
           <el-switch v-model="form.must_company_audit" />
         </el-form-item>
         <el-form-item label="要求简历完整度">
-          <el-input v-model="form.min_complete_percent" type="number" />
+          <el-input v-model="form.min_complete_percent" type="number" :min="0" />
         </el-form-item>
+
+        <!--        浏览次数-->
+        <el-form-item label="浏览次数">
+          <el-input v-model="form.click" type="number" :min="0" />
+        </el-form-item>
+        <!--        浏览次数-->
+
         <el-form-item required label="联系客服" prop="qrcode">
           <el-upload
             class="thumb-uploader"
@@ -82,7 +89,7 @@
             <i v-else class="el-icon-plus thumb-uploader-icon" />
           </el-upload>
         </el-form-item>
-        <el-form-item  label="上传图片" prop="thumb">
+        <el-form-item label="上传图片" prop="thumb">
           <div class="upload-wrapper">
             <div class="upload-item">
               <el-upload
@@ -97,11 +104,11 @@
                 <i v-else class="el-icon-plus thumb-uploader-icon" />
               </el-upload>
               <div class="smalltips">
-               缩略图
+                缩略图
               </div>
               <div class="sp">
                 <i class="el-icon-info" />
-               建议尺寸：245*145
+                建议尺寸：245*145
               </div>
             </div>
             <div class="upload-item">
@@ -117,11 +124,11 @@
                 <i v-else class="el-icon-plus thumb-uploader-icon" />
               </el-upload>
               <span class="smalltips">
-               pc头图
+                pc头图
               </span>
               <span class="sp">
                 <i class="el-icon-info" />
-               建议尺寸：1200*330
+                建议尺寸：1200*330
               </span>
             </div>
             <div class="upload-item">
@@ -137,17 +144,17 @@
                 <i v-else class="el-icon-plus thumb-uploader-icon" />
               </el-upload>
               <span class="smalltips ">
-               触屏头图
+                触屏头图
               </span>
               <span class=" sp">
                 <i class="el-icon-info" />
-               建议尺寸：750*280
+                建议尺寸：750*280
               </span>
             </div>
           </div>
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
+          <el-button type="primary" :disabled="issubmit" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/jobfairol/list')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -183,7 +190,7 @@ export default {
       }
     }
     return {
-      issubmit:false,
+      issubmit: false,
       editor: null,
       toolbarConfig: {
         excludeKeys: [
@@ -210,7 +217,8 @@ export default {
         enable_setmeal_id: [],
         must_company_audit: false,
         min_complete_percent: '',
-        qrcode: ''
+        qrcode: '',
+        click: 0
       },
       rules: {
         title: [

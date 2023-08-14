@@ -363,8 +363,17 @@ class JobSearchEngine
              * 【新增】搜索关键词配置项，全文搜，模糊搜方式可选
              * yx - 2023.02.17
              * [新增]:
+             * $like_sql = " (`jobname` like '%" . $this->keyword . "%' OR `companyname` like '%" . $this->keyword . "%' OR `company_nature` like '%" . $this->keyword . "%') ";
              */
-            $like_sql = " (`jobname` like '%" . $this->keyword . "%' OR `companyname` like '%" . $this->keyword . "%' OR `company_nature` like '%" . $this->keyword . "%') ";
+            /**
+             * 【ID1000568】
+             * 【排查】模糊搜索，没关联职位类型
+             * 【说明】：数据库新增`job_category`字段，记录`jobcategory`
+             * yx - 2023.03.14
+             * [修改]:
+             * $like_sql = " (`jobname` like '%" . $this->keyword . "%' OR `companyname` like '%" . $this->keyword . "%' OR `company_nature` like '%" . $this->keyword . "%' OR `job_category` like '%" . $this->keyword . "%') ";
+             */
+            $like_sql = " (`jobname` like '%" . $this->keyword . "%' OR `companyname` like '%" . $this->keyword . "%' OR `company_nature` like '%" . $this->keyword . "%' OR `job_category` like '%" . $this->keyword . "%') ";
             $this->where .=
                 $this->where == '' ? $like_sql : ' AND ' . $like_sql;
             $this->field = 'a.id,company_id,refreshtime,stick,jobname,companyname,company_nature';

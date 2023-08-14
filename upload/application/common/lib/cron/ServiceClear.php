@@ -132,9 +132,11 @@ class ServiceClear
          * 取差集即为错误数据
          */
         $tag_pids = $model
-            ->where('type', 'service_tag')
+            ->where('type', 'tag')
             ->column('pid');
-        $tag_ids = $resumeModel->where(['service_tag' => ['neq', '']])->column('id');
+        $tag_ids = $resumeModel->where(['service_tag' => ['neq', '']])
+            ->where(['service_tag' => ['neq', 0]])
+            ->column('id');
         $error_tag_ids = array_diff($tag_ids, $tag_pids);
         if (!empty($error_tag_ids)) {
             $tagWhere = [

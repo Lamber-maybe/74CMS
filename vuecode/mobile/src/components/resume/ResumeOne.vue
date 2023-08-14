@@ -17,6 +17,9 @@
 		<van-skeleton title avatar :row="10" :loading="mainLoading">
 			<div class="box_1">
 				<div class="content">
+          <div class="invalid_resume" v-if="is_invalid===1">
+            <img src="../../assets/images/resumeshow/invalid_resume.png">
+          </div>
 					<div class="up">
 						<div class="avatar_box">
 							<img :src="base_info.photo_img_src" :alt="base_info.fullname" />
@@ -566,7 +569,8 @@ export default {
         job_apply_id: ''
       },
       showUpgradePackage: false,
-      LoginType: 0
+      LoginType: 0,
+      is_invalid: 1
     }
   },
   created () {
@@ -639,7 +643,8 @@ export default {
         phone_protect_open,
         phone_protect_timeout,
         cur_com_mobile,
-        phone_protect_type
+        phone_protect_type,
+        is_invalid
       } = {
         ...res.data
       }
@@ -673,6 +678,7 @@ export default {
       this.phone_protect_timeout = phone_protect_timeout
       this.cur_com_mobile = cur_com_mobile
       this.phone_protect_type = phone_protect_type
+      this.is_invalid = is_invalid
       let wechatShareInfo = {
         fullname: base_info.fullname,
         sex: base_info.sex == 1 ? '男' : '女',
@@ -2065,6 +2071,22 @@ export default {
 
 .box_1 {
 	.content {
+    .invalid_resume{
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 187px;
+      height: 40px;
+      z-index: 999;
+      background: linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0));
+      img{
+        display: block;
+        width: 79px;
+        height: 47px;
+        float: right;
+        margin: 36px 30px 0 0;
+      }
+    }
 		.share {
 			position: absolute;
 			right: 16px;

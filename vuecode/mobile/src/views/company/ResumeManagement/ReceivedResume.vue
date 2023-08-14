@@ -141,7 +141,9 @@
       <van-form @submit="submitRemark">
         <van-field
           type="textarea"
-          rows="2"
+          maxlength="50"
+          rows="3"
+          show-word-limit
           name="remark"
           v-model="remark_item.remark"
           label=""
@@ -384,11 +386,16 @@ export default {
       http
         .post(api.remark_resume, values)
         .then((res) => {
-          this.dataset.forEach(element => {
-            if (element.resume_id == this.remark_item.resume_id) {
-              element.remark = values.remark
-            }
-          })
+          if (res.code == 200) {
+            this.$notify({ type: 'success', message: res.message })
+            this.dataset.forEach(element => {
+              if (element.resume_id == this.remark_item.resume_id) {
+                element.remark = values.remark
+              }
+            })
+          } else {
+            this.$notify({ type: 'error', message: res.message })
+          }
           this.showRemark = false
         })
         .catch(() => {})

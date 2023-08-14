@@ -320,7 +320,7 @@
 								<img src="{#$vo.photo_img_src#}" />
 							</div>
 							<div>
-								<div class="list_name_box" data-id="{#$vo.id#}">
+								<div class="list_name_box" data-id="{#$vo.id#}" id="resume_box_{#$vo.id#}">
 									<a target="_blank" class="b_name"
 										href="{#:url("index/resume/show",["id"=>$vo.id])#}">{#$vo.fullname#}</a>
 									{#eq name="vo.high_quality" value="1"#}
@@ -353,8 +353,9 @@
 							</div>
 							<div class="btn">
 								<p>{#$vo.refreshtime#}</p>
-								<button
-									onclick="javascript:window.open('{#:url("index/resume/show",["id"=>$vo.id])#}')">查看简历</button>
+								<button class="list_show_btn"
+										data-url="{#:url('index/resume/show',['id'=>$vo.id])#}"
+										data-id="{#$vo.id#}">查看简历</button>
 							</div>
 						</div>
 						{#eq name="vo.stick" value="1"#}
@@ -673,7 +674,7 @@
 				localStorage.setItem('selectComArr', []); //企业
 			}
 			var selectArrResumeOnload = localStorage.getItem('selectResumeArr') == null || 
-			localStorage.getItem('selectResumeArr') == null || 
+			localStorage.getItem('selectResumeArr') == 'null' ||
 			localStorage.getItem('selectResumeArr') == '' || 
 			localStorage.getItem('selectResumeArr') == undefined ? [] : JSON.parse(
 					localStorage.getItem('selectResumeArr'))
@@ -699,6 +700,20 @@
 						$(this).addClass('list_name_box_active')
 					}
 				}
+			});
+			// 【查看简历】点击变色
+			$('.list_show_btn').click(function(e) {
+				var select_id = e.currentTarget.dataset.id
+				var url = e.currentTarget.dataset.url
+				if (!$('#resume_box_'+select_id).hasClass('list_name_box_active')) {
+					selectResumeArr.push(select_id)
+					var selectResumeArrStr = JSON.stringify(selectResumeArr)
+					localStorage.setItem('selectResumeArr', selectResumeArrStr)
+					if (!$('#resume_box_'+select_id).hasClass('list_name_box_active')) {
+						$('#resume_box_'+select_id).addClass('list_name_box_active')
+					}
+				}
+				window.open(url)
 			});
 			// 简历点击标题变色 end
 		});

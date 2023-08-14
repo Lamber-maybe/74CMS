@@ -12,7 +12,7 @@
       </swiper>
     </div>
     <div class="b2 clearfix" v-else>
-      <div class="item" v-for="(item,index) in dataset" :key="index">
+      <div class="item" v-for="(item,index) in dataset" :key="index" @click="beforeJump(index)">
         <img :src="item.icon == '' ? require('../../../assets/images/index/ap3/' + item.alias + '.png') : item.icon" alt="" />
         <div class="des">{{ item.title }}</div>
       </div>

@@ -1,43 +1,46 @@
 <?php
+
 namespace app\index\controller;
 
 class Resume extends \app\index\controller\Base
 {
-    public function _initialize(){
+    public function _initialize()
+    {
         parent::_initialize();
-        $this->assign('navSelTag','resume');
+        $this->assign('navSelTag', 'resume');
     }
+
     public function index()
     {
-        if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'resumelist',302);
+        if (is_mobile_request() === true) {
+            $this->redirect(config('global_config.mobile_domain') . 'resumelist', 302);
             exit;
         }
         $keyword = request()->route('keyword/s', '', 'trim,addslashes');
-        $listtype = request()->route('listtype/s','','trim');
-        $category1 = request()->route('c1/d',0,'intval');
-        $category2 = request()->route('c2/d',0,'intval');
-        $category3 = request()->route('c3/d',0,'intval');
-        $district1 = request()->route('d1/d',0,'intval');
-        $district2 = request()->route('d2/d',0,'intval');
-        $district3 = request()->route('d3/d',0,'intval');
-        $experience = request()->route('exp/d',0,'intval');
+        $listtype = request()->route('listtype/s', '', 'trim');
+        $category1 = request()->route('c1/d', 0, 'intval');
+        $category2 = request()->route('c2/d', 0, 'intval');
+        $category3 = request()->route('c3/d', 0, 'intval');
+        $district1 = request()->route('d1/d', 0, 'intval');
+        $district2 = request()->route('d2/d', 0, 'intval');
+        $district3 = request()->route('d3/d', 0, 'intval');
+        $experience = request()->route('exp/d', 0, 'intval');
         $tag = request()->route('tag/s', '', 'trim');
-        $sex = request()->route('sex/d',0,'intval');
-        $minage = request()->route('a1/d',0,'intval');
-        $maxage = request()->route('a2/d',0,'intval');
-        $trade = request()->route('trade/d',0,'intval');
-        $major = request()->route('major/d',0,'intval');
-        $education = request()->route('edu/d',0,'intval');
-        $nature = request()->route('nat/d',0,'intval');
-        $minwage = request()->route('w1/d',0,'intval');
-        $maxwage = request()->route('w2/d',0,'intval');
-        $settr = request()->route('settr/d',0,'intval');
-        $photo = request()->route('photo/d',0,'intval');
-        $img = request()->route('img/d',0,'intval');
+        $sex = request()->route('sex/d', 0, 'intval');
+        $minage = request()->route('a1/d', 0, 'intval');
+        $maxage = request()->route('a2/d', 0, 'intval');
+        $trade = request()->route('trade/d', 0, 'intval');
+        $major = request()->route('major/d', 0, 'intval');
+        $education = request()->route('edu/d', 0, 'intval');
+        $nature = request()->route('nat/d', 0, 'intval');
+        $minwage = request()->route('w1/d', 0, 'intval');
+        $maxwage = request()->route('w2/d', 0, 'intval');
+        $settr = request()->route('settr/d', 0, 'intval');
+        $photo = request()->route('photo/d', 0, 'intval');
+        $img = request()->route('img/d', 0, 'intval');
         $sort = request()->route('sort/s', '', 'trim');
-        $current_page = request()->get('page/d',1,'intval');
-        $pagesize = request()->get('pagesize/d',10,'intval');
+        $current_page = request()->get('page/d', 1, 'intval');
+        $pagesize = request()->get('pagesize/d', 10, 'intval');
         $selectedTagArr = [];
 
         if ($keyword != '') {
@@ -45,19 +48,19 @@ class Resume extends \app\index\controller\Base
         }
         $subsiteCondition = get_subsite_condition();
         $subsite_district_level = 0;
-        if(!empty($subsiteCondition)){
+        if (!empty($subsiteCondition)) {
             foreach ($subsiteCondition as $key => $value) {
-                if($key=='district1'){
+                if ($key == 'district1') {
                     $district1 = $value;
                     $subsite_district_level = 1;
                     break;
                 }
-                if($key=='district2'){
+                if ($key == 'district2') {
                     $district2 = $value;
                     $subsite_district_level = 2;
                     break;
                 }
-                if($key=='district3'){
+                if ($key == 'district3') {
                     $district3 = $value;
                     $subsite_district_level = 3;
                     break;
@@ -137,14 +140,14 @@ class Resume extends \app\index\controller\Base
         if ($settr > 0) {
             $params['settr'] = $settr;
         }
-        if($listtype=='great'){
+        if ($listtype == 'great') {
             $params['high_quality'] = 1;
         }
         if ($sort != '') {
             $params['sort'] = $sort;
         }
 
-        if ($this->visitor!==null && $this->visitor['utype'] == 1) {
+        if ($this->visitor !== null && $this->visitor['utype'] == 1) {
             $shield_find = model('Shield')
                 ->where('company_uid', $this->visitor['uid'])
                 ->find();
@@ -154,8 +157,8 @@ class Resume extends \app\index\controller\Base
         }
 
 
-        if(config('global_config.resume_search_login')==1){
-            if($this->visitor===null){
+        if (config('global_config.resume_search_login') == 1) {
+            if ($this->visitor === null) {
                 $show_mask = 1;
                 /**
                  * 【ID1000524】
@@ -172,14 +175,14 @@ class Resume extends \app\index\controller\Base
                 }
                 $params['count_total'] = 0;
                 $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.resume_search_login_num')==0?1:config('global_config.resume_search_login_num');
-            }else{
+                $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
+            } else {
                 $show_mask = 0;
                 $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
             }
-        }else{
+        } else {
             $show_mask = 0;
             $params['count_total'] = 1;
             $params['current_page'] = $current_page;
@@ -194,27 +197,27 @@ class Resume extends \app\index\controller\Base
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
 
-        if($this->subsite!==null && $this->subsite->district3>0){
+        if ($this->subsite !== null && $this->subsite->district3 > 0) {
             $district_level = 0;
             $category_district = [];
-        }else if($district2>0){
+        } else if ($district2 > 0) {
             $district_level = 3;
             $category_district = model('CategoryDistrict')->getCache($district2);
-        }else if($district1>0){
+        } else if ($district1 > 0) {
             $district_level = 2;
             $category_district = model('CategoryDistrict')->getCache($district1);
-        }else {
+        } else {
             $district_level = 1;
             $category_district = model('CategoryDistrict')->getCache('0');
         }
         $options_district = [];
         foreach ($category_district as $key => $value) {
-            if($district_level==1){
-                $params = ['d1'=>$key,'d2'=>null,'d3'=>null];
-            }else if($district_level==2){
-                $params = ['d1'=>$district1,'d2'=>$key,'d3'=>null];
-            }else if($district_level==3){
-                $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
+            if ($district_level == 1) {
+                $params = ['d1' => $key, 'd2' => null, 'd3' => null];
+            } else if ($district_level == 2) {
+                $params = ['d1' => $district1, 'd2' => $key, 'd3' => null];
+            } else if ($district_level == 3) {
+                $params = ['d1' => $district1, 'd2' => $district2, 'd3' => $key];
             }
 
             $arr['id'] = $key;
@@ -224,24 +227,24 @@ class Resume extends \app\index\controller\Base
         }
 
 
-        if($category2>0){
+        if ($category2 > 0) {
             $category_level = 3;
             $category_category = model('CategoryJob')->getCache($category2);
-        }else if($category1>0){
+        } else if ($category1 > 0) {
             $category_level = 2;
             $category_category = model('CategoryJob')->getCache($category1);
-        }else {
+        } else {
             $category_level = 1;
             $category_category = model('CategoryJob')->getCache('0');
         }
         $options_categoryjob = [];
         foreach ($category_category as $key => $value) {
-            if($category_level==1){
-                $params = ['c1'=>$key,'c2'=>null,'c3'=>null];
-            }else if($category_level==2){
-                $params = ['c1'=>$category1,'c2'=>$key,'c3'=>null];
-            }else if($category_level==3){
-                $params = ['c1'=>$category1,'c2'=>$category2,'c3'=>$key];
+            if ($category_level == 1) {
+                $params = ['c1' => $key, 'c2' => null, 'c3' => null];
+            } else if ($category_level == 2) {
+                $params = ['c1' => $category1, 'c2' => $key, 'c3' => null];
+            } else if ($category_level == 3) {
+                $params = ['c1' => $category1, 'c2' => $category2, 'c3' => $key];
             }
 
             $arr['id'] = $key;
@@ -273,59 +276,61 @@ class Resume extends \app\index\controller\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $seoData['keyword'] = $keyword;
-        if($district3>0){
+        if ($district3 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district3]) ? $category_district_data[$district3] : '';
-        }else if($district2>0){
+        } else if ($district2 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district2]) ? $category_district_data[$district2] : '';
-        }else if($district1>0){
+        } else if ($district1 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district1]) ? $category_district_data[$district1] : '';
-        }else{
+        } else {
             $seoData['citycategory'] = '';
         }
-        if($category3>0){
+        if ($category3 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category3]) ? $category_job_data[$category3] : '';
-        }else if($category2>0){
+        } else if ($category2 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category2]) ? $category_job_data[$category2] : '';
-        }else if($category1>0){
+        } else if ($category1 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category1]) ? $category_job_data[$category1] : '';
-        }else{
+        } else {
             $seoData['jobcategory'] = '';
         }
-        $this->initPageSeo('resumelist',$seoData);
+        $this->initPageSeo('resumelist', $seoData);
 
-        $this->assign('subsite_district_level',$subsite_district_level);
-        $this->assign('selectedTagArr',$selectedTagArr);
-        $this->assign('currentPage',$current_page);
-        $this->assign('prevPage',$current_page-1);
-        $this->assign('nextPage',$current_page+1);
-        $this->assign('pagerHtml',$pagerHtml);
-        $this->assign('dataset',$return);
-        $this->assign('district_level',$district_level);
-        $this->assign('options_district',$options_district);
-        $this->assign('category_level',$category_level);
-        $this->assign('options_categoryjob',$options_categoryjob);
-        $this->assign('options_exp',$options_exp);
-        $this->assign('options_tag',$options_tag);
-        $this->assign('options_sex',$options_sex);
-        $this->assign('options_edu',$options_edu);
-        $this->assign('options_nature',$options_nature);
-        $this->assign('options_trade',$options_trade);
-        $this->assign('options_major',$options_major);
-        $this->assign('show_mask',$show_mask);
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->assign('subsite_district_level', $subsite_district_level);
+        $this->assign('selectedTagArr', $selectedTagArr);
+        $this->assign('currentPage', $current_page);
+        $this->assign('prevPage', $current_page - 1);
+        $this->assign('nextPage', $current_page + 1);
+        $this->assign('pagerHtml', $pagerHtml);
+        $this->assign('dataset', $return);
+        $this->assign('district_level', $district_level);
+        $this->assign('options_district', $options_district);
+        $this->assign('category_level', $category_level);
+        $this->assign('options_categoryjob', $options_categoryjob);
+        $this->assign('options_exp', $options_exp);
+        $this->assign('options_tag', $options_tag);
+        $this->assign('options_sex', $options_sex);
+        $this->assign('options_edu', $options_edu);
+        $this->assign('options_nature', $options_nature);
+        $this->assign('options_trade', $options_trade);
+        $this->assign('options_major', $options_major);
+        $this->assign('show_mask', $show_mask);
+        $this->assign('pageHeader', $this->pageHeader);
         return $this->fetch('index');
     }
+
     public function contrast()
     {
-        $this->pageHeader['title'] = '简历对比 - '.$this->pageHeader['title'];
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->pageHeader['title'] = '简历对比 - ' . $this->pageHeader['title'];
+        $this->assign('pageHeader', $this->pageHeader);
         return $this->fetch('contrast');
     }
+
     public function show()
     {
-        $id = request()->route('id/d',0,'intval');
-        if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'resume/'.$id,302);
+        $id = request()->route('id/d', 0, 'intval');
+        if (is_mobile_request() === true) {
+            $this->redirect(config('global_config.mobile_domain') . 'resume/' . $id, 302);
             exit;
         }
         $field_rule_data = model('FieldRule')->getCache();
@@ -355,31 +360,31 @@ class Resume extends \app\index\controller\Base
         //读取页面缓存配置
         $pageCache = model('Page')->getCache('resumeshow');
         //如果缓存有效期为0，则不使用缓存
-        if($pageCache['expire']>0){
-            $return = model('Page')->getCacheByAlias('resumeshow',$id);
-        }else{
+        if ($pageCache['expire'] > 0) {
+            $return = model('Page')->getCacheByAlias('resumeshow', $id);
+        } else {
             $return = false;
         }
-        if(!$return){
-            $return = $this->writeShowCache($id,$resume_module,$pageCache);
-            if($return===false){
-                abort(404,'页面不存在');
+        if (!$return) {
+            $return = $this->writeShowCache($id, $resume_module, $pageCache);
+            if ($return === false) {
+                abort(404, '页面不存在');
             }
         }
         $this->assign('phone_protect_open', false);
-        if(intval(config('global_config.alicloud_phone_protect_open'))){
+        if (intval(config('global_config.alicloud_phone_protect_open'))) {
             $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
-            if(in_array(2, $protectTarget)){
+            if (in_array(2, $protectTarget)) {
                 $this->assign('phone_protect_open', true);
             }
         }
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
-        $return['share_url'] = config('global_config.mobile_domain').'resume/'.$return['base_info']['id'];
-        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']],$this->visitor,true);
-        $this->pageHeader['title'] = $return['base_info']['fullname'].'的简历 - '.$this->pageHeader['title'];
-        $this->pageHeader['keywords'] = $return['base_info']['fullname'].'的简历,'.$this->pageHeader['keywords'];
-        $this->pageHeader['description'] = $return['base_info']['fullname'].'的简历,'.$this->pageHeader['description'];
+        $return['share_url'] = config('global_config.mobile_domain') . 'resume/' . $return['base_info']['id'];
+        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']], $this->visitor, true);
+        $this->pageHeader['title'] = $return['base_info']['fullname'] . '的简历 - ' . $this->pageHeader['title'];
+        $this->pageHeader['keywords'] = $return['base_info']['fullname'] . '的简历,' . $this->pageHeader['keywords'];
+        $this->pageHeader['description'] = $return['base_info']['fullname'] . '的简历,' . $this->pageHeader['description'];
         $seoData['fullname'] = $return['base_info']['fullname'];
         $seoData['sex'] = $return['base_info']['sex_text'];
         $seoData['education'] = $return['base_info']['education_text'];
@@ -425,7 +430,7 @@ class Resume extends \app\index\controller\Base
             }
         }
 
-        $this->initPageSeo('resumeshow',$seoData);
+        $this->initPageSeo('resumeshow', $seoData);
 
         // 附件简历
         $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['rid' => $id]);
@@ -435,13 +440,15 @@ class Resume extends \app\index\controller\Base
             $return['enclosure_resume'] = '';
         }
 
-        $this->assign('return',$return);
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->assign('return', $return);
+        $this->assign('pageHeader', $this->pageHeader);
 
         $resume_show_tpl = !empty(config('global_config.resume_show_tpl')) ? config('global_config.resume_show_tpl') : 'def';
-        return $this->fetch('resume/showTpl/'.$resume_show_tpl.'/show');
+        return $this->fetch('resume/showTpl/' . $resume_show_tpl . '/show');
     }
-    protected function writeShowCache($id,$resume_module,$pageCache){
+
+    protected function writeShowCache($id, $resume_module, $pageCache)
+    {
         $where['id'] = $id;
         $basic = model('Resume')
             ->where($where)
@@ -532,53 +539,69 @@ class Resume extends \app\index\controller\Base
             ->where(['rid' => ['eq', $basic['id']]])
             ->select();
         $intention_list = [];
-        foreach ($intention_data as $key => $value) {
-            $tmp_arr = [];
-            $tmp_arr['nature_text'] = isset(
-                model('Resume')->map_nature[$value['nature']]
-            )
-                ? model('Resume')->map_nature[$value['nature']]
-                : '全职';
-            $tmp_arr['category_text'] = isset(
-                $category_job_data[$value['category']]
-            )
-                ? $category_job_data[$value['category']]
-                : '';
-            $tmp_arr['district_text'] = isset(
-                $category_district_data[$value['district']]
-            )
-                ? $category_district_data[$value['district']]
-                : '';
-            $tmp_arr['wage_text'] = model('BaseModel')->handle_wage(
-                $value['minwage'],
-                $value['maxwage'],
-                0
-            );
-            $tmp_arr['trade_text'] = isset(
-                $category_data['QS_trade'][$value['trade']]
-            )
-                ? $category_data['QS_trade'][$value['trade']]
-                : '';
+        if (isset($intention_data) && !empty($intention_data)) {
+            $hava_intention = 1; // 有求职意向
+            foreach ($intention_data as $key => $value) {
+                $tmp_arr = [];
+                $tmp_arr['nature_text'] = isset(
+                    model('Resume')->map_nature[$value['nature']]
+                )
+                    ? model('Resume')->map_nature[$value['nature']]
+                    : '全职';
+                $tmp_arr['category_text'] = isset(
+                    $category_job_data[$value['category']]
+                )
+                    ? $category_job_data[$value['category']]
+                    : '';
+                $tmp_arr['district_text'] = isset(
+                    $category_district_data[$value['district']]
+                )
+                    ? $category_district_data[$value['district']]
+                    : '';
+                $tmp_arr['wage_text'] = model('BaseModel')->handle_wage(
+                    $value['minwage'],
+                    $value['maxwage'],
+                    0
+                );
+                $tmp_arr['trade_text'] = isset(
+                    $category_data['QS_trade'][$value['trade']]
+                )
+                    ? $category_data['QS_trade'][$value['trade']]
+                    : '';
 
-            // 【新增】求职状态唯一展示
-            $return['base_info']['nature_text_unique'] = !empty($return['base_info']['nature_text_unique']) ? $return['base_info']['nature_text_unique'] : $tmp_arr['nature_text'];
-            // 【新增】薪资唯一展示
-            $return['base_info']['wage_text_unique'] = !empty($return['base_info']['wage_text_unique']) ? $return['base_info']['wage_text_unique'] : $tmp_arr['wage_text'];
+                // 【新增】求职状态唯一展示
+                $return['base_info']['nature_text_unique'] = !empty($return['base_info']['nature_text_unique']) ? $return['base_info']['nature_text_unique'] : $tmp_arr['nature_text'];
+                // 【新增】薪资唯一展示
+                $return['base_info']['wage_text_unique'] = !empty($return['base_info']['wage_text_unique']) ? $return['base_info']['wage_text_unique'] : $tmp_arr['wage_text'];
 
-            $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
-            $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
-            $intention_list[] = $tmp_arr;
-        }
-        if(!empty($return['base_info']['intention_jobs_text'])){
-            $return['base_info']['intention_jobs_text'] = array_unique($return['base_info']['intention_jobs_text']);
-            $return['base_info']['intention_jobs_text'] = implode(",",$return['base_info']['intention_jobs_text']);
-        }else{
+                $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
+                $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
+                $intention_list[] = $tmp_arr;
+            }
+        } else {
+            $hava_intention = 0; // 无求职意向
+            $return['base_info']['intention_jobs_text'] = '';
+            $return['base_info']['intention_district_text'] = '';
             $return['base_info']['intention_jobs_text'] = '';
         }
-        if(!empty($return['base_info']['intention_district_text'])){
+
+        // 简历审核状态： 0|'待审核';1|'已通过';2|'未通过'
+        if (1 === intval($return['base_info']['audit']) && 1 === $hava_intention) {
+            $return['is_invalid'] = 0;
+        } else {
+            $return['is_invalid'] = 1;
+        }
+
+        if (!empty($return['base_info']['intention_jobs_text'])) {
+            $return['base_info']['intention_jobs_text'] = array_unique($return['base_info']['intention_jobs_text']);
+            $return['base_info']['intention_jobs_text'] = implode(",", $return['base_info']['intention_jobs_text']);
+        } else {
+            $return['base_info']['intention_jobs_text'] = '';
+        }
+        if (!empty($return['base_info']['intention_district_text'])) {
             $return['base_info']['intention_district_text'] = array_unique($return['base_info']['intention_district_text']);
-            $return['base_info']['intention_district_text'] = implode(",",$return['base_info']['intention_district_text']);
-        }else{
+            $return['base_info']['intention_district_text'] = implode(",", $return['base_info']['intention_district_text']);
+        } else {
             $return['base_info']['intention_district_text'] = '';
         }
 
@@ -661,14 +684,14 @@ class Resume extends \app\index\controller\Base
         $return['certificate_list'] = $certificate_list;
 
         $bind_data = model('MemberBind')
-            ->where('uid',$basic['uid'])
-            ->where('type','weixin')
-            ->where('is_subscribe',1)
+            ->where('uid', $basic['uid'])
+            ->where('type', 'weixin')
+            ->where('is_subscribe', 1)
             ->find();
-        $return['bind_weixin'] = $bind_data!==null?1:0;
+        $return['bind_weixin'] = $bind_data !== null ? 1 : 0;
 
-        if($pageCache['expire']>0){
-            model('Page')->writeCacheByAlias('resumeshow',$return,$pageCache['expire'],$id);
+        if ($pageCache['expire'] > 0) {
+            model('Page')->writeCacheByAlias('resumeshow', $return, $pageCache['expire'], $id);
         }
         return $return;
     }
@@ -689,12 +712,12 @@ class Resume extends \app\index\controller\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
-            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->visitor);
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr, $this->visitor);
 
             $photo_arr = $photo_id_arr = [];
             foreach ($resume as $key => $value) {
                 $value['photo_img'] > 0 &&
-                    ($photo_id_arr[] = $value['photo_img']);
+                ($photo_id_arr[] = $value['photo_img']);
             }
             if (!empty($photo_id_arr)) {
                 $photo_arr = model('Uploadfile')->getFileUrlBatch(
@@ -785,9 +808,7 @@ class Resume extends \app\index\controller\Base
                                 $category_data['QS_trade'][$v['trade']];
                         }
                         if ($v['nature']) {
-                            $nature_arr[] = model('Resume')->map_nature[
-                                $v['nature']
-                            ];
+                            $nature_arr[] = model('Resume')->map_nature[$v['nature']];
                         }
                         $wage_arr[0] = model('BaseModel')->handle_wage(
                             $v['minwage'],

@@ -7,6 +7,10 @@
 				<div>
 					<div class="information_box clearfix">
 						<div class="information_left clearfix">
+							<!-- 无效简历标识 -->
+							{#if condition="$return.is_invalid === 1"#}
+							<div class="invalid_resume"><img src="__ROOT__/assets/images/resumeshow/invalid_resume.png"></div>
+							{#/if#}
 							<div class="information_img">
 								<img class="avator" src="{#$return.base_info.photo_img_src#}">
 								{#if condition="$return.base_info.sex == 1"#}
@@ -137,7 +141,7 @@
 					</div>
 					<div class="warning_box clearfix">
 						<p class="warning_txt">
-							<span>招聘过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请</span>
+							<span>在招聘过程中，如遇无效、虚假简历，联系方式不实等情况，请</span>
 							<span @click="doTipoff" class="report_btn">立即举报</span>
 						</p>
 						<div class="lately_data">
@@ -150,6 +154,7 @@
 							<span class="title_item1">求职意向</span>
 							<p class="title_item2"><span>{#$return.base_info.current_text#}</span></p>
 						</div>
+						{#if condition="count($return.intention_list) gt 0"#}
 						<div class="item_box">
 							<div class="intention_item">
 								<p>
@@ -168,6 +173,7 @@
 								</p>
 							</div>
 						</div>
+						{#/if#}
 					</div>
 
 					{#if condition="$return.base_info.specialty!=''"#}
@@ -878,7 +884,8 @@
 			query_id: '',
 			payment: 'wxpay',
 			isPayment: false,
-			showUpgradePackage: false
+			showUpgradePackage: false,
+			preview_id: 0
 		},
 		watch: {
 			'form.interview_date': function(value) {
@@ -1134,6 +1141,7 @@
 					if (res.data.login === true) {
 						that.isLogin = true
 						that.utype = res.data.userinfo.utype
+						that.preview_id = res.data.preview_id
 					}
 				}).catch(function() {})
 			},
@@ -1315,6 +1323,34 @@
 				}
 			},
 			handlerDownPdf: function() {
+				var that = this
+				if (that.utype === 0) {
+					location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+					return false
+				}
+				if (that.preview_id != id) {
+					if (that.utype === 2) {
+						that.$confirm('当前操作需要登录企业账号', '提示', {
+							type: 'warning',
+							confirmButtonText: '去登录'
+						})
+						.then(function() {
+							location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+						})
+						.catch(function() {})
+						return false
+					}
+					if(that.contactData.show_contact === 0) {
+						that.$confirm('当前操作需要先下载简历，确定下载该简历吗？', '提示', {
+							type: 'warning',
+						})
+						.then(function() {
+							that.downloadResume()
+						})
+						.catch(function() {})
+						return false
+					}
+				}
 				window.open(qscms.sitedir + qscms.memberDirname + "/resume_save/" + id)
 			},
 			doTipoff: function() {

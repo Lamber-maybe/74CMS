@@ -189,15 +189,7 @@ class Upgrade extends \app\common\controller\Backend
         $filename = basename($path);
         $dirname = str_replace(strrchr($filename, '.'), '', $filename);
         $unzip_dir = $this->unzip_dir.$dirname.'/file';
-        $mysql_file = $unzip_dir.'/upgrade/index.php';
-        //判断是否有mysql执行文件，有的话需要执行sql
-        if(is_file($mysql_file)){
-            include($mysql_file);
-            $run_result = mysql_run(config('database'));
-            if($run_result['err']==1){
-                $this->ajaxReturn(500, 'sql升级失败');
-            }
-        }
+
         $cover_dir = $unzip_dir.'/cover';
         if(!is_dir($cover_dir)){
             $this->ajaxReturn(500, '覆盖文件失败，没有检测到覆盖包文件');
@@ -212,6 +204,18 @@ class Upgrade extends \app\common\controller\Backend
 
         //覆盖cover文件
         $num = $this->copy_merge($cover_dir,PUBLIC_PATH.'../');
+
+        $mysql_file = $unzip_dir . '/upgrade/index.php';
+        //判断是否有mysql执行文件，有的话需要执行sql
+        if (is_file($mysql_file)) {
+            include($mysql_file);
+            $run_result = mysql_run(config('database'));
+            if ($run_result['err'] == 1) {
+                $err_msg = !empty($run_result['message']) ? $run_result['message'] : '';
+                $this->ajaxReturn(500, 'sql升级失败', ['err_msg' => $err_msg]);
+            }
+        }
+
         //清空压缩包目录和解压目录
         rmdirs($this->save_dir);
         rmdirs($this->unzip_dir);

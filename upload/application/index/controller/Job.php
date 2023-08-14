@@ -13,9 +13,44 @@ class Job extends \app\index\controller\Base
     public function index()
     {
         if (is_mobile_request() === true) {
-            $this->redirect(config('global_config.mobile_domain') . 'joblist', 302);
+            $request_param = request()->param();
+            $m_params = [];
+            $redirect_url = config('global_config.mobile_domain') . 'joblist';
+
+            if (isset($request_param) && !empty($request_param)) {
+                $replace_param = [
+                    'keyword' => 'keyword',
+                    'd1' => 'district1',
+                    'd2' => 'district2',
+                    'd3' => 'district3',
+                    'c1' => 'category1',
+                    'c2' => 'category2',
+                    'c3' => 'category3',
+                    'w1' => 'minwage',
+                    'w2' => 'maxwage',
+                    'edu' => 'education',
+                    'exp' => 'experience',
+                    'settr' => 'settr',
+                    'tag' => 'tag'
+                ];
+                foreach ($request_param as $param => $value) {
+                    if (isset($replace_param[$param])) {
+                        if ($param == 'keyword') {
+                            $value = urldecode($value);
+                        } elseif ($param == 'tag') {
+                            $value = str_replace(",", "_", $value);
+                        }
+                        $m_params[$replace_param[$param]] = $value;
+                    }
+                }
+                $url_query = http_build_query($m_params);
+                $redirect_url .= '?' . $url_query;
+            }
+
+            $this->redirect($redirect_url, 302);
             exit;
         }
+
         $keyword = request()->route('keyword/s', '', 'trim,addslashes');
         $listtype = request()->route('listtype/s', '', 'trim');
         $category1 = request()->route('c1/d', 0, 'intval');

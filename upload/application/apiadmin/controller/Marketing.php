@@ -280,7 +280,7 @@ class Marketing extends Backend
             return [];
         }
 
-        return $model->distinct('jsr.id')->limit($limit_start, $this->pageSize)->select();
+        return $model->distinct('jsr.id')->order('jsr.id', 'desc')->limit($limit_start, $this->pageSize)->select();
 
     }
 

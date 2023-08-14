@@ -165,7 +165,7 @@ export default {
         key_type: '1',
         keyword: '',
         page: 1,
-        pagesize: 15
+        pagesize: 10
       },
       previewShow: false,
       previewCur: {},

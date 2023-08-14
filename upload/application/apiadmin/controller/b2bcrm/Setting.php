@@ -251,7 +251,14 @@ class Setting extends Backend
                     $arr[$v['key']]['remark'] = $v['remark'];
                 }
                 $arr['admin_id'] = model('b2bcrm.CrmAutoAssign')
-                    ->where(['type'=>2])
+                    ->alias('caa')
+                    ->join(
+                        config('database.prefix') . 'admin a',
+                        'caa.admin_id=a.id',
+                        'LEFT'
+                    )
+                    ->where('caa.type', 2) // yx-2023.03.17【剔除已锁定的管理员账号】
+                    ->where('a.status', 1) // yx-2023.03.17【剔除已锁定的管理员账号】
                     ->column('admin_id');
                 $this->ajaxReturn(200, '数据获取成功', $arr);
             }
@@ -549,12 +556,38 @@ class Setting extends Backend
 
         try {
             Db::startTrans();
+
             if (isset($inputdata['customer_allocation_rule']['value']) && $inputdata['customer_allocation_rule']['value'] == 1)
             {
                 if (!is_array($admin_id) || empty($admin_id)) {
                     $this->ajaxReturn(500, '请选择客户自动分配线索的销售');
                 }
                 $this->customerAutoAssign($admin_id);
+            }
+
+            if (isset($inputdata['customer_total_limit']['value']))
+            {
+                $admin_id_arr = model('Admin')->column('id');
+                foreach ($admin_id_arr as $adminId) {
+                    $customer_total_now = model('Company')
+                        ->where([
+                            'admin_id' => $adminId
+                        ])
+                        ->count();
+                    if ($customer_total_now >= $inputdata['customer_total_limit']['value']) {
+                        $exceed_result = model('Admin')
+                            ->where('id', $adminId)
+                            ->update(['customer_exceed' => 1]);
+                    } else {
+                        $exceed_result = model('Admin')
+                            ->where('id', $adminId)
+                            ->update(['customer_exceed' => 0]);
+                    }
+
+                    if (false === $exceed_result) {
+                        throw new \Exception(model('Admin')->getError());
+                    }
+                }
             }
 
             $sqldata = [];

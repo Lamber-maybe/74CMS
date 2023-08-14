@@ -661,19 +661,17 @@ class Company extends Backend
             if (false === $update) {
                 throw new \Exception(model('Company')->getError());
             }
-            $release = [];
 
-            foreach ($uid as $v) {
-                $release[] = [
-                    'uid' => $v,
-                    'create_time' => time(),
-                    'operation_type' => 2,
-                    'operator' => 2,
-                    'admin_id' => $this->admininfo->id,
-                    'utype' => 1
-                ];
+            $receive = model('b2bcrm.CrmClueRelease')->releaseAdd($uid, $this->admininfo->id, 2, 2, 1);
+            if ($receive === false) {
+                $this->ajaxReturn(500, '释放失败', []);
             }
-            model('b2bcrm.CrmClueRelease')->insertAll($release);
+
+            # 设置管理员销售客户总数上限
+            $exceed_result = model('Admin')->setCustomerExceed($this->admininfo->id);
+            if (false === $exceed_result) {
+                throw new \Exception(model('Admin')->getError());
+            }
 
             // 日志
             $uid = implode(',', $uid);
@@ -711,6 +709,8 @@ class Company extends Backend
             $this->ajaxReturn(500, '请选择企业');
         }
         try {
+            Db::startTrans();
+
             $sys_configs = model('b2bcrm.CrmSysConfig')->getDateByCategory('customer');
             $sys_config = [];
             foreach ($sys_configs as $v) {
@@ -728,7 +728,7 @@ class Company extends Backend
                     'create_time' => ['gt', $today_time],
                     'admin_id' => $this->admininfo->id,
                     'operation_type' => 1,
-                    'operator' => 1,
+                    'operator' => 2,
                     'utype' => 1,
                 ];
                 $count = model('b2bcrm.CrmClueRelease')->where($where)->count();
@@ -738,6 +738,36 @@ class Company extends Backend
                         $can_num = 0;
                     }
                     $this->ajaxReturn(500, '当天领取限制' . $sys_config['customer_receive_limit'] . '个，你已领取' . $count . '个！还可领取【' . $can_num . '】个！', []);
+                }
+            }
+
+            /**
+             * 【ID1000518】、
+             * 【新增】CRM设置客户总数、线索总数限定
+             * yx - 2023.03.21
+             * [新增]:
+             */
+            if (isset($sys_config['customer_total_limit'])) {
+                if ($sys_config['customer_total_limit'] == 0) {
+                    $this->ajaxReturn(500, '当前销售客户总数上限不允许领取', []);
+                }
+
+                $customer_total_count = model('Company')
+                    ->where([
+                        'admin_id' => $this->admininfo->id
+                    ])
+                    ->count();
+
+                if (($customer_total_count + $company_count) > $sys_config['customer_total_limit']) {
+                    $total_can_num = $sys_config['customer_total_limit'] - $customer_total_count;
+                    if ($total_can_num < 0) {
+                        $total_can_num = 0;
+                    }
+                    $this->ajaxReturn(500, '线索客户领取上限【' . $sys_config['customer_total_limit'] . '】个，你已领取【' . $customer_total_count . '】个，还可领取【' . $total_can_num . '】个！', []);
+                }
+
+                if ($this->admininfo->customer_exceed === 1) {
+                    $this->ajaxReturn(500, '已达客户总数上限', []);
                 }
             }
 
@@ -799,7 +829,7 @@ class Company extends Backend
                 }
             }
 
-            $receive = model('b2bcrm.CrmClueRelease')->releaseAdd($uid, $this->admininfo->id, 1, 1, 1);
+            $receive = model('b2bcrm.CrmClueRelease')->releaseAdd($uid, $this->admininfo->id, 1, 2, 1);
             if ($receive === false) {
                 $this->ajaxReturn(500, '领取失败', []);
             }
@@ -814,11 +844,30 @@ class Company extends Backend
                         'uid' => ['in', $uid]
                     ]
                 );
-            $this->ajaxReturn(200, '领取成功', []);
+
+            # 设置管理员销售客户总数上限
+            $exceed_result = model('Admin')->setCustomerExceed($this->admininfo->id);
+            if (false === $exceed_result) {
+                throw new \Exception(model('Admin')->getError());
+            }
+
+            // 日志
+            $uid = implode(',', $uid);
+            $log_result = model('AdminLog')->record(
+                '领取企业【ID:' . $uid . '】',
+                $this->admininfo
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
             $this->ajaxReturn(500, $e->getMessage(), []);
         }
+
+        $this->ajaxReturn(200, '领取成功', []);
     }
 
     /*
@@ -1067,6 +1116,33 @@ class Company extends Backend
 
         $sale = input('post.member.sale/d', 0, '');
         if ($sale > 0) {
+            /**
+             * 【ID1000518】、
+             * 【新增】CRM设置客户总数、线索总数限定
+             * yx - 2023.03.21
+             * [新增]:
+             */
+            $customer_total_limit = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_total_limit');
+            if (isset($customer_total_limit)) {
+                if ($customer_total_limit == 0) {
+                    $this->ajaxReturn(500, '当前销售客户总数上限不允许领取', []);
+                }
+
+                $customer_total_count = model('Company')
+                    ->where([
+                        'admin_id' => $this->admininfo->id
+                    ])
+                    ->count();
+
+                if (($customer_total_count + 1) > $customer_total_limit) {
+                    $this->ajaxReturn(500, '已达客户总数上限', []);
+                }
+
+                if ($this->admininfo->customer_exceed === 1) {
+                    $this->ajaxReturn(500, '已达客户总数上限', []);
+                }
+            }
+
             $input_data['admin_id'] = $this->admininfo->id;
             $input_data['collection_time'] = time(); // 添加领取时间
         }
@@ -1406,31 +1482,55 @@ class Company extends Backend
         if (empty($company_id)) {
             throw new \Exception('企业uid错误');
         }
-        if (isset($input_data['audit']) && !empty($input_data['audit'])) {
-            model('Company')->setAudit($company_id, $input_data['audit'], $reason);
-            model('AdminLog')->record(
-                '将企业认证状态变更为【' .
-                model('Company')->map_audit[$input_data['audit']] .
-                '】。企业ID【' .
-                implode(',', $company_id) .
-                '】',
-                $this->admininfo
-            );
-        } else {
-            $update_member = model('Company')
-                ->allowField(true)
-                ->save($input_data, ['uid' => $uid]);
 
-            if (false === $update_member) {
-                throw new \Exception(model('Company')->getError());
+        /**
+         * 【ID1000596】
+         * 【bug】职位显示状态（企业不显示）
+         *  zch 2023.3.21
+         * 【增加】
+         *  事务
+         *  $jobid_arr = model('Job')->whereIn('company_id', $company_id)->column('id');
+         *  model('Job')->refreshSearchBatch($jobid_arr);
+         */
+        Db::startTrans();
+        try {
+            $jobid_arr = model('Job')->whereIn('company_id', $company_id)->column('id');
+            if (isset($input_data['audit']) && !empty($input_data['audit'])) {
+                model('Company')->setAudit($company_id, $input_data['audit'], $reason);
+                model('AdminLog')->record(
+                    '将企业认证状态变更为【' .
+                    model('Company')->map_audit[$input_data['audit']] .
+                    '】。企业ID【' .
+                    implode(',', $company_id) .
+                    '】',
+                    $this->admininfo
+                );
+
+                model('Job')->refreshSearchBatch($jobid_arr);
+            } else {
+                $update_member = model('Company')
+                    ->allowField(true)
+                    ->save($input_data, ['uid' => $uid]);
+
+                if (false === $update_member) {
+                    throw new \Exception(model('Company')->getError());
+                }
+                if (isset($input_data['is_display'])) {
+                    model('Job')->refreshSearchBatch($jobid_arr);
+                }
+                model('AdminLog')->record(
+                    '编辑企业。企业UID【' . $uid . '】',
+                    $this->admininfo
+                );
             }
-            model('AdminLog')->record(
-                '编辑企业。企业UID【' . $uid . '】',
-                $this->admininfo
-            );
+            // 提交事务
+            Db::commit();
+            return true;
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            throw new \Exception($e->getMessage());
         }
-
-        return true;
     }
 
     // 修改密码或手机号

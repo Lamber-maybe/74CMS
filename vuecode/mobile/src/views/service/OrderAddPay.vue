@@ -13,10 +13,10 @@ export default {
   name: 'OrderAddPay',
   data () {
     return {
-      url:'',
-      payment:'',
-      successUrl:'',
-      paydata:{},
+      url: '',
+      payment: '',
+      successUrl: '',
+      paydata: {},
       code: ''
     }
   },
@@ -40,24 +40,23 @@ export default {
       for (let i = 0; i < cs_arr.length; i++) {
         cs[cs_arr[i].split('=')[0]] = cs_arr[i].split('=')[1]
       }
-      if(cs.code!==undefined){
+      if (cs.code !== undefined) {
         this.code = cs.code
       }
     }
-    this.handlerSubmit(this.url,this.data)
+    this.handlerSubmit(this.url, this.data)
   },
   methods: {
     handlerSubmit (url, data, callback) {
       let that = this
-      //微信环境下选择微信支付，并且没有openid，则需要先获取openid
-      if(this.payment == 'wxpay' && isWeiXin() && (this.paydata.openid===undefined || this.paydata.openid=='' || !this.paydata.openid)){
+      // 微信环境下选择微信支付，并且没有openid，则需要先获取openid
+      if (this.payment == 'wxpay' && isWeiXin() && (this.paydata.openid === undefined || this.paydata.openid == '' || !this.paydata.openid)) {
         this.initWeixinPaymentOpenid()
-      }else{
+      } else {
         this.doRequest()
       }
-
     },
-    doRequest(){
+    doRequest () {
       let that = this
       http
         .post(that.url, that.paydata)
@@ -93,17 +92,44 @@ export default {
       if (this.payment == 'wxpay') {
         if (isWeiXin()) {
           let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + data.parameter.jsApiParameters.appId + '&timeStamp=' + data.parameter.jsApiParameters.timeStamp + '&nonceStr=' + data.parameter.jsApiParameters.nonceStr + '&package=' + data.parameter.jsApiParameters.package + '&signType=' + data.parameter.jsApiParameters.signType + '&paySign=' + data.parameter.jsApiParameters.paySign + '&successUrl=' + this.successUrl
-          window.location.href = locationUrl
+          /**
+           * 【ID1000329】
+           * 【bug】触屏订单支付时，点击取消，返回上一页，系统一直重复下订单
+           * yx - 2023.03.14
+           * [旧]:
+           * window.location.href = locationUrl
+           * [新]:
+           * window.location.replace(locationUrl)
+           */
+          window.location.replace(locationUrl)
         } else {
-          window.location.href = data.parameter
+          /**
+           * 【ID1000329】
+           * 【bug】触屏订单支付时，点击取消，返回上一页，系统一直重复下订单
+           * yx - 2023.03.14
+           * [旧]:
+           * window.location.href = data.parameter
+           * [新]:
+           *  window.location.replace(data.parameter)
+           */
+          window.location.replace(data.parameter)
         }
       } else {
-        window.location.href = data.parameter
+        /**
+         * 【ID1000329】
+         * 【bug】触屏订单支付时，点击取消，返回上一页，系统一直重复下订单
+         * yx - 2023.03.14
+         * [旧]:
+         * window.location.href = data.parameter
+         * [新]:
+         *  window.location.replace(data.parameter)
+         */
+        window.location.replace(data.parameter)
       }
     },
     initWeixinPaymentOpenid () {
       if (this.code !== '') {
-        http.post(api.get_weixin_openid, {code:this.code}).then(res => {
+        http.post(api.get_weixin_openid, {code: this.code}).then(res => {
           localStorage.setItem('weixinOpenid', res.data)
           this.paydata.openid = res.data
           this.doRequest()

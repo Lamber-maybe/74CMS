@@ -11,7 +11,7 @@
             icon-size="18px"
           ></van-radio>
         </div>
-        <div class="pay_item ali" @click="choosePayment('alipay')">
+        <div class="pay_item ali" @click="choosePayment('alipay')" v-if="$store.state.showAlipay">
           支付宝支付
           <van-radio
             class="self_check"

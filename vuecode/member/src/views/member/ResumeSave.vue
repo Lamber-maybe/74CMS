@@ -108,7 +108,7 @@
         </div>
         <div class="bottom-line">
           <div class="title">联系方式</div>
-          <div class="intention_list" v-if="show_contact===0">
+          <div class="intention_list" v-if="show_contact===0 && logo_resume_id != base_info.id">
             <p>
               <span>下载后查看联系方式</span>
             </p>
@@ -251,10 +251,10 @@
 </template>
 
 <script>
-import htmlToPdf from '@/utils/htmlToPdf'
 import http from '@/utils/http'
 import api from '@/api'
 import { parseTime } from '@/utils/index'
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -276,6 +276,7 @@ export default {
       language_list: [],
       certificate_list: [],
       rightFixed:false,
+      logo_resume_id: 0
     }
   },
   created() {
@@ -298,11 +299,38 @@ export default {
         }
         this.rightFixed = scrollTop >= 114
       },
+    getFile (url) {
+        console.log(url)
+      axios.get(url,{ responseType: 'blob' }).then(res =>{
+        console.log(res)
+        let blob = new Blob([res.data], { type: "application/pdf" });
+        let href = window.URL.createObjectURL(blob);
+        const a = document.createElement('a')
+        a.download = this.base_info.fullname + '的个人简历-' + this.$store.state.config.sitename
+        a.href = href
+        a.click()
+        a.remove()
+        window.URL.revokeObjectURL(href);
+      })
+    },
     handleDown () {
-      window.pageYOffset = 0
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
-      htmlToPdf.downloadPDF(document.querySelector('#saveBox'), this.base_info.fullname+'的个人简历-'+this.$store.state.config.sitename)
+      const params = {
+        id: this.base_info.id
+      }
+      http
+        .get(api.exportPdfByPhp, params)
+        .then(response => {
+          if (parseInt(response.code) === 200) {
+            if (response.data.url){
+              this.getFile(response.data.url)
+            } else {
+              this.$message.error('下载失败，请刷新页面重新尝试。')
+            }
+          } else {
+            this.$message.error(response.message)
+          }
+        })
+        .catch(() => {})
     },
     monthTimeFilter (timestamp) {
       return parseTime(timestamp, '{y}-{m}')
@@ -325,7 +353,8 @@ export default {
           project_list,
           training_list,
           language_list,
-          certificate_list
+          certificate_list,
+          logo_resume_id
         } = { ...res.data }
         this.resume_module = resume_module
         this.field_rule = field_rule
@@ -340,6 +369,7 @@ export default {
         this.training_list = training_list
         this.language_list = language_list
         this.certificate_list = certificate_list
+        this.logo_resume_id = logo_resume_id
       })
     }
   },

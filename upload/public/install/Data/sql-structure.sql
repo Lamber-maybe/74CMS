@@ -49,6 +49,8 @@ CREATE TABLE `qs_admin` (
   `is_sc` tinyint(3) NOT NULL DEFAULT 0 COMMENT '是否是销售',
   `mobile` char(11) NOT NULL DEFAULT '',
   `avatar` varchar(200) DEFAULT '',
+  `status` TINYINT (1) UNSIGNED DEFAULT 1 NOT NULL COMMENT '状态[1:正常;2:锁定]',
+  `customer_exceed` TINYINT (1) UNSIGNED DEFAULT 0 NOT NULL COMMENT '销售客户总数上限[0:未达上限;1:已达上限]',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin||-_-||
@@ -929,6 +931,7 @@ CREATE TABLE `qs_job_search_key` (
   `jobname` varchar(50) NOT NULL,
   `companyname` varchar(50) NOT NULL,
   `company_nature` varchar(20) NOT NULL,
+  `job_category` varchar(255) NOT NULL DEFAULT '' COMMENT '职位类别',
   PRIMARY KEY (`id`),
   KEY `index_uid` (`uid`),
   KEY `index_company_id` (`company_id`),
@@ -1891,6 +1894,7 @@ DROP TABLE IF EXISTS `qs_wechat_fans`;
 CREATE TABLE `qs_wechat_fans` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `openid` varchar(50) NOT NULL,
+  `subscribe_time` int(10) NOT NULL DEFAULT '0' COMMENT '（最后）关注时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `openid` (`openid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -2888,3 +2892,21 @@ CREATE TABLE `qs_person_cancel_apply_backups`  (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='个人注销备份';
 ||-_-||qs_person_cancel_apply_backups||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_resume_remark`;
+CREATE TABLE `qs_resume_remark` (
+`id` INT (10) NOT NULL AUTO_INCREMENT COMMENT '主键自增ID',
+`comid` INT (10) NOT NULL COMMENT '企业ID',
+`resume_id` INT (10) NOT NULL COMMENT '简历ID',
+`remark` VARCHAR (50) NOT NULL COMMENT '备注',
+`addtime` INT (10) NOT NULL COMMENT '创建时间',
+`updatetime` INT (10) NOT NULL COMMENT '更新时间',
+PRIMARY KEY (`id`),
+KEY `idx_comid` (`comid`) USING BTREE,
+KEY `idx_resumeid` (`resume_id`) USING BTREE,
+UNIQUE INDEX `idx_comid_resumeid` (`comid`, `resume_id`) USING BTREE
+) ENGINE = INNODB CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '企业-简历备注表';
+||-_-||qs_resume_remark||-_-||

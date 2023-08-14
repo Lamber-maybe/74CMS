@@ -308,9 +308,14 @@ class Job extends \app\v1_0\controller\common\Base
                         'a.uid=c.uid',
                         'LEFT'
                     )
+                    ->join(
+                        config('database.prefix') . 'company_contact cc',
+                        'a.uid=cc.uid',
+                        'LEFT'
+                    )
                     ->where('a.id', 'in', $comid_arr)
                     ->column(
-                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon,c.deadline as setmeal_deadline',
+                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon,c.deadline as setmeal_deadline,cc.contact',
                         'a.id'
                     );
                 foreach ($cominfo_arr as $key => $value) {
@@ -353,6 +358,23 @@ class Job extends \app\v1_0\controller\common\Base
                 if (isset($cominfo_arr[$val['company_id']])) {
                     $tmp_arr['companyname'] =
                         $cominfo_arr[$val['company_id']]['companyname'];
+                    /**
+                     * 【APP新增】新增职位列表返回字段：职位、企业联系人
+                     * yx - 2023.03.03
+                     */
+                    # 企业联系人
+                    $tmp_arr['company_contact'] =
+                        $cominfo_arr[$val['company_id']]['contact'];
+                    # 职位联系人
+                    $contact_info = model('JobContact')
+                        ->field('id,jid,uid', true)
+                        ->where(['jid' => ['eq', $val['id']]])
+                        ->find();
+                    if ($contact_info['use_company_contact'] == 1) {
+                        $tmp_arr['job_contact'] = $cominfo_arr[$val['company_id']]['contact'];
+                    }else{
+                        $tmp_arr['job_contact'] = $contact_info['contact'];
+                    }
                     $tmp_arr['company_audit'] =
                         $cominfo_arr[$val['company_id']]['audit'];
                     $tmp_arr['company_logo'] = isset(
@@ -633,6 +655,12 @@ class Job extends \app\v1_0\controller\common\Base
             $companyinfo['logo'] > 0
             ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
             : default_empty('logo');
+            $img_list = model('CompanyImg')::getImgListByComId($companyinfo['id'], 3);
+            if (count($img_list) === 3) {
+                $return['com_info']['img_list'] = $img_list;
+            } else {
+                $return['com_info']['img_list'] = [];
+            }
             $return['com_info']['district_text'] = isset(
                 $category_district_data[$companyinfo['district']]
             )

@@ -28,7 +28,7 @@ class Article extends \app\index\controller\Base
             ->where('b.id','not null')
             ->where('a.addtime','lt',time()) // 【优化】发布资讯 发布时间按显示时间出现 zch 2022.9.20
             ->where($where)
-            ->order('a.sort_id desc,a.id desc')
+            ->order('a.sort_id desc,a.addtime desc,a.id desc')  // 【ID1000555】【bug】首页默认模板资讯页排序方式 yx-2023.02.22 [新增]:a.addtime desc
             ->field('a.*');
         $current_page = request()->get('page/d',1,'intval');
         $pagesize = 10;

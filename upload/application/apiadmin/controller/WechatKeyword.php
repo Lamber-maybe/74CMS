@@ -16,7 +16,17 @@ class WechatKeyword extends \app\common\controller\Backend
             ->order('id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-        
+
+        /**
+         *【ID1000595】
+         * 【优化】公众号关键词回复链接
+         * yx - 2023.03.20
+         * [新增]:
+         */
+        foreach ($list as &$keyword) {
+            $keyword['return_link'] = htmlspecialchars_decode($keyword['return_link']);
+        }
+
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;

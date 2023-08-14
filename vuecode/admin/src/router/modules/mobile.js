@@ -15,7 +15,7 @@ const mobileRouter = {
     path: '/mobile/touch',
     name: 'touch',
     component: () =>
-      import('@/views/mobile/touch'),
+      import ('@/views/mobile/touch'),
     redirect: 'noRedirect',
     alwaysShow: true,
     meta: {
@@ -26,7 +26,7 @@ const mobileRouter = {
       path: '/mobile/touch/basic',
       name: 'touchBasic',
       component: () =>
-        import('@/views/mobile/touch/basic'),
+        import ('@/views/mobile/touch/basic'),
       meta: {
         title: '基础配置',
         access: 'touchBasic'
@@ -36,7 +36,7 @@ const mobileRouter = {
       path: '/mobile/touch/diy',
       name: 'touchDiy',
       component: () =>
-        import('@/views/mobile/touch/diy'),
+        import ('@/views/mobile/touch/diy'),
       meta: {
         title: '个性化首页',
         access: 'touchDiy'

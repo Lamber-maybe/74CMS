@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use Think\Db;
+
 class SceneQrcode extends \app\common\controller\Backend
 {
     public function index()
@@ -87,49 +89,63 @@ class SceneQrcode extends \app\common\controller\Backend
             $input_data['deadline'] = 0;
         }
 
-        $input_data['uuid'] = uuid();
-        $result = model('SceneQrcode')
-            ->validate(true)
-            ->allowField(true)
-            ->save($input_data);
-        if (false === $result) {
-            $this->ajaxReturn(500, model('SceneQrcode')->getError());
+        try {
+            Db::startTrans();
+
+            $input_data['uuid'] = uuid();
+            $result = model('SceneQrcode')
+                ->validate(true)
+                ->allowField(true)
+                ->save($input_data);
+            if (false === $result) {
+                $this->ajaxReturn(500, model('SceneQrcode')->getError());
+            }
+            $insertid = model('SceneQrcode')->id;
+            $typeinfo = model('SceneQrcode')->type_arr[$input_data['type']];
+            if ($input_data['platform'] == 0) {
+                $expire = $input_data['deadline'] - time();
+                if ($expire < 0) {
+                    $expire = 60;
+                }
+                if ($expire > 2592000) {
+                    $expire = 2592000;
+                }
+                $class = new \app\common\lib\Wechat;
+                $qrcodeData = $class->makeQrcode(['alias' => 'subscribe_' . $typeinfo['alias'], $typeinfo['offiaccount_param_name'] => $input_data['paramid'], 'scene_uuid' => $input_data['uuid']], $expire);
+                if (!$qrcodeData) {
+                    $this->ajaxReturn(500, '公众号二维码生成失败', ['err_msg' => $class->getError()]);
+                }
+                $result = file_get_contents($qrcodeData);
+                $filename = 'scene_qrcode_wechat_' . $insertid . '.jpg';
+                $file_dir_name = 'files/' . date('Ymd/');
+                $file_dir = SYS_UPLOAD_PATH . $file_dir_name;
+                $file_path = $file_dir . $filename;
+                if (!is_dir($file_dir)) {
+                    mkdir($file_dir, 0755, true);
+                }
+                file_put_contents($file_path, $result);
+                $qrcodeSrc = $file_dir_name . $filename;
+            } else {
+                $locationUrl = config('global_config.mobile_domain') . str_replace(":id", $input_data['paramid'], $typeinfo['mobile_page']) . '?scene_uuid=' . $input_data['uuid'];
+                $locationUrl = urlencode($locationUrl);
+                $qrcodeSrc = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/qrcode/index?type=normal&url=' . $locationUrl;
+            }
+
+            model('SceneQrcode')->save(['qrcode_src' => $qrcodeSrc], ['id' => $insertid]);
+            model('AdminLog')->record(
+                '添加场景码。场景码ID【' .
+                $insertid .
+                '】',
+                $this->admininfo
+            );
+
+            Db::commit();
+
+            $this->ajaxReturn(200, '保存成功');
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '场景码创建失败', ['err_msg' => $e->getMessage()]);
         }
-        $insertid = model('SceneQrcode')->id;
-        $typeinfo = model('SceneQrcode')->type_arr[$input_data['type']];
-        if($input_data['platform']==0){
-            $expire = $input_data['deadline']-time();
-            if($expire<0){
-                $expire = 60;
-            }
-            if ($expire > 2592000) {
-                $expire = 2592000;
-            }
-            $class = new \app\common\lib\Wechat;
-            $qrcodeData = $class->makeQrcode(['alias' => 'subscribe_' . $typeinfo['alias'], $typeinfo['offiaccount_param_name'] => $input_data['paramid'], 'scene_uuid' => $input_data['uuid']], $expire);
-            $result = file_get_contents($qrcodeData);
-            $filename = 'scene_qrcode_wechat_' . $insertid . '.jpg';
-            $file_dir_name = 'files/' . date('Ymd/');
-            $file_dir = SYS_UPLOAD_PATH . $file_dir_name;
-            $file_path = $file_dir . $filename;
-            if (!is_dir($file_dir)) {
-                mkdir($file_dir, 0755, true);
-            }
-            file_put_contents($file_path, $result);
-            $qrcodeSrc = $file_dir_name . $filename;
-        } else {
-            $locationUrl = config('global_config.mobile_domain') . str_replace(":id", $input_data['paramid'], $typeinfo['mobile_page']) . '?scene_uuid=' . $input_data['uuid'];
-            $locationUrl = urlencode($locationUrl);
-            $qrcodeSrc = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/qrcode/index?type=normal&url=' . $locationUrl;
-        }
-        model('SceneQrcode')->save(['qrcode_src' => $qrcodeSrc], ['id' => $insertid]);
-        model('AdminLog')->record(
-            '添加场景码。场景码ID【' .
-            $insertid .
-            '】',
-            $this->admininfo
-        );
-        $this->ajaxReturn(200, '保存成功');
     }
 
     //增加场景码批量删除  zch 2022/8/1

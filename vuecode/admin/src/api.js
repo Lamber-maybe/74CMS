@@ -1,12 +1,22 @@
-import { saveJobSeting } from '@/api/datacollection'
+import {
+  saveJobSeting
+} from '@/api/datacollection'
 import {
   clueDelete,
   clueExport,
   clueReceive,
-  clueRelease, companyCrmAdd, companyCrmEdit, companyJob,
-  companyList, companyReceive, crmClueRelease, deletedCustomers, deleteImg,
+  clueRelease,
+  companyCrmAdd,
+  companyCrmEdit,
+  companyJob,
+  companyList,
+  companyReceive,
+  crmClueRelease,
+  deletedCustomers,
+  deleteImg,
   exportList,
-  refreshCrmJob, setDisplay
+  refreshCrmJob,
+  setDisplay
 } from '@/api/company_crm'
 import {
   customerServiceEdit
@@ -221,6 +231,10 @@ export default {
   adminAllList: '/admin/alladmin',
   adminBindQrcode: '/admin/getBindQrcode',
   adminBindQrcodeCancel: '/admin/bindQrcodeCancel',
+  adminIsBindWechat: '/admin/isBindWechat',
+  getAdminCrmData: '/admin/getAdminCrmData',
+  adminLock: '/admin/lock',
+  adminDeblocking: '/admin/deblocking',
 
   // 管理员角色
   adminRoleList: '/admin_role/index',
@@ -314,6 +328,8 @@ export default {
   companyImgList: '/company_img/index',
   companyImgAudit: '/company_img/setAudit',
   companyImgDelete: '/company_img/delete',
+  companyImgDeleteOne: '/company_img/deleteOne',
+  companyImgEdit: '/company_img/edit',
 
   // 面试邀请列表
   companyInterviewList: '/company_interview/index',

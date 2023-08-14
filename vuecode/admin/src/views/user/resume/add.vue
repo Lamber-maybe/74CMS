@@ -63,6 +63,7 @@
           value-format="yyyy-MM"
           style="width: 330px"
           :disabled="enter_job_time_empty === true"
+          :picker-options="jobDateRanges"
         />
         &nbsp;
         <el-checkbox
@@ -389,6 +390,7 @@ export default {
     }
     return {
       DateRanges: this.birthdayDateRange(),
+      jobDateRanges: this.enterJobDateRange(),
       defaultValue: this.defaultValueFun(),
       submitLoading: false,
       headers: { admintoken: getToken() },
@@ -687,6 +689,14 @@ export default {
         disabledDate(time){
           var myDate = new Date();
           return time.getTime() > new Date(new Date(myDate.getFullYear(),11).getTime() - 16 * 365 * 24 * 3600 * 1000);
+        }
+      }
+    },
+    // 【ID1000572】【bug】后台修改简历，基本资料参加工作时间无限制 yx - 2023.03.02
+    enterJobDateRange(){
+      return {
+        disabledDate(time){
+          return time.getTime() > new Date().getTime()
         }
       }
     },

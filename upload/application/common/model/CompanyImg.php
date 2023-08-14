@@ -40,4 +40,39 @@ class CompanyImg extends \app\common\model\BaseModel
         }
         return $return;
     }
+
+
+    /**
+     * 通过企业ID获取企业风采
+     * @param $company_id
+     * @param $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getImgListByComId($company_id, $limit = 6)
+    {
+        $imgList = self::alias('a')
+            ->join(
+                config('database.prefix') . 'uploadfile b',
+                'a.img=b.id',
+                'LEFT'
+            )
+            ->field('b.save_path,b.platform,a.title')
+            ->where('a.comid', $company_id)
+            ->where('a.audit', 1)
+            ->limit($limit)
+            ->select();
+        $return = [];
+        foreach ($imgList as $img) {
+            $arr['title'] = $img['title'];
+            $arr['img_src'] = make_file_url(
+                $img['save_path'],
+                $img['platform']
+            );
+            $return[] = $arr;
+        }
+        return $return;
+    }
 }

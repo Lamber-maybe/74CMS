@@ -44,8 +44,8 @@ class Im extends \app\v1_0\controller\common\Base
             //简历审核状态
             if($rule['audit_status']==1){
                 $resume = model('Resume')->field('audit')->where('uid',$this->userinfo->uid)->find();
-                if($resume===null || $resume['audit']==0){
-                    return ['code'=>0,'next'=>'disabled','message'=>'您的简历未审核通过，暂时无法使用职聊功能'];
+                if ($resume === null || $resume['audit'] != 1) {
+                    return ['code' => 0, 'next' => 'disabled', 'message' => '您的简历未审核通过，暂时无法使用职聊功能'];
                 }
             }
         }else{

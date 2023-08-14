@@ -33,4 +33,6 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Grafika\\' => array($vendorDir . '/kosinix/grafika/src/Grafika'),
     'EasyZip\\' => array($vendorDir . '/ssskit/easyzip/src'),
+    'phpService\\' => array($vendorDir . '/ims/php-service/src'),
+    'Dompdf\\' => array($vendorDir . '/dompdf/dompdf/src'),
 );

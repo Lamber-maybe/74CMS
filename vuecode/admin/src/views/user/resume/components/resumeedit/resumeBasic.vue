@@ -124,6 +124,7 @@
             value-format="yyyy-MM"
             style="width: 330px"
             :disabled="enter_job_time_empty === true"
+            :picker-options="jobDateRanges"
           />
           &nbsp;
           <el-checkbox
@@ -244,17 +245,23 @@
         </el-form-item>
         <div class="clearfix" />
         <el-form-item label="照片" prop="photo_img">
-          <el-upload
-            class="photo-uploader"
-            :action="apiUpload"
-            :headers="headers"
-            :show-file-list="false"
-            :on-success="handlePhotoSuccess"
-            :before-upload="beforePhotoUpload"
-          >
-            <img v-if="form.photo_img" :src="photoUrl" class="photo">
-            <i v-else class="el-icon-plus photo-uploader-icon" />
-          </el-upload>
+          <div style="position: relative">
+            <div v-if="form.photo_img" class="transparent" @click="logoDel">
+              <i class="el-icon-delete" />
+              删除
+            </div>
+            <el-upload
+              class="photo-uploader"
+              :action="apiUpload"
+              :headers="headers"
+              :show-file-list="false"
+              :on-success="handlePhotoSuccess"
+              :before-upload="beforePhotoUpload"
+            >
+              <img v-if="form.photo_img" :src="photoUrl" class="photo">
+              <i v-else class="el-icon-plus photo-uploader-icon" />
+            </el-upload>
+          </div>
           <span class="smalltip">
             <i class="el-icon-info" />
             建议尺寸120*120
@@ -269,7 +276,7 @@
           >
             保存
           </el-button>
-          <el-button type="info" plain @click="is_edit = !is_edit">
+          <el-button type="info" plain @click="formCancel()">
             取消
           </el-button>
         </el-form-item>
@@ -318,6 +325,7 @@ export default {
     }
     return {
       DateRanges: this.birthdayDateRange(),
+      jobDateRanges: this.enterJobDateRange(),
       defaultValue: this.defaultValueFun(),
       is_edit: false,
       submitLoading: false,
@@ -515,6 +523,10 @@ export default {
     this.fetchInfo()
   },
   methods: {
+    logoDel(){
+      this.photoUrl = ''
+      this.form.photo_img = ''
+    },
     getFieldRule(response){
       console.log(response)
       const { Resume, ResumeContact } = {
@@ -624,6 +636,14 @@ export default {
         }
       }
     },
+    // 【ID1000572】【bug】后台修改简历，基本资料参加工作时间无限制 yx - 2023.03.02
+    enterJobDateRange(){
+      return {
+        disabledDate(time){
+          return time.getTime() > new Date().getTime()
+        }
+      }
+    },
     // PC端创建简历日期选择往前推到16岁 zdq
     defaultValueFun() {
       const nowDate = new Date()
@@ -710,6 +730,10 @@ export default {
         }
       })
     },
+    formCancel() {
+      this.is_edit = !this.is_edit
+      this.fetchInfo()
+    },
     handlePhotoSuccess(res, file) {
       if (res.code == 200) {
         this.photoUrl = URL.createObjectURL(file.raw)
@@ -744,6 +768,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.transparent{
+  cursor:pointer;
+  z-index: 1;
+  font-size: 12px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  position: absolute;
+  bottom: 15px;
+  color: #d5cece;
+  left: 1px;
+  width: 120px;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
 .photo{
   text-align: center;
   display: inline-block;

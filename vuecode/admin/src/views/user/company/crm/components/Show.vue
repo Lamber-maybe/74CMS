@@ -44,7 +44,7 @@
               <el-col :span="8">
                 <label class="line_label">所在地区：</label>
                 <span class="text">
-                  {{ details.district }}
+                  {{ details.district_text }}
                 </span>
               </el-col>
               <el-col :span="8">

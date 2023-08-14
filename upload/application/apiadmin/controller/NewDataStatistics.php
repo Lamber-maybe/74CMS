@@ -289,7 +289,7 @@ class NewDataStatistics extends \app\common\controller\Backend
             $current_version = $version_int_1 . $version_int_2 . $version_int_3;
             $return['new_version_notice'] = $result['data']['latest_version'] > $current_version ? 1 : 0;
             $account_sms = config('global_config.account_sms');
-            $sms_result = $http->post('https://www.74cms.com/sms.php/Api/total',['username'=>$account_sms['app_key'],'password'=>$account_sms['secret_key'],'method'=>'total']);
+            $sms_result = $http->post('http://sms.74cms.com/Api/total',['username'=>$account_sms['app_key'],'password'=>$account_sms['secret_key'],'method'=>'total']);
             $sms_result_arr = json_decode($sms_result, 1);
             if($sms_result_arr['status'] == 1){
                 $return['sms_count'] = $sms_result_arr['data']['sms_count'];

@@ -5,6 +5,8 @@ import axios from 'axios'
 import api from '@/api'
 import VueCookies from 'vue-cookies'
 import router from '@/router'
+import { isWeiXin } from '@/utils/index'
+
 Vue.use(Vuex)
 const service = axios.create({
   baseURL: window.global.RequestBaseUrl,
@@ -100,7 +102,8 @@ const store = new Vuex.Store({
     userIminfo: {
       userid: '',
       user_token: ''
-    }
+    },
+    showAlipay: true
   },
   mutations: {
     setLoginState (state, data) {
@@ -428,6 +431,9 @@ const store = new Vuex.Store({
     // 设置聊天过程中被拉入黑名单参数
     setBlackObj (state, data) {
       state.isInBlackObj = data
+    },
+    setShowAlipay (state) {
+      state.showAlipay = isWeiXin() ? false : true
     }
   },
   actions: {
