@@ -349,6 +349,7 @@ export default {
   },
   created () {
     this.initDate()
+    this.$store.dispatch('getClassify', 'citycategory')
     this.$store.dispatch('getClassify', 'education')
     this.$store.dispatch('getClassify', 'current')
     this.$store.dispatch('getClassifyWage')

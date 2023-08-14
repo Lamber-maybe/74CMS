@@ -24,6 +24,7 @@
       <van-dropdown-menu class="filter_menu">
         <van-dropdown-item
           :title="districtTitle"
+          :lock-scroll="false"
           ref="dropDistrict"
           @opened="openedDistrict"
           @closed="closedDistrict"

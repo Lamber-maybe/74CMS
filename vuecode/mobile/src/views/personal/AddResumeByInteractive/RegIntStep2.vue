@@ -91,6 +91,8 @@ export default {
     DistrictFilter
   },
   created () {
+    this.$store.dispatch('getClassify', 'citycategory')
+    this.$store.dispatch('getClassify', 'jobcategory')
     this.$store.dispatch('getClassifyWage')
   },
   computed: {

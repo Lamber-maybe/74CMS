@@ -279,6 +279,8 @@ export default {
     // 请求列表数据
     this.initQuery(this.$route.query)
     this.fetchData(true)
+    this.$store.dispatch('getClassify', 'citycategory')
+    this.$store.dispatch('getClassify', 'jobcategory')
     this.$store.dispatch('getClassify', 'education').then(() => {
       this.optionEducation = this.restructureData(
         this.$store.state.classifyEdu,

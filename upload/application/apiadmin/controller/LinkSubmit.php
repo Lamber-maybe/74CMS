@@ -17,7 +17,7 @@ class LinkSubmit extends \app\common\controller\Backend
         }
         $where = [];
         if ($range == 'today') {
-            $where['addtime'] = ['EGT', time('today')];
+            $where['addtime'] = ['EGT', strtotime('today')];
         }
         if ($type == 'job') {
             $total = model('Job')

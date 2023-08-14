@@ -75,7 +75,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('getClassify', 'jobcategory').then(() => {
+    this.$store.dispatch('getClassify', 'citycategory').then(() => {
       // 处理地区格式
       this.citySource = this.$store.state.classifyCityOriginal
       let storeDistrict = (JSON.parse(JSON.stringify(this.citySource)))

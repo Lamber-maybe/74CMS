@@ -368,7 +368,7 @@ export default {
         this.$notify('请选择刷新时间间隔')
         return false
       }
-      this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/company/order'
+      this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'
       this.$refs.paySubmit.handlerSubmit(api.company_pay, this.submitData)
     },
     handlerRefreshStarttime () {

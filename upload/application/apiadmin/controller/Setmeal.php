@@ -41,7 +41,7 @@ class Setmeal extends \app\common\controller\Backend
                 'trim'
             ),
             'service_added_discount' => input(
-                'post.service_added_discount/d',
+                'post.service_added_discount/f',
                 0.0,
                 'floatval'
             ),
@@ -67,6 +67,7 @@ class Setmeal extends \app\common\controller\Backend
                 'intval'
             ),
             'enable_poster' => input('post.enable_poster/d', 0, 'intval'),
+            'note' => input('post.note/s', '', 'trim'),
             'recommend' => input('post.recommend/d', 0, 'intval'),
             'gift_point' => input('post.gift_point/d', 0, 'intval'),
             'show_apply_contact' => input(
@@ -160,7 +161,7 @@ class Setmeal extends \app\common\controller\Backend
                     'trim'
                 ),
                 'service_added_discount' => input(
-                    'post.service_added_discount/d',
+                    'post.service_added_discount/f',
                     0.0,
                     'floatval'
                 ),
@@ -186,6 +187,7 @@ class Setmeal extends \app\common\controller\Backend
                     'intval'
                 ),
                 'enable_poster' => input('post.enable_poster/d', 0, 'intval'),
+                'note' => input('post.note/s', '', 'trim'),
                 'recommend' => input('post.recommend/d', 0, 'intval'),
                 'gift_point' => input('post.gift_point/d', 0, 'intval'),
                 'show_apply_contact' => input(

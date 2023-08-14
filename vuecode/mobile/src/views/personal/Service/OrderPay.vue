@@ -217,7 +217,7 @@ export default {
     },
 
     handlerSubmit (payment) {
-      this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/personal/order'
+      this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'
       this.submitData.payment = payment
       this.$refs.paySubmit.handlerSubmit(api.personal_pay, this.submitData)
     },

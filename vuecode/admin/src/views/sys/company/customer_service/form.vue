@@ -82,6 +82,7 @@ export default {
         mobile: '',
         tel: '',
         weixin: '',
+        wx_qrcode: 0,
         qq: '',
         status: true
       },
