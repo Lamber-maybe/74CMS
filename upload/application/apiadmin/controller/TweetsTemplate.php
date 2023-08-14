@@ -385,8 +385,8 @@ class TweetsTemplate extends \app\common\controller\Backend
 		$item['nowtime'] = date('Y-m-d',time());
 		$item['sitename'] = config('global_config.sitename');
 		$item['sitedir'] = config('global_config.sitedomain');
-		$item['login'] = config('global_config.sitedomain').url('member/login');
-		$item['register'] = config('global_config.sitedomain').url('member/reg/personal');
+		$item['login'] = config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/login';
+		$item['register'] = config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/reg/personal';
 		$this->ajaxReturn(200, '获取数据成功', $item);
 	}
     protected function _parseConditionOfJob($condition)

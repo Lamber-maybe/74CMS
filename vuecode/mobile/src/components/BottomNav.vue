@@ -25,7 +25,7 @@ export default {
       secondTo: '/joblist',
       thirdClass: 'resume',
       thirdText: '简历',
-      thirdTo: '/resumeList',
+      thirdTo: '/resumelist',
       mineTo: '/member/login'
     }
   },
@@ -36,7 +36,7 @@ export default {
         // 企业
         this.secondClass = 'resume'
         this.secondText = '找人才'
-        this.secondTo = '/resumeList'
+        this.secondTo = '/resumelist'
         this.thirdClass = 'personal'
         this.thirdText = '候选人'
         this.thirdTo = '/member/company/jobapply'

@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {setStorageValue,getStorageValue} from '@/utils/index'
+import { isMobile } from '@/utils/index'
 import { handlerHttpError } from '@/utils/error'
 import http from '@/utils/http'
 import api from '@/api'
@@ -95,6 +95,10 @@ import Captcha from '@/components/captcha/index'
         this.utype = 2
       }else{
         this.utype = 2
+      }
+      if(isMobile()===true){
+        location.href=this.$store.state.config.mobile_domain+'member/login'
+        return false
       }
 
       if (window.WxLogin === undefined) {
@@ -167,37 +171,42 @@ import Captcha from '@/components/captcha/index'
         }
         let postData = { ...this.formPwd }
         postData.utype = this.utype
-        let LoginErrorNumByPwd = getStorageValue('LoginErrorNumByPwd')
-        LoginErrorNumByPwd = LoginErrorNumByPwd?LoginErrorNumByPwd:0
-        this.$refs.captcha.show(res => {
-          if (res !== undefined) {
-            postData.captcha = res
-          }
-          http
-            .post(api.login_pwd, postData, 'LoginErrorNumByPwd')
-            .then(response => {
-              if (parseInt(response.code) === 200) {
-                setStorageValue('LoginErrorNumByCode',0)
-                setStorageValue('LoginErrorNumByPwd',0)
-                this.$store.commit('clearCountDownFun')
-                this.$store.commit('setLoginState', {
-                  whether: true,
-                  utype: response.data.utype,
-                  token: response.data.token,
-                  mobile: response.data.mobile,
-                  userIminfo: response.data.user_iminfo
-                })
-                if (response.data.next_code != 200) {
-                  handlerHttpError({ code: response.data.next_code, message: '' })
-                } else {
-                  this.redirectTo()
-                }
-              } else {
-                this.$message.error(response.message)
+        http
+            .get(api.login_pwd, postData)
+            .then(check_res => {
+              let setShow = false
+              if (check_res.data == 1) {
+                setShow = true
               }
-            })
-            .catch(() => {})
-        }, 'pwd', LoginErrorNumByPwd)
+              this.$refs.captcha.show(res => {
+                if (res !== undefined) {
+                  postData.captcha = res
+                }
+                http
+                  .post(api.login_pwd, postData)
+                  .then(response => {
+                    if (parseInt(response.code) === 200) {
+                      this.$store.commit('clearCountDownFun')
+                      this.$store.commit('setLoginState', {
+                        whether: true,
+                        utype: response.data.utype,
+                        token: response.data.token,
+                        mobile: response.data.mobile,
+                        userIminfo: response.data.user_iminfo
+                      })
+                      if (response.data.next_code != 200) {
+                        handlerHttpError({ code: response.data.next_code, message: '' })
+                      } else {
+                        this.redirectTo()
+                      }
+                    } else {
+                      this.$message.error(response.message)
+                    }
+                  })
+                  .catch(() => {})
+              }, setShow)
+            }).catch(() => {})
+        
       },
       doSubmitCode () {
         if (!this.formCode.mobile) {
@@ -210,37 +219,42 @@ import Captcha from '@/components/captcha/index'
         }
         let postData = { ...this.formCode }
         postData.utype = this.utype
-        let LoginErrorNumByCode = getStorageValue('LoginErrorNumByCode')
-        LoginErrorNumByCode = LoginErrorNumByCode?LoginErrorNumByCode:0
-        this.$refs.captcha.show(res => {
-          if (res !== undefined) {
-            postData.captcha = res
-          }
-          http
-            .post(api.login_code, postData, 'LoginErrorNumByCode')
-            .then(response => {
-              if (parseInt(response.code) === 200) {
-                setStorageValue('LoginErrorNumByCode',0)
-                setStorageValue('LoginErrorNumByPwd',0)
-                this.$store.commit('clearCountDownFun')
-                this.$store.commit('setLoginState', {
-                  whether: true,
-                  utype: response.data.utype,
-                  token: response.data.token,
-                  mobile: response.data.mobile,
-                  userIminfo: response.data.user_iminfo
-                })
-                if (response.data.next_code != 200) {
-                  handlerHttpError({ code: response.data.next_code, message: '' })
-                } else {
-                  this.redirectTo()
-                }
-              } else {
-                this.$message.error(response.message)
+        http
+            .get(api.login_code, postData)
+            .then(check_res => {
+              let setShow = false
+              if (check_res.data == 1) {
+                setShow = true
               }
-            })
-            .catch(() => {})
-        }, 'code', LoginErrorNumByCode)
+              this.$refs.captcha.show(res => {
+              if (res !== undefined) {
+                postData.captcha = res
+              }
+              http
+                .post(api.login_code, postData)
+                .then(response => {
+                  if (parseInt(response.code) === 200) {
+                    this.$store.commit('clearCountDownFun')
+                    this.$store.commit('setLoginState', {
+                      whether: true,
+                      utype: response.data.utype,
+                      token: response.data.token,
+                      mobile: response.data.mobile,
+                      userIminfo: response.data.user_iminfo
+                    })
+                    if (response.data.next_code != 200) {
+                      handlerHttpError({ code: response.data.next_code, message: '' })
+                    } else {
+                      this.redirectTo()
+                    }
+                  } else {
+                    this.$message.error(response.message)
+                  }
+                })
+                .catch(() => {})
+            }, setShow)
+        }).catch(() => {})
+        
       },
       // 提交之前的验证
       handleSubmit () {

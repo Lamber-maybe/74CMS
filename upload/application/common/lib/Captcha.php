@@ -48,6 +48,10 @@ class Captcha
      */
     public function verify($data)
     {
+        if(!isset($data['captcha'])){
+            $this->_error = '验证失败';
+            return false;
+        }
         //app验证需要把字符串转为数组
         if(is_string($data['captcha'])){
             $data['captcha'] = htmlspecialchars_decode($data['captcha']);

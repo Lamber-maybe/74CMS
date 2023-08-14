@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import {setStorageValue} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 export default {
@@ -28,8 +27,6 @@ export default {
             .post(api.oauth_qq_login, user)
             .then(res => {
               if (parseInt(res.code) === 200) {
-                setStorageValue('LoginErrorNumByCode',0)
-                setStorageValue('LoginErrorNumByPwd',0)
                 this.$store.commit('clearCountDownFun')
                 this.$store.commit('setLoginState', {
                   whether: true,

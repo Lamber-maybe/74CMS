@@ -9,29 +9,36 @@ class Login extends \app\v1_0\controller\common\Base
     }
     protected function _verify($post_data)
     {
-        if (config('global_config.captcha_open') == 1) {
-            $captcha = new \app\common\lib\Captcha();
-            try {
-                $result = $captcha->verify($post_data);
-            } catch (\Exception $e) {
-                $this->ajaxReturn(500, $e->getMessage());
+            if (config('global_config.captcha_open') == 1) {
+                $captcha = new \app\common\lib\Captcha();
+                try {
+                    $result = $captcha->verify($post_data);
+                } catch (\Exception $e) {
+                    $this->ajaxReturn(500, $e->getMessage());
+                }
+                if (false === $result) {
+                    $this->ajaxReturn(500, $captcha->getError());
+                }
             }
-            if (false === $result) {
-                $this->ajaxReturn(500, $captcha->getError());
-            }
-        }
-    }
-    protected function writeErrorNum($type,$reset=false){
-        $name = 'login_'.$type.'_error_num';
-        if($reset===true){
-            session($name,0);
-        }else{
-            session($name,session($name)+1);
-        }
     }
     public function password()
     {
-        $error_num = session('login_pwd_error_num')?session('login_pwd_error_num'):0;
+        if(request()->isGet()){
+            $error_mark = input('get.username/s', '', 'trim');
+        }else{
+            $error_mark = input('post.username/s', '', 'trim');
+        }
+        $error_mark = 'login_pwd_error_num_'.$error_mark;
+        $error_num = \think\Cache::get($error_mark)?\think\Cache::get($error_mark):0;
+        if(request()->isGet()){
+            $show = 0;
+            if(config('global_config.captcha_open')==1){
+                if($error_num>=config('global_config.captcha_show_by_pwd_error')){
+                    $show = 1;
+                }
+            }
+            $this->ajaxReturn(200,'获取数据成功',$show);
+        }
         $input_data = [
             'username' => input('post.username/s', '', 'trim'),
             'password' => input('post.password/s', '', 'trim'),
@@ -39,11 +46,11 @@ class Login extends \app\v1_0\controller\common\Base
         ];
         $validate = new \think\Validate([
             'username' => 'require|max:30',
-            'password' => 'require|max:15|min:6',
+            'password' => 'require|max:15',
             'utype' => 'require|in:1,2'
         ]);
         if (!$validate->check($input_data)) {
-            $this->writeErrorNum('pwd');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, $validate->getError());
         }
         if (fieldRegex($input_data['username'], 'mobile')) {
@@ -64,7 +71,7 @@ class Login extends \app\v1_0\controller\common\Base
             ])
             ->find();
         if (!$member) {
-            $this->writeErrorNum('pwd');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '账号未注册');
         }
         if (
@@ -74,11 +81,11 @@ class Login extends \app\v1_0\controller\common\Base
                 $member['pwd_hash']
             )
         ) {
-            $this->writeErrorNum('pwd');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '账号或密码错误');
         }
         if ($member['status'] == 0) {
-            $this->writeErrorNum('pwd');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '账号已被暂停使用');
         }
         //通知完整度
@@ -97,8 +104,7 @@ class Login extends \app\v1_0\controller\common\Base
                 model('NotifyRule')->notify($member['uid'], 2, $notify_alias);
             }
         }
-        $this->writeErrorNum('pwd',true);
-        $this->writeErrorNum('code',true);
+        \think\Cache::rm($error_mark);
         $this->ajaxReturn(
             200,
             '登录成功',
@@ -111,7 +117,22 @@ class Login extends \app\v1_0\controller\common\Base
     }
     public function code()
     {
-        $error_num = session('login_pwd_error_num')?session('login_pwd_error_num'):0;
+        if(request()->isGet()){
+            $error_mark = input('get.mobile/s', '', 'trim');
+        }else{
+            $error_mark = input('post.mobile/s', '', 'trim');
+        }
+        $error_mark = 'login_code_error_num_'.$error_mark;
+        $error_num = \think\Cache::get($error_mark)?\think\Cache::get($error_mark):0;
+        if(request()->isGet()){
+            $show = 0;
+            if(config('global_config.captcha_open')==1){
+                if($error_num>=config('global_config.captcha_show_by_code_error')){
+                    $show = 1;
+                }
+            }
+            $this->ajaxReturn(200,'获取数据成功',$show);
+        }
         $input_data = [
             'mobile' => input('post.mobile/s', '', 'trim'),
             'code' => input('post.code/s', '', 'trim'),
@@ -126,12 +147,12 @@ class Login extends \app\v1_0\controller\common\Base
             if (fieldRegex($value, 'mobile')) {
                 return true;
             } else {
-                $this->writeErrorNum('code');
+                \think\Cache::inc($error_mark);
                 return '请输入正确的手机号码';
             }
         });
         if (!$validate->check($input_data)) {
-            $this->writeErrorNum('code');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, $validate->getError());
         }
         $auth_result = cache('smscode_' . $input_data['mobile']);
@@ -142,14 +163,14 @@ class Login extends \app\v1_0\controller\common\Base
             (isset($auth_result['utype']) && $auth_result['utype'] != $input_data['utype'])
         ) {
             \think\Cache::inc('smscode_error_num_' . $input_data['mobile']);
-            $this->writeErrorNum('code');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '验证码错误');
         }
-        $error_num = \think\Cache::get(
+        $smscode_error_num = \think\Cache::get(
             'smscode_error_num_' . $input_data['mobile']
         );
-        if ($error_num !== false && $error_num >= 5) {
-            $this->writeErrorNum('code');
+        if ($smscode_error_num !== false && $smscode_error_num >= 5) {
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '验证码失效，请重新获取');
         }
         if($error_num>=config('global_config.captcha_show_by_code_error')){
@@ -170,11 +191,11 @@ class Login extends \app\v1_0\controller\common\Base
             }
 
             if (false === $member) {
-                $this->writeErrorNum('code');
+                \think\Cache::inc($error_mark);
                 $this->ajaxReturn(500, model('Member')->getError());
             }
         } elseif ($member['status'] == 0) {
-            $this->writeErrorNum('code');
+            \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '账号已被暂停使用');
         }
         cache('smscode_' . $input_data['mobile'], null);
@@ -196,8 +217,8 @@ class Login extends \app\v1_0\controller\common\Base
             }
         }
 
-        $this->writeErrorNum('pwd',true);
-        $this->writeErrorNum('code',true);
+        \think\Cache::rm($error_mark);
+        \think\Cache::rm('smscode_error_num_' . $input_data['mobile']);
         $this->ajaxReturn(
             200,
             '登录成功',

@@ -22,12 +22,6 @@ export default {
         .post(api.oauth_qq_login, user)
         .then(response => {
           if (parseInt(response.code) === 200) {
-            this.$store.commit('setLoginErrorNumByCode', {
-              number: 0
-            })
-            this.$store.commit('setLoginErrorNumByPwd', {
-              number: 0
-            })
             this.$store.commit('clearCountDownFun')
             this.$store.commit('setLoginState', {
               whether: true,

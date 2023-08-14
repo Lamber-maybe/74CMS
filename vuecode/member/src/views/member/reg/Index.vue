@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { isMobile } from '@/utils/index'
 import choose from "./components/Choose";
 import register from "./components/Register";
   export default {
@@ -18,6 +19,10 @@ import register from "./components/Register";
       }
     },
     created(){
+      if(isMobile()===true){
+        location.href=this.$store.state.config.mobile_domain+'member/reg/personal'
+        return false
+      }
       if(this.$route.params.utype===undefined){
         this.who = 'choose'
       }else{

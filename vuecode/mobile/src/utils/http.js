@@ -53,7 +53,7 @@ export default {
        * @param {String} url [请求的url地址]
        * @param {Object} data [请求时携带的参数]
        */
-  post (url, data, loginErrorAlias) {
+  post (url, data) {
     return new Promise((resolve, reject) => {
       service
         .post(url, data, {
@@ -64,14 +64,6 @@ export default {
         })
         .then((res) => {
           if (res.data.code != 200) {
-            if (loginErrorAlias !== undefined) {
-              let LoginErrorNum = store.state[loginErrorAlias]
-              LoginErrorNum = LoginErrorNum || 0
-              LoginErrorNum = parseInt(LoginErrorNum)
-              store.commit('set' + loginErrorAlias, {
-                number: parseInt(LoginErrorNum + 1)
-              })
-            }
             handlerHttpError(res.data)
             reject(res.data)
           } else {

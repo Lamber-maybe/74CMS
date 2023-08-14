@@ -28,20 +28,12 @@ export default {
   },
   computed: {},
   methods: {
-    show (callback, loginType, loginErrorNum) {
-      if (this.$store.state.config.captcha_open == 1) {
-        if (loginType === undefined && loginErrorNum === undefined) {
+    show (callback, setShow) {
+        if (setShow === undefined || setShow === true) {
           this.$refs.child.show(callback)
-        } else if (loginType == 'pwd' && parseInt(loginErrorNum) >= this.$store.state.config.captcha_show_by_pwd_error) {
-          this.$refs.child.show(callback)
-        } else if (loginType == 'code' && parseInt(loginErrorNum) >= this.$store.state.config.captcha_show_by_code_error) {
-          this.$refs.child.show(callback)
-        } else {
+        }else {
           callback()
         }
-      } else {
-        callback()
-      }
     }
   }
 }

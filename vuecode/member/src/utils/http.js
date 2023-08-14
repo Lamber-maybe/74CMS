@@ -6,7 +6,6 @@
  * http.post('/api/enquiry/web/update',{id:1}).then((res)=>{你的操作})
  * http.postFormData('/api/enquiry/web/update',{id:1,file:file}).then((res)=>{你的操作})
  */
-import {setStorageValue,getStorageValue} from '@/utils/index'
 import axios from 'axios'
 import store from '@/store'
 import { handlerHttpError } from '@/utils/error'
@@ -55,7 +54,7 @@ export default {
        * @param {String} url [请求的url地址]
        * @param {Object} data [请求时携带的参数]
        */
-  post (url, data, loginErrorAlias) {
+  post (url, data) {
     return new Promise((resolve, reject) => {
       service
         .post(url, data, {
@@ -66,12 +65,6 @@ export default {
         })
         .then((res) => {
           if (res.data.code !== 200) {
-            if (loginErrorAlias !== undefined) {
-              let LoginErrorNum = getStorageValue(loginErrorAlias)
-              LoginErrorNum = LoginErrorNum?LoginErrorNum:0
-              LoginErrorNum = parseInt(LoginErrorNum)
-              setStorageValue(loginErrorAlias,parseInt(LoginErrorNum + 1))
-            }
             handlerHttpError(res.data)
             reject(res.data)
           } else {

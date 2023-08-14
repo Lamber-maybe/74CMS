@@ -30,7 +30,7 @@ class MobileIndexMenu extends \app\common\model\BaseModel
             $data = [];
             foreach ($list as $key => $value) {
                 $arr['alias'] = $value['alias'];
-                $arr['link_url'] = $value['link_url'];
+                $arr['url'] = $value['link_url'];
                 $arr['title'] =
                     $value['custom_title'] == ''
                         ? $value['title']

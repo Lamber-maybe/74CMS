@@ -755,10 +755,15 @@
 						that.$message.error('请输入验证码')
 						return false
 					}
-					if (that.captcha_open == 1) {
-						var LoginErrorNumByCode = getStorageValue('LoginErrorNumByCode')
-						LoginErrorNumByCode = LoginErrorNumByCode ? LoginErrorNumByCode : 0
-						if (LoginErrorNumByCode > 0) {
+					var data = {
+						mobile: that.mobile
+					}
+					httpget(qscms.apiList.loginByCode, data).then(function (check_res) {
+						let setShow = false
+						if (check_res.data == 1) {
+							setShow = true
+						}
+						if (setShow) {
 							if (that.captcha_type == 'tencent') {
 								var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
 									that.doRequestLoginByCode(res)
@@ -789,9 +794,8 @@
 						} else {
 							that.doRequestLoginByCode(null)
 						}
-					} else {
-						that.doRequestLoginByCode(null)
-					}
+					}).catch(function () { })
+						
 				} else {
 					if (!that.username) {
 						that.$message.error('请输入手机号/用户名/邮箱')
@@ -801,10 +805,15 @@
 						that.$message.error('请输入密码')
 						return false
 					}
-					if (that.captcha_open == 1) {
-						var LoginErrorNumByPwd = getStorageValue('LoginErrorNumByPwd')
-						LoginErrorNumByPwd = LoginErrorNumByPwd ? LoginErrorNumByPwd : 0
-						if (LoginErrorNumByPwd > 0) {
+					var data = {
+						username: that.username
+					}
+					httpget(qscms.apiList.loginByPwd, data).then(function (check_res) {
+						let setShow = false
+						if (check_res.data == 1) {
+							setShow = true
+						}
+						if (setShow) {
 							if (that.captcha_type == 'tencent') {
 								var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
 									that.doRequestLoginByPwd(res)
@@ -835,9 +844,7 @@
 						} else {
 							that.doRequestLoginByPwd(null)
 						}
-					} else {
-						that.doRequestLoginByPwd(null)
-					}
+					}).catch(function () { })
 				}
 			},
 			doRequestLoginByPwd: function (captcha) {
@@ -848,7 +855,7 @@
 					utype: that.formUtype,
 					captcha: captcha
 				}
-				httppost(qscms.apiList.loginByPwd, data, 'LoginErrorNumByPwd').then(function (res) {
+				httppost(qscms.apiList.loginByPwd, data).then(function (res) {
 					var visitor = {
 						utype: res.data.utype,
 						token: res.data.token,
@@ -856,10 +863,7 @@
 						userIminfo: res.data.user_iminfo
 					}
 					Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
-					removeStorageValue('LoginErrorNumByCode')
-					removeStorageValue('LoginErrorNumByPwd')
 					window.location.reload()
-					// that.handlerMemberCenter(that.formUtype)
 				}).catch(function () { })
 			},
 			doRequestLoginByCode: function (captcha) {
@@ -870,7 +874,7 @@
 					utype: that.formUtype,
 					captcha: captcha
 				}
-				httppost(qscms.apiList.loginByCode, data, 'LoginErrorNumByCode').then(function (res) {
+				httppost(qscms.apiList.loginByCode, data).then(function (res) {
 					var visitor = {
 						utype: res.data.utype,
 						token: res.data.token,
@@ -878,9 +882,6 @@
 						userIminfo: res.data.user_iminfo
 					}
 					Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
-					removeStorageValue('LoginErrorNumByCode')
-					removeStorageValue('LoginErrorNumByPwd')
-					// that.handlerMemberCenter(that.formUtype)
 					window.location.reload()
 				}).catch(function () { })
 			},

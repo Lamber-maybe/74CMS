@@ -14,8 +14,6 @@ const store = new Vuex.Store({
     isHeadShow: true, // 是否显示头部
     LoginOrNot: false, // 用户是否登录
     LoginType: 0, // 用户类型-1为企业 2位个人
-    LoginErrorNumByPwd: 0, // 登录错误次数(用户名密码登录)
-    LoginErrorNumByCode: 0, // 登录错误次数(验证码登录)
     userToken: 'user_token',
     userMobile: '',
     platform: 'mobile',
@@ -90,12 +88,6 @@ const store = new Vuex.Store({
       state.userToken = data.token
       state.userMobile = data.mobile
       state.userIminfo = data.userIminfo
-    },
-    setLoginErrorNumByPwd (state, data) {
-      state.LoginErrorNumByPwd = data.number
-    },
-    setLoginErrorNumByCode (state, data) {
-      state.LoginErrorNumByCode = data.number
     },
     // 更改是否显示头部的状态
     toggleHeadShow (state, data) {

@@ -21,6 +21,9 @@ export default {
   watch: {
     datalist(val, oldVal){
       this.replaceContent()
+    },
+    content(val, oldVal){
+      this.$emit('copyhtml', val)
     }
   },
   created() {
@@ -35,7 +38,6 @@ export default {
           that.itemInfo = response.data.info
           that.replaceContent()
           that.listLoading = false
-          that.$emit('copyhtml', that.content)
         })
         .catch(() => {})
     },

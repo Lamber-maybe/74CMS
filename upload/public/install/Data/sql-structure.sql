@@ -1975,7 +1975,7 @@ CREATE TABLE `qs_badword` (
 
 DROP TABLE IF EXISTS `qs_tweets_label`;
 CREATE TABLE `qs_tweets_label` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `value` text NOT NULL,
   `type` tinyint(3) NOT NULL DEFAULT '2' COMMENT '1-头部底部；2-主体',

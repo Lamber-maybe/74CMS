@@ -273,39 +273,39 @@ export default {
       }
       let postData = { ...this.formPwd }
       postData.utype = this.utype
-      this.$refs.captcha.show(res => {
-        if (res !== undefined) {
-          postData.captcha = res
+      http.get(api.login_pwd, postData).then(check_res => {
+        let setShow = false
+        if (check_res.data == 1) {
+          setShow = true
         }
-        http
-          .post(api.login_pwd, postData, 'LoginErrorNumByPwd')
-          .then(response => {
-            if (parseInt(response.code) === 200) {
-              this.$store.commit('setLoginErrorNumByCode', {
-                number: 0
-              })
-              this.$store.commit('setLoginErrorNumByPwd', {
-                number: 0
-              })
-              this.$store.commit('clearCountDownFun')
-              this.$store.commit('setLoginState', {
-                whether: true,
-                utype: response.data.utype,
-                token: response.data.token,
-                mobile: response.data.mobile,
-                userIminfo: response.data.user_iminfo
-              })
-              if (response.data.next_code != 200) {
-                handlerHttpError({ code: response.data.next_code, message: '' })
+        this.$refs.captcha.show(res => {
+          if (res !== undefined) {
+            postData.captcha = res
+          }
+          http
+            .post(api.login_pwd, postData)
+            .then(response => {
+              if (parseInt(response.code) === 200) {
+                this.$store.commit('clearCountDownFun')
+                this.$store.commit('setLoginState', {
+                  whether: true,
+                  utype: response.data.utype,
+                  token: response.data.token,
+                  mobile: response.data.mobile,
+                  userIminfo: response.data.user_iminfo
+                })
+                if (response.data.next_code != 200) {
+                  handlerHttpError({ code: response.data.next_code, message: '' })
+                } else {
+                  this.$emit('afterLogin', this.after_login_data)
+                }
               } else {
-                this.$emit('afterLogin', this.after_login_data)
+                this.$notify(response.message)
               }
-            } else {
-              this.$notify(response.message)
-            }
-          })
-          .catch(() => {})
-      }, 'pwd', this.$store.state.LoginErrorNumByPwd)
+            })
+            .catch(() => {})
+        }, setShow)
+      }).catch(() => {})
     },
     doSubmitCode () {
       if (!this.formCode.mobile) {
@@ -318,39 +318,39 @@ export default {
       }
       let postData = { ...this.formCode }
       postData.utype = this.utype
-      this.$refs.captcha.show(res => {
-        if (res !== undefined) {
-          postData.captcha = res
+      http.get(api.login_code, postData).then(check_res => {
+        let setShow = false
+        if (check_res.data == 1) {
+          setShow = true
         }
-        http
-          .post(api.login_code, postData, 'LoginErrorNumByCode')
-          .then(response => {
-            if (parseInt(response.code) === 200) {
-              this.$store.commit('setLoginErrorNumByCode', {
-                number: 0
-              })
-              this.$store.commit('setLoginErrorNumByPwd', {
-                number: 0
-              })
-              this.$store.commit('clearCountDownFun')
-              this.$store.commit('setLoginState', {
-                whether: true,
-                utype: response.data.utype,
-                token: response.data.token,
-                mobile: response.data.mobile,
-                userIminfo: response.data.user_iminfo
-              })
-              if (response.data.next_code != 200) {
-                handlerHttpError({ code: response.data.next_code, message: '' })
+        this.$refs.captcha.show(res => {
+          if (res !== undefined) {
+            postData.captcha = res
+          }
+          http
+            .post(api.login_code, postData)
+            .then(response => {
+              if (parseInt(response.code) === 200) {
+                this.$store.commit('clearCountDownFun')
+                this.$store.commit('setLoginState', {
+                  whether: true,
+                  utype: response.data.utype,
+                  token: response.data.token,
+                  mobile: response.data.mobile,
+                  userIminfo: response.data.user_iminfo
+                })
+                if (response.data.next_code != 200) {
+                  handlerHttpError({ code: response.data.next_code, message: '' })
+                } else {
+                  this.$emit('afterLogin', this.after_login_data)
+                }
               } else {
-                this.$emit('afterLogin', this.after_login_data)
+                this.$notify(response.message)
               }
-            } else {
-              this.$notify(response.message)
-            }
-          })
-          .catch(() => {})
-      }, 'code', this.$store.state.LoginErrorNumByCode)
+            })
+            .catch(() => {})
+        }, setShow)
+      }).catch(() => {})
     },
     // 提交之前的验证
     handleSubmit () {

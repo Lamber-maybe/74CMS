@@ -493,7 +493,7 @@ class Job extends \app\common\model\BaseModel
             ->setField('refreshtime', $timestamp);
         foreach ($jobid_arr as $key => $value) {
             model('RefreshJobLog')->save([
-                'uid' => $uid,
+                'uid' => is_array($uid)?$uid[$key]:$uid,
                 'jobid' => $value,
                 'addtime' => $timestamp,
                 'platform' => config('platform'),

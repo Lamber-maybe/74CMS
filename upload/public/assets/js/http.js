@@ -29,7 +29,7 @@ function httpget (url, params) {
       })
   })
 }
-function httppost (url, data, loginErrorAlias) {
+function httppost (url, data) {
   return new Promise(function(resolve, reject){
     service
       .post(url, data, {
@@ -40,12 +40,6 @@ function httppost (url, data, loginErrorAlias) {
       })
       .then(function(res){
         if (res.data.code != 200) {
-          if (loginErrorAlias !== undefined) {
-            var counter = localStorage.getItem(loginErrorAlias)
-            counter = counter === null ? 0 : counter
-            counter = parseInt(counter)
-            localStorage.setItem(loginErrorAlias, parseInt(counter + 1))
-          }
           handlerHttpError(res.data)
           reject(res.data)
         } else {
