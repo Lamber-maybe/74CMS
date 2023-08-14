@@ -281,7 +281,7 @@ class Resume extends \app\index\controller\Base
         foreach ($field_rule as $key => $rule) {
             foreach ($rule as $field => $field_attr) {
                 $_arr = [
-                    'is_display' => $field_attr['is_display'],
+                    'is_display' => intval($field_attr['is_display']),
                     'field_cn' => $field_attr['field_cn']
                 ];
                 $field_rule[$key][$field] = $_arr;
@@ -292,7 +292,7 @@ class Resume extends \app\index\controller\Base
         foreach ($resume_module_data as $module_name => $module_attr) {
             $_arr = [
                 'module_cn' => $module_attr['module_cn'],
-                'is_display' => $module_attr['is_display']
+                'is_display' => intval($module_attr['is_display'])
             ];
             $resume_module[$module_name] = $_arr;
         }

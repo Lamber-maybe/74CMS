@@ -121,6 +121,22 @@ class Job extends \app\common\controller\Backend
             $value['company_link'] = config('global_config.sitedomain').url('index/company/show', [
                 'id' => $value['company_id']
             ]);
+            $value['education_text'] = isset(
+                model('BaseModel')->map_education[$value['education']]
+            )
+            ? model('BaseModel')->map_education[$value['education']]
+            : '不限';
+            $value['experience_text'] = isset(
+                model('BaseModel')->map_experience[$value['experience']]
+            )
+            ? model('BaseModel')->map_experience[$value['experience']]
+            : '不限';
+            $value['wage_text'] = model('BaseModel')->handle_wage(
+                $value['minwage'],
+                $value['maxwage'],
+                $value['negotiable']
+            );
+            $value['sitename'] = config('global_config.sitename');
             $list[$key] = $value;
         }
 

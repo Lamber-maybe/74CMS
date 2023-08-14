@@ -116,6 +116,12 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column align="center" label="推广">
+          <template slot-scope="scope">
+            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
+            <el-button type="text" @click="funCopy(scope.row)">[复制]</el-button>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="220">
           <template slot-scope="scope">
             <el-button
@@ -196,6 +202,7 @@
         </el-button>
       </div>
     </el-dialog>
+    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
   </div>
 </template>
 
@@ -204,6 +211,7 @@ import { getClassify } from '@/api/classify'
 import { jobList, jobDelete, jobAudit, jobRefresh } from '@/api/job'
 import { parseTime } from '@/utils/index'
 import { exportJobById } from '@/api/export'
+import Poster from '@/components/Poster'
 
 export default {
   filters: {
@@ -233,9 +241,15 @@ export default {
       }
     }
   },
+  components: {
+    Poster
+  },
   props: ['listtype'],
   data() {
     return {
+      showPoster: false,
+      posterId: '',
+      posterType: '',
       auditSubmitLoading: false,
       setAuditVal: 0,
       setAuditReason: '',
@@ -533,6 +547,26 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    funPoster(id){
+      this.showPoster = true
+      this.posterId = id
+      this.posterType = 'job'
+    },
+    // 一键复制
+    funCopy (row) {
+      const that = this
+      const copyMessage = `${row.companyname}
+招聘：${row.jobname}
+要求：工作经验${row.experience_text}、学历要求${row.education_text}
+工资：${row.wage_text}
+查看联系方式：${row.job_link}
+-招聘求职就上${row.sitename}-`
+      this.$copyText(copyMessage).then(function (e) {
+        that.$message.success('内容已复制到剪切板！')
+      }, function (e) {
+        that.$message.error('抱歉，复制失败！')
+      })
     }
   }
 }

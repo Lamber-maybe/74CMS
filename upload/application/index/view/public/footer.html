@@ -112,20 +112,88 @@
         {#:htmlspecialchars_decode($global_config.statistics)#}
         {#/if#}
     </div>
+    <!--右侧固定漂浮栏-->
+    {#if condition="$global_config.service_ol_open eq '1'"#}
+    <div class="right_fixed_float">
+        <div class="rff_cell tel">
+            <div class="rff_cell_dia">
+            <div class="tel_line" v-for="(item,index) in mobileList"><span class="number">{{item.value}}</span><span>（{{item.name}}）</span></div>
+            </div>
+        </div>
+        <div class="rff_cell qq">
+            <div class="rff_cell_dia">
+            <a href="javascript:;" @click="wakeupQq(item.value)" class="qq_line" v-for="(item,index) in qqList">QQ交谈</a>
+            </div>
+        </div>
+        <div class="rff_cell wx">
+            <div class="rff_cell_dia">
+                <div class="wx_item" v-for="(item,index) in weixinList"><img :src="item.value" alt="" class="img"><p class="img_name">{{item.name}}</p></div>
+            </div>
+        </div>
+        <div class="rff_cell wx qr">
+            <div class="rff_cell_dia">
+            <div class="wx_item"><img src="{#$global_config.wechat_qrcode#}" alt="" class="img"><p class="img_name">{#$global_config.wechat_name#}</p></div>
+            </div>
+        </div>
+    </div>
+    {#/if#}
+    <!--返回顶部-->
+    <div class="right_fixed_back_top" v-if="backTopFlag" @click="backTop">顶部</div>
 </div>
-
 <script> 
 let version = "<?php echo config('version.version')?>";
 console.log('\n' + ' %c 74cmsSE v'+version+'  %c https://www.74cms.com ' + '\n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     var app = new Vue({
         el: '#footerContent',
         data:{
-            mobileQrcode:''
+            mobileQrcode:'',
+            backTopFlag: false,
+            scrollTop: 0,
+            mobileList:[],
+            qqList:[],
+            weixinList:[],
         },
         created:function(){
+            this.getServiceOl()
             this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}" 
         },
+        mounted () {
+            window.addEventListener('scroll', this.scrollToTop)
+        },
+        destroyed () {
+            window.removeEventListener('scroll', this.scrollToTop)
+        },
         methods:{
+            wakeupQq(qq){
+                if(qq){
+                    window.open('http://wpa.qq.com/msgrd?v=3&uin='+qq+'&site=在线客服&menu=yes')
+                }
+            },
+            getServiceOl:function() {
+                var that = this
+                httpget(qscms.apiList.serviceOl).then(function (res) {
+                 that.mobileList = res.data.mobile
+                 that.qqList = res.data.qq
+                 that.weixinList = res.data.weixin
+                }).catch(function () { })
+            },
+            // 点击图片回到顶部方法，加计时器是为了过渡顺滑
+            backTop:function() {
+                const that = this
+                let timer = setInterval(() => {
+                let ispeed = Math.floor(-that.scrollTop / 5)
+                document.documentElement.scrollTop = document.body.scrollTop = that.scrollTop + ispeed
+                if (that.scrollTop === 0) {
+                    clearInterval(timer)
+                }
+                }, 16)
+            },
+            // 为了计算距离顶部的高度，当高度大于60显示回顶部图标，小于60则隐藏
+            scrollToTop:function() {
+                const that = this
+                that.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+                that.backTopFlag = that.scrollTop > 60;
+            },
             handlerResumeIndex:function(){
                 location.href = qscms.locationList.personalResume
             },

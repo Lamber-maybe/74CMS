@@ -2,7 +2,7 @@
     <div class="login_box">
       <div class="b_bg" :class="utype==1?'':'p'"></div>
       <div class="b_group">
-        <div :class="scan ? 'b_sw aco' : 'b_sw'" @click="showScan"></div>
+        <div v-if="$store.state.config.wechat_login_open==1" :class="scan ? 'b_sw aco' : 'b_sw'" @click="showScan"></div>
         <div v-show="!scan">
           <div class="b_title">{{layout.utype_current_text}}登录</div>
           <div class="b_input" v-if="!loginByCode">
@@ -21,11 +21,11 @@
           </div>
           <el-button class="b_btn" type="primary" @click="handleSubmit">立即登录</el-button>
           <div class="b_reg">没有账号？<router-link :to="'/reg'+(utype==1?'/company':'')">立即注册</router-link></div>
-          <div class="b_coop">
+          <div class="b_coop" v-if="$store.state.config.account_qqlogin_open==1 || $store.state.config.wechat_login_open==1">
             <div class="p_title">合作账号登录</div>
             <div class="p_group">
-              <div class="p_item"><a href="javascript:;" class="p_ico qq" @click="qqLogin"></a></div>
-              <div class="p_item"><a href="javascript:;" class="p_ico wx" @click="showScan"></a></div>
+              <div class="p_item" v-if="$store.state.config.account_qqlogin_open==1"><a href="javascript:;" class="p_ico qq" @click="qqLogin"></a></div>
+              <div class="p_item" v-if="$store.state.config.wechat_login_open==1"><a href="javascript:;" class="p_ico wx" @click="showScan"></a></div>
             </div>
           </div>
           <div class="b_sw_txt">如果您是{{layout.utype_other_text}}，请<span @click="$router.push(layout.utype_other_login_route)">点击此处登录>></span></div>

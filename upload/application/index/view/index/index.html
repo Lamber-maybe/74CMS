@@ -41,7 +41,7 @@
 							{#volist name="banner_list['QS_index_a1@web']" id="vo"#}
 							<div class="swiper-slide" {#if condition="$vo.web_link_url!=''"#}style="cursor:pointer;"
 								onclick="javascript:window.open('{#$vo.web_link_url#}')" {#/if#}>
-								<img src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}" class="img lazy">
+								<img src="{#$vo.image_src#}" class="img">
 							</div>
 							{#/volist#}
 						</div>
@@ -54,7 +54,7 @@
 						{#volist name="banner_list['QS_index_a2@web']" id="vo"#}
 						<li>
 							<a href="{#if condition="$vo.web_link_url!=''"#}{#$vo.web_link_url#}{#else /#}javascript:;{#/if#}">
-								<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}" alt="{#$vo.companyname#}">
+								<img src="{#$vo.image_src#}" alt="{#$vo.companyname#}">
 								{#if condition="$vo.joblist!=''"#}
 								<div class="hot-info">
 									<h2 class="substring" title="{#$vo.companyname#}">{#$vo.companyname#}</h2>
@@ -130,7 +130,7 @@
 				<div class="igb">
 					<a {#if condition="$vo.web_link_url!=''"#}href="{#$vo.web_link_url#}"
 					   target="_blank" {#/if#}>
-					<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+					<img src="{#$vo.image_src#}">
 					</a>
 				</div>
 				<div class="name substring"><a {#if condition="$vo.web_link_url!=''"#}href="{#$vo.web_link_url#}"
@@ -151,7 +151,7 @@
 		<div class="source_1">
 			{#volist name="banner_list['QS_index_a4@web']" id="vo"#}
 			<a class="img" {#if condition="$vo.web_link_url!=''"#}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
-				<img class="lazy" src="__ROOT__/assets/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+				<img src="{#$vo.image_src#}">
 				<div class="pcd"></div>
 			</a>
 			{#/volist#}
@@ -534,6 +534,18 @@
 	<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
 		{#include file="captcha/picture" /#}
 	</el-dialog>
+  <!--底部未登录引导-->
+  <div class="bottom_guide" :style="showGuide===true?'display:block;':'display:none;'">
+    <div class="btg_pop"></div>
+    <div class="btg_container">
+      <div class="btg_icon"></div>
+      <p class="btg_t1">{#$global_config.guide_title#}</p><p class="btg_t2">{#$global_config.guide_content#}</p>
+      <button class="btg_btn_1" @click="handlerMemberCenter(2)">免费注册简历</button><button class="btg_btn_2" @click="handlerMemberCenter(1)">企业发布职位</button>
+      <div class="btg_icon_1"></div>
+      <div class="btg_qr_box"><img class="qr_img" :src="guideQrcode" alt=""></div>
+      <div class="btg_close" @click="showGuide=false"></div><p class="btg_t3">微信扫码 求职更简单</p>
+    </div>
+  </div>
 </div>
 
 {#load href="__ROOT__/assets/js/jquery.hoverdir.js" /#}
@@ -648,19 +660,40 @@
 			secret_str: '',
 			catpchaSrc: '',
 			pictureCaptchaCallback: '',
-		},
+			guideQrcode:'',
+			showGuide:false
+    },
 		created: function () {
 			this.getUserInfo()
 			this.captcha_open = captcha_open
 			this.captcha_type = captcha_type
+			var guide_qrcode = "{#$global_config.guide_qrcode#}"
+			if(guide_qrcode==''){
+				this.guideQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}" 
+			}else{
+				this.guideQrcode = guide_qrcode
+			}
 		},
 		methods: {
+			handlerMemberCenter: function (utype) {
+                if (utype == 1) {
+                    location.href = qscms.locationList.indexCompany
+                } else {
+                    location.href = qscms.locationList.indexPersonal
+                }
+            },
 			getUserInfo: function () {
 				var that = this
 				httpget(qscms.apiList.userinfo).then(function (res) {
 					if (res.data.login === true) {
 						that.loginUtype = res.data.userinfo.utype
 						that.getStatAfterLogin()
+						that.showGuide = false
+					}else{
+						var guide_open = "{#$global_config.guide_open#}"
+						if(guide_open=='1'){
+							that.showGuide = true
+						}
 					}
 				}).catch(function () { })
 			},
@@ -795,7 +828,7 @@
 							that.doRequestLoginByCode(null)
 						}
 					}).catch(function () { })
-						
+
 				} else {
 					if (!that.username) {
 						that.$message.error('请输入手机号/用户名/邮箱')
@@ -990,7 +1023,7 @@
 						return false;
 					}
 				});
-			},
+			}
 		}
 	})
 </script>

@@ -29,7 +29,19 @@
 </template>
 
 <script>
-import TRTC from 'trtc-js-sdk'
+let CTRTC = null
+// import TRTC from 'trtc-js-sdk'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+if (!isSpider) {
+  Promise.all([
+    import('trtc-js-sdk')
+  ]).then(([
+    TRTC
+  ]) => {
+    CTRTC = TRTC
+  })
+} else {
+}
 export default {
   name: 'Trtc',
   data () {
@@ -73,7 +85,7 @@ export default {
       const sdkAppId = this.config.appid
       const userSig = this.config.sig
       const userId = this.userId
-      this.client = TRTC.createClient({
+      this.client = CTRTC.createClient({
         mode: 'videoCall',
         sdkAppId,
         userId,
@@ -99,7 +111,7 @@ export default {
     },
     // 创建本地流
     createStream (userId) {
-      const localStream = TRTC.createStream({
+      const localStream = CTRTC.createStream({
         userId,
         audio: this.audio,
         video: this.video,

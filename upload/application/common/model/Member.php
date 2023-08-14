@@ -265,6 +265,12 @@ class Member extends \app\common\model\BaseModel
         } else {
             $info['overtime'] = 0;
         }
+        $setmeal = model('Setmeal')->where('id',$info['setmeal_id'])->find();
+        if($setmeal===null){
+            $info['name'] = '';
+        }else{
+            $info['name'] = $info['overtime']==1?($setmeal['name'].'已过期'):$setmeal['name'];
+        }
         return $info;
     }
     /**

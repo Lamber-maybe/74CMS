@@ -228,7 +228,7 @@
     </van-dialog>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'resume'" :info="shareInfo"></SharePoster>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'resume'" :infoid="shareid"></SharePoster>
     <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
@@ -257,7 +257,7 @@ export default {
     return {
       previewImgList: [],
       showDetail: false,
-      shareInfo: {},
+      shareid: 0,
       showShare: false,
       showWxLayer: false,
       showLayer: false,
@@ -327,17 +327,7 @@ export default {
       }
     },
     handlePoster () {
-      this.shareInfo = {
-        id: this.basic.id,
-        photo: this.basic.photo_img_src,
-        fullname: this.basic.fullname,
-        age: this.basic.age,
-        education: this.basic.education_text,
-        experience: this.basic.experience_text,
-        intention_jobs: this.basic.intention_jobs_text,
-        intention_district: this.basic.intention_district_text,
-        current: this.basic.current_text
-      }
+      this.shareid = this.query_id
       this.showPoster = true
     },
     closePoster () {

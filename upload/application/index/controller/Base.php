@@ -9,11 +9,12 @@ class Base extends \app\common\controller\Base
     {
         parent::_initialize();
         $global_config = config('global_config');
-        $img_id_arr = [$global_config['logo'],$global_config['square_logo'],$global_config['wechat_qrcode']];
+        $img_id_arr = [$global_config['logo'],$global_config['square_logo'],$global_config['wechat_qrcode'],$global_config['guide_qrcode']];
         $img_arr = model('Uploadfile')->getFileUrlBatch($img_id_arr);
         $global_config['logo'] = isset($img_arr[$global_config['logo']])?$img_arr[$global_config['logo']]:make_file_url('resource/logo.png');
         $global_config['square_logo'] = isset($img_arr[$global_config['square_logo']])?$img_arr[$global_config['square_logo']]:make_file_url('resource/square_logo.png');
         $global_config['wechat_qrcode'] = isset($img_arr[$global_config['wechat_qrcode']])?$img_arr[$global_config['wechat_qrcode']]:make_file_url('resource/weixin_img.jpg');
+        $global_config['guide_qrcode'] = isset($img_arr[$global_config['guide_qrcode']])?$img_arr[$global_config['guide_qrcode']]:'';
         $this->assign('global_config',$global_config);
         $this->initPageHeader($global_config);
         $this->initVisitor();

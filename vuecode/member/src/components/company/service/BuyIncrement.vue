@@ -22,7 +22,7 @@
         <div class="service_list">
           <div :class="[submitData.service_id==item.id?'border2':'','hoverbg']" @click="changeItem(item)" v-for="(item, index) in dataset" :key="index">
             <div class="item_left">
-              <p>{{ item.name }}</p>
+              <p><span class="service_name">{{ item.name }}<img v-if="item.recommend==1" class="recommend" :src="require('@/assets/images/tuijian2.png')" /></span></p>
               <span>低至 {{item.expense_avg}}<span v-if="item.enable_points_deduct == 1"> ，可使用{{ $store.state.config.points_byname }}抵扣</span></span>
             </div>
             <div class="item_right">
@@ -110,7 +110,7 @@ import api from '@/api'
           starttime: '',
           timerange: '',
           payment: 'alipay',
-          jobid: 0
+          jobid: ''
         },
         mySetmeal:{},
         options_timerange:[]
@@ -268,10 +268,18 @@ import api from '@/api'
     flex: 2;
     margin-left: 20px;
   }
-  .item_left p{
+  .item_left .service_name{
+    position:relative;
     color: #333333;
     font-size: 16px;
-    margin: 10px 0 ;
+  }
+  .item_left .service_name .recommend{
+    position:absolute;
+    top:-10px;
+    right:-40px;
+  }
+  .item_left p{
+    margin: 10px 0 8px;
   }
   .item_left span{
     font-size:13px ;

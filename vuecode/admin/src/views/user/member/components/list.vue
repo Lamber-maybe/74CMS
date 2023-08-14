@@ -376,8 +376,9 @@ export default {
     },
     funDelete(row){
       var that = this
+      const msg = row.utype == 1 ? '删除企业会员将删除此会员的一切信息，包括企业资料、在招职位、下载的简历等，删除后不可恢复。是否继续？' : '删除个人会员将删除此会员的一切信息，包括简历、投递记录等信息，删除后不可恢复。是否继续？'
       that
-        .$confirm('此操作将永久删除该会员, 是否继续?', '提示', {
+        .$confirm(msg, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -400,8 +401,14 @@ export default {
         return false
       }
       var that = this
+      let msg = '删除企业会员将删除选中会员的一切信息，删除后不可恢复。是否继续？'
+      if (that.listtype == 'company'){
+        msg = '删除企业会员将删除选中会员的一切信息，包括企业资料、在招职位、下载的简历等，删除后不可恢复。是否继续？'
+      } else if (that.listtype == 'personal'){
+        msg = '删除个人会员将删除选中会员的一切信息，包括简历、投递记录等信息，删除后不可恢复。是否继续？'
+      }
       that
-        .$confirm('此操作将永久删除该会员, 是否继续?', '提示', {
+        .$confirm(msg, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

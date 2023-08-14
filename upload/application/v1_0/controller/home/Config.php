@@ -151,4 +151,101 @@ class Config extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
+    /**
+     * 页面信息
+     */
+    public function pageinfo(){
+        $alias = input('get.alias/s','','trim');
+        if($alias==''){
+            $this->ajaxReturn(200,'获取数据成功',[]);
+        }
+        $return = model('PageMobile')->getCache($alias);
+        if(!$return){
+            $this->ajaxReturn(200,'获取数据成功',[]);
+        }
+        $return['seo_title'] = str_replace("{sitename}",config('global_config.sitename'),$return['seo_title']);
+        $return['seo_keywords'] = str_replace("{sitename}",config('global_config.sitename'),$return['seo_keywords']);
+        $return['seo_description'] = str_replace("{sitename}",config('global_config.sitename'),$return['seo_description']);
+        $return['og_title'] = config('global_config.sitename');
+        $return['og_type'] = '招聘求职网';
+        $return['og_site_name'] = config('global_config.sitename');
+        $return['og_description'] = '为求职者提供免费注册、求职指导、简历管理等服务，职位真实可靠，上' . config('global_config.sitename') . '，找到满意工作';
+
+        //============处理替换自定义标签start=============
+        $query = input('get.data/s','','trim');
+        if($query!="{}"){
+            $query = json_decode($query,true);
+        }else{
+            $query = [];
+        }
+
+        $seoData = [];
+        
+
+        if(isset($query['article_cid']) && intval($query['article_cid'])>0){
+            $categoryinfo = model('ArticleCategory')->where('id',intval($query['article_cid']))->find();
+            if($categoryinfo!==null){
+                $seoData['cname'] = $categoryinfo['name'];
+                $seoData['seo_keywords'] = $categoryinfo['seo_keywords'];
+                $seoData['seo_description'] = $categoryinfo['seo_description'];
+            }
+        }else{
+            $seoData['cname'] = '最新资讯';
+        }
+
+
+        $category_district_data = model('CategoryDistrict')->getCache();
+        $category_job_data = model('CategoryJob')->getCache();
+
+        if(isset($query['keyword']) && $query['keyword']!=''){
+            $seoData['keyword'] = $query['keyword'];
+        }else{
+            $seoData['keyword'] = '';
+        }
+        
+        if(isset($query['district3'])>0 && intval($query['district3'])>0){
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district3'])]) ? $category_district_data[intval($query['district3'])] : '';
+        }else if(isset($query['district2'])>0 && intval($query['district2'])>0){
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district2'])]) ? $category_district_data[intval($query['district2'])] : '';
+        }else if(isset($query['district1'])>0 && intval($query['district1'])>0){
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district1'])]) ? $category_district_data[intval($query['district1'])] : '';
+        }else{
+            $seoData['citycategory'] = '';
+        }
+
+        if(isset($query['category3'])>0 && intval($query['category3'])>0){
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category3'])]) ? $category_job_data[intval($query['category3'])] : '';
+        }else if(isset($query['category2'])>0 && intval($query['category2'])>0){
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category2'])]) ? $category_job_data[intval($query['category2'])] : '';
+        }else if(isset($query['category1'])>0 && intval($query['category1'])>0){
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category1'])]) ? $category_job_data[intval($query['category1'])] : '';
+        }else{
+            $seoData['jobcategory'] = '';
+        }
+
+        foreach ($seoData as $key => $value) {
+            $return['seo_title'] = str_replace("{".$key."}",$value,$return['seo_title']);
+            $return['seo_keywords'] = str_replace("{".$key."}",$value,$return['seo_keywords']);
+            $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
+        }
+
+        
+        $custom_data = input('get.custom_data/s','','trim');
+        if($custom_data!="{}"){
+            $custom_data = json_decode($custom_data,true);
+        }else{
+            $custom_data = [];
+        }
+        foreach ($custom_data as $key => $value) {
+            $return['seo_title'] = str_replace("{".$key."}",$value,$return['seo_title']);
+            $return['seo_keywords'] = str_replace("{".$key."}",$value,$return['seo_keywords']);
+            $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
+        }
+        
+
+        //============处理替换自定义标签end=============
+
+
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
 }

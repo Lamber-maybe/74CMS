@@ -186,6 +186,7 @@ class SceneQrcode extends \app\common\controller\Backend
         if (null === $info) {
             $this->ajaxReturn(500, '请选择数据');
         }
+        $info['qrcode_src'] = stripos($info['qrcode_src'],'http')===false?(SYS_UPLOAD_PATH.$info['qrcode_src']):$info['qrcode_src'];
         header("Content-Type: application/force-download");
         header("Content-Disposition: attachment; filename=".$info['title'].".jpg");
         echo file_get_contents($info['qrcode_src']);

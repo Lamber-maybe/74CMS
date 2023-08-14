@@ -1,5 +1,6 @@
 <template>
-  <div id="app" class="my_app" v-wechat-title="this.pageTitle">
+  <div id="app" class="my_app">
+    <Meta v-if="base_info.companyname!==undefined" pagealias="companyshow" :custom_data="{companyname:base_info.companyname,content:base_info.content}" />
     <Head>公司详情</Head>
     <div class="box_1">
       <div class="top">
@@ -158,7 +159,7 @@
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'company'" :info="shareInfo"></SharePoster>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'company'" :infoid="shareid"></SharePoster>
     <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
@@ -178,20 +179,25 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import Subscribe from '@/components/Subscribe'
 import { countDistance } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Login from '@/components/Login'
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import Report from '@/components/Report'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
 export default {
   name: 'CompanyShow',
   components: {
-    BaiduMap,
     Login,
     Subscribe,
     Share,
@@ -200,7 +206,6 @@ export default {
   },
   data () {
     return {
-      pageTitle: '',
       query_id: '',
       loading: false,
       finished: false,
@@ -233,7 +238,7 @@ export default {
       after_login_data: {},
       showContentMore: false,
       isMore: false,
-      shareInfo: {},
+      shareid: 0,
       showShare: false,
       showWxLayer: false,
       showLayer: false,
@@ -322,8 +327,6 @@ export default {
       } = { ...res.data }
       this.field_rule = field_rule
       this.base_info = base_info
-      this.pageTitle =
-        this.base_info.companyname + ' - ' + this.$store.state.config.sitename
       this.img_list = img_list
       this.report = report
       this.fans = fans
@@ -421,17 +424,7 @@ export default {
       }
     },
     handlePoster () {
-      this.shareInfo = {
-        id: this.query_id,
-        logo: this.base_info.logo_src,
-        companyname: this.base_info.companyname,
-        nature: this.base_info.nature_text,
-        scale: this.base_info.scale_text,
-        district: this.base_info.district_text,
-        jobnum: this.base_info.jobnum,
-        joblist: this.joblist,
-        address: this.base_info.address
-      }
+      this.shareid = this.query_id
       this.showPoster = true
     },
     closePoster () {

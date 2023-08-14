@@ -18,6 +18,9 @@
       :model="form"
       label-width="120px"
     >
+      <el-form-item label="开启微信登录">
+        <el-switch v-model="form.wechat_login_open" />
+      </el-form-item>
       <el-form-item label="AppId">
         <el-input v-model="form.wechat_open_appid" class="middle" />
       </el-form-item>
@@ -39,6 +42,7 @@ export default {
     return {
       infoLoading: true,
       form: {
+        wechat_login_open: false,
         wechat_open_appid: '',
         wechat_open_appsecret: ''
       }
@@ -54,14 +58,15 @@ export default {
       const param = {}
       setConfig(param, 'get')
         .then(response => {
-          const { wechat_open_appid, wechat_open_appsecret } = { ...response.data }
-          this.form = { wechat_open_appid, wechat_open_appsecret }
+          const { wechat_login_open, wechat_open_appid, wechat_open_appsecret } = { ...response.data }
+          this.form = { wechat_login_open: wechat_login_open == 1, wechat_open_appid, wechat_open_appsecret }
           this.infoLoading = false
         })
         .catch(() => {})
     },
     onSubmit(formName) {
       const insertData = { ...this.form }
+      insertData.wechat_login_open = insertData.wechat_login_open === true ? 1 : 0
       this.$refs[formName].validate(valid => {
         if (valid) {
           setConfig(insertData)

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Meta pagealias="jobfairollist" />
     <Head>网络招聘会</Head>
     <div class="b1"><img src="../../assets/images/jobfairol/1.png" alt=""></div>
     <van-empty

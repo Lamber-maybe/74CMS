@@ -1,5 +1,6 @@
 <template>
-  <div id="app" v-wechat-title="this.pageTitle">
+  <div id="app">
+    <Meta v-if="info.title!==undefined" pagealias="articleshow" :custom_data="{title:info.title,seo_keywords:info.seo_keywords,seo_description:info.seo_description}" />
     <Head>资讯详情</Head>
     <div class="form_top_border"></div>
     <div class="list_wrapper">
@@ -64,7 +65,6 @@ export default {
   },
   data () {
     return {
-      pageTitle: '',
       id: 0,
       info: {},
       prev: {},
@@ -90,8 +90,6 @@ export default {
           this.info = info
           this.prev = prev
           this.next = next
-          this.pageTitle =
-            this.info.title + ' - ' + this.$store.state.config.sitename
           let wechatShareInfo = {
             title: this.info.title,
             imgUrl: this.info.thumb

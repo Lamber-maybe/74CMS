@@ -7,15 +7,13 @@ class Index extends \app\v1_0\controller\common\Base
     {
         parent::_initialize();
     }
-    public function index()
-    {
+    protected function writeShowCache($pageCache){
         if (in_array(config('platform'),['wechat','mobile'])) {
             $index_module = model('MobileIndexModule')->column(
                 'alias,is_display,plan_id'
             );
             $return['module_rule'] = $index_module;
         }
-
         //菜单
         if (
             !in_array(config('platform'),['wechat','mobile']) ||
@@ -52,6 +50,24 @@ class Index extends \app\v1_0\controller\common\Base
             $data['article_list'] = $this->getArticle();
         }
         $return['data'] = $data;
+        if($pageCache['expire']>0){
+            model('PageMobile')->writeCacheByAlias('index',$return,$pageCache['expire']);
+        }
+        return $return;
+    }
+    public function index()
+    {
+        //读取页面缓存配置
+        $pageCache = model('PageMobile')->getCache('index');
+        //如果缓存有效期为0，则不使用缓存
+        if($pageCache['expire']>0){
+            $return = model('PageMobile')->getCacheByAlias('index');
+        }else{
+            $return = false;
+        }
+        if (!$return) {
+            $return = $this->writeShowCache($pageCache);
+        }
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     /**
@@ -67,15 +83,11 @@ class Index extends \app\v1_0\controller\common\Base
      */
     protected function getNotice()
     {
-        $list = cache('index_notice_list');
-        if (!$list) {
-            $list = model('Notice')
-                ->field('id,title,link_url')
-                ->where('is_display', 1)
-                ->order('sort_id desc,id desc')
-                ->select();
-            cache('index_notice_list', $list, 3600);
-        }
+        $list = model('Notice')
+            ->field('id,title,link_url')
+            ->where('is_display', 1)
+            ->order('sort_id desc,id desc')
+            ->select();
         return $list;
     }
     /**
@@ -83,15 +95,11 @@ class Index extends \app\v1_0\controller\common\Base
      */
     protected function getHotword()
     {
-        $list = cache('index_hotword_list');
-        if (!$list) {
-            $list = model('Hotword')
-                ->field('word,hot')
-                ->order('hot desc')
-                ->limit(16)
-                ->select();
-            cache('index_hotword_list', $list, 3600);
-        }
+        $list = model('Hotword')
+            ->field('word,hot')
+            ->order('hot desc')
+            ->limit(16)
+            ->select();
         return $list;
     }
     /**
@@ -99,54 +107,50 @@ class Index extends \app\v1_0\controller\common\Base
      */
     protected function getFamous()
     {
-        $return = cache('index_famous_list');
-        if (!$return) {
-            $famous_enterprises_setmeal = config(
-                'global_config.famous_enterprises'
-            );
-            $famous_enterprises_setmeal =
-                $famous_enterprises_setmeal == ''
-                    ? []
-                    : explode(',', $famous_enterprises_setmeal);
-            if (empty($famous_enterprises_setmeal)) {
-                $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
+        $famous_enterprises_setmeal = config(
+            'global_config.famous_enterprises'
+        );
+        $famous_enterprises_setmeal =
+            $famous_enterprises_setmeal == ''
+                ? []
+                : explode(',', $famous_enterprises_setmeal);
+        if (empty($famous_enterprises_setmeal)) {
+            $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
+        }
+        $list = model('Company')
+            ->where('setmeal_id', 'in', $famous_enterprises_setmeal)
+            ->field('id,logo,companyname')
+            ->order('refreshtime desc')
+            ->limit(9)
+            ->select();
+        $job_list = $comid_arr = $logo_id_arr = $logo_arr = [];
+        foreach ($list as $key => $value) {
+            $comid_arr[] = $value['id'];
+            $value['logo'] > 0 && ($logo_id_arr[] = $value['logo']);
+        }
+        if (!empty($logo_id_arr)) {
+            $logo_arr = model('Uploadfile')->getFileUrlBatch($logo_id_arr);
+        }
+        if (!empty($comid_arr)) {
+            $job_data = model('Job')
+                ->where('company_id', 'in', $comid_arr)
+                ->where('is_display', 1)
+                ->where('audit', 1)
+                ->column('id,company_id,jobname', 'id');
+            foreach ($job_data as $key => $value) {
+                $job_list[$value['company_id']][] = $value['jobname'];
             }
-            $list = model('Company')
-                ->where('setmeal_id', 'in', $famous_enterprises_setmeal)
-                ->field('id,logo,companyname')
-                ->order('refreshtime desc')
-                ->limit(9)
-                ->select();
-            $job_list = $comid_arr = $logo_id_arr = $logo_arr = [];
-            foreach ($list as $key => $value) {
-                $comid_arr[] = $value['id'];
-                $value['logo'] > 0 && ($logo_id_arr[] = $value['logo']);
-            }
-            if (!empty($logo_id_arr)) {
-                $logo_arr = model('Uploadfile')->getFileUrlBatch($logo_id_arr);
-            }
-            if (!empty($comid_arr)) {
-                $job_data = model('Job')
-                    ->where('company_id', 'in', $comid_arr)
-                    ->where('is_display', 1)
-                    ->where('audit', 1)
-                    ->column('id,company_id,jobname', 'id');
-                foreach ($job_data as $key => $value) {
-                    $job_list[$value['company_id']][] = $value['jobname'];
-                }
-            }
-            $return = [];
-            foreach ($list as $key => $value) {
-                $arr = $value->toArray();
-                $arr['logo'] = isset($logo_arr[$value['logo']])
-                    ? $logo_arr[$arr['logo']]
-                    : default_empty('logo');
-                $arr['jobnum'] = isset($job_list[$value['id']])
-                    ? count($job_list[$arr['id']])
-                    : 0;
-                $return[] = $arr;
-            }
-            cache('index_famous_list', $return, 3600);
+        }
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr = $value->toArray();
+            $arr['logo'] = isset($logo_arr[$value['logo']])
+                ? $logo_arr[$arr['logo']]
+                : default_empty('logo');
+            $arr['jobnum'] = isset($job_list[$value['id']])
+                ? count($job_list[$arr['id']])
+                : 0;
+            $return[] = $arr;
         }
 
         return $return;
@@ -156,33 +160,29 @@ class Index extends \app\v1_0\controller\common\Base
      */
     protected function getArticle()
     {
-        $return = cache('index_article_list');
-        if (!$return) {
-            $list = model('Article')
-                ->field('id,title,thumb,link_url,click,addtime,source')
-                ->where('is_display', 1)
-                ->limit(5)
-                ->order('sort_id desc,id desc')
-                ->select();
-            $thumb_id_arr = $thumb_arr = [];
-            foreach ($list as $key => $value) {
-                $value['thumb'] > 0 && ($thumb_id_arr[] = $value['thumb']);
-            }
-            if (!empty($thumb_id_arr)) {
-                $thumb_arr = model('Uploadfile')->getFileUrlBatch(
-                    $thumb_id_arr
-                );
-            }
-            $return = [];
-            foreach ($list as $key => $value) {
-                $arr = $value->toArray();
-                $arr['thumb'] = isset($thumb_arr[$arr['thumb']])
-                    ? $thumb_arr[$arr['thumb']]
-                    : default_empty('thumb');
-                $arr['source_text'] = $arr['source'] == 1 ? '转载' : '原创';
-                $return[] = $arr;
-            }
-            cache('index_article_list', $return, 3600);
+        $list = model('Article')
+            ->field('id,title,thumb,link_url,click,addtime,source')
+            ->where('is_display', 1)
+            ->limit(5)
+            ->order('sort_id desc,id desc')
+            ->select();
+        $thumb_id_arr = $thumb_arr = [];
+        foreach ($list as $key => $value) {
+            $value['thumb'] > 0 && ($thumb_id_arr[] = $value['thumb']);
+        }
+        if (!empty($thumb_id_arr)) {
+            $thumb_arr = model('Uploadfile')->getFileUrlBatch(
+                $thumb_id_arr
+            );
+        }
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr = $value->toArray();
+            $arr['thumb'] = isset($thumb_arr[$arr['thumb']])
+                ? $thumb_arr[$arr['thumb']]
+                : default_empty('thumb');
+            $arr['source_text'] = $arr['source'] == 1 ? '转载' : '原创';
+            $return[] = $arr;
         }
         return $return;
     }
@@ -211,13 +211,7 @@ class Index extends \app\v1_0\controller\common\Base
         header("Cache-Control: public"); 
         Header("Content-type: application/octet-stream"); 
         Header("Accept-Ranges: bytes"); 
-        if (strpos($_SERVER["HTTP_USER_AGENT"],'MSIE')) { 
-            header('Content-Disposition: attachment; filename=招聘委托书.doxc'); 
-        }else if (strpos($_SERVER["HTTP_USER_AGENT"],'Firefox')) { 
-            header('Content-Disposition: attachment; filename=招聘委托书.docx'); 
-        } else { 
-            header('Content-Disposition: attachment; filename=招聘委托书.docx'); 
-        } 
+        header('Content-Disposition: attachment; filename=招聘委托书.docx'); 
         header("Pragma:no-cache"); 
         header("Expires:0"); 
         ob_end_flush(); 

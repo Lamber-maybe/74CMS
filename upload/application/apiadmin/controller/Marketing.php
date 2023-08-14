@@ -26,7 +26,7 @@ class Marketing extends \app\common\controller\Backend
                 ->select();
             $comid_arr = [];
             foreach ($datalist as $key => $value) {
-                $comid_arr = $value['id'];
+                $comid_arr[] = $value['id'];
             }
             $jobdata = [];
             if(!empty($comid_arr)){

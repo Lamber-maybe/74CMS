@@ -60,6 +60,7 @@ class IndexController extends Controller {
     	return [
     		'/runtime/',
 			'/public/upload/',
+			'/public/baiduxml/',
 			'/public/admin/static/config.js',
 			'/public/member/static/config.js',
 			'/public/m/static/config.js',

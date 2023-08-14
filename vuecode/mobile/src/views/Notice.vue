@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Meta pagealias="noticelist" />
     <Head>公告列表</Head>
     <div class="form_top_border"></div>
     <van-empty

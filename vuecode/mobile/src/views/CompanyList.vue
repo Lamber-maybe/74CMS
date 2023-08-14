@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Meta pagealias="companylist" :query_data="$route.query" />
     <Head>企业列表</Head>
     <div class="box_1">
       <div class="content" @click="toggleSearch">

@@ -72,8 +72,8 @@
                 {{ item.district_text }}
                 <div class="time">{{ item.refreshtime }}</div>
               </div>
-              <div class="tag_wrapper clearfix" v-if="item.tag_text_arr.length>0">
-                <div class="tag_cell" v-for="(t, key) in item.tag_text_arr" :key="key">{{ t }}</div>
+              <div class="tag_wrapper clearfix" v-if="item.tag.length>0">
+                <div class="tag_cell" v-for="(t, key) in item.tag" :key="key">{{ t }}</div>
               </div>
               <div class="company">
                 <div class="name">{{ item.companyname }}</div>
@@ -90,22 +90,37 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import http from '@/utils/http'
 import api from '@/api'
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
-import BmNavigation from 'vue-baidu-map/components/controls/Navigation'
-import BmGeolocation from 'vue-baidu-map/components/controls/Geolocation.vue'
-import BmMarker from 'vue-baidu-map/components/overlays/Marker.vue'
-import { BmlMarkerClusterer } from 'vue-baidu-map'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
+Vue.component('BmNavigation', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/controls/Navigation'], resolve)
+  }
+})
+Vue.component('BmGeolocation', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/controls/Geolocation.vue'], resolve)
+  }
+})
+Vue.component('BmMarker', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/overlays/Marker.vue'], resolve)
+  }
+})
+Vue.component('BmlMarkerClusterer', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/extra/MarkerClusterer.vue'], resolve)
+  }
+})
 export default {
   name: 'JobMap',
-  components: {
-    BaiduMap,
-    BmNavigation,
-    BmGeolocation,
-    BmMarker,
-    BmlMarkerClusterer
-  },
   data () {
     return {
       show: true,

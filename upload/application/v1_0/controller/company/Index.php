@@ -152,8 +152,7 @@ class Index extends \app\v1_0\controller\common\Base
         ];
         
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        $setmeal = model('Setmeal')->where('id',$member_setmeal->setmeal_id)->find();
-        $member_setmeal['name'] = $setmeal['name'];
+        
         $message_list = model('Message')
             ->field('content,is_readed')
             ->where('uid', $this->userinfo->uid)

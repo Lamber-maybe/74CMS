@@ -1,5 +1,6 @@
 <template>
-  <div id="app" class="my_app" v-wechat-title="this.pageTitle">
+  <div id="app" class="my_app">
+    <Meta v-if="base_info.fullname!==undefined" pagealias="resumeshow" :custom_data="{fullname:base_info.fullname,sex:base_info.sex_text,education:base_info.education_text,experience:base_info.experience_text,district:base_info.intention_district_text,jobcategory:base_info.intention_jobs_text,specialty:base_info.specialty}" />
     <Head>{{ base_info.fullname }}的简历</Head>
     <van-skeleton title avatar :row="10" :loading="mainLoading">
       <div class="box_1">
@@ -574,13 +575,14 @@
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'resume'" :info="shareInfo"></SharePoster>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'resume'" :infoid="shareid"></SharePoster>
     <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
               @handleForward="handleForward"
               @handlePoster="handlePoster"></Share>
     </van-popup>
+    <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
   </div>
 </template>
 
@@ -629,7 +631,6 @@ export default {
       showPayment: false,
       showDirectService: false,
       directServiceInfo: {},
-      pageTitle: '',
       enableClick: true,
       mainLoading: true,
       query_id: '',
@@ -674,7 +675,7 @@ export default {
         speed: 600,
         watchOverflow: true
       },
-      shareInfo: {},
+      shareid: 0,
       showShare: false,
       showWxLayer: false,
       showLayer: false,
@@ -732,10 +733,6 @@ export default {
           break
         }
       }
-      this.pageTitle =
-        this.base_info.fullname +
-        '的简历 - ' +
-        this.$store.state.config.sitename
       this.intention_list = intention_list
       this.show_contact = show_contact
       this.show_contact_note = show_contact_note
@@ -996,17 +993,7 @@ export default {
       }
     },
     handlePoster () {
-      this.shareInfo = {
-        id: this.query_id,
-        photo: this.base_info.photo_img_src,
-        fullname: this.base_info.fullname,
-        age: this.base_info.age,
-        education: this.base_info.education_text,
-        experience: this.base_info.experience_text,
-        intention_jobs: this.base_info.intention_jobs_text,
-        intention_district: this.base_info.intention_district_text,
-        current: this.base_info.current_text
-      }
+      this.shareid = this.query_id
       this.showPoster = true
     },
     closePoster () {
@@ -1107,6 +1094,10 @@ export default {
 </script>
 
 <style lang="scss">
+  .generate_posters {
+    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
+    right: 15px;bottom: 100px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
+  }
   .box_report {
     position: relative;padding:17px 0;
     &::after {

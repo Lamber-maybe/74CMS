@@ -94,8 +94,8 @@
         </van-button>
       </div>
       <div class="bottom_other_login">
-        <div class="other_cell c_qq" @click="qqLogin">QQ登录</div>
-        <div class="other_cell c_wx" @click="wxLogin" v-if="inWeixin">
+        <div class="other_cell c_qq" @click="qqLogin" v-if="$store.state.config.account_qqlogin_open==1">QQ登录</div>
+        <div class="other_cell c_wx" @click="wxLogin" v-if="$store.state.config.wechat_login_open==1 && inWeixin">
           微信登录
         </div>
       </div>

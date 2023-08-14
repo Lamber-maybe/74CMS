@@ -1,5 +1,5 @@
 'use strict'
-const glob = require('glob')
+// const glob = require('glob')
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
@@ -20,23 +20,24 @@ const createLintingRule = () => ({
   }
 })
 
-function getEntries() {
-  let map = {}
-  const entryFiles = glob.sync("./src/**/*.vue")
+// function getEntries () {
+//   let map = {}
+//   const entryFiles = glob.sync('./src/**/*.vue')
 
-  entryFiles.forEach(filepath => {
-    let fileDir = /.\/src\/(.*?)\.vue/.exec(filepath)
+//   entryFiles.forEach(filepath => {
+//     let fileDir = /.\/src\/(.*?)\.vue/.exec(filepath)
 
-    map[fileDir[1]] = filepath
-  })
+//     map[fileDir[1]] = filepath
+//   })
 
-  return map
-}
+//   return map
+// }
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    // app: './src/main.js'
+    app: ['babel-polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
@@ -49,7 +50,7 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': resolve('src')
     }
   },
   module: {
@@ -89,7 +90,7 @@ module.exports = {
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       },
-      {test:/\.scss$/,use:['style-loader','css-loader','sass-loader']}
+      {test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader']}
     ]
   },
   node: {

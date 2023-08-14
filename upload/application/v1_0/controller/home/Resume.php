@@ -287,12 +287,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         return $result_data_list;
     }
-    /**
-     * 获取简历详情
-     */
-    public function getDetail($id)
-    {
-        $id = intval($id);
+    protected function writeShowCache($id,$resume_module,$pageCache){
         $where['id'] = $id;
         $basic = model('Resume')
             ->where($where)
@@ -301,33 +296,7 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($basic === null) {
             return false;
         }
-        $field_rule_data = model('FieldRule')->getCache();
-        $field_rule = [
-            'basic' => $field_rule_data['Resume'],
-            'contact' => $field_rule_data['ResumeContact'],
-            'intention' => $field_rule_data['ResumeIntention'],
-            'education' => $field_rule_data['ResumeEducation']
-        ];
-        foreach ($field_rule as $key => $rule) {
-            foreach ($rule as $field => $field_attr) {
-                $_arr = [
-                    'is_display' => $field_attr['is_display'],
-                    'field_cn' => $field_attr['field_cn']
-                ];
-                $field_rule[$key][$field] = $_arr;
-            }
-        }
-        $return['field_rule'] = $field_rule;
-        $resume_module_data = model('ResumeModule')->getCache();
-        $resume_module = [];
-        foreach ($resume_module_data as $module_name => $module_attr) {
-            $_arr = [
-                'module_cn' => $module_attr['module_cn'],
-                'is_display' => $module_attr['is_display']
-            ];
-            $resume_module[$module_name] = $_arr;
-        }
-        $return['resume_module'] = $resume_module;
+        
         $category_data = model('Category')->getCache();
         $category_major_data = model('CategoryMajor')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
@@ -475,11 +444,6 @@ class Resume extends \app\v1_0\controller\common\Base
         }
 
         $return['intention_list'] = $intention_list;
-        //联系方式
-        $getResumeContact = model('Resume')->getContact($basic,$this->userinfo);
-        $return['show_contact'] = $getResumeContact['show_contact'];
-        $return['show_contact_note'] = $getResumeContact['show_contact_note'];
-        $return['contact_info'] = $getResumeContact['contact_info'];
 
         //工作经历
         $work_list = model('ResumeWork')
@@ -563,6 +527,64 @@ class Resume extends \app\v1_0\controller\common\Base
             $img_list = [];
         }
         $return['img_list'] = $img_list;
+        if($pageCache['expire']>0){
+            model('PageMobile')->writeCacheByAlias('resumeshow',$return,$pageCache['expire'],$id);
+        }
+        return $return;
+    }
+    /**
+     * 获取简历详情
+     */
+    public function getDetail($id)
+    {
+        $id = intval($id);
+        $field_rule_data = model('FieldRule')->getCache();
+        $field_rule = [
+            'basic' => $field_rule_data['Resume'],
+            'contact' => $field_rule_data['ResumeContact'],
+            'intention' => $field_rule_data['ResumeIntention'],
+            'education' => $field_rule_data['ResumeEducation']
+        ];
+        foreach ($field_rule as $key => $rule) {
+            foreach ($rule as $field => $field_attr) {
+                $_arr = [
+                    'is_display' => intval($field_attr['is_display']),
+                    'field_cn' => $field_attr['field_cn']
+                ];
+                $field_rule[$key][$field] = $_arr;
+            }
+        }
+        $resume_module_data = model('ResumeModule')->getCache();
+        $resume_module = [];
+        foreach ($resume_module_data as $module_name => $module_attr) {
+            $_arr = [
+                'module_cn' => $module_attr['module_cn'],
+                'is_display' => intval($module_attr['is_display'])
+            ];
+            $resume_module[$module_name] = $_arr;
+        }
+        //读取页面缓存配置
+        $pageCache = model('PageMobile')->getCache('resumeshow');
+        //如果缓存有效期为0，则不使用缓存
+        if($pageCache['expire']>0){
+            $return = model('PageMobile')->getCacheByAlias('resumeshow',$id);
+        }else{
+            $return = false;
+        }
+        if(!$return){
+            $return = $this->writeShowCache($id,$resume_module,$pageCache);
+            if($return===false){
+                $this->ajaxReturn(500, '简历信息为空');
+            }
+        }
+        $return['field_rule'] = $field_rule;
+        $return['resume_module'] = $resume_module;
+        
+        //联系方式
+        $getResumeContact = model('Resume')->getContact($return['base_info'],$this->userinfo);
+        $return['show_contact'] = $getResumeContact['show_contact'];
+        $return['show_contact_note'] = $getResumeContact['show_contact_note'];
+        $return['contact_info'] = $getResumeContact['contact_info'];
         return $return;
     }
     /**
@@ -661,8 +683,8 @@ class Resume extends \app\v1_0\controller\common\Base
         foreach ($field_rule as $field => $rule) {
             $_arr = [
                 'field_name' => $rule['field_name'],
-                'is_require' => $rule['is_require'],
-                'is_display' => $rule['is_display'],
+                'is_require' => intval($rule['is_require']),
+                'is_display' => intval($rule['is_display']),
                 'field_cn' => $rule['field_cn'],
             ];
             $field_rule[$field] = $_arr;

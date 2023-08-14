@@ -29,7 +29,11 @@ class Cron
             return false;
         }
         $instance = new $class_name();
-        $instance->execute();
+        $result = $instance->execute();
+        if ($result===false) {
+            $this->error = $instance->getError();
+            return false;
+        }
         debug('end');
         $timerange = debug('begin', 'end');
         $next_execute_time = $this->getNextExecuteTime($cron);

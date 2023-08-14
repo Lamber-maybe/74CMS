@@ -177,6 +177,38 @@ const systemRouter = {
         title: '合作账号',
         access: 'sysBasicCooperation'
       }
+    },
+    {
+      path: '/sys/basic/serviceol',
+      name: 'sysBasicServiceOl',
+      component: () =>
+        import('@/views/sys/basic/serviceol'),
+      meta: {
+        title: '在线客服',
+        access: 'sysBasicServiceOl'
+      }
+    },
+    {
+      path: '/sys/basic/serviceol/add',
+      name: 'sysBasicServiceOlAdd',
+      component: () =>
+        import('@/views/sys/basic/serviceol/add'),
+      meta: {
+        title: '新增在线客服',
+        access: 'sysBasicServiceOl'
+      },
+      hidden: true
+    },
+    {
+      path: '/sys/basic/serviceol/edit',
+      name: 'sysBasicServiceOlEdit',
+      component: () =>
+        import('@/views/sys/basic/serviceol/edit'),
+      meta: {
+        title: '修改在线客服',
+        access: 'sysBasicServiceOl'
+      },
+      hidden: true
     }
     ]
   },

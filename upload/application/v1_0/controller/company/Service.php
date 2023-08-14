@@ -16,8 +16,6 @@ class Service extends \app\v1_0\controller\common\Base
     public function mysetmeal()
     {
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        $setmeal = model('Setmeal')->where('id',$member_setmeal->setmeal_id)->find();
-        $member_setmeal['name'] = $setmeal['name'];
         $company_info['companyname'] = $this->company_profile['companyname'];
         $company_info['logo_src'] =
         $this->company_profile['logo'] > 0

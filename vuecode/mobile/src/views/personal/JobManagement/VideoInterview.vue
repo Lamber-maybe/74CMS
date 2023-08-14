@@ -197,7 +197,7 @@ export default {
         })
     },
     copyUrl (id) {
-      var url = this.$store.state.config.sitedomain + '/video/' + id
+      var url = this.$store.state.config.mobile_domain + 'video/' + id
       var oInput = document.createElement('input')
       oInput.value = url
       document.body.appendChild(oInput)

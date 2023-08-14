@@ -60,19 +60,31 @@
 </template>
 
 <script>
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
-import BmNavigation from 'vue-baidu-map/components/controls/Navigation'
-import BmGeolocation from 'vue-baidu-map/components/controls/Geolocation.vue'
-import BmLocalSearch from 'vue-baidu-map/components/search/LocalSearch.vue'
+import Vue from 'vue'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
+Vue.component('BmNavigation', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/controls/Navigation'], resolve)
+  }
+})
+Vue.component('BmGeolocation', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/controls/Geolocation.vue'], resolve)
+  }
+})
+Vue.component('BmLocalSearch', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/search/LocalSearch.vue'], resolve)
+  }
+})
 export default {
   name: 'Mapset',
   props: ['mapLat', 'mapLng', 'mapZoom', 'address'],
-  components: {
-    BaiduMap,
-    BmNavigation,
-    BmGeolocation,
-    BmLocalSearch
-  },
   data () {
     return {
       location: '',

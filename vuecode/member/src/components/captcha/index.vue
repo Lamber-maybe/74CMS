@@ -29,7 +29,7 @@ export default {
   computed: {},
   methods: {
     show (callback, setShow) {
-        if (setShow === undefined || setShow === true) {
+        if (this.$store.state.config.captcha_open == 1 && (setShow === undefined || setShow === true)) {
           this.$refs.child.show(callback)
         }else {
           callback()

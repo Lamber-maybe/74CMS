@@ -21,6 +21,9 @@
       :model="form"
       label-width="120px"
     >
+      <el-form-item label="开启qq登录">
+        <el-switch v-model="form.account_qqlogin_open" />
+      </el-form-item>
       <el-form-item label="AppId">
         <el-input v-model="form.account_qqlogin_appid" class="middle" />
       </el-form-item>
@@ -42,6 +45,7 @@ export default {
     return {
       infoLoading: true,
       form: {
+        account_qqlogin_open: false,
         account_qqlogin_appid: '',
         account_qqlogin_appkey: ''
       }
@@ -57,14 +61,15 @@ export default {
       const param = {}
       setConfig(param, 'get')
         .then(response => {
-          const { account_qqlogin_appid, account_qqlogin_appkey } = { ...response.data }
-          this.form = { account_qqlogin_appid, account_qqlogin_appkey }
+          const { account_qqlogin_open, account_qqlogin_appid, account_qqlogin_appkey } = { ...response.data }
+          this.form = { account_qqlogin_open: account_qqlogin_open == 1, account_qqlogin_appid, account_qqlogin_appkey }
           this.infoLoading = false
         })
         .catch(() => {})
     },
     onSubmit(formName) {
       const insertData = { ...this.form }
+      insertData.account_qqlogin_open = insertData.account_qqlogin_open === true ? 1 : 0
       this.$refs[formName].validate(valid => {
         if (valid) {
           setConfig(insertData)

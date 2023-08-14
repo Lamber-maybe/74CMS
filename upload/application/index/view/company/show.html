@@ -150,7 +150,7 @@
                     </div>
                     <div class="clearfix">
                         {#volist name="return.similar_company_list" id="vo"#}
-                        <div class="company_list clearfix">
+                        <div class="company_list clearfix" onclick="window.open('{#:url('index/company/show',['id'=>$vo.id])#}')" >
                             <div class="interest_img">
                                 <img src="{#$vo.logo_src#}">
                             </div>

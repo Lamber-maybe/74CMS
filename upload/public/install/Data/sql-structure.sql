@@ -2021,3 +2021,31 @@ CREATE TABLE `qs_member_action_log` (
   FULLTEXT KEY `index_content` (`content`) /*!50100 WITH PARSER `ngram` */ 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_member_action_log||-_-||
+
+DROP TABLE IF EXISTS `qs_page_mobile`;
+CREATE TABLE `qs_page_mobile` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL,
+  `alias` varchar(30) NOT NULL,
+  `enable_cache` tinyint(1) unsigned NOT NULL,
+  `expire` int(10) NOT NULL,
+  `seo_title` varchar(100) NOT NULL,
+  `seo_keywords` varchar(100) NOT NULL,
+  `seo_description` varchar(200) NOT NULL,
+  `params` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_page_mobile||-_-||
+
+DROP TABLE IF EXISTS `qs_service_ol`;
+CREATE TABLE `qs_service_ol` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(15) NOT NULL COMMENT '姓名',
+  `mobile` varchar(20) NOT NULL COMMENT '手机',
+  `weixin` int(10) NOT NULL COMMENT '微信图片',
+  `qq` varchar(30) NOT NULL COMMENT 'QQ',
+  `sort` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `display` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '是否显示',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_service_ol||-_-||

@@ -78,14 +78,17 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import http from '@/utils/http'
 import api from '@/api'
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
 export default {
   name: 'JobFour',
-  components: {
-    BaiduMap
-  },
   data () {
     return {
       currentTab: 1,

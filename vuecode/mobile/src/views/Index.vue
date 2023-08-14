@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Meta pagealias="index" />
     <index_header
       v-if="moduleRule.header.is_display == 1"
       :plan_id="moduleRule.header.plan_id"
@@ -46,6 +47,8 @@
       :dataset="article_list"
     ></index_article>
     <BottomNav></BottomNav>
+    <!-- 弹窗 -->
+    <IndexPopup v-if="showPopup" :list="ad_dataset_popup"></IndexPopup>
   </div>
 </template>
 
@@ -62,6 +65,7 @@ import index_hotword from '@/components/index/Hotword'
 import index_article from '@/components/index/Article'
 import index_joblist from '@/components/index/JobList'
 import Ad from '@/components/Ad'
+import IndexPopup from '@/components/index/IndexPopup'
 export default {
   name: 'Index',
   data () {
@@ -120,7 +124,9 @@ export default {
       },
       ad_dataset_top: { alias: 'QS_top_slide', items: [] },
       ad_dataset_banner_a: { alias: 'QS_index_banner_a', items: [] },
-      ad_dataset_banner_b: { alias: 'QS_index_banner_b', items: [] }
+      ad_dataset_banner_b: { alias: 'QS_index_banner_b', items: [] },
+      ad_dataset_popup: { alias: 'QS_index_popup', items: [] },
+      showPopup: false
     }
   },
   components: {
@@ -132,6 +138,7 @@ export default {
     index_hotword,
     index_article,
     index_joblist,
+    IndexPopup,
     Ad
   },
   created () {
@@ -168,7 +175,8 @@ export default {
           alias: [
             'QS_top_slide@mobile',
             'QS_index_banner_a@mobile',
-            'QS_index_banner_b@mobile'
+            'QS_index_banner_b@mobile',
+            'QS_index_popup@mobile'
           ]
         })
         .then(res => {
@@ -177,8 +185,23 @@ export default {
             res.data.items['QS_index_banner_a@mobile']
           this.ad_dataset_banner_b.items =
             res.data.items['QS_index_banner_b@mobile']
+          this.ad_dataset_popup.items =
+            res.data.items['QS_index_popup@mobile']
+          this.showPopupAdOrNot()
         })
         .catch(() => {})
+    },
+    showPopupAdOrNot () {
+      let that = this
+      let current = new Date()
+      let expire_time = localStorage.getItem('index_popup_expire_time')
+      if ((expire_time === undefined || !expire_time || current.getTime() > new Date(expire_time)) && this.ad_dataset_popup.items.length > 0) {
+        setTimeout(() => {
+          that.showPopup = true
+          expire_time = new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
+          localStorage.setItem('index_popup_expire_time', expire_time)
+        }, 500)
+      }
     },
     cronRun () {
       http

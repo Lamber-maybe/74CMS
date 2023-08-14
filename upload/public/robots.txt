@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+
+Disallow: /admin/
+Disallow: /adminm/
+Disallow: /assets/
+Disallow: /include/
+Disallow: /install/
+Disallow: /member/
+Disallow: /static/
+Disallow: /upgrade/
+Disallow: /upload/

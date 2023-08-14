@@ -158,15 +158,8 @@
               {{ item.district_text }}
               <div class="time">{{ item.refreshtime }}</div>
             </div>
-            <div class="tag_wrapper">
-              <van-tag
-                color="#e9f8ff"
-                text-color="#8096a3"
-                v-for="(t, key) in item.tag"
-                :key="key"
-              >
-                {{ t }}
-              </van-tag>
+            <div class="tag_wrapper clearfix" v-if="item.tag.length>0">
+              <div class="tag_cell" v-for="(t, key) in item.tag" :key="key">{{ t }}</div>
             </div>
             <div class="company">
               <div class="name">{{ item.companyname }}</div>
@@ -192,17 +185,22 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import { obj2Param } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
 import JobCategoryFilter from '@/components/JobCategoryFilter'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
 export default {
   name: 'JobListNearby',
   filters: {},
   components: {
-    BaiduMap,
     JobCategoryFilter
   },
   data () {
@@ -877,6 +875,14 @@ export default {
       .van-tag {
         margin-right: 5px;
         border-radius: 3px;
+      }
+      .tag_cell {
+        float: left;
+        padding: 2px 5px;
+        margin: 0 5px 5px 0;
+        font-size: 10px;
+        background-color: #e9f8ff;
+        color: #8096a3;
       }
       width: 100%;
       padding-bottom: 13px;

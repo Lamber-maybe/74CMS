@@ -690,16 +690,6 @@ class Order extends \app\common\model\BaseModel
                     $order_arr['addtime']
                 );
             }
-            if ($order_arr['deduct_points'] > 0) {
-                model('Member')->setMemberPoints(
-                    [
-                        'uid' => $order_arr['uid'],
-                        'points' => $order_arr['deduct_points'],
-                        'note' => '购买' . $order_arr['service_name'] . '抵扣',
-                    ],
-                    2
-                );
-            }
 
             \think\Db::commit();
         } catch (\Exception $e) {

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Meta pagealias="joblist" :query_data="$route.query" />
     <Head>找工作</Head>
     <div class="form_top_border"></div>
     <div class="box_1">
@@ -587,9 +588,7 @@ export default {
      */
     restructureData (data, id, type) {
       let restoreArray = data
-      let existSub = restoreArray.findIndex(v => {
-        return v.id === ''
-      })
+      let existSub = restoreArray.findIndex(v => v.id === '')
       if (existSub === -1) {
         // 防止重复添加
         restoreArray.unshift({ id: '', text: '全部' })

@@ -16,12 +16,12 @@ class Job extends \app\v1_0\controller\common\Base
     public function checkJobaddNumber()
     {
         $enable_num = model('Job')->getEnableJobaddNum($this->userinfo->uid);
-        $setmeal_info = model('Setmeal')->where('id', $this->company_profile['setmeal_id'])->find();
         $member_setmeal_info = model('Member')->getMemberSetmeal($this->userinfo->uid);
+        
         $this->ajaxReturn(200, '获取数据成功', [
             'enable_addjob_num_total' => $member_setmeal_info['jobs_meanwhile'],
             'enable_addjob_num' => $enable_num,
-            'setmeal_name' => ($setmeal_info===null?'':$setmeal_info['name']),
+            'setmeal_name' => $member_setmeal_info['name'],
         ]);
     }
     /**
@@ -38,8 +38,8 @@ class Job extends \app\v1_0\controller\common\Base
             foreach ($rule as $field => $field_attr) {
                 $_arr = [
                     'field_name' => $field_attr['field_name'],
-                    'is_require' => $field_attr['is_require'],
-                    'is_display' => $field_attr['is_display'],
+                    'is_require' => intval($field_attr['is_require']),
+                    'is_display' => intval($field_attr['is_display']),
                     'field_cn' => $field_attr['field_cn'],
                 ];
                 $field_rule[$key][$field] = $_arr;
@@ -384,8 +384,8 @@ class Job extends \app\v1_0\controller\common\Base
             foreach ($rule as $field => $field_attr) {
                 $_arr = [
                     'field_name' => $field_attr['field_name'],
-                    'is_require' => $field_attr['is_require'],
-                    'is_display' => $field_attr['is_display'],
+                    'is_require' => intval($field_attr['is_require']),
+                    'is_display' => intval($field_attr['is_display']),
                     'field_cn' => $field_attr['field_cn'],
                 ];
                 $field_rule[$key][$field] = $_arr;

@@ -16,6 +16,8 @@ class Config extends \app\common\controller\Backend
             $info['qrcodeUrl'] = $info['qrcodeUrl']?$info['qrcodeUrl']:make_file_url('resource/weixin_img.jpg');
             $info['infopicUrl'] = model('Uploadfile')->getFileUrl($info['wechat_info_img']);
             $info['infopicUrl'] = $info['infopicUrl']?$info['infopicUrl']:make_file_url('resource/wechat_info_img.jpg');
+            $info['guide_qrcodeUrl'] = model('Uploadfile')->getFileUrl($info['guide_qrcode']);
+            $info['guide_qrcodeUrl'] = $info['guide_qrcodeUrl']?$info['guide_qrcodeUrl']:($info['sitedomain'].$info['sitedir'].'apiadmin/qrcode/normal?url='.$info['mobile_domain']);
             foreach ($info as $key => $value) {
                 $value = $value;
                 if (is_json($value)) {

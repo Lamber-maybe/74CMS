@@ -388,5 +388,9 @@ export default {
   // 号码保护
   secret_phone: '/member/index/secretPhone',
   // 场景码扫描添加记录
-  scene_record: '/home/index/scenerecord'
+  scene_record: '/home/index/scenerecord',
+  // 海报
+  create_poster: '/home/poster/index',
+  // 页面管理详情
+  pageinfo: '/home/config/pageinfo'
 }

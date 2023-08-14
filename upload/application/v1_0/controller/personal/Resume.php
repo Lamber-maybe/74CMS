@@ -69,8 +69,8 @@ class Resume extends \app\v1_0\controller\common\Base
             foreach ($rule as $field => $field_attr) {
                 $_arr = [
                     'field_name' => $field_attr['field_name'],
-                    'is_require' => $field_attr['is_require'],
-                    'is_display' => $field_attr['is_display'],
+                    'is_require' => intval($field_attr['is_require']),
+                    'is_display' => intval($field_attr['is_display']),
                     'field_cn' => $field_attr['field_cn']
                 ];
                 $field_rule[$key][$field] = $_arr;
@@ -82,8 +82,8 @@ class Resume extends \app\v1_0\controller\common\Base
             $_arr = [
                 'module_name' => $module_attr['module_name'],
                 'module_cn' => $module_attr['module_cn'],
-                'score' => $module_attr['score'],
-                'is_display' => $module_attr['is_display']
+                'score' => intval($module_attr['score']),
+                'is_display' => intval($module_attr['is_display'])
             ];
             $resume_module[$module_name] = $_arr;
         }

@@ -1,5 +1,6 @@
 <template>
-  <div id="app" v-wechat-title="this.pageTitle">
+  <div id="app">
+    <Meta v-if="title!==''" pagealias="jobfairolshow" :custom_data="{title:title}" />
     <Head>网络招聘会详情</Head>
     <div class="b1">
       <img src="../../assets/images/jobfairol/2.png" alt="">
@@ -199,6 +200,7 @@ export default {
       pageRes: 1,
       pagesize: 15,
       jobfair_id: 0,
+      title: '',
       companyNum: 0,
       jobNum: 0,
       clickNum: 0,
@@ -211,7 +213,6 @@ export default {
       resKey: '',
       showQrcode: false,
       diaQrUrl: '',
-      pageTitle: '',
       diaQrTitle: ''
     }
   },
@@ -253,11 +254,11 @@ export default {
     getJobfairShow: function () {
       var t = this
       http.get(api.jobfairol_show, {id: t.jobfair_id}).then(r => {
+        t.title = r.data.info.title
         t.companyNum = r.data.info.total_company
         t.jobNum = r.data.info.total_job
         t.clickNum = r.data.info.click
         t.content = r.data.info.content
-        t.pageTitle = r.data.info.title + ' - ' + t.$store.state.config.sitename
         let wechatShareInfo = {
           title: t.info.title
         }

@@ -67,6 +67,8 @@
 import { helpAdd } from '@/api/help'
 import { getClassify } from '@/api/classify'
 import E from 'wangeditor'
+import apiArr from '@/api'
+import { getToken } from '@/utils/auth'
 
 export default {
   data() {
@@ -137,7 +139,10 @@ export default {
   },
   mounted() {
     this.editor = new E('#editor')
-    this.editor.config.uploadImgShowBase64 = true
+    this.editor.config.uploadImgServer = window.global.RequestBaseUrl + apiArr.uploadEditor
+    this.editor.config.uploadImgHeaders = {
+      admintoken: getToken()
+    }
     this.editor.config.zIndex = 0
     this.editor.config.pasteFilterStyle = false
     this.editor.create()

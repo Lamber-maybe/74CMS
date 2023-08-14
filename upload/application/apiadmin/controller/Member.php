@@ -119,36 +119,38 @@ class Member extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('Member')->getError());
         }
-        $insert_data_company['uid'] = model('Member')->uid;
-        $insert_data_company['companyname'] = '';
-        $insert_data_company['short_name'] = '';
-        $insert_data_company['nature'] = 0;
-        $insert_data_company['trade'] = 0;
-        $insert_data_company['district1'] = 0;
-        $insert_data_company['district2'] = 0;
-        $insert_data_company['district3'] = 0;
-        $insert_data_company['district'] = 0;
-        $insert_data_company['scale'] = 0;
-        $insert_data_company['registered'] = 0;
-        $insert_data_company['currency'] = 0;
-        $insert_data_company['tag'] = '';
-        $insert_data_company['map_lat'] = 0.0;
-        $insert_data_company['map_lng'] = 0.0;
-        $insert_data_company['map_zoom'] = 0;
-        $insert_data_company['logo'] = 0;
-        $insert_data_company['addtime'] = time();
-        $insert_data_company['refreshtime'] =
-            $insert_data_company['addtime'];
-        $insert_data_company[
-            'cs_id'
-        ] = model('Member')->distributionCustomerService();
-        model('Company')->save($insert_data_company);
-        //赠送套餐
-        $data_setmeal['uid'] = model('Member')->uid;
-        $data_setmeal['note'] = '';
-        $data_setmeal['setmeal_id'] = config('global_config.reg_service');
-        model('Member')->setMemberSetmeal($data_setmeal);
-        model('Task')->doTask(model('Member')->uid, 1, 'reg');
+        if($input_data['utype']==1){
+            $insert_data_company['uid'] = model('Member')->uid;
+            $insert_data_company['companyname'] = '';
+            $insert_data_company['short_name'] = '';
+            $insert_data_company['nature'] = 0;
+            $insert_data_company['trade'] = 0;
+            $insert_data_company['district1'] = 0;
+            $insert_data_company['district2'] = 0;
+            $insert_data_company['district3'] = 0;
+            $insert_data_company['district'] = 0;
+            $insert_data_company['scale'] = 0;
+            $insert_data_company['registered'] = 0;
+            $insert_data_company['currency'] = 0;
+            $insert_data_company['tag'] = '';
+            $insert_data_company['map_lat'] = 0.0;
+            $insert_data_company['map_lng'] = 0.0;
+            $insert_data_company['map_zoom'] = 0;
+            $insert_data_company['logo'] = 0;
+            $insert_data_company['addtime'] = time();
+            $insert_data_company['refreshtime'] =
+                $insert_data_company['addtime'];
+            $insert_data_company[
+                'cs_id'
+            ] = model('Member')->distributionCustomerService();
+            model('Company')->save($insert_data_company);
+            //赠送套餐
+            $data_setmeal['uid'] = model('Member')->uid;
+            $data_setmeal['note'] = '';
+            $data_setmeal['setmeal_id'] = config('global_config.reg_service');
+            model('Member')->setMemberSetmeal($data_setmeal);
+        }
+        model('Task')->doTask(model('Member')->uid, $input_data['utype'], 'reg');
         model('AdminLog')->record(
             '添加会员。会员UID【' . model('Member')->uid . '】',
             $this->admininfo

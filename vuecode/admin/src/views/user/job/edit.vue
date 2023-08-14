@@ -51,6 +51,7 @@
           v-model="form.jobcategory_arr"
           :options="options_jobcategory"
           :show-all-levels="false"
+          filterable
         />
       </el-form-item>
       <el-form-item label="学历要求" prop="education">

@@ -7,7 +7,8 @@
             class="item"
             :class="{
               active: active_index == index,
-              time: item.recommend == 1
+              recommend: item.recommend == 1,
+              time: item.preferential_open == 1
             }"
             v-for="(item, index) in dataset"
             :key="index"
@@ -439,6 +440,17 @@ export default {
   .top-menu-list {
     white-space: nowrap;
     .item {
+      &.recommend::after {
+        content: "推荐";
+        position: absolute;
+        left: -2px;
+        top: -2px;
+        background-color: #ff0000;
+        color: #ffffff;
+        font-size: 12px;
+        border-radius: 5px 0 5px 0;
+        padding: 3.5px;
+      }
       &.time::after {
         content: "限时";
         position: absolute;

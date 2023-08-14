@@ -27,6 +27,7 @@ defined('SYS_UPLOAD_PATH') or
 defined('TOKEN_PATH') or
     define('TOKEN_PATH', __DIR__ . '/../runtime/jwttokens/');
 defined('STATIC_PATH') or define('STATIC_PATH', __DIR__ . '/static/');
+defined('PUBLIC_PATH') or define('PUBLIC_PATH', __DIR__ . '/');
 define('PAY_TEST_MODE', false);
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';

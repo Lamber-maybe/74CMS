@@ -362,7 +362,6 @@ export default {
             logo,
             square_logo
           }
-          debugger
           this.form.isclose = this.form.isclose == 1
           this.logoUrl = response.data.logoUrl
           this.squarelogoUrl = response.data.squarelogoUrl

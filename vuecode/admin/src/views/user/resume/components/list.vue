@@ -1,6 +1,14 @@
 <template>
-  <div class="app-container">
-    <el-card class="box-card">
+  <div
+    v-loading="importLoading"
+    class="app-container"
+    :element-loading-text="importText"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
+    <el-card
+      class="box-card"
+    >
       <div slot="header" class="clearfix">
         <span>简历管理</span>
       </div>
@@ -128,16 +136,21 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建时间">
+        <el-table-column align="center" label="创建时间" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="刷新时间">
+        <el-table-column align="center" label="刷新时间" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.refreshtime | timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="推广">
+          <template slot-scope="scope">
+            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
@@ -192,6 +205,13 @@
             @click="goto('/user/resume/add')"
           >
             添加简历
+          </el-button>
+          <el-button
+            size="small"
+            type="primary"
+            @click="openDialog"
+          >
+            导入简历
           </el-button>
           <el-button size="small" type="primary" @click="funRefresh">
             刷新
@@ -295,19 +315,46 @@
         </el-button>
       </div>
     </el-dialog>
+    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
+    <el-dialog v-if="showUpload" title="导入简历" :visible.sync="showUpload" :close-on-click-modal="false" width="30%">
+      <el-form ref="form" label-width="120px" size="small">
+        <el-form-item label="上传文件">
+          <input
+            style="width:200px;"
+            class="input-file"
+            type="file"
+            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            @change="exportData"
+          >
+          <span class="smalltip">
+            <i class="el-icon-info" />
+            <el-button type="text" @click="downTpl">[模板下载]</el-button>
+          </span>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="doUpload">确定</el-button>
+          <el-button @click="showUpload=false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import apiArr from '@/api'
+import { getToken } from '@/utils/auth'
+import XLSX from 'xlsx'
 import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
-import { resumeList, resumeAudit, resumeLevel, resumeComment, resumeDelete, resumeRefresh } from '@/api/resume'
+import { resumeList, resumeAudit, resumeLevel, resumeComment, resumeDelete, resumeRefresh, resumeImport } from '@/api/resume'
 import { management } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
+import Poster from '@/components/Poster'
 
 export default {
   components: {
-    MemberLog
+    MemberLog,
+    Poster
   },
   filters: {
     timeFilter(timestamp) {
@@ -329,6 +376,13 @@ export default {
   props: ['listtype', 'showOptionsAudit'],
   data() {
     return {
+      importText: '正在导入，请稍候',
+      importLoading: false,
+      showUpload: false,
+      excelData: [],
+      showPoster: false,
+      posterId: '',
+      posterType: '',
       auditSubmitLoading: false,
       levelSubmitLoading: false,
       setLevelVal: 0,
@@ -569,7 +623,7 @@ export default {
     funDelete(row){
       var that = this
       that
-        .$confirm('此操作将永久删除该简历, 是否继续?', '提示', {
+        .$confirm('删除简历将同步删除该会员账号及简历，删除后不可恢复, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -593,7 +647,7 @@ export default {
         return false
       }
       that
-        .$confirm('此操作将永久删除该简历, 是否继续?', '提示', {
+        .$confirm('删除简历将同步删除该会员账号及简历，删除后不可恢复, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -623,6 +677,226 @@ export default {
         that.$message.success(response.message)
         that.fetchData()
       })
+    },
+    funPoster(id){
+      this.showPoster = true
+      this.posterId = id
+      this.posterType = 'resume'
+    },
+    exportData(event){
+      if (!event.currentTarget.files.length) {
+        return
+      }
+      const that = this
+      // 拿取文件对象
+      var f = event.currentTarget.files[0]
+      // 用FileReader来读取
+      var reader = new FileReader()
+      // 重写FileReader上的readAsBinaryString方法
+      FileReader.prototype.readAsBinaryString = function(f) {
+        var binary = ''
+        var wb // 读取完成的数据
+        var outdata // 你需要的数据
+        var reader = new FileReader()
+        reader.onload = function() {
+          // 读取成Uint8Array，再转换为Unicode编码（Unicode占两个字节）
+          var bytes = new Uint8Array(reader.result)
+          var length = bytes.byteLength
+          for (let i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i])
+          }
+          // 接下来就是xlsx了，具体可看api
+          wb = XLSX.read(binary, {
+            type: 'binary',
+            cellDates: true
+          })
+          const sheet2JSONOpts = {
+            header: 1,
+            /** Default value for null/undefined values */
+            defval: ''// 给defval赋值为空的字符串
+          }
+          const outdataAll = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], sheet2JSONOpts)
+          outdata = outdataAll.filter(item => item[0] != '')
+          outdata.splice(0, 1)
+          that.excelData = []
+          for (let i = 0; i < outdata.length; i++) {
+            const outputs = {
+              'basic': {},
+              'intention_list': {},
+              'education_list': {},
+              'work_list': {},
+              'language_list': {},
+              'certificate_list': {}
+            } // 清空接收数据
+            // console.log(ws[i])
+            const sheetBasic = {
+              'fullname': outdata[i][0],
+              'sex': outdata[i][1] === '男' ? 1 : 2,
+              'birthday': that.dateFormat('YYYY-mm-dd', outdata[i][2]),
+              'residence': outdata[i][17],
+              'height': outdata[i][3],
+              'marriage': outdata[i][5],
+              'education': outdata[i][7],
+              'enter_job_time': outdata[i][6],
+              'householdaddress': outdata[i][4],
+              'specialty': outdata[i][18],
+              'addtime': outdata[i][19],
+              'platform': outdata[i][20],
+              'contact': {
+                'mobile': outdata[i][15],
+                'email': outdata[i][16]
+              }
+            }
+            let sheetIntentionList = []
+            if (outdata[i][8]) {
+              sheetIntentionList = sheetIntentionList.concat(that.handleCellData(outdata[i][8], 'intention'))
+            }
+            if (outdata[i][9]) {
+              sheetIntentionList = sheetIntentionList.concat(that.handleCellData(outdata[i][9], 'intention'))
+            }
+            if (outdata[i][10]) {
+              sheetIntentionList = sheetIntentionList.concat(that.handleCellData(outdata[i][10], 'intention'))
+            }
+            const sheetEducationList = that.handleCellData(outdata[i][11], 'education')
+            const sheetWorkList = that.handleCellData(outdata[i][12], 'work')
+            const sheetLanguageList = that.handleCellData(outdata[i][13], 'language')
+            const sheetCertificateList = that.handleCellData(outdata[i][14], 'certificate')
+            outputs.basic = sheetBasic
+            outputs.intention_list = sheetIntentionList
+            outputs.education_list = sheetEducationList
+            outputs.work_list = sheetWorkList
+            outputs.language_list = sheetLanguageList
+            outputs.certificate_list = sheetCertificateList
+            that.excelData.push(outputs)
+          }
+        }
+        reader.readAsArrayBuffer(f)
+      }
+      reader.readAsBinaryString(f)
+    },
+    // 根据汉字获取分类id
+    // 处理数据
+    handleCellData (data, type) {
+      const that = this
+      const returnArray = []
+      if (type === 'intention') {
+        const valArray = data.split('|')
+        returnArray.push(
+          {
+            'nature': valArray[0],
+            'category': valArray[1],
+            'district': valArray[2],
+            'minwage': valArray[3].split('-')[0],
+            'maxwage': valArray[3].split('-')[1],
+            'trade': valArray[4]
+          }
+        )
+      } else {
+        const listArray = data.split('【#】')
+        listArray.forEach(function (val, index, arr) {
+          const valArray = val.split('|')
+          if (type === 'education') {
+            returnArray.push(
+              {
+                'starttime': that.handleDate(valArray[0])[0],
+                'endtime': that.handleDate(valArray[0])[1],
+                'school': valArray[1],
+                'major': valArray[2],
+                'education': valArray[3]
+              }
+            )
+          }
+          if (type === 'work') {
+            returnArray.push(
+              {
+                'starttime': that.handleDate(valArray[0])[0],
+                'endtime': that.handleDate(valArray[0])[1],
+                'companyname': valArray[1],
+                'jobname': valArray[2],
+                'duty': valArray[3]
+              }
+            )
+          }
+          if (type === 'language') {
+            returnArray.push(
+              {
+                'language': valArray[0],
+                'level': valArray[1]
+              }
+            )
+          }
+          if (type === 'certificate') {
+            returnArray.push(
+              {
+                'name': valArray[0],
+                'obtaintime': valArray[1].split('/')[0] + '-' + valArray[1].split('/')[1]
+              }
+            )
+          }
+        })
+      }
+      return returnArray
+    },
+    // 处理日期
+    handleDate (date) {
+      const dateArray = date.split('-')
+      dateArray[0] = dateArray[0].split('/')[0] + '-' + dateArray[0].split('/')[1]
+      dateArray[1] = dateArray[1].split('/')[0] + '-' + dateArray[1].split('/')[1]
+      return dateArray
+    },
+    dateFormat(fmt, date) {
+      let ret
+      const opt = {
+        'Y+': date.getFullYear().toString(), // 年
+        'm+': (date.getMonth() + 1).toString(), // 月
+        'd+': date.getDate().toString(), // 日
+        'H+': date.getHours().toString(), // 时
+        'M+': date.getMinutes().toString(), // 分
+        'S+': date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      }
+      for (const k in opt) {
+        ret = new RegExp('(' + k + ')').exec(fmt)
+        if (ret) {
+          fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')))
+        }
+      }
+      return fmt
+    },
+    doUpload(){
+      const that = this
+      if (that.excelData.length <= 0){
+        that.$message.error('没有读取到数据，请重新核对、上传')
+        return false
+      }
+      const pagesize = 20
+      const totalPage = Math.ceil(that.excelData.length / pagesize)
+      that.importLoading = true
+      that.showUpload = false
+      that.loopImport(1, pagesize, totalPage)
+    },
+    loopImport(page, pagesize, totalPage){
+      const that = this
+      const start = (page - 1) * pagesize
+      const end = start + pagesize
+      const newarr = that.excelData.slice(start, end)
+      that.importText = '正在导入第' + start + '-' + end + '条，请稍候'
+      resumeImport(newarr).then(response => {
+        if (page >= totalPage){
+          that.importLoading = false
+          that.$message({ type: 'success', message: '导入成功' })
+          that.fetchData(true)
+        } else {
+          page++
+          that.loopImport(page, pagesize, totalPage)
+        }
+      })
+    },
+    downTpl(){
+      location.href = window.global.RequestBaseUrl + apiArr.downloadImportResumeTpl + '?admintoken=' + getToken()
+    },
+    openDialog(){
+      this.showUpload = true
     }
   }
 }

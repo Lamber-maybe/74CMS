@@ -17,7 +17,8 @@ INSERT INTO `qs_ad_category` VALUES
 (26,'QS_index_a9@web','首页A9五分之一广告',232,80,25,1,'web'),
 (27,'QS_index_a10@web','首页A10通栏广告位',1200,80,3,1,'web'),
 (28,'QS_index_a11@web','首页A11名企雇主',199,92,60,1,'web'),
-(29,'QS_index_a12@web','首页A12通栏广告位',1200,80,3,1,'web');
+(29,'QS_index_a12@web','首页A12通栏广告位',1200,80,3,1,'web'),
+(30,'QS_index_popup@mobile','首页弹窗广告',640,960,1,1,'mobile');
 
 INSERT INTO `qs_admin_role` VALUES
 (1, '超级管理员', 'all','all',1,1);
@@ -905,7 +906,14 @@ INSERT INTO `qs_config` VALUES
 (NULL,'alicloud_pool_key_axn', '0', '', 'axn号池key', '1'),
 (NULL,'alicloud_appsecret', '0', '', '阿里云appsecret', '1'),
 (NULL,'alicloud_pool_key', '0', '', '号池key', '1'),
-(NULL,'filter_ip', '1', '', '禁止IP', '0');
+(NULL,'filter_ip', '1', '', '禁止IP', '0'),
+(NULL,'guide_title', '1', '海量职位任您选，优秀人才等你来！', '底部引导条标题', '0'),
+(NULL,'guide_content', '1','本地企业+本地人才库高效匹配 高效赋能','底部引导条内容','0'),
+(NULL,'guide_open', '1', '1', '底部引导条开关', '0'),
+(NULL,'guide_qrcode', '1', '', '底部引导条二维码', '0'),
+(NULL,'service_ol_open', '1', '0', 'PC首页右侧在线客服', '0'),
+(NULL,'account_qqlogin_open', '1', '1', 'qq登录是否开启', '0'),
+(NULL,'wechat_login_open', '1', '1', '微信登录是否开启', '0');
 
 
 INSERT INTO `qs_cron` VALUES
@@ -917,7 +925,8 @@ INSERT INTO `qs_cron` VALUES
 (NULL,'职位订阅推送','PushSubscribeJob',-1,-1,-1,'*/5',0,0,1,1,0),
 (NULL,'休眠用户提醒','NologinNotice',-1,-1,7,'1',0,0,1,1,1),
 (NULL,'点击量/浏览量少提醒','FewViewNotice',-1,-1,7,'1',0,0,0,1,0),
-(NULL,'简历点不足100提醒','FewResumePointNotice',-1,-1,7,'1',0,0,0,1,0);
+(NULL,'简历点不足100提醒','FewResumePointNotice',-1,-1,7,'1',0,0,0,1,0),
+(NULL,'生成百度百聘xml','Baiduxml','-1','-1','0','1','0','0','0','1','0');
 
 
 INSERT INTO `qs_explain` VALUES
@@ -1275,3 +1284,17 @@ INSERT INTO `qs_tweets_label` VALUES
 
 INSERT INTO `qs_tweets_template` VALUES (NULL, '默认模板【系统】', '#nowtime# \n#sitename#', '公司： #company# \n职位： #job# \n薪资： #wage# \n工作地点： #district_cn# | #address# \n联系方式：【 #contact# 】 #telephone#\n点击链接查看详情 #joburl#', '#sitename#  #sitedir#', '1619406876', '1');
 
+INSERT INTO `qs_page_mobile` VALUES 
+(NULL,'首页','index',1,30,'{sitename}PHP高端人才系统(www.74cms.com)——更懂运营的地方人才招聘系统','{sitename},74cms,骑士cms,人才网站源码,php人才网程序','{sitename}CMS是基于PHP+MYSQL的免费网站管理系统，提供完善的人才招聘网站建设方案','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
+(NULL,'职位列表页','joblist',0,0,'{jobcategory}{citycategory}{keyword}招聘列表 - {sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"搜索关键词\",\"value\":\"keyword\"},{\"name\":\"筛选职位类别\",\"value\":\"jobcategory\"},{\"name\":\"筛选地区\",\"value\":\"citycategory\"}]'),
+(NULL,'职位详情页','jobshow',1,10,'{jobname} - {companyname} - {sitename}','{companyname},{jobname},{nature},{category},{district}','{companyname}招聘岗位,{jobname}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"职位名称\",\"value\":\"jobname\"},{\"name\":\"企业名称\",\"value\":\"companyname\"},{\"name\":\"工作性质\",\"value\":\"nature\"},{\"name\":\"职位类别\",\"value\":\"category\"},{\"name\":\"工作地区\",\"value\":\"district\"}]'),
+(NULL,'简历列表页','resumelist',0,0,'{jobcategory}{citycategory}{keyword}简历列表 - {sitename}','{jobcategory}{citycategory}{keyword}简历列表,{sitename}','{jobcategory}{citycategory}{keyword}简历列表,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"搜索关键词\",\"value\":\"keyword\"},{\"name\":\"筛选意向职位\",\"value\":\"jobcategory\"},{\"name\":\"筛选意向地区\",\"value\":\"citycategory\"}]'),
+(NULL,'简历详情页','resumeshow',1,30,'{fullname}的个人简历 -{sitename}','{fullname},{sex},{education},{experience},{district},{jobcategory}','{fullname},{specialty}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"姓名\",\"value\":\"fullname\"},{\"name\":\"性别\",\"value\":\"sex\"},{\"name\":\"学历\",\"value\":\"education\"},{\"name\":\"经验\",\"value\":\"experience\"},{\"name\":\"期望工作地区\",\"value\":\"district\"},{\"name\":\"期望工作类别\",\"value\":\"jobcategory\"},{\"name\":\"自我描述\",\"value\":\"specialty\"}]'),
+(NULL,'企业列表页','companylist',0,0,'{citycategory}{keyword}最新企业信息 - {sitename}','{citycategory}{keyword}最新企业信息,{sitename}','{citycategory}{keyword}最新企业信息,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"搜索关键词\",\"value\":\"keyword\"},{\"name\":\"筛选行业类别\",\"value\":\"trade\"},{\"name\":\"筛选地区\",\"value\":\"citycategory\"},{\"name\":\"筛选企业性质\",\"value\":\"nature\"}]'),
+(NULL,'企业详情页','companyshow',1,10,'{companyname} - {sitename}','{companyname},公司简介','{content},公司简介','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"企业名称\",\"value\":\"companyname\"},{\"name\":\"公司简介\",\"value\":\"content\"}]'),
+(NULL,'资讯列表页','articlelist',0,0,'{cname} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"分类名称\",\"value\":\"cname\"},,{\"name\":\"资讯关键词\",\"value\":\"seo_keywords\"},{\"name\":\"资讯描述\",\"value\":\"seo_description\"}]'),
+(NULL,'资讯详情页','articleshow',0,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"资讯关键词\",\"value\":\"seo_keywords\"},{\"name\":\"资讯描述\",\"value\":\"seo_description\"}]'),
+(NULL,'公告列表页','noticelist',0,0,'网站公告 - {sitename}','网站公告,{sitename}','网站公告,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
+(NULL,'公告详情页','noticeshow',0,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"资讯关键词\",\"value\":\"seo_keywords\"},{\"name\":\"资讯描述\",\"value\":\"seo_description\"}]'),
+(NULL,'网络招聘会列表','jobfairollist',0,0,'网络招聘会 - {sitename}','','','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
+(NULL,'网络招聘会详情','jobfairolshow',0,0,'{title} - {sitename}','{title}','{title}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');

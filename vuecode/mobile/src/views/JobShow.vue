@@ -1,5 +1,6 @@
 <template>
-  <div id="app" class="my_app" v-wechat-title="this.pageTitle">
+  <div id="app" class="my_app">
+    <Meta v-if="base_info.jobname!==undefined" pagealias="jobshow" :custom_data="{jobname:base_info.jobname,companyname:com_info.companyname,nature:base_info.nature_text,category:base_info.category_text,district:base_info.district_text}" />
     <Head>职位详情</Head>
     <van-skeleton title avatar :row="10" :loading="mainLoading">
       <div class="box_1">
@@ -429,7 +430,7 @@
     </van-popup>
     <div class="alw-wx-layer" v-if="showWxLayer" @click="cancelShare"></div>
     <div class="alw-layer" v-if="showLayer" @click="cancelShare"></div>
-    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'job'" :info="shareInfo"></SharePoster>
+    <SharePoster v-if="showPoster" @closePoster="closePoster" :type="'job'" :infoid="shareid"></SharePoster>
     <van-overlay z-index="3" :show="showPoster" @click="showPoster=false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share @cancelShare="cancelShare"
@@ -442,12 +443,14 @@
       <div class="line18 font12">(电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)</div>
       <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号</div>
     </van-dialog>
+    <div class="return_list" v-if="isRetrunBtn != null" @click="$router.push('/campus/job')">返回列表</div>
     <div class="click_copy" @click="handlerCopy">一键<br />复制</div>
     <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import Subscribe from '@/components/Subscribe'
 import Tipoff from '@/components/Tipoff'
@@ -456,13 +459,17 @@ import http from '@/utils/http'
 import api from '@/api'
 import Login from '@/components/Login'
 import JobCompetitive from '@/components/JobCompetitive'
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
+let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
+  if (!isSpider) {
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
+  }
+})
 export default {
   name: 'JobShow',
   components: {
-    BaiduMap,
     Login,
     JobCompetitive,
     Tipoff,
@@ -481,7 +488,6 @@ export default {
       },
       isRetrunBtn: null,
       showTipoff: false,
-      pageTitle: '',
       mainLoading: true,
       query_id: '',
       showLogin: false,
@@ -505,7 +511,7 @@ export default {
       has_apply: 0,
       after_login_data: {},
       competitive_data: {},
-      shareInfo: {},
+      shareid: 0,
       showShare: false,
       showWxLayer: false,
       showLayer: false,
@@ -655,8 +661,6 @@ export default {
       if (next_method !== null) {
         this[next_method]()
       }
-      this.pageTitle =
-        this.base_info.jobname + ' - ' + this.$store.state.config.sitename
     },
     callCodePro () {
       location.href = `tel:${this.codePro.x}`
@@ -828,18 +832,7 @@ export default {
       }
     },
     handlePoster () {
-      this.shareInfo = {
-        id: this.query_id,
-        logo: this.com_info.logo_src,
-        companyname: this.com_info.companyname,
-        jobname: this.base_info.jobname,
-        nature: this.base_info.nature_text,
-        wage: this.base_info.wage_text,
-        education: this.base_info.education_text,
-        experience: this.base_info.experience_text,
-        district: this.base_info.district_text,
-        tag_arr: this.base_info.tag_text_arr
-      }
+      this.shareid = this.query_id
       this.showPoster = true
     },
     closePoster () {

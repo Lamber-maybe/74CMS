@@ -362,3 +362,10 @@ export function jobApplyList(params) {
     params
   })
 }
+export function resumeImport(data) {
+  return request({
+    url: apiArr.resumeImport,
+    method: 'post',
+    data
+  })
+}

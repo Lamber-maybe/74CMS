@@ -96,7 +96,7 @@
       placeholder="请填写联系微信"
       class="reset_after no_border"
     />
-    <div class="for_btn">
+    <div class="for_btn" v-if="fieldStore.contact.weixin.is_display">
       <div class="sync_phone">
         <van-checkbox v-model="wxSyncPhone" @change="syncWxPhone" icon-size="16px">同手机号</van-checkbox>
       </div>
@@ -131,12 +131,12 @@
       />
     </van-popup>
     <div class="form_split_10"></div>
-    <div class="box_3" @click="showMoreInfo = !showMoreInfo">
+    <div class="box_3" v-if="showMoreBtn" @click="showMoreInfo = !showMoreInfo">
       <div :class="showMoreInfo ? 'txt up' : 'txt'">
         完善信息，获得更多求职机会
       </div>
     </div>
-    <div class="form_split_10"></div>
+    <div v-if="showMoreBtn" class="form_split_10"></div>
     <div v-if="showMoreInfo">
       <van-field
         :required="fieldStore.basic.major.is_require === 1"
@@ -383,6 +383,17 @@ export default {
     },
     fieldStore () {
       return this.$store.state.resume.field_rule
+    },
+    showMoreBtn () {
+      return this.$store.state.resume.field_rule.basic.major.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.height.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.householdaddress.is_display == 1 ||
+                         this.$store.state.resume.field_rule.contact.email.is_display == 1 ||
+                         this.$store.state.resume.field_rule.contact.qq.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.custom_field_1.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.custom_field_2.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.custom_field_3.is_display == 1 ||
+                         this.$store.state.resume.field_rule.basic.idcard.is_display == 1
     }
   },
   methods: {
@@ -568,55 +579,55 @@ export default {
       }
       if (this.fieldStore.basic.major.is_require) {
         if (!this.basic.major1) {
-          this.$notify(`请选择${this.fieldStore.basic.major.field_cn}`)
+          this.$notify(`请在下方完善信息中选择${this.fieldStore.basic.major.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.height.is_require) {
         if (!this.basic.height) {
-          this.$notify(`请填写${this.fieldStore.basic.height.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.height.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.householdaddress.is_require) {
         if (!this.basic.householdaddress) {
-          this.$notify(`请填写${this.fieldStore.basic.householdaddress.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.householdaddress.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.contact.email.is_require) {
         if (!this.contact.email) {
-          this.$notify(`请填写${this.fieldStore.contact.email.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.contact.email.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.contact.qq.is_require) {
         if (!this.contact.qq) {
-          this.$notify(`请填写${this.fieldStore.contact.qq.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.contact.qq.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.custom_field_1.is_require) {
         if (!this.basic.custom_field_1) {
-          this.$notify(`请填写${this.fieldStore.basic.custom_field_1.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_1.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.custom_field_2.is_require) {
         if (!this.basic.custom_field_2) {
-          this.$notify(`请填写${this.fieldStore.basic.custom_field_2.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_2.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.custom_field_3.is_require) {
         if (!this.basic.custom_field_3) {
-          this.$notify(`请填写${this.fieldStore.basic.custom_field_3.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_3.field_cn}`)
           return false
         }
       }
       if (this.fieldStore.basic.idcard.is_require) {
         if (!this.basic.idcard) {
-          this.$notify(`请填写${this.fieldStore.basic.idcard.field_cn}`)
+          this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.idcard.field_cn}`)
           return false
         }
       }

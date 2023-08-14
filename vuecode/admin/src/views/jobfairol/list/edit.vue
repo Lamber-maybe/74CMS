@@ -65,10 +65,10 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="仅认证企业报名">
-          <el-switch v-model="form.must_company_audit"></el-switch>
+          <el-switch v-model="form.must_company_audit" />
         </el-form-item>
         <el-form-item label="要求简历完整度">
-          <el-input type="number" v-model="form.min_complete_percent" />
+          <el-input v-model="form.min_complete_percent" type="number" />
         </el-form-item>
         <el-form-item required label="联系客服" prop="qrcode">
           <el-upload
@@ -168,7 +168,10 @@ export default {
   },
   mounted() {
     this.editor = new E('#editor')
-    this.editor.config.uploadImgShowBase64 = true
+    this.editor.config.uploadImgServer = window.global.RequestBaseUrl + apiArr.uploadEditor
+    this.editor.config.uploadImgHeaders = {
+      admintoken: getToken()
+    }
     this.editor.config.zIndex = 0
     this.editor.config.pasteFilterStyle = false
     this.editor.create()

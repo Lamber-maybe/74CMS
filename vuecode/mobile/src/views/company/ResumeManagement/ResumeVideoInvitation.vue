@@ -188,7 +188,7 @@ export default {
     },
     copyUrl (id) {
       var oInput = document.createElement('input')
-      oInput.value = this.$store.state.config.sitedomain + '/video/' + id
+      oInput.value = this.$store.state.config.mobile_domain + 'video/' + id
       document.body.appendChild(oInput)
       oInput.select() // 选择对象
       document.execCommand('Copy') // 执行浏览器复制命令

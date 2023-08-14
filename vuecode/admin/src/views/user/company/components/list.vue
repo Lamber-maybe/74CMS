@@ -139,6 +139,11 @@
           label="在招职位"
           prop="jobs_num"
         />
+        <el-table-column align="center" label="推广">
+          <template slot-scope="scope">
+            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="270">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funManagement(scope.row)">
@@ -321,6 +326,7 @@
     >
       <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
+    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
   </div>
 </template>
 
@@ -331,10 +337,12 @@ import { companyList, companyAudit, companyDelete, companySetService } from '@/a
 import { management } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
 import { exportCompanyById } from '@/api/export'
+import Poster from '@/components/Poster'
 
 export default {
   components: {
-    MemberLog
+    MemberLog,
+    Poster
   },
   filters: {
     timeFilter(timestamp) {
@@ -358,6 +366,9 @@ export default {
   props: ['listtype', 'showAuditOption'],
   data() {
     return {
+      showPoster: false,
+      posterId: '',
+      posterType: '',
       dialogAuthinfoWidth: '25%',
       dialogAuthinfoVisible: false,
       auth_info: {},
@@ -587,7 +598,7 @@ export default {
     funDelete(row){
       var that = this
       that
-        .$confirm('此操作将永久删除该企业, 是否继续?', '提示', {
+        .$confirm('删除企业将删除该企业的一切信息，包括会员账号、企业资料、招聘职位等所属信息，删除后不可恢复, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -611,7 +622,7 @@ export default {
         return false
       }
       that
-        .$confirm('此操作将永久删除该企业, 是否继续?', '提示', {
+        .$confirm('删除企业将删除该企业的一切信息，包括会员账号、企业资料、招聘职位等所属信息，删除后不可恢复, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -704,6 +715,11 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    funPoster(id){
+      this.showPoster = true
+      this.posterId = id
+      this.posterType = 'company'
     }
   }
 }

@@ -99,84 +99,101 @@ class TweetsTemplate extends \app\common\controller\Backend
                 $comid_arr[] = $value['id'];
             }
             $jobdata = [];
+            $jobid_arr = [];
             if(!empty($comid_arr)){
-                $jobdata = model('Job')->where('company_id','in',$comid_arr)->select();
+                $joblistdata = model('Job')->where('company_id','in',$comid_arr)->select();
+                foreach ($joblistdata as $key => $value) {
+                    $jobid_arr[] = $value['id'];
+                    $jobdata[$value['company_id']][] = $value;
+                }
 				$condata = model('CompanyContact')->where('comid','in',$comid_arr)->column('contact,mobile,telephone','comid');
             }
-			$jobcontactdata = model('JobContact')->column('contact,mobile,telephone,use_company_contact','jid');
-			$allDistrict = model('CategoryDistrict')->column('name','id');
+            if(!empty($jobid_arr)){
+                $jobcontactdata = model('JobContact')->where('jid','in',$jobid_arr)->column('contact,mobile,telephone,use_company_contact','jid');
+            }else{
+                $jobcontactdata = [];
+            }
+			
+			$allDistrict = model('CategoryDistrict')->getCache('all');
             foreach ($datalist as $key => $values) {
                 $list[$key]['id'] = $values['id'];
                 $list[$key]['companyname'] = $values['companyname'];
-                $list[$key]['joblist']=array();
-                foreach($jobdata as $keys => $value){
-                    $item['id'] = $value['id'];
-					$com_id = $value['company_id'];
-					$item['company'] = $values['companyname'];
-					$item['job'] = $value['jobname'];
-					$item['jobname'] = $value['jobname'];
-					if($value['nature']==1){
-						$item['nature'] = '全职'; 
-					}elseif($value['nature']==2){
-						$item['nature'] = '实习'; 
-					}else{
-						$item['nature'] = '不限'; 
-					}
-					$item['education'] = isset(
-						model('BaseModel')->map_education[$value['education']]
-					)
-						? model('BaseModel')->map_education[$value['education']]
-						: '学历不限';			
-					$item['experience'] = isset(
-						model('BaseModel')->map_experience[$value['experience']]
-					)
-					? model('BaseModel')->map_experience[$value['experience']]
-					: '经验不限';		
-					$item['wage'] = model('BaseModel')->handle_wage(
-						$value['minwage'],
-						$value['maxwage'],
-						$value['negotiable']
-					);
-					$item['tag'] = [];
-					if ($value['tag']) {
-						$tag_arr = explode(',', $value['tag']);
-						foreach ($tag_arr as $k => $v) {
-							if (
-								is_numeric($v) &&
-								isset($category_data['QS_jobtag'][$v])
-							) {
-								$item['tag'][] = $category_data['QS_jobtag'][$v];
-							} else {
-								$item['tag'][] = $v;
-							}
-						}
-					}
-					$item['jobtag'] = implode(",",$item['tag']);
-					$item['amount'] = $value['amount'];
-					if($value['district1']&&$value['district2']&&$value['district3']){
-						$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];	
-					}elseif($value['district1']&&$value['district2']){
-						$item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];	
-					}elseif($value['district1']){
-						$item['district_cn'] = $allDistrict[$value['district1']];	
-					}		
-					$item['address'] = $value['address'];
-					$item['content'] = $value['content'];
-					$jid = $value['id'];
-					$cid = $value['company_id'];
-					if($jobcontactdata[$jid]['use_company_contact']==1){
-						$item['contact'] = $condata[$cid]['contact'];
-						$item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-					}else{						
-						$item['contact'] = $jobcontactdata[$jid]['contact'];
-						$item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
-					}
-					$item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-					$item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
-					if($value['company_id']==$values['id']){
+                $list[$key]['joblist']=[];
+                if(isset($jobdata[$values['id']])){
+                    foreach($jobdata[$values['id']] as $keys => $value){
+                        $item['id'] = $value['id'];
+                        $com_id = $value['company_id'];
+                        $item['company'] = $values['companyname'];
+                        $item['job'] = $value['jobname'];
+                        $item['jobname'] = $value['jobname'];
+                        if($value['nature']==1){
+                            $item['nature'] = '全职'; 
+                        }elseif($value['nature']==2){
+                            $item['nature'] = '实习'; 
+                        }else{
+                            $item['nature'] = '不限'; 
+                        }
+                        $item['education'] = isset(
+                            model('BaseModel')->map_education[$value['education']]
+                        )
+                            ? model('BaseModel')->map_education[$value['education']]
+                            : '学历不限';			
+                        $item['experience'] = isset(
+                            model('BaseModel')->map_experience[$value['experience']]
+                        )
+                        ? model('BaseModel')->map_experience[$value['experience']]
+                        : '经验不限';		
+                        $item['wage'] = model('BaseModel')->handle_wage(
+                            $value['minwage'],
+                            $value['maxwage'],
+                            $value['negotiable']
+                        );
+                        $item['tag'] = [];
+                        if ($value['tag']) {
+                            $tag_arr = explode(',', $value['tag']);
+                            foreach ($tag_arr as $k => $v) {
+                                if (
+                                    is_numeric($v) &&
+                                    isset($category_data['QS_jobtag'][$v])
+                                ) {
+                                    $item['tag'][] = $category_data['QS_jobtag'][$v];
+                                } else {
+                                    $item['tag'][] = $v;
+                                }
+                            }
+                        }
+                        $item['jobtag'] = implode(",",$item['tag']);
+                        $item['amount'] = $value['amount'];
+                        if($value['district1']&&$value['district2']&&$value['district3']){
+                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']].'/'.$allDistrict[$value['district3']];	
+                        }elseif($value['district1']&&$value['district2']){
+                            $item['district_cn'] = $allDistrict[$value['district1']].'/'.$allDistrict[$value['district2']];	
+                        }elseif($value['district1']){
+                            $item['district_cn'] = $allDistrict[$value['district1']];	
+                        }		
+                        $item['address'] = $value['address'];
+                        $item['content'] = $value['content'];
+                        $jid = $value['id'];
+                        $cid = $value['company_id'];
+                        if(!isset($jobcontactdata[$jid])){
+                            $item['contact'] = $condata[$cid]['contact'];
+                            $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+                        }else{
+                            if($jobcontactdata[$jid]['use_company_contact']==1){
+                                $item['contact'] = $condata[$cid]['contact'];
+                                $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+                            }else{						
+                                $item['contact'] = $jobcontactdata[$jid]['contact'];
+                                $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
+                            }
+                        }
+                        
+                        $item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
+                        $item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
                         $list[$key]['joblist'][]=$item;
                     }
                 }
+                
                 $list[$key]['has_job_num'] = count($list[$key]['joblist']);
                 $list[$key]['has_job'] = $list[$key]['has_job_num']==0?0:1;
 				
@@ -192,9 +209,10 @@ class TweetsTemplate extends \app\common\controller\Backend
                 ->where('id', 'eq', $keyword)
                 ->whereOr('jobname', 'like', '%' . $keyword . '%')
                 ->select();
-            $comid_arr = [];
+            $comid_arr = $jid_arr = [];
             foreach ($datalist as $k => $val) {
                 $comid_arr[] = $val['company_id'];
+                $jid_arr[] = $val['id'];
             }
             $comdata = [];
             if(!empty($comid_arr)){
@@ -202,12 +220,12 @@ class TweetsTemplate extends \app\common\controller\Backend
 				$condata = model('CompanyContact')->where('comid','in',$comid_arr)->column('contact,mobile,telephone','comid');
             }
             unset($comid_arr);
-			$jobcontactdata = model('JobContact')->column('contact,mobile,telephone,use_company_contact','jid');
-			$allDistrict = model('CategoryDistrict')->column('name','id');
+			$jobcontactdata = model('JobContact')->where('jid','in',$jid_arr)->column('contact,mobile,telephone,use_company_contact','jid');
+			$allDistrict = model('CategoryDistrict')->getCache('all');
             foreach ($datalist as $key => $value) {
 				$item['id'] = $value['id'];
 				$com_id = $value['company_id'];
-				$item['company'] = $comdata[$com_id];
+				$item['company'] = isset($comdata[$com_id])?$comdata[$com_id]:'未知';
 				$item['companyname'] = $item['company'];
 				$item['job'] = $value['jobname'];
 				$item['jobname'] = $value['jobname'];
@@ -259,14 +277,19 @@ class TweetsTemplate extends \app\common\controller\Backend
 				$item['address'] = $value['address'];
 				$item['content'] = $value['content'];
 				$jid = $value['id'];
-				$cid = $value['company_id'];				
-				if($jobcontactdata[$jid]['use_company_contact']==1){
-					$item['contact'] = $condata[$cid]['contact'];
-					$item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-				}else{						
-					$item['contact'] = $jobcontactdata[$jid]['contact'];
-					$item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
-				}
+				$cid = $value['company_id'];	
+                if(!isset($jobcontactdata[$jid])){
+                    $item['contact'] = $condata[$cid]['contact'];
+                    $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+                }else{
+                    if($jobcontactdata[$jid]['use_company_contact']==1){
+                        $item['contact'] = $condata[$cid]['contact'];
+                        $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+                    }else{						
+                        $item['contact'] = $jobcontactdata[$jid]['contact'];
+                        $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
+                    }
+                }	
 				$item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
 				$item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
 				$list[] = $item;
@@ -277,7 +300,7 @@ class TweetsTemplate extends \app\common\controller\Backend
     public function joblist($condition){
         $type = input('post.type/s', '', 'trim');
         $condition = input('post.condition/a', []);
-        unset($jobid_arr);
+        $jobid_arr = [];
         if($type==='joblist'){
             $model = $this->_parseConditionOfJob($condition);
             $jobid_arr = $model->column('a.id');
@@ -303,18 +326,18 @@ class TweetsTemplate extends \app\common\controller\Backend
 		$comdata = [];
 		if(!empty($comid_arr)){
 			$comdata = model('Company')->where('id','in',$comid_arr)->column('companyname','id');
-				$condata = model('CompanyContact')->where('comid','in',$comid_arr)->column('contact,mobile,telephone','comid');
+			$condata = model('CompanyContact')->where('comid','in',$comid_arr)->column('contact,mobile,telephone','comid');
 		}
 		unset($comid_arr);
 		
         $return = [];
         $category_data = model('Category')->getCache();
-		$jobcontactdata = model('JobContact')->column('contact,mobile,telephone,use_company_contact','jid');
-		$allDistrict = model('CategoryDistrict')->column('name','id');
+		$jobcontactdata = model('JobContact')->where('jid','in',$jobid_arr)->column('contact,mobile,telephone,use_company_contact','jid');
+		$allDistrict = model('CategoryDistrict')->getCache('all');
 		foreach ($list as $key => $value) {            
 			$item['id'] = $value['id'];
 			$com_id = $value['company_id'];
-            $item['company'] = $comdata[$com_id];
+            $item['company'] = isset($comdata[$com_id])?$comdata[$com_id]:'未知';
             $item['job'] = $value['jobname'];
             $item['jobname'] = $value['jobname'];
 			if($value['nature']==1){
@@ -365,14 +388,20 @@ class TweetsTemplate extends \app\common\controller\Backend
             $item['address'] = $value['address'];
 			$item['content'] = $value['content'];
 			$jid = $value['id'];
-			$cid = $value['company_id'];			
-			if($jobcontactdata[$jid]['use_company_contact']==1){
-				$item['contact'] = $condata[$cid]['contact'];
-				$item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
-			}else{						
-				$item['contact'] = $jobcontactdata[$jid]['contact'];
-				$item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
-			}		
+			$cid = $value['company_id'];	
+            if(!isset($jobcontactdata[$jid])){
+                $item['contact'] = $condata[$cid]['contact'];
+                $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+            }else{
+                if($jobcontactdata[$jid]['use_company_contact']==1){
+                    $item['contact'] = $condata[$cid]['contact'];
+                    $item['telephone'] = !empty($condata[$cid]['telephone'])?$condata[$cid]['telephone']:$condata[$cid]['mobile'];
+                }else{						
+                    $item['contact'] = $jobcontactdata[$jid]['contact'];
+                    $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
+                }		
+            }		
+			
             $item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
             $item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
             $return[] = $item;

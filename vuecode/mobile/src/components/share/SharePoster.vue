@@ -2,11 +2,11 @@
   <div id="app">
     <div class="job_popup">
       <div class="job_popup_box">
-        <ShareCompany v-if="type === 'company'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareCompany>
-        <ShareJob v-if="type === 'job'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareJob>
-        <ShareResume v-if="type === 'resume'" :info="info" :tpl="tplArr[currentTplIndex]" @closePoster="closePoster"></ShareResume>
+        <ShareCompany v-if="type === 'company'" :tplIndex="currentTplIndex" :infoid="infoid" @closePoster="closePoster"></ShareCompany>
+        <ShareJob v-if="type === 'job'" :tplIndex="currentTplIndex" :infoid="infoid" @closePoster="closePoster"></ShareJob>
+        <ShareResume v-if="type === 'resume'" :tplIndex="currentTplIndex" :infoid="infoid" @closePoster="closePoster"></ShareResume>
         <div class="job_btns">
-          <div class="job_btn_1" @click="changeTpl">换一组</div>
+          <div class="job_btn_1" @click="changeTpl">换一个</div>
           <div class="job_btn_2" @click="longTap">长按保存图片</div>
         </div>
       </div>
@@ -20,7 +20,7 @@ import ShareJob from './ShareJob'
 import ShareResume from './ShareResume'
 export default {
   name: 'SharePoster',
-  props: ['type', 'info'],
+  props: ['type', 'infoid'],
   components: {
     ShareCompany,
     ShareJob,
@@ -28,14 +28,13 @@ export default {
   },
   data () {
     return {
-      currentTplIndex: 0,
-      tplArr: ['one', 'two', 'three']
+      currentTplIndex: 0
     }
   },
   methods: {
     changeTpl () {
       this.currentTplIndex++
-      if (this.tplArr[this.currentTplIndex] === undefined) {
+      if (this.currentTplIndex >= 3) {
         this.currentTplIndex = 0
       }
     },

@@ -55,7 +55,7 @@
                     <div class="p_txt">{{basic.complete_percent}}<span>%</span></div>
                     <div class="txt">简历完整度</div>
                 </div>
-                <div class="tx2" v-if="basic.complete_percent < $store.state.config.apply_job_min_percent">完整度太低严重影响求职质量，<router-link to="/persona/resume">去完善！</router-link></div>
+                <div class="tx2" v-if="basic.complete_percent < $store.state.config.apply_job_min_percent">完整度太低严重影响求职质量，<router-link to="/personal/resume">去完善！</router-link></div>
                 <div class="tx2" v-else>使用简历置顶提高简历曝光率，<a href="javascript:;" @click="$router.push('/personal/service/stick')">去置顶！</a></div>
             </div>
             <div class="b_right">

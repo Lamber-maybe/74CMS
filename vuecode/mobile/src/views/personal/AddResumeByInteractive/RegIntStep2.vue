@@ -191,7 +191,7 @@ export default {
         this.$notify('请选择期望地区')
         return false
       }
-      if (!this.category1 || !this.category2 || !this.category3) {
+      if (!this.category1) {
         this.$notify('请选择期望职位')
         return false
       }

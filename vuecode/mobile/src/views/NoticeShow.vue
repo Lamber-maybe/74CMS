@@ -1,5 +1,6 @@
 <template>
   <div id="app" v-wechat-title="this.pageTitle">
+    <Meta v-if="info.title!==undefined" pagealias="noticeshow" :custom_data="{title:info.title,seo_keywords:info.seo_keywords,seo_description:info.seo_description}" />
     <Head>公告详情</Head>
     <div class="form_top_border"></div>
     <div class="list_wrapper">

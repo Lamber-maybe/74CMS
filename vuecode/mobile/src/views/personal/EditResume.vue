@@ -12,7 +12,7 @@
       <div class="box_1" v-if="parseInt(basic.stick) === 0 && !showPerfectTip" @click="$router.push('/member/order/add/stick')">
         简历不出众? 快来试试简历置顶，立即提高5倍曝光率!
       </div>
-      <div class="box_2" v-if="this.moduleStore.basic.is_display === 1">
+      <div class="box_2" v-if="moduleStore.basic!==undefined && moduleStore.basic.is_display == 1">
         <div class="name_group">
           <div
             :class="parseInt(basic.sex) === 1 ? 'avatar_box' : 'avatar_box fe'"
@@ -30,14 +30,14 @@
           </div>
         </div>
         <div class="tx1">{{ contact.mobile }}</div>
-        <div class="tx2" v-if="fieldRule.contact.weixin!==undefined && fieldRule.contact.weixin.is_display === 1">{{ contact.weixin?contact.weixin:'未填写' }}</div>
+        <div class="tx2" v-if="fieldRule.contact.weixin!==undefined && fieldRule.contact.weixin.is_display == 1">{{ contact.weixin?contact.weixin:'未填写' }}</div>
         <div class="percent">完整度: {{ basic.complete_percent }}%</div>
       </div>
     </div>
     <div class="form_split_10"></div>
     <div class="content_wrapper">
       <!--求职意向-->
-      <div class="box_3" v-if="this.moduleStore.intention.is_display === 1">
+      <div class="box_3" v-if="moduleStore.intention!==undefined && moduleStore.intention.is_display == 1">
         <div class="box_head">
           <div class="txt">求职意向</div>
           <div class="required">必填</div>
@@ -72,13 +72,13 @@
             </div>
             <div class="intent">
               {{ item.wage_text }}，{{ item.nature_text }}
-              {{ fieldRule.intention.trade.is_display === 1 && item.trade_text !== '' ? `，${item.trade_text}` : '' }}
+              {{ fieldRule.intention.trade.is_display == 1 && item.trade_text !== '' ? `，${item.trade_text}` : '' }}
             </div>
           </router-link>
         </div>
       </div>
       <!--特长标签-->
-      <div class="box_4" v-if="this.moduleStore.tag.is_display === 1">
+      <div class="box_4" v-if="moduleStore.tag!==undefined && moduleStore.tag.is_display == 1">
         <div class="box_head">
           <div class="txt">特长标签</div>
           <router-link
@@ -99,7 +99,7 @@
         </div>
       </div>
       <!--自我描述-->
-      <div class="box_5" v-if="this.moduleStore.specialty.is_display === 1">
+      <div class="box_5" v-if="moduleStore.specialty!==undefined && moduleStore.specialty.is_display == 1">
         <div class="box_head">
           <div class="txt">自我描述</div>
           <router-link
@@ -111,7 +111,7 @@
         <div class="box_content">{{ basic.specialty }}</div>
       </div>
       <!--教育经历-->
-      <div class="box_6" v-if="this.moduleStore.education.is_display === 1">
+      <div class="box_6" v-if="moduleStore.education!==undefined && moduleStore.education.is_display == 1">
         <div class="box_head">
           <div class="txt">教育经历</div>
           <div class="required">必填</div>
@@ -135,12 +135,12 @@
                 parseInt(item.todate) === 0 ? dateFormat(item.endtime) : "至今"
               }}
             </div>
-            <div class="t3" v-if="fieldRule.education.major.is_display === 1">{{ item.major }}</div>
+            <div class="t3" v-if="fieldRule.education.major.is_display == 1">{{ item.major }}</div>
           </router-link>
         </div>
       </div>
       <!--工作经历-->
-      <div class="box_7" v-if="this.moduleStore.work.is_display === 1">
+      <div class="box_7" v-if="moduleStore.work!==undefined && moduleStore.work.is_display == 1">
         <div class="box_head">
           <div class="txt">工作经历</div>
           <div class="required">必填</div>
@@ -170,7 +170,7 @@
         </div>
       </div>
       <!--培训经历-->
-      <div class="box_8" v-if="this.moduleStore.training.is_display === 1">
+      <div class="box_8" v-if="moduleStore.training!==undefined && moduleStore.training.is_display == 1">
         <div class="box_head">
           <div class="txt">培训经历</div>
           <router-link
@@ -199,7 +199,7 @@
         </div>
       </div>
       <!--项目经历-->
-      <div class="box_9" v-if="this.moduleStore.project.is_display === 1">
+      <div class="box_9" v-if="moduleStore.project!==undefined && moduleStore.project.is_display == 1">
         <div class="box_head">
           <div class="txt">项目经历</div>
           <router-link
@@ -228,7 +228,7 @@
         </div>
       </div>
       <!--获得证书-->
-      <div class="box_10" v-if="this.moduleStore.certificate.is_display === 1">
+      <div class="box_10" v-if="moduleStore.certificate!==undefined && moduleStore.certificate.is_display == 1">
         <div class="box_head">
           <div class="txt">获得证书</div>
           <span class="add_ico" @click="handlerCertificateAdd"></span>
@@ -247,7 +247,7 @@
         </div>
       </div>
       <!--语言能力-->
-      <div class="box_11" v-if="this.moduleStore.language.is_display === 1">
+      <div class="box_11" v-if="moduleStore.language!==undefined && moduleStore.language.is_display == 1">
         <div class="box_head">
           <div class="txt">语言能力</div>
           <span class="add_ico" @click="handlerLanguageAdd"></span>
@@ -265,7 +265,7 @@
         </div>
       </div>
       <!--我的作品-->
-      <div class="box_12" v-if="this.moduleStore.img.is_display === 1">
+      <div class="box_12" v-if="moduleStore.img!==undefined && moduleStore.img.is_display == 1">
         <div class="box_head">
           <div class="txt">我的作品</div>
           <div class="clear"></div>
@@ -408,7 +408,6 @@ export default {
             // 更新简历模块列表
             this.$store.dispatch('setModuleList', res.data.module_list)
             this.moduleStore = res.data.module_list
-            console.log(this.moduleStore)
             // 更新简历字段列表
             this.$store.dispatch('setFieldList', res.data.field_rule)
             // 更新联系方式

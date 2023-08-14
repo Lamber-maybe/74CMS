@@ -42,6 +42,7 @@
             v-model="form.basic.jobcategory_arr"
             :options="columnsJobcategory"
             :show-all-levels="false"
+            filterable
           ></el-cascader>
           </el-form-item>
 

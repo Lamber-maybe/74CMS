@@ -350,6 +350,7 @@
 	float: left;
 	border-right: 1px solid #f3f3f3;
 	border-bottom: 1px solid #f3f3f3;
+	cursor: pointer;
 }
 
 .interest_img {

@@ -205,8 +205,8 @@ class Profile extends \app\v1_0\controller\common\Base
                 foreach ($rule as $field => $field_attr) {
                     $_arr = [
                         'field_name' => $field_attr['field_name'],
-                        'is_require' => $field_attr['is_require'],
-                        'is_display' => $field_attr['is_display'],
+                        'is_require' => intval($field_attr['is_require']),
+                        'is_display' => intval($field_attr['is_display']),
                         'field_cn' => $field_attr['field_cn'],
                     ];
                     $field_rule[$key][$field] = $_arr;

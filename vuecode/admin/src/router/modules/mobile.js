@@ -41,6 +41,28 @@ const mobileRouter = {
         title: '个性化首页',
         access: 'touchDiy'
       }
+    },
+    {
+      path: '/mobile/touch/page',
+      name: 'mobileTouchPage',
+      component: () =>
+        import('@/views/mobile/touch/page/index'),
+      meta: {
+        title: '页面管理',
+        access: 'mobileTouchPage'
+      }
+    },
+    {
+      path: '/mobile/touch/page/edit',
+      name: 'mobileTouchPageEdit',
+      component: () =>
+        import('@/views/mobile/touch/page/edit'),
+      meta: {
+        title: '页面管理',
+        access: 'mobileTouchPage',
+        activeMenu: '/mobile/touch/page'
+      },
+      hidden: true
     }
     ]
   }]

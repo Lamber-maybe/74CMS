@@ -53,7 +53,7 @@ class MarketTask extends \app\common\model\BaseModel
     public function countTotal($target, $condition)
     {
         $model = $this->parseCondition($target, $condition);
-        return $model->count();
+        return $model->count('distinct a.uid');
     }
     protected function parseCondition($target, $condition)
     {

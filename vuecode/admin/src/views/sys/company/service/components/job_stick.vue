@@ -210,7 +210,7 @@ export default {
       if (this.form.enable_points_deduct == 2) {
         if (!value) {
           return callback(new Error('请输入最大允许抵扣金额'))
-        } else if (value >= this.form.expense) {
+        } else if (parseFloat(value) >= parseFloat(this.form.expense)) {
           return callback(new Error('抵扣金额必须小于服务价格'))
         }
       }
@@ -222,7 +222,7 @@ export default {
       } else {
         if (
           this.form.enable_points_deduct == 2 &&
-          value <= this.form.deduct_max
+          parseFloat(value) <= parseFloat(this.form.deduct_max)
         ) {
           return callback(new Error('服务价格必须大于抵扣金额'))
         }

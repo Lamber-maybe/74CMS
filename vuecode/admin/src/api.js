@@ -15,6 +15,8 @@ export default {
   getConfigCache: '/login/config',
   // 上传
   upload: '/upload/index',
+  // 编辑器上传
+  uploadEditor: '/upload/editor',
   // 上传hr工具箱
   uploadHrtool: '/hrtool/upload',
   // 上传微信素材
@@ -603,18 +605,18 @@ export default {
   jobFairListOlAdd: '/jobfairol/add',
   jobFairListOlEdit: '/jobfairol/edit',
   jobFairListOlDelete: '/jobfairol/delete',
-  jobFairListOlCompanyList: 'jobfairol/companyList',
-  jobFairListOlPersonalList: 'jobfairol/personalList',
-  jobFairListOlSticky: 'jobfairol/setSticky',
-  jobFairListOlQrcode: 'jobfairol/setQrcode',
-  jobFairListOlCompanySearch: 'jobfairol/getCompany',
-  jobFairListOlParAdd: 'jobfairol/participateAdd',
-  jobFairListOlPersonalSearch: 'jobfairol/getPersonal',
-  jobFairListOlStatus: 'jobfairol/setStatus',
-  jobFairListOlParticipateDelete: 'jobfairol/participateDelete',
-  jobFairListOlQrService: 'jobfairol/qrService',
-  jobFairListOlComBatchAdd: 'jobfairol/companyBatchAdd',
-  jobFairListOlPerBatchAdd: 'jobfairol/personalBatchAdd',
+  jobFairListOlCompanyList: '/jobfairol/companyList',
+  jobFairListOlPersonalList: '/jobfairol/personalList',
+  jobFairListOlSticky: '/jobfairol/setSticky',
+  jobFairListOlQrcode: '/jobfairol/setQrcode',
+  jobFairListOlCompanySearch: '/jobfairol/getCompany',
+  jobFairListOlParAdd: '/jobfairol/participateAdd',
+  jobFairListOlPersonalSearch: '/jobfairol/getPersonal',
+  jobFairListOlStatus: '/jobfairol/setStatus',
+  jobFairListOlParticipateDelete: '/jobfairol/participateDelete',
+  jobFairListOlQrService: '/jobfairol/qrService',
+  jobFairListOlComBatchAdd: '/jobfairol/companyBatchAdd',
+  jobFairListOlPerBatchAdd: '/jobfairol/personalBatchAdd',
 
   // 同步im数据
   syncImTokenBatch: '/config/syncImTokenBatch',
@@ -631,7 +633,6 @@ export default {
   sceneQrcodeTypeList: '/scene_qrcode/typeList',
   sceneQrcodeDownload: '/scene_qrcode/download',
   sceneSearchList: '/scene_qrcode/searchList',
-
 
   // 敏感词
   badwordList: '/badword/index',
@@ -651,4 +652,28 @@ export default {
   tweetsSearchCompany: '/tweets_template/companySearch',
   tweetsTitleFooter: '/tweets_template/title_footer',
 
+  // 生成海报
+  makePoster: '/poster/index',
+  downloadPoster: '/poster/download',
+
+  // 触屏页面配置
+  pageMobileList: '/page_mobile/index',
+  pageMobileEdit: '/page_mobile/edit',
+
+  // 简历导入
+  resumeImport: '/resume/import',
+  // 热门关键词
+  hotwordList: '/hotword/index',
+  hotwordAdd: '/hotword/add',
+  hotwordEdit: '/hotword/edit',
+  hotwordDelete: '/hotword/delete',
+  hotwordSaveAll: '/hotword/saveAll',
+  // 在线客服
+  serviceOl: '/service_ol/index',
+  serviceOlAdd: '/service_ol/add',
+  serviceOlEdit: '/service_ol/edit',
+  serviceOlDelete: '/service_ol/delete',
+  
+  // 简历导入模板下载
+  downloadImportResumeTpl: '/resume/downloadImportResumeTpl'
 }

@@ -402,12 +402,7 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return $result_data_list;
     }
-    /**
-     * 职位详情
-     */
-    public function show()
-    {
-        $id = input('get.id/d', 0, 'intval');
+    protected function writeShowCache($id,$pageCache){
         $jobinfo = model('Job')
             ->where('id', 'eq', $id)
             ->field(true)
@@ -419,6 +414,7 @@ class Job extends \app\v1_0\controller\common\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $base_info['id'] = $jobinfo['id'];
+        $base_info['uid'] = $jobinfo['uid'];
         $base_info['jobname'] = $jobinfo['jobname'];
         $base_info['emergency'] = $jobinfo['emergency'];
         $base_info['stick'] = $jobinfo['stick'];
@@ -491,23 +487,7 @@ class Job extends \app\v1_0\controller\common\Base
             $jobinfo['refreshtime']
         );
         $return['base_info'] = $base_info;
-        $field_rule_data = model('FieldRule')->getCache();
-        $field_rule = [
-            'basic' => $field_rule_data['Job'],
-            'contact' => $field_rule_data['JobContact'],
-        ];
-        foreach ($field_rule as $key => $rule) {
-            foreach ($rule as $field => $field_attr) {
-                $_arr = [
-                    'field_name' => $field_attr['field_name'],
-                    'is_require' => $field_attr['is_require'],
-                    'is_display' => $field_attr['is_display'],
-                    'field_cn' => $field_attr['field_cn'],
-                ];
-                $field_rule[$key][$field] = $_arr;
-            }
-        }
-        $return['field_rule'] = $field_rule;
+        
         
         $getJobContact = model('Job')->getContact($jobinfo,$this->userinfo);
         $return['show_contact'] = $getJobContact['show_contact'];
@@ -633,6 +613,48 @@ class Job extends \app\v1_0\controller\common\Base
         $instance = new \app\common\lib\JobRecommend($similar_data);
         $similar_list = $instance->run('id != ' . $jobinfo['id']);
         $return['similar'] = $this->get_datalist($similar_list['items']);
+        if($pageCache['expire']>0){
+            model('PageMobile')->writeCacheByAlias('jobshow',$return,$pageCache['expire'],$id);
+        }
+        return $return;
+    }
+    /**
+     * 职位详情
+     */
+    public function show()
+    {
+        $id = input('get.id/d', 0, 'intval');
+        $field_rule_data = model('FieldRule')->getCache();
+        $field_rule = [
+            'basic' => $field_rule_data['Job'],
+            'contact' => $field_rule_data['JobContact'],
+        ];
+        foreach ($field_rule as $key => $rule) {
+            foreach ($rule as $field => $field_attr) {
+                $_arr = [
+                    'field_name' => $field_attr['field_name'],
+                    'is_require' => intval($field_attr['is_require']),
+                    'is_display' => intval($field_attr['is_display']),
+                    'field_cn' => $field_attr['field_cn'],
+                ];
+                $field_rule[$key][$field] = $_arr;
+            }
+        }
+        //读取页面缓存配置
+        $pageCache = model('PageMobile')->getCache('jobshow');
+        //如果缓存有效期为0，则不使用缓存
+        if($pageCache['expire']>0){
+            $return = model('PageMobile')->getCacheByAlias('jobshow',$id);
+        }else{
+            $return = false;
+        }
+        if (!$return) {
+            $return = $this->writeShowCache($id,$pageCache);
+            if($return===false){
+                $this->ajaxReturn(500, '职位信息为空');
+            }
+        }
+        $return['field_rule'] = $field_rule;
 
         if ($this->userinfo != null && $this->userinfo->utype == 2) {
             $fav_info = model('FavJob')
@@ -647,20 +669,21 @@ class Job extends \app\v1_0\controller\common\Base
         } else {
             $return['has_fav'] = 0;
         }
-        $imuser_info = model('ImToken')->where('uid', $jobinfo['uid'])->find();
+        $imuser_info = model('ImToken')->where('uid', $return['base_info']['uid'])->find();
         if ($imuser_info !== null) {
             $return['base_info']['im_userid'] = $imuser_info['im_userid'];
         } else {
             $return['base_info']['im_userid'] = '';
         }
-        $return['share_url'] = config('global_config.mobile_domain').'job/'.$jobinfo['id'];
+        $return['share_url'] = config('global_config.mobile_domain').'job/'.$return['base_info']['id'];
         model('Job')->addViewLog(
-            $jobinfo['id'],
-            $jobinfo['uid'],
+            $return['base_info']['id'],
+            $return['base_info']['uid'],
             $this->userinfo !== null && $this->userinfo->utype == 2
             ? $this->userinfo->uid
             : 0
         );
+        unset($return['base_info']['uid']);
         $return['phone_protect_open'] =  false;
         $return['phone_protect_timeout'] = 180;
         $return['phone_protect_type'] = '';
@@ -1240,8 +1263,8 @@ class Job extends \app\v1_0\controller\common\Base
         foreach ($field_rule as $field => $rule) {
             $_arr = [
                 'field_name' => $rule['field_name'],
-                'is_require' => $rule['is_require'],
-                'is_display' => $rule['is_display'],
+                'is_require' => intval($rule['is_require']),
+                'is_display' => intval($rule['is_display']),
                 'field_cn' => $rule['field_cn'],
             ];
             $field_rule[$field] = $_arr;

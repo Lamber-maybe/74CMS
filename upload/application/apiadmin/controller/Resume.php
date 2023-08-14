@@ -72,7 +72,7 @@ class Resume extends \app\common\controller\Backend
             ->order($order)
             ->page($current_page . ',' . $pagesize)
             ->select();
-            
+
         $ridarr = [];
         $uidarr = [];
         $complete_list = [];
@@ -123,9 +123,9 @@ class Resume extends \app\common\controller\Backend
                 ? $complete_list[$value['id']]
                 : 0;
             $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
-            $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;     
+            $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;
             $value['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
-        
+
             $list[$key] = $value;
         }
         $return['items'] = $list;
@@ -1602,5 +1602,271 @@ class Resume extends \app\common\controller\Backend
         model('Resume')->backendRefreshResume($id);
         model('AdminLog')->record('刷新简历。简历ID【'.implode(",",$id).'】',$this->admininfo);
         $this->ajaxReturn(200, '刷新成功');
+    }
+    /**
+     * 简历导入
+     */
+    public function import()
+    {
+        $timestamp = time();
+        $post_data = input('post.');
+
+        $compelete_list = [];
+        $contact_list = [];
+        $intention_list = [];
+        $certificate_list = [];
+        $education_list = [];
+        $language_list = [];
+        $work_list = [];
+        $category_data = model('Category')->getCache();
+        $category_job_data = model('CategoryJob')->getCache();
+        $category_district_data = model('CategoryDistrict')->getCache();
+        $memberModel = model('Member');
+        $resumeModel = model('Resume');
+        $resumeid_arr = [];
+        \think\Db::startTrans();
+        try{
+            foreach ($post_data as $key => $value) {
+                $_member_model = clone $memberModel;
+                $_resume_model = clone $resumeModel;
+                if($_member_model->where('mobile',$value['basic']['contact']['mobile'])->find()!==null){
+                    continue;
+                }
+                $insert_data_member = [
+                    'username' => config('global_config.reg_prefix') . $value['basic']['contact']['mobile'],
+                    'password' => '',
+                    'mobile' => $value['basic']['contact']['mobile'],
+                    'utype' => 2,
+                    'platform' => $value['basic']['platform']
+                ];
+                $insert_data_member['pwd_hash'] = randstr();
+                if ($insert_data_member['password'] != '') {
+                    $insert_data_member['password'] = $this->makePassword(
+                        $insert_data_member['password'],
+                        $insert_data_member['pwd_hash']
+                    );
+                } else {
+                    $insert_data_member['password'] = '';
+                }
+                //插入member表
+                $_member_model->validate(false)->allowField(true)->save($insert_data_member);
+                $insert_uid = $_member_model->uid;
+                $insert_data_resume = [
+                    'uid'=>$insert_uid,
+                    'service_tag'=>'',
+                    'fullname'=>$value['basic']['fullname'],
+                    'sex'=>$value['basic']['sex'],
+                    'birthday'=>$value['basic']['birthday'],
+                    'residence'=>$value['basic']['residence'],
+                    'height'=>$value['basic']['height'],
+                    'marriage'=>array_search($value['basic']['marriage'],$_resume_model->map_marriage),
+                    'education'=>array_search($value['basic']['education'],model('BaseModel')->map_education),
+                    'enter_job_time'=>$value['basic']['enter_job_time']?strtotime($value['basic']['enter_job_time']):0,
+                    'householdaddress'=>$value['basic']['householdaddress'],
+                    'major1'=>0,
+                    'major2'=>0,
+                    'major'=>0,
+                    'current'=>0,
+                    'click'=>0,
+                    'custom_field_1'=>'',
+                    'custom_field_2'=>'',
+                    'custom_field_3'=>'',
+                    'platform'=>$value['basic']['platform'],
+                    'remark'=>'',
+                    'comment'=>''
+                ];
+                //插入resume表
+                $_resume_model->validate(false)->save($insert_data_resume);
+                $insert_resumeid = $_resume_model->id;
+                if($value['basic']['specialty']!=''){
+                    model('Resume')->where('id',$insert_resumeid)->setField('specialty',$value['basic']['specialty']);
+                }
+                
+                $resumeid_arr[] = $insert_resumeid;
+                
+                $contact_list[] = [
+                    'rid'=>$insert_resumeid,
+                    'uid'=>$insert_uid,
+                    'mobile'=>$value['basic']['contact']['mobile'],
+                    'email'=>$value['basic']['contact']['email'],
+                    'qq'=>'',
+                    'weixin'=>''
+                ];
+                foreach ($value['intention_list'] as $k => $v) {
+                    $arr = [
+                        'rid'=>$insert_resumeid,
+                        'uid'=>$insert_uid,
+                        'nature'=>array_search($v['nature'],$_resume_model->map_nature),
+                        'category1'=>0,
+                        'category2'=>0,
+                        'category3'=>0,
+                        'category'=>0,
+                        'district1'=>0,
+                        'district2'=>0,
+                        'district3'=>0,
+                        'district'=>0,
+                        'minwage'=>$v['minwage'],
+                        'maxwage'=>$v['maxwage'],
+                        'trade'=>array_search($v['trade'],$category_data['QS_trade'])===false?0:array_search($v['trade'],$category_data['QS_trade'])
+                    ];
+                    $district_arr = explode("/",$v['district']);
+                    $v['district'] = $district_arr[count($district_arr)-1];
+                    $district_id = array_search($v['district'],$category_district_data);
+                    if($district_id!==false){
+                        $district_info = model('CategoryDistrict')->where('id',$district_id)->find();
+                        if($district_info!==null){
+                            if($district_info['pid']==0){
+                                $arr['district1'] = $district_id;
+                                $arr['district'] = $district_id;
+                            }else{
+                                $parent_district_info = model('CategoryDistrict')->where('id',$district_info['pid'])->find();
+                                if($parent_district_info['pid']==0){
+                                    $arr['district1'] = $parent_district_info['id'];
+                                    $arr['district2'] = $district_id;
+                                    $arr['district'] = $district_id;
+                                }else{
+                                    $arr['district1'] = $parent_district_info['pid'];
+                                    $arr['district2'] = $parent_district_info['id'];
+                                    $arr['district3'] = $district_id;
+                                    $arr['district'] = $district_id;
+                                }
+                            }
+                            
+                        }
+                    }
+                    $category_arr = explode("/",$v['category']);
+                    $v['category'] = $category_arr[count($category_arr)-1];
+                    $category_id = array_search($v['category'],$category_job_data);
+                    if($category_id!==false){
+                        $category_info = model('CategoryJob')->where('id',$category_id)->find();
+                        if($category_info!==null){
+                            if($category_info['pid']==0){
+                                $arr['category1'] = $category_id;
+                                $arr['category'] = $category_id;
+                            }else{
+                                $parent_category_info = model('CategoryJob')->where('id',$category_info['pid'])->find();
+                                if($parent_category_info['pid']==0){
+                                    $arr['category1'] = $parent_category_info['id'];
+                                    $arr['category2'] = $category_id;
+                                    $arr['category'] = $category_id;
+                                }else{
+                                    $arr['category1'] = $parent_category_info['pid'];
+                                    $arr['category2'] = $parent_category_info['id'];
+                                    $arr['category3'] = $category_id;
+                                    $arr['category'] = $category_id;
+                                }
+                            }
+                            
+                        }
+                    }
+                    $intention_list[] = $arr;
+                }
+                foreach ($value['certificate_list'] as $k => $v) {
+                    $arr = [
+                        'rid'=>$insert_resumeid,
+                        'uid'=>$insert_uid,
+                        'name'=>$v['name'],
+                        'obtaintime'=>strtotime($v['obtaintime'])
+                    ];
+                    $certificate_list[] = $arr;
+                }
+                foreach ($value['education_list'] as $k => $v) {
+                    $arr = [
+                        'rid'=>$insert_resumeid,
+                        'uid'=>$insert_uid,
+                        'starttime'=>strtotime($v['starttime']),
+                        'endtime'=>strtotime($v['endtime']),
+                        'todate'=>0,
+                        'school'=>$v['school'],
+                        'major'=>$v['major'],
+                        'education'=>array_search($v['education'],model('BaseModel')->map_education)
+                    ];
+                    $education_list[] = $arr;
+                }
+                foreach ($value['language_list'] as $k => $v) {
+                    $arr = [
+                        'rid'=>$insert_resumeid,
+                        'uid'=>$insert_uid,
+                        'language'=>array_search($v['language'],$category_data['QS_language'])===false?0:array_search($v['language'],$category_data['QS_language']),
+                        'level'=>array_search($v['level'],$category_data['QS_language_level'])===false?0:array_search($v['level'],$category_data['QS_language_level'])
+                    ];
+                    $language_list[] = $arr;
+                }
+                foreach ($value['work_list'] as $k => $v) {
+                    $arr = [
+                        'rid'=>$insert_resumeid,
+                        'uid'=>$insert_uid,
+                        'starttime'=>strtotime($v['starttime']),
+                        'endtime'=>strtotime($v['endtime']),
+                        'todate'=>0,
+                        'companyname'=>$v['companyname'],
+                        'jobname'=>$v['jobname'],
+                        'duty'=>$v['duty']
+                    ];
+                    $work_list[] = $arr;
+                }
+                $compelete_list[] = [
+                    'rid'=>$insert_resumeid,
+                    'uid'=>$insert_uid,
+                    'basic'=>1,
+                    'intention'=>!empty($intention_list)?1:0,
+                    'specialty'=>$value['basic']['specialty']==''?0:1,
+                    'education'=>!empty($education_list)?1:0,
+                    'work'=>!empty($work_list)?1:0,
+                    'training'=>0,
+                    'project'=>0,
+                    'certificate'=>!empty($certificate_list)?1:0,
+                    'language'=>!empty($language_list)?1:0,
+                    'tag'=>0,
+                    'img'=>0
+                ];
+            }
+            unset($_member_model,$_resume_model);
+            if(!empty($compelete_list)){
+                model('ResumeComplete')->saveAll($compelete_list);
+            }
+            if(!empty($contact_list)){
+                model('ResumeContact')->saveAll($contact_list);
+            }
+            if(!empty($intention_list)){
+                model('ResumeIntention')->saveAll($intention_list);
+            }
+            if(!empty($certificate_list)){
+                model('ResumeCertificate')->saveAll($certificate_list);
+            }
+            if(!empty($education_list)){
+                model('ResumeEducation')->saveAll($education_list);
+            }
+            if(!empty($language_list)){
+                model('ResumeLanguage')->saveAll($language_list);
+            }
+            if(!empty($work_list)){
+                model('ResumeWork')->saveAll($work_list);
+            }
+            if(!empty($resumeid_arr)){
+                model('Resume')->where('id','in',$resumeid_arr)->setField('audit',1);
+            }
+            \think\Db::commit();
+        }catch(\Exception $e){
+            \think\Db::rollBack();
+            $this->ajaxReturn(500,$e->getMessage());
+        }
+        if(!empty($resumeid_arr)){
+            model('Resume')->refreshSearchBatch($resumeid_arr);
+        }
+        $this->ajaxReturn(200, '导入成功');
+    }
+    public function downloadImportResumeTpl(){
+        $file = SYS_UPLOAD_PATH.'resource/import_resume.xls';
+        $result = file_get_contents($file);
+        ob_start(); 
+        echo "$result"; 
+        header("Cache-Control: public"); 
+        Header("Content-type: application/octet-stream"); 
+        Header("Accept-Ranges: bytes"); 
+        header('Content-Disposition: attachment; filename=简历导入模板.xls'); 
+        header("Pragma:no-cache"); 
+        header("Expires:0"); 
+        ob_end_flush(); 
     }
 }

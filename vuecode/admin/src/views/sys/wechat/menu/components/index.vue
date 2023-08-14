@@ -156,7 +156,7 @@
           prop="sort_id"
         >
           <el-input
-            v-model="form.sort_id"
+            v-model.number="form.sort_id"
             class="mini"
           />
         </el-form-item>

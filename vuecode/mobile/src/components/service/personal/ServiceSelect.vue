@@ -11,7 +11,7 @@
         <div class="item" @click="handleLine(item.id)" v-for="(item, index) in service_list" :key="index">
           <div class="order_ico" :class="type"></div>
           <div class="name">
-            <div class="name_psi">{{ item.name }}</div>
+            <div class="name_psi"><span class="service_name">{{ item.name }}</span><img v-if="item.recommend==1" class="recommend" :src="require('@/assets/images/tuijian2.png')" /></div>
             <div class="name_tj" v-if="item.recommend === 1"></div>
             <div class="clear"></div>
             <van-radio
@@ -144,10 +144,22 @@ export default {
       }
       .name_psi {
         float: left;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        max-width: 180px;
+        position:relative;
+        font-size: 0;
+        .service_name{
+          font-size: 15px;
+          max-width: 160px;
+          display:inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .recommend{
+          position:absolute;
+          top:-4px;
+          right:-30px;
+          width:26px;
+        }
       }
       font-size: 15px;
       color: #666666;

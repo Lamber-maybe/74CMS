@@ -44,6 +44,6 @@
     .el-breadcrumb { padding: 16px 0;}
   }
   .personal_top {
-    display: inline-table;width: 100%; height: 153px; margin-bottom: 42px;
+    display: inline-table;width: 100%; height: 153px; margin-bottom: 170px;
   }
 </style>
