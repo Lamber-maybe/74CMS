@@ -535,6 +535,12 @@ class Screen extends \app\v1_0\controller\common\Base
         foreach ($list2 as $key => $value) {
             $arr = [];
             $arr['type'] = 'resume_refresh';
+            /**
+             * 2022-10-09
+             * zdq【排查】数据大屏 求职者实时数据-刷新简历动态
+             * 增加 $arr['jobname'] = '';
+             */
+            $arr['jobname'] = '';
             $arr['fullname'] = $value['fullname'];
             if ($value['display_name'] == 0) {
                 if ($value['sex'] == 1) {

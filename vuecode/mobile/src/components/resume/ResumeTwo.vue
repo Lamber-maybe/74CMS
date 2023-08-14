@@ -19,7 +19,7 @@
         <div class="content">
           <div class="up">
             <div class="avatar_box">
-              <img :src="base_info.photo_img_src" :alt="base_info.fullname" />
+              <img :src="base_info.photo_img_src" :alt="base_info.fullname"/>
               <div
                 class="gender"
                 :class="base_info.sex == 1 ? 'male' : 'female'"
@@ -127,7 +127,7 @@
               <div class="tx2">
                 <div class="name">
                   <!-- 工作类型/职位 -->
-                  <span>{{ base_info.nature_text_unique }}</span>{{base_info.intention_jobs_text}}
+                  <span>{{ base_info.nature_text_unique }}</span>{{ base_info.intention_jobs_text }}
                 </div>
                 <div class="intent">
                   <!-- 薪资 -->
@@ -173,10 +173,10 @@
                 <div class="t3">
                   {{ item.jobname }}
                   <span
-                    >{{ item.starttime | monthTimeFilter }}
+                  >{{ item.starttime | monthTimeFilter }}
                     <span v-if="item.todate == 1">至今</span>
                     <span v-else
-                      >至 {{ item.endtime | monthTimeFilter }}</span
+                    >至 {{ item.endtime | monthTimeFilter }}</span
                     ></span
                   >
                 </div>
@@ -202,17 +202,19 @@
               >
                 <div class="circle"></div>
                 <div class="t1">
-                  {{ item.school
+                  {{
+                    item.school
                   }}<span class="school-time"
-                    >{{ item.starttime | monthTimeFilter }}
+                >{{ item.starttime | monthTimeFilter }}
                     <span v-if="item.todate == 1">至今</span>
                     <span v-else
-                      >至 {{ item.endtime | monthTimeFilter }}</span
+                    >至 {{ item.endtime | monthTimeFilter }}</span
                     ></span
-                  >
+                >
                 </div>
                 <div class="t3">
-                  {{ item.education_text
+                  {{
+                    item.education_text
                   }}{{
                     field_rule.education.major !== undefined &&
                     field_rule.education.major.is_display === 1 &&
@@ -260,7 +262,7 @@
                   phone_protect_open &&
                   phone_protect_type == 1
                 "
-                >请使用
+              >请使用
                 <span class="phone" v-text="cur_com_mobile"></span>
                 的手机号拔号</span
               >
@@ -306,12 +308,12 @@
               class="code_pro_wrap"
               v-if="show_contact == 1 && phone_protect_open"
             >
-              <img class="secret" src="../../assets/images/318.jpg" />
+              <img class="secret" src="../../assets/images/318.jpg"/>
               <div v-if="phone_protect_type == 1" class="pro_tip">
                 1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span
-                  v-text="phone_protect_timeout"
-                ></span
-                >秒,过期后需再次点击拔号
+                v-text="phone_protect_timeout"
+              ></span
+              >秒,过期后需再次点击拔号
               </div>
             </div>
             <div
@@ -551,7 +553,7 @@
                   v-for="(item, index) in img_list"
                   :key="index"
                 >
-                  <img :src="item.img_src" alt="" />
+                  <img :src="item.img_src" alt=""/>
                 </div>
               </div>
             </div>
@@ -655,10 +657,12 @@
           购买简历包价格低至<span class="red">{{
             directServiceInfo.discount
           }}</span
-          >折，<router-link
+        >折，
+          <router-link
             to="/member/order/add/common?type=service&service_type=resume_package"
             class="blue"
-            >立即了解</router-link
+          >立即了解
+          </router-link
           >
         </div>
       </div>
@@ -674,7 +678,7 @@
       <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
       <div class="line18 font12">
         (电话<span class="color-orange" v-text="codePro.timeout"></span
-        >秒后失效,请尽快拔打)
+      >秒后失效,请尽快拔打)
       </div>
       <div
         v-if="phone_protect_type == 1"
@@ -854,7 +858,7 @@
       :type="'resume'"
       :infoid="shareid"
     ></SharePoster>
-    <van-overlay z-index="3" :show="showPoster" @click="showPoster = false" />
+    <van-overlay z-index="3" :show="showPoster" @click="showPoster = false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share
         @cancelShare="cancelShare"
@@ -874,7 +878,7 @@
       <div class="bind-weixin-box">
         <div class="title-1">您当前未绑定微信，绑定后可发起聊天。</div>
         <div class="img">
-          <img :src="scanQrcodeImg" alt="" />
+          <img :src="scanQrcodeImg" alt=""/>
         </div>
         <div class="title-2">使用微信扫一扫，按提示快速绑定</div>
       </div>
@@ -920,7 +924,7 @@ import VideoList from '../../views/shortvideo/components/VideoListtwo'
 import wxshare from '@/assets/js/share.js'
 import Tipoff from '@/components/Tipoff'
 import AddInvitation from '@/components/AddInvitation'
-import { isWeiXin, parseTime } from '@/utils/index'
+import {isWeiXin, parseTime} from '@/utils/index'
 import PopupPayment from '@/components/service/PopupPayment'
 import http from '@/utils/http'
 import api from '@/api'
@@ -928,10 +932,11 @@ import Login from '@/components/Login'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import Vue from 'vue'
-import { ImagePreview } from 'vant'
+import {ImagePreview} from 'vant'
 import SelectJob from '@/views/im/components/SelectJob.vue'
-import { mapMutations } from 'vuex'
+import {mapMutations} from 'vuex'
 import PaySubmit from '@/components/service/PaySubmit'
+
 Vue.use(ImagePreview)
 export default {
   name: 'ResumeShow',
@@ -975,7 +980,7 @@ export default {
       showLogin: false,
       after_login_data: {},
       resume_module: {},
-      field_rule: { basic: {}, contact: {}, intention: {}, education: {} },
+      field_rule: {basic: {}, contact: {}, intention: {}, education: {}},
       base_info: {},
       intention_list: [],
       show_contact: 0,
@@ -1032,19 +1037,19 @@ export default {
       // 绑定微信二维码
       scanQrcodeImg: '',
       putAway: true,
-      company_uid: 0,
-      job_apply_id: 0
+      params: {
+        company_uid: '',
+        job_apply_id: ''
+      }
     }
   },
   created () {
     this.query_id = this.$route.params.id
-    this.company_uid = this.$route.params.company_uid
-    this.job_apply_id = this.$route.params.job_apply_id
     this.is_company_login = !!(
       this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1
     )
     // 请求数据
-    this.fetchData()
+    this.initQuery(this.$route.query)
     this.getScanQrcodeImg()
     if (this.$store.state.config.shortvideo_enable === '1') {
       this.fetchVideonum()
@@ -1066,7 +1071,7 @@ export default {
      * 绑定微信二维码
      */
     getScanQrcodeImg () {
-      http.get(api.get_qrcode, { type: 'bind_weixin' }).then((res) => {
+      http.get(api.get_qrcode, {type: 'bind_weixin'}).then((res) => {
         this.scanQrcodeImg = res.data
       })
     },
@@ -1074,12 +1079,19 @@ export default {
       location.href = `tel:${this.codePro.x}`
     },
     async fetchData (next_method = null) {
-      const params = {
-        id: this.query_id,
-        company_uid: this.company_uid,
-        job_apply_id: this.job_apply_id
+      var request_params
+      if (this.params.company_uid == '' || this.params.job_apply_id == '') {
+        request_params = {
+          id: this.query_id
+        }
+      } else {
+        request_params = {
+          id: this.query_id,
+          company_uid: this.params.company_uid,
+          job_apply_id: this.params.job_apply_id
+        }
       }
-      let res = await http.get(api.resumeshow, params)
+      let res = await http.get(api.resumeshow, request_params)
       const {
         resume_module,
         field_rule,
@@ -1102,7 +1114,7 @@ export default {
         phone_protect_timeout,
         cur_com_mobile,
         phone_protect_type
-      } = { ...res.data }
+      } = {...res.data}
       this.resume_module = resume_module
       this.field_rule = field_rule
       this.base_info = base_info
@@ -1156,7 +1168,7 @@ export default {
           let res = await http.get(api.secret_phone, {
             resume_id: this.query_id
           })
-          const { code, message, data } = res
+          const {code, message, data} = res
           if (code == 200) {
             this.codePro.x = data.x
             this.codePro.timeout = data.timeout
@@ -1189,7 +1201,8 @@ export default {
             .then(() => {
               window.location.href = `tel:${this.contact_info.mobile}`
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         }
       } else if (this.is_company_login === false) {
         this.$dialog
@@ -1204,7 +1217,8 @@ export default {
               method: 'doTel'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.show_contact_note == 'need_download') {
           this.$notify('请先下载简历')
@@ -1225,14 +1239,15 @@ export default {
               method: 'doMsg'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         // if (this.base_info.audit != 1) {
         //   this.$notify('该简历还未审核通过，不能继续此操作')
         //   return false
         // }
         http.post(api.company_index, {}).then((res) => {
-          var { companyinfo } = res.data
+          var {companyinfo} = res.data
 
           // if (this.jobid == 0) {
           this.companyId = companyinfo.id
@@ -1263,7 +1278,7 @@ export default {
                     companyId: companyinfo.id
                   })
                   this.setimChatid(res.data.chatid)
-                  this.$router.push({ path: '/im/' + res.data.chatid })
+                  this.$router.push({path: '/im/' + res.data.chatid})
                   return false
                 }
                 if (res.data.next == 'disabled') {
@@ -1272,7 +1287,8 @@ export default {
                     title: '系统提示',
                     message: res.message,
                     showConfirmButton: true
-                  }).then(() => {})
+                  }).then(() => {
+                  })
                   return false
                 }
                 if (res.data.next == 'complete_resume') {
@@ -1284,9 +1300,10 @@ export default {
                       showCancelButton: true
                     })
                     .then(() => {
-                      this.$router.push({ path: '/member/personal/resume' })
+                      this.$router.push({path: '/member/personal/resume'})
                     })
-                    .catch(() => {})
+                    .catch(() => {
+                    })
                   return false
                 }
                 if (res.data.next == 'bind_weixin') {
@@ -1305,7 +1322,8 @@ export default {
                         path: '/member/order/add/common?type=service&service_type=im'
                       })
                     })
-                    .catch(() => {})
+                    .catch(() => {
+                    })
                 }
                 if (res.data.next == 'choose_job') {
                   this.selectJobShow = true
@@ -1360,7 +1378,8 @@ export default {
               method: 'doInterview'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.base_info.audit != 1) {
           this.$notify('该简历还未审核通过，不能继续此操作')
@@ -1384,7 +1403,8 @@ export default {
               method: 'doDownload'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.enableClick === false) {
           return false
@@ -1425,7 +1445,7 @@ export default {
               }
               return false
             } else {
-              this.$notify({ type: 'success', message: res.message })
+              this.$notify({type: 'success', message: res.message})
               this.fetchData()
             }
           })
@@ -1448,7 +1468,8 @@ export default {
               method: 'doFav'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.enableClick === false) {
           return false
@@ -1468,7 +1489,7 @@ export default {
           .then((res) => {
             this.enableClick = true
             this.has_fav = this.has_fav == 1 ? 0 : 1
-            this.$notify({ type: 'success', message: res.message })
+            this.$notify({type: 'success', message: res.message})
           })
           .catch(() => {
             this.enableClick = true
@@ -1585,7 +1606,8 @@ export default {
               method: 'handlerReport'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.base_info.audit != 1) {
           this.$notify('该简历还未审核通过，不能继续此操作')
@@ -1608,11 +1630,22 @@ export default {
     },
     fetchVideonum () {
       http
-        .get(api.shortvideo_total, { rid: this.query_id })
+        .get(api.shortvideo_total, {rid: this.query_id})
         .then((res) => {
           this.videonum = res.data
         })
-        .catch(() => {})
+        .catch(() => {
+        })
+    },
+    initQuery (query) {
+      for (const key in this.params) {
+        if (query.hasOwnProperty(key)) {
+          this.params[key] = query[key]
+        } else {
+          this.params[key] = ''
+        }
+      }
+      this.fetchData()
     }
   }
 }
@@ -1634,6 +1667,7 @@ export default {
   -o-transition: width 0.5s; /* Opera */
   line-height: 58px;
   padding-top: 0;
+
   .poster_item {
     z-index: 2;
     width: 33%;
@@ -1648,6 +1682,7 @@ export default {
     overflow: hidden;
     box-sizing: border-box;
     padding-top: 2px;
+
     span {
       display: inline-block;
       width: 100%;
@@ -1656,14 +1691,17 @@ export default {
       color: #595959;
     }
   }
+
   .copy_item {
     background: url(../../assets/images/company/copy_icon.png) 18px 8px no-repeat;
     background-size: 14px;
   }
+
   .hb_item {
     background: url(../../assets/images/company/hb_share.png) 18px 8px no-repeat;
     background-size: 14px;
   }
+
   .all-item {
     position: fixed;
     right: 15px;
@@ -1675,6 +1713,7 @@ export default {
     height: 45px;
     line-height: 45px;
     color: #ffffff;
+
     .all-item-img {
       display: inline-block;
       width: 25px;
@@ -1683,6 +1722,7 @@ export default {
       background-size: 100% 100%;
       margin-top: 8px;
     }
+
     .all-item-img-qx {
       width: 25px;
       height: 25px;
@@ -1692,9 +1732,11 @@ export default {
     }
   }
 }
+
 .generate_posters_all {
   width: 45px;
 }
+
 .box_report {
   .report {
     // position: absolute;
@@ -1732,11 +1774,13 @@ export default {
   padding: 12px;
   margin-top: 20px;
 }
+
 .resume-show-swiper-span {
   width: 6px;
   height: 6px;
   border-radius: 100%;
 }
+
 .resume-show-swiper-bullet-active {
   background-color: #1787fb;
   border-radius: 6px;
@@ -1752,6 +1796,7 @@ export default {
   overflow-y: auto;
   font-size: 13px;
   padding: 20px;
+
   .detail_desc {
     width: 100%;
     background-color: #f5f5f5;
@@ -1760,9 +1805,11 @@ export default {
     padding: 8px 20px;
     margin-top: 10px;
   }
+
   .detail_line {
     line-height: 1.5;
     margin-bottom: 5px;
+
     .line_left {
       float: left;
       color: #999999;
@@ -1770,6 +1817,7 @@ export default {
       width: 80px;
       line-height: 1.5;
     }
+
     .line_right {
       float: left;
       color: #333333;
@@ -1777,10 +1825,12 @@ export default {
       width: 190px;
       text-align: left;
       line-height: 1.5;
+
       .a_black {
         color: #333333;
         text-decoration: none;
       }
+
       .a_blue {
         color: #1887fb;
         text-decoration: none;
@@ -1788,10 +1838,12 @@ export default {
     }
   }
 }
+
 .my_app {
   padding-bottom: 45px;
   overflow: hidden;
 }
+
 .box_13 {
   .bottom_bar {
     .item_apply {
@@ -1807,6 +1859,7 @@ export default {
       border-radius: 5px;
       flex-shrink: 0;
     }
+
     .item_chat {
       flex-shrink: 0;
       // float: left;
@@ -1821,6 +1874,7 @@ export default {
       line-height: 43px;
       margin-right: 12px;
       background: #167eff;
+
       &::after {
         position: absolute;
         box-sizing: border-box;
@@ -1832,6 +1886,7 @@ export default {
         // border-bottom: 0.026667rem solid #f3f3f3;
       }
     }
+
     .item_call {
       flex-shrink: 0;
       // float: left;
@@ -1845,6 +1900,7 @@ export default {
       background-size: 17px;
       position: relative;
     }
+
     .item_collect {
       flex-shrink: 0;
       width: 60px;
@@ -1856,12 +1912,13 @@ export default {
       position: relative;
       background: url("../../assets/images/jobshow/sc.png") center 9px no-repeat;
       background-size: 17px;
+
       &.item_collect_ac {
-        background: url("../../assets/images/jobshow/sc_act.png") center 9px
-          no-repeat;
+        background: url("../../assets/images/jobshow/sc_act.png") center 9px no-repeat;
         background-size: 17px;
       }
     }
+
     position: fixed;
     left: 0;
     right: 0;
@@ -1873,6 +1930,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+
     &::after {
       position: absolute;
       box-sizing: border-box;
@@ -1884,19 +1942,24 @@ export default {
       border-bottom: 0.026667rem solid #f3f3f3;
     }
   }
+
   position: relative;
   width: 100%;
   height: 63px;
   background-color: #ffffff;
 }
+
 .box_12 {
   width: 100%;
+
   .swiper-pagination {
     bottom: 0px;
   }
+
   .swiper-slide {
     text-align: center;
   }
+
   .box_content {
     img {
       width: 100px;
@@ -1907,19 +1970,23 @@ export default {
       vertical-align: top;
       margin-bottom: 23px;
     }
+
     padding-bottom: 10px;
     width: 100%;
+
     .swiper-duo {
       overflow-x: auto;
       overflow-y: hidden;
       height: 90px;
       width: 100%;
       white-space: nowrap;
+
       .swiper-item {
         display: inline-block;
         width: 130px;
         height: 90px;
         margin-right: 10px;
+
         img {
           display: inline-block;
           width: 100%;
@@ -1927,23 +1994,28 @@ export default {
           border-radius: 3px;
         }
       }
+
       .swiper-item:last-child {
         margin-right: 0;
       }
     }
   }
 }
+
 .box_11 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       .right_txt {
         color: #999999;
       }
+
       &:not(:last-child) {
         margin-bottom: 14px;
       }
+
       // font-size: 15px;
       // color: #333333;
       // position: relative;
@@ -1955,12 +2027,15 @@ export default {
       border-radius: 3px;
       margin: 0 10px 5px 0;
     }
+
     padding-bottom: 17px;
   }
 }
+
 .box_10 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       float: left;
@@ -1970,6 +2045,7 @@ export default {
       padding: 3px 8px;
       border-radius: 3px;
       margin: 0 10px 5px 0;
+
       .right_txt {
         position: absolute;
         right: 0;
@@ -1978,16 +2054,20 @@ export default {
         font-size: 14px;
         color: #666666;
       }
+
       &:not(:last-child) {
         margin-bottom: 14px;
       }
     }
+
     padding-bottom: 17px;
   }
 }
+
 .box_9 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       // &::before {
@@ -2015,6 +2095,7 @@ export default {
         color: #666666;
         text-align: justify;
       }
+
       .t3 {
         font-size: 12px;
         color: #666666;
@@ -2022,6 +2103,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-bottom: 5px;
+
         .t3_time {
           font-size: 12px;
           float: right;
@@ -2030,6 +2112,7 @@ export default {
           color: #999;
         }
       }
+
       .t2 {
         font-size: 12px;
         color: #999999;
@@ -2038,6 +2121,7 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 6.5px;
       }
+
       .t1 {
         font-size: 15px;
         color: #222222;
@@ -2047,24 +2131,30 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 10.5px;
       }
+
       .t5 {
         color: #999;
         font-size: 14px;
       }
+
       &:not(:last-child) {
         margin-bottom: 15px;
       }
+
       border-left: 0.026667rem dashed #8abeff;
       border-bottom: 0.026667rem dashed #8abeff;
       padding: 0 15px 8px;
       position: relative;
     }
+
     padding-bottom: 17.5px;
   }
 }
+
 .box_8 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       // &::before {
@@ -2092,6 +2182,7 @@ export default {
         color: #666666;
         text-align: justify;
       }
+
       .t3 {
         font-size: 14px;
         color: #666666;
@@ -2099,6 +2190,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-bottom: 5px;
+
         .t3_time {
           font-size: 12px;
           float: right;
@@ -2107,6 +2199,7 @@ export default {
           color: #999;
         }
       }
+
       .t2 {
         font-size: 12px;
         color: #999999;
@@ -2115,6 +2208,7 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 6.5px;
       }
+
       .t1 {
         font-size: 15px;
         color: #333333;
@@ -2123,24 +2217,30 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 10.5px;
       }
+
       .t5 {
         color: #999;
         font-size: 14px;
       }
+
       &:not(:last-child) {
         margin-bottom: 15px;
       }
+
       border-left: 0.026667rem dashed #8abeff;
       border-bottom: 0.026667rem dashed #8abeff;
       padding: 0 15px 8px;
       position: relative;
     }
+
     padding-bottom: 17.5px;
   }
 }
+
 .box_7 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       // &::before {
@@ -2166,6 +2266,7 @@ export default {
         font-size: 14px;
         color: #999999;
       }
+
       .t4 {
         line-height: 1.8;
         font-size: 12px;
@@ -2174,6 +2275,7 @@ export default {
         word-wrap: break-word;
         text-align: justify;
       }
+
       .t3 {
         font-size: 14px;
         color: #666666;
@@ -2181,12 +2283,14 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-bottom: 5px;
+
         span {
           float: right;
           font-size: 12px;
           color: #999;
         }
       }
+
       .t2 {
         font-size: 12px;
         color: #999999;
@@ -2195,6 +2299,7 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 6.5px;
       }
+
       .t1 {
         font-size: 16px;
         color: #222222;
@@ -2204,21 +2309,26 @@ export default {
         margin-bottom: 10.5px;
         font-weight: bold;
       }
+
       &:not(:last-child) {
         margin-bottom: 15px;
       }
+
       padding: 0 15px 8px;
       position: relative;
       box-sizing: border-box;
       border-bottom: 1px dashed #8abeff;
       border-left: 1px dashed #8abeff;
     }
+
     padding-bottom: 17.5px;
   }
 }
+
 .box_6 {
   width: 100%;
   border-bottom: 1px solid #f5f5f5;
+
   .box_content {
     .tx1 {
       // &::before {
@@ -2242,6 +2352,7 @@ export default {
       // }
       border-left: 1px dashed #8abeff;
       border-bottom: 1px dashed #8abeff;
+
       .t3 {
         font-size: 12px;
         color: #666666;
@@ -2249,6 +2360,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
       }
+
       .t2 {
         font-size: 12px;
         color: #999999;
@@ -2257,6 +2369,7 @@ export default {
         text-overflow: ellipsis;
         margin-bottom: 6.5px;
       }
+
       .t1 {
         font-size: 15px;
         color: #333333;
@@ -2264,6 +2377,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-bottom: 10.5px;
+
         .school-time {
           float: right;
           font-size: 12px;
@@ -2271,24 +2385,31 @@ export default {
           margin-top: 3px;
         }
       }
+
       &:not(:last-child) {
         margin-bottom: 15px;
       }
+
       padding: 0 15px 8px;
       position: relative;
     }
+
     padding-bottom: 17.5px;
   }
 }
+
 .box_5 {
   width: 100%;
+
   .box_content {
     .tag {
       margin-bottom: 10px;
+
       .van-tag + .van-tag {
         margin-left: 5px;
       }
     }
+
     .dec {
       line-height: 1.8;
       font-size: 13px;
@@ -2296,11 +2417,14 @@ export default {
       word-break: break-all;
       text-align: justify;
     }
+
     padding-bottom: 20px;
   }
 }
+
 .box_cac {
   padding-right: 16px;
+
   .phone_tip {
     display: inline-block;
     position: absolute;
@@ -2309,20 +2433,24 @@ export default {
     transform: translate(0, -50%);
     color: #666;
     font-size: 12px;
+
     .phone {
       color: #ffa54e;
     }
   }
+
   .code_pro_wrap {
     .secret {
       width: 100%;
     }
+
     .pro_tip {
       margin-top: 0.08rem;
       color: #888;
       font-size: 12px;
     }
   }
+
   .box_content {
     .item {
       // &.phone {
@@ -2349,19 +2477,23 @@ export default {
       text-overflow: ellipsis;
       padding: 0 20px 0 0;
       word-break: break-all;
+
       &:not(:last-child) {
         margin-bottom: 8px;
       }
     }
   }
+
   .contact_tip {
     .tx2 {
       padding-bottom: 15.5px;
     }
+
     .tx1 {
       padding-top: 16px;
       margin-bottom: 3px;
     }
+
     .link {
       display: inline-block;
       color: #167eff;
@@ -2375,6 +2507,7 @@ export default {
       font-size: 13px;
       padding-right: 11px;
       margin-top: 8px;
+
       span {
         display: inline-block;
         width: 10px;
@@ -2384,9 +2517,10 @@ export default {
         position: absolute;
         top: 9px;
         right: 13px;
-        border:none;
+        border: none;
       }
     }
+
     padding: 3px 16px 20px 0;
     text-align: center;
     font-size: 14px;
@@ -2395,35 +2529,39 @@ export default {
     border-radius: 7px;
     background: linear-gradient(170deg, #f2f8ff, #cbe8fe, #d0e5ff);
   }
+
   width: 100%;
   padding-bottom: 17px;
   border-bottom: 1px solid #f5f5f5;
 }
+
 .box_3 {
   .tx2 {
     margin-bottom: 10px;
+
     &:not(:first-child) {
       margin-top: 13.5px;
     }
+
     .intent {
       font-size: 12px;
       color: #ff6b08;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      background: url("../../assets/images/resumeshow/money.png") 0 center
-        no-repeat;
+      background: url("../../assets/images/resumeshow/money.png") 0 center no-repeat;
       background-size: 12px 12px;
       box-sizing: border-box;
       padding-left: 20px;
       margin: 10px 0;
     }
+
     .address {
-      background: url("../../assets/images/resumeshow/address.png") 0 center
-        no-repeat;
+      background: url("../../assets/images/resumeshow/address.png") 0 center no-repeat;
       background-size: 12px 12px;
       color: #595959;
     }
+
     .name {
       font-size: 15px;
       color: #222222;
@@ -2431,6 +2569,7 @@ export default {
       text-overflow: ellipsis;
       margin-bottom: 5.5px;
       font-weight: bold;
+
       span {
         font-size: 12px;
         color: #34ba86;
@@ -2440,18 +2579,22 @@ export default {
       }
     }
   }
+
   .box_content {
     // padding-bottom: 17.5px;
   }
+
   width: 100%;
   // border-bottom: 1px solid #f5f5f5;
   // border-top: 1px solid #f5f5f5;
 }
+
 .content_wrapper {
   width: 100%;
   background-color: #ffffff;
   padding: 0 17px;
 }
+
 .box_nav {
   .item {
     &.active {
@@ -2466,8 +2609,10 @@ export default {
         background-color: #1787fb;
         border-radius: 3px;
       }
+
       color: #1787fb;
     }
+
     flex: 1;
     position: relative;
     padding: 15px 0;
@@ -2476,6 +2621,7 @@ export default {
     font-weight: bold;
     color: #333333;
   }
+
   width: 100%;
   background-color: #ffffff;
   display: flex;
@@ -2485,6 +2631,7 @@ export default {
   margin-top: 10px;
   border-radius: 21px 21px 0 0;
 }
+
 .box_2 {
   .content {
     .item {
@@ -2496,19 +2643,21 @@ export default {
       border-radius: 3px;
       margin: 0 8px 8px 0;
     }
+
     padding-bottom: 10px;
   }
+
   width: 100%;
   background-color: #ffffff;
   padding: 0 0 0 17px;
 }
+
 .box_content {
   .tx1 {
     .circle {
       width: 20px;
       height: 20px;
-      background: #fff url("../../assets/images/resumeshow/circle.png") 0 bottom
-        no-repeat;
+      background: #fff url("../../assets/images/resumeshow/circle.png") 0 bottom no-repeat;
       background-size: 10px 10px;
       position: absolute;
       top: -4px;
@@ -2516,6 +2665,7 @@ export default {
     }
   }
 }
+
 .box_head {
   .txt {
     font-size: 18px;
@@ -2524,9 +2674,10 @@ export default {
 
     .title {
       background: url("../../assets/images/company/border_bg.png") 0 bottom no-repeat;
-    background-size: 100% 3px;
+      background-size: 100% 3px;
     }
   }
+
   .right_text {
     position: absolute;
     right: 0;
@@ -2539,10 +2690,12 @@ export default {
     border-radius: 3px;
     font-size: 12px;
   }
+
   position: relative;
   width: 100%;
   padding: 21.5px 0;
 }
+
 .box_1 {
   .content {
     .share {
@@ -2557,6 +2710,7 @@ export default {
       background: url("../../assets/images/company/share.png") 0 no-repeat;
       background-size: 100% 100%;
     }
+
     .collect {
       width: 20px;
       height: 20px;
@@ -2569,10 +2723,12 @@ export default {
       background: url("../../assets/images/company/like.png") 0 no-repeat;
       background-size: 100% 100%;
     }
+
     .collect_act {
       background: url("../../assets/images/company/like_act.png") 0 no-repeat;
       background-size: 100% 100%;
     }
+
     .down {
       .right {
         &::after {
@@ -2586,6 +2742,7 @@ export default {
           transform: rotate(45deg);
           content: " ";
         }
+
         position: absolute;
         right: 2px;
         top: 50%;
@@ -2594,15 +2751,18 @@ export default {
         color: #999999;
         padding: 5px 11px 5px 0;
       }
+
       position: relative;
       padding: 12.5px 2px;
       font-size: 12px;
       color: #999999;
       // border-top: 1px solid #f8f8f8;
     }
+
     div.mid-div {
       position: relative;
       margin: 18px 0 36px;
+
       .mid {
         padding: 8px;
         font-size: 12px;
@@ -2611,10 +2771,12 @@ export default {
         border-radius: 0px 28px 28px 28px;
         height: 36px;
       }
+
       .text {
         .num {
           color: #ff6600;
         }
+
         width: 100%;
         height: 100%;
         padding: 8px;
@@ -2628,6 +2790,7 @@ export default {
         left: 0;
       }
     }
+
     .up {
       .tag {
         padding: 1px 5px 1px 17px;
@@ -2636,10 +2799,10 @@ export default {
         font-size: 10px;
         width: fit-content;
         margin-top: 9px;
-        background: #ffa57d url("../../assets/images/fab_ico.svg") 5px center
-          no-repeat;
+        background: #ffa57d url("../../assets/images/fab_ico.svg") 5px center no-repeat;
         background-size: 10px;
       }
+
       .tx2 {
         font-size: 15px;
         // padding-right: 20px;
@@ -2647,6 +2810,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         color: #dcdcdc;
+
         span {
           color: #8a90b4;
           font-size: 12px;
@@ -2654,17 +2818,19 @@ export default {
           margin-top: 5px;
         }
       }
+
       .tx1 {
         margin-bottom: 8px;
+
         .level_ico {
           float: left;
           margin-left: 10px;
           width: 36px;
           height: 27px;
-          background: url("../../assets/images/resumeshow/yz.png") 0 center
-            no-repeat;
+          background: url("../../assets/images/resumeshow/yz.png") 0 center no-repeat;
           background-size: 45px 18px;
         }
+
         .name {
           float: left;
           font-size: 19px;
@@ -2672,18 +2838,19 @@ export default {
           color: #ffffff;
         }
       }
+
       .avatar_box {
         .gender {
           &.female {
-            background: #ff8d65 url("../../assets/images/female_ico.svg") center
-              no-repeat;
+            background: #ff8d65 url("../../assets/images/female_ico.svg") center no-repeat;
             background-size: 9px;
           }
+
           &.male {
-            background: #4fa5fa url("../../assets/images/male_ico.svg") center
-              no-repeat;
+            background: #4fa5fa url("../../assets/images/male_ico.svg") center no-repeat;
             background-size: 9px;
           }
+
           position: absolute;
           right: 0;
           top: 0;
@@ -2692,12 +2859,14 @@ export default {
           height: 13px;
           border-radius: 100%;
         }
+
         img {
           width: 55px;
           height: 55px;
           border: 0;
           border-radius: 100%;
         }
+
         position: absolute;
         left: 0;
         top: 30px;
@@ -2705,69 +2874,86 @@ export default {
         height: 55px;
         overflow: hidden;
       }
+
       position: relative;
       padding: 31px 0 0 61px;
     }
+
     position: relative;
     width: 350px;
     margin: 0 auto;
     padding: 0 3px;
     border-radius: 7px;
   }
+
   width: 100%;
   background: url("../../assets/images/company/bj.png") no-repeat;
   background-size: 100%;
   padding: 20px 0 1px;
 }
+
 .orange-phone {
   color: #ffa54e;
   font-weight: bold;
 }
+
 .font12 {
   font-size: 12px;
 }
+
 .font15 {
   font-size: 15px;
 }
+
 .line18 {
   line-height: 25px;
   text-align: center;
 }
+
 .color-orange {
   color: #ffa54e;
 }
+
 .m-top {
   margin-top: 25px;
 }
+
 .m-btm {
   margin-bottom: 20px;
 }
+
 .bold {
   font-weight: bold;
 }
+
 // 绑定微信开始
 .bind-weixin-box {
   display: flex;
   flex-direction: column;
   text-align: center;
   padding: 10px 0;
+
   .title-1 {
     color: #646566;
     font-size: 14px;
   }
+
   .img {
     width: 111px;
     height: 111px;
     margin: 13px auto 10px;
+
     img {
       width: 100%;
       height: 100%;
     }
   }
+
   .title-2 {
     color: #999999;
     font-size: 13px;
   }
 }
+
 //绑定微信结束
 </style>

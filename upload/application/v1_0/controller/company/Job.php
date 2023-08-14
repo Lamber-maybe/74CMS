@@ -89,6 +89,23 @@ class Job extends \app\v1_0\controller\common\Base
                 'is_display' => input('post.contact.is_display/d', 1, 'intval'),
             ],
         ];
+
+        /**
+         * 【优化】触屏端发布职位薪资待遇问题
+         * zch 2022.10.9
+         * 薪资条件判断
+         */
+        if ($input_data['basic']['maxwage'] === 0 && $input_data['basic']['minwage'] === 0 && $input_data['basic']['negotiable'] === 0)
+        {
+            $is_display = model('FieldRule')
+                ->where('model_name','Job')
+                ->where('field_name','negotiable')
+                ->value('is_display');
+            if ($is_display === 0)
+            {
+                $this->ajaxReturn(500, '请选择薪资待遇');
+            }
+        }
         if (input('?post.basic.department')) {
             $input_data['basic']['department'] = input(
                 'post.basic.department/s',

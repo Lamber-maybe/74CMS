@@ -211,7 +211,7 @@ import Captcha from '@/components/captcha/index'
                   .catch(() => {})
               }, setShow)
             }).catch(() => {})
-        
+
       },
       doSubmitCode () {
         if (!this.formCode.mobile) {
@@ -259,7 +259,7 @@ import Captcha from '@/components/captcha/index'
                 .catch(() => {})
             }, setShow)
         }).catch(() => {})
-        
+
       },
       // 提交之前的验证
       handleSubmit () {
@@ -292,9 +292,16 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
-        if(this.sendSmsLimit){
-          return false
-        }
+
+        /**
+         * 【bug】登录页-验证码登录 弹出关闭后无法在打开
+         * zch 2022.10.9
+         * 【去除】
+         * if(this.sendSmsLimit){
+         *   return false
+         * }
+         * */
+
         this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store

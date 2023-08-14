@@ -1464,53 +1464,11 @@
         this.rightMenu = this.rightMenu.filter((item) => {
           return item.show
         })
-        // 计算简历完整度
-        let percentNumber = 0
-        // 基本资料
-        if (this.moduleStore.basic.is_display) {
-          percentNumber += this.moduleStore.basic.score
-        }
-        // 求职意向
-        if (this.moduleStore.intention.is_display && this.intentionList.length > 0) {
-          percentNumber += this.moduleStore.intention.score
-        }
-        // 特长标签
-        if (this.moduleStore.tag.is_display && this.selectedTags.length > 0) {
-          percentNumber += this.moduleStore.tag.score
-        }
-        // 自我描述
-        if (this.moduleStore.specialty.is_display && this.basic.specialty !== '') {
-          percentNumber += this.moduleStore.specialty.score
-        }
-        // 教育经历
-        if (this.moduleStore.education.is_display && this.educationList.length > 0) {
-          percentNumber += this.moduleStore.education.score
-        }
-        // 工作经历
-        if (this.moduleStore.work.is_display && this.workList.length > 0) {
-          percentNumber += this.moduleStore.work.score
-        }
-        // 培训经历
-        if (this.moduleStore.training.is_display && this.trainList.length > 0) {
-          percentNumber += this.moduleStore.training.score
-        }
-        // 项目经历
-        if (this.moduleStore.project.is_display && this.projectList.length > 0) {
-          percentNumber += this.moduleStore.project.score
-        }
-        // 获得证书
-        if (this.moduleStore.certificate.is_display && this.certificateList.length > 0) {
-          percentNumber += this.moduleStore.certificate.score
-        }
-        // 语言能力
-        if (this.moduleStore.language.is_display && this.languageList.length > 0) {
-          percentNumber += this.moduleStore.language.score
-        }
-        // 照片作品
-        if (this.moduleStore.img.is_display && this.imgList.length > 0) {
-          percentNumber += this.moduleStore.img.score
-        }
-        this.basic.complete_percent = parseInt(percentNumber)
+        /**
+         * 【bug】简历完整度不一致问题修改
+         * zch 2022.10.9
+         * 【删除前段计算完整度代码（后台接口字段已经处理）】
+         * */
       },
       // 简历公开状态
       handleStatus (value) {

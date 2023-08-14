@@ -747,8 +747,10 @@ export default {
       selectJobObj: {},
       // 绑定微信二维码
       scanQrcodeImg: '',
-      company_uid: 0,
-      job_apply_id: 0
+      params: {
+        company_uid: '',
+        job_apply_id: ''
+      }
     }
   },
   created () {
@@ -757,7 +759,7 @@ export default {
     this.is_company_login =
       !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
     // 请求数据
-    this.fetchData()
+    this.initQuery(this.$route.query)
     this.getScanQrcodeImg()
     if (this.$store.state.config.shortvideo_enable === '1') {
       this.fetchVideonum()
@@ -784,12 +786,19 @@ export default {
       location.href = `tel:${this.codePro.x}`
     },
     async fetchData (next_method = null) {
-      const params = {
-        id: this.query_id,
-        company_uid: this.company_uid,
-        job_apply_id: this.job_apply_id
+      var request_params
+      if (this.params.company_uid == '' || this.params.job_apply_id == '') {
+        request_params = {
+          id: this.query_id
+        }
+      } else {
+        request_params = {
+          id: this.query_id,
+          company_uid: this.params.company_uid,
+          job_apply_id: this.params.job_apply_id
+        }
       }
-      let res = await http.get(api.resumeshow, params)
+      let res = await http.get(api.resumeshow, request_params)
       const {
         resume_module,
         field_rule,
@@ -1304,6 +1313,16 @@ export default {
           this.videonum = res.data
         })
         .catch(() => {})
+    },
+    initQuery (query) {
+      for (const key in this.params) {
+        if (query.hasOwnProperty(key)) {
+          this.params[key] = query[key]
+        } else {
+          this.params[key] = ''
+        }
+      }
+      this.fetchData()
     }
   }
 }

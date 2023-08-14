@@ -2629,3 +2629,29 @@ CREATE TABLE `qs_crm_customer_service` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm个人中心客服(客服名片)';
 ||-_-||qs_crm_customer_service||-_-||
+
+
+
+DROP TABLE IF EXISTS `qs_outbount_seats`;
+CREATE TABLE `qs_outbount_seats` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+`seat_id` int(10) NOT NULL COMMENT '坐席ID',
+`seat_number` char(8) NOT NULL COMMENT '坐席编号',
+`admin_id` int(10) NOT NULL COMMENT '坐席员工id',
+`bind_time` int(10) NOT NULL COMMENT '绑定时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '外呼坐席绑定表';
+||-_-||qs_outbount_seats||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_custom_list`;
+CREATE TABLE `qs_custom_list` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '配置名称',
+`value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '自定义列表',
+`admin_id` int(10) NOT NULL COMMENT '操作人',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '自定义表单记录表';
+||-_-||qs_custom_list||-_-||

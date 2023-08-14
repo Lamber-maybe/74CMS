@@ -429,6 +429,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $intention_data = model('ResumeIntention')
             ->field('id,rid,uid', true)
             ->where(['rid' => ['eq', $basic['id']]])
+            ->limit(3) // 【优化】简历详情页-导出简历，三条以上求职意向都显示第三意向问题   和武哥确认改为只显示3条  zch 2022.9.30
             ->select();
         $intention_list = [];
         foreach ($intention_data as $key => $value) {

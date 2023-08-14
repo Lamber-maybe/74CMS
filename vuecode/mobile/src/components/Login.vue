@@ -388,9 +388,15 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
-      if (this.sendSmsLimit) {
-        return false
-      }
+
+      /**
+       * 【bug】登录页-验证码登录 弹出关闭后无法在打开
+       * zch 2022.10.9
+       * 【去除】
+       * if(this.sendSmsLimit){
+       *   return false
+       * }
+       * */
       this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store

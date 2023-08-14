@@ -5,9 +5,6 @@
         <span>{{ title }}</span>
       </div>
       <div style="float:right;z-index: 1;position: relative;">
-        <el-button size="small" type="primary" @click="reset('all')">
-          重置筛选
-        </el-button>
         <el-button size="small" type="primary" @click="goto('/user/company/add')">
           新增企业
         </el-button>
@@ -36,8 +33,92 @@
           />
         </el-input>
       </div>
+      <div
+        v-if="weixinFilter !='' ||
+          gradeFilter !='' ||
+          examineFilter !='' ||
+          mealFilter !='' ||
+          followupFilter !='' ||
+          authenticationFilter !='' ||
+          positionFilter !='' ||
+          saleFilter !='' ||
+          deadlineFilter !=''"
+        class="filterCriteria"
+      >
+        <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
+        <div style="float:left;display: inline-block;width: 80%">
+          <div v-if="weixinFilter !=''" class="selected">
+            <div class="name">绑定微信：{{ weixinFilter.name }}</div>
+            <div class="closes" @click="reset(weixinFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="gradeFilter !=''" class="selected">
+            <div class="name">客户等级：{{ gradeFilter.name }}</div>
+            <div class="closes" @click="reset(gradeFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="examineFilter !=''" class="selected">
+            <div class="name">显示状态：{{ examineFilter.name }}</div>
+            <div class="closes" @click="reset(examineFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="mealFilter !=''" class="selected">
+            <div class="name">企业套餐：{{ mealFilter.name }}</div>
+            <div class="closes" @click="reset(mealFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="followupFilter !=''" class="selected">
+            <div class="name">未跟进：{{ followupFilter.name }}</div>
+            <div class="closes" @click="reset(followupFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="authenticationFilter !=''" class="selected">
+            <div class="name">认证状态：{{ authenticationFilter.name }}</div>
+            <div class="closes" @click="reset(authenticationFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="positionFilter !=''" class="selected">
+            <div class="name">在招职位：{{ positionFilter.name }}</div>
+            <div class="closes" @click="reset(positionFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="saleFilter !=''" class="selected">
+            <div class="name">所属销售：{{ saleFilter.name }}</div>
+            <div class="closes" @click="reset(saleFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="deadlineFilter !=''" class="selected">
+            <div class="name">套餐剩余：{{ deadlineFilter.name }}</div>
+            <div class="closes" @click="reset(deadlineFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+        </div>
+        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
+          <i class="el-icon-delete" /> 清空条件
+        </div>
+        <div style="clear:both;" />
+      </div>
       <div style="position: relative;">
-        <div class="setField">
+        <div
+          :class="weixinFilter !='' ||
+            gradeFilter !='' ||
+            examineFilter !='' ||
+            mealFilter !='' ||
+            followupFilter !='' ||
+            authenticationFilter !='' ||
+            positionFilter !='' ||
+            saleFilter !='' ||
+            deadlineFilter !='' ? 'setField_s' : 'setField'"
+        >
           <el-popover
             v-model="visiblepop"
             placement="bottom-start"
@@ -179,7 +260,7 @@
                   <!-- 套餐剩余时间-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
-                    <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="confirm(items.field)">确认</el-button>
                   </div>
                   <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
                 </el-popover>
@@ -189,12 +270,12 @@
             </template>
             <template slot-scope="scope">
               <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''"> 未完善企业资料 </span>
+                <span v-if="scope.row.id == ''"> - </span>
                 <span v-else> {{ scope.row.id }} </span>
               </div>
               <div v-if="items.field == 'companyname'">
-                <span v-if="scope.row.companyname == ''"> - </span>
-                <span v-else> {{ scope.row.companyname }} </span>
+                <span v-if="scope.row.companyname == ''"> 未完善企业资料 </span>
+                <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)"> {{ scope.row.companyname }} </span>
               </div>
               <div v-if="items.field == 'is_bind'">
                 <span v-if="scope.row.is_bind == ''"> - </span>
@@ -209,12 +290,22 @@
                 <span v-else> {{ scope.row.contact }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{ scope.row.mobile }} </span>
+                <span v-if="scope.row.mobile == '' || scope.row.mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.mobile }}
+                  <div class="dial" title="拨打会员联系号码">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'contact_mobile'">
-                <span v-if="scope.row.contact_mobile == ''"> - </span>
-                <span v-else> {{ scope.row.contact_mobile }} </span>
+                <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.contact_mobile }}
+                  <div class="dial" title="拨打企业联系号码">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'jobs_num'">
                 <span v-if="scope.row.jobs_num == ''"> 0 </span>
@@ -391,7 +482,7 @@
               </div>
               <div v-if="items.field == 'companyname'">
                 <span v-if="scope.row.companyname == ''"> 未完善企业资料 </span>
-                <span v-else> {{ scope.row.companyname }} </span>
+                <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)"> {{ scope.row.companyname }} </span>
               </div>
               <div v-if="items.field == 'is_bind'">
                 <span v-if="scope.row.is_bind == ''"> - </span>
@@ -406,12 +497,22 @@
                 <span v-else> {{ scope.row.contact }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{ scope.row.mobile }} </span>
+                <span v-if="scope.row.mobile == '' || scope.row.mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.mobile }}
+                  <div class="dial" title="拨打会员联系号码">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'contact_mobile'">
-                <span v-if="scope.row.contact_mobile == ''"> - </span>
-                <span v-else> {{ scope.row.contact_mobile }} </span>
+                <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.contact_mobile }}
+                  <div class="dial" title="拨打企业联系号码">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.companyname )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'jobs_num'">
                 <span v-if="scope.row.jobs_num == ''"> 0 </span>
@@ -488,43 +589,43 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
-      <div class="bortton-page">
-        <el-col :span="12">
-          <el-button size="small" type="primary" @click="choose">
-            全选/反选
-          </el-button>
-          <el-button v-if="currentNav == 'myClient'" size="small" type="primary" @click="funRelease">
-            释放
-          </el-button>
-          <el-button v-if="currentNav == 'pubilceClient'" size="small" type="primary" @click="funReceive">
-            领取
-          </el-button>
-          <el-button size="small" type="primary" @click="funAuditBatch">
-            认证
-          </el-button>
-          <el-button size="small" type="primary" @click="displayBatch">
-            显示
-          </el-button>
-          <el-button size="small" type="primary" @click="handlerRefreshJobBatch">
-            刷新职位
-          </el-button>
-          <el-button size="small" type="primary" @click="funExport">
-            导出
-          </el-button>
-        </el-col>
-        <el-col :span="12" style="text-align: right">
-          <el-pagination
-            background
-            :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
-            :page-size="pagesize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
+        <div class="bortton-page">
+          <el-col :span="12">
+            <el-button size="small" type="primary" @click="choose">
+              全选/反选
+            </el-button>
+            <el-button v-if="currentNav == 'myClient'" size="small" type="primary" @click="funRelease">
+              释放
+            </el-button>
+            <el-button v-if="currentNav == 'pubilceClient'" size="small" type="primary" @click="funReceive">
+              领取
+            </el-button>
+            <el-button size="small" type="primary" @click="funAuditBatch">
+              认证
+            </el-button>
+            <el-button size="small" type="primary" @click="displayBatch">
+              显示
+            </el-button>
+            <el-button size="small" type="primary" @click="handlerRefreshJobBatch">
+              刷新职位
+            </el-button>
+            <el-button size="small" type="primary" @click="funExport">
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="12" style="text-align: right">
+            <el-pagination
+              background
+              :current-page="currentPage"
+              :page-sizes="[10, 15, 20, 30, 40]"
+              :page-size="pagesize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+          </el-col>
+        </div>
       </div>
     </el-card>
     <el-dialog
@@ -583,6 +684,69 @@
         <i class="el-icon-close" />
       </div>
     </el-drawer>
+    <div class="call">
+      <el-dialog
+        :visible.sync="callDialogVisible"
+        width="30%"
+        :before-close="callHandleClose"
+      >
+        <div class="box-content">
+          <div class="content">
+            <div class="title1">您还尚未开通云呼叫服务</div>
+            <div class="title2">扫码添加客服</div>
+            <div class="title3">快速开通呼叫业务</div>
+          </div>
+          <div class="code">
+            <img src="../../../../assets/images/outbound/renew.png" alt="">
+          </div>
+          <div style="clear:both" />
+          <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
+          <div class="advantage">
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">免硬件设备</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">录音清晰无杂音</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">外显销售手机号</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">招聘行业专用线路</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">稳定性更高</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">防封强、接通率高</div>
+            </div>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
+    <div class="meet">
+      <el-dialog
+        :visible.sync="meetDialogVisible"
+        width="30%"
+        :before-close="meetHandleClose"
+      >
+        <div class="box-content">
+          <div id="animation" class="img">
+            <!--            <img src="../../../../assets/images/outbound/meet.png" alt="">-->
+          </div>
+          <div class="hu">正在呼叫客户</div>
+          <div class="telephone">{{ dialPhone }}</div>
+          <div class="company">{{ dialName }}</div>
+          <div class="tips">请您留意手机来电接听</div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 <script>
@@ -597,14 +761,16 @@ import {
   lifeCycle,
   companyCrmAudit,
   refreshCrmJob,
-  exportCrmCompanyById,
+  // exportCrmCompanyById,
   companyReceive,
   companyRelease,
   companySetDisplay,
   putRecycleBin
 } from '@/api/company_crm'
 import { export_json_to_excel } from '@/excel/Export2Excel'
-import { parseTime } from '@/utils'
+import { parseTime, setMemberLogin } from '@/utils'
+import { outboundCall } from '@/api/outbound'
+import { management } from '@/api/member'
 
 export default {
   name: 'Client',
@@ -681,12 +847,26 @@ export default {
       sort: '',
       is_display: '1',
       exportData: [],
+      callDialogVisible: false,
+      meetDialogVisible: false,
+      dialPhone: '',
+      dialName: '',
       setmealDeadline: '',
       is_setmeal_deadline: '1',
       setmealDeadlineData: [
         { 'id': 1, 'name': '即将到期' },
-        { 'id': 2, 'name': '已到期' }
-      ]
+        { 'id': 2, 'name': '已到期' },
+        { 'id': 3, 'name': '未到期' }
+      ],
+      weixinFilter: '',
+      gradeFilter: '',
+      examineFilter: '',
+      mealFilter: '',
+      followupFilter: '',
+      authenticationFilter: '',
+      positionFilter: '',
+      saleFilter: '',
+      deadlineFilter: ''
     }
   },
   computed: {
@@ -977,52 +1157,153 @@ export default {
     },
     reset(field){
       if (field == 'all'){
-        this.authenticationScreen = []
+        this.authenticationScreen = ''
         this.positionScreen = ''
-        this.followupScreen = []
-        this.examineScreen = []
-        this.mealScreen = []
-        this.gradeScreen = []
-        this.saleScreen = []
+        this.followupScreen = ''
+        this.examineScreen = ''
+        this.mealScreen = ''
+        this.gradeScreen = ''
+        this.saleScreen = ''
         this.key_type = '1'
         this.keyword = ''
         this.setmealDeadline = []
         this.weixin = []
       }
       if (field == 'audit'){
-        this.authenticationScreen = []
+        this.authenticationScreen = ''
       }
       if (field == 'jobs_num'){
         this.positionScreen = ''
       }
       if (field == 'not_following_day'){
-        this.followupScreen = []
+        this.followupScreen = ''
       }
       if (field == 'is_display'){
-        this.examineScreen = []
+        this.examineScreen = ''
       }
       if (field == 'setmeal_name'){
-        this.mealScreen = []
+        this.mealScreen = ''
       }
       if (field == 'is_bind'){
-        this.weixin = []
+        this.weixin = ''
       }
       if (field == 'life_cycle_txt'){
-        this.gradeScreen = []
+        this.gradeScreen = ''
       }
       if (field == 'admin_username'){
-        this.saleScreen = []
+        this.saleScreen = ''
       }
       if (field == 'deadline'){
-        this.setmealDeadline = []
+        this.setmealDeadline = ''
       }
-      this.clueList()
+      this.confirm()
     },
     confirm(){
+      if (this.weixin != ''){
+        for (var i = 0; i <= this.weixinData.length - 1; i++){
+          if (this.weixin == this.weixinData[i].id){
+            this.weixinFilter = {
+              'field': 'is_bind', 'name': this.weixinData[i].name
+            }
+          }
+        }
+      } else {
+        this.weixinFilter = ''
+      }
+      if (this.gradeScreen != ''){
+        for (var i = 0; i <= this.gradeScreenData.length - 1; i++){
+          if (this.gradeScreen == this.gradeScreenData[i].id){
+            this.gradeFilter = {
+              'field': 'life_cycle_txt', 'name': this.gradeScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.gradeFilter = ''
+      }
+      if (this.examineScreen != ''){
+        for (var i = 0; i <= this.examineScreenData.length - 1; i++){
+          if (this.examineScreen == this.examineScreenData[i].id){
+            this.examineFilter = {
+              'field': 'is_display', 'name': this.examineScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.examineFilter = ''
+      }
+      if (this.mealScreen != ''){
+        for (var i = 0; i <= this.mealScreenData.length - 1; i++){
+          if (this.mealScreen == this.mealScreenData[i].id){
+            this.mealFilter = {
+              'field': 'setmeal_name', 'name': this.mealScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.mealFilter = ''
+      }
+      if (this.followupScreen != ''){
+        for (var i = 0; i <= this.followupScreenData.length - 1; i++){
+          if (this.followupScreen == this.followupScreenData[i].id){
+            this.followupFilter = {
+              'field': 'not_following_day', 'name': this.followupScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.followupFilter = ''
+      }
+      if (this.positionScreen != ''){
+        for (var i = 0; i <= this.positionScreenData.length - 1; i++){
+          if (this.positionScreen == this.positionScreenData[i].id){
+            this.positionFilter = {
+              'field': 'jobs_num', 'name': this.positionScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.positionFilter = ''
+      }
+      if (this.authenticationScreen !== ''){
+        for (var i = 0; i <= this.authenticationScreenData.length - 1; i++){
+          if (this.authenticationScreen === this.authenticationScreenData[i].id){
+            this.authenticationFilter = {
+              'field': 'audit', 'name': this.authenticationScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.authenticationFilter = ''
+      }
+      if (this.saleScreen != ''){
+        for (var i = 0; i <= this.saleScreenData.length - 1; i++){
+          if (this.saleScreen == this.saleScreenData[i].id){
+            this.saleFilter = {
+              'field': 'admin_username', 'name': this.saleScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.saleFilter = ''
+      }
+      if (this.setmealDeadline != ''){
+        for (var i = 0; i <= this.setmealDeadlineData.length - 1; i++){
+          if (this.setmealDeadline == this.setmealDeadlineData[i].id){
+            this.deadlineFilter = {
+              'field': 'deadline', 'name': this.setmealDeadlineData[i].name
+            }
+          }
+        }
+      } else {
+        this.deadlineFilter = ''
+      }
+      this.currentPage = 1
       this.clueList()
       this.crmCustomList()
     },
     funSearchKeyword(){
+      this.currentPage = 1
       this.clueList()
     },
     classify(){
@@ -1224,12 +1505,199 @@ export default {
     },
     add(){
       this.$router.push('/user/company/add')
+    },
+    clickDial(phone, name){
+      var company_name = ''
+      if (name == '' || name == null){
+        company_name = '未完善企业资料'
+      } else {
+        company_name = name
+      }
+      this.$confirm('是否对【' + company_name + '】' + phone + ' 发起呼叫？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        outboundCall(
+          { 'mobile': phone }
+        ).then(res => {
+          if (res.code == 200){
+            this.meetDialogVisible = true
+            this.dialPhone = phone
+            this.dialName = name
+          }
+          if (res.code == 4040){
+            this.callDialogVisible = true
+          }
+        }).catch((res) => {
+        })
+      }).catch(() => {
+
+      })
+    },
+    callHandleClose(){
+      this.callDialogVisible = false
+    },
+    meetHandleClose(){
+      this.meetDialogVisible = false
+    },
+    jumpDetails(url) {
+      window.open(url)
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+.dial{
+  position: relative;
+  top:2px;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  .disal_img{
+    cursor:pointer;
+    width: 14px;
+    height: 14px;
+    background: url('../../../../assets/images/outbound/dial.png') no-repeat center;
+  }
+}
+.meet{
+  .box-content{
+    .img{
+      width: 150px;
+      height:150px;
+      text-align: center;
+      margin-top: 40px;
+      margin:0 auto;
+      background: url('../../../../assets/images/outbound/meet.png') no-repeat center;
+    }
+    .hu{
+      text-align: center;
+      margin-top: 30px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #949494;
+    }
+    .telephone{
+      text-align: center;
+      font-size: 30px;
+      font-family: Microsoft YaHei;
+      font-weight: bold;
+      color: #333333;
+      margin-top: 26px;
+    }
+    .company{
+      text-align: center;
+      margin-top:25px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #666666;
+    }
+    .tips{
+      text-align: center;
+      height: 80px;
+      line-height: 80px;
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #959595;
+    }
+  }
+}
+.meet{
+  ::v-deep .el-dialog__body{
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+  ::v-deep .el-dialog{
+    border-radius: 16px;
+  }
+}
+.call{
+  .box-content{
+    padding: 20px 30px 35px 30px;
+    .advantage{
+      .advantage-box{
+        display: inline-block;
+        width: 170px;
+        .title{
+          display: inline-block;
+          float:left;
+        }
+        .img{
+          display: inline-block;
+          float:left;
+          margin-right: 8px;
+        }
+      }
+      margin-top: 25px;
+    }
+    .slogan{
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #FF550A;
+      margin-top:24px;
+    }
+    .code{
+      display: inline-block;
+      margin-right: 30px;
+      float: right;
+      width: 117px;
+      height: 117px;
+      background: #FFFFFF;
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
+      border-radius: 8px;
+      padding: 10px 10px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .content{
+      display: inline-block;
+      float: left;
+      .title1{
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FF550A;
+      }
+      .title2{
+        margin-top: 18px;
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #555555;
+      }
+      .title3{
+        width: 133px;
+        height: 24px;
+        background: #FF6929;
+        border-radius: 3px;
+        text-align: center;
+        line-height: 24px;
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FFFFFF;
+        margin-top: 23px;
+      }
+    }
+  }
+}
+.call{
+  ::v-deep .el-dialog__body{
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+  ::v-deep .el-dialog{
+    border-radius: 16px;
+  }
+}
 .screen_s{
   max-height: 220px;
   overflow: auto
@@ -1400,6 +1868,66 @@ export default {
 .input-with-select{
   float:left;
   margin-bottom: 20px;
+}
+.filterCriteria{
+  border: 1px dashed #EEEEEE;
+  font-size: 13px;
+  color: #999999;
+  margin-top: 62px;
+  margin-bottom: 16px;
+  padding:15px 16px 15px 16px;
+  .selected{
+    display: inline-block;
+    font-size: 12px;
+    color: #e6a23c;
+    height: 26px;
+    line-height: 26px;
+    padding: 0 7px 0 7px;
+    border: 1px solid #e6a23c;
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    border-radius: 3px;
+    .name{
+      display: inline-block;
+    }
+    .closes{
+      display: inline-block;
+      margin-left: 10px;
+    }
+  }
+}
+.setField_s {
+  top: 0px;
+  right: 0;
+  position: absolute;
+  z-index: 1000;
+  margin-left: 10px;
+}
+#animation {
+  animation:pulse 1s .2s ease both infinite;
+}
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform:scale(1)
+  }
+  50% {
+    -webkit-transform:scale(1.1)
+  }
+  100% {
+    -webkit-transform:scale(1)
+  }
+}
+@-moz-keyframes pulse {
+  0% {
+    -moz-transform:scale(1)
+  }
+  50% {
+    -moz-transform:scale(1.1)
+  }
+  100% {
+    -moz-transform:scale(1)
+  }
 }
 </style>
 

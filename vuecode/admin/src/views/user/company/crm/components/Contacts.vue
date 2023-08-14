@@ -1,5 +1,5 @@
 <template>
-  <div class="popup_contacts" v-loading="loading">
+  <div v-loading="loading" class="popup_contacts">
     <el-row :gutter="20">
       <el-col v-for="(item, index) in linkmanList" :key="index" :span="6">
         <div class="contacts_item">
@@ -23,6 +23,9 @@
               </div>
               <div class="phone">
                 {{ item.mobile ? item.mobile : '-' }}
+                <div class="dial" title="拨打联系人号码" v-if="item.mobile != '' && item.mobile != null">
+                  <div class="disal_img" @click="clickDial(item.mobile, item.contact )" />
+                </div>
               </div>
             </div>
             <div class="bottom">
@@ -101,12 +104,76 @@
       </div>
 
     </el-dialog>
+    <el-dialog
+      :visible.sync="callDialogVisible"
+      width="30%"
+      append-to-body
+      class="call"
+      :before-close="callHandleClose"
+    >
+      <div class="box-content">
+        <div class="content">
+          <div class="title1">您还尚未开通云呼叫服务</div>
+          <div class="title2">扫码添加客服</div>
+          <div class="title3">快速开通呼叫业务</div>
+        </div>
+        <div class="code">
+          <img src="../../../../../assets/images/outbound/renew.png" alt="">
+        </div>
+        <div style="clear:both" />
+        <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
+        <div class="advantage">
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">免硬件设备</div>
+          </div>
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">录音清晰无杂音</div>
+          </div>
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">外显销售手机号</div>
+          </div>
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">招聘行业专用线路</div>
+          </div>
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">稳定性更高</div>
+          </div>
+          <div class="advantage-box">
+            <div class="img"><img src="../../../../../assets/images/outbound/choose.png" alt=""></div>
+            <div class="title">防封强、接通率高</div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="meetDialogVisible"
+      width="30%"
+      class="meet"
+      append-to-body
+      :before-close="meetHandleClose"
+    >
+      <div class="box-content">
+        <div id="animation" class="img">
+          <!--          <img src="../../../../../assets/images/outbound/meet.png" alt="">-->
+        </div>
+        <div class="hu">正在呼叫客户</div>
+        <div class="telephone">{{ dialPhone }}</div>
+        <div class="company">{{ dialName }}</div>
+        <div class="tips">请您留意手机来电接听</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { addContact, clueAdd, companyContactList, delContact, editContact } from '@/api/company_crm'
+import { addContact, companyContactList, delContact, editContact } from '@/api/company_crm'
 import { validMobile } from '@/utils/validate'
+import { outboundCall } from '@/api/outbound'
 
 export default {
   name: 'Contacts',
@@ -135,7 +202,7 @@ export default {
       dialogTitle: '',
       isDialogBTn: false,
       linkmanList: [],
-      loading:false,
+      loading: false,
       submitLoading: false,
       // 请求参数
       parmas: {
@@ -149,7 +216,11 @@ export default {
         email: '',
         qq: '',
         cid: ''
-      }
+      },
+      callDialogVisible: false,
+      meetDialogVisible: false,
+      dialPhone: '',
+      dialName: ''
     }
   },
   created() {
@@ -260,6 +331,41 @@ export default {
       this.parmas.comid = ''
       this.parmas.uid = this.uid
       this.parmas.comid = this.comid
+    },
+    clickDial(phone, name){
+      var company_name = ''
+      if (name == '' || name == null){
+        company_name = '未完善企业资料'
+      } else {
+        company_name = name
+      }
+      this.$confirm('是否对【' + company_name + '】' + phone + ' 发起呼叫？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        outboundCall(
+          { 'mobile': phone }
+        ).then(res => {
+          if (res.code == 200){
+            this.meetDialogVisible = true
+            this.dialPhone = phone
+            this.dialName = name
+          }
+          if (res.code == 4040){
+            this.callDialogVisible = true
+          }
+        }).catch((res) => {
+        })
+      }).catch(() => {
+
+      })
+    },
+    callHandleClose(){
+      this.callDialogVisible = false
+    },
+    meetHandleClose(){
+      this.meetDialogVisible = false
     }
   }
 }
@@ -273,6 +379,155 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.dial{
+  position: relative;
+  top:2px;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  .disal_img{
+    cursor:pointer;
+    width: 14px;
+    height: 14px;
+    background: url('../../../../../assets/images/outbound/dial.png') no-repeat center;
+  }
+}
+.meet{
+  .box-content{
+    .img{
+      width: 150px;
+      height:150px;
+      text-align: center;
+      margin-top: 40px;
+      margin:0 auto;
+      background: url('../../../../../assets/images/outbound/meet.png') no-repeat center;
+    }
+    .hu{
+      text-align: center;
+      margin-top: 30px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #949494;
+    }
+    .telephone{
+      text-align: center;
+      font-size: 30px;
+      font-family: Microsoft YaHei;
+      font-weight: bold;
+      color: #333333;
+      margin-top: 26px;
+    }
+    .company{
+      text-align: center;
+      margin-top:25px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #666666;
+    }
+    .tips{
+      text-align: center;
+      height: 80px;
+      line-height: 80px;
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #959595;
+    }
+  }
+}
+.meet{
+  ::v-deep .el-dialog__body{
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+  ::v-deep .el-dialog{
+    border-radius: 16px;
+  }
+}
+.call{
+  .box-content{
+    padding: 20px 30px 35px 30px;
+    .advantage{
+      .advantage-box{
+        display: inline-block;
+        width: 170px;
+        .title{
+          display: inline-block;
+          float:left;
+        }
+        .img{
+          display: inline-block;
+          float:left;
+          margin-right: 8px;
+        }
+      }
+      margin-top: 25px;
+    }
+    .slogan{
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #FF550A;
+      margin-top:24px;
+    }
+    .code{
+      display: inline-block;
+      margin-right: 30px;
+      float: right;
+      width: 117px;
+      height: 117px;
+      background: #FFFFFF;
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
+      border-radius: 8px;
+      padding: 10px 10px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .content{
+      display: inline-block;
+      float: left;
+      .title1{
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FF550A;
+      }
+      .title2{
+        margin-top: 18px;
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #555555;
+      }
+      .title3{
+        width: 133px;
+        height: 24px;
+        background: #FF6929;
+        border-radius: 3px;
+        text-align: center;
+        line-height: 24px;
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FFFFFF;
+        margin-top: 23px;
+      }
+    }
+  }
+}
+.call{
+  ::v-deep .el-dialog__body{
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+  ::v-deep .el-dialog{
+    border-radius: 16px;
+  }
+}
 .popup_contacts{
   padding: 30px;
   .contacts_item{
@@ -379,5 +634,30 @@ export default {
 }
 ::v-deep .el-dialog__body{
   padding-bottom: 10px;
+}
+#animation {
+  animation:pulse 1s .2s ease both infinite;
+}
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform:scale(1)
+  }
+  50% {
+    -webkit-transform:scale(1.1)
+  }
+  100% {
+    -webkit-transform:scale(1)
+  }
+}
+@-moz-keyframes pulse {
+  0% {
+    -moz-transform:scale(1)
+  }
+  50% {
+    -moz-transform:scale(1.1)
+  }
+  100% {
+    -moz-transform:scale(1)
+  }
 }
 </style>

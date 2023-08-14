@@ -360,16 +360,22 @@ function isJSON(str) {
             this.cronRun()
             // 头部搜索默认选中
             var locationArr = location.pathname.split('/');
-            if (locationArr[1] === '' || locationArr[1] === 'job') {
+            /**
+             * 【优化】顶部搜索条件默认搜索项与列表一致
+             * zch 2022.10.9
+             * 【新增】
+             * .html
+             * */
+            if (locationArr[1] === '' || locationArr[1] === 'job' || locationArr[1] === 'job.html') {
                 this.searchAliasCn = '找工作'
                 this.searchAlias = 'joblist'
-            } else if (locationArr[1] === 'resume') {
+            } else if (locationArr[1] === 'resume' || locationArr[1] === 'resume.html') {
                 this.searchAliasCn = '找人才'
                 this.searchAlias = 'resumelist'
-            } else if (locationArr[1] === 'company') {
+            } else if (locationArr[1] === 'company' || locationArr[1] === 'company.html') {
                 this.searchAliasCn = '找企业'
                 this.searchAlias = 'companylist'
-            } else if (locationArr[1] === 'article') {
+            } else if (locationArr[1] === 'article' || locationArr[1] === 'article.html') {
                 this.searchAliasCn = '找资讯'
                 this.searchAlias = 'articlelist'
             }

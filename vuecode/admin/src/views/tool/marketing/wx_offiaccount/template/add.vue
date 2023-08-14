@@ -25,6 +25,7 @@
               placement="right-start"
               width="260"
               trigger="manual"
+              popper-class="wx-official-deep-popover"
             >
               <div class="tagTitle">
                 <span>模板参数 <b>复制参数插入到编辑区</b></span>
@@ -61,6 +62,7 @@
               placement="right-start"
               width="260"
               trigger="manual"
+              popper-class="wx-official-deep-popover"
             >
               <div class="tagTitle">
                 <span>模板参数 <b>复制参数插入到编辑区</b></span>
@@ -119,6 +121,7 @@
               placement="right-start"
               width="260"
               trigger="manual"
+              popper-class="wx-official-deep-popover"
             >
               <div class="tagTitle">
                 <span>模板参数 <b>复制参数插入到编辑区</b></span>
@@ -248,9 +251,15 @@ export default {
     onShow(name){
       if (name == 1){
         this.isShow1 = !this.isShow1
+        this.isShow2 = false
+        this.isShow3 = false
       } else if (name == 2){
         this.isShow2 = !this.isShow2
+        this.isShow1 = false
+        this.isShow3 = false
       } else {
+        this.isShow1 = false
+        this.isShow2 = false
         this.isShow3 = !this.isShow3
       }
     },
@@ -426,10 +435,12 @@ export default {
       margin: auto;
     }
   }
-
 </style>
 <style>
-  .edui-default .edui-editor{
-    z-index: 1!important;
-  }
+.edui-default .edui-editor{
+  z-index: 1!important;
+}
+.wx-official-deep-popover{
+  z-index: 1!important;
+}
 </style>

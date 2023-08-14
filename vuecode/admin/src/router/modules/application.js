@@ -133,6 +133,42 @@ const applicationRouter = {
       ]
     },
     {
+      path: '/outbound',
+      name: 'outbound',
+      component: () => import('@/views/outbound'),
+      redirect: 'noRedirect',
+      alwaysShow: true,
+      meta: { title: '外呼中心', access: 'outbound' },
+      children: [
+        {
+          path: '/outbound/dataDoard',
+          name: 'outboundDataDoard',
+          component: () => import('@/views/outbound/dataDoard'),
+          meta: { title: '数据看板', access: 'outboundDataDoard' }
+        }, {
+          path: '/outbound/allOutbound',
+          name: 'allOutbound',
+          component: () => import('@/views/outbound/outbound'),
+          meta: { title: '全部外呼', access: 'allOutbound' }
+        }, {
+          path: '/outbound/myOutbound',
+          name: 'myOutbound',
+          component: () => import('@/views/outbound/outbound'),
+          meta: { title: '我的外呼', access: 'myOutbound' }
+        }, {
+          path: '/outbound/seats',
+          name: 'seats',
+          component: () => import('@/views/outbound/seats'),
+          meta: { title: '坐席信息', access: 'seats' }
+        }, {
+          path: '/outbound/config',
+          name: 'outboundConfig',
+          component: () => import('@/views/outbound/config'),
+          meta: { title: '外呼配置', access: 'outboundConfig' }
+        }
+      ]
+    },
+    {
       path: '/shortvideo',
       name: 'shortvideo',
       component: () => import('@/views/shortvideo'),

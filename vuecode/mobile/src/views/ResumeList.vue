@@ -754,6 +754,13 @@ export default {
       this.fetchData(false)
     },
     toDetail (id) {
+      /**
+       * 【bug】触屏简历列表进入详情右下角通过多功能侧边栏按钮返回首页，再次进入简历列表页时，会出现重复数据
+       *  zch 2022.10.9
+       * 【新增】列表置空
+       * this.dataset = []
+       * */
+      this.dataset = []
       this.$router.push('/resume/' + id)
     },
     // 搜索通用函数

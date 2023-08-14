@@ -125,6 +125,15 @@ export default {
         })
     },
     funAdd() {
+      /**
+       * 【bug】简历求职意向最多应设置三条
+       *  zch 2022.10.9
+       *  【新增】
+       */
+      if (this.list.length >= 3) {
+        this.$message({ message: '求职意向最多可填写三条', type: 'warning' })
+        return false
+      }
       this.itemId = 0
       this.dialogTitle = '添加求职意向'
       this.dialogFormVisible = true

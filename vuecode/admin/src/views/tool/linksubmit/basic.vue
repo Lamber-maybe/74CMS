@@ -95,7 +95,7 @@
           {{ submit_info.success }} 条
         </p>
         <p>
-          每天推送上限为 {{ submit_info.max }} 条 还可以推送
+          今日还可以推送
           {{ submit_info.remain }} 条
         </p>
       </div>

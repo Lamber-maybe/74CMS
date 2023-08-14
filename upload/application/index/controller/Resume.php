@@ -373,8 +373,8 @@ class Resume extends \app\index\controller\Base
          * 微信通知查看简历，会员中心显示未查看
          * yx - 2022.09.22
          */
-        $company_uid = request()->route('company_uid/d', 0, 'intval');
-        $job_apply_id = request()->route('job_apply_id/d', 0, 'intval');
+        $company_uid = request()->get('company_uid/d', 0, 'intval');
+        $job_apply_id = request()->get('job_apply_id/d', 0, 'intval');
         if (!empty($company_uid) && !empty($job_apply_id)) {
             $JobApplyInfo = model('JobApply')
                 ->where('id', $job_apply_id)

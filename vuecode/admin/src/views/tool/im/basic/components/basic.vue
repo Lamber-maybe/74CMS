@@ -2,6 +2,12 @@
   <div
     class="app-container"
   >
+    <div class="tip">
+      <p>
+        74IM通讯专为骑士CMS用户服务，轻松接入即可享受全平台、全场景即时聊天互动，消息及时达，沟通更无忧！
+        <a class="im_center" href="http://imcenter.74cms.com" target="_blank">立即开通</a>
+      </p>
+    </div>
     <el-form
       ref="form"
       class="common-form"
@@ -104,5 +110,10 @@ export default {
 .el-input,
 .el-input-group {
   width: 50%;
+}
+.im_center {
+  color: #1787FB;
+  text-decoration: none;
+  border-bottom: 1px solid #1787FB;
 }
 </style>

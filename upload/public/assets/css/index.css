@@ -625,7 +625,13 @@ button { border: none; background: none; }
 
 .job_type { padding: 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.job_type, .region { color: #666666; font-size: 12px; padding-left: 3px; }
+/**
+ * 【优化】首页简历模板，地区太多导致掉行
+ *  zch 2022.10.9
+ * 【新增】
+ *  white-space: nowrap;overflow: hidden; text-overflow: ellipsis;
+ */
+.job_type, .region { color: #666666; font-size: 12px; padding-left: 3px; white-space: nowrap;overflow: hidden; text-overflow: ellipsis;}
 
 .job_type span, .region span { color: #999999; font-size: 12px; }
 

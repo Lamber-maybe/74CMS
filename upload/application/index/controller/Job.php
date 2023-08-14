@@ -1,4 +1,5 @@
 <?php
+
 namespace app\index\controller;
 
 class Job extends \app\index\controller\Base
@@ -6,37 +7,38 @@ class Job extends \app\index\controller\Base
     public function _initialize()
     {
         parent::_initialize();
-        $this->assign('navSelTag','job');
+        $this->assign('navSelTag', 'job');
     }
+
     public function index()
     {
-        if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'joblist',302);
+        if (is_mobile_request() === true) {
+            $this->redirect(config('global_config.mobile_domain') . 'joblist', 302);
             exit;
         }
         $keyword = request()->route('keyword/s', '', 'trim,addslashes');
-        $listtype = request()->route('listtype/s','','trim');
-        $category1 = request()->route('c1/d',0,'intval');
-        $category2 = request()->route('c2/d',0,'intval');
-        $category3 = request()->route('c3/d',0,'intval');
-        $district1 = request()->route('d1/d',0,'intval');
-        $district2 = request()->route('d2/d',0,'intval');
-        $district3 = request()->route('d3/d',0,'intval');
-        $minwage = request()->route('w1/d',0,'intval');
-        $maxwage = request()->route('w2/d',0,'intval');
-        $trade = request()->route('trade/d',0,'intval');
-        $scale = request()->route('scale/d',0,'intval');
-        $nature = request()->route('nat/d',0,'intval');
-        $education = request()->route('edu/d',0,'intval');
-        $experience = request()->route('exp/d',0,'intval');
+        $listtype = request()->route('listtype/s', '', 'trim');
+        $category1 = request()->route('c1/d', 0, 'intval');
+        $category2 = request()->route('c2/d', 0, 'intval');
+        $category3 = request()->route('c3/d', 0, 'intval');
+        $district1 = request()->route('d1/d', 0, 'intval');
+        $district2 = request()->route('d2/d', 0, 'intval');
+        $district3 = request()->route('d3/d', 0, 'intval');
+        $minwage = request()->route('w1/d', 0, 'intval');
+        $maxwage = request()->route('w2/d', 0, 'intval');
+        $trade = request()->route('trade/d', 0, 'intval');
+        $scale = request()->route('scale/d', 0, 'intval');
+        $nature = request()->route('nat/d', 0, 'intval');
+        $education = request()->route('edu/d', 0, 'intval');
+        $experience = request()->route('exp/d', 0, 'intval');
         $tag = request()->route('tag/s', '', 'trim');
-        $settr = request()->route('settr/d',0,'intval');
+        $settr = request()->route('settr/d', 0, 'intval');
         $sort = request()->route('sort/s', '', 'trim');
-        $famous = request()->route('famous/d',0,'intval');
-        $license = request()->route('license/d',0,'intval');
-        $filter_apply = request()->route('filter_apply/d',0,'intval');
-        $current_page = request()->get('page/d',1,'intval');
-        $pagesize = request()->get('pagesize/d',10,'intval');
+        $famous = request()->route('famous/d', 0, 'intval');
+        $license = request()->route('license/d', 0, 'intval');
+        $filter_apply = request()->route('filter_apply/d', 0, 'intval');
+        $current_page = request()->get('page/d', 1, 'intval');
+        $pagesize = request()->get('pagesize/d', 10, 'intval');
         $selectedTagArr = [];
 
         if ($keyword != '') {
@@ -44,19 +46,19 @@ class Job extends \app\index\controller\Base
         }
         $subsiteCondition = get_subsite_condition();
         $subsite_district_level = 0;
-        if(!empty($subsiteCondition)){
+        if (!empty($subsiteCondition)) {
             foreach ($subsiteCondition as $key => $value) {
-                if($key=='district1'){
+                if ($key == 'district1') {
                     $district1 = $value;
                     $subsite_district_level = 1;
                     break;
                 }
-                if($key=='district2'){
+                if ($key == 'district2') {
                     $district2 = $value;
                     $subsite_district_level = 2;
                     break;
                 }
-                if($key=='district3'){
+                if ($key == 'district3') {
                     $district3 = $value;
                     $subsite_district_level = 3;
                     break;
@@ -73,7 +75,7 @@ class Job extends \app\index\controller\Base
             $params['district3'] = $district3;
         }
 
-        
+
         if ($category1 > 0) {
             $params['category1'] = $category1;
         }
@@ -83,7 +85,7 @@ class Job extends \app\index\controller\Base
         if ($category3 > 0) {
             $params['category3'] = $category3;
         }
-        if($listtype=='emergency'){
+        if ($listtype == 'emergency') {
             $params['emergency'] = 1;
         }
         if ($minwage > 0) {
@@ -134,26 +136,26 @@ class Job extends \app\index\controller\Base
         if ($license > 0) {
             $params['license'] = $license;
         }
-        if ($filter_apply > 0 && $this->visitor!==null && $this->visitor['utype']==2) {
+        if ($filter_apply > 0 && $this->visitor !== null && $this->visitor['utype'] == 2) {
             $params['filter_apply_uid'] = $this->visitor['uid'];
         }
 
-        if(config('global_config.job_search_login')==1){
-            if($this->visitor===null){
+        if (config('global_config.job_search_login') == 1) {
+            if ($this->visitor === null) {
                 $show_mask = 1;
-                if(!empty($params)){
+                if (!empty($params)) {
                     $params['district1'] = -1;
                 }
                 $params['count_total'] = 0;
                 $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.job_search_login_num')==0?1:config('global_config.job_search_login_num');
-            }else{
+                $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
+            } else {
                 $show_mask = 0;
                 $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
             }
-        }else{
+        } else {
             $show_mask = 0;
             $params['count_total'] = 1;
             $params['current_page'] = $current_page;
@@ -167,27 +169,27 @@ class Job extends \app\index\controller\Base
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
 
-        if($this->subsite!==null && $this->subsite->district3>0){
+        if ($this->subsite !== null && $this->subsite->district3 > 0) {
             $district_level = 0;
             $category_district = [];
-        }else if($district2>0){
+        } else if ($district2 > 0) {
             $district_level = 3;
             $category_district = model('CategoryDistrict')->getCache($district2);
-        }else if($district1>0){
+        } else if ($district1 > 0) {
             $district_level = 2;
             $category_district = model('CategoryDistrict')->getCache($district1);
-        }else {
+        } else {
             $district_level = 1;
             $category_district = model('CategoryDistrict')->getCache('0');
         }
         $options_district = [];
         foreach ($category_district as $key => $value) {
-            if($district_level==1){
-                $params = ['d1'=>$key,'d2'=>null,'d3'=>null];
-            }else if($district_level==2){
-                $params = ['d1'=>$district1,'d2'=>$key,'d3'=>null];
-            }else if($district_level==3){
-                $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
+            if ($district_level == 1) {
+                $params = ['d1' => $key, 'd2' => null, 'd3' => null];
+            } else if ($district_level == 2) {
+                $params = ['d1' => $district1, 'd2' => $key, 'd3' => null];
+            } else if ($district_level == 3) {
+                $params = ['d1' => $district1, 'd2' => $district2, 'd3' => $key];
             }
 
             $arr['id'] = $key;
@@ -197,24 +199,24 @@ class Job extends \app\index\controller\Base
         }
 
 
-        if($category2>0){
+        if ($category2 > 0) {
             $category_level = 3;
             $category_category = model('CategoryJob')->getCache($category2);
-        }else if($category1>0){
+        } else if ($category1 > 0) {
             $category_level = 2;
             $category_category = model('CategoryJob')->getCache($category1);
-        }else {
+        } else {
             $category_level = 1;
             $category_category = model('CategoryJob')->getCache('0');
         }
         $options_categoryjob = [];
         foreach ($category_category as $key => $value) {
-            if($category_level==1){
-                $params = ['c1'=>$key,'c2'=>null,'c3'=>null];
-            }else if($category_level==2){
-                $params = ['c1'=>$category1,'c2'=>$key,'c3'=>null];
-            }else if($category_level==3){
-                $params = ['c1'=>$category1,'c2'=>$category2,'c3'=>$key];
+            if ($category_level == 1) {
+                $params = ['c1' => $key, 'c2' => null, 'c3' => null];
+            } else if ($category_level == 2) {
+                $params = ['c1' => $category1, 'c2' => $key, 'c3' => null];
+            } else if ($category_level == 3) {
+                $params = ['c1' => $category1, 'c2' => $category2, 'c3' => $key];
             }
 
             $arr['id'] = $key;
@@ -237,60 +239,62 @@ class Job extends \app\index\controller\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $seoData['keyword'] = $keyword;
-        if($district3>0){
+        if ($district3 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district3]) ? $category_district_data[$district3] : '';
-        }else if($district2>0){
+        } else if ($district2 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district2]) ? $category_district_data[$district2] : '';
-        }else if($district1>0){
+        } else if ($district1 > 0) {
             $seoData['citycategory'] = isset($category_district_data[$district1]) ? $category_district_data[$district1] : '';
-        }else{
+        } else {
             $seoData['citycategory'] = '';
         }
-        if($category3>0){
+        if ($category3 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category3]) ? $category_job_data[$category3] : '';
-        }else if($category2>0){
+        } else if ($category2 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category2]) ? $category_job_data[$category2] : '';
-        }else if($category1>0){
+        } else if ($category1 > 0) {
             $seoData['jobcategory'] = isset($category_job_data[$category1]) ? $category_job_data[$category1] : '';
-        }else{
+        } else {
             $seoData['jobcategory'] = '';
         }
-        $this->initPageSeo('joblist',$seoData);
+        $this->initPageSeo('joblist', $seoData);
 
-        $this->assign('subsite_district_level',$subsite_district_level);
-        $this->assign('selectedTagArr',$selectedTagArr);
-        $this->assign('hotjob_list',$hotjob_list);
-        $this->assign('currentPage',$current_page);
-        $this->assign('prevPage',$current_page-1);
-        $this->assign('nextPage',$current_page+1);
-        $this->assign('pagerHtml',$pagerHtml);
-        $this->assign('dataset',$return);
-        $this->assign('district_level',$district_level);
-        $this->assign('options_district',$options_district);
-        $this->assign('category_level',$category_level);
-        $this->assign('options_categoryjob',$options_categoryjob);
-        $this->assign('options_exp',$options_exp);
-        $this->assign('options_tag',$options_tag);
-        $this->assign('options_sex',$options_sex);
-        $this->assign('options_trade',$options_trade);
-        $this->assign('options_edu',$options_edu);
-        $this->assign('options_scale',$options_scale);
-        $this->assign('options_nature',$options_nature);
-        $this->assign('show_mask',$show_mask);
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->assign('subsite_district_level', $subsite_district_level);
+        $this->assign('selectedTagArr', $selectedTagArr);
+        $this->assign('hotjob_list', $hotjob_list);
+        $this->assign('currentPage', $current_page);
+        $this->assign('prevPage', $current_page - 1);
+        $this->assign('nextPage', $current_page + 1);
+        $this->assign('pagerHtml', $pagerHtml);
+        $this->assign('dataset', $return);
+        $this->assign('district_level', $district_level);
+        $this->assign('options_district', $options_district);
+        $this->assign('category_level', $category_level);
+        $this->assign('options_categoryjob', $options_categoryjob);
+        $this->assign('options_exp', $options_exp);
+        $this->assign('options_tag', $options_tag);
+        $this->assign('options_sex', $options_sex);
+        $this->assign('options_trade', $options_trade);
+        $this->assign('options_edu', $options_edu);
+        $this->assign('options_scale', $options_scale);
+        $this->assign('options_nature', $options_nature);
+        $this->assign('show_mask', $show_mask);
+        $this->assign('pageHeader', $this->pageHeader);
         return $this->fetch('index');
     }
+
     public function contrast()
     {
-        $this->pageHeader['title'] = '职位对比 - '.$this->pageHeader['title'];
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->pageHeader['title'] = '职位对比 - ' . $this->pageHeader['title'];
+        $this->assign('pageHeader', $this->pageHeader);
         return $this->fetch('contrast');
     }
+
     public function show()
     {
-        $id = request()->route('id/d',0,'intval');
-        if(is_mobile_request()===true){
-            $this->redirect(config('global_config.mobile_domain').'job/'.$id,302);
+        $id = request()->route('id/d', 0, 'intval');
+        if (is_mobile_request() === true) {
+            $this->redirect(config('global_config.mobile_domain') . 'job/' . $id, 302);
             exit;
         }
         $field_rule_data = model('FieldRule')->getCache();
@@ -307,37 +311,37 @@ class Job extends \app\index\controller\Base
         //读取页面缓存配置
         $pageCache = model('Page')->getCache('jobshow');
         //如果缓存有效期为0，则不使用缓存
-        if($pageCache['expire']>0){
-            $return = model('Page')->getCacheByAlias('jobshow',$id);
-        }else{
+        if ($pageCache['expire'] > 0) {
+            $return = model('Page')->getCacheByAlias('jobshow', $id);
+        } else {
             $return = false;
         }
         if (!$return) {
-            $return = $this->writeShowCache($id,$pageCache);
-            if($return===false){
-                abort(404,'页面不存在');
+            $return = $this->writeShowCache($id, $pageCache);
+            if ($return === false) {
+                abort(404, '页面不存在');
             }
         }
         $return['field_rule'] = $field_rule;
-        $return['share_url'] = config('global_config.mobile_domain').'job/'.$return['base_info']['id'];
-        $return['im_url'] = config('global_config.mobile_domain').'im/imlist';
+        $return['share_url'] = config('global_config.mobile_domain') . 'job/' . $return['base_info']['id'];
+        $return['im_url'] = config('global_config.mobile_domain') . 'im/imlist';
         $seoData['jobname'] = $return['base_info']['jobname'];
         $seoData['companyname'] = $return['com_info']['companyname'];
         $seoData['nature'] = $return['base_info']['nature_text'];
         $seoData['category'] = $return['base_info']['category_text'];
         $seoData['district'] = $return['base_info']['district_text'];
         $this->assign('phone_protect_open', false);
-        if(intval(config('global_config.alicloud_phone_protect_open'))){
+        if (intval(config('global_config.alicloud_phone_protect_open'))) {
             $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
-            if(in_array(1, $protectTarget)){
+            if (in_array(1, $protectTarget)) {
                 $this->assign('phone_protect_open', true);
             }
         }
 
         //获取企业登录信息
-        $company  = model('Company')->where(['id'=>$return['com_info']['id']])->field('uid,audit')->find();
-        $uid = !empty($company)?$company['uid']:0;
-        $logo = model('member')->where(['uid'=>$uid])->field('last_login_ip,last_login_time,last_login_address')->find();
+        $company = model('Company')->where(['id' => $return['com_info']['id']])->field('uid,audit')->find();
+        $uid = !empty($company) ? $company['uid'] : 0;
+        $logo = model('member')->where(['uid' => $uid])->field('last_login_ip,last_login_time,last_login_address')->find();
         $logo['audit'] = $company['audit'];
 
         /**
@@ -345,31 +349,40 @@ class Job extends \app\index\controller\Base
          * IP最后一位以*加密
          * zch 2022/7/22
          */
-        if (!empty($logo['last_login_ip'])){
-            $dot = strripos($logo['last_login_ip'],"."); //查找“.”最后出现的位置
-            $logo['last_login_ip'] = substr($logo['last_login_ip'],0,$dot).".*"; //输出“.”最后出现位置之前的字符串并加上*号
-        }else{
+        if (!empty($logo['last_login_ip'])) {
+            $dot = strripos($logo['last_login_ip'], "."); //查找“.”最后出现的位置
+            $logo['last_login_ip'] = substr($logo['last_login_ip'], 0, $dot) . ".*"; //输出“.”最后出现位置之前的字符串并加上*号
+        } else {
             $logo['last_login_ip'] = '';
         }
 
+        /**
+         * 【优化】
+         * 【ID1000339】 - 旧数据没有登录信息导致的报错
+         * yx - 2022.09.29
+         */
+        $logo['last_login_address'] = !empty($logo['last_login_address']) ? $logo['last_login_address'] : '';
+        $logo['last_login_time'] = !empty($logo['last_login_time']) ? $logo['last_login_time'] : 0;
+
         $last_login_time = '';
-        if (!empty($logo) && $logo['last_login_time'] > 0)
-        {
-            $last_login_time = date('Y/m/d H:i:s',$logo['last_login_time']);
+        if (!empty($logo) && $logo['last_login_time'] > 0) {
+            $last_login_time = date('Y/m/d H:i:s', $logo['last_login_time']);
         }
         $logo['last_time'] = $last_login_time;
-        $this->assign('logo',$logo);
-	
-        $this->initPageSeo('jobshow',$seoData);
-        $this->assign('return',$return);
-        $this->assign('pageHeader',$this->pageHeader);
+        $this->assign('logo', $logo);
+       
+        $this->initPageSeo('jobshow', $seoData);
+        $this->assign('return', $return);
+        $this->assign('pageHeader', $this->pageHeader);
         /**
          * 模板切换
          */
         $job_show_tpl = !empty(config('global_config.job_show_tpl')) ? config('global_config.job_show_tpl') : 'def';
-        return $this->fetch('job/showTpl/'.$job_show_tpl.'/show');
+        return $this->fetch('job/showTpl/' . $job_show_tpl . '/show');
     }
-    protected function writeShowCache($id,$pageCache){
+
+    protected function writeShowCache($id, $pageCache)
+    {
         $jobinfo = model('Job')
             ->where('id', $id)
             ->field(true)
@@ -389,35 +402,35 @@ class Job extends \app\index\controller\Base
         $base_info['nature_text'] = isset(
             model('Job')->map_nature[$jobinfo['nature']]
         )
-        ? model('Job')->map_nature[$jobinfo['nature']]
-        : '全职';
+            ? model('Job')->map_nature[$jobinfo['nature']]
+            : '全职';
         $base_info['sex_text'] = isset(model('Job')->map_sex[$jobinfo['sex']])
-        ? model('Job')->map_sex[$jobinfo['sex']]
-        : '不限';
+            ? model('Job')->map_sex[$jobinfo['sex']]
+            : '不限';
         $base_info['district_text'] = isset(
             $category_district_data[$jobinfo['district1']]
         )
             ? $category_district_data[$jobinfo['district1']]
             : '';
-        if($base_info['district_text']!='' && $jobinfo['district2']>0){
+        if ($base_info['district_text'] != '' && $jobinfo['district2'] > 0) {
             $base_info['district_text'] .= isset(
                 $category_district_data[$jobinfo['district2']]
             )
-                ? ' / '.$category_district_data[$jobinfo['district2']]
+                ? ' / ' . $category_district_data[$jobinfo['district2']]
                 : '';
         }
-        if($base_info['district_text']!='' && $jobinfo['district3']>0){
+        if ($base_info['district_text'] != '' && $jobinfo['district3'] > 0) {
             $base_info['district_text'] .= isset(
                 $category_district_data[$jobinfo['district3']]
             )
-                ? ' / '.$category_district_data[$jobinfo['district3']]
+                ? ' / ' . $category_district_data[$jobinfo['district3']]
                 : '';
         }
         $base_info['category_text'] = isset(
             $category_job_data[$jobinfo['category']]
         )
-        ? $category_job_data[$jobinfo['category']]
-        : '';
+            ? $category_job_data[$jobinfo['category']]
+            : '';
         $base_info['negotiable'] = $jobinfo['negotiable'];
         $base_info['wage_text'] = model('BaseModel')->handle_wage(
             $jobinfo['minwage'],
@@ -427,20 +440,20 @@ class Job extends \app\index\controller\Base
         $base_info['education_text'] = isset(
             model('BaseModel')->map_education[$jobinfo['education']]
         )
-        ? model('BaseModel')->map_education[$jobinfo['education']]
-        : '不限';
+            ? model('BaseModel')->map_education[$jobinfo['education']]
+            : '不限';
         $base_info['experience_text'] = isset(
             model('BaseModel')->map_experience[$jobinfo['experience']]
         )
-        ? model('BaseModel')->map_experience[$jobinfo['experience']]
-        : '不限';
+            ? model('BaseModel')->map_experience[$jobinfo['experience']]
+            : '不限';
 
         $base_info['tag_text_arr'] = [];
         if ($jobinfo['tag'] != '') {
             $tag_arr = explode(',', $jobinfo['tag']);
             foreach ($tag_arr as $k => $v) {
                 isset($category_data['QS_jobtag'][$v]) &&
-                    ($base_info['tag_text_arr'][] =
+                ($base_info['tag_text_arr'][] =
                     $category_data['QS_jobtag'][$v]);
             }
         }
@@ -498,32 +511,32 @@ class Job extends \app\index\controller\Base
             $return['com_info']['audit'] = $companyinfo['audit'];
             $return['com_info']['address'] = $companyinfo['address'];
             $return['com_info']['logo_src'] =
-            $companyinfo['logo'] > 0
-            ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
-            : default_empty('logo');
+                $companyinfo['logo'] > 0
+                    ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
+                    : default_empty('logo');
             $return['com_info']['district_text'] = isset(
                 $category_district_data[$companyinfo['district']]
             )
-            ? $category_district_data[$companyinfo['district']]
-            : '';
+                ? $category_district_data[$companyinfo['district']]
+                : '';
             $return['com_info']['scale_text'] = isset(
                 $category_data['QS_scale'][$companyinfo['scale']]
             )
-            ? $category_data['QS_scale'][$companyinfo['scale']]
-            : '';
+                ? $category_data['QS_scale'][$companyinfo['scale']]
+                : '';
             $return['com_info']['nature_text'] = isset(
                 $category_data['QS_company_type'][$companyinfo['nature']]
             )
-            ? $category_data['QS_company_type'][$companyinfo['nature']]
-            : '';
+                ? $category_data['QS_company_type'][$companyinfo['nature']]
+                : '';
             $return['com_info']['trade_text'] = isset(
                 $category_data['QS_trade'][$companyinfo['trade']]
             )
-            ? $category_data['QS_trade'][$companyinfo['trade']]
-            : '';
-            if($companyinfo['setmeal_deadline']>time() || $companyinfo['setmeal_deadline']==0){
+                ? $category_data['QS_trade'][$companyinfo['trade']]
+                : '';
+            if ($companyinfo['setmeal_deadline'] > time() || $companyinfo['setmeal_deadline'] == 0) {
                 $return['com_info']['setmeal_icon'] = $companyinfo['icon'] > 0 ? model('Uploadfile')->getFileUrl($companyinfo['icon']) : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
-            }else{
+            } else {
                 $return['com_info']['setmeal_icon'] = '';
             }
 
@@ -535,14 +548,14 @@ class Job extends \app\index\controller\Base
                 ->select();
             $return['com_info']['jobnum'] = count($job_list);
             $return['com_info']['first_jobname'] = !empty($job_list)
-            ? $job_list[0]['jobname']
-            : '';
+                ? $job_list[0]['jobname']
+                : '';
         }
 
 
         $subsiteCondition = get_subsite_condition();
         $similar_data = [
-            'subsiteCondition'=>$subsiteCondition,
+            'subsiteCondition' => $subsiteCondition,
             'category1' => $jobinfo['category1'],
             'category2' => $jobinfo['category2'],
             'category3' => $jobinfo['category3'],
@@ -559,14 +572,15 @@ class Job extends \app\index\controller\Base
         $instance = new \app\common\lib\JobRecommend($similar_data);
         $similar_list = $instance->run('id != ' . $jobinfo['id']);
         $return['similar'] = $this->get_datalist($similar_list['items']);
-        $return['near_district_list'] = $this->getNearDistrict($jobinfo['district1'],$jobinfo['district2'],$jobinfo['district3']);
+        $return['near_district_list'] = $this->getNearDistrict($jobinfo['district1'], $jobinfo['district2'], $jobinfo['district3']);
         $return['hotword_list'] = model('Hotword')->getList(49);
         $return['hotjob_list'] = $this->getHotjob($jobinfo['id']);
-        if($pageCache['expire']>0){
-            model('Page')->writeCacheByAlias('jobshow',$return,$pageCache['expire'],$id);
+        if ($pageCache['expire'] > 0) {
+            model('Page')->writeCacheByAlias('jobshow', $return, $pageCache['expire'], $id);
         }
         return $return;
     }
+
     protected function get_datalist($list)
     {
         $result_data_list = $jobid_arr = $comid_arr = $cominfo_arr = $logo_id_arr = $logo_arr = $icon_id_arr = $icon_arr = [];
@@ -635,42 +649,30 @@ class Job extends \app\index\controller\Base
                     $tmp_arr['company_logo'] = isset(
                         $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
                     )
-                    ? $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
-                    : default_empty('logo');
+                        ? $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
+                        : default_empty('logo');
                     $tmp_arr['company_trade_text'] = isset(
-                        $category_data['QS_trade'][
-                            $cominfo_arr[$val['company_id']]['trade']
-                        ]
+                        $category_data['QS_trade'][$cominfo_arr[$val['company_id']]['trade']]
                     )
-                    ? $category_data['QS_trade'][
-                        $cominfo_arr[$val['company_id']]['trade']
-                    ]
-                    : '';
+                        ? $category_data['QS_trade'][$cominfo_arr[$val['company_id']]['trade']]
+                        : '';
                     $tmp_arr['company_scale_text'] = isset(
-                        $category_data['QS_scale'][
-                            $cominfo_arr[$val['company_id']]['scale']
-                        ]
+                        $category_data['QS_scale'][$cominfo_arr[$val['company_id']]['scale']]
                     )
-                    ? $category_data['QS_scale'][
-                        $cominfo_arr[$val['company_id']]['scale']
-                    ]
-                    : '';
+                        ? $category_data['QS_scale'][$cominfo_arr[$val['company_id']]['scale']]
+                        : '';
                     $tmp_arr['company_nature_text'] = isset(
-                        $category_data['QS_company_type'][
-                            $cominfo_arr[$val['company_id']]['nature']
-                        ]
+                        $category_data['QS_company_type'][$cominfo_arr[$val['company_id']]['nature']]
                     )
-                    ? $category_data['QS_company_type'][
-                        $cominfo_arr[$val['company_id']]['nature']
-                    ]
-                    : '';
-                    if($cominfo_arr[$val['company_id']]['setmeal_deadline']>time() || $cominfo_arr[$val['company_id']]['setmeal_deadline']==0){
+                        ? $category_data['QS_company_type'][$cominfo_arr[$val['company_id']]['nature']]
+                        : '';
+                    if ($cominfo_arr[$val['company_id']]['setmeal_deadline'] > time() || $cominfo_arr[$val['company_id']]['setmeal_deadline'] == 0) {
                         $tmp_arr['setmeal_icon'] = isset(
                             $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
                         )
-                        ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                        : model('Setmeal')->getSysIcon($val['setmeal_id']);
-                    }else{
+                            ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                            : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    } else {
                         $tmp_arr['setmeal_icon'] = '';
                     }
                 } else {
@@ -687,33 +689,33 @@ class Job extends \app\index\controller\Base
                     $tmp_arr['district_text'] = isset(
                         $category_district_data[$val['district']]
                     )
-                    ? $category_district_data[$val['district']]
-                    : '';
+                        ? $category_district_data[$val['district']]
+                        : '';
                 } else {
                     $tmp_arr['district_text'] = '';
                 }
-                if($val['district1']){
+                if ($val['district1']) {
                     $tmp_arr['district_text_full'] = isset(
                         $category_district_data[$val['district1']]
                     )
                         ? $category_district_data[$val['district1']]
                         : '';
-                }else{
+                } else {
                     $tmp_arr['district_text_full'] = '';
                 }
 
-                if($tmp_arr['district_text_full']!='' && $val['district2']>0){
+                if ($tmp_arr['district_text_full'] != '' && $val['district2'] > 0) {
                     $tmp_arr['district_text_full'] .= isset(
                         $category_district_data[$val['district2']]
                     )
-                        ? ' / '.$category_district_data[$val['district2']]
+                        ? ' / ' . $category_district_data[$val['district2']]
                         : '';
                 }
-                if($tmp_arr['district_text_full']!='' && $val['district3']>0){
+                if ($tmp_arr['district_text_full'] != '' && $val['district3'] > 0) {
                     $tmp_arr['district_text_full'] .= isset(
                         $category_district_data[$val['district3']]
                     )
-                        ? ' / '.$category_district_data[$val['district3']]
+                        ? ' / ' . $category_district_data[$val['district3']]
                         : '';
                 }
 
@@ -727,13 +729,13 @@ class Job extends \app\index\controller\Base
                 $tmp_arr['education_text'] = isset(
                     model('BaseModel')->map_education[$val['education']]
                 )
-                ? model('BaseModel')->map_education[$val['education']]
-                : '学历不限';
+                    ? model('BaseModel')->map_education[$val['education']]
+                    : '学历不限';
                 $tmp_arr['experience_text'] = isset(
                     model('BaseModel')->map_experience[$val['experience']]
                 )
-                ? model('BaseModel')->map_experience[$val['experience']]
-                : '经验不限';
+                    ? model('BaseModel')->map_experience[$val['experience']]
+                    : '经验不限';
                 $tmp_arr['tag'] = [];
                 if ($val['tag']) {
                     $tag_arr = explode(',', $val['tag']);
@@ -754,42 +756,46 @@ class Job extends \app\index\controller\Base
                 );
                 $tmp_arr['map_lat'] = $val['map_lat'];
                 $tmp_arr['map_lng'] = $val['map_lng'];
-                $tmp_arr['share_url'] = config('global_config.mobile_domain').'job/'.$val['id'];
-                $tmp_arr['qrcode_url'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_job&url='.$tmp_arr['share_url'].'&jobid='.$val['id'];
+                $tmp_arr['share_url'] = config('global_config.mobile_domain') . 'job/' . $val['id'];
+                $tmp_arr['qrcode_url'] = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/qrcode/index?alias=subscribe_job&url=' . $tmp_arr['share_url'] . '&jobid=' . $val['id'];
                 $result_data_list[] = $tmp_arr;
             }
         }
         return $result_data_list;
     }
-    protected function getNearDistrict($district1,$district2,$district3){
-        if($district2==0){
+
+    protected function getNearDistrict($district1, $district2, $district3)
+    {
+        if ($district2 == 0) {
             $level = 1;
             $parentDistrict = 0;
-        }else if($district3=0){
+        } else if ($district3 = 0) {
             $level = 2;
             $parentDistrict = $district1;
-        }else{
+        } else {
             $level = 3;
             $parentDistrict = $district2;
         }
         $district_list = model('CategoryDistrict')->getCache($parentDistrict);
         $return = [];
         foreach ($district_list as $key => $value) {
-            if($level==1){
-                $params = ['d1'=>$key,'d2'=>0,'d3'=>0];
-            }else if($level==2){
-                $params = ['d1'=>$district1,'d2'=>$key,'d3'=>0];
-            }else if($level==3){
-                $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
+            if ($level == 1) {
+                $params = ['d1' => $key, 'd2' => 0, 'd3' => 0];
+            } else if ($level == 2) {
+                $params = ['d1' => $district1, 'd2' => $key, 'd3' => 0];
+            } else if ($level == 3) {
+                $params = ['d1' => $district1, 'd2' => $district2, 'd3' => $key];
             }
-            $return[] = ['id'=>$key,'text'=>$value,'params'=>$params];
+            $return[] = ['id' => $key, 'text' => $value, 'params' => $params];
         }
         return $return;
     }
+
     /**
      * 热门职位
      */
-    protected function getHotjob($id=0){
+    protected function getHotjob($id = 0)
+    {
         $subsiteCondition = get_subsite_condition();
         $params = $subsiteCondition;
         $params['count_total'] = 0;
@@ -797,8 +803,8 @@ class Job extends \app\index\controller\Base
         $params['sort'] = 'emergency';
         $instance = new \app\common\lib\JobSearchEngine($params);
         $runMap = '';
-        if($id>0){
-            $runMap = 'id!='.$id;
+        if ($id > 0) {
+            $runMap = 'id!=' . $id;
         }
         $searchResult = $instance->run($runMap);
         $list = $this->get_datalist($searchResult['items']);

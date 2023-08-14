@@ -360,7 +360,8 @@ class Index extends \app\v1_0\controller\common\Base
             'tel' => input('post.tel/s', '', 'trim,badword_filter'),
             'note' => input('post.note/s', '', 'trim,badword_filter'),
         ];
-        $validate = new \think\Validate([
+
+        $rule = [
             'resume_id' => 'require|number|gt:0',
             'jobid' => 'require|number|gt:0',
             'interview_date' => 'require',
@@ -369,7 +370,27 @@ class Index extends \app\v1_0\controller\common\Base
             'contact' => 'require|max:10',
             'tel' => 'require|max:15',
             'note' => 'max:100',
-        ]);
+        ];
+
+        /**
+         * 【优化】面试邀请提示需提示具体信息
+         * zch 2022.9.30
+         *
+         */
+
+        $message = [
+            'resume_id'  =>  '请填写面试人',
+            'jobid' =>  '请选择面试职位',
+            'interview_date' => '请选择面试日期',
+            'interview_time' => '请选择面试时间',
+            'address' => '请填写100字以内的面试地址',
+            'contact' => '请填写10字以内的联系人',
+            'tel' => '请填写正确的联系电话',
+            'note' => '请填写100字以内的备注'
+        ];
+        $validate = new \think\Validate($rule,$message);
+
+
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }

@@ -8,7 +8,8 @@ import {
   exportList,
   refreshCrmJob, setDisplay
 } from '@/api/company_crm'
-import {customerServiceEdit} from "@/api/personal";
+import { customerServiceEdit } from '@/api/personal'
+import {bindSeat, customLndex, dataBoardcallRecordList, outboundSeat, recordDetails} from "@/api/outbound";
 
 export default {
   // 首页仪表盘
@@ -862,5 +863,19 @@ export default {
   toBeFollowedup: 'b2bcrm/follow_up/toBeFollowedup',
   companyCrmAdd: 'b2bcrm/Company/add',
   crmClueRelease: 'b2bcrm/Crm_Clue_Release/index',
-  isNameRepeat: 'b2bcrm/Clue/isNameRepeat'
+  isNameRepeat: 'b2bcrm/Clue/isNameRepeat',
+  // 外呼系统
+  outboundRecordList: 'outbound/record/index',
+  outboundAccount: 'outbound/Account/index',
+  outboundSeat: 'outbound/seat/index',
+  outboundStaffList: 'outbound/seat/staffList',
+  recordDetails: 'outbound/record/details',
+  customLndex: 'Custom/index',
+  dataBoardCallRecord: 'outbound/data_board/callRecord',
+  dataBoardcallRecordList: 'outbound/data_board/callRecordList',
+  seatCallRecord: 'outbound/data_board/seatCallRecord',
+  bindSeat: 'outbound/Seat/bindSeat',
+  unbindSeat: 'outbound/Seat/unbindSeat',
+  outboundCall: 'outbound/outbound_call/call',
+  UnbindList: 'outbound/seat/unbindList'
 }

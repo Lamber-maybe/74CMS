@@ -175,7 +175,7 @@ class JobApply extends \app\common\model\BaseModel
                     $job_info['jobname'],
                     '点击立即查看简历详情'
                 ],
-                'resume/' . $resume_info['id'] . '/' . $company_info['uid'] . '/' . $job_apply_id
+                'resume/' . $resume_info['id'] . '?company_uid=' . $company_info['uid'] . '&job_apply_id=' . $job_apply_id
             );
         }
         return $result;

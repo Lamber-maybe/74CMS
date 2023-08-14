@@ -952,7 +952,9 @@ INSERT INTO `qs_config` VALUES
 (NULL,'mobile_job_show_tpl',1,'def','触屏职位详情模板',0),
 (null,'mobile_company_show_tpl',1,'def','触屏企业详情模板',0),
 (NULL,'mobile_resume_show_tpl',1,'def','触屏简历详情模板',0),
-(NULL,'qualification_publicity',1,'{"business_license":"","business_license_id":"0","business_licenses":"","business_licenses_id":"0","service_license_id":"0","service_license":""}','app资质公示',0);
+(NULL,'qualification_publicity',1,'{"business_license":"","business_license_id":"0","business_licenses":"","business_licenses_id":"0","service_license_id":"0","service_license":""}','app资质公示',0),
+(NULL,'account_outbound',0,'{"app_id":"","app_secret":""}','外呼配置',0);
+
 
 INSERT INTO `qs_cron` VALUES
 (NULL,'清除过期服务','ServiceClear',-1,-1,-1,'1',0,0,1,1,0),
@@ -966,7 +968,9 @@ INSERT INTO `qs_cron` VALUES
 (NULL,'简历点不足100提醒','FewResumePointNotice',-1,-1,7,'1',0,0,0,1,0),
 (NULL,'生成百度百聘xml','Baiduxml','-1','-1','0','1','0','0','0','1','0'),
 (NULL,'清除过期套餐','SetmealClear','-1','-1','-1','1','0','0','0','1','0'),
-(NULL, 'Sitemap', 'Sitemap', -1, -1, 0, '1', 1658160060, 1656572289, 1, 1, 0);
+(NULL, 'Sitemap', 'Sitemap', -1, -1, 0, '1', 0, 0, 1, 1, 0),
+(NULL, 'CRM线索未跟进自动释放', 'CrmClue', 0, 0, 0, 0, 0, 0, 1, 1, 0),
+(NULL, 'CRM企业未跟进自动释放', 'CrmCompany', 0, 0, 0, 0, 0, 0, 1, 1, 0);
 
 
 INSERT INTO `qs_explain` VALUES

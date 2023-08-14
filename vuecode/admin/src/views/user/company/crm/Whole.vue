@@ -5,9 +5,9 @@
         <span>{{ title }}</span>
       </div>
       <div style="float:right;z-index: 1;position: relative;">
-        <el-button size="small" type="primary" @click="reset('all')">
-          重置筛选
-        </el-button>
+        <!--        <el-button size="small" type="primary" @click="reset('all')">-->
+        <!--          重置筛选-->
+        <!--        </el-button>-->
         <el-button size="small" type="primary" @click="goto('/user/company/crm/wholeAdd')">
           新增线索
         </el-button>
@@ -36,8 +36,48 @@
           />
         </el-input>
       </div>
+      <div
+        v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' "
+        class="filterCriteria"
+      >
+        <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
+        <div style="float:left;display: inline-block;width: 80%">
+          <!--          saleFilter: '',-->
+          <!--          industryFilter: '',-->
+          <!--          regionFilter: '',-->
+          <!--          createdByFilter: ''-->
+          <div v-if="saleFilter !=''" class="selected">
+            <div class="name">所属销售：{{ saleFilter.name }}</div>
+            <div class="closes" @click="reset(saleFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="industryFilter !=''" class="selected">
+            <div class="name">客户行业：{{ industryFilter.name }}</div>
+            <div class="closes" @click="reset(industryFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="regionFilter !=''" class="selected">
+            <div class="name">所在地区：{{ regionFilter.name }}</div>
+            <div class="closes" @click="reset(regionFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="createdByFilter !=''" class="selected">
+            <div class="name">创建人：{{ createdByFilter.name }}</div>
+            <div class="closes" @click="reset(createdByFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+        </div>
+        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
+          <i class="el-icon-delete" /> 清空条件
+        </div>
+        <div style="clear:both;" />
+      </div>
       <div style="position: relative;">
-        <div class="setField">
+        <div :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' ? 'setField_s' : 'setField'">
           <el-popover
             v-model="visiblepop"
             placement="bottom-start"
@@ -158,8 +198,13 @@
                 <span v-else> {{ scope.row.contacts }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{ scope.row.mobile }} </span>
+                <span v-if="scope.row.mobile == '' || scope.row.mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.mobile }}
+                  <div class="dial" title="拨打联系人手机号">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.name )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'weixin'">
                 <span v-if="scope.row.weixin == ''"> - </span>
@@ -279,8 +324,13 @@
                 <span v-else> {{ scope.row.contacts }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{ scope.row.mobile }} </span>
+                <span v-if="scope.row.mobile == '' || scope.row.mobile == null"> - </span>
+                <span v-else>
+                  {{ scope.row.mobile }}
+                  <div class="dial" title="拨打联系人手机号">
+                    <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.name )" />
+                  </div>
+                </span>
               </div>
               <div v-if="items.field == 'weixin'">
                 <span v-if="scope.row.weixin == ''"> - </span>
@@ -381,6 +431,69 @@
         <i class="el-icon-close" />
       </div>
     </el-drawer>
+    <div class="call">
+      <el-dialog
+        :visible.sync="callDialogVisible"
+        width="30%"
+        :before-close="callHandleClose"
+      >
+        <div class="box-content">
+          <div class="content">
+            <div class="title1">您还尚未开通云呼叫服务</div>
+            <div class="title2">扫码添加客服</div>
+            <div class="title3">快速开通呼叫业务</div>
+          </div>
+          <div class="code">
+            <img src="../../../../assets/images/outbound/renew.png" alt="">
+          </div>
+          <div style="clear:both" />
+          <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
+          <div class="advantage">
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">免硬件设备</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">录音清晰无杂音</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">外显销售手机号</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">招聘行业专用线路</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">稳定性更高</div>
+            </div>
+            <div class="advantage-box">
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
+              <div class="title">防封强、接通率高</div>
+            </div>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
+    <div class="meet">
+      <el-dialog
+        :visible.sync="meetDialogVisible"
+        width="30%"
+        :before-close="meetHandleClose"
+      >
+        <div class="box-content">
+          <div id="animation" class="img">
+            <!--            <img src="../../../../assets/images/outbound/meet.png" alt="">-->
+          </div>
+          <div class="hu">正在呼叫客户</div>
+          <div class="telephone">{{ dialPhone }}</div>
+          <div class="company">{{ dialName }}</div>
+          <div class="tips">请您留意手机来电接听</div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -388,6 +501,7 @@
 import show from '@/views/user/company/crm/components/Show'
 import { clueRelease, clueReceive, clueDelete, crmCustomList, clueList, clueAdminLists, classify, crmCustomListEdit, clueExport } from '@/api/company_crm'
 import { export_json_to_excel } from '@/excel/Export2Excel'
+import { outboundCall } from '@/api/outbound'
 
 export default {
   name: 'Whole',
@@ -436,8 +550,16 @@ export default {
       },
       export_field: [],
       export_name: [],
+      callDialogVisible: false,
+      meetDialogVisible: false,
+      dialPhone: '',
+      dialName: '',
       sort_type: '',
-      sort: ''
+      sort: '',
+      saleFilter: '',
+      industryFilter: '',
+      regionFilter: '',
+      createdByFilter: ''
     }
   },
   computed: {
@@ -631,6 +753,84 @@ export default {
       }
     },
     confirm(){
+      if (this.saleScreen != ''){
+        for (var i = 0; i <= this.saleScreenData.length - 1; i++){
+          if (this.saleScreen == this.saleScreenData[i].id){
+            this.saleFilter = {
+              'field': 'admin_username', 'name': this.saleScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.saleFilter = ''
+      }
+      if (this.industryScreen != ''){
+        for (var i = 0; i <= this.industryScreenData.length - 1; i++){
+          if (this.industryScreen == this.industryScreenData[i].id){
+            this.industryFilter = {
+              'field': 'trade', 'name': this.industryScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.industryFilter = ''
+      }
+      if (this.regionScreen != ''){
+        // for (var i = 0; i <= this.regionScreenData.length - 1; i++){
+        //   if (this.regionScreen[0] == this.regionScreenData[i].value){
+        //     this.regionFilter = {
+        //       'field': 'district', 'name': this.regionScreenData[i].name
+        //     }
+        //   }
+        // }
+        if (this.regionScreen.length == 1){
+          for (var i = 0; i <= this.regionScreenData.length - 1; i++){
+            if (this.regionScreen[0] == this.regionScreenData[i].value){
+              this.regionFilter = {
+                'field': 'district', 'name': this.regionScreenData[i].label
+              }
+            }
+          }
+        }
+        if (this.regionScreen.length == 2){
+          for (var i = 0; i <= this.regionScreenData.length - 1; i++){
+            for (var a = 0; a <= this.regionScreenData[i].children.length - 1; a++){
+              if (this.regionScreen[1] == this.regionScreenData[i].children[a].value){
+                this.regionFilter = {
+                  'field': 'district', 'name': this.regionScreenData[i].children[a].label
+                }
+              }
+            }
+          }
+        }
+        if (this.regionScreen.length == 3){
+          for (var i = 0; i <= this.regionScreenData.length - 1; i++){
+            for (var a = 0; a <= this.regionScreenData[i].children.length - 1; a++){
+              for (var b = 0; b <= this.regionScreenData[i].children[a].children.length - 1; b++){
+                if (this.regionScreen[2] == this.regionScreenData[i].children[a].children[b].value){
+                  this.regionFilter = {
+                    'field': 'district', 'name': this.regionScreenData[i].children[a].children[b].label
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        this.regionFilter = ''
+      }
+      if (this.createdByScreen != ''){
+        for (var i = 0; i <= this.createdByScreenData.length - 1; i++){
+          if (this.createdByScreen == this.createdByScreenData[i].id){
+            this.createdByFilter = {
+              'field': 'creat_username', 'name': this.createdByScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.createdByFilter = ''
+      }
+      this.currentPage = 1
       this.clueList()
     },
     see(value){
@@ -746,6 +946,7 @@ export default {
       return jsonData.map(v => filterVal.map(j => v[j]))
     },
     funSearchKeyword(){
+      this.currentPage = 1
       this.clueList()
     },
     goto(target) {
@@ -796,29 +997,211 @@ export default {
       if (field == 'creat_username'){
         this.createdByScreen = []
       }
-      this.clueList()
+      this.confirm()
+    },
+    clickDial(phone, name){
+      this.$confirm('是否对【' + name + '】' + phone + ' 发起呼叫？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        outboundCall(
+          { 'mobile': phone }
+        ).then(res => {
+          if (res.code == 200){
+            this.meetDialogVisible = true
+            this.dialPhone = phone
+            this.dialName = name
+          }
+          if (res.code == 4040){
+            this.callDialogVisible = true
+          }
+        }).catch((res) => {
+        })
+      }).catch(() => {
+
+      })
+    },
+    callHandleClose(){
+      this.callDialogVisible = false
+    },
+    meetHandleClose(){
+      this.meetDialogVisible = false
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-.sotrTime{
+.dial{
+  position: relative;
+  top:2px;
+  width: 14px;
+  height: 14px;
   display: inline-block;
-  width: 85%;
+  .disal_img{
+    cursor:pointer;
+    width: 14px;
+    height: 14px;
+    background: url('../../../../assets/images/outbound/dial.png') no-repeat center;
+  }
 }
-  ::v-deep .el-popover{
+.meet{
+  .box-content{
+    .img{
+      width: 150px;
+      height:150px;
+      text-align: center;
+      margin-top: 40px;
+      margin:0 auto;
+      background: url('../../../../assets/images/outbound/meet.png') no-repeat center;
+    }
+    .hu{
+      text-align: center;
+      margin-top: 30px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #949494;
+    }
+    .telephone{
+      text-align: center;
+      font-size: 30px;
+      font-family: Microsoft YaHei;
+      font-weight: bold;
+      color: #333333;
+      margin-top: 26px;
+    }
+    .company{
+      text-align: center;
+      margin-top:25px;
+      font-size: 15px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #666666;
+    }
+    .tips{
+      text-align: center;
+      height: 80px;
+      line-height: 80px;
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #959595;
+    }
+  }
+}
+.meet{
+  ::v-deep .el-dialog__body{
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+  ::v-deep .el-dialog{
+    border-radius: 16px;
+  }
+}
+.call{
+  .box-content{
+    padding: 20px 30px 35px 30px;
+    .advantage{
+      .advantage-box{
+        display: inline-block;
+        width: 170px;
+        .title{
+          display: inline-block;
+          float:left;
+        }
+        .img{
+          display: inline-block;
+          float:left;
+          margin-right: 8px;
+        }
+      }
+      margin-top: 25px;
+    }
+    .slogan{
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #FF550A;
+      margin-top:24px;
+    }
+    .code{
+      display: inline-block;
+      margin-right: 30px;
+      float: right;
+      width: 117px;
+      height: 117px;
+      background: #FFFFFF;
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
+      border-radius: 8px;
+      padding: 10px 10px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .content{
+      display: inline-block;
+      float: left;
+      .title1{
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FF550A;
+      }
+      .title2{
+        margin-top: 18px;
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #555555;
+      }
+      .title3{
+        width: 133px;
+        height: 24px;
+        background: #FF6929;
+        border-radius: 3px;
+        text-align: center;
+        line-height: 24px;
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #FFFFFF;
+        margin-top: 23px;
+      }
+    }
+  }
+}
+.call {
+  ::v-deep .el-dialog__body {
+    padding: 0px 0px 0px 0px;
+    border-radius: 5px;
+  }
+
+  ::v-deep .el-dialog {
+    border-radius: 16px;
+  }
+}
+.sotrTime {
+    display: inline-block;
+    width: 85%;
+}
+
+::v-deep .el-popover {
     position: fixed;
-  }
-  ::v-deep .el-checkbox-group{
-    height: 250px;
-    overflow-y: scroll;
-  }
-  .list-search{
-    z-index: 1;
-    position: relative;
-  }
-  .filterOperation{
+}
+
+::v-deep .el-checkbox-group {
+  height: 250px;
+  overflow-y: scroll;
+}
+.list-search {
+  z-index: 1;
+  position: relative;
+}
+
+.filterOperation {
     float: right;
     margin-right: 5px;
     color: #fff;
@@ -827,93 +1210,111 @@ export default {
     font-size: 12px;
     border-radius: 3px;
   }
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
     width: 10px; // 横向滚动条
     height: 10px; // 纵向滚动条 必写
   }
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
     background-color: #c1c7d0;
     border-radius: 2px;
   }
-  .unlock_display{
-      display: inline-block;
-      float: right;
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
-      &:hover{
-        background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
-      }
+
+.unlock_display {
+    display: inline-block;
+    float: right;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
+
+    &:hover {
+      background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
     }
-  .unlock{
+  }
+
+.unlock {
     display: none;
     float: right;
     width: 20px;
     height: 20px;
     cursor: pointer;
     background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
-    &:hover{
+
+    &:hover {
       background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
     }
   }
-  .lock_display{
+
+.lock_display {
     display: inline-block;
     float: right;
     width: 20px;
     height: 20px;
     cursor: pointer;
     background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
-    &:hover{
+
+    &:hover {
       background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
     }
   }
-  .lock{
+
+.lock {
     display: none;
     float: right;
     width: 20px;
     height: 20px;
     cursor: pointer;
     background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
-    &:hover{
+
+    &:hover {
       background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
     }
   }
-  .drop_down{
+
+.drop_down {
     display: inline-block;
     float: right;
     width: 20px;
     height: 20px;
     cursor: pointer;
     background: url("../../../../assets/images/company/crm/drop-down.png") no-repeat center center;
-    &:hover{
+
+    &:hover {
       background: url("../../../../assets/images/company/crm/drop-down1.png") no-repeat center center;
     }
   }
-  .checkboxBtn{
-    ::v-deep .el_button{
+
+.checkboxBtn {
+    ::v-deep .el_button {
       padding: 4px 6px;
       font-size: 14px;
       border-radius: 3px;
     }
   }
-  .field_s_select{
+
+.field_s_select {
     background-color: #344563;
     border: 1px solid transparent;
-    padding:16px 10px;
+    padding: 16px 10px;
   }
-  .field_s{
+
+.field_s {
     background: #f4f5f7;
     border: 1px solid transparent;
-    padding:16px 10px;
+    padding: 16px 10px;
   }
-  .operation{
+
+.operation {
     font-size: 14px;
   }
-  ::v-deep .el-drawer {
-      overflow: initial;
+
+::v-deep .el-drawer {
+    overflow: initial;
   }
-  .close {
+
+.close {
     width: 40px;
     height: 60px;
     position: absolute;
@@ -923,6 +1324,7 @@ export default {
     background: #f5f5f5;
     border-radius: 8px 0 0 8px;
     cursor: pointer;
+
     .el-icon-close {
       font-size: 30px;
       color: #777;
@@ -932,30 +1334,96 @@ export default {
       transform: translate(-50%, -50%);
     }
   }
-  .setField_h{
+
+.setField_h {
     height: 250px;
     overflow: auto;
   }
-  .setFields{
-    margin:15px 0px;
+
+.setFields {
+    margin: 15px 0px;
     font-size: 14px;
   }
-  .setField{
-    top:60px;
+
+.setField {
+    top: 60px;
     right: 0;
     position: absolute;
     z-index: 1000;
     margin-left: 10px;
   }
-  .screenStyle{
-    margin:10px 0px;
+
+.screenStyle {
+    margin: 10px 0px;
   }
-  .bortton-page{
+
+.bortton-page {
     margin-top: 20px;
     padding-bottom: 40px;
   }
-  .input-with-select{
-    float:left;
+
+.input-with-select {
+    float: left;
     margin-bottom: 20px;
   }
+.filterCriteria{
+  border: 1px dashed #EEEEEE;
+  font-size: 13px;
+  color: #999999;
+  margin-top: 62px;
+  margin-bottom: 16px;
+  padding:15px 16px 15px 16px;
+  .selected{
+    display: inline-block;
+    font-size: 12px;
+    color: #e6a23c;
+    height: 26px;
+    line-height: 26px;
+    padding: 0 7px 0 7px;
+    border: 1px solid #e6a23c;
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    border-radius: 3px;
+    .name{
+      display: inline-block;
+    }
+    .closes{
+      display: inline-block;
+      margin-left: 10px;
+    }
+  }
+}
+.setField_s {
+  top: 0px;
+  right: 0;
+  position: absolute;
+  z-index: 1000;
+  margin-left: 10px;
+}
+#animation {
+  animation:pulse 1s .2s ease both infinite;
+}
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform:scale(1)
+  }
+  50% {
+    -webkit-transform:scale(1.1)
+  }
+  100% {
+    -webkit-transform:scale(1)
+  }
+}
+@-moz-keyframes pulse {
+  0% {
+    -moz-transform:scale(1)
+  }
+  50% {
+    -moz-transform:scale(1.1)
+  }
+  100% {
+    -moz-transform:scale(1)
+  }
+}
 </style>

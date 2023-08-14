@@ -205,6 +205,7 @@ export default {
   },
   methods: {
     funSearchKeyword(){
+      this.params.page = 1
       this.getDataList()
     },
     handleReduction(id) {

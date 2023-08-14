@@ -157,6 +157,13 @@ import api from '@/api'
           .get(api.company_setmeallist, {})
           .then(res => {
             this.dataset = res.data.items
+            /*
+            * 【bug】后台配置允许购买套餐，首页升级套餐点进来不能购买
+            *  zch 2022.9.26
+            * 【新增】
+            *  this.submitData.is_apply = this.dataset[0].is_apply
+            * */
+            this.submitData.is_apply = this.dataset[0].is_apply
             if (this.dataset.length > 0) {
               this.submitData.service_id = this.dataset[0].id
               this.old_amount = this.dataset[0].expense
@@ -209,13 +216,13 @@ import api from '@/api'
         this.ispay = true   // 同一时间多次点击支付生成多条订单修改
         // 【bug】后台企业套餐设置显示开关和是否允许申请开关关系
         if (this.submitData.is_apply === 1){
+          this.ispay = false    // 同一时间多次点击支付生成多条订单修改
           this.submitData.return_url =
             window.location.protocol +
             '//' +
             window.location.host +
             '/'+this.$store.state.config.member_dirname+'/company/service/order'
           this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData,()=>{
-            this.ispay = false    // 同一时间多次点击支付生成多条订单修改
           })
         }else {
           this.$message({

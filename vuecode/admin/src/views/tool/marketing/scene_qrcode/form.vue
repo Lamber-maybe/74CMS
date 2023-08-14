@@ -35,7 +35,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="showParam" :label="paramLabel" prop="paramid" required>
+      <el-form-item v-if="showParam" :label="paramLabel" prop="paramid">
         <el-select
           v-model="form.paramid"
           filterable
@@ -120,7 +120,7 @@ export default {
           { required: true, message: '请选择平台', trigger: 'change' }
         ],
         deadline: [
-          { validator: validateDeadline, trigger: 'change' }
+          { required: true, validator: validateDeadline, trigger: 'blur' }
         ],
         type: [
           { required: true, message: '请选择类型', trigger: 'change' }
