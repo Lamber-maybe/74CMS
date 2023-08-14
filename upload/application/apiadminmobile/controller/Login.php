@@ -5,9 +5,7 @@ class Login extends \app\apiadmin\controller\Login
 {
     public function config()
     {
-        $nameArr = ['sitename','wechat_appid'];
-        $info = model('Config')->whereIn('name',$nameArr)->column('name,value');
-        $this->ajaxReturn(200, '获取数据成功', $info);
+        $this->ajaxReturn(200, '获取数据成功', model('Config')->getCache());
     }
     public function weixin(){
         $code = input('post.code');

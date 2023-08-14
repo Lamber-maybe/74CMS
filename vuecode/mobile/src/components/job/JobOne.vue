@@ -582,6 +582,44 @@
     </van-dialog>
     <!-- 绑定微信结束 -->
 
+    <!--简历完整度过低，弹窗提示 start -->
+    <van-dialog
+      v-model="showLowPop"
+      title="提示"
+      show-cancel-button
+      @confirm="completeResume"
+      confirm-button-text="去完善"
+    >
+      <div class="complete_resume_box">
+        <label>
+          <span>{{ completeResumeMsg }}</span>
+        </label>
+      </div>
+    </van-dialog>
+    <!--简历完整度过低，弹窗提示 end -->
+    <!-- 弹窗登录 start -->
+    <van-dialog
+      v-model="needLogin"
+      title=""
+      :showConfirmButton="false"
+      :showCancelButton="false"
+      :closeOnClickOverlay="true"
+    >
+      <div class="user-login-title">求职者用户登录</div>
+      <input class="user-login-input1" v-model="loginForm.mobile" placeholder="请输入手机号" type="number" maxlength="11"/>
+      <div class="user-login-code">
+        <input class="user-login-input2" v-model="loginForm.code" placeholder="请输入验证码"/>
+        <button class="log_get_btn" :disabled="is_submit" :style="'color:'+$store.state.sendSmsBtnTextColor"
+                @click="sendSms">
+          {{ $store.state.sendSmsBtnText }}
+        </button>
+      </div>
+      <div class="login-btn-wrapper">
+        <button class="login-btn" round block color="#1989fa" @click="handleLogin">登录</button>
+      </div>
+    </van-dialog>
+    <Captcha ref="captcha" @setSubmitFun="setSubmitFun"></Captcha>
+    <!-- 弹窗登录 end -->
   </div>
 </template>
 
@@ -599,6 +637,8 @@ import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import TianMap from '@/components/map/TianMap/TianMap'
 import { mapMutations, mapState } from 'vuex'
+import Captcha from '@/components/captcha/index'
+import { handlerHttpError } from '@/utils/error'
 let isSpider = new RegExp(
   '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
 ).test(navigator.userAgent)
@@ -616,7 +656,8 @@ export default {
     Subscribe,
     Share,
     SharePoster,
-    TianMap
+    TianMap,
+    Captcha
   },
   data () {
     return {
@@ -668,7 +709,19 @@ export default {
       // 绑定微信二维码
       scanQrcodeImg: '',
       mobile_company_show_tpl: 'def',
-      TMap: {}
+      TMap: {},
+      // 是否显示简历完整度过低弹窗
+      showLowPop: false,
+      // 完善简历提示语
+      completeResumeMsg: '',
+      needLogin: false,
+      loginForm: {
+        mobile:'',
+        code:''
+      },
+      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+      sendSmsLimit: false,
+      is_submit: false
     }
   },
   created () {
@@ -1063,42 +1116,41 @@ export default {
       // }
     },
     doApply () {
-      if (this.$store.state.LoginOrNot === true) {
-        if (this.$store.state.LoginType !== 2) {
-          this.$dialog
-            .confirm({
-              title: '提示',
-              message: '当前操作需要登录求职者账号',
-              confirmButtonText: '去登录'
-            })
-            .then(() => {
-              this.showLogin = true
-              this.after_login_data = {
-                method: 'doApply'
-              }
-            })
-            .catch(() => {})
-        } else {
-          const params = {
-            jobid: this.query_id
-          }
-          http
-            .post(api.jobapply, params)
-            .then((res) => {
-              this.$notify({ type: 'success', message: res.message })
-              this.fetchData()
-            })
-            .catch(() => {})
+      /**
+       * 【ID1000705】
+       * 【优化】未登录情况下，职位详情页点投递简历取消快捷投递
+       * cy 2023-6-29
+       * 取消未登录跳转快速注册页，改为跳转到登录页
+       */
+      if (this.$store.state.LoginOrNot === false || this.$store.state.LoginType !== 2) {
+        // 去登录
+        this.needLogin = true
+      } else if (this.has_apply != 1) {
+        let basic = this.$store.state.resume.basic
+        if (basic && basic.complete_percent && basic.complete_percent < this.$store.state.config.apply_job_min_percent) {
+          this.showLowPop = true
+          this.completeResumeMsg = '您的简历完整度不足' + this.$store.state.config.apply_job_min_percent + '%，暂不能投递此职位，建议您完善简历！'
+          return false;
         }
-      } else {
-        // 快速注册简历
-        this.$router.push({
-          path: '/member/regquick',
-          query: {
-            id: this.query_id
-          }
-        })
+        const params = {
+          jobid: this.query_id
+        }
+        http
+          .post(api.jobapply, params)
+          .then((res) => {
+            this.$notify({type: 'success', message: res.message})
+            this.fetchData()
+          })
+          .catch(() => {
+          })
       }
+      // // 快速注册简历
+      // this.$router.push({
+      //   path: '/member/regquick',
+      //   query: {
+      //     id: this.query_id
+      //   }
+      // })
     },
     doFav () {
       if (this.is_personal_login === false) {
@@ -1213,6 +1265,122 @@ export default {
         this.$refs.tipoff.initCB()
         this.showTipoff = true
       }
+    },
+    // 完善简历事件
+    completeResume() {
+      this.$router.push('/member/personal/resume')
+    },
+    // 发送验证码
+    sendSms() {
+      if (this.$store.state.sendSmsBtnDisabled) {
+        return false
+      }
+      if (!this.loginForm.mobile) {
+        this.$notify('请输入手机号')
+        return false
+      }
+      if (!this.regularMobile.test(this.loginForm.mobile)) {
+        this.$notify('手机号格式不正确')
+        return false
+      }
+      this.is_submit = true
+      this.sendSmsLimit = true
+      this.$refs.captcha.show(res => {
+        this.$store
+          .dispatch('sendSmsFun', {
+            url: api.get_login_code,
+            mobile: this.loginForm.mobile,
+            type: 2,
+            captcha: res
+          })
+          .then(response => {
+            this.sendSmsLimit = false
+            if (response.code === 200) {
+              this.is_submit = false
+              this.$notify({
+                type: 'success',
+                message: this.$store.state.sendSmsMessage
+              })
+            } else {
+              this.is_submit = false
+              this.$notify(this.$store.state.sendSmsMessage)
+            }
+          })
+      })
+    },
+    setSubmitFun () {
+      this.is_submit = false
+    },
+    // 求职者登录
+    handleLogin() {
+      if (!this.loginForm.mobile) {
+        this.$notify('请输入手机号')
+        return false
+      }
+      if (!this.regularMobile.test(this.loginForm.mobile)) {
+        this.$notify('手机号格式不正确')
+        return false
+      }
+      if (!this.loginForm.code) {
+        this.$notify('请输入验证码')
+        return false
+      }
+      let paramsData = this.loginForm
+      paramsData.utype = 2
+      http.get(api.login_code, paramsData).then(check_res => {
+        let setShow = false
+        if (check_res.data == 1) {
+          setShow = true
+        }
+        this.$refs.captcha.show(res => {
+          if (res !== undefined) {
+            paramsData.captcha = res
+          }
+          http
+            .post(api.login_code, paramsData)
+            .then(response => {
+              if (parseInt(response.code) === 200) {
+                this.$store.commit('clearCountDownFun')
+                this.$store.commit('setLoginState', {
+                  whether: true,
+                  utype: response.data.utype,
+                  token: response.data.token,
+                  mobile: response.data.mobile,
+                  userIminfo: response.data.user_iminfo
+                })
+                if (response.data.next_code != 200) {
+                  handlerHttpError({ code: response.data.next_code, message: '' })
+                } else {
+                  // 更新简历基本资料
+                  this.updateBasicResume()
+                  // 投递
+                  this.doApply()
+                  // 刷新页面
+                  this.fetchData()
+                  this.needLogin = false
+                }
+              } else {
+                this.$notify(response.message)
+              }
+            })
+            .catch(() => {})
+        }, setShow)
+      }).catch(() => {})
+    },
+    // 更新简历基本资料
+    updateBasicResume() {
+      http.get(api.editResume).then(res => {
+        if (res.data === null) {
+          // 更新基本资料
+          this.$store.dispatch('setBasicInfo', null)
+        } else {
+          // 更新基本资料
+          this.$store.dispatch('setBasicInfo', res.data.basic)
+        }
+      })
+        .catch(err => {
+          console.log(err, 'updateBasicResume')
+        })
     }
   }
 }
@@ -2414,4 +2582,79 @@ export default {
   }
 }
 //绑定微信结束
+// 简历完整度提醒框
+.complete_resume_box {
+  padding: 10px 25px;
+  box-sizing: border-box;
+}
+
+.login-btn-wrapper {
+  margin: 25px auto 25px;
+  text-align: center;
+  width: 270px;
+  .login-btn{
+    width: 7.2rem;
+    background: #1787fb;
+    border: none;
+    color: #fff;
+    height: 34px;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+}
+.log_get_btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border: 0;
+  font-size: 15px;
+  width: 100px;
+  height: 100%;
+  border-radius: 20px;
+  background: transparent;
+}
+
+.user-login-title {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+}
+.user-login-input1 {
+  display: block;
+  width: 270px;
+  height: 35px;
+  margin: 0 auto 15px;
+  background-color: #f7f8f9;
+  border-radius: 20px;
+  border: none;
+  box-sizing: border-box;
+  padding: 0 15px;
+  font-size: 14px;
+  &::placeholder {
+    color: #ccc;
+  }
+}
+
+.user-login-code {
+  position: relative;
+  width: 270px;
+  margin: 0 auto 15px;
+
+  .user-login-input2 {
+    display: block;
+    width: 100%;
+    height: 35px;
+    background-color: #f7f8f9;
+    border-radius: 20px;
+    border: none;
+    box-sizing: border-box;
+    padding: 0 15px;
+    font-size: 14px;
+
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+}
+
 </style>

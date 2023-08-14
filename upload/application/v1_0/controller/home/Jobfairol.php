@@ -735,7 +735,17 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $this->interceptPersonalResume();
             $compelete_percent = model('Resume')->countCompletePercent(0,$this->userinfo->uid);
             if($compelete_percent < $info['min_complete_percent']){
-                $this->ajaxReturn(500,'你的简历完整度不足'.$info['min_complete_percent'].'%，不能参加此招聘会');
+                /**
+                 *【ID1000674】
+                 * 【优化】网络招聘会，简历完善度不够不能参加，引导注册简历
+                 * cy - 2023.06.27
+                 * [修改]:
+                 * 状态码500 改为 200
+                 * 增加data返回字段用来前端进行判断弹窗
+                 */
+                $this->ajaxReturn(200, '你的简历完整度不足' . $info['min_complete_percent'] . '%，不能参加此招聘会，建议您立即完善简历！', [
+                    'is_complete' => 1
+                ]);
             }
         }
         if(null!==model('JobfairOnlineParticipate')->where('jobfair_id',$jobfair_id)->where('uid',$this->userinfo->uid)->find()){

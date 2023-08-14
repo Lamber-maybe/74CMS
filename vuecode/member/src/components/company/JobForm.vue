@@ -550,6 +550,23 @@
           >
         </el-form-item>
 
+        <el-form-item label="接收通知">
+          <el-switch
+            v-model="smsNotice"
+            @change="handlerNeedNotice"
+            active-text="联系手机接收投递通知"
+          >
+          </el-switch>
+        </el-form-item>
+
+        <div class="follow_wechat" v-if="bind_weixin && scanQrcodeImg!=''">
+          <img class="follow_wechat_lf" v-if="scanQrcodeImg" :src="scanQrcodeImg" width="175" height="175"/>
+          <div class="follow_wechat_rt">
+            <div class="text1"></div>
+            <div class="text2">随时随地接收简历投递通知，更有优秀人才精准推荐</div>
+          </div>
+        </div>
+
         <div class="btn_wrapper">
 <!--          【ID1000214]连续点击多条职位发布修改-->
           <el-button type="primary" @click="onSubmit('form')" :loading="ispay">{{
@@ -619,6 +636,19 @@ export default {
     this.$store.dispatch('getClassifyAge')
   },
   created() {
+    http
+      .post(api.member_account, {})
+      .then(res => {
+        if ( parseInt(res.data.bind_weixin) === 1){
+          this.bind_weixin = false
+        }else {
+          this.bind_weixin = true
+          http.get(api.get_qrcode,{type:'bind_weixin'}).then(res=>{
+            this.scanQrcodeImg = res.data
+          })
+        }
+      })
+      .catch(() => {})
     if (this.type === 'add') {
       http
         .get(api.company_index)
@@ -740,7 +770,8 @@ export default {
           address: '',
           custom_field_1: '',
           custom_field_2: '',
-          custom_field_3: ''
+          custom_field_3: '',
+          need_notice: 1
         },
         contact: {
           use_company_contact: 1,
@@ -757,7 +788,10 @@ export default {
       contactHidden: false,
       weixin_sync_mobile: false,
       tpllist: [],
-      secrecyHidden: false
+      secrecyHidden: false,
+      smsNotice: true,
+      bind_weixin: false,
+      scanQrcodeImg: ''
     }
   },
   methods: {
@@ -915,6 +949,13 @@ export default {
         })
         .catch(() => {
         })
+    },
+    handlerNeedNotice () {
+      if (this.smsNotice === true) {
+        this.form.basic.need_notice = 1
+      } else {
+        this.form.basic.need_notice = 0
+      }
     }
   }
 }
@@ -1043,5 +1084,56 @@ export default {
 .preserveBtn {
   margin-top: -10px;
   text-align: center;
+}
+
+.follow_wechat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 584px;
+  height: 98px;
+  background: #F7F9FD;
+  opacity: 0.8;
+  border-radius: 2px;
+  margin: 0 0 23px 32px;
+  box-sizing: border-box;
+  padding: 0 0 0 34px;
+
+  .follow_wechat_lf {
+    display: block;
+    width: 75px;
+    height: 74px;
+    margin-right: 45px;
+  }
+
+  .follow_wechat_rt {
+    font-size: 14px;
+    color: #1E1E1E;
+
+    .text1 {
+      width: 130px;
+      height: 14px;
+      background: url('../../assets/images/wechatIcon.png') center center no-repeat;
+      background-size: 100% 100%;
+      margin-bottom: 13px;
+      position: relative;
+
+      &:after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 7px;
+        background: #409EFF;
+        opacity: 0.2;
+        position: absolute;
+        bottom: -4px;
+      }
+    }
+  }
+}
+
+.btn_wrapper {
+  box-sizing: border-box;
+  padding-left: 32px;
 }
 </style>

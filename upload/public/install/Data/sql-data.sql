@@ -833,7 +833,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'account_alisms',0,'{\"signature\":\"\",\"accesskey_id\":\"\",\"accesskey_secret\":\"\"}','阿里云短信配置',1),
 (NULL,'account_alipay',0,'{\"appid\":\"\",\"privatekey\":\"\",\"publickey\":\"\"}\r\n','支付宝配置',1),
 (NULL,'resume_download_points_talent',0,'30','优质简历下载点数',0),
-(NULL,'setmeal_overtime_conf',0,'{\"service_added_discount\":\"0\",\"jobs_meanwhile\":\"2\",\"refresh_jobs_free_perday\":\"2\",\"download_resume_max_perday\":\"0\",\"enable_video_interview\":\"0\",\"enable_poster\":\"0\",\"show_apply_contact\":\"1\",\"im_max_perday\":\"10\"}','套餐过期权限配置',0),
+(NULL,'setmeal_overtime_conf',0,'{\"service_added_discount\":\"0\",\"jobs_meanwhile\":\"2\",\"refresh_jobs_free_perday\":\"2\",\"download_resume_max_perday\":\"0\",\"enable_video_interview\":\"0\",\"show_apply_contact\":\"1\",\"im_max_perday\":\"10\"}','套餐过期权限配置',0),
 (NULL,'audit_new_com',0,'0','新注册企业认证状态',0),
 (NULL,'audit_verifycom_addjob',0,'1','已认证企业新发布职位审核状态',0),
 (NULL,'audit_unverifycom_addjob',0,'0','未认证企业新发布职位审核状态',0),

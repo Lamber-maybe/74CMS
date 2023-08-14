@@ -4285,5 +4285,25 @@ return [
             '地区分站',
             '分站管理'
         ]
-    ]
+    ],
+    'douyin_miniprogram_examine' => [
+        'name' => 'douyin_miniprogram_examine',
+        'is_log' => 1,
+        'is_frontend' => '0',
+        'value' => 'douyin_miniprogram_examine',
+        'is_secret' => '0',
+        'is_json' => [],
+        'association' => '',
+        'map' => [
+            0 => '关闭',
+            1 => '开启'
+        ],
+        'field_name' => '抖音账号登录',
+        'menu_zh' => [
+            '移动端',
+            '抖音小程序',
+            '基础配置',
+            '基础配置'
+        ]
+    ],
 ];

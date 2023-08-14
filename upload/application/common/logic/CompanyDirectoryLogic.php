@@ -511,7 +511,7 @@ class CompanyDirectoryLogic
         }
 
         model('AdminLog')->writeLog(
-            '企业名录导入线索，导入CRM线索：' . implode($clueList, '；') . '，导入位置：' . $placeName,
+            '企业名录导入线索，导入CRM线索：' . implode('；', $clueList) . '，导入位置：' . $placeName,
             $adminInfo,
             0,
             1

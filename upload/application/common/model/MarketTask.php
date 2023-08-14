@@ -840,6 +840,21 @@ class MarketTask extends \app\common\model\BaseModel
     protected function _parseConditionOfSetmeal($condition)
     {
         $model = model('MemberSetmeal')->alias('a');
+        /**
+         * 【ID1000680】
+         * 【bug】后台群发工具-套餐到期提醒，应发送数量对不上
+         * yx - 2023.06.27
+         * [新增]:
+         * $model = $model->join('Member m', 'a.uid=m.uid', 'LEFT')
+         *  ->where('m.uid', 'not null')
+         *  ->where('a.deadline', 'neq', 0);
+         * 【说明：】
+         * 选择过期，未过滤永不到期，包含了永久套餐企业
+         * 并且未过滤已删除企业
+         */
+        $model = $model->join('Member m', 'a.uid=m.uid', 'LEFT')
+            ->where('m.uid', 'not null')
+            ->where('a.deadline', 'neq', 0);
         if (
             isset($condition['setmeal_id']) &&
             count($condition['setmeal_id']) > 0

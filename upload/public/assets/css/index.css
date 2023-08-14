@@ -3010,3 +3010,29 @@ button {
 .impowerBox .qrcode{
 width: 120px !important;
 }
+.new{
+	position: relative;
+}
+.new:after{
+	content: '';
+	position: absolute;
+	right: -17px;
+	top: 7px;
+	width: 7px;
+	height: 7px;
+	background-color: #ff5050;
+	border-radius: 100%;
+}
+ .interview_new{
+	 position: relative;
+ }
+.interview_new:after{
+	content: '';
+	position: absolute;
+	right: -17px;
+	top: 7px;
+	width: 7px;
+	height: 7px;
+	background-color: #ff5050;
+	border-radius: 100%;
+}

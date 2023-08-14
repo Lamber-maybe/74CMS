@@ -124,7 +124,7 @@
                         <div class="item_box">
                             {#volist name="return.intention_list" id="vo"#}
                             <div class="intention_item">
-                                <p class="intention_item_text1">[{#$vo.district_text#}] {#$vo.category_text#}</p>
+                                <p class="intention_item_text1">[{#$vo.district_full_text#}] {#$vo.category_text#}</p>
                                 <p class="intention_item_text2">
                                     {#$vo.wage_text#}，{#$vo.nature_text#}{#if
                                     condition="$return.field_rule.intention.trade.is_display==1 &&
@@ -550,9 +550,7 @@
     >
         <div class="dialog_tip_wrapper" style="text-align: center;">
             <div class="tx1" style="line-height: 25px;">
-                很抱歉，您的套餐暂不支持下载简历，
-                <br />
-                请升级套餐。
+                {{showUpgradePackageMsg}}
             </div>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -680,6 +678,7 @@
             payment:'wxpay',
             isPayment:false,
             showUpgradePackage: false,
+            showUpgradePackageMsg: '',
             preview_id: 0
         },
         watch: {
@@ -1036,6 +1035,7 @@
                     if (res.data.done == 0) {
                         if (res.data.need_upgrade == 1){
                             that.showUpgradePackage = true
+                            that.showUpgradePackageMsg = res.message
                         } else {
                             that.showDirectService = true
                             var btnCn = ''

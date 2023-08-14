@@ -28,7 +28,7 @@
         </div>
       </div>
       <div
-        v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter!='' || followCountFilter != ''"
+        v-if="saleFilter !='' || followupFilter != '' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter!='' || followCountFilter != ''"
         class="filterCriteria"
       >
         <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
@@ -73,6 +73,10 @@
               <i class="el-icon-close" />
             </div>
           </div>
+          <div v-if="followupFilter != ''" class="selected">
+            <div class="name">未跟进：{{ followupFilter.name }}</div>
+            <div class="closes" @click="reset(followupFilter.field)"><i class="el-icon-close" /></div>
+          </div>
         </div>
         <div
           style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;"
@@ -85,7 +89,7 @@
       <div style="position: relative;padding-top: 15px">
         <span class="checkboxName">ID</span>
         <div
-          :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'"
+          :class="saleFilter !='' || followupFilter != '' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'"
         >
           <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
             <div class="setField_h">
@@ -172,7 +176,8 @@
                 @mouseenter="locks(items.field)"
                 @mouseleave="locks(items.field)"
               >
-                <span>{{ items.name }}</span>
+                <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
+                <span v-else>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
                   <div v-if="items.field == 'admin_username'">
@@ -215,6 +220,15 @@
                     </el-checkbox-group>
                   </div>
                   <!-- 跟进次数-->
+                  <!-- 未跟进-->
+                  <div v-if="items.field == 'not_following_day'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in followupScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 未跟进-->
                   <!-- 创建人-->
                   <div v-if="items.field == 'creat_username'">
                     <el-checkbox-group>
@@ -303,6 +317,15 @@
                 <span v-if="scope.row.remark == ''"> - </span>
                 <span v-else> {{ scope.row.remark }} </span>
               </div>
+              <div v-if="items.field == 'last_visit_time'">
+                <span v-if="scope.row.last_visit_time == ''">-</span>
+                <span v-else>{{ scope.row.last_visit_time }}</span>
+              </div>
+              <div v-if="items.field == 'not_following_day'">
+                <span v-if="scope.row.not_following_day == -1">-</span>
+                <span v-else-if="scope.row.not_following_day == 0">0</span>
+                <span v-else>{{ scope.row.not_following_day }}</span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
@@ -318,7 +341,8 @@
                 @mouseenter="locks(items.field)"
                 @mouseleave="locks(items.field)"
               >
-                <span>{{ items.name }}</span>
+                <span v-if="items.field == 'not_following_day'">{{ items.name }}(天)</span>
+                <span v-else>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
                   <div v-if="items.field == 'admin_username'">
@@ -370,13 +394,22 @@
                     </el-checkbox-group>
                   </div>
                   <!-- 跟进次数-->
+                  <!-- 未跟进-->
+                  <div v-if="items.field == 'not_following_day'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in followupScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="followupScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 未跟进-->
                   <div style="margin-top: 10px;">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置
                     </el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
                   <div
-                    v-if="items.field == 'creat_username' || items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'collection_time' || items.field == 'follow_count'"
+                    v-if="items.field == 'creat_username' || items.field == 'not_following_day' || items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'collection_time' || items.field == 'follow_count'"
                     slot="reference"
                     class="drop_down"
                   />
@@ -456,6 +489,15 @@
               <div v-if="items.field == 'remark'">
                 <span v-if="scope.row.remark == ''"> - </span>
                 <span v-else> {{ scope.row.remark }} </span>
+              </div>
+              <div v-if="items.field == 'last_visit_time'">
+                <span v-if="scope.row.last_visit_time == ''">-</span>
+                <span v-else>{{ scope.row.last_visit_time }}</span>
+              </div>
+              <div v-if="items.field == 'not_following_day'">
+                <span v-if="scope.row.not_following_day == -1">-</span>
+                <span v-else-if="scope.row.not_following_day == 0">0</span>
+                <span v-else>{{ scope.row.not_following_day }}</span>
               </div>
             </template>
           </el-table-column>
@@ -704,7 +746,19 @@ export default {
       ],
       followCountScreen: '',
       followCountFilter: '',
-      tabelHeight: 0
+      tabelHeight: 0,
+      followupScreen: '',
+      followupScreenData: [
+        { id: 0, name: '全部' },
+        { id: 1, name: '今日跟进' },
+        { id: 2, name: '30天内跟进过' },
+        { id: 3, name: '7天内未跟进' },
+        { id: 4, name: '15天内未跟进' },
+        { id: 5, name: '30天内未跟进' },
+        { id: 6, name: '从未跟进' },
+        { id: 7, name: '即将转公' }
+      ],
+      followupFilter: '',
     }
   },
   computed: {
@@ -837,6 +891,48 @@ export default {
         }
         localStorage.setItem('followCountScreen', '')
       }
+      // 从未跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '6') {
+        this.followupScreen = 6;
+        this.followupFilter = { name: '从未跟进', field: 'deadline' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 今日跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '1') {
+        this.followupScreen = 1;
+        this.followupFilter = { name: '今日跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 即将转入公海客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '7') {
+        this.followupScreen = 7;
+        this.followupFilter = { name: '即将转入公海客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 30天内跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '2') {
+        this.followupScreen = 2;
+        this.followupFilter = { name: '30天内跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 15天内未跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '4') {
+        this.followupScreen = 4;
+        this.followupFilter = { name: '15天内未跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 7天内未跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '3') {
+        this.followupScreen = 3;
+        this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
+      // 自定义领取时间
+      if (localStorage.getItem('collection_date_custom')) {
+        this.collectionScreen = localStorage.getItem('collection_date_custom');
+        this.collectionFilter = { name: localStorage.getItem('collection_date_custom'), field: 'collection_time' };
+        localStorage.setItem('collection_date_custom', '');
+      }
       clueList({
         'page': this.currentPage,
         'pagesize': this.pagesize,
@@ -850,7 +946,8 @@ export default {
         'sort_type': this.sort_type,
         'sort': this.sort,
         'collection': this.collectionScreen,
-        'follow_count': this.followCountScreen
+        'follow_count': this.followCountScreen,
+        'search_type': this.followupScreen
       })
         .then(res => {
           this.tableData = res.data.items
@@ -911,7 +1008,7 @@ export default {
         .then(res => {
           this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++){
-            if (this.fieldData[i].field == 'collection_time'){
+            if (this.fieldData[i].field == 'collection_time' || this.fieldData[i].field == 'last_visit_time'){
               this.fieldData[i].is_sortable = 'custom'
             } else {
               this.fieldData[i].is_sortable = false
@@ -977,6 +1074,18 @@ export default {
         }
       } else {
         this.saleFilter = ''
+      }
+      if (this.followupScreen != '') {
+        for (var i = 0; i <= this.followupScreenData.length - 1; i++) {
+          if (this.followupScreen == this.followupScreenData[i].id) {
+            this.followupFilter = {
+              field: 'not_following_day',
+              name: this.followupScreenData[i].name
+            };
+          }
+        }
+      } else {
+        this.followupFilter = '';
       }
       if (this.industryScreen != ''){
         for (var i = 0; i <= this.industryScreenData.length - 1; i++){
@@ -1190,6 +1299,12 @@ export default {
         that.$message.error('请选择要导出的线索')
         return false
       }
+      var exportData = this.exportData;
+      for (var i = 0; i <= exportData.length - 1; i++) {
+        if (exportData[i].not_following_day == -1) {
+          exportData[i].not_following_day = '';
+        }
+      }
       that.exportExcel(this.exportData)
     },
     exportExcel(list) {
@@ -1284,6 +1399,7 @@ export default {
         this.industryScreen = []
         this.regionScreen = []
         this.createdByScreen = []
+        this.followupScreen = '';
         this.key_type = '1'
         this.keyword = ''
         this.collectionScreen = ''
@@ -1306,6 +1422,9 @@ export default {
       }
       if (field == 'follow_count') {
         this.followCountScreen = ''
+      }
+      if (field == 'not_following_day') {
+        this.followupScreen = '';
       }
       this.confirm('reset')
     },

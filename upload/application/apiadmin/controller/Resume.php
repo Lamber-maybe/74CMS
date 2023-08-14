@@ -1718,6 +1718,8 @@ class Resume extends \app\common\controller\Backend
         $id = input('post.id/a');
         $audit = input('post.audit/d', 0, 'intval');
         $reason = input('post.reason/s', '', 'trim');
+        $templateId = input('post.template_id/d', 0, 'intval');
+        $addTemplate = input('post.add_template/d', 0, 'intval');
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择');
         }
@@ -1731,6 +1733,45 @@ class Resume extends \app\common\controller\Backend
             }
 
             Db::startTrans();
+
+            if ($audit === 2) {
+                /**
+                 * 【ID1000663】
+                 * 【优化】简历未通过新增审核模板及审核说明
+                 * cy 2023-7-3
+                 */
+                // 添加模板
+                if ($addTemplate == 1 && !empty($reason)) {
+                    $templateWhere = [
+                        'type' => 1,
+                        'is_del' => 0
+                    ];
+                    $templateModel = model('audit_template');
+                    // 模板最多可添加6条
+                    if ($templateModel->getCount($templateWhere) < 6) {
+                        $templateData = [
+                            'type' => 1,
+                            'content' => $reason,
+                            'add_id' => $this->admininfo->id,
+                            'add_time' => time()
+                        ];
+                        $result = $templateModel->addTemplate($templateData);
+                        if (empty($result)) {
+                            throw new \Exception('添加模板失败');
+                        }
+                    }
+                }
+                // 填写了原因的话不获取模板内容
+                if (empty($reason) && !empty($templateId)) {
+                    // 获取模板内容
+                    $templateWhere = [
+                        'id' => $templateId,
+                        'is_del' => 0
+                    ];
+                    $templateContent = model('audit_template')->getValue($templateWhere, 'content');
+                    $reason = !empty($templateContent) ? $templateContent : $reason;
+                }
+            }
 
             model('Resume')->setAudit($id, $audit, $reason);
 

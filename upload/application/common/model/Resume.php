@@ -100,6 +100,18 @@ class Resume extends \app\common\model\BaseModel
                 'filter' => 'trim',
                 'validate' => []
             ],
+            'template_id' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => []
+            ],
+            'add_template' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => []
+            ],
         ],
         'resume_img' => [
             'examine' => [

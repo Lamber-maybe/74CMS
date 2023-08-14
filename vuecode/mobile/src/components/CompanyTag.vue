@@ -120,7 +120,15 @@ export default {
     },
     // 自定义标签确定
     handleConfirm () {
+      if (this.customText == '') {
+        this.$notify({
+          type: 'warning',
+          message: '请输入标签内容'
+        })
+        return false
+      }
       this.loopTags.push({ id: '', text: this.customText, selected: 1 })
+      this.customText = ''
       this.syncSelectedTag()
     },
     // 选择标签

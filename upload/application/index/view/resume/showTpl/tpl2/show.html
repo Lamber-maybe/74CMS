@@ -171,7 +171,7 @@
 								</p>
 								<p>
 									<span class="title_dre">期望地区：</span>
-									<span class="title_cntent">{#$return.base_info.intention_district_text#}</span>
+									<span class="title_cntent">{#$return.base_info.intention_district_full_text#}</span>
 								</p>
 							</div>
 						</div>
@@ -737,9 +737,7 @@
 		modal=true show-cancel-button>
 		<div class="dialog_tip_wrapper" style="text-align: center;">
 			<div class="tx1" style="line-height: 25px;">
-				很抱歉，您的套餐暂不支持下载简历，
-				<br />
-				请升级套餐。
+				{{showUpgradePackageMsg}}
 			</div>
 		</div>
 		<div slot="footer" class="dialog-footer">
@@ -911,6 +909,7 @@
 			payment: 'wxpay',
 			isPayment: false,
 			showUpgradePackage: false,
+			showUpgradePackageMsg: '',
 			preview_id: 0
 		},
 		watch: {
@@ -1303,6 +1302,7 @@
 					if (res.data.done == 0) {
 						if (res.data.need_upgrade == 1){
 							that.showUpgradePackage = true
+							that.showUpgradePackageMsg = res.message
 						} else {
 							that.showDirectService = true
 							var btnCn = ''

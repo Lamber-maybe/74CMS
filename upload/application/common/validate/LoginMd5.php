@@ -19,10 +19,10 @@ use app\common\validate\BaseValidate;
 class LoginMd5 extends BaseValidate
 {
     protected $rule = [
-        'code' => 'require|checkCaptcha',
+        'code' => '',
+        'secret_str' => '',
         'username' => 'require|max:15',
-        'password' => 'require|checkMd5Password',
-        'secret_str' => 'require'
+        'password' => 'require|checkMd5Password'
     ];
 
     protected $message = [

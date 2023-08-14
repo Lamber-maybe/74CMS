@@ -157,7 +157,7 @@ class Seat extends Backend
             $param = [];
         } else {
             $param = [
-                'seat_id' => implode($bindSeat, ',')
+                'seat_id' => implode(',', $bindSeat)
             ];
         }
 

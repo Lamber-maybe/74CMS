@@ -571,4 +571,26 @@ class Index extends \app\v1_0\controller\common\Base
         return $a;
     }
 
+    public function isLookApply(){
+        $arr = [
+            'is_look_apply' => 0,
+            'is_look_interview' => 0
+        ];
+        if (isset($this->userinfo)){
+            if ($this->userinfo->utype === 1){
+                $is_look_apply = model('JobApply')
+                    ->where('company_uid',$this->userinfo->uid)
+                    ->where('is_look',0)
+                    ->find();
+                $arr['is_look_apply'] = !empty($is_look_apply) ? 1 : 0;
+            }else{
+                $is_look_interview = model('CompanyInterview')
+                    ->where('personal_uid',$this->userinfo->uid)
+                    ->where('is_look',0)
+                    ->find();
+                $arr['is_look_interview'] = !empty($is_look_interview) ? 1 : 0;
+            }
+        }
+        return $this->ajaxReturn(200, '获取成功', $arr);
+    }
 }

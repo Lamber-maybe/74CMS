@@ -87,7 +87,11 @@
               <span v-if="details.is_display == 0" class="text" style="color: #f56c6c;">不显示</span>
             </div>
             <div class="btn">
-              <el-button size="small" type="primary" plain @click="handleEdit('is_display')">修改显示状态</el-button>
+              <el-switch
+                v-model="is_display"
+                active-color="#409EFF"
+                inactive-color="#DCDFE6">
+              </el-switch>
             </div>
           </div>
           <div class="item">
@@ -291,11 +295,6 @@
         <div v-if="edit_type == 'company_mobile'" class="dia_box">
           修改企业手机号：
           <el-input v-model="form.company_mobile" style="width: 45%" />
-        </div>
-        <div v-if="edit_type == 'is_display'" class="dia_box">
-          显示状态：
-          <el-radio v-model="form.is_display" label="0">不显示</el-radio>
-          <el-radio v-model="form.is_display" label="1">显示</el-radio>
         </div>
         <div v-if="edit_type == 'email'" class="dia_box">
           修改邮箱：
@@ -543,7 +542,19 @@ export default {
       callDialogVisible: false,
       meetDialogVisible: false,
       dialPhone: '',
-      dialName: ''
+      dialName: '',
+      is_display: false
+    }
+  },
+  watch: {
+    is_display: {
+      handler(newVal, oldVal) {
+        const is_display = newVal === true ? 1 : 0;
+        if (is_display != this.details.is_display) {
+          this.form.is_display = is_display;
+          this.submit('is_display')
+        }
+      },
     }
   },
   computed: {
@@ -552,6 +563,7 @@ export default {
     }
   },
   created() {
+    this.is_display = this.details.is_display === 1 ? true : false
     this.details_list = this.details
     this.form.life_cycle_id = this.details.life_cycle_id
     if (this.form.life_cycle_id >= 6){

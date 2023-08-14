@@ -137,7 +137,6 @@ class Member extends \app\common\model\BaseModel
             $setmeal_info['service_added_discount'];
         $data['enable_video_interview'] =
             $setmeal_info['enable_video_interview'];
-        $data['enable_poster'] = $setmeal_info['enable_poster'];
         $data['show_apply_contact'] = $setmeal_info['show_apply_contact'];
         $data['resume_view_num'] = $setmeal_info['resume_view_num'];
         $data['expired'] = 0;

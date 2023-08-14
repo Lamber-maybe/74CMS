@@ -169,6 +169,16 @@ export default {
           // on cancel
         })
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    /**
+     * 【ID1000702】
+     * 【bug】触屏端从记录列表页进入详情再返回后直接回到顶部
+     * cy 2023-7-6
+     */
+    // 从列表页如果不是去详情页，则不缓存列表页
+    this.$route.meta.keepAlive = to.name != 'resumeShow' ? false : true;
+    next();
   }
 }
 </script>

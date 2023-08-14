@@ -14,7 +14,13 @@ class ShortUrl extends \app\v1_0\controller\common\Base
 {
     public function index($code){
         $m = new \app\common\model\ShortUrl();
-        $row = $m->getValidByCode($code);
+        /**
+         * 【BUG】
+         * 当短链接为‘OR’,$code会在尾部有一个空格
+         * [新增]:
+         * trim()过滤$code
+         */
+        $row = $m->getValidByCode(trim($code));
         if(!$row){
             $this->error('链接已失效或不存在', '/');
         }
@@ -25,7 +31,7 @@ class ShortUrl extends \app\v1_0\controller\common\Base
     public function genJobShow(){
         $jobId = input('get.jobId/d', 0, 'intval');
         $m = new \app\common\model\ShortUrl();
-        $url = $this->sub_site_domain_m . '/job/' . $jobId;
+        $url = $this->sub_site_domain_m . 'job/' . $jobId;
         try{
             $s = $m->gen($url, '系统生成触屏版职位详情短链');
             $this->ajaxReturn(200, 'ok', $s);

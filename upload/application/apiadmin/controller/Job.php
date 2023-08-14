@@ -237,7 +237,8 @@ class Job extends Backend
                     'is_display' => input('post.contact.is_display/d', 0, 'intval'),
                     'use_company_contact' => input('post.contact.use_company_contact/d', 0, 'intval'),
                     'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
-                ]
+                ],
+                'need_notice' => input('post.need_notice/d', 0, 'intval')
             ];
 
             if (false === model('Job')->backendEdit($input_data)) {

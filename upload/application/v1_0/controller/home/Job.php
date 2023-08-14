@@ -611,6 +611,7 @@ class Job extends \app\v1_0\controller\common\Base
             $jobinfo['addtime'],
             $jobinfo['refreshtime']
         );
+        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content'] );
         $return['base_info'] = $base_info;
 
         $apply_map['company_uid'] = $jobinfo['uid'];

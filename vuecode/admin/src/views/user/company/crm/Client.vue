@@ -1737,6 +1737,24 @@ export default {
         this.regScreenFilter = { name: '今日', field: 'addtime' };
         localStorage.setItem('add_date', '');
       }
+      // 成交客户
+      if (localStorage.getItem('gradeScreen') && localStorage.getItem('gradeScreen') == '7') {
+        this.gradeScreen = 7;
+        this.gradeFilter = { name: '成交客户', field: 'life_cycle_txt' };
+        localStorage.setItem('gradeScreen', '');
+      }
+      // 自定义领取时间
+      if (localStorage.getItem('collection_date_custom')) {
+        this.collection = localStorage.getItem('collection_date_custom');
+        this.collectionFilter = { name: localStorage.getItem('collection_date_custom'), field: 'collection_time' };
+        localStorage.setItem('collection_date_custom', '');
+      }
+      // 全部跟进客户
+      if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '8') {
+        this.followupScreen = 8;
+        this.followupFilter = { name: '全部跟进过', field: 'not_following_day' };
+        localStorage.setItem('followupScreen', '');
+      }
       crmCompanyList({
         page: this.currentPage,
         pagesize: this.pagesize,

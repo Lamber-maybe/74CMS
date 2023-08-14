@@ -20,9 +20,11 @@
       </el-menu-item>
       <el-submenu class="i3" index="/company/resume">
         <template slot="title">
-          <span :style="{'padding-left':'64px'}">简历管理</span>
+          <span :style="{'padding-left':'64px'}" class="unread_prompt" :class="this.is_look_apply===1?'resume_new':''">简历管理</span>
         </template>
-        <el-menu-item :style="{'padding-left':'84px'}" index="/company/resume/jobapply">收到投递</el-menu-item>
+
+        <el-menu-item :style="{'padding-left':'84px'}" index="/company/resume/jobapply" class="unread_prompt" :class="this.is_look_apply===1?'new':''">收到投递
+        </el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/resume/download">我的下载</el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/resume/interview">面试邀请</el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/resume/interview_video">视频面试</el-menu-item>
@@ -49,10 +51,11 @@
       <el-menu-item class="i6" :style="{'padding-left':'84px'}" index="/company/recommend">
         <span slot="title">智能推荐</span>
       </el-menu-item>
-      <el-submenu class="i9" index="/company/jobfair/network/index">
+      <el-submenu class="i9" index="/company/jobfair">
         <template slot="title">
           <span :style="{'padding-left':'64px'}">招聘会</span>
         </template>
+        <el-menu-item :style="{'padding-left':'84px'}" index="/company/jobfair/index">近期招聘会</el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/jobfair/network/index">网络招聘会</el-menu-item>
       </el-submenu>
       <el-menu-item class="i8" :style="{'padding-left':'84px'}" index="/company/account">
@@ -63,10 +66,19 @@
 </template>
 
 <script>
+  import http from '@/utils/http'
+  import api from '@/api'
   export default {
     name: 'SideNav',
     data () {
-      return {}
+      return {
+        'is_look_apply': 0
+      }
+    },
+    created() {
+      http.get(api.isLookApply).then(res => {
+        this.is_look_apply = res.data.is_look_apply
+      }).catch(() => {})
     },
     computed: {
       activeName () {
@@ -189,6 +201,29 @@
         background: url("../../assets/images/menu/company/3.png") 0 0 no-repeat;
         background-size: 13px 16px;
       }
+      .unread_prompt{
+        &.resume_new::after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-image: linear-gradient(to bottom, #ff420a, #ff420a);
+          left: 146px;
+          top: 12px;
+        }
+        &.new::after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-image: linear-gradient(to bottom, #ff420a, #ff420a);
+          left: 146px;
+          top: 12px;
+        }
+      }
+
     }
 
     .i4 {
@@ -309,7 +344,7 @@
       }
     }
   }
-  .i10.point span:after { content: ''; width: 10px; height: 10px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: 72px; top: 12px; z-index: 50 }
+  .i10.point span:after { content: ''; width: 8px; height: 8px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; left: 146px; top: 12px; z-index: 50 }
   .com_menu::-webkit-scrollbar {
     display: none; /* Chrome Safari */
     width: 0;

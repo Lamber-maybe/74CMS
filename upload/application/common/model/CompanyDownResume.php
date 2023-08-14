@@ -110,14 +110,22 @@ class CompanyDownResume extends \app\common\model\BaseModel
             if($member_setmeal['download_resume_max_perday']>0){
                 $downnum = $this->where('uid',$company_uid)->where('addtime','egt',strtotime('today'))->count();
                 if($downnum>=$member_setmeal['download_resume_max_perday']){
+                    /**
+                     * 【ID1000633】
+                     * 【优化】快捷支付增加提示，引导客户购买增值包或升级套餐
+                     * cy 2023-7-3
+                     * 将提示改为弹窗形式
+                     */
                     $return_data['status'] = 0;
-                    $return_data['msg'] = '您今天已下载 '.$downnum.' 份简历，已达到每天下载上限，请先收藏该简历，明天继续下载。';
-                    $return_data['done'] = 1;
+                    // $return_data['msg'] = '您今天已下载 '.$downnum.' 份简历，已达到每天下载上限，请先收藏该简历，明天继续下载。';
+                    $return_data['msg'] = '您今日已达下载简历上限，建议您收藏该简历，明天继续下载或升级套餐。';
+                    $return_data['done'] = 0;
+                    $return_data['need_upgrade'] = 1;
                     break;
                 }
             }else{
                 $return_data['status'] = 0;
-                $return_data['msg'] = '您当前的套餐不允许下载简历，请升级套餐';
+                $return_data['msg'] = '很抱歉，您的套餐暂不支持下载简历，请升级套餐。';
                 $return_data['done'] = 0;
                 $return_data['need_upgrade'] = 1;
                 break;

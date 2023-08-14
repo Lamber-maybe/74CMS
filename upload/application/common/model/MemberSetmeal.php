@@ -7,6 +7,10 @@ class MemberSetmeal extends BaseModel
     public function syncSet($setMealId, $admin, $syncItem)
     {
         $setmeal = Setmeal::get($setMealId);
+        if (null === $setmeal) {
+            return callBack(false, '要同步的套餐不存在');
+        }
+        $setmeal = $setmeal->toArray();
 
         $where = [
             'setmeal_id' => $setMealId,
@@ -20,7 +24,9 @@ class MemberSetmeal extends BaseModel
         $updateData = $uidArr = [];
         $points = 0;
 
-        $log_field = '套餐权限同步，所选套餐:月度会员；同步的项目-';
+        $log_field = '套餐权限同步，所选套餐:'
+            . $setmeal['name']
+            . '；同步的项目-';
 
         // 根据选择项进行同步 chenyang 2022年4月6日15:26:24
         foreach ($syncItem as $item) {

@@ -25,6 +25,7 @@ class SaleStatistics extends Backend
             ->where('admin_id', $user_id)
             ->where('collection_time', '>', $month_stat)
             ->where('collection_time', '<=', $month_end)
+            ->where('is_customer', 0)
             ->count();//新增线索
         $expire_company = model('Company')
             ->alias('c')
@@ -32,8 +33,6 @@ class SaleStatistics extends Backend
             ->where('c.admin_id', $user_id)
             ->where('s.deadline', '<', time())
             ->where('s.deadline', '>', 0)
-            ->where('collection_time', '>', $month_stat)
-            ->where('collection_time', '<=', $month_end)
             ->count();//到期未续费客户
         $expiring_soon = model('Company')
             ->alias('c')
@@ -41,8 +40,6 @@ class SaleStatistics extends Backend
             ->where('c.admin_id', $user_id)
             ->where('deadline', '>=', time())
             ->where('deadline', '<', strtotime('+' . config('global_config.meal_min_remind') . 'day'))
-            ->where('collection_time', '>', $month_stat)
-            ->where('collection_time', '<=', $month_end)
             ->count();//即将到期客户
         $transaction_customers = model('Company')
             ->where('admin_id', $user_id)
@@ -175,10 +172,12 @@ class SaleStatistics extends Backend
 
         $total_clue = model('b2bcrm.CrmClue')
             ->where('admin_id', $user_id)
+            ->where('is_customer', 0)
             ->count();//累计总线索统计
         $today_clue = model('b2bcrm.CrmClue')
             ->where('collection_time', '>', $timestampToday)
             ->where('admin_id', $user_id)
+            ->where('is_customer', 0)
             ->count();//今日新增线索
         $startTime = mktime(0, 0, 0, date('m'), date('d') - date('w') + 1, date('y'));
         $overTime = mktime(23, 59, 59, date('m'), date('d') - date('w') + 7, date('y'));
@@ -186,6 +185,7 @@ class SaleStatistics extends Backend
             ->where('collection_time', '>', $startTime)
             ->where('collection_time', '<=', $overTime)
             ->where('admin_id', $user_id)
+            ->where('is_customer', 0)
             ->count();//本周新增线索
         $startTime = mktime(0, 0, 0, date('m'), 1, date('Y'));
         //本月结束时间时间戳
@@ -194,6 +194,7 @@ class SaleStatistics extends Backend
             ->where('collection_time', '>', $startTime)
             ->where('collection_time', '<=', $overTime)
             ->where('admin_id', $user_id)
+            ->where('is_customer', 0)
             ->count();//本月新增线索
         $not_following_clue = model('b2bcrm.CrmClue')
             ->where('last_visit_time', 0)

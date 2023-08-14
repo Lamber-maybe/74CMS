@@ -4,9 +4,9 @@
     <Head>网络招聘会详情</Head>
     <div class="b1">
       <div class="banner_img">
-        <div v-if="status == 0"><img src="../../assets/images/jobfairol/nostart.png" alt="" class="tast"></div>
-        <div v-if="status == 1"><img src="../../assets/images/jobfairol/conduct.png" alt="" class="tast"></div>
-        <div v-if="status == 2"><img src="../../assets/images/jobfairol/end.png" alt="" class="tast"></div>
+        <div v-if="status == 0"><img src="../../assets/images/jobfairol/nostart2.png" alt="" class="tast"></div>
+        <div v-if="status == 1"><img src="../../assets/images/jobfairol/conduct2.png" alt="" class="tast"></div>
+        <div v-if="status == 2"><img src="../../assets/images/jobfairol/end2.png" alt="" class="tast"></div>
         <vue-baberrage
         :isShow="barrageIsShow"
         :barrageList="log"
@@ -304,6 +304,19 @@
       </div>
     </van-dialog>
     <!-- 绑定微信结束 -->
+    <van-dialog
+      v-model="showLowPop"
+      title="提示"
+      show-cancel-button
+      @confirm="completeResume"
+      confirm-button-text="去完善"
+    >
+      <div class="complete_resume_box">
+        <label>
+          <span>{{ completeResumeMsg }}</span>
+        </label>
+      </div>
+    </van-dialog>
   </div>
 </template>
 
@@ -382,7 +395,11 @@ export default {
       // 绑定微信
       bindWeixinShow: false,
       // 绑定微信二维码
-      scanQrcodeImg: ''
+      scanQrcodeImg: '',
+      // 是否显示简历完整度过低弹窗
+      showLowPop: false,
+      // 完善简历提示语
+      completeResumeMsg: ''
     }
   },
   created () {
@@ -732,8 +749,18 @@ export default {
             .then(() => {})
             .catch(() => {})
         } else {
-          http.post(api.jobfairol_apply, {jobfair_id: t.jobfair_id}).then(r => {
-            this.$notify({ type: 'success', message: r.message })
+          http.post(api.jobfairol_apply, {jobfair_id: t.jobfair_id}).then((r) => {
+            /**
+             *【ID1000674】
+             * 【优化】网络招聘会，简历完善度不够不能参加，引导注册简历
+             * cy - 2023.06.27
+             * [新增]:
+             * 根据后台返回的参数来判断是否弹窗去提醒完善简历
+             */
+            if (r.code == 200 && r.data.is_complete && r.data.is_complete == 1) {
+              this.showLowPop = true;
+              this.completeResumeMsg = r.message
+            }
           }).catch(() => {})
         }
       }
@@ -759,6 +786,10 @@ export default {
           location.reload(true)
         }
       })
+    },
+    // 完善简历事件
+    completeResume() {
+      this.$router.push('/member/personal/resume')
     }
   },
   watch: {
@@ -1443,5 +1474,10 @@ export default {
       color: #999999;
       font-size: 13px;
     }
+  }
+
+  .complete_resume_box {
+    padding: 10px 25px;
+    box-sizing: border-box;
   }
 </style>

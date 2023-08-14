@@ -5,6 +5,21 @@
         <span>会话管理</span>
       </div>
 
+      <div class="list-search">
+        <el-input
+          v-model="keyword"
+          placeholder="请输入搜索内容"
+          class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="funSearchKeyword"
+          />
+        </el-input>
+      </div>
+
       <div class="spaceline" />
       <el-table
         v-loading="listLoading"
@@ -44,7 +59,7 @@
       <div class="spaceline" />
       <el-row :gutter="20">
         <el-col :span="8" />
-        <el-col v-if="total>pagesize" :span="16" style="text-align: right;">
+        <el-col :offset="8" :span="16" style="text-align: right;">
           <el-pagination
             background
             :current-page="currentPage"

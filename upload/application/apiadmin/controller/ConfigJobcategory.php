@@ -351,7 +351,11 @@ class ConfigJobcategory extends Backend
             }
 
             // 日志
-            $log_field = '系统-分类配置-职位分类，删除分类，' . implode($del_list, '；') . '；共删除' . $del_total . '个分类';
+            $log_field = '系统-分类配置-职位分类，删除分类，'
+                . implode('；', $del_list)
+                . '；共删除'
+                . $del_total
+                . '个分类';
             $log_result = model('AdminLog')->writeLog(
                 $log_field,
                 $this->admininfo,

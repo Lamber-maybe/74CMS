@@ -26,7 +26,7 @@ class ViewJob extends \app\v1_0\controller\common\Base
             ->where($where)
             ->where('b.companyname','not null')
             ->where('c.jobname','not null')
-            ->order('a.id desc')
+            ->order('a.addtime desc, a.id desc')
             ->page($current_page, $pagesize)
             ->select();
 

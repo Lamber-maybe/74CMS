@@ -121,7 +121,7 @@ const store = new Vuex.Store({
               token: data.token,
               userIminfo: data.userIminfo
             },
-            7,
+            '7d',
             null,
             state.config.subsite_domain
           )
@@ -133,7 +133,7 @@ const store = new Vuex.Store({
               token: data.token,
               userIminfo: data.userIminfo
             },
-            7
+            '7d'
           )
         }
       }

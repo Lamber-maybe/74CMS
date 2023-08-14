@@ -48,8 +48,9 @@ class Clue extends Backend
         $admin_id = input('get.admin_id/d', 0, 'intval');
         $sort = input('get.sort/s', 'DESC', 'trim,strtoupper'); // 排序方式 asc dec
         $sort_type = input('get.sort_type/s', '', 'trim');
-        $collection = input('get.collection/d', 0, 'intval');
+        $collection = input('get.collection/s', '', 'trim');
         $follow_count = input('get.follow_count/d', 0, 'intval');
+        $search_type = input('get.search_type/d', 0, 'intval');
 
         // 排序规则【ASC|DESC】
         if (!in_array($sort, ['ASC', 'DESC'])) {
@@ -60,6 +61,10 @@ class Clue extends Backend
             case 'collection_time':
                 // 领取时间
                 $order = 'a.collection_time ' . $sort . ',a.id DESC';
+                break;
+            case 'last_visit_time':
+                // 最近跟进
+                $order = 'a.last_visit_time ' . $sort;
                 break;
             default:
                 if ($list_type === 2) {
@@ -82,6 +87,45 @@ class Clue extends Backend
             }
         }
 
+        // 查询条件 - 跟进状态
+        if (!empty($search_type)) {
+            switch ($search_type) {
+                case 1: // 今日跟进
+                    $beginToday = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+                    $where['a.last_visit_time'] = ['gt', $beginToday];
+                    break;
+                case 2: // 30天内跟进过
+                    $time = strtotime(date("Y-m-d", strtotime("-30 day")));
+                    $where['a.last_visit_time'] = ['gt', $time];
+                    break;
+                case 3: // 7天未跟进
+                    $time = strtotime(date("Y-m-d", strtotime("-7 day")));
+                    $where['a.last_visit_time'] = ['lt', $time];
+                    break;
+                case 4: // 15天未跟进
+                    $time = strtotime(date("Y-m-d", strtotime("-15 day")));
+                    $where['a.last_visit_time'] = ['lt', $time];
+                    break;
+                case 5: // 30天未跟进
+                    $time = strtotime(date("Y-m-d", strtotime("-30 day")));
+                    $where['a.last_visit_time'] = ['lt', $time];
+                    break;
+                case 6: // 从未跟进
+                    $where['a.last_visit_time'] = 0;
+                    break;
+                case 7: // 即将转为公客
+                    $customer_fall_seas = model('b2bcrm.CrmSysConfig')
+                        ->getConfigByKey('customer_fall_seas');
+                    if (isset($customer_fall_seas) && !empty($customer_fall_seas)) {
+                        $day = $customer_fall_seas - 7;
+                        $time = strtotime(date("Y-m-d", strtotime("-$day day")));
+                        $where['a.last_visit_time'] = ['lt', $time];
+                    } else {
+                        $where['a.last_visit_time'] = ['lt', 0];
+                    }
+                    break;
+            }
+        }
         if (!empty($collection)) {
             //今日时间时间戳
             $timestampToday = strtotime('today');
@@ -100,6 +144,20 @@ class Clue extends Backend
                     break;
                 case 3: // 本月新增线索
                     $where['a.collection_time'] = [['>=', $month_start_time], ['<', $month_over_time], 'and'];
+                    break;
+                default:
+                    /**
+                     * 【ID1000677】
+                     * 【优化】销售看板新增提示语、点击跳转、样式优化
+                     * cy 2023-06-28
+                     * 指定月份的筛选
+                     */
+                    $timestamp = strtotime($collection);
+                    if (false !== $timestamp && $timestamp > 0) {
+                        $monthStart = strtotime(getMonthRange($collection));
+                        $monthEnd = strtotime(getMonthRange($collection, false));
+                        $where['a.collection_time'] = ['between', [$monthStart, $monthEnd]];
+                    }
                     break;
             }
         }
@@ -170,16 +228,23 @@ class Clue extends Backend
             $v['district2'] = isset($category_district_data[$v['district2']]) ? $category_district_data[$v['district2']] : '';
             $v['district3'] = isset($category_district_data[$v['district3']]) ? $category_district_data[$v['district3']] : '';
             $v['district'] = $v['district1'] . $v['district2'] . $v['district3'];
+            $v['last_visit_time'] = intval($v['last_visit_time']);
             if ($v['last_visit_time'] > 0) {
-                $v['not_following_day'] = intval((time() - $v['last_visit_time']) / 86400);
+                // 最后跟进
+                $v['not_following_day'] = intval((time() - $v['last_visit_time']) / 86400); // 未跟进时长
+                $v['last_visit_time'] = date('Y-m-d H:i:s', $v['last_visit_time']); // 最后跟进时间
+                // 未跟进时长（天）
             } else {
-                $v['not_following_day'] = '从未跟进';
+                // 最后跟进
+                $v['last_visit_time'] = '';
+                // 未跟进时长（天）
+                $v['not_following_day'] = -1;
             }
 
             // 领取时间
             $v['collection_time'] = !empty($v['collection_time']) ? date('Y-m-d H:i:s', $v['collection_time']) : '';
 
-            unset($v['creat_id'], $v['last_visit_time']);
+            unset($v['creat_id']);
             $cluelist[] = $v;
         }
         $return['items'] = $cluelist;

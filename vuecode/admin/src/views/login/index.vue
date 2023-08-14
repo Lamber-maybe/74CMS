@@ -9,7 +9,7 @@
       auto-complete="on"
       label-position="left"
     >
-      <div class="title-container">
+      <div :class="captcha_open == 1 ? 'title-container' : !isTabLogin ? 'title-container' : 'title-container no-captcha'">
         <div class="t_wel">欢迎登录</div>
         <div class="t_site">{{ $store.state.config.sitename }}管理中心</div>
       </div>
@@ -59,7 +59,7 @@
             />
           </span>
         </el-form-item>
-        <el-form-item prop="code">
+        <el-form-item prop="code" v-if="captcha_open == 1">
           <el-input
             v-model="loginForm.code"
             placeholder="请输入验证码"
@@ -77,6 +77,7 @@
           >
         </el-form-item>
 
+        <div v-if="captcha_open != 1" style="height: 20px"></div>
         <el-button
           :loading="loading"
           type="primary"
@@ -162,7 +163,8 @@ export default {
       isTabLogin: true,
       qrcode: '',
       scan_token: '',
-      timer: ''
+      timer: '',
+      captcha_open: 0
     }
   },
   watch: {
@@ -174,7 +176,10 @@ export default {
     }
   },
   created() {
-    this.refreshCaptcha()
+    this.captcha_open = this.$store.state.config.captcha_open
+    if (this.captcha_open == 1) {
+      this.refreshCaptcha()
+    }
     this.mobileUrl = this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'adminm'
   },
   beforeDestroy() {
@@ -215,7 +220,9 @@ export default {
               this.loading = false
             })
             .catch(() => {
-              this.refreshCaptcha()
+              if (this.captcha_open == 1) {
+                this.refreshCaptcha()
+              }
               this.loading = false
             })
         } else {
@@ -393,6 +400,9 @@ $color_white: #ffffff;
   .title-container {
     position: relative;
     text-align: center;
+    &.no-captcha{
+      margin-top: 30px;
+    }
     .t_wel {
       font-size: 26px;
       line-height: 1;

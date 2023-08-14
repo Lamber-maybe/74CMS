@@ -4,6 +4,15 @@
 <div id="app">
 	<div class="banner_img">
 		<div class="banner_img_inner">
+			<div style="position: absolute;top: 42px;">
+				{#if condition="$info.score eq 2"#}
+					<img src="__ROOT__/assets/images/jobfairol/pc_progress.png" alt="">
+				{#elseif condition="$info.score eq 1"#}
+					<img src="__ROOT__/assets/images/jobfairol/pc_not started.png" alt="">
+				{#else /#}
+					<img src="__ROOT__/assets/images/jobfairol/pc_end.png" alt="">
+				{#/if#}
+			</div>
 			{#if condition="$info.banner neq ''"#}
 			<img class="banner_inner_img" src="{#$info.banner#}" alt="">
 			{#else /#}
@@ -319,6 +328,9 @@
 		<el-dialog title="选择职位" width="576px" :visible.sync="showSelectJob" @opened="joblistOpened" :close-on-click-modal="false">
 			{#include file="public/selectJob" /#}
 		</el-dialog>
+		<el-dialog title="系统提示" :visible.sync="showBindWeixin" @opened="bindWeixinOpened" width="450px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
+			{#include file="public/bindWeixin" /#}
+		</el-dialog>
 		<el-dialog
 				:title="'微信直面-' + diaComName"
 				:visible.sync="dialogVisible"
@@ -385,6 +397,8 @@
 					{ required: true, message: '请选择面试职位', trigger: 'change' },
 				]
 			},
+			scanQrcodeImg: '',
+			showBindWeixin: false
 		},
 		created:function(){
 			this.getUserInfo()
@@ -452,7 +466,6 @@
 			joblistOpened:function(){
 				var that = this
 				that.joblist_loading = true
-				console.log(123)
 				httpget(qscms.apiList.imJoblist, {company_id:that.companyId})
 						.then(res => {
 							that.dataset_joblist = [...res.data.items]
@@ -614,7 +627,6 @@
 				var that = this
 				httppost(qscms.apiList.imStart, {token:qscms.imToken,resumeid:that.resumeid,jobid:that.jobid,companyid:that.companyId})
 						.then(function (res) {
-							console.log(res.data)
 							if(res.data.next==''){
 								if(that.thisType === 1)
 								{
@@ -708,6 +720,23 @@
 								.catch(function () {})
 					} else {
 						httppost(qscms.apiList.jobfairolApply,{jobfair_id:that.id}).then(function(r){
+							/**
+							 *【ID1000674】
+							 * 【优化】网络招聘会，简历完善度不够不能参加，引导注册简历
+							 * cy - 2023.06.27
+							 * [新增]:
+							 * 根据后台返回的参数来判断是否弹窗去提醒完善简历
+							 */
+							if (r.code == 200 && r.data.is_complete && r.data.is_complete == 1) {
+								that.$confirm(r.message, '系统提示', {
+									confirmButtonText: '去完善',
+									cancelButtonText: '取消',
+									type: 'warning'
+								}).then(() => {
+									location.href = qscms.locationList.personalResume
+								}).catch(() => {});
+								return false;
+							}
 							that.$message({
 								type: 'success',
 								message: r.message
@@ -765,7 +794,14 @@
 					window.open(link)
 				}).catch(function(){})
 			},
-
+			bindWeixinOpened: function(){
+				var that = this
+				httpget(qscms.apiList.qrcode, { type: 'bind_weixin' })
+						.then(function (res) {
+							that.scanQrcodeImg = res.data
+						})
+						.catch(function () { })
+			}
 		},
 
 	})

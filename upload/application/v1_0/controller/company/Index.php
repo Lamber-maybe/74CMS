@@ -25,6 +25,11 @@ class Index extends \app\v1_0\controller\common\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         if ($companyinfo !== null) {
             $return_companyinfo['id'] = $companyinfo['id'];
+            $is_look_apply = model('JobApply')
+                ->where('company_uid',$this->userinfo->uid)
+                ->where('is_look',0)
+                ->find();
+            $return_companyinfo['is_look_apply'] = !empty($is_look_apply) ? 1 : 0;
             $return_companyinfo['companyname'] = $companyinfo['companyname'];
             $return_companyinfo['district1'] = $companyinfo['district1'];
             $return_companyinfo['district2'] = $companyinfo['district2'];
@@ -44,19 +49,24 @@ class Index extends \app\v1_0\controller\common\Base
             }
             $return_companyinfo['tag'] = !empty($companyinfo['tag']) ? explode(',',$companyinfo['tag']) : '';
             $category_data = model('Category')->getCache('QS_jobtag');
-            $tag_arr = [];
+            $tag_arr = '';
             if (!empty($return_companyinfo['tag']))
             {
-                foreach ($return_companyinfo['tag'] as $k=>$v)
-                {
-                    $return_companyinfo['tag'][$k] = intval($v);
-                    if (isset($category_data[$v]))
-                    {
-                        array_push($tag_arr,$category_data[$v]);
+                $tag_text_arr = [];
+                foreach ($return_companyinfo['tag'] as $k => $v) {
+                    if (is_numeric($v) && isset($category_data[$v])) {
+                        $return_companyinfo['tag'][$k] = intval($v);
+                        $tag_text_arr[] = $category_data[$v];
+                    } else {
+                        $tag_text_arr[] = $v;
                     }
                 }
+                if (!empty($tag_text_arr)) {
+                    $return_companyinfo['tag_text_arr'] = $tag_text_arr;
+                    $tag_arr = implode(',', $tag_text_arr);
+                }
             }
-            $return_companyinfo['tag_text'] = implode(',',$tag_arr);
+            $return_companyinfo['tag_text'] = $tag_arr;
             $return_companyinfo['district1_text'] = isset($category_district_data[$companyinfo['district1']])
                 ? $category_district_data[$companyinfo['district1']] : '';
             $return_companyinfo['district2_text'] = isset($category_district_data[$companyinfo['district2']])

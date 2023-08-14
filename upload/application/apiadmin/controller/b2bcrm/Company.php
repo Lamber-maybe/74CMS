@@ -33,7 +33,7 @@ class Company extends Backend
         $weixin = input('get.weixin/d', 0, 'intval');// 微信绑定 1-已绑定 2-未绑定
         $trade = input('get.trade/d', 0, 'intval'); // 所属行业
         $district = input('get.district/a', []); //所在地区
-        $collection = input('get.collection/d', 0); //领取时间
+        $collection = input('get.collection/s', '', 'trim'); //领取时间
         $addtime = input('get.addtime/d', 0); //注册时间
 
         // 排序规则【ASC|DESC】
@@ -146,6 +146,9 @@ class Company extends Backend
                             $where['c.last_visit_time'] = ['<', 0];
                         }
                     }
+                    break;
+                case 8: // 全部跟进过
+                    $where['c.last_visit_time'] = ['gt', 0];
                     break;
             }
         }
@@ -284,9 +287,19 @@ class Company extends Backend
                     $day_30_time = strtotime(date("Y-m-d", strtotime("-30 day")));
                     $where['c.collection_time'] = ['gt', $day_30_time];
                     break;
-
-                case 0:
                 default:
+                    /**
+                     * 【ID1000677】
+                     * 【优化】销售看板新增提示语、点击跳转、样式优化
+                     * cy 2023-06-28
+                     * 指定月份的筛选
+                     */
+                    $timestamp = strtotime($collection);
+                    if (false !== $timestamp && $timestamp > 0) {
+                        $monthStart = strtotime(getMonthRange($collection));
+                        $monthEnd = strtotime(getMonthRange($collection, false));
+                        $where['c.collection_time'] = ['between', [$monthStart, $monthEnd]];
+                    }
                     break;
             }
         }

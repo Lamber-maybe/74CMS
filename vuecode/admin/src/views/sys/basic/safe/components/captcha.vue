@@ -26,9 +26,13 @@
       </el-form-item>
       <el-form-item
         v-if="form.captcha_type == 'picture'"
-        label="使用中文验证码"
+        label="验证码形式"
       >
-        <el-switch v-model="form.picture.useZh" />
+        <el-radio-group v-model="form.picture.code_mode">
+          <el-radio label="1">中文</el-radio>
+          <el-radio label="2">数字</el-radio>
+          <el-radio label="3">英文</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item
         v-if="form.captcha_type == 'picture'"
@@ -119,6 +123,7 @@ export default {
         captcha_open: true,
         captcha_type: 'picture',
         picture: {
+          code_mode: '3',
           useZh: true,
           useCurve: true,
           useNoise: true,
@@ -161,6 +166,7 @@ export default {
           this.form.captcha_open = captcha_open == 1
           this.form.captcha_type = captcha_type
           this.form.picture = {
+            code_mode: captcha_picture_rule.code_mode == undefined ? '3' : captcha_picture_rule.code_mode,
             useZh: captcha_picture_rule.useZh == 1,
             useCurve: captcha_picture_rule.useCurve == 1,
             useNoise: captcha_picture_rule.useNoise == 1,
@@ -182,6 +188,7 @@ export default {
         captcha_open: that.form.captcha_open == true ? 1 : 0,
         captcha_type: that.form.captcha_type,
         captcha_picture_rule: {
+          code_mode: that.form.picture.code_mode,
           useZh: that.form.picture.useZh == true ? 1 : 0,
           useCurve: that.form.picture.useCurve == true ? 1 : 0,
           useNoise: that.form.picture.useNoise == true ? 1 : 0,

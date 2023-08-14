@@ -70,7 +70,11 @@
               <span v-if="details.is_display == 0" class="text">关闭</span>
             </div>
             <div class="btn">
-              <el-button size="small" type="primary" plain @click="handleEdit('is_display')">修改</el-button>
+              <el-switch
+                v-model="is_display"
+                active-color="#409EFF"
+                inactive-color="#DCDFE6">
+              </el-switch>
             </div>
           </div>
           <div class="item">
@@ -233,7 +237,7 @@
       title="提示"
       append-to-body
       :visible.sync="editDialog"
-      width="30%"
+      width="576px"
     >
       <el-form ref="form" :model="form" label-width="80px" style="text-align: center">
         <div v-if="edit_type == 'password'" class="dia_box">
@@ -247,11 +251,6 @@
         <div v-if="edit_type == 'resume_mobile'" class="dia_box">
           修改简历手机号：
           <el-input v-model="form.resume_mobile" style="width: 45%" />
-        </div>
-        <div v-if="edit_type == 'is_display'" class="dia_box">
-          公开状态：
-          <el-radio v-model="form.is_display" label="0">关闭</el-radio>
-          <el-radio v-model="form.is_display" label="1">开启</el-radio>
         </div>
         <div v-if="edit_type == 'high_quality'" class="dia_box">
           显示状态：
@@ -271,19 +270,27 @@
           <el-input v-model="form.comment" maxlength="100" show-word-limit type="textarea" rows="3" style="width: 300px;" />
         </div>
         <div v-if="edit_type == 'audit'" class="dia_box">
-          审核状态：
-          <el-radio-group v-model="form.examine">
-            <el-radio
-              v-for="(item) in options_audit"
-              :key="item.id"
-              :label="item.id"
-            >
-              {{ item.name }}
-            </el-radio>
-          </el-radio-group>
-          <div v-if="form.examine == 2" style="margin-top: 20px;">
+          <div class="item-box">
+            <div class="reason">审核状态：</div>
+            <el-radio-group v-model="form.examine" @change="auditDataChange">
+              <el-radio v-for="(item) in options_audit" :key="item.id" :label="item.id">{{ item.name }}</el-radio>
+            </el-radio-group>
+          </div>
+          <div class="item-box" v-if="form.examine == 2" style="margin-top: 20px;">
+            <div class="reason">审核模板：</div>
+            <el-select v-model="auditTemplateId" :clearable="true" placeholder="请选择" @change="selectedAuditTemplate">
+              <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content" >
+                <span class="multiline-text">{{ item.content }}</span>
+                <span class="el-icon-delete" v-if="item.id != 0" @click.stop="deleteAuditTemplate(item.id)"></span>
+              </el-option>
+            </el-select>
+          </div>
+          <div class="item-box" v-if="form.examine == 2" style="margin-top: 20px;">
             <div class="reason">原因：</div>
-            <el-input v-model="setAuditReason" type="textarea" rows="3" style="width: 300px;" />
+            <el-input v-model="setAuditReason" type="textarea" placeholder="请填写不通过原因" rows="3" style="width: 390px;" maxlength="40" show-word-limit />
+          </div>
+          <div class="checkboxAddAuditTemplate" v-if="form.examine == 2" style="margin-top: 20px;">
+            <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">{{ addAuditTemplateDesc }}</el-checkbox>
           </div>
         </div>
         <div v-if="edit_type == 'examine'" class="dia_box">
@@ -385,7 +392,7 @@
 import { resumeDetailsList, updateResume } from '@/api/resume_urm'
 import { parseTime } from '@/utils'
 import { classify } from '@/api/company_crm'
-import { resumeImgDel } from '@/api/resume'
+import { resumeImgDel, getAuditTemplateList, deleteAuditTemplate } from '@/api/resume'
 import { memberLock } from '@/api/member'
 import { outboundCall } from '@/api/outbound'
 
@@ -470,7 +477,24 @@ export default {
       meetDialogVisible: false,
       callDialogVisible: false,
       jobWanted: [],
-      loading: true
+      loading: true,
+      is_display: false,
+      auditTemplateId: '',
+      auditTemplateList: {},
+      addAuditTemplate: 0,
+      addAuditTemplateDesc: '',
+      canAddAuditTemplate: false
+    }
+  },
+  watch: {
+    is_display: {
+      handler(newVal, oldVal) {
+        const is_display = newVal === true ? 1 : 0;
+        if (is_display != this.form.is_display) {
+          this.form.is_display = is_display;
+          this.submit('is_display')
+        }
+      },
     }
   },
   methods: {
@@ -546,7 +570,16 @@ export default {
         data = { 'comment': this.form.comment, 'uid': this.uid, 'type': 'comment' }
       }
       if (type == 'audit'){
-        data = { 'audit': this.form.examine, 'reason': this.setAuditReason, 'uid': this.uid, 'type': 'audit' }
+        data = {
+          'audit': this.form.examine,
+          'reason': this.setAuditReason,
+          'uid': this.uid,
+          template_id: this.auditTemplateId,
+          add_template: this.addAuditTemplate ? 1 : 0,
+          'type': 'audit'
+        }
+        // 获取审核模板列表
+        this.getAuditTemplateList()
       }
       if (type == 'examine'){
         data = { 'examine': this.form.examine, 'resume_img': this.form.resume_img, 'uid': this.uid, 'type': 'resume_img' }
@@ -559,6 +592,8 @@ export default {
           this.$message.success(res.message)
           this.resumeDetails()
           this.editDialog = false
+          this.auditTemplateId = ''
+          this.setAuditReason = ''
         }).catch(() => {
 
         })
@@ -632,6 +667,7 @@ export default {
       resumeDetailsList({ 'id': this.id, 'start': start, 'end': end })
         .then(res => {
           this.details = res.data
+          this.is_display = this.details.is_display == 1 ? true : false
           for (var i = 0; i <= this.details.resume_video.length - 1; i++){
             this.details.resume_video[i].img_url = this.details.resume_video[i].video_src + '?vframe/jpg/offset/0'
           }
@@ -662,8 +698,94 @@ export default {
           return false
         }
       }
+      if (type == 'audit') {
+        this.form.examine = 0
+        // 获取审核模板列表
+        this.getAuditTemplateList()
+      }
       this.edit_type = type
       this.editDialog = true
+    },
+    // 获取审核模板列表
+    getAuditTemplateList() {
+      getAuditTemplateList({ type: 1 })
+        .then(res => {
+          this.auditTemplateList = res.data
+
+          let maxTemplate = 6;
+          let currentNum = this.auditTemplateList.length;
+          if (currentNum >= maxTemplate) {
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，当前已添加' + currentNum + '条）';
+            // 超过最大可添加就不能再添加模板了
+            this.canAddAuditTemplate = true
+          } else {
+            let diffNum = maxTemplate - currentNum;
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，还可添加' + diffNum + '条）';
+            this.canAddAuditTemplate = false
+          }
+          // 最后拼接一个默认选中项
+          this.auditTemplateList.push({
+            id: 0,
+            content: '其他'
+          })
+          this.defaultSelectedAuditTemplate()
+          this.addAuditTemplate = 0
+        })
+        .catch(() => {
+        })
+    },
+    // 切换审核状态
+    auditDataChange(){
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
+      this.defaultSelectedAuditTemplate()
+    },
+    // 删除审核模板
+    deleteAuditTemplate(id) {
+      this.$confirm('确定要删除此模板吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteAuditTemplate({ id: id })
+            .then(res => {
+              // 如果删除的模板当前已被选中就将选中值清空
+              if (this.auditTemplateId == id) {
+                this.auditTemplateId = ''
+              }
+              // 获取审核模板列表
+              this.getAuditTemplateList()
+            })
+            .catch(() => {
+            })
+        })
+        .catch(() => {
+        })
+    },
+    // 选中审核模板事件
+    selectedAuditTemplate() {
+      // 选中模板后将模板内容放入到原因中
+      if (this.auditTemplateId > 0 && this.auditTemplateList.length > 0) {
+        this.auditTemplateList.forEach((item) => {
+          if (item.id == this.auditTemplateId) {
+            this.setAuditReason = item.content
+            return
+          }
+        })
+      } else {
+        this.setAuditReason = ''
+      }
+    },
+    // 默认选中审核模板
+    defaultSelectedAuditTemplate(){
+      if (this.form.examine == 2 && this.auditTemplateList.length > 0) {
+        // 默认选中第一个模板
+        this.auditTemplateId = this.auditTemplateList[0].id
+        if (this.auditTemplateId > 0) {
+          this.setAuditReason = this.auditTemplateList[0].content
+        }
+      }
     }
   }
 }
@@ -1230,5 +1352,58 @@ export default {
 }
 .clientInfo_box{
   padding:  0 30px;
+}
+
+.audit_template_select{
+  .el-select{
+    width: 100% !important;
+  }
+}
+
+.checkboxAddAuditTemplate{
+  ::v-deep .el-checkbox__inner{
+    border-radius: 50%;
+  }
+}
+
+.multiline-text{
+  white-space: normal;
+  width: 330px;
+}
+
+.el-select-dropdown__item {
+  font-size: 14px;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: auto;
+  line-height: 1.5;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  &:first-child{
+    margin-top: 10px;
+  }
+}
+
+.item-box{
+  display: flex;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding-left: 50px;
+  .reason{
+    min-height: initial;
+    width: 70px;
+    text-align: right;
+  }
+  .el-select{
+    width: 80% !important;
+  }
 }
 </style>

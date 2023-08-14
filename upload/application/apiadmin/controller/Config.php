@@ -65,6 +65,25 @@ class Config extends \app\common\controller\Backend
                     setConfigPHP(['domain'], ['']);
                 }
             }
+            /**
+             * 【ID1000706】
+             * 【bug/新增】系统内置验证码加纯数字
+             * cy 2023-6-30
+             * 增加数字和英文类型的验证码
+             */
+            if (isset($inputdata['captcha_picture_rule']['code_mode']) && !empty($inputdata['captcha_picture_rule']['code_mode'])) {
+                // code_mode：1|中文，2|数字，3|英文
+                if ($inputdata['captcha_picture_rule']['code_mode'] == 1) {
+                    // 中文
+                    $inputdata['captcha_picture_rule']['useZh'] = '1';
+                } elseif ($inputdata['captcha_picture_rule']['code_mode'] == 2) {
+                    // 数字
+                    $inputdata['captcha_picture_rule']['codeSet'] = '0123456789';
+                } elseif ($inputdata['captcha_picture_rule']['code_mode'] == 3) {
+                    // 英文
+                    $inputdata['captcha_picture_rule']['codeSet'] = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                }
+            }
             try {
                 // 开启事务
                 Db::startTrans();

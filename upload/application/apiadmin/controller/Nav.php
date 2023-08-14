@@ -27,6 +27,20 @@ class Nav extends \app\common\controller\Backend
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
 
+        switch ($input_data['link_type']) {
+            case 1:
+                $input_data['url'] = '';
+                break;
+
+            case 2:
+                $input_data['page'] = '';
+                break;
+
+            default:
+                $this->ajaxReturn(500, '错误的导航类型');
+                break;
+        }
+
         try {
             Db::startTrans();
 
@@ -113,9 +127,20 @@ class Nav extends \app\common\controller\Backend
                  * [新增]:
                  * 导航类型为系统页面，将跳转链接置空
                  */
-                if (1 === $input_data['link_type']) {
-                    $input_data['url'] = '';
+                switch ($input_data['link_type']) {
+                    case 1:
+                        $input_data['url'] = '';
+                        break;
+
+                    case 2:
+                        $input_data['page'] = '';
+                        break;
+
+                    default:
+                        $this->ajaxReturn(500, '错误的导航类型');
+                        break;
                 }
+
                 if (
                     false ===
                     model('Navigation')

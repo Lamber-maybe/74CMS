@@ -846,6 +846,7 @@ CREATE TABLE `qs_job` (
   `custom_field_2` varchar(255) NOT NULL DEFAULT '',
   `custom_field_3` varchar(255) NOT NULL DEFAULT '',
   `platform` varchar(30) NOT NULL DEFAULT '',
+  `need_notice` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '接收通知(联系手机接收投递通知):1|是;0:否',
   PRIMARY KEY (`id`),
   KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1161,7 +1162,6 @@ CREATE TABLE `qs_member_setmeal` (
   `download_resume_max_perday` int(10) unsigned NOT NULL DEFAULT '0',
   `service_added_discount` double(2,1) unsigned NOT NULL,
   `enable_video_interview` tinyint(1) unsigned NOT NULL,
-  `enable_poster` tinyint(1) unsigned NOT NULL,
   `show_apply_contact` tinyint(1) unsigned NOT NULL,
   `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '每天最多可发起聊天次数',
   `im_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一共可发起聊天次数',
@@ -1757,7 +1757,6 @@ CREATE TABLE `qs_setmeal` (
   `download_resume_max_perday` int(10) unsigned NOT NULL DEFAULT '0',
   `service_added_discount` double(2,1) unsigned NOT NULL,
   `enable_video_interview` tinyint(1) unsigned NOT NULL,
-  `enable_poster` tinyint(1) unsigned NOT NULL,
   `show_apply_contact` tinyint(1) unsigned NOT NULL,
   `note` varchar(100) NOT NULL,
   `recommend` tinyint(1) unsigned NOT NULL,
@@ -2927,3 +2926,18 @@ KEY `idx_resumeid` (`resume_id`) USING BTREE,
 UNIQUE INDEX `idx_comid_resumeid` (`comid`, `resume_id`) USING BTREE
 ) ENGINE = INNODB CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '企业-简历备注表';
 ||-_-||qs_resume_remark||-_-||
+
+
+
+DROP TABLE IF EXISTS `qs_audit_template`;
+CREATE TABLE `qs_audit_template` (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '类型：1|简历',
+`content` varchar(100) NOT NULL DEFAULT '' COMMENT '内容',
+`add_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加人ID',
+`add_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+`is_del` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除：0|否',
+PRIMARY KEY (`id`),
+KEY `idx_type` (`type`) USING BTREE
+) ENGINE = INNODB CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '审核模板表';
+||-_-||qs_audit_template||-_-||

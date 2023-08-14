@@ -595,8 +595,8 @@ export default {
     left: 115px;
     top: 13px;
     display: block;
-    width: 10px;
-    height: 10px;
+    width: 7px;
+    height: 7px;
     background: red;
     border-radius: 50%;
   }
@@ -692,10 +692,10 @@ export default {
         position: absolute;
         right: -9px;
         top: -3px;
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 100%;
-        background-color: #ff5700;
+        background-color: red;
       }
       position: relative;
       font-size: 18px;

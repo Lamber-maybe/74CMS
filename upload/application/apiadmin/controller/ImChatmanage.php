@@ -72,6 +72,33 @@ class ImChatmanage extends \app\common\controller\Backend
             'page' => $page,
             'pagesize' => $pagesize
         ];
+
+        /**
+         * 【ID1000685】
+         * 【优化】后台会话管理新增搜索
+         * [新增]:
+         * yx - 2023.07.04
+         */
+        $keyword = input('get.keyword', '', 'trim');
+        if (isset($keyword) && !empty($keyword)) {
+            $uids = model('Member')->alias('m')
+                ->join('Company c', 'm.uid = c.uid', 'LEFT')
+                ->join('Resume r', 'm.uid = r.uid', 'LEFT')
+                ->where('m.mobile|c.companyname|r.fullname', 'like', '%' . $keyword . '%')
+                ->column('m.uid');
+            if (!empty($uids)) {
+                $data['uids'] = json_encode($uids);
+            } else {
+                $res = [
+                    'items' => [],
+                    'total' => 0,
+                    'currentPage' => $page,
+                    'pagesize' => $pagesize
+                ];
+                $this->ajaxReturn(200, '获取数据成功！', $res);
+            }
+        }
+
         $result = https_request($url, $data);
         $result = json_decode($result, 1);
         if ($result['code'] == 500) {

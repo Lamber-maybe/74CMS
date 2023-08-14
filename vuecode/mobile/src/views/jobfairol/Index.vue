@@ -21,10 +21,16 @@
         <div class="b_item" v-for="(item,index) in dataset" :key="index" @click="toDetail(item.id)">
           <img class="img" :src="item.thumb_src" alt="">
           <div class="t1">
-            <span class="st ing" v-if="item.score === 2">预定中</span>
-            <span class="st not" v-else-if="item.score === 1">未开始</span>
-            <span class="st over" v-else>已结束</span>
-            {{item.title}}
+            <div style="margin-top: 8px;">
+              <img src="../../assets/images/jobfairol/jobfairol_2.png" alt="" v-if="item.score === 2">
+              <img src="../../assets/images/jobfairol/jobfairol_1.png" alt="" v-else-if="item.score === 1">
+              <img src="../../assets/images/jobfairol/jobfairol_3.png" alt="" v-else>
+              <div>
+                <span style="margin-left: 6px;">
+                   {{item.title}}
+                </span>
+              </div>
+            </div>
           </div>
           <div class="t2">
             <span class="hd">参会企业</span><span class="hn">{{item.total_company}}</span>
@@ -129,6 +135,13 @@ export default {
         line-height: 20px;padding-left: 113px;margin-bottom: 7px;
       }
       .t1 {
+        img{
+          display: block;
+          float: left;
+          width: 44px;
+          height: 18px;
+          margin-top: 4px;
+        }
         padding-left: 113px;font-size: 15px;color: #333;font-weight: bold;word-break: break-all;line-height: 1.7;
         height: 50px;
         width: 9rem;
@@ -136,7 +149,7 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
         .st {
-          padding: 1px 6px;font-size: 10px;border-radius: 18px;margin-right: 5px;vertical-align: middle;
+          padding: 1px 6px;font-size: 10px;border-radius: 2px;margin-right: 5px;vertical-align: middle;
           &.ing {
             color: #ff6363;border: 1px solid #ff6363;
           }

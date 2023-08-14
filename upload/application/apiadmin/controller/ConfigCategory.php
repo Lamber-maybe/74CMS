@@ -187,7 +187,7 @@ class ConfigCategory extends Backend
             }
 
             // 日志
-            $log_field = '系统-分类配置-其他分类组，' . implode($log_all, '；');
+            $log_field = '系统-分类配置-其他分类组，' . implode('；', $log_all);
             $log_result = model('AdminLog')->writeLog(
                 $log_field,
                 $this->admininfo,

@@ -498,7 +498,11 @@ export default {
       clearCache({}).then(response => {
         if (response.code == 200) {
           this.$store.dispatch('config/getConfigInfo')
-          this.$message.success(response.message)
+          this.$message({
+            duration: 1200,
+            message: response.message,
+            type: 'success'
+          })
         }
       })
     },

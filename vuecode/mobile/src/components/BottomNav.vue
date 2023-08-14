@@ -332,13 +332,12 @@ export default {
 }
 
 .information {
-  padding: 0px 5px;
-  height: 10px;
-  width: 10px;
+  height: 7px;
+  width: 7px;
   background: red;
   position: absolute;
   top: 10px;
-  margin-left: 10%;
+  margin-left: 11%;
   border-radius: 50px;
   color: #ffffff;
 }

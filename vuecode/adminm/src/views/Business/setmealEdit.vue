@@ -115,18 +115,6 @@
       @click="showActions=true"
     />
     <van-field
-        label="微海报"
-        class="reset_after"
-    />
-    <div class="for_btn">
-      <van-switch
-          class="self_switch"
-          v-model="form.enable_poster"
-          size="18px"
-          active-color="#0088fc"
-      />
-    </div>
-    <van-field
         label="视频面试"
         class="reset_after"
     />
@@ -237,7 +225,6 @@
               download_resume_point: res.data.download_resume_point,
               download_resume_max_perday: res.data.download_resume_max_perday,
               enable_video_interview: res.data.enable_video_interview==1?true:false,
-              enable_poster: res.data.enable_poster==1?true:false,
               show_apply_contact:res.data.show_apply_contact,
               im_total:res.data.im_total,
               im_max_perday:res.data.im_max_perday,
@@ -254,7 +241,6 @@
       onSubmit(){
         let data = JSON.parse(JSON.stringify(this.form))
         data.enable_video_interview = data.enable_video_interview===true?1:0
-        data.enable_poster = data.enable_poster===true?1:0
         data.days = data.days===''?0:data.days
 
         http.post(api.companySetmealEdit, data)

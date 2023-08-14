@@ -991,4 +991,9 @@ export default {
 
   // 生成企业logo
   sendCompanyLogo: '/company/sendCompanyLogo',
+
+  // 获取审核模板
+  getAuditTemplateList: '/audit_template/getList',
+  // 删除审核模板
+  deleteAuditTemplate: '/audit_template/delete'
 }

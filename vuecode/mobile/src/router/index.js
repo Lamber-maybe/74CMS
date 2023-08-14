@@ -317,7 +317,7 @@ const routes = [{
   component: PersonalJobApply,
   meta: {
     title: '已申请职位',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 2
   }
@@ -555,7 +555,7 @@ const routes = [{
   component: AttentionMe,
   meta: {
     title: '被关注',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 2
   }
@@ -566,7 +566,7 @@ const routes = [{
   component: AttentionCompany,
   meta: {
     title: '关注的企业',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 2
   }
@@ -577,7 +577,7 @@ const routes = [{
   component: ViewJob,
   meta: {
     title: '足迹',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 2
   }
@@ -599,7 +599,7 @@ const routes = [{
   component: JobFavorites,
   meta: {
     title: '收藏的职位',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 2
   }
@@ -824,7 +824,7 @@ const routes = [{
   component: CompamyJobapply,
   meta: {
     title: '收到投递',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -835,7 +835,7 @@ const routes = [{
   component: CompamyDownload,
   meta: {
     title: '我的下载',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -846,7 +846,7 @@ const routes = [{
   component: CompanyInterview,
   meta: {
     title: '面试邀请',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -857,7 +857,7 @@ const routes = [{
   component: CompanyInterviewVideo,
   meta: {
     title: '视频面试',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -868,7 +868,7 @@ const routes = [{
   component: CompanyFav,
   meta: {
     title: '我的收藏',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -879,7 +879,7 @@ const routes = [{
   component: CompanyViewResume,
   meta: {
     title: '我看过',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }
@@ -890,7 +890,7 @@ const routes = [{
   component: CompanyBeBrowsed,
   meta: {
     title: '看过我',
-    keepAlive: false,
+    keepAlive: true,
     loginCheck: true,
     utype: 1
   }

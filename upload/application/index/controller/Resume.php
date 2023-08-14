@@ -102,7 +102,7 @@ class Resume extends \app\index\controller\Base
             foreach ($params_tags as $key => $value) {
                 $selectedTagArr[] = intval($value);
             }
-            $params['tag'] = implode($selectedTagArr, '_');
+            $params['tag'] = implode('_', $selectedTagArr);
         }
         if ($sex > 0) {
             $params['sex'] = $sex;
@@ -558,6 +558,27 @@ class Resume extends \app\index\controller\Base
                 )
                     ? $category_district_data[$value['district']]
                     : '';
+
+                $tmp_arr['district_full_text'] = isset(
+                    $category_district_data[$value['district1']]
+                )
+                    ? $category_district_data[$value['district1']]
+                    : '';
+                if ($tmp_arr['district_full_text'] != '' && $value['district2'] > 0) {
+                    $tmp_arr['district_full_text'] .= isset(
+                        $category_district_data[$value['district2']]
+                    )
+                        ? '-' . $category_district_data[$value['district2']]
+                        : '';
+                }
+                if ($tmp_arr['district_full_text'] != '' && $value['district3'] > 0) {
+                    $tmp_arr['district_full_text'] .= isset(
+                        $category_district_data[$value['district3']]
+                    )
+                        ? '-' . $category_district_data[$value['district3']]
+                        : '';
+                }
+
                 $tmp_arr['wage_text'] = model('BaseModel')->handle_wage(
                     $value['minwage'],
                     $value['maxwage'],
@@ -576,12 +597,14 @@ class Resume extends \app\index\controller\Base
 
                 $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
                 $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
+                $return['base_info']['intention_district_full_text'][] = $tmp_arr['district_full_text'];
                 $intention_list[] = $tmp_arr;
             }
         } else {
             $hava_intention = 0; // 无求职意向
             $return['base_info']['intention_jobs_text'] = '';
             $return['base_info']['intention_district_text'] = '';
+            $return['base_info']['intention_district_full_text'] = '';
             $return['base_info']['intention_jobs_text'] = '';
         }
 
@@ -603,6 +626,13 @@ class Resume extends \app\index\controller\Base
             $return['base_info']['intention_district_text'] = implode(",", $return['base_info']['intention_district_text']);
         } else {
             $return['base_info']['intention_district_text'] = '';
+        }
+
+        if (!empty($return['base_info']['intention_district_full_text'])) {
+            $return['base_info']['intention_district_full_text'] = array_unique($return['base_info']['intention_district_full_text']);
+            $return['base_info']['intention_district_full_text'] = implode(" ; ", $return['base_info']['intention_district_full_text']);
+        } else {
+            $return['base_info']['intention_district_full_text'] = '';
         }
 
         $return['intention_list'] = $intention_list;

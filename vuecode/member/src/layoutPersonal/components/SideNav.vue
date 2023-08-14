@@ -25,10 +25,10 @@
       </el-menu-item>
       <el-submenu class="i3" index="/personal/job">
         <template slot="title">
-          <span>求职管理</span>
+          <span  class="unread_prompt" :class="this.is_look_interview===1?'interview_new':''">求职管理</span>
         </template>
         <el-menu-item index="/personal/job/jobapply">我的投递</el-menu-item>
-        <el-menu-item index="/personal/job/interview">面试邀请</el-menu-item>
+        <el-menu-item index="/personal/job/interview" class="unread_prompt" :class="this.is_look_interview===1?'new':''">面试邀请</el-menu-item>
         <el-menu-item index="/personal/job/interview_video">视频面试</el-menu-item>
         <el-menu-item index="/personal/job/attention_me">对我感兴趣</el-menu-item>
         <el-menu-item index="/personal/job/viewjob">我的足迹</el-menu-item>
@@ -74,12 +74,16 @@
     name: 'SideNav',
     data () {
       return {
+        'is_look_interview': 0
       }
     },
     mounted(){
       this.fetchUserData()
     },
     created() {
+      http.get(api.isLookApply).then(res => {
+        this.is_look_interview = res.data.is_look_interview
+      }).catch(() => {})
       this.userSignin()
     },
     computed: {
@@ -284,6 +288,28 @@
         background: url("../../assets/images/menu/personal/3.png") 0 0 no-repeat;
         background-size: 11px 17px;
       }
+      .unread_prompt{
+        &.interview_new::after {
+          content: '';
+          position: absolute;
+          left: 146px;
+          top: 16px;
+          width: 8px;
+          height: 8px;
+          background-image: linear-gradient(180deg,#ff420a,#ff420a);
+          border-radius: 100%;
+        }
+        &.new::after {
+          content: '';
+          position: absolute;
+          left: 146px;
+          top: 16px;
+          width: 8px;
+          height: 8px;
+          background-image: linear-gradient(180deg,#ff420a,#ff420a);
+          border-radius: 100%;
+        }
+      }
     }
 
     .i4 {
@@ -400,6 +426,6 @@
       }
     }
   }
-    .i10.point span:after { content: ''; width: 10px; height: 10px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: 56px; top: 12px; z-index: 50 }
+    .i10.point span:after { content: ''; width: 8px; height: 8px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; left: 146px; top: 12px; z-index: 50 }
 
 </style>

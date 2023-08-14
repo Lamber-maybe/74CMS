@@ -1305,6 +1305,44 @@ class Resume extends Backend
                     }
                 case 'audit':
                     if (isset($input_data['audit'])) {
+                        if ($input_data['audit'] === 2) {
+                            /**
+                             * 【ID1000663】
+                             * 【优化】简历未通过新增审核模板及审核说明
+                             * cy 2023-7-3
+                             */
+                            // 添加模板
+                            if (!empty($input_data['add_template']) == 1 && !empty($input_data['reason'])) {
+                                $templateWhere = [
+                                    'type' => 1,
+                                    'is_del' => 0
+                                ];
+                                $templateModel = model('audit_template');
+                                // 模板最多可添加6条
+                                if ($templateModel->getCount($templateWhere) < 6) {
+                                    $templateData = [
+                                        'type' => 1,
+                                        'content' => $input_data['reason'],
+                                        'add_id' => $this->admininfo->id,
+                                        'add_time' => time()
+                                    ];
+                                    $result = $templateModel->addTemplate($templateData);
+                                    if (empty($result)) {
+                                        throw new \Exception('添加模板失败');
+                                    }
+                                }
+                            }
+                            if (!empty($input_data['template_id'])) {
+                                // 获取模板内容
+                                $templateWhere = [
+                                    'id' => $input_data['template_id'],
+                                    'is_del' => 0
+                                ];
+                                $templateContent = model('audit_template')->getValue($templateWhere, 'content');
+                                $input_data['reason'] = !empty($templateContent) ? $templateContent : $input_data['reason'];
+                            }
+                        }
+
                         $resume_audit = model('Resume')->where('uid', $uid)->value('audit');
                         $log_field = '审核简历{' . $fullname . '}(简历ID:' . $resumeId . ')，审核状态:' . model('Resume')->map_audit[$resume_audit] . ' -> ' . model('Resume')->map_audit[$input_data['audit']];
                         if ($input_data['audit'] === 2) {

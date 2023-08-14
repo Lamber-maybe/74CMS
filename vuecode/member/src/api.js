@@ -499,4 +499,6 @@ export default {
   exportPdfByPhp: '/home/resume/exportPdfByPhp',
   // 生成企业LOGO头像
   sendCompanyLogo: '/company/index/sendCompanyLogo',
+  // 会员收到投递面试邀请新消息
+  isLookApply: '/member/index/isLookApply'
 }

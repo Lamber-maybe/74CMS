@@ -15,7 +15,7 @@
             <van-field class="log_field" type="password" v-model="password" label="" placeholder="请输入登录密码"  :rules="[{ required: true, message: '' }]" />
           </label>
         </div>
-        <div class="field_cell for_img">
+        <div class="field_cell for_img" v-if="globalConfig.captcha_open == 1">
           <label>
             <van-field class="log_field" type="text" v-model="code" label="" placeholder="请输入验证码"  :rules="[{ required: true, message: '' }]" />
           </label>

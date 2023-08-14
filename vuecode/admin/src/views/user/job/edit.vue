@@ -278,6 +278,16 @@
       >
         <el-checkbox v-model="contactHidden">联系方式保密（不想受到骚扰）</el-checkbox>
       </el-form-item>
+      <el-form-item
+        label="接收通知"
+      >
+        <el-switch
+          v-model="smsNotice"
+          @change="handlerNeedNotice"
+          active-text="联系手机接收投递通知"
+        >
+        </el-switch>
+      </el-form-item>
       <el-form-item label="">
         <el-button
           type="primary"
@@ -406,7 +416,8 @@ export default {
           is_display: 1,
           use_company_contact: 1,
           is_secrecy: 0
-        }
+        },
+        need_notice: 1
       },
       rules: {
         jobname: [
@@ -580,7 +591,8 @@ export default {
             { validator: validateContactEmail, trigger: 'blur' }
           ]
         }
-      }
+      },
+      smsNotice: true
     }
   },
   created() {
@@ -800,6 +812,7 @@ export default {
           this.form.tag = arrData
           this.contactHidden = this.form.contact.is_display != 1
           this.secrecyHidden = this.form.contact.is_secrecy != 1
+          this.smsNotice = parseInt(this.form.need_notice) === 1
           this.infoLoading = false
         })
         .catch(() => {})
@@ -831,7 +844,11 @@ export default {
           insertData.age_na = insertData.age_na == true ? 1 : 0
           jobEdit(insertData)
             .then(response => {
-              this.$message.success(response.message)
+              this.$message({
+                duration: 1200,
+                message: response.message,
+                type: 'success'
+              })
               this.$emit('handleCloseJob')
               this.submitLoading = false
               return true
@@ -887,6 +904,13 @@ export default {
           name: age_data[index] + '岁'
         }
         this.options_maxage.push(tmp_json)
+      }
+    },
+    handlerNeedNotice () {
+      if (this.smsNotice === true) {
+        this.form.need_notice = 1
+      } else {
+        this.form.need_notice = 0
       }
     }
   }

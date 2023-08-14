@@ -102,7 +102,7 @@ class Config extends BaseModel
 
             $fieldInfo = $configField[$config_name];
             $menu_zh = $fieldInfo['menu_zh'];
-            $menu_path = implode($menu_zh, '-');
+            $menu_path = implode('-', $menu_zh);
             $configInfo = $configList[$config_name];
             $old_value = $configInfo['value'];
 
@@ -173,7 +173,7 @@ class Config extends BaseModel
                         }
                     }
 
-                    $logData[] = $fieldInfo['field_name'] . '：' . implode($logChild, ';');
+                    $logData[] = $fieldInfo['field_name'] . '：' . implode(';', $logChild);
                 } else {
                     // 配置项单位
                     $unit = !empty($fieldInfo['unit']) ? $fieldInfo['unit'] : '';
@@ -186,11 +186,11 @@ class Config extends BaseModel
                         $old_value = model($correlation['model'])
                             ->where($correlation['pk'], $correlation['condition'], $old_value)
                             ->column($correlation['value']);
-                        $old_value = implode($old_value, $correlation['implode']);
+                        $old_value = implode($correlation['implode'], $old_value);
                         $new_value = model($correlation['model'])
                             ->where($correlation['pk'], $correlation['condition'], $new_value)
                             ->column($correlation['value']);
-                        $new_value = implode($new_value, $correlation['implode']);
+                        $new_value = implode($correlation['implode'], $new_value);
                     }
                     $logData[] = $fieldInfo['field_name'] . '：'
                         . $old_value
@@ -209,7 +209,7 @@ class Config extends BaseModel
         }
 
         // 日志
-        $log_field = '修改' . $menu_path . '，' . implode($logData, '；');
+        $log_field = '修改' . $menu_path . '，' . implode('；', $logData);
         $log_result = model('AdminLog')->writeLog(
             $log_field,
             $adminInfo,

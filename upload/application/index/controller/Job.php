@@ -157,7 +157,7 @@ class Job extends \app\index\controller\Base
             foreach ($params_tags as $key => $value) {
                 $selectedTagArr[] = intval($value);
             }
-            $params['tag'] = implode($selectedTagArr, '_');
+            $params['tag'] = implode('_', $selectedTagArr);
         }
         if ($settr > 0) {
             $params['settr'] = $settr;
@@ -564,6 +564,7 @@ class Job extends \app\index\controller\Base
             $jobinfo['addtime'],
             $jobinfo['refreshtime']
         );
+        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content'] );
         $return['base_info'] = $base_info;
 
         $companyinfo = model('Company')

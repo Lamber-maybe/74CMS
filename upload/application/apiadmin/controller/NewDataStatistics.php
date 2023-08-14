@@ -60,7 +60,7 @@ class NewDataStatistics extends \app\common\controller\Backend
      */
     protected function checkRewrite()
     {
-        $result = file_get_contents(config('global_config.sitedomain') . config('global_config.sitedir') . 'apiadmin/login/userinfo');
+        $result = https_request(config('global_config.sitedomain') . config('global_config.sitedir') . 'apiadmin/login/userinfo');
         if ($result === false) {
             return 1;
         } else {

@@ -495,6 +495,7 @@ class Job extends \app\v1_0\controller\common\Base
                 'map_lat' => input('post.basic.map_lat/s', '', 'trim'),
                 'map_lng' => input('post.basic.map_lng/s', '', 'trim'),
                 'map_zoom' => input('post.basic.map_zoom/d', 12, 'intval'),
+                'need_notice' => input('post.basic.need_notice/d', 0, 'intval'),
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,

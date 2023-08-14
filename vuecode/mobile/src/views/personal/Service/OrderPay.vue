@@ -147,7 +147,12 @@ export default {
   },
   computed: {
     options_tag () {
-      return this.$store.state.classifyResumeStrongTag
+      var options_tag = this.$store.state.classifyResumeStrongTag
+      if (options_tag.length > 0) {
+        this.sel_tag_id = options_tag[0].id
+        this.submitData.tag_text = options_tag[0].text
+      }
+      return options_tag
     }
   },
   data () {

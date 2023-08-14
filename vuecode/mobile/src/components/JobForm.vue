@@ -32,7 +32,7 @@
       />
       <van-action-sheet
         v-model="showPickerNature"
-        :actions="columnsNature"
+        :actions="jobNature"
         @select="onConfirmNature"
       />
       <van-field
@@ -116,7 +116,7 @@
         v-model="basic.amount"
         name="amount"
         :label="field_rule.basic.amount.field_cn"
-        placeholder="请填写"
+        placeholder="若干"
         class="reset_after"
       />
       <!--    【优化】 求职登录地区样式问题-->
@@ -484,11 +484,27 @@
         label="联系方式保密"
         placeholder="（不想受到骚扰）"
         class="reset_after"
+        :disabled="contactHidden"
       />
       <div class="for_btn">
         <van-switch
           class="self_switch"
           v-model="contactHidden"
+          size="18px"
+          active-color="#45db5e"
+        />
+      </div>
+      <div class="form_split_10"></div>
+      <van-field
+        label="接收通知"
+        placeholder="联系手机接收投递通知"
+        class="reset_after"
+        :disabled=true
+      />
+      <div class="for_btn">
+        <van-switch
+          class="self_switch"
+          v-model="smsNotice"
           size="18px"
           active-color="#45db5e"
         />
@@ -538,6 +554,7 @@ export default {
   },
   data () {
     return {
+      jobNature: [], // 职位
       showPickerNature: false,
       showMap: false,
       btnText: '发布职位',
@@ -589,7 +606,8 @@ export default {
         address: '',
         custom_field_1: '',
         custom_field_2: '',
-        custom_field_3: ''
+        custom_field_3: '',
+        need_notice: 1
       },
       contact: {
         use_company_contact: 1,
@@ -612,7 +630,7 @@ export default {
       showPickerContactSource: false,
       experience_text: '经验不限',
       education_text: '学历不限',
-      age_text: '请选择',
+      age_text: '',
       district_text: '请选择',
       tag_text: '',
       wage_text: '请选择',
@@ -634,7 +652,8 @@ export default {
       tpllist: [],
       nature_text: '全职',
       is_submit: false,
-      secrecyHidden: false
+      secrecyHidden: false,
+      smsNotice: true
     }
   },
   created () {
@@ -642,12 +661,13 @@ export default {
     this.$store.dispatch('getClassify', 'education')
     this.$store.dispatch('getClassify', 'citycategory')
     this.$store.dispatch('getClassify', 'experience')
-    this.$store.dispatch('getClassify', 'jobNature')
+    // this.$store.dispatch('getClassify', 'jobNature')
     this.$store.dispatch('getClassifyWage')
     this.$store.dispatch('getClassifyAge')
     this.companyDetail()
   },
   mounted () {
+    this.columnsNature()
     this.restoreJobCategory()
   },
   computed: {
@@ -661,13 +681,13 @@ export default {
       arr = arr.concat(this.$store.state.classifyExperience)
       return arr
     },
-    columnsNature () {
-      let arr = []
-      this.$store.state.classifyJobNature.forEach(element => {
-        arr.push({id: element.id, name: element.text})
-      })
-      return arr
-    },
+    // columnsNature () {
+    //   let arr = []
+    //   this.$store.state.classifyJobNature.forEach(element => {
+    //     arr.push({id: element.id, name: element.text})
+    //   })
+    //   return arr
+    // },
     columnsWage () {
       return [
         {
@@ -694,6 +714,13 @@ export default {
     }
   },
   methods: {
+    columnsNature () {
+      this.$store.dispatch('getClassify', 'jobNature').then(res => {
+        this.$store.state.classifyJobNature.forEach(element => {
+          this.jobNature.push({id: element.id, name: element.text})
+        })
+      })
+    },
     companyDetail () {
       if (this.type === 'add') {
         http
@@ -757,7 +784,10 @@ export default {
           )
         }
       })
-      this.age_text = restoreBasic.age_text + '岁'
+      this.age_text = restoreBasic.age_text
+      if (restoreBasic.age_text != '不限') {
+        this.age_text += '岁'
+      }
       // 联系方式是否保密
       this.contactHidden = parseInt(restoreContact.is_display) === 0
       this.weixin_sync_mobile = this.contact.weixin === this.contact.mobile
@@ -766,6 +796,8 @@ export default {
       this.contact.use_company_contact = restoreContact.use_company_contact
       let contactItem = this.columnsContactSource.filter(item => item.id === this.contact.use_company_contact)[0]
       this.contact_source_text = contactItem.name
+      // 接收通知
+      this.smsNotice = parseInt(restoreBasic.need_notice) === 1
     },
     // 恢复职位分类
     restoreJobCategory () {
@@ -944,8 +976,14 @@ export default {
     },
     onSubmit (values) {
       this.is_submit = true
+      if (this.wage_text === '请选择') {
+        this.$notify('请选择薪资待遇')
+        this.is_submit = false
+        return false
+      }
       this.contact.is_display = this.contactHidden === 1 ? 0 : 1
       this.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
+      this.basic.need_notice = this.smsNotice === true ? 1 : 0
       this.$emit('submit', {
         basic: this.basic,
         contact: this.contact

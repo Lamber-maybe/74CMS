@@ -115,6 +115,11 @@ class NotifyRule extends BaseModel
                             break;
                         }
                         $job_id = $otherParams['job_id'];
+                        $jobInfo = model('Job')->find($job_id);
+                        if ($jobInfo['need_notice'] != 1) {
+                            $memberlist[0]['mobile'] = '';
+                            break;
+                        }
                         $job_contact = model('JobContact')
                             ->where('jid', $job_id)
                             ->find();

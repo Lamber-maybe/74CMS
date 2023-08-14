@@ -67,9 +67,9 @@
         </el-table-column>
         <el-table-column label="预定状态" width="100">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.score === 2" type="success">预定中</el-tag>
-            <el-tag v-else-if="scope.row.score === 1" type="danger">未开始</el-tag>
-            <el-tag v-else type="info">已结束</el-tag>
+            <span v-if="scope.row.score === 2" style="color: #4caf50">进行中</span>
+            <span v-else-if="scope.row.score === 1" style="color: #f0ad00">未开始</span>
+            <span v-else style="color: #9e9e9e">已结束</span>
           </template>
         </el-table-column>
         <el-table-column label="显示状态" width="100">

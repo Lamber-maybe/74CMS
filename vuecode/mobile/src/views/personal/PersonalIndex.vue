@@ -66,7 +66,7 @@
             <div>被关注</div>
           </div>
           <div class="box_item" @click="handlerJump('/member/personal/interview')">
-            <div class="ico_box b4"></div>
+            <div class="ico_box b4" :class="this.is_look_interview===1?'new_red':''"></div>
             <div>面试邀请</div>
           </div>
           <div class="box_item" @click="handlerJump('/member/personal/interview_video')">
@@ -217,7 +217,8 @@ export default {
       ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] },
       chatList: [],
       defectResumeAry: [],
-      resumeisDisplay:''
+      resumeisDisplay:'',
+      is_look_interview: 0
     }
   },
   computed: {
@@ -276,6 +277,9 @@ export default {
     clearInterval(this.timer)
   },
   created () {
+    http.get(api.isLookApply).then(res => {
+      this.is_look_interview = res.data.is_look_interview
+    }).catch(() => {})
     this.getMessageList()
     this.initInfo()
     this.fetchAd()
@@ -610,18 +614,13 @@ export default {
       center no-repeat;
     background-size: 18.5px 18px;
   }
-  &.l7 {
-    background: url("../../assets/images/money.png") 15px
-    center no-repeat;
-    background-size: 18.5px 18px;
-  }
   .point{
     position: absolute;
-    left: 115px;
-    top: 13px;
+    left: 106px;
+    top: 15px;
     display: block;
-    width: 10px;
-    height: 10px;
+    width: 7px;
+    height: 7px;
     background: red;
     border-radius: 50%;
   }
@@ -694,6 +693,16 @@ export default {
         background: url("../../assets/images/personal_index_app_new.png") 0
           no-repeat;
         background-size: 18px 11px;
+      }
+      &.new_red::after {
+        content: " ";
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        top: -6px;
+        right: -11px;
+        background-color: #ff5050;
+        border-radius: 50%;
       }
       &.b1 {
         background: url("../../assets/images/personal_index_app1.png") center 0

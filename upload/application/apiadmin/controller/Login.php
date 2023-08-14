@@ -6,7 +6,7 @@ class Login extends \app\common\controller\Backend
 {
     public function captcha()
     {
-        $captcha = new \think\captcha\Captcha(['useZh' => false]);
+        $captcha = new \think\captcha\Captcha(config('global_config.captcha_picture_rule'));
         $result = $captcha->entryWithJwt();
         $this->ajaxReturn(200, '获取验证码成功', $result);
     }
@@ -14,8 +14,6 @@ class Login extends \app\common\controller\Backend
     {
         $data['username'] = input('post.username/s', '', 'trim');
         $data['password'] = input('post.password/s', '', 'trim');
-        $data['code'] = input('post.code/s', '', 'trim');
-        $data['secret_str'] = input('post.secret_str/s', '', 'trim');
         /**
          * 明文传输漏洞
          * 旧代码:
@@ -23,7 +21,22 @@ class Login extends \app\common\controller\Backend
          * @since    2022/4/27
          */
         $validate = validate('LoginMd5');
-        if (!$validate->check($data)) {
+        /**
+         * 【ID1000706】
+         * 【bug/新增】系统内置验证码加纯数字
+         * cy 2023-6-30
+         * 验证码开启后再进行验证码的校验
+         */
+        $rule = [];
+        if (config('global_config.captcha_open') == 1) {
+            $data['code'] = input('post.code/s', '', 'trim');
+            $data['secret_str'] = input('post.secret_str/s', '', 'trim');
+            $rule = [
+                'code' => 'require|checkCaptcha',
+                'secret_str' => 'require',
+            ];
+        }
+        if (!$validate->rule($rule)->check($data)) {
             $this->ajaxReturn(0, $validate->getError());
         } else {
             $admininfo = model('Admin')

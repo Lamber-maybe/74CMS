@@ -21,7 +21,7 @@
           <div class="num">{{ info.click }}</div>
         </div>
       </div>
-      <div class="notice_content editor-content-view">
+      <div class="notice_content editor-content-view editor-content-view-img">
         <span style="white-space: pre-line;" v-html="info.content"></span>
       </div>
       <div class="attach">
@@ -292,5 +292,10 @@ export default {
       margin-bottom: 0;
     }
   }
+}
+</style>
+<style>
+.notice_content.editor-content-view.editor-content-view-img img {
+  max-width: 100% !important;
 }
 </style>

@@ -504,5 +504,7 @@ export default {
   // 简历解析 -附件简历删除
   enclosureDelete: '/personal/resume/enclosureDelete',
   // 发送注销验证码
-  cancelApply: '/member/sendsms/cancelApply'
+  cancelApply: '/member/sendsms/cancelApply',
+  // 会员收到投递面试邀请新消息
+  isLookApply: '/member/index/isLookApply'
 }

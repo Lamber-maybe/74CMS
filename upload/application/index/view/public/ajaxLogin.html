@@ -53,7 +53,7 @@
 	<div class="successful_title">欢迎登录</div>
 	<div class="resume  clearfix">
 		<div class="resume_list float" @click="handlerCompanyJobApplyList">
-			<span class="resume_number">{{statAfterLogin.jobapply}}</span>
+			<span class="resume_number" :class="{#$prompt.is_look_apply#}===1?'new':''">{{statAfterLogin.jobapply}}</span>
 			<p class="resume_text">收到投递</p>
 		</div>
 		<div class="resume_list float" @click="handlerCompanyInterviewList">
@@ -99,7 +99,7 @@
 			<p class="resume_text">我的投递</p>
 		</div>
 		<div class="resume_list float" @click="handlerPersonalInterviewList">
-			<span class="resume_number">{{statAfterLogin.interview}}</span>
+			<span class="resume_number" :class="{#$prompt.is_look_interview#}===1?'interview_new':''">{{statAfterLogin.interview}}</span>
 			<p class="resume_text">面试邀请</p>
 		</div>
 		<div class="resume_list float" @click="handlerPersonalViewList">
@@ -133,3 +133,14 @@
 		<span>进入会员中心</span>
 	</div>
 </div>
+<style>
+	.new{
+		position: relative;
+		left: 44px;
+		top: 28px;
+		width: 7px;
+		height: 7px;
+		background-color: #ff5050;
+		border-radius: 100%;
+	}
+</style>
