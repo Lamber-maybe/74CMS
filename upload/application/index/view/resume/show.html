@@ -1,0 +1,788 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/resumeshow.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content_box clearfix">
+        <div class="content2 clearfix">
+            <div class="left_sidebar">
+                <div>
+                    <div class="information_box clearfix">
+                        <div class="information_left clearfix">
+                            <div class="information_img">
+                                <img src="{#$return.base_info.photo_img_src#}">
+                            </div>
+                            <div class="information_text">
+                                <div class="info_name_bar">
+                                    <div class="information_name">{#$return.base_info.fullname#}</div>
+                                    {#eq name="return.base_info.high_quality" value="1"#}
+                                    <div class="hq"></div>
+                                    {#/eq#}
+                                    {#if condition="$return.base_info.service_tag != ''"#}
+                                    <div class="r_tag">{#$return.base_info.service_tag#}</div>
+                                    {#/if#}
+                                    <div class="clear"></div>
+                                </div>
+                                <p class="information_job">
+                                    <span class="job_item">{#$return.base_info.sex_text#}</span>
+                                    <span class="job_item">{#$return.base_info.age#}岁</span>
+                                    <span class="job_item">{#$return.base_info.education_text#}</span>
+                                    <span>{#$return.base_info.experience_text#}</span>
+                                </p>
+                                <div class="inf_au">
+                                    <div class="authentication phone_icon">已认证</div>
+                                    {#eq name="return.bind_weixin" value="1"#}
+                                    <div class="authentication wx_icon">已认证</div>
+                                    {#/eq#}
+                                    <div class="more">
+                                        <div class="m_text">查看更多资料&gt;</div>
+                                        <div class="more_hover">
+                                            <span class="top_triangle"></span>
+                                            <div class="hover_text">
+                                                <p class="hover_text1">
+                                                    {#if condition="$return.field_rule.basic.marriage.is_display==1 && $return.base_info.marriage_text!=''"#}
+                                                    <span
+                                                            class="item_text1">婚姻状况：<span>{#$return.base_info.marriage_text#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.height.is_display==1 && $return.base_info.height!=''"#}
+                                                    <span
+                                                            class="item_text1">身高：<span>{#$return.base_info.height#}CM</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.major.is_display==1 && $return.base_info.major_text!=''"#}
+                                                    <span
+                                                            class="item_text1">专业：<span>{#$return.base_info.major_text#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.householdaddress.is_display==1 && $return.base_info.householdaddress!=''"#}
+                                                    <span
+                                                            class="item_text1">籍贯：<span>{#$return.base_info.householdaddress#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.residence.is_display==1 && $return.base_info.residence!=''"#}
+                                                    <span
+                                                            class="item_text1">现居住地：<span>{#$return.base_info.residence#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.custom_field_1.is_display==1 && $return.base_info.custom_field_1!=''"#}
+                                                    <span
+                                                            class="item_text1">{#$return.field_rule.basic.custom_field_1.field_cn#}：<span>{#$return.base_info.custom_field_1#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.custom_field_2.is_display==1 && $return.base_info.custom_field_2!=''"#}
+                                                    <span
+                                                            class="item_text1">{#$return.field_rule.basic.custom_field_2.field_cn#}：<span>{#$return.base_info.custom_field_2#}</span></span>
+                                                    {#/if#}
+                                                    {#if condition="$return.field_rule.basic.custom_field_3.is_display==1 && $return.base_info.custom_field_3!=''"#}
+                                                    <span
+                                                            class="item_text1">{#$return.field_rule.basic.custom_field_3.field_cn#}：<span>{#$return.base_info.custom_field_3#}</span></span>
+                                                    {#/if#}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="information_right" v-cloak>
+                            <p>
+                                <span class="margin_right">更新：{#$return.base_info.refreshtime#}</span>
+                                <span>浏览：{{clickNum}}人</span>
+                            </p>
+                            <div class="handle_box clearfix">
+                                <div class="collect" @click="doFav">
+                                    <img v-if="hasFav===false" src="__ROOT__/assets/images/collect_icon.png" />
+                                    <img v-else src="__ROOT__/assets/images/collect_icon_has.png" />
+                                    {{hasFav===true?'已收藏':'收藏'}}
+                                </div>
+                                <div class="btn" v-if="contactData.show_contact===0" @click="doDownload">下载简历</div>
+                                <div class="btn" v-else @click="doInterview">面试邀请</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="intention">
+                        <div class="intention_title clearfix">
+                            <span class="title_item1">求职意向</span>
+                            <p class="title_item2">求职状态：<span>{#$return.base_info.current_text#}</span></p>
+                        </div>
+                        <div class="item_box">
+                            {#volist name="return.intention_list" id="vo"#}
+                            <div class="intention_item">
+                                <p class="intention_item_text1">[{#$vo.district_text#}] {#$vo.category_text#}</p>
+                                <p class="intention_item_text2">
+                                    {#$vo.wage_text#}，{#$vo.nature_text#}{#if condition="$return.field_rule.intention.trade.is_display==1 && $vo.trade_text!=''"#}，{#$vo.trade_text#}{#/if#}
+                                </p>
+                            </div>
+                            {#/volist#}
+                        </div>
+                    </div>
+
+                    <div class="contact_wraper">
+                        <div class="resume_contact" v-if="contactData.show_contact==0">
+                            <div class="details_wrapper contact_margin"
+                                v-if="contactData.show_contact_note=='need_login'">
+                                <div class="contact_details_title">
+                                    联系方式
+                                </div>
+                                <div class="contact_details">
+                                    <p class="box_text">您尚未登录，点击登录后可获取简历联系方式</p>
+                                    <div class="contact_btn" @click="handlerLoginForContact">点击登录</div>
+                                </div>
+                            </div>
+
+                            <div class="details_wrapper contact_margin"
+                                v-if="contactData.show_contact_note=='need_company_login'">
+                                <div class="contact_details_title">
+                                    联系方式
+                                </div>
+                                <div class="contact_details">
+                                    <p class="box_text2">简历联系方式</p>
+                                    <p>仅对企业会员开放</p>
+                                </div>
+                            </div>
+
+                            <div class="details_wrapper contact_margin"
+                                v-if="contactData.show_contact_note=='need_download'">
+                                <div class="contact_details_title">
+                                    联系方式
+                                </div>
+                                <div class="contact_details">
+                                    <p class="box_text">下载简历获取简历联系方式</p>
+                                    <div class="contact_btn" v-if="contactData.show_contact===0" @click="doDownload">
+                                        下载简历</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="contact_title">联系方式</div>
+                            <div class="contact_box clearfix">
+                                <div class="clearfix">
+                                    <div class="contact_list_box clearfix">
+                                        <div class="contact_item">
+                                            <img src="__ROOT__/assets/images/contact_icon_1.png" />
+                                            手机：{{contactData.contact_info.mobile}}
+                                        </div>
+                                        <div class="contact_item" v-if="contactData.field_rule.weixin.is_display==1">
+                                            <img src="__ROOT__/assets/images/contact_icon_2.png" />
+                                            微信：{{contactData.contact_info.weixin}}
+                                        </div>
+                                        <div class="contact_item" v-if="contactData.field_rule.email.is_display==1">
+                                            <img src="__ROOT__/assets/images/contact_icon_4.png" />
+                                            邮箱：{{contactData.contact_info.email}}
+                                        </div>
+                                        <div class="contact_item" v-if="contactData.field_rule.qq.is_display==1">
+                                            <img src="__ROOT__/assets/images/contact_icon_3.png" />
+                                            QQ：{{contactData.contact_info.qq}}
+                                        </div>
+                                    </div>
+                                    <div class="contact_btn_box">
+                                        <div class="contact_btn" @click="doInterview">面试邀请</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interview_wrapper " v-cloak>
+                        <div class="interview clearfix">
+                            <div class="interview_box1">
+                                <img src="__ROOT__/assets/images/calendar_icon.png">
+                                <p>近两周</p>
+                            </div>
+                            <div class="interview_box2 clearfix">
+                                <span class="border_box border_left"></span>
+                                <div class="garden">
+                                    <div class="garden2">活跃度</div>
+                                </div>
+                                <div class="interview_text">
+                                    <p class="interview_text1">更新时间<span
+                                            class="interview_color">{#$return.base_info.refreshtime#}</span></p>
+                                    <p>主动申请职位<span class="interview_color">{{supplementary.apply_num}}</span>个职位</p>
+                                </div>
+                                <span class="border_box border_right"></span>
+                            </div>
+                            <div class="interview_box3">
+                                <div class="garden">
+                                    <div class="garden2">关注度</div>
+                                </div>
+                                <div class="interview_text">
+                                    <p>被浏览<span class="interview_color">{{clickNum}}</span>次</p>
+                                    <p class="interview_text2">被下载<span
+                                            class="interview_color">{{supplementary.download_num}}</span>次</p>
+                                    <p>收到面试邀请<span class="interview_color">{{supplementary.interview_num}}</span>次</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
+                    <div class="tag_wrapper">
+                        <div class="tag_title">个性标签</div>
+                        <ul class="tag_list clearfix">
+                            {#volist name="return.base_info.tag_text_arr" id="vo"#}
+                            <li>{#$vo#}</li>
+                            {#/volist#}
+                        </ul>
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.base_info.specialty!=''"#}
+                    <div class="tag_wrapper">
+                        <div class="tag_title">自我描述</div>
+                        <div class="synopsis">
+                            {#$return.base_info.specialty#}
+                        </div>
+                    </div>
+                    {#/if#}
+
+                    {#if condition="count($return.education_list) gt 0"#}
+                    <div class="educate_wrapper">
+                        <div class="educate_padding2 tag_title">教育经历</div>
+                        <div>
+                            {#volist name="return.education_list" id="vo"#}
+                            <div class="school">
+                                <p class="school_text clearfix">
+                                    {#$vo.school#}<span>{#:date('Y-m',$vo.starttime)#}{#if condition="$vo.todate==1"#}
+                                        至今{#else#} 至 {#:date('Y-m',$vo.endtime)#}{#/if#}</span></p>
+                                <p class="school_text2">
+                                    {#$vo.education_text#}{#if condition="$return.field_rule.education.major.is_display==1"#}，{#$vo.major#}{#/if#}
+                                </p>
+                            </div>
+                            {#/volist#}
+                        </div>
+                    </div>
+                    {#/if#}
+
+                    {#if condition="count($return.work_list) gt 0"#}
+                    <div class="work_wrapper">
+                        <div class="educate_padding2 tag_title">工作经历</div>
+                        {#volist name="return.work_list" id="vo"#}
+                        <div class="item">
+                            <p class="school_text clearfix">
+                                {#$vo.companyname#}<span>{#:date('Y-m',$vo.starttime)#}{#if condition="$vo.todate==1"#}
+                                    至今{#else#} 至 {#:date('Y-m',$vo.endtime)#}{#/if#}</span></p>
+                            <p class="post_text">{#$vo.jobname#}</p>
+                            <div class="demand_con">
+                                <p>{#$vo.duty#}</p>
+                            </div>
+                        </div>
+                        {#/volist#}
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.resume_module.training.is_display==1 && count($return.training_list) gt 0"#}
+                    <div class="work_wrapper">
+                        <div class="educate_padding2 tag_title">培训经历</div>
+                        {#volist name="return.training_list" id="vo"#}
+                        <div class="item">
+                            <p class="school_text clearfix">
+                                {#$vo.agency#}<span>{#:date('Y-m',$vo.starttime)#}{#if condition="$vo.todate==1"#}
+                                    至今{#else#} 至 {#:date('Y-m',$vo.endtime)#}{#/if#}</span></p>
+                            <p class="post_text">{#$vo.course#}</p>
+                            <div class="demand_con">
+                                <p>{#$vo.description#}</p>
+                            </div>
+                        </div>
+                        {#/volist#}
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.resume_module.project.is_display==1 && count($return.project_list) gt 0"#}
+                    <div class="work_wrapper">
+                        <div class="educate_padding2 tag_title">项目经历</div>
+                        {#volist name="return.project_list" id="vo"#}
+                        <div class="item">
+                            <p class="school_text clearfix">
+                                {#$vo.projectname#}<span>{#:date('Y-m',$vo.starttime)#}{#if condition="$vo.todate==1"#}
+                                    至今{#else#} 至 {#:date('Y-m',$vo.endtime)#}{#/if#}</span></p>
+                            <p class="post_text">{#$vo.role#}</p>
+                            <div class="demand_con">
+                                <p>{#$vo.description#}</p>
+                            </div>
+                        </div>
+                        {#/volist#}
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.resume_module.certificate.is_display==1 && count($return.certificate_list) gt 0"#}
+                    <div class="certificate_wrapper">
+                        <div class="educate_padding tag_title">获得证书</div>
+                        <ul class="certificate_list clearfix">
+                            {#volist name="return.certificate_list" id="vo"#}
+                            <li>
+                                {#$vo.name#}
+                                <span>{#:date('Y-m',$vo.obtaintime)#}</span>
+                            </li>
+                            {#/volist#}
+                        </ul>
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.resume_module.language.is_display==1 && count($return.language_list) gt 0"#}
+                    <div class="certificate_wrapper">
+                        <div class="educate_padding tag_title">语言能力</div>
+                        <ul class="certificate_list clearfix">
+                            {#volist name="return.language_list" id="vo"#}
+                            <li>
+                                {#$vo.language_text#}
+                                <span>{#$vo.level_text#}</span>
+                            </li>
+                            {#/volist#}
+                        </ul>
+                    </div>
+                    {#/if#}
+
+                    {#if condition="$return.resume_module.img.is_display==1"#}
+                    <div class="certificate_wrapper"
+                        v-if="supplementary.img_list!==undefined && supplementary.img_list.length>0">
+                        <div class="tag_title img_padding">我的作品</div>
+                        <ul class="img_list clearfix">
+                            <li v-for="(item,index) in supplementary.img_list" :key="index">
+                                <img :src="item.img_src">
+                            </li>
+                        </ul>
+                    </div>
+                    {#/if#}
+                </div>
+                {#if condition="$return.base_info.comment!=''"#}
+                <div class="comment">
+                    <div class="intention_title">
+                        <span class="title_item1">网站客服点评</span>
+                        <p class="title_item2"></p>
+                    </div>
+                    <div class="comment_text">{#$return.base_info.comment#}</div>
+                </div>
+                {#/if#}
+            </div>
+            <div class="right_sidebar">
+                <div>
+                    <div class="right_code_box">
+                        <img class="img_margin" :src="rightQrcode">
+                        <p>使用微信扫一扫<br />简历信息秒传到手机</p>
+                    </div>
+                    <div class="border">
+                        <span class="left_border"></span>
+                        操作
+                        <span class="right_border"></span>
+                    </div>
+                    <div class="resume_box clearfix">
+                        <div @click="handlerDownPdf">
+                            <img src="__ROOT__/assets/images/resume_icon1.png">
+                            <p>打印简历</p>
+                        </div>
+                        <div @click="handlerDownPdf">
+                            <img src="__ROOT__/assets/images/resume_icon2.png">
+                            <p>导出word简历</p>
+                        </div>
+                        <el-popover placement="left" width="200" trigger="hover">
+                            <span>
+                                <img :src="shareQrcode" width="174" height="174" />
+                                <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                            </span>
+                            <div slot="reference">
+                                <img src="__ROOT__/assets/images/resume_icon3.png">
+                                <p>分享</p>
+                            </div>
+                        </el-popover>
+                        <div @click="doTipoff">
+                            <img src="__ROOT__/assets/images/resume_icon4.png">
+                            <p>举报简历</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide_wrapper" :class="rightFixed===true?'beFixed':''">
+        <div class="slide_wrapper2 clearfix">
+            <div class="slide_con">
+                <div class="left_con clearfix">
+                    <div class=" float text_wrapper clearfix">
+                        <div class="float slide_img">
+                            <img src="{#$return.base_info.photo_img_src#}">
+                        </div>
+                        <div class="float ">
+                            <div class="user_wrapper">
+                                <span class="user_text">{#$return.base_info.fullname#}</span>
+                                <p class="user_list">
+                                    <span class="job_item">{#$return.base_info.age#}岁</span>
+                                    <span class="job_item">{#$return.base_info.education_text#}</span>
+                                    <span>{#$return.base_info.experience_text#}</span>
+                                </p>
+                            </div>
+                            <div class="work_text">
+                                <p class="work_text1 work_margin">
+                                    想找<span>{#$return.base_info.intention_jobs_text#}</span>工作
+                                </p>
+                                <p class="work_text1">
+                                    想在<span>{#$return.base_info.intention_district_text#}</span>工作
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn_box">
+                        <span class="btn" v-if="contactData.show_contact===0" @click="doDownload">下载简历</span>
+                        <span class="btn" v-else @click="doInterview">面试邀请</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <el-dialog title="举报简历" :visible.sync="showTipoff" @opened="tipoffOpened" width="30%">
+        {#include file="public/tipoff" /#}
+    </el-dialog>
+
+    <el-dialog title="面试邀请" :visible.sync="showInvite" width='540px' @opened="handlerInviteOpened"
+        @closed="handlerInviteClose">
+        {#include file="public/interview" /#}
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="handlerInviteClose(true)" :loading="btnLoading">确 定</el-button>
+            <el-button @click="handlerInviteClose">取 消</el-button>
+        </span>
+    </el-dialog>
+</div>
+<script>
+    var id = parseInt("{#$return.base_info.id#}")
+    var fullName = "{#$return.base_info.fullname#}"
+    var app = new Vue({
+        el: '#app',
+        data: {
+            showTipoff: false,
+            tipoffForm: {
+                reason: '',
+                content: ''
+            },
+            tipoffRules: {
+                reason: [
+                    { required: true, message: '请选择举报原因', trigger: 'change' }
+                ],
+                content: [
+                    { required: true, message: '请输入备注说明', trigger: 'blur' },
+                    { min: 20, max: 100, message: '长度在 20 到 100 个字符', trigger: 'blur' }
+                ],
+            },
+            classifyTipoffResume: [],
+            isLogin: false,
+            utype: 0,
+            rightFixed: false,
+            contactData: {
+                field_rule: {
+                    email: {},
+                    qq: {},
+                    weixin: {}
+                },
+                contact_info: {},
+                show_contact: 0,
+                show_contact_note: ''
+            },
+            hasFav: false,
+            clickNum: 0,
+            showInvite: false,
+            rightQrcode: '',
+            shareQrcode: '',
+            supplementary: {},
+            form: {
+                type: 1,
+                jobid: '',
+                interview_date: '',
+                interview_time: '',
+                address: '',
+                contact: '',
+                tel: '',
+                note: '',
+                startTime: '',
+                pickerOptions: {
+                    disabledDate(v) {
+                        return v.getTime() < new Date().getTime() - 86400000;
+                    }
+                }
+            },
+            mySetmeal: {},
+            rules: {
+                jobid: [
+                    { required: true, message: '请选择面试职位', trigger: 'change' },
+                ],
+                interview_date: [
+                    { required: true, message: '请选择面试日期', trigger: 'change' }
+                ],
+                interview_time: [
+                    { required: true, message: '请选择面试时间', trigger: 'change' }
+                ],
+                address: [
+                    { required: true, message: '请输入面试地址', trigger: 'blur' }
+                ],
+                contact: [
+                    { required: true, message: '请输入联系人', trigger: 'blur' }
+                ],
+                tel: [
+                    { required: true, message: '请输入联系电话', trigger: 'blur' }
+                ]
+            },
+            apply_fullname: fullName,
+            options_jobs: [],
+            from: 'download',
+            resume_id: id,
+            btnLoading: false
+        },
+        watch: {
+            'form.interview_date': function (value) {
+                this.$nextTick(function () {
+                    let myDate = new Date() // 当前日期
+                    let year = myDate.getFullYear() //获取当前年
+                    let mon = myDate.getMonth() + 1 //获取当前月
+                    let date = myDate.getDate() //获取当前日
+                    let chooseDate = value.split('-')
+                    if (year === parseInt(chooseDate[0]) && mon === parseInt(chooseDate[1]) && date === parseInt(chooseDate[2])) {
+                        this.form.startTime = '' + myDate.getHours() + ':' + myDate.getMinutes() + ''
+                        this.form.interview_time = ''
+                    } else {
+                        this.form.startTime = '07:00'
+                    }
+                })
+            }
+        },
+        created: function () {
+            this.getUserInfo()
+            this.getSupplementary()
+            this.getContact()
+            this.addClick()
+            this.getFavStatus()
+            var locationUrl = "{#$return.share_url#}"
+            this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_resume&url=' + locationUrl + '&resumeid=' + id
+            this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+        },
+        mounted: function () {
+            // 滚动条的获取
+            window.addEventListener('scroll', this.getScrollTop)
+        },
+        computed: {
+            options_tipoff: function () {
+                return this.classifyTipoffResume
+            }
+        },
+        methods: {
+            handlerInviteOpened: function () {
+                var that = this
+                httpget(qscms.apiList.company_published_jobslist, {})
+                    .then(function (res) {
+                        that.options_jobs = []
+                        res.data.forEach(function (element) {
+                            that.options_jobs.push(element)
+                        })
+                    })
+                    .catch(function () { })
+                this.fetchSetmeal()
+            },
+            fetchSetmeal: function () {
+                var that = this
+                httpget(qscms.apiList.member_setmeal, {})
+                    .then(function (res) {
+                        that.mySetmeal = res.data.info
+                    })
+                    .catch(function () { })
+            },
+            handlerLoginForContact: function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+            },
+            handlerInviteClose: function (setData) {
+                var that = this
+                if (setData === true) {
+                    this.btnLoading = true
+                    this.$refs.form.validate(function (valid) {
+                        if (valid) {
+                            let data = that.form
+                            data.resume_id = that.resume_id
+                            httppost(qscms.apiList.interview_add, data)
+                                .then(function () {
+                                    that.btnLoading = false
+                                    that.$message({ type: 'success', message: '邀请面试成功' })
+                                    that.showInvite = false
+                                })
+                                .catch(function () {
+                                    that.btnLoading = false
+                                })
+                        } else {
+                            that.btnLoading = false
+                            return false;
+                        }
+                    });
+                } else {
+                    this.showInvite = false
+                }
+            },
+            getUserInfo: function () {
+                var that = this
+                httpget(qscms.apiList.userinfo).then(function (res) {
+                    if (res.data.login === true) {
+                        that.isLogin = true
+                        that.utype = res.data.userinfo.utype
+                    }
+                }).catch(function () { })
+            },
+            // 监听页面滚动
+            getScrollTop: function () {
+                var scrollTop = 0
+                if (document.documentElement && document.documentElement.scrollTop) {
+                    scrollTop = document.documentElement.scrollTop
+                } else if (document.body) {
+                    scrollTop = document.body.scrollTop
+                }
+                this.rightFixed = scrollTop >= 400
+            },
+            getSupplementary: function () {
+                var that = this
+                httpget(qscms.apiList.resumeSupplementary, { id: id }).then(function (res) {
+                    if (res.data !== null) {
+                        that.supplementary = res.data
+                    }
+                }).catch(function () { })
+            },
+            getContact: function () {
+                var that = this
+                httpget(qscms.apiList.resumeContact, { id: id }).then(function (res) {
+                    that.contactData = res.data
+                }).catch(function () { })
+            },
+            getFavStatus: function () {
+                var that = this
+                httpget(qscms.apiList.resumeFavCheck, { id: id }).then(function (res) {
+                    that.hasFav = res.data == 1 ? true : false
+                }).catch(function () { })
+            },
+            doFav: function () {
+                var that = this
+                if (that.utype != 1) {
+                    this.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    if ("{#$return.base_info.audit#}" != 1) {
+                        this.$message.error('该简历还未审核通过，不能继续此操作')
+                        return false
+                    }
+                    var params = {
+                        resume_id: id
+                    }
+                    var _api_url = that.hasFav === true ? qscms.apiList.resumeFavCancel : qscms.apiList.resumeFav
+                    httppost(_api_url, params)
+                        .then(function (res) {
+                            that.hasFav = that.hasFav === true ? false : true
+                            that.$message({ type: 'success', message: res.message })
+                        })
+                        .catch(function () { })
+                }
+            },
+            addClick: function () {
+                var that = this
+                httppost(qscms.apiList.resumeClick, { id: id }).then(function (res) {
+                    that.clickNum = res.data
+                }).catch(function () { })
+            },
+            doDownload: function () {
+                var that = this
+                if (that.utype != 1) {
+                    that.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    if ("{#$return.base_info.audit#}" != 1) {
+                        that.$message.error('该简历还未审核通过，不能继续此操作')
+                        return false
+                    }
+                    that.$confirm('确定下载该简历吗？', '提示', {
+                        type: 'warning',
+                    })
+                        .then(function () {
+                            var params = {
+                                resume_id: id
+                            }
+                            httppost(qscms.apiList.resumeDownload, params).then(function (res) {
+                                if (res.data.done == 0) {
+                                    that.$message.error(res.message)
+                                } else {
+                                    that.$message({ type: 'success', message: res.message })
+                                    that.getContact()
+                                }
+                            })
+                                .catch(function () { })
+                        })
+                        .catch(function () { })
+
+                }
+            },
+            doInterview: function () {
+                var that = this
+                if (that.utype != 1) {
+                    this.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    if ("{#$return.base_info.audit#}" != 1) {
+                        this.$message.error('该简历还未审核通过，不能继续此操作')
+                        return false
+                    }
+                    this.showInvite = true
+                }
+            },
+            handlerDownPdf: function () {
+                window.open(qscms.sitedir + qscms.memberDirname + "/resume_save/" + id)
+            },
+            doTipoff: function () {
+                if (this.utype != 1) {
+                    this.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    if ("{#$return.base_info.audit#}" != 1) {
+                        this.$message.error('该简历还未审核通过，不能继续此操作')
+                        return false
+                    }
+                    this.showTipoff = true
+                }
+            },
+            tipoffOpened: function () {
+                var that = this
+                httpget(qscms.apiList.classify + '?type=tipoffResume', {}).then(function (res) {
+                    if (res.code === 200) {
+                        that.classifyTipoffResume = res.data
+                    }
+                }).catch(function () { });
+            },
+            handleSubmitTipoff: function () {
+                let that = this
+                this.$refs.tipoffForm.validate(function (valid) {
+                    if (valid) {
+                        httppost(qscms.apiList.tipoff, { target_id: id, type: 2, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })
+                            .then(function (res) {
+                                that.showTipoff = false
+                                that.$message({
+                                    type: 'success',
+                                    message: res.message
+                                })
+                            })
+                            .catch(function () { })
+                    } else {
+                        return false;
+                    }
+                });
+            },
+        }
+    })
+</script>

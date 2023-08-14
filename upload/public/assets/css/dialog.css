@@ -1,0 +1,24 @@
+/* 弹出框 */
+body{_background-attachment:fixed;_background-image:url(about:blank);}
+.fade{opacity:0;-webkit-transition:opacity 0.08s linear;-o-transition:opacity 0.08s linear;transition:opacity 0.08s linear;}
+.modal_backdrop{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;background-color:#000;z-index:1040;-webkit-opacity:0.5;-moz-opacity:0.5;-khtml-opacity:0.5;opacity:0.5;filter:alpha(opacity=50);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50);_position:absolute;_top:expression(offsetParent.scrollTop);_left:expression(offsetParent.scrollLeft);}
+.modal_backdrop.fade{filter:alpha(opacity=0);opacity:0;}
+.modal_backdrop.in{filter:alpha(opacity=50);opacity:0.5;}
+.modal_scrollbar_measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll;}
+.modal{overflow:hidden;-webkit-overflow-scrolling:touch;outline:0;}
+.modal .modal_dialog{position:absolute;top:0;left:0;z-index:1050;}
+.modal.in .modal_dialog{-webkit-transition:-webkit-transform 0.2s ease-out;-o-transition:-o-transform 0.2s ease-out;transition:transform 0.2s ease-out;-webkit-transform:translate(0,-25%);-ms-transform:translate(0,-25%);-o-transform:translate(0,-25%);transform:translate(0,-25%);}
+.modal_content{padding:5px;background:#a3a3a3;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;}
+.modal_content.no_pad{padding:0;background:transparent;}
+.modal_content .modal_header{height:40px;padding-top:10px;padding-left:15px;background:#f0f0f0;position:relative;cursor:move;moz-user-select:-moz-none;-moz-user-select:none;-o-user-select:none;-khtml-user-select:none;-webkit-user-select:none;-ms-user-select:none;user-select:none;}
+.modal_content .modal_header .title{font-size:16px;color:#333333;line-height:20px;}
+.modal_content .modal_header .max_remind{font-size:12px;color:#999999;}
+.modal_content .modal_header .close{display:block;position:absolute;right:15px;top:12px;width:16px;height:16px;background:url(../images/44.png) no-repeat;*font-size:0;}
+.modal_content .modal_header .close:hover{background-position:0 -24px;}
+.modal_content .modal_body{padding:15px;background:#fff;display:inline-block;*display:inline;*zoom:1;}
+.modal_content .modal_body.no_pad{padding:0;background:none;}
+.modal_content .modal_body .confirm{text-align:center;padding:0 50px;}
+.modal_content .modal_body .agreement{width:900px;height:600px;overflow-y:scroll;overflow-x:hidden;}
+.modal_content .modal_body .refresh_jobs_all_confirm{padding:20px 10px;line-height:180%;}
+.modal_content .modal_body .refresh_jobs_all_confirm a{text-decoration:none;}
+.modal_content .modal_body .refresh_jobs_all_confirm a:hover{text-decoration:underline;}

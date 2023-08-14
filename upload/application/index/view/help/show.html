@@ -1,0 +1,25 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/help.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content clearfix">
+        <ul class="sidebar float">
+            {#volist name="nav" id="vo"#}
+            <li class="sidebar_item active">
+                {#$vo.title#}
+                <ul class="hover_sidebarBox">
+                    {#volist name="vo.items" id="item"#}
+                    <li {#if condition="$item.id eq $Request.param.id"#}class="active"{#/if#}><a href="{#:url('index/help/show',['id'=>$item.id])#}">{#$item.title#}</a></li>
+                    {#/volist#}
+                </ul>
+            </li>
+            {#/volist#}
+        </ul>
+        
+        <div class="right_con float" >
+            <div class="right_con_title">{#$info.title#}</div>
+            <div class="right_con_article">
+                 {#$info.content|default="暂无内容"#}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/contrast.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content" v-cloak>
+
+        <div class="content_box clearfix">
+            <div class="user">
+                <p class="photo2">职位名称</p>
+                <p class="name2">薪资待遇</p>
+                <p>企业名称</p>
+            </div>
+            <div class="box1_list box1_list_height2" v-for="(item,index) in list" :key="index" :class="index==4?'last':''">
+                <a class="List_name2" href="javascript:;" @click="viewDetail(item.id)">{{item.jobname}}</a>
+                <p class="List_sex2 list_money">{{item.wage}}</p>
+                <a class="List_company" href="javascript:;" @click="viewCompanyDetail(item.company_id)">{{item.companyname}}</a>
+                <el-button size="small" type="primary" @click="removeItem(index)" plain>取消对比</el-button>
+            </div>
+        </div>
+        
+        <div class="content_box2">
+            <div>
+                <div class="box2_title">
+                任职要求
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作性质</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.nature}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">招聘人数</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.amount}}人</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">学历要求</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.education}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作经验</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.experience}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作地区</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.district?item.district:'-'}}</div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="box2_title">
+                    企业信息
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">营业执照</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_audit==1?'已认证':'未认证'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">套餐服务</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_setmeal}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">实地认证</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_report==1?'已认证':'未认证'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">企业登记</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.reg_duration}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">简历查看率</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_watch_percent}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">企业性质</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_nature?item.company_nature:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">行业类别</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_trade?item.company_trade:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">行业规模</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_scale?item.company_scale:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作地区</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_district?item.company_district:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text btn">&nbsp;</div>
+                    <div class="ite_details btn" :class="index==4?'last':''" v-for="(item,index) in list" :key="index"><el-button size="small" type="primary" @click="viewDetail(item.id)">查看详情</el-button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        id:'',
+        list:[]
+    },
+    created:function(){
+        this.id = "{#$Request.param.id#}"
+        this.fetchData()
+    },
+    methods:{
+        fetchData:function(){
+            var that = this
+            httpget(qscms.apiList.jobContrast,{id:that.id}).then(function(res){
+                that.list = res.data
+            }).catch(function(){})
+        },
+        removeItem:function(index){
+            if(this.list.length==1){
+                return
+            }
+            this.list.splice(index,1)
+        },
+        viewDetail:function(id){
+            var url="{#:url('index/job/show',['id'=>'_id_'])#}"
+            url = url.replace('_id_',id);
+            window.open(url)
+        },
+        viewCompanyDetail:function(id){
+            var url="{#:url('index/company/show',['id'=>'_id_'])#}"
+            url = url.replace('_id_',id);
+            window.open(url)
+        }
+    }
+})
+</script>

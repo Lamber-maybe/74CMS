@@ -1,0 +1,120 @@
+<div class="login_wrapper" v-if="loginUtype==0" v-cloak>
+	<div class="title login_title_padding">
+		{{formUtype==1?'企业登录':'求职者登录'}}
+		<a class="right_text" @click="handlerChangeUtype">{{formUtype==1?'求职者登录':'企业登录'}}&gt;</a>
+	</div>
+	<div>
+		<div v-if="!loginByMobile">
+			<div class="logo_input">
+				<input type="text" placeholder="请输入手机号/用户名/邮箱" v-model="username" />
+			</div>
+			<div class="logo_input">
+				<input type="password" placeholder="请输入密码" v-model="password" />
+			</div>
+		</div>
+		<div v-if="loginByMobile">
+			<div class="logo_input">
+				<input type="text" placeholder="请输入手机号" v-model="mobile" />
+			</div>
+			<div class="logo_input">
+				<input type="password" placeholder="请输入验证码" v-model="code" />
+				<input type="button" class="get_bt" :value="sendSmsBtnText" @click="sendSms">
+				<div class="sf"></div>
+			</div>
+		</div>
+		<div class="clearfix">
+			<span class="left_login" @click="loginByMobile = !loginByMobile">{{loginByMobile ? '密码登录' : '验证码登录'}}</span>
+			<span class="right_pass" @click="handlerForget(formUtype)">忘记密码？</span>
+		</div>
+		<div class="home_login_btn" @click="doLogin">立即登录</div>
+		<div class="login_text">
+			没有账号？立即 <a href="javascript:;" @click="handlerReg(formUtype)">注册</a>
+		</div>
+	</div>
+</div>
+
+<!-- 登录成功 -->
+<div class="successful" v-if="loginUtype==1" v-cloak>
+	<div class="successful_title">欢迎登录</div>
+	<div class="resume  clearfix">
+		<div class="resume_list float" @click="handlerCompanyJobApplyList">
+			<span class="resume_number">{{statAfterLogin.jobapply}}</span>
+			<p class="resume_text">收到投递</p>
+		</div>
+		<div class="resume_list float" @click="handlerCompanyInterviewList">
+			<span class="resume_number">{{statAfterLogin.interview}}</span>
+			<p class="resume_text">面试邀请</p>
+		</div>
+		<div class="resume_list float" @click="handlerCompanyViewList">
+			<span class="resume_number">{{statAfterLogin.view}}</span>
+			<p class="resume_text">浏览记录</p>
+		</div>
+	</div>
+	
+	<div class="handle_resume clearfix">
+		<div class=" resume_list float" @click="handlerCompanyJoblist">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon4.png" />
+			</div>
+			<p class="resume_text">管理职位</p>
+		</div>
+		<div class="resume_list float" @click="handlerRefreshJob">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon2.png" />
+			</div>
+			<p class="resume_text">一键刷新</p>
+		</div>
+		<div class="resume_list float" @click="handlerCompanyService">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon5.png" />
+			</div>
+			<p class="resume_text">会员服务</p>
+		</div>
+	</div>
+	
+	<div class="resume_btn" @click="handlerMemberCenter(1)">
+		<span>进入会员中心</span>
+	</div>
+</div>
+<div class="successful" v-if="loginUtype==2" v-cloak>
+	<div class="successful_title">欢迎登录</div>
+	<div class="resume  clearfix">
+		<div class="resume_list float" @click="handlerPersonalJobApplyList">
+			<span class="resume_number">{{statAfterLogin.jobapply}}</span>
+			<p class="resume_text">我的投递</p>
+		</div>
+		<div class="resume_list float" @click="handlerPersonalInterviewList">
+			<span class="resume_number">{{statAfterLogin.interview}}</span>
+			<p class="resume_text">面试邀请</p>
+		</div>
+		<div class="resume_list float" @click="handlerPersonalViewList">
+			<span class="resume_number">{{statAfterLogin.view}}</span>
+			<p class="resume_text">我的足迹</p>
+		</div>
+	</div>
+	
+	<div class="handle_resume clearfix">
+		<div class=" resume_list float" @click="handlerResumeIndex">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon1.png" />
+			</div>
+			<p class="resume_text">编辑简历</p>
+		</div>
+		<div class="resume_list float" @click="handlerRefreshResume">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon2.png" />
+			</div>
+			<p class="resume_text">刷新简历</p>
+		</div>
+		<div class="resume_list float" @click="handlerPersonalRecommend">
+			<div class="resume_icon">
+				<img src="__ROOT__/assets/images/login_icon3.png" />
+			</div>
+			<p class="resume_text">智能匹配</p>
+		</div>
+	</div>
+	
+	<div class="resume_btn" @click="handlerMemberCenter(2)">
+		<span>进入会员中心</span>
+	</div>
+</div>

@@ -1,0 +1,81 @@
+<layout name="public/layout" />
+<div class="content">
+	<div class="title">
+		<i></i>
+		<div class="txt">安装环境检查</div>
+	</div>
+	<div class="table">
+		<div class="th">
+			<div class="td">环境名称</div>
+			<div class="td">当前配置</div>
+			<div class="td">所需配置</div>
+			<div class="clear"></div>
+		</div>
+		<volist name="check_env" id="vo">
+			<div class="tr <if condition=" $vo['check_pass'] eq 0">nopass</if>">
+				<div class="td">{$vo.name}</div>
+				<div class="td">{$vo.current}</div>
+				<div class="td">{$vo.require}</div>
+				<div class="clear"></div>
+			</div>
+		</volist>
+	</div>
+	<div class="table">
+		<div class="th">
+			<div class="td">函数/扩展</div>
+			<div class="td">&nbsp;</div>
+			<div class="td">状态</div>
+			<div class="clear"></div>
+		</div>
+		<volist name="check_ext" id="vo">
+			<div class="tr <if condition=" $vo['check_pass'] eq 0">nopass</if>">
+				<div class="td">{$vo.name}</div>
+				<div class="td">&nbsp;</div>
+				<div class="td">{$vo['check_pass']==1?'支持':'不支持'}</div>
+				<div class="clear"></div>
+			</div>
+		</volist>
+	</div>
+	<div class="table">
+		<div class="th">
+			<div class="td">目录/文件权限</div>
+			<div class="td">可读状态</div>
+			<div class="td">可写状态</div>
+			<div class="clear"></div>
+		</div>
+		<volist name="check_dir" id="vo">
+			<div class="tr ">
+				<div class="td">{$vo.name}</div>
+				<div class="td <if condition=" $vo['read_pass'] eq 0">nopass
+					<else />pass</if>">{$vo.read}
+				</div>
+				<div class="td <if condition=" $vo['write_pass'] eq 0">nopass
+					<else />pass</if>">{$vo.write}
+				</div>
+				<div class="clear"></div>
+			</div>
+		</volist>
+	</div>
+	<div class="btn fl" id="J_prev">返回上一步</div>
+	<if condition="$error==1">
+		<div class="btn blue fr disabled">继续下一步</div>
+		<else />
+		<div class="btn blue fr" id="J_next">继续下一步</div>
+	</if>
+	<div class="btn orange fr" id="J_help">常见问题</div>
+	<div class="clear"></div>
+</div>
+<script>
+	$(document).ready(function () {
+		$('#J_prev').click(function () {
+			location.href = '{:U("index")}';
+		})
+		$('#J_next').click(function () {
+			location.href = '{:U("step2")}';
+		})
+		$('#J_help').click(function () {
+			window.open('http://doc.74cms.com/');
+		})
+
+	})
+</script>

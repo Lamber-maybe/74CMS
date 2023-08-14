@@ -1,0 +1,96 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/article.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content">
+        <div class="information_detailed clearfix">
+            <div class="information_detailed_left float">
+                
+                <div class="detailed_title_box">
+                    <p class="detailed_title">{#$info.title#}</p>
+                    <div class="detailed_bottom clearfix">
+                        {#eq name="info.source" value="0"#}
+                        <span class="original">原创</span>
+                        {#else/#}
+                        <span class="original2">转载</span>
+                        {#/eq#}
+                        <span class="guide">{#$info.category_text#}</span>
+                        <p class="handle_right">
+                            <el-popover placement="bottom-end" width="200" trigger="hover">
+                                <span>
+                                    <img :src="shareQrcode" width="174" height="174" />
+                                    <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                                </span>
+                                <span class="share" slot="reference">分享</span>
+                            </el-popover>
+                            <span class="handle_time">{#:date('Y-m-d H:i',$info.addtime)#}</span>
+                            <span class="handle_see" v-cloak>{{clickNum}}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="detailed_con">
+                    {#$info.content#}
+                </div>
+                <div class="detailed_paging clearfix">
+                    {#if condition="$prev===null"#}
+                    <a>上一篇： 没有了</a>
+                    {#else /#}
+                    <a href="{#$prev.link_url#}" target="_blank">上一篇： {#$prev.title#}</a>
+                    {#/if#}
+                    {#if condition="$next===null"#}
+                    <a>下一篇： 没有了</a>
+                    {#else /#}
+                    <a href="{#$next.link_url#}" target="_blank">下一篇： {#$next.title#}</a>
+                    {#/if#}
+                </div>
+            </div>
+            <div class="information_detailed_right float">
+                <div class="detailed_sort">
+                    <div class="sort_title">资讯分类</div>
+                    <div class="sort_list">
+                        {#volist name="options" id="vo"#}
+                        <a href="{#:url('index/article/index',['cid'=>$key])#}">{#$vo#}</a>
+                        {#/volist#}
+                    </div>
+                </div>
+                <div class="hot_sort">
+                    <div class="hot_sort_title clearfix">
+                        热门资讯
+                        <a href="{#:url('index/article/index')#}">查看更多&gt;</a>
+                    </div>
+                    <div class="hotSort_list_wrapper">
+                        {#volist name="hotArticleList" id="vo"#}
+                        <div class="hot_sort_list">
+                            <a href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
+                            <span>{#:date('Y-m-d H:i')#}</span>
+                        </div>
+                        {#/volist#}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var id = parseInt("{#$info.id#}")
+var app = new Vue({
+    el: '#app',
+    data: {
+        clickNum:0,
+        shareQrcode:''
+    },
+    created:function(){
+        this.addClick()
+        var locationUrl = "{#$info.share_url#}"
+        this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+    },
+    methods:{
+        addClick:function(){
+            var that = this
+            httppost(qscms.apiList.articleClick,{id:id}).then(function(res){
+                that.clickNum = res.data
+            }).catch(function(){})
+        },
+    }
+})
+</script>

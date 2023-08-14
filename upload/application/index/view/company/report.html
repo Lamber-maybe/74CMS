@@ -1,0 +1,87 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/highslide.css" /#}
+{#load href="__ROOT__/assets/css/company_report.css" /#}
+<div class="com-report">
+	<div class="report-title">企业实地认证报告</div>
+	<div class="report-info">
+		<span class="topic">企业名称</span>
+		<a href="{#:url('index/company/show',['id'=>$info.company_id])#}" title="{#$info.companyname#}">{#$info.companyname#}</a>
+		<span class="topic">认证时间</span>{#:date('Y-m-d',$info.addtime)#}
+	</div>
+	<div class="badge"></div>
+	<div class="section">
+		<div class="tit">工商登记信息</div>
+		<div class="li"><span class="topic">名称</span><span class="text">{#$info.companyname#}</span></div>
+		<div class="li"><span class="topic">法人</span><span class="text">{#$info.corporate#}</span></div>
+		<div class="li"><span class="topic">主体类型</span><span class="text">{#$info.com_type#}</span></div>
+		<div class="li"><span class="topic">创立时间</span><span class="text">{#:date('Y-m-d',$info.reg_time)#}</span></div>
+		<div class="li"><span class="topic">注册资本</span><span class="text">{#$info.reg_capital#} 万元</span></div>
+		<div class="li"><span class="topic">注册地址</span><span class="text" title="{#$info.reg_address#}">{#$info.reg_address#}</span></div>
+		<div class="li"><span class="topic">办公地点</span><span class="text" title="{#$info.office_address#}">{#$info.office_address#}</span></div>
+		<div class="li"><span class="topic">登记机关</span><span class="text">{#$info.registrar#}</span></div>
+		<div class="li"><span class="topic">经营范围</span><span class="business">{#$info.scope#}</span></div>
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<div class="tit i2">{#$global_config.sitename#}人力资源师实地认证情况</div>
+		<div class="li"><span class="topic">办公面积</span><span class="text">{#$info.office_area#} 平方米</span></div>
+		<div class="li"><span class="topic">办公环境</span>
+			<span class="text">
+				<switch name="$info.office_env">
+            		<case value="1">一般</case>
+            		<case value="3">优美</case>
+            		<default />良好
+        		</switch>
+			</span>
+		</div>
+		<div class="li"><span class="topic">办公场所</span><span class="text">{#$info.workplace#}</span></div>
+		<div class="li"><span class="topic">员工人数</span><span class="text">{#$info.number#}</span></div>
+		<div class="li"><span class="topic">男女比例</span><span class="text">{#$info.sex_ratio#}</span></div>
+		<div class="li"><span class="topic">平均年龄</span><span class="text">{#$info.average_age#} 岁左右</span></div>
+        <div class="li"><span class="topic">乘车路线</span><span class="business">{#$info.route#}</span></div>
+        {#if condition="count($img_arr) gt 0"#}
+			<div class="li">
+				<span class="topic">公司照片</span>
+				<div class="img-ul">
+					{#volist name="img_arr" id="vo"#}
+						<div class="img-li highslide-gallery">
+							<a href="{#$vo.img_src#}" class="highslide" onclick="return hs.expand(this)"><img src="{#$vo.img_src#}"></a>
+						</div>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+			</div>
+		{#/if#}
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<div class="tit i3">人力资源师评价</div>
+		<div class="evaluation">{#$info.evaluation#}</div>
+		<div class="certifier">
+			<span class="topic">{#$global_config.sitename#}认证师</span><span class="text">{#$info.certifier#}</span>
+		</div>
+	</div>
+</div>
+{#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(function() {
+			hs.graphicsDir = "__ROOT__/assets/js/graphics/";
+			hs.align = 'center';
+			hs.transitions = ['expand', 'crossfade'];
+			hs.outlineType = 'rounded-white';
+			hs.fadeInOut = true;
+			hs.addSlideshow({
+				interval: 5000,
+				repeat: false,
+				useControls: true,
+				fixedControls: 'fit',
+				overlayOptions: {
+					opacity: 0.75,
+					position: 'bottom center',
+					hideOnMouseOut: true
+				}
+			});
+		})
+	})
+</script>

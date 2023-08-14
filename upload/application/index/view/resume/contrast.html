@@ -1,0 +1,136 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/contrast.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content" v-cloak>
+        <div class="content_box clearfix">
+            <div class="user resume">
+                <p class="photo">头像</p>
+                <p class="name">姓名</p>
+                <p>性别</p>
+            </div>
+            <div class="box1_list box1_list_height1" v-for="(item,index) in list" :key="index" :class="index==4?'last':''">
+                <img class="List_img avatar" :src="item.photo_img_src" />
+                <p class="List_name"><a href="javascript:;" @click="viewDetail(item.id)">{{item.fullname}}</a></p>
+                <p class="List_sex">{{item.sex_text}}</p>
+                <el-button size="small" type="primary" @click="removeItem(index)" plain>取消对比</el-button>
+            </div>
+        </div>
+
+        <div class="content_box2">
+            <div>
+                <div class="box2_title">
+                    基本资料
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">年龄</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.age_text}}岁</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">学历要求</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.education_text}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作经验</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.experience_text}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">婚姻状况</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.marriage_text?item.marriage_text:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">身高</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.height?(item.height+'CM'):'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">专业</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.major_text?item.major_text:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">现居住地</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.residence?item.residence:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">籍贯</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.householdaddress?item.householdaddress:'-'}}</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="box2_title">
+                    求职意向
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">求职状态</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.current_text?item.current_text:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作性质</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.intention_nature?item.intention_nature:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">期望职位</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.intention_jobs?item.intention_jobs:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作地区</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.intention_district?item.intention_district:'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">期望薪资</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.intention_wage?item.intention_wage:'-'}}</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="box2_title">
+                    其他信息
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">工作经历</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.work_count?(item.work_count+'份（共'+item.work_time+'）'):'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text">教育经历</div>
+                    <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.education_count?(item.education_count+'份'):'-'}}</div>
+                </div>
+                <div class="item clearfix">
+                    <div class="item_text btn">&nbsp;</div>
+                    <div class="ite_details btn" :class="index==4?'last':''" v-for="(item,index) in list" :key="index"><el-button size="small" type="primary" @click="viewDetail(item.id)">查看详情</el-button></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        id:'',
+        list:[]
+    },
+    created:function(){
+        this.id = "{#$Request.param.id#}"
+        this.fetchData()
+    },
+    methods:{
+        fetchData:function(){
+            var that = this
+            httpget(qscms.apiList.resumeContrast,{id:that.id}).then(function(res){
+                that.list = res.data
+            }).catch(function(){})
+        },
+        removeItem:function(index){
+            if(this.list.length==1){
+                return
+            }
+            this.list.splice(index,1)
+        },
+        viewDetail:function(id){
+            var url="{#:url('index/resume/show',['id'=>'_id_'])#}"
+            url = url.replace('_id_',id);
+            window.open(url)
+        }
+    }
+})
+</script>

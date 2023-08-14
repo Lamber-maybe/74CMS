@@ -1,0 +1,34 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/hrtool.css" /#}
+<div>
+    <div class="banner">
+        <p class="banner_maintitle">HR工具箱</p>
+        <p class="banner_subtitle">HR工作必备，可以自定义选择添加</p>
+    </div>
+    <div class="content_wrapper">
+        <div class="content">
+            <div class="toolCase_box clearfix">
+                {#volist name="list" id="vo"#}
+                <div class="toolCase_list float">
+                    <div class="toolCase_img p{#$vo.last_num#}">
+                        <div class="img_text">
+                            {#$vo.name#}
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="toolCase_text">
+                        <p>{#$vo.describe#}</p>
+                        <div class="toolCase_btn active_btn">
+                            <a class="toolCase_more" href="{#:url('index/hrtool/show',['id'=>$vo.id])#}">查看更多</a>
+                        </div>
+                    </div>
+                </div>
+                {#/volist#}
+                
+                
+            </div>
+            
+            
+        </div>
+    </div>
+</div>

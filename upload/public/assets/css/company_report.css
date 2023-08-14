@@ -1,0 +1,21 @@
+/*实地认证报告*/
+.com-report{ margin: 50px auto 0; width: 1200px; height: 1500px; padding-top: 280px; background:url(../images/report_bg.jpg) no-repeat; position: relative; color: #333333;}
+.com-report .topic{ color: #999999; padding-right: 15px;}
+.com-report .report-title{ text-align: center; font-size: 46px; color: #003E8A; font-weight: bold; margin-bottom: 16px; *zoom: 1;}
+.com-report .report-info{ text-align: center; line-height: 38px; font-size: 16px;}
+.com-report .report-info a{ color: #66be8c; text-decoration: none; margin-right: 50px;}
+.com-report .badge{ width:150px; height: 150px; background:url(../images/report_badge.png) no-repeat; position: absolute; right: 240px; top: 280px;}
+.com-report .section{ padding: 30px 145px 0;}
+.com-report .section .tit{ font-weight: 700;font-size: 18px; margin-bottom: 15px; *zoom: 1; background:url(../images/report_icon.png) no-repeat 0 4px; padding-left: 20px;}
+.com-report .section .tit.i2{ background-position: 0 -32px;}
+.com-report .section .tit.i3{ background-position: 0 -68px;}
+.com-report .section .li{ float: left; line-height: 32px;}
+.com-report .section .li .topic{ color: #999999; padding-right: 15px; width: 72px; text-align: right; float: left;}
+.com-report .section .li .text{ width: 380px; float: left; text-overflow:ellipsis; white-space:nowrap;overflow: hidden;}
+.com-report .section .li .business{ width: 835px; float: left; height: auto; word-break: break-all;}
+.com-report .section .li .img-ul{ width: 835px; float: left; padding-top: 10px;}
+.com-report .section .li .img-li{ width: 130px; height: 110px; border: 1px solid #dddddd; float: left; margin-right: 10px; *zoom: 1; cursor: pointer;}
+.com-report .section .li .img-li:nth-of-type(6n){margin-right: 0;}
+.com-report .section .li .img-li img{ width: 130px; height: 110px; }
+.com-report .section .evaluation{ line-height: 32px; word-break: break-all;}
+.com-report .section .certifier{ line-height: 32px; text-align: right; }

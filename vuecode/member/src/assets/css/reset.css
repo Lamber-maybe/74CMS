@@ -1,0 +1,149 @@
+@charset "UTF-8";
+.absolute_for_x {
+  transform: translate(-50%, 0);
+}
+
+.absolute_for_y {
+  transform: translate(0, -50%);
+}
+
+.el-header {
+  padding: 0;
+}
+
+.el-main {
+  background-color: #f7f9fd;
+}
+
+.my_app,
+.my_container {
+  height: 100%;
+}
+
+/*重置Tabs 标签页样式*/
+.my_tabs .el-tabs__header {
+  margin-bottom: 20px;
+}
+.my_tabs .el-tabs__item {
+  font-size: 15px;
+  height: 42px;
+  line-height: 42px;
+  color: #999;
+}
+.my_tabs .el-tabs__item.is-active,
+.my_tabs .el-tabs__item:hover {
+  color: #1787fb;
+}
+.my_tabs .el-tabs__item .el-tabs__active-bar {
+  background-color: #1787fb;
+}
+.my_tabs .el-tabs__nav-wrap::after {
+  background-color: #ebeef5;
+  height: 1px;
+}
+
+/*重置table*/
+.my_table .el-table th.is-leaf {
+  border-top: 1px solid #ebeef5;
+}
+
+.bg_th .el-table thead th {
+  background-color: #fcfcfc;
+}
+
+.imgList .el-upload-list--picture-card .el-upload-list__item {
+  overflow: visible !important;
+}
+
+.form_item_con .salary_width .el-input__inner {
+  border: none !important;
+}
+
+/* 设置表头字体颜色 */
+/* .tab-con .el-table_1_column_4 .cell{ color: #1787fb;} */
+
+.el-input.w156 {
+  width: 156px;
+}
+
+.el-input.w217 {
+  width: 217px;
+}
+
+.el-button.w150 {
+  width: 150px;
+}
+.el-button.w200 {
+  width: 200px;
+}
+
+.el-textarea .el-textarea__inner {
+  resize: none;
+}
+.el-textarea.w766 {
+  width: 766px;
+}
+.el-textarea.w618 {
+  width: 618px;
+}
+.el-textarea.h190 .el-textarea__inner {
+  height: 190px;
+}
+.my_resume .r_left .fill_group .fill_line .f_item .i_input .el-select.w250 .el-input {
+  width: 250px;
+}
+.my_resume .r_left .fill_group .fill_line .f_item .i_input .el-select.w118 .el-input {
+  width: 118px;
+}
+
+/* 企业认证 */
+.upload-demo .el-upload-dragger {
+  border: none !important;
+}
+.upload-demo .el-upload-dragger {
+  width: 100%;
+  height: 100%;
+}
+
+/* 弹出框 */
+.el-dialog__header {
+  background: #f3f3f3;
+  text-align: center;
+  font-size: 15px;
+  color: #333333;
+}
+.el-dialog__footer {
+  text-align: center;
+}
+.el-dialog__footer .el-button {
+  width: 110px;
+  height: 36px;
+  padding: 0;
+}
+
+/* 文件上传 */
+.imgList_warpper .el-upload {
+  width: 148px;
+  height: 148px;
+  line-height: normal;
+  border: 2px dashed #f3f3f3;
+  background: #fff;
+  color: #1787fb;
+}
+
+.add_step_box .el-step__title {
+  font-size: 12px;
+  line-height: 28px;
+}
+
+.f_item .i_input .el-checkbox__label{font-size: 12px;}
+
+.add_step_box .el-step__icon.is-text {
+  border: 1px solid;
+  font-size: 12px;
+}
+.add_step_box .el-step.is-horizontal .el-step__line {
+  height: 1px;
+}
+
+/*# sourceMappingURL=reset.css.map */

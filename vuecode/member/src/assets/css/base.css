@@ -1,0 +1,39 @@
+@charset "UTF-8";
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; height: 100%; }
+
+body { margin: 0; padding: 0; color: #666666; background-color: #ffffff; -webkit-overflow-scrolling: touch; height: 100%; font: 14px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif; line-height: 1.3125; }
+
+* { -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+h1, h2, h3, h4, h5, form, p, ul, input { margin: 0; padding: 0; }
+
+input[type=button], input[type=submit] { -webkit-appearance: none; outline: none; }
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+input[type="number"] { -moz-appearance: textfield; }
+
+li { padding: 0; margin: 0; line-height: 180%; list-style-type: none; }
+
+a { text-decoration: none; color: #666; }
+
+a:hover { text-decoration: underline; }
+
+u { text-decoration: none; }
+
+:focus { outline: 0; }
+
+.substring { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.nowrap { white-space: nowrap; }
+
+.clear { clear: both; height: 0; font-size: 0; line-height: 0; }
+
+.main_container { width: 100%; background-color: #fff; padding: 0 40px; border-radius: 5px; }
+
+.sp_20_f3 { width: 100%; height: 20px; background-color: #f3f3f3; }
+
+/*企业会员中心首页 select 样式重置*/
+.recommend_select .self_input .el-input--mini .el-input__inner, .echarts_con .el-input--mini .el-input__inner { height: 36px; line-height: 36px; }
+
+/*# sourceMappingURL=base.css.map */

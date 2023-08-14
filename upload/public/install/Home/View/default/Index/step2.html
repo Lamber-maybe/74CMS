@@ -1,0 +1,201 @@
+<layout name="public/layout" />
+<div class="content">
+	<div class="title">
+		<i></i>
+		<div class="txt">安装参数配置</div>
+	</div>
+	<form id="form" action="{:U('step3')}" method="post">
+		<div class="form">
+			<div class="item">
+				<div class="label">数据库地址：</div>
+				<div class="input"><input class="input_text" type="text" value="127.0.0.1" id="host" name="host" />
+				</div>
+				<div class="tip">数据库服务器地址，一般为127.0.0.1</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据库端口：</div>
+				<div class="input"><input class="input_text" type="text" value="3306" id="port" name="port" /></div>
+				<div class="tip">系统数据库端口，一般为3306</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据库账号：</div>
+				<div class="input"><input class="input_text" type="text" value="" id="dbuser" name="dbuser" /></div>
+				<div class="tip">连接数据库的账号</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据库密码：</div>
+				<div class="input"><input class="input_text" type="text" value="" id="dbpwd" name="dbpwd" /></div>
+				<div class="tip">连接数据库的密码</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据库名称：</div>
+				<div class="input"><input class="input_text" type="text" value="" id="dbname" name="dbname" /></div>
+				<div class="tip">系统数据库名，必须包含字母</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据表前缀：</div>
+				<div class="input"><input class="input_text" type="text" value="qs_" id="dbprefix" name="dbprefix" />
+				</div>
+				<div class="tip">建议使用默认，数据库前缀必须带“_”</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">数据库覆盖：</div>
+				<div class="input">
+					<label class="input_radio_line"><input class="input_radio" type="radio" name="cover" checked
+							value="1">覆盖</label>
+					<label class="input_radio_line"><input class="input_radio" type="radio" name="cover"
+							value="0">不覆盖</label>
+				</div>
+				<div class="tip"></div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">&nbsp;</div>
+				<div class="input" style="width:150px;">
+					<div class="btn blue fl" id="J_test">测试数据库连接</div>
+				</div>
+				<div class="tip">请先点击“测试数据库连接”检测配置信息</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="title">
+			<i></i>
+			<div class="txt">设置管理员账号</div>
+		</div>
+		<div class="form">
+			<div class="item">
+				<div class="label">管理员账号：</div>
+				<div class="input"><input class="input_text" id="admin_name" name="admin_name" type="text"
+						value="admin" /></div>
+				<div class="tip">设置管理员用户名，最少5位</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">管理员密码：</div>
+				<div class="input"><input class="input_text" id="admin_pwd" name="admin_pwd" type="text" value="" />
+				</div>
+				<div class="tip">设置管理员密码，最少6位</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<div class="label">重复密码：</div>
+				<div class="input"><input class="input_text" id="admin_pwd1" name="admin_pwd1" type="text" value="" />
+				</div>
+				<div class="tip">再次输入管理密码</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</form>
+
+	<div class="btn fl" id="J_prev">返回上一步</div>
+	<div class="btn blue fr" id="J_next">继续下一步</div>
+	<div class="clear"></div>
+</div>
+<script>
+	$(document).ready(function () {
+		$('#J_prev').click(function () {
+			location.href = '{:U("step1")}';
+		})
+		$("#J_test").click(function () {
+			var host = $('#host').val();
+			if (!host) {
+				window.ELEMENT.Message.error('请填写数据库服务器地址')
+				return false
+			}
+			var port = $('#port').val();
+			if (!port) {
+				window.ELEMENT.Message.error('请填写数据库端口')
+				return false
+			}
+			var dbuser = $('#dbuser').val();
+			if (!dbuser) {
+				window.ELEMENT.Message.error('请填写数据库账号')
+				return false
+			}
+			var dbpwd = $('#dbpwd').val();
+			var dbname = $('#dbname').val();
+			if (!dbname) {
+				window.ELEMENT.Message.error('请填写数据库名')
+				return false
+			}
+			var dbprefix = $('#dbprefix').val();
+			if (!dbprefix) {
+				window.ELEMENT.Message.error('请填写数据表前缀')
+				return false
+			}
+			var cover = $('input[name=cover]:checked').val()
+			var postdata = {
+				host: host,
+				port: port,
+				dbuser: dbuser,
+				dbpwd: dbpwd,
+				dbname: dbname,
+				dbprefix: dbprefix,
+				cover: cover
+			}
+			$.post("{:U('test')}", postdata, function (res) {
+				res = JSON.parse(res)
+				if (res.code == 200) {
+					window.ELEMENT.Message({ type: 'success', message: res.message })
+				} else {
+					window.ELEMENT.Message.error(res.message)
+				}
+			})
+		})
+		$("#J_next").click(function () {
+			var host = $('#host').val();
+			if (!host) {
+				window.ELEMENT.Message.error('请填写数据库服务器地址')
+				return false
+			}
+			var port = $('#port').val();
+			if (!port) {
+				window.ELEMENT.Message.error('请填写数据库端口')
+				return false
+			}
+			var dbuser = $('#dbuser').val();
+			if (!dbuser) {
+				window.ELEMENT.Message.error('请填写数据库账号')
+				return false
+			}
+			var dbpwd = $('#dbpwd').val();
+			var dbname = $('#dbname').val();
+			if (!dbname) {
+				window.ELEMENT.Message.error('请填写数据库名')
+				return false
+			}
+			var dbprefix = $('#dbprefix').val();
+			if (!dbprefix) {
+				window.ELEMENT.Message.error('请填写数据表前缀')
+				return false
+			}
+			var admin_name = $('#admin_name').val();
+			if (!admin_name) {
+				window.ELEMENT.Message.error('请填写管理员用户名')
+				return false
+			}
+			var admin_pwd = $('#admin_pwd').val();
+			if (!admin_pwd) {
+				window.ELEMENT.Message.error('请填写管理员密码')
+				return false
+			}
+			var admin_pwd1 = $('#admin_pwd1').val();
+			if (!admin_pwd1) {
+				window.ELEMENT.Message.error('请再次输入管理密码')
+				return false
+			}
+			if (admin_pwd != admin_pwd1) {
+				window.ELEMENT.Message.error('两次输入密码不一致')
+				return false
+			}
+			$('#form').submit();
+
+		})
+	})
+</script>

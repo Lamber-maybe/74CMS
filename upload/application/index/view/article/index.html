@@ -1,0 +1,71 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/article.css" /#}
+<div id="app">
+    <div class="information_banner">
+        <img src="__ROOT__/assets/images/information_banner.png" >
+    </div>
+    <div class="content_wrapper">
+        <div class="content">
+            <div class="information_nav_wrapper clearfix">
+                <div class="information_nav_con">
+                    <div class="information_nav">
+                        <a {#if condition="!$Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>null])#}">全部分类</a>
+                        {#volist name="options1" id="vo"#}
+                        <a {#if condition="$key eq $Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>$key])#}">{#$vo#}</a>
+                        {#/volist#}
+                        {#if condition="count($options2) gt 0"#}
+                        <a class="open_btn active_open_btn" href="javascript:;" @mouseover="showSecondLine=true" @mouseout="showSecondLine=false">···</a>
+                        {#/if#}
+                    </div>
+                    <div class="information_nav2" v-show="showSecondLine">
+                        {#volist name="options2" id="vo"#}
+                        <a {#if condition="$key eq $Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>$key])#}">{#$vo#}</a>
+                        {#/volist#}
+                    </div>
+                </div>
+            </div>
+            <div class="information_list_con">
+                {#if condition="count($list) gt 0"#}
+                <div>
+                    {#volist name="list" id="vo"#}
+                    <div class="information_list clearfix">
+                        <div class="information_list_img  float">
+                            <a href="{#$vo.link_url#}" target="_blank"><img src="{#$vo.thumb_src#}" ></a>
+                        </div>
+                        <div class="information_list_text float">
+                            <a class="title" href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
+                            <p class="list_con">{#$vo.content#}</p>
+                            <div class="list_text_bottom clearfix">
+                                {#eq name="vo.source" value="0"#}
+                                <span class="original">原创</span>
+                                {#else/#}
+                                <span class="original2">转载</span>
+                                {#/eq#}
+                                <a class="guide" href="{#:P(['cid'=>$vo.cid])#}">{#$options[$vo.cid]#}</a>
+                                <p class="handle_right">
+                                    <span class="handle_time">{#:date('Y-m-d H:i',$vo.addtime)#}</span>
+                                    <span class="handle_see">{#$vo.click#}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {#/volist#}
+                </div>
+                {#else#}
+                <div class="list_empty n_bd">
+                    <div class="emp_text">暂时没有数据哦</div>
+                </div>
+                {#/if#}
+                {#$pagerHtml#}
+            </div>
+        </div>
+    </div>			
+</div>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        showSecondLine:false,
+    }
+})
+</script>

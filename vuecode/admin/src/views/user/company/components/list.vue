@@ -1,0 +1,709 @@
+<template>
+  <div class="app-container">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>企业管理</span>
+      </div>
+      <div class="list-search">
+        <el-select
+          v-if="showAuditOption===true"
+          v-model="audit"
+          class="list-options"
+          placeholder="不限认证状态"
+          @change="funSearch"
+        >
+          <el-option label="不限认证状态" value="" />
+          <el-option
+            v-for="(item, index) in options_audit"
+            :key="index"
+            :label="item"
+            :value="index"
+          />
+        </el-select>
+        <el-select
+          v-model="setmeal"
+          class="list-options"
+          placeholder="不限套餐类型"
+          @change="funSearch"
+        >
+          <el-option label="不限套餐类型" value="" />
+          <el-option
+            v-for="(item, index) in options_setmeal"
+            :key="index"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+        <el-select
+          v-model="regtime"
+          class="list-options"
+          placeholder="不限注册时间"
+          @change="funSearch"
+        >
+          <el-option label="不限注册时间" value="" />
+          <el-option label="3天内" value="3" />
+          <el-option label="7天内" value="7" />
+          <el-option label="15天内" value="15" />
+          <el-option label="30天内" value="30" />
+        </el-select>
+        <el-select
+          v-model="service"
+          class="list-options"
+          placeholder="不限所属客服"
+          @change="funSearch"
+        >
+          <el-option label="不限所属客服" value="" />
+          <el-option label="未分配" value="0" />
+          <el-option
+            v-for="(item, index) in options_service"
+            :key="index"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+        <el-input
+          v-model="keyword"
+          placeholder="请输入搜索内容"
+          class="input-with-select"
+        >
+          <el-select
+            slot="prepend"
+            v-model="key_type"
+            placeholder="请选择"
+            class="input-sel"
+          >
+            <el-option label="公司名称" value="1" />
+            <el-option label="公司ID" value="2" />
+            <el-option label="会员手机号" value="3" />
+            <el-option label="会员ID" value="4" />
+          </el-select>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="funSearchKeyword"
+          />
+        </el-input>
+      </div>
+      <div class="spaceline" />
+      <el-table
+        v-loading="listLoading"
+        :data="list"
+        element-loading-text="Loading"
+        fit
+        highlight-current-row
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="公司名称">
+          <template slot-scope="scope">
+            <el-link :href="scope.row.link" target="_blank" type="primary">
+              {{ scope.row.companyname }}
+            </el-link>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="认证资料">
+          <template slot-scope="scope">
+            <span
+              v-if="scope.row.has_auth_info == 1"
+              class="font_brand"
+              style="cursor:pointer;"
+              @click="fun_show_authinfo(scope.row)"
+            >
+              [点击查看]
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="认证状态">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.auth_status | auditFilter">
+              {{ options_audit[scope.row.auth_status] }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="创建时间">
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.addtime | timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="刷新时间">
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.refreshtime | timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="套餐名称" prop="setmeal_name" />
+        <el-table-column
+          align="center"
+          label="在招职位"
+          prop="jobs_num"
+        />
+        <el-table-column fixed="right" label="操作" width="270">
+          <template slot-scope="scope">
+            <el-button size="small" type="primary" @click="funManagement(scope.row)">
+              管理
+            </el-button>
+            <el-button
+              size="small"
+              type="primary"
+              @click="goto('/user/company/edit?id=' + scope.row.id)"
+            >
+              编辑
+            </el-button>
+            <el-button size="small" type="warning" @click="funAudit(scope.row)">
+              认证
+            </el-button>
+            <el-dropdown trigger="click" style="margin-left: 10px">
+              <el-button type="small">···</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  @click.native="funLog(scope.$index, scope.row)"
+                >
+                  日志
+                </el-dropdown-item>
+                <el-dropdown-item
+                  @click.native="funDelete(scope.row)"
+                >
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="spaceline" />
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-button
+            size="small"
+            type="primary"
+            @click="goto('/user/company/add')"
+          >
+            添加企业
+          </el-button>
+          <el-button size="small" type="primary" @click="funExport">
+            导出
+          </el-button>
+          <el-button size="small" type="primary" @click="funService">
+            分配客服
+          </el-button>
+          <el-button size="small" type="warning" @click="funAuditBatch">
+            认证
+          </el-button>
+          <el-button size="small" type="danger" @click="funDeleteBatch">
+            删除
+          </el-button>
+        </el-col>
+        <el-col :span="16" style="text-align: right;">
+          <el-pagination
+            background
+            :current-page="currentPage"
+            :page-sizes="[10,15, 20, 30, 40]"
+            :page-size="pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </el-col>
+      </el-row>
+    </el-card>
+    <el-dialog
+      title="将所选企业设置为"
+      :visible.sync="dialogFormVisible"
+      width="25%"
+    >
+      <el-form class="common-form" label-width="80px">
+        <el-form-item label="认证状态">
+          <el-radio-group v-model="setAuditVal">
+            <el-radio
+              v-for="(item, index) in form_options_audit"
+              :key="index"
+              :label="index"
+            >
+              {{ item }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="setAuditVal == 2" label="原因">
+          <el-input v-model="setAuditReason" type="textarea" rows="3" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="fun_set_audit">
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="将所选企业的客服设置为"
+      :visible.sync="dialogServiceVisible"
+      width="25%"
+    >
+      <el-form class="common-form" label-width="80px">
+        <el-form-item label="选择客服">
+          <el-select v-model="setServiceVal" placeholder="请选择">
+            <el-option
+              v-for="(item, index) in options_service_enable"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogServiceVisible = false">取 消</el-button>
+        <el-button type="primary" @click="fun_set_service">
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="认证资料"
+      :visible.sync="dialogAuthinfoVisible"
+      :width="dialogAuthinfoWidth"
+    >
+      <el-row v-if="auth_info.legal_person_name != ''">
+        <el-col :span="24">
+          负责人姓名：{{ auth_info.legal_person_name }}
+        </el-col>
+      </el-row>
+      <el-row v-if="auth_info.legal_person_idcard_number != ''">
+        <el-col :span="24">
+          负责人身份证号：{{ auth_info.legal_person_idcard_number }}
+        </el-col>
+      </el-row>
+      <el-row v-if="auth_info.legal_person_idcard_front != ''">
+        <el-col :span="12">
+          身份证正面照：
+          <el-image
+            style="width: 200px; "
+            :src="auth_info.legal_person_idcard_front"
+            :preview-src-list="[auth_info.legal_person_idcard_front]"
+          />
+        </el-col>
+        <el-col v-if="auth_info.legal_person_idcard_back != ''" :span="12">
+          身份证背面照：
+          <el-image
+            style="width: 200px; "
+            :src="auth_info.legal_person_idcard_back"
+            :preview-src-list="[auth_info.legal_person_idcard_back]"
+          />
+        </el-col>
+      </el-row>
+      <el-row v-if="auth_info.license != ''">
+        <el-col :span="24">
+          营业执照：
+          <el-image
+            style="width: 200px; "
+            :src="auth_info.license"
+            :preview-src-list="[auth_info.license]"
+          />
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog
+      v-if="dialogListVisible"
+      title="登录日志"
+      :visible.sync="dialogListVisible"
+      width="50%"
+      :close-on-click-modal="false"
+      @close="closeListDialog"
+    >
+      <dialist :uid="listUid" @setDialogFormVisible="closeListDialog" />
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import dialist from './loglist.vue'
+import { getClassify } from '@/api/classify'
+import { companyList, companyAudit, companyDelete, companySetService } from '@/api/company'
+import { management } from '@/api/member'
+import { parseTime, setMemberLogin } from '@/utils/index'
+import { exportCompanyById } from '@/api/export'
+
+export default {
+  components: {
+    dialist
+  },
+  filters: {
+    timeFilter(timestamp) {
+      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
+    },
+    auditFilter(audit) {
+      switch (audit) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'success'
+        case 2:
+          return 'danger'
+        case 3:
+          return 'info'
+        default:
+          return ''
+      }
+    }
+  },
+  props: ['listtype', 'showAuditOption'],
+  data() {
+    return {
+      dialogAuthinfoWidth: '25%',
+      dialogAuthinfoVisible: false,
+      auth_info: {},
+      auditSubmitLoading: false,
+      setAuditVal: 0,
+      setAuditReason: '',
+      setServiceVal: '',
+      auditIdarr: [],
+      serviceIdarr: [],
+      tableIdarr: [],
+      tableUidarr: [],
+      dialogFormVisible: false,
+      dialogServiceVisible: false,
+      list: null,
+      listLoading: true,
+      total: 0,
+      currentPage: 1,
+      pagesize: 10,
+      key_type: '1',
+      keyword: '',
+      audit: '',
+      setmeal: '',
+      regtime: '',
+      service: '',
+      form_options_audit: [],
+      options_audit: [],
+      options_setmeal: [],
+      options_service: [],
+      options_service_enable: [],
+      dialogListVisible: false,
+      listUid: 0
+    }
+  },
+  created() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.listLoading = true
+      getClassify({ type: 'companyAudit,setmealList,customerService' })
+        .then(response => {
+          const options_audit_arr = [...response.data.companyAudit]
+          options_audit_arr.forEach(el => {
+            this.options_audit[el.id] = el.name
+          })
+          this.form_options_audit = [...this.options_audit]
+          this.options_audit[3] = '未认证'
+          this.options_setmeal = [...response.data.setmealList]
+          this.options_service = [...response.data.customerService]
+          this.options_service.forEach(item => {
+            if (item.status == 1) {
+              this.options_service_enable.push(item)
+            }
+          })
+          const list_type = this.listtype
+          const param = {
+            list_type,
+            key_type: this.key_type,
+            keyword: this.keyword,
+            audit: this.audit,
+            setmeal: this.setmeal,
+            regtime: this.regtime,
+            service: this.service,
+            page: this.currentPage,
+            pagesize: this.pagesize
+          }
+          return companyList(param)
+        })
+        .then(response => {
+          this.list = response.data.items
+          this.listLoading = false
+          this.total = response.data.total
+          this.currentPage = response.data.current_page
+          this.pagesize = response.data.pagesize
+        })
+    },
+    fetchListData() {
+      this.listLoading = true
+      const list_type = this.listtype
+      const param = {
+        list_type,
+        key_type: this.key_type,
+        keyword: this.keyword,
+        audit: this.audit,
+        setmeal: this.setmeal,
+        regtime: this.regtime,
+        service: this.service,
+        page: this.currentPage,
+        pagesize: this.pagesize
+      }
+      companyList(param).then(response => {
+        this.list = response.data.items
+        this.listLoading = false
+        this.total = response.data.total
+        this.currentPage = response.data.current_page
+        this.pagesize = response.data.pagesize
+      })
+    },
+    handleSizeChange(val) {
+      this.pagesize = val
+      this.fetchListData()
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.fetchListData()
+    },
+    funSearch() {
+      this.fetchListData()
+    },
+    funSearchKeyword() {
+      this.currentPage = 1
+      this.fetchListData()
+    },
+    goto(target) {
+      this.$router.push(target)
+    },
+    closeDialog() {
+      this.dialogFormVisible = false
+    },
+    funAudit(row) {
+      this.setAuditReason = ''
+      this.setAuditVal = row.audit
+      this.auditIdarr = [row.id]
+      this.dialogFormVisible = true
+    },
+    funAuditBatch() {
+      if (this.tableIdarr.length == 0) {
+        this.$message.error('请选择要认证的企业')
+        return false
+      }
+      this.auditIdarr = this.tableIdarr
+      this.setAuditReason = ''
+      this.setAuditVal = 0
+      this.dialogFormVisible = true
+    },
+    funService(){
+      if (this.tableIdarr.length == 0) {
+        this.$message.error('请选择要分配客服的企业')
+        return false
+      }
+      this.serviceIdarr = this.tableIdarr
+      this.setServiceVal = ''
+      this.dialogServiceVisible = true
+    },
+    fun_set_audit() {
+      if (this.auditSubmitLoading == true) {
+        return false
+      }
+      this.auditSubmitLoading = true
+      const params = {
+        id: this.auditIdarr,
+        audit: this.setAuditVal,
+        reason: this.setAuditReason
+      }
+      companyAudit(params, 'post').then(response => {
+        if (response.code == 200) {
+          this.$message.success(response.message)
+          this.auditSubmitLoading = false
+          this.fetchListData()
+          this.closeDialog()
+          return true
+        } else {
+          this.auditSubmitLoading = false
+          this.$message.error(response.message)
+          return false
+        }
+      })
+    },
+    fun_set_service() {
+      const params = {
+        id: this.serviceIdarr,
+        cs_id: this.setServiceVal
+      }
+      companySetService(params, 'post').then(response => {
+        if (response.code == 200) {
+          this.$message.success(response.message)
+          this.fetchListData()
+          this.dialogServiceVisible = false
+          return true
+        } else {
+          this.$message.error(response.message)
+          return false
+        }
+      }).catch(() => {})
+    },
+    handleSelectionChange(idlist) {
+      this.tableIdarr = []
+      this.tableUidarr = []
+      if (idlist.length > 0) {
+        for (const item of idlist) {
+          this.tableIdarr.push(item.id)
+          this.tableUidarr.push(item.uid)
+        }
+      }
+    },
+    fun_show_authinfo(row) {
+      this.auth_info = { ...row }
+      this.dialogAuthinfoVisible = true
+      if (this.auth_info.license != '') {
+        this.dialogAuthinfoWidth = '20%'
+      } else {
+        this.dialogAuthinfoWidth = '40%'
+      }
+    },
+    funManagement(row){
+      const params = {
+        uid: row.uid
+      }
+      management(params).then(response => {
+        if (response.code == 200) {
+          setMemberLogin(response.data)
+          window.open(this.$store.state.config.sitedomain + this.$store.state.config.sitedir + this.$store.state.config.member_dirname)
+          return true
+        } else {
+          this.$message.error(response.message)
+          return false
+        }
+      })
+    },
+    funLog(index, row){
+      this.listUid = row.uid
+      this.dialogListVisible = true
+    },
+    closeListDialog() {
+      this.dialogListVisible = false
+    },
+    funDelete(row){
+      var that = this
+      that
+        .$confirm('此操作将永久删除该企业, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            uid: [row.uid]
+          }
+          companyDelete(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
+          })
+        })
+        .catch(() => {})
+    },
+    funDeleteBatch(){
+      var that = this
+      if (that.tableUidarr.length == 0){
+        that.$message.error('请选择要删除的企业')
+        return false
+      }
+      that
+        .$confirm('此操作将永久删除该企业, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            uid: that.tableUidarr
+          }
+          companyDelete(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
+          })
+        })
+        .catch(() => {})
+    },
+    funExport(){
+      var that = this
+      if (that.tableIdarr.length == 0){
+        that.$message.error('请选择要导出的企业')
+        return false
+      }
+      const param = {
+        id: that.tableIdarr
+      }
+      exportCompanyById(param).then(response => {
+        if (response.code == 200) {
+          that.exportExcel(response.data.items)
+        } else {
+          that.$message.error(response.message)
+          that.waiting = false
+        }
+        return true
+      })
+    },
+    exportExcel(list) {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('@/excel/Export2Excel')
+        const tHeader = [
+          '序号',
+          '企业ID',
+          '企业名称',
+          '企业简称',
+          '企业性质',
+          '所属行业',
+          '所在地区',
+          '企业规模',
+          '注册资金',
+          '联系人',
+          '联系手机',
+          '联系座机',
+          '联系人微信',
+          '联系人qq',
+          '联系人邮箱',
+          '审核状态',
+          '注册时间',
+          '刷新时间'
+        ] // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          'number',
+          'id',
+          'companyname',
+          'short_name',
+          'nature',
+          'trade',
+          'district',
+          'scale',
+          'registered',
+          'contact',
+          'mobile',
+          'telephone',
+          'weixin',
+          'qq',
+          'email',
+          'audit',
+          'addtime',
+          'refreshtime'
+        ]
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(
+          tHeader,
+          data,
+          '企业导出'
+        )
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
+    }
+  }
+}
+</script>
+
+<style scoped>
+.el-row {
+  margin-bottom: 20px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+</style>

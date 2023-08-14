@@ -1,0 +1,30 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/notice.css" /#}
+<div class="notice">
+    <div class="notice_banner">
+        <img src="__ROOT__/assets/images/notice_banner.png" />
+    </div>
+    <div class="content_wrapper">
+        <div class="content">
+            
+            <div>
+                {#volist name="list" id="vo"#}
+                <div class="notice_list_wrapper">
+                    <a class="notice_list_title"  href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
+                    <div class="notice_list_con">
+                        {#$vo.content#}
+                    </div>
+                    <div class="notice_handle">
+                        <span class="notice_time">{#:date('Y-m-d H:i',$vo.addtime)#}</span>
+                        <span class="notice_see">{#$vo.click#}</span>
+                    </div>
+                </div>
+                {#/volist#}
+                
+                {#$pagerHtml#}
+            </div>
+            
+            
+        </div>
+    </div>
+</div>

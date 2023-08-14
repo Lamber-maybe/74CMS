@@ -1,0 +1,168 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/map.css" /#}
+<div class="content_wrapper">
+    <div id="bdMap" style="width:100%;height:700px;"></div>
+    <div id="app">
+        <div class="map_list_con" v-cloak>
+            <div class="map_list_search">
+                <div class="search_box">
+                    <input type="text" placeholder="请输入搜索关键字" v-model="params.keyword" />
+                    <button type="button" @click="fetchData(true)"></button>
+                </div>
+            </div>
+            <div class="map_list_box" v-infinite-scroll="loadData" infinite-scroll-immediate="false">
+                <div class="list_empty n_bd" v-if="joblist.length==0">
+                    <div class="emp_text">此区域内暂无招聘职位</div>
+                    <div class="emp_text2">拖动地图寻找更多职位</div>
+                </div>
+                <div class="map_job_list" v-for="(item,index) in joblist" :key="index">
+                    <div class="map_job_name_box clearfix">
+                        <a class="map_job_name" href="javascript:;"
+                            @click="handlerJobshow(item.id)">{{item.jobname}}</a>
+                        <span class="map_job_time2">{{item.refreshtime}}</span>
+                    </div>
+                    <div class="map_job_info">
+                        <span class="map_job_salary">{{item.wage_text}}</span>
+                        <p>
+                            <span>{{item.district_text}}</span>
+                            <span>{{item.education_text}}</span>
+                            <span>{{item.experience_text}}</span>
+                        </p>
+                    </div>
+                    <div class="map_job_welfare">
+                        <span v-for="(tag,i) in item.tag" :key="i" v-if="i<4">{{tag}}</span>
+                    </div>
+                    <div class="map_job_company">
+                        <a class="company_name" href="javascript:;"
+                            @click="handlerCompanyshow(item.company_id)">{{item.companyname}}</a>
+                        <img class="setmeal_icon1 img1" src="__ROOT__/assets/images/details_icon_1.png"
+                            v-if="item.company_audit==1">
+                        <img class="setmeal_icon img2" v-if="item.setmeal_icon!=''" :src="item.setmeal_icon">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}"></script>
+<script type="text/javascript"
+    src="//api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script type="text/javascript"
+    src="//api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+<script>
+    var jobUrl = "{#:url('index/job/show',['id'=>'_id_'])#}"
+    var companyUrl = "{#:url('index/company/show',['id'=>'_id_'])#}"
+    var app = new Vue({
+        el: '#app',
+        data: {
+            map: null,
+            params: {
+                keyword: '',
+                south_west_lat: '',
+                south_west_lng: '',
+                north_east_lat: '',
+                north_east_lng: ''
+            },
+            page: 1,
+            pagesize: 5,
+            joblist: [],
+            marklist: [],
+        },
+        created: function () {
+            this.initBdMap()
+        },
+        methods: {
+            initBdMap: function () {
+                var that = this
+                this.map = new BMap.Map('bdMap') // 创建Map实例
+                var lng = parseFloat("{#$global_config.map_lng#}")
+                var lat = parseFloat("{#$global_config.map_lat#}")
+                var zoom = parseInt("{#$global_config.map_zoom#}")
+                var point = new BMap.Point(lng, lat) // 创建点坐标
+                this.map.centerAndZoom(point, zoom)
+                var scaleCtrl = new BMap.ScaleControl();
+                this.map.addControl(scaleCtrl);
+                var navigationCtrl = new BMap.NavigationControl();
+                this.map.addControl(navigationCtrl);
+                this.map.addEventListener('tilesloaded', function () {
+                    var cur_bssw = that.map.getBounds().getSouthWest()
+                    var cur_bsne = that.map.getBounds().getNorthEast()
+                    that.params.south_west_lat = cur_bssw.lat
+                    that.params.south_west_lng = cur_bssw.lng
+                    that.params.north_east_lat = cur_bsne.lat
+                    that.params.north_east_lng = cur_bsne.lng
+                    that.fetchData(true)
+                });
+            },
+            fetchData: function (init) {
+                var that = this
+                if (init) {
+                    this.page = 1
+                }
+                var conditions = JSON.parse(JSON.stringify(that.params))
+                conditions.page = that.page
+                conditions.pagesize = that.pagesize
+                httpget(qscms.apiList.mapsearch, conditions).then(function (res) {
+                    if (init === true) {
+                        that.marklist = JSON.parse(JSON.stringify(res.data.marks))
+                        that.joblist = JSON.parse(JSON.stringify(res.data.items))
+                        that.addMarkers()
+                    } else {
+                        that.joblist = that.joblist.concat(res.data.items)
+                    }
+
+                }).catch(function () { })
+            },
+            loadData: function () {
+                this.page++
+                this.fetchData(false)
+            },
+            addMarkers: function () {
+                var that = this
+                that.map.clearOverlays()
+                var markers = []
+                that.marklist.forEach(function (element) {
+                    var pt = new BMap.Point(element.map_lng, element.map_lat)
+                    var marker = new BMap.Marker(pt);
+                    that.map.addOverlay(marker);
+                    markers.push(marker);
+                    // 创建信息窗口
+                    var sContent = '<div class="map_hover">'
+                    sContent += '<div>'
+                    sContent += '<a class="hover_title">' + element.jobname + '</a>'
+                    sContent += '<p class="map_job_salary">' + element.wage_text + '</p>'
+                    sContent += '<p class="info">'
+                    sContent += '<span>' + element.district_text + '</span>'
+                    sContent += '<span>' + element.education_text + '</span>'
+                    sContent += '<span>' + element.experience_text + '</span>'
+                    sContent += '</p>'
+                    sContent += '<div class="hover_company_box">'
+                    sContent += '<a class="company_name" target="_blank" href="' + companyUrl.replace('_id_', element.id) + '">' + element.companyname + '</a>'
+                    if (element.company_audit == 1) {
+                        sContent += '<img class="setmeal_icon1 img1" src="__ROOT__/assets/images/details_icon_1.png" >'
+                    }
+                    var bdmapUrl = 'http://api.map.baidu.com/marker?location=' + element.map_lat + ',' + element.map_lng + '&title=' + element.companyname + '&content=' + element.address + '&output=html'
+                    sContent += '</div>'
+                    sContent += '</div>'
+                    sContent += '<div class="hover_details clearfix">'
+                    sContent += '<a class="hover_job_details" target="_blank" href="' + jobUrl.replace('_id_', element.id) + '">查看职位详情>></a>'
+                    sContent += '<a class="itinerary_details" target="_blank" href="' + bdmapUrl + '">查看上班路线</a>'
+                    sContent += '</div>'
+                    sContent += '</div>'
+                    var infoWindow = new BMap.InfoWindow(sContent);
+                    // 点标记添加点击事件
+                    marker.addEventListener('click', function () {
+                        that.map.openInfoWindow(infoWindow, pt); // 开启信息窗口
+                    });
+                });
+                var markerClusterer = new BMapLib.MarkerClusterer(that.map, { markers: markers });
+            },
+            handlerJobshow: function (id) {
+                window.open(jobUrl.replace('_id_', id))
+            },
+            handlerCompanyshow: function (id) {
+                window.open(companyUrl.replace('_id_', id))
+            }
+        }
+    })
+</script>

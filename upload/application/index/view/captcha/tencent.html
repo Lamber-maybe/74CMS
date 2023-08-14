@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证</title>
+    <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+</head>
+
+<body>
+    <script>
+        var from = "{#$Request.get.from#}";
+        var captcha = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+            if (res.ret === 0) {
+                var data = {
+                    //表单数据
+                    event: 'pass',
+                    data: {
+                        ticket: res.ticket,
+                        randstr: res.randstr
+                    }
+                };
+                if (from == 'ios') {
+                    window.webkit.messageHandlers.signal.postMessage(JSON.stringify(data));
+                } else {
+                    vaptchaInterface.signal(JSON.stringify(data))
+                }
+            } else {
+                var data = {
+                    //表单数据
+                    event: 'close',
+                    data: {
+                        ticket: null,
+                        randstr: null
+                    }
+                };
+                if (from == 'ios') {
+                    window.webkit.messageHandlers.signal.postMessage(JSON.stringify(data));
+                } else {
+                    vaptchaInterface.signal(JSON.stringify(data))
+                }
+            }
+            // res（用户主动关闭验证码）= {ret: 2, ticket: null}
+            // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
+        });
+        captcha.show(); // 显示验证码
+    </script>
+</body>
+
+</html>

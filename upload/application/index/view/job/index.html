@@ -1,0 +1,925 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/joblist.css" /#}
+<div class="content_wrapper" id="app">
+  <div class="content" v-cloak>
+    <div :class="showSelected ? 'filter_combo n_pd' : 'filter_combo'">
+      <div class="filter_line">
+        <div class="line_title">地标地段：</div>
+        <div class="line_item">
+          <a href="{#:P(['d1'=>null,'d2'=>null,'d3'=>null])#}"
+            class="f_item {#if condition='!$Request.param.d1'#}active{#/if#}">不限</a>
+          <a href="javascript:;" class="f_item back classifyReturn" data-type="cityReturn" style="display: none">上级</a>
+          <span id="cityLinkArea">
+            {#volist name="options_district" id="vo"#}
+            <a href="{#$vo.url#}"
+              class="f_item cityLink {#if condition='$Request.param.d3==$vo.id'#}active{#/if#}">{#$vo.text#}</a>
+            {#/volist#}
+          </span>
+          <a href="javascript:;" class="f_item more toggleMore" style="display: none" data-type="cityLink">
+            <span>更多</span>
+          </a>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="filter_line">
+        <div class="line_title">职位分类：</div>
+        <div class="line_item">
+          <a href="{#:P(['c1'=>null,'c2'=>null,'c3'=>null])#}"
+            class="f_item {#if condition='!$Request.param.c1'#}active{#/if#}">不限</a>
+          <a href="javascript:;" class="f_item back classifyReturn" data-type="categoryReturn"
+            style="display: none">上级</a>
+          <span id="categoryLinkArea">
+            {#volist name="options_categoryjob" id="vo"#}
+            <a href="{#$vo.url#}"
+              class="f_item jobLink {#if condition='$Request.param.c3==$vo.id'#}active{#/if#}">{#$vo.text#}</a>
+            {#/volist#}
+          </span>
+          <a href="javascript:;" class="f_item more toggleMore" style="display: none" data-type="jobLink">
+            <span>更多</span>
+          </a>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="filter_line">
+        <div class="line_title">职位薪资：</div>
+        <div class="line_item">
+          <a href="{#:P(['w1'=>null,'w2'=>null])#}"
+            class="f_item {#if condition='!$Request.param.w1 && !$Request.param.w2'#}active{#/if#}">不限</a>
+          <a class="f_item {#if condition='!$Request.param.w1 && $Request.param.w2==1000'#}active{#/if#}"
+            href="{#:P(['w1'=>null,'w2'=>1000])#}">1000元以下</a>
+          <a class="f_item {#if condition='$Request.param.w1==1000 && $Request.param.w2==2000'#}active{#/if#}"
+            href="{#:P(['w1'=>1000,'w2'=>2000])#}">1000-2000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==2000 && $Request.param.w2==3000'#}active{#/if#}"
+            href="{#:P(['w1'=>2000,'w2'=>3000])#}">2000-3000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==3000 && $Request.param.w2==5000'#}active{#/if#}"
+            href="{#:P(['w1'=>3000,'w2'=>5000])#}">3000-5000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==5000 && $Request.param.w2==8000'#}active{#/if#}"
+            href="{#:P(['w1'=>5000,'w2'=>8000])#}">5000-8000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==8000 && $Request.param.w2==12000'#}active{#/if#}"
+            href="{#:P(['w1'=>8000,'w2'=>12000])#}">8000-12000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==12000 && $Request.param.w2==15000'#}active{#/if#}"
+            href="{#:P(['w1'=>12000,'w2'=>15000])#}">12000-15000元</a>
+          <a class="f_item {#if condition='$Request.param.w1==15000 && !$Request.param.w2'#}active{#/if#}"
+            href="{#:P(['w1'=>15000,'w2'=>null])#}">15000元以上</a>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="filter_line">
+        <div class="line_title">职位亮点：</div>
+        <div class="line_item">
+          <a href="{#:P(['tag'=>null])#}"
+            class="f_item {#if condition='count($selectedTagArr) eq 0'#}active{#/if#}">不限</a>
+          {#volist name="options_tag" id="vo"#}
+          <a href="javascript:;" class="f_item tagLink {#if condition='in_array($key,$selectedTagArr)'#}active{#/if#}"
+            data-id="{#$key#}">{#$vo#}</a>
+          {#/volist#}
+          <a href="javascript:;" class="f_item more toggleMore" style="display: none" data-type="tagLink" data-num="15">
+            <span>更多</span>
+          </a>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="filter_line so_condition last">
+        <div class="line_title">更多筛选：</div>
+        <div class="f_select first J_dropdown">
+          <span class="s_text" :title="tradeSelectedText ? tradeSelectedText : '行业类别'">
+            {{tradeSelectedText ? tradeSelectedText : '行业类别'}}
+          </span>
+          <div class="dropdowbox_searchtrade J_dropdown_menu">
+            <div class="dropdow_inner_searchtrade">
+              <ul class="nav_box">
+                {#volist name="options_trade" id="vo"#}
+                <li><a href="{#:P(['trade'=>$key])#}">{#$vo#}</a></li>
+                {#/volist#}
+                <div class="clear"></div>
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="f_select J_dropdown">
+          <span class="s_text" :title="scaleSelectedText ? scaleSelectedText : '企业规模'">
+            {{scaleSelectedText ? scaleSelectedText : '企业规模'}}
+          </span>
+          <div class="dropdowbox_noa J_dropdown_menu">
+            <div class="dropdow_inner_noa">
+              <ul class="nav_box">
+                <li><a href="{#:P(['scale'=>null])#}">不限</a></li>
+                {#volist name="options_scale" id="vo"#}
+                <li><a href="{#:P(['scale'=>$key])#}">{#$vo#}</a></li>
+                {#/volist#}
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="f_select J_dropdown">
+          <span class="s_text" :title="natSelectedText ? natSelectedText : '工作性质'">
+            {{natSelectedText ? natSelectedText : '工作性质'}}
+          </span>
+          <div class="dropdowbox_noa J_dropdown_menu">
+            <div class="dropdow_inner_noa">
+              <ul class="nav_box">
+                <li><a href="{#:P(['nat'=>null])#}">不限</a></li>
+                {#volist name="options_nature" id="vo"#}
+                <li><a href="{#:P(['nat'=>$key])#}">{#$vo#}</a></li>
+                {#/volist#}
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="f_select J_dropdown">
+          <span class="s_text" :title="eduSelectedText ? eduSelectedText : '学历要求'">
+            {{eduSelectedText ? eduSelectedText : '学历要求'}}
+          </span>
+          <div class="dropdowbox_noa J_dropdown_menu">
+            <div class="dropdow_inner_noa">
+              <ul class="nav_box">
+                <li><a href="{#:P(['edu'=>null])#}">不限</a></li>
+                {#volist name="options_edu" id="vo"#}
+                <li><a href="{#:P(['edu'=>$key])#}">{#$vo#}</a></li>
+                {#/volist#}
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="f_select J_dropdown">
+          <span class="s_text" :title="expSelectedText ? expSelectedText : '工作经验'">
+            {{expSelectedText ? expSelectedText : '工作经验'}}
+          </span>
+          <div class="dropdowbox_noa J_dropdown_menu">
+            <div class="dropdow_inner_noa">
+              <ul class="nav_box">
+                <li><a href="{#:P(['exp'=>null])#}">不限</a></li>
+                {#volist name="options_exp" id="vo" key="k"#}
+                <li><a href="{#:P(['exp'=>$k])#}">{#$vo#}</a></li>
+                {#/volist#}
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="f_select J_dropdown">
+          <span class="s_text" :title="settrSelectedText ? settrSelectedText : '更新时间'">
+            {{settrSelectedText ? settrSelectedText : '更新时间'}}
+          </span>
+          <div class="dropdowbox_noa J_dropdown_menu">
+            <div class="dropdow_inner_noa">
+              <ul class="nav_box">
+                <li><a href="{#:P(['settr'=>null])#}">不限</a></li>
+                <li><a href="{#:P(['settr'=>3])#}">3天内</a></li>
+                <li><a href="{#:P(['settr'=>7])#}">7天内</a></li>
+                <li><a href="{#:P(['settr'=>15])#}">15天内</a></li>
+                <li><a href="{#:P(['settr'=>30])#}">30天内</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="filter_selected" v-if="showSelected">
+        <div class="filter_line so_condition last">
+          <div class="line_title">已选条件：</div>
+          <div class="fse_group">
+            <a href="{#:P(['keyword'=>null])#}" class="s_tag" v-if="keyword">{{keyword}}</a>
+            <a href="{#:P(['d1'=>null,'d2'=>null,'d3'=>null])#}" class="s_tag" v-if="d1">{{citySelectedText}}</a>
+            <a href="{#:P(['c1'=>null,'c2'=>null,'c3'=>null])#}" class="s_tag" v-if="c1">{{categorySelectedText}}</a>
+            <a href="{#:P(['w1'=>null,'w2'=>null])#}" class="s_tag" v-if="w1 || w2">{{wageSelectedText}}</a>
+            <a href="{#:P(['tag'=>null])#}" class="s_tag" v-if="tag">{{tagSelectedText}}</a>
+            <a href="{#:P(['trade'=>null])#}" class="s_tag" v-if="trade">{{tradeSelectedText}}</a>
+            <a href="{#:P(['scale'=>null])#}" class="s_tag" v-if="scale">{{scaleSelectedText}}</a>
+            <a href="{#:P(['nat'=>null])#}" class="s_tag" v-if="nat">{{natSelectedText}}</a>
+            <a href="{#:P(['edu'=>null])#}" class="s_tag" v-if="edu">{{eduSelectedText}}</a>
+            <a href="{#:P(['exp'=>null])#}" class="s_tag" v-if="exp">{{expSelectedText}}</a>
+            <a href="{#:P(['settr'=>null])#}" class="s_tag" v-if="settr">{{settrSelectedText}}</a>
+          </div>
+          <div class="clear"></div>
+          <a href="{#:url('index/job/index')#}" class="remove">清空条件</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="content_box2">
+      <ul class="box2_nav clearfix">
+        <li class="tab {#if condition="!$Request.param.listtype"#}nav_active{#/if#}"><a
+            href="{#:P(['listtype'=>null])#}" class="listtype">所有职位</a></li>
+        <li class="tab {#if condition="$Request.param.listtype eq 'emergency'"#}nav_active{#/if#}"><a
+            href="{#:P(['listtype'=>'emergency'])#}" class="listtype">紧急招聘</a></li>
+        <li class="tab"><a href="javascript:;" @click="handlerRecommend" class="listtype">智能推荐</a></li>
+        {#if condition="$show_mask eq 0"#}
+        <li class="tab paging">
+          <ul class="pagination-simple">
+            {#if condition="$prevPage eq 0"#}
+            <li class="pn disabled"><a>上一页</a></li>
+            {#else#}
+            <li class="pn"><a href="?page={#$prevPage#}">上一页</a></li>
+            {#/if#}
+            <li class="pn pagenum"><span class="color">{#$currentPage#}</span><span>/{#$dataset.total_page#}</span></li>
+            {#if condition="$nextPage gt $dataset.total_page"#}
+            <li class="pn disabled"><a>下一页</a></li>
+            {#else#}
+            <li class="pn"><a href="?page={#$nextPage#}">下一页</a></li>
+            {#/if#}
+          </ul>
+        </li>
+        {#/if#}
+        <li class="tab tel">提升招聘效果，请致电：{#$global_config.contact_tel#}</li>
+      </ul>
+      <div class="option clearfix">
+        <div class="option_text">排序方式：</div>
+        <div class="option_btn {#if condition="!$Request.param.sort"#}option_btn1{#/if#}"><a
+            href="{#:P(['sort'=>null])#}">综合排序</a></div>
+        <div class="option_btn {#if condition="$Request.param.sort eq 'rtime'"#}option_btn1{#/if#}"><a
+            href="{#:P(['sort'=>'rtime'])#}">更新时间</a></div>
+        <div class="option_right clearfix">
+          <div class="option_opt">
+            <label onclick="javascript:location.href='{#:P(["famous"=>$Request.param.famous==1?null:1])#}'"><input
+                type="checkbox" {#if condition="$Request.param.famous eq 1"#}checked{#/if#} /> 名企</label>
+            <label onclick="javascript:location.href='{#:P(["license"=>$Request.param.license==1?null:1])#}'"><input
+                type="checkbox" {#if condition="$Request.param.license eq 1"#}checked{#/if#} /> 企业已认证</label>
+            <label
+              onclick="javascript:location.href='{#:P(["filter_apply"=>$Request.param.filter_apply==1?null:1])#}'"><input
+                type="checkbox" {#if condition="$Request.param.filter_apply eq 1"#}checked{#/if#} /> 过滤已投递</label>
+          </div>
+          <div class="array_type">
+            <div class="t">展示方式：</div>
+            <div @click="handlerListtype('detail')" :class="displayMethod ? 'img_x active' : 'img_x'"></div>
+            <div @click="handlerListtype('list')" :class="!displayMethod ? 'img_j active' : 'img_j'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content_box3 clearfix">
+      <div class="left_sidebar">
+        <div class="job_list_box">
+          {#if condition="count($dataset.items) gt 0"#}
+          <div class="J_allListBox" v-if="displayMethod">
+            {#volist name="dataset.items" id="vo"#}
+            <div class="job_list2 clearfix">
+              <div class="job_text">
+                <input type="checkbox" class="l_chk J_allList" value="{#$vo.id#}" />
+                <div class="job_title">
+                  <a href="{#:url('index/job/show',['id'=>$vo.id])#}" target="_blank">{#$vo.jobname#}</a>
+                  <div class="job_list_hover">
+                    <span class="triangle"></span>
+                    <div class="hover_title_box clearfix">
+                      <div class="hover_title">
+                        <p class="hover_text1"><a>{#$vo.jobname#}</a></p>
+                        <p class="hover_text2">{#$vo.wage_text#}</p>
+                      </div>
+                      <div class="hover_img">
+                        <img src="__ROOT__/assets/images/CodeImg_icon.png" />
+                      </div>
+                    </div>
+
+                    <div class="job_duty">
+                      <div class="duty_title">
+                        <div class="clearfix">
+                          <p class="require_text">工作地区<span>{#$vo.district_text#}</span></p>
+                          <p class="require_text">招聘人数<span>{#$vo.amount_text#}人</span></p>
+                        </div>
+                        <div class="clearfix">
+                          <p class="require_text">学历要求<span>{#$vo.education_text#}</span></p>
+                          <p class="require_text">工作经验<span>{#$vo.experience_text#}</span></p>
+                        </div>
+                      </div>
+                      <ul class="duty_list">
+                        <li>{#:nl2br($vo.content)#}</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                </div>
+                <p class="job_salary job_salary_margin">
+                  <strong>{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}<span> /月</span>{#/if#}</strong>
+                  <span>{#$vo.district_text#}</span>
+                  <span>{#$vo.education_text#}</span>
+                  <span>{#$vo.experience_text#}</span>
+                </p>
+                {#if condition="$vo.tag"#}
+                <p class="job_welfare job_welfare_margin">
+                  {#volist name="$vo.tag" id="tag"#}
+                  <span>{#$tag#}</span>
+                  {#/volist#}
+                </p>
+                {#/if#}
+              </div>
+              <div class="company">
+                <div class="company_title">
+                  <a class="c_name substring" title="{#$vo.companyname#}" href="{#:url('index/company/show',['id'=>$vo.company_id])#}"
+                    target="_blank">{#$vo.companyname#}</a>
+                  {#if condition="$vo.company_audit eq 1"#}
+                  <div class="s_ic1"></div>
+                  {#/if#}
+                  {#if condition="$vo.setmeal_icon!=''"#}
+                  <div class="s_ic2"
+                    style="background: url('{#$vo.setmeal_icon#}') 0 4px no-repeat;background-size: 15px 13px;"></div>
+                  {#/if#}
+                  <div class="clear"></div>
+                </div>
+                <div class="in_p">
+                  <span class="company_span">{#$vo.company_nature_text#}</span>
+                  <span class="company_span">{#$vo.company_trade_text#}</span>
+                  <span class="company_span">{#$vo.company_scale_text#}</span>
+                </div>
+              </div>
+              <div class="job_btn">
+                <p>{#$vo.refreshtime#}</p>
+                <button class="btn" @click="doApply('{#$vo.id#}')">申请职位</button>
+              </div>
+            </div>
+            {#/volist#}
+          </div>
+          <div class="J_allListBox seekJob_list_box" v-if="!displayMethod">
+            {#volist name="dataset.items" id="vo"#}
+            <div class="seekJob_list clearfix">
+              <input type="checkbox" class="l_chk J_allList" value="{#$vo.id#}" />
+              <div class="name_box float">
+                <a class="job_name" href="{#:url('index/job/show',['id'=>$vo.id])#}" target="_blank">{#$vo.jobname#}</a>
+              </div>
+              <div class="region float">{#$vo.district_text#}</div>
+              <div class="company_title j float">
+                <a class="c_name" href="{#:url('index/company/show',['id'=>$vo.company_id])#}"
+                  target="_blank">{#$vo.companyname#}</a>
+                {#if condition="$vo.company_audit eq 1"#}
+                <div class="s_ic1"></div>
+                {#/if#}
+                {#if condition="$vo.setmeal_icon!=''"#}
+                <div class="s_ic2"
+                  style="background: url('{#$vo.setmeal_icon#}') 0 4px no-repeat;background-size: 15px 13px;"></div>
+                {#/if#}
+                <div class="clear"></div>
+              </div>
+              <div class="salary">{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}/月{#/if#}</div>
+            </div>
+            {#/volist#}
+          </div>
+          {#if condition="$show_mask eq 1"#}
+          <div class="jobslist-login-layer">
+            <div class="tip-block">
+              <div class="tip-block-title">
+                <p class="middle"><span class="font_red">30秒</span>快速注册简历，海量职位任意投！</p>
+                <p class="small">登录或注册简历后可以查看更多数据</p>
+              </div>
+              <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
+              <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">30秒注册简历</a>
+            </div>
+          </div>
+          {#/if#}
+          {#else#}
+          {#if condition="$show_mask eq 1"#}
+          <div class="jobslist-login-layer">
+            <div class="tip-block">
+              <div class="tip-block-title">
+                <p class="middle"><span class="font_red">30秒</span>快速注册简历，海量职位任意投！</p>
+                <p class="small">登录或注册简历后可以查看更多数据</p>
+              </div>
+              <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
+              <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">30秒注册简历</a>
+            </div>
+          </div>
+          {#else#}
+          <div class="list_empty">
+            <div class="emp_text">暂时没有数据哦</div>
+          </div>
+          {#/if#}
+          {#/if#}
+          {#if condition="$show_mask eq 0"#}
+          <div class="operation_wrapper">
+            <div class="operation">
+              <input type="checkbox" class="J_allSelected" />
+              <button class="operation_btn" @click="doContrast">对比职位</button>
+            </div>
+            {#$pagerHtml#}
+            <div class="clearfix"></div>
+          </div>
+          {#/if#}
+        </div>
+      </div>
+      <div class="right_sidebar">
+        <div>
+          <div class="right_box1" @click="handlerResumeStick">
+            <img src="__ROOT__/assets/images/job_icon.jpg">
+          </div>
+        </div>
+        <div class="right_box2">
+          <div class="right_box2_title">推荐职位</div>
+          {#volist name="hotjob_list" id="vo"#}
+          <div class="right_box2_text">
+            <a target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}"
+              class="box2_text1 {#eq name="vo.emergency" value="1"#}emergency{#/eq#}">{#$vo.jobname#}</a>
+            <p class="box2_text2"><a target="_blank"
+                href="{#:url('index/company/show',['id'=>$vo.company_id])#}">{#$vo.companyname#}</a></p>
+            <p class="box2_text3">{#$vo.wage_text#}{#if condition="$vo.negotiable==0"#}/月{#/if#}</p>
+          </div>
+          {#/volist#}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  $(document).ready(function () {
+    $(function () {
+      var cityList = {}, categoryList = {};
+      var d1 = 0, d2 = 0, d3 = 0;
+      var c1 = 0, c2 = 0, c3 = 0;
+      var cityLevel = parseInt('{#$district_level#}');
+      var categoryLevel = parseInt('{#$category_level#}');
+      var displayWordWidth = 900;
+
+      // 筛选条件显示数量控制
+      handleFilterConditionDisplay('cityLink');
+      handleFilterConditionDisplay('jobLink');
+      handleFilterConditionDisplay('tagLink');
+      function handleFilterConditionDisplay(className) {
+        var showWidth = 0, $filterLink = $('.' + className);
+        $filterLink.each(function (index, value) {
+          if (showWidth > displayWordWidth) {
+            $(this).hide();
+            $('[data-type=' + className + ']').show();
+          } else {
+            $(this).addClass('sw');
+            if (className === 'tagLink') {
+              showWidth += (value.clientWidth + 5);
+            } else {
+              showWidth += value.clientWidth;
+            }
+          }
+        });
+      }
+
+      // ajax获取分类数据
+      getClassify('citycategory');
+      getClassify('jobcategory');
+
+      // 返回上一级
+      $('.classifyReturn').click(function () {
+        var thisType = $(this).data('type');
+        if (thisType === 'cityReturn') {
+          if (cityLevel === 3) {
+            // 三级分类
+            var returnArray = cityList.filter(function (item) {
+              if (parseInt(item.value) === d1) {
+                return item
+              }
+            })[0].children;
+            $('#cityLinkArea').html(generateList(returnArray, 2, thisType));
+          } else {
+            $('#cityLinkArea').html(generateList(cityList, 1, thisType));
+            $('[data-type=cityReturn]').hide();
+          }
+          cityLevel = cityLevel - 1;
+          handleFilterConditionDisplay('cityLink');
+        } else {
+          if (categoryLevel === 3) {
+            // 三级分类
+            var returnArray = categoryList.filter(function (item) {
+              if (parseInt(item.value) === c1) {
+                return item
+              }
+            })[0].children;
+            $('#categoryLinkArea').html(generateList(returnArray, 2, thisType));
+          } else {
+            $('#categoryLinkArea').html(generateList(categoryList, 1, thisType));
+            $('[data-type=categoryReturn]').hide();
+          }
+          categoryLevel = categoryLevel - 1;
+          handleFilterConditionDisplay('jobLink');
+        }
+      });
+
+      // 返回上一级生成列表
+      function generateList(data, level, type) {
+        var listHtml = '';
+        Object.values(data).forEach(function (item) {
+          var listUrl = '';
+          if (type === 'cityReturn') {
+            if (level === 2) {
+              listUrl = '{#:P([\'d1\'=>\'_d1_\',\'d2\'=>\'_d2_\',\'d3\'=>null])#}';
+              listUrl = listUrl.replace('_d1_', d1);
+              listUrl = listUrl.replace('_d2_', item.value);
+            } else {
+              listUrl = '{#:P([\'d1\'=>\'_d1_\',\'d2\'=>null,\'d3\'=>null])#}';
+              listUrl = listUrl.replace('_d1_', item.value);
+            }
+            listHtml += '<a href="' + listUrl + '" class="f_item cityLink">' + item.label + '</a>';
+          } else {
+            if (level === 2) {
+              listUrl = '{#:P([\'c1\'=>\'_c1_\',\'c2\'=>\'_c2_\',\'c3\'=>null])#}';
+              listUrl = listUrl.replace('_c1_', c1);
+              listUrl = listUrl.replace('_c2_', item.value);
+            } else {
+              listUrl = '{#:P([\'c1\'=>\'_c1_\',\'c2\'=>null,\'c3\'=>null])#}';
+              listUrl = listUrl.replace('_c1_', item.value);
+            }
+            listHtml += '<a href="' + listUrl + '" class="f_item jobLink">' + item.label + '</a>';
+          }
+        });
+        return listHtml;
+      }
+
+      // 显示和收起更多分类
+      $('.toggleMore').click(function () {
+        var className = $(this).data('type');
+        if ($(this).hasClass('open')) {
+          $(this).removeClass('open').find('span').html('更多');
+          toggleClassify(className, true);
+        } else {
+          $(this).addClass('open').find('span').html('收起');
+          toggleClassify(className, false);
+        }
+      });
+
+      /**
+       * 显示和隐藏操作节点的公用方法
+       * @param className 节点类名
+       * @param num 可以显示的数量
+       * @param status 区分显示还是隐藏 true->需要隐藏
+       */
+      function toggleClassify(className, status) {
+        var num = $('.' + className + '.sw').length;
+        $('.' + className).each(function (index) {
+          $(this).show();
+          if (status) {
+            if (index > (num - 1)) {
+              $(this).hide();
+            }
+          }
+        });
+      }
+
+      // 获取分类数据
+      function getClassify(type) {
+        httpget(qscms.apiList.classify + '?type=' + type, {}).then(function (res) {
+          if (res.code === 200) {
+            if (type === 'citycategory') {
+              cityList = res.data;
+              d1 = parseInt('{#$Request.param.d1#}');
+              d2 = parseInt('{#$Request.param.d2#}');
+              d3 = parseInt('{#$Request.param.d3#}');
+              if (cityLevel !== 1) {
+                $('[data-type=cityReturn]').show();
+              }
+            } else if (type === 'jobcategory') {
+              categoryList = res.data;
+              c1 = parseInt('{#$Request.param.c1#}');
+              c2 = parseInt('{#$Request.param.c2#}');
+              c3 = parseInt('{#$Request.param.c3#}');
+              if (categoryLevel !== 1) {
+                $('[data-type=categoryReturn]').show();
+              }
+            }
+          } else {
+            console.log(res.message);
+          }
+        }).catch(function (err) {
+          console.log(err);
+        });
+      }
+
+      // 职位亮点筛选，可选多个条件
+      $('.tagLink').click(function () {
+        $(this).toggleClass('active');
+        var tagActiveArray = [];
+        $('.tagLink.active').each(function () {
+          tagActiveArray.push($(this).data('id'));
+        });
+        var tagUrl = '{#:P([\'tag\'=>\'_tag_\'])#}';
+        tagUrl = tagUrl.replace('_tag_', tagActiveArray.join('_'));
+        window.location.href = tagUrl;
+      });
+    });
+  });
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      keyword: '{#$Request.param.keyword#}',
+      d1: parseInt('{#$Request.param.d1#}'),
+      d2: parseInt('{#$Request.param.d2#}'),
+      d3: parseInt('{#$Request.param.d3#}'),
+      cityLevel: parseInt('{#$district_level#}'),
+      citySelectedText: '',
+      c1: parseInt('{#$Request.param.c1#}'),
+      c2: parseInt('{#$Request.param.c2#}'),
+      c3: parseInt('{#$Request.param.c3#}'),
+      categoryLevel: parseInt('{#$category_level#}'),
+      categorySelectedText: '',
+      w1: parseInt('{#$Request.param.w1#}'),
+      w2: parseInt('{#$Request.param.w2#}'),
+      wageSelectedText: '',
+      tag: '{#$Request.param.tag#}',
+      tagSelectedText: '',
+      trade: '{#$Request.param.trade#}',
+      tradeSelectedText: '',
+      scale: '{#$Request.param.scale#}',
+      scaleSelectedText: '',
+      nat: '{#$Request.param.nat#}',
+      natSelectedText: '',
+      edu: '{#$Request.param.edu#}',
+      eduSelectedText: '',
+      exp: '{#$Request.param.exp#}',
+      expSelectedText: '',
+      settr: '{#$Request.param.settr#}',
+      settrSelectedText: '',
+      showSelected: false,
+      displayMethod: true
+    },
+    mounted: function () {
+      var listtype = getStorageValue('joblist_type');
+      if (!listtype || listtype == 'detail') {
+        this.displayMethod = true
+      } else {
+        this.displayMethod = false
+      }
+      // 已选条件展示
+      if (this.d1) {
+        this.getClassify('citycategory'); // 地区
+      }
+      if (this.c1) {
+        this.getClassify('jobcategory'); // 职位分类
+      }
+      // 薪资
+      if (this.w1 && !this.w2) {
+        // 最高薪资以上
+        this.wageSelectedText = this.w1 + '元以上';
+      } else if (this.w1 && this.w2) {
+        // 薪资区间
+        this.wageSelectedText = this.w1 + '-' + this.w2 + '元';
+      } else if (!this.w1 && this.w2) {
+        // 最低薪资以下
+        this.wageSelectedText = this.w2 + '元以下';
+      }
+      // 职位亮点
+      if (this.tag) {
+        this.getClassify('jobTag');
+      }
+      // 行业类别
+      if (this.trade) {
+        this.getClassify('trade');
+        $('.so_condition .J_dropdown').eq(0).addClass('active');
+      }
+      // 企业规模
+      if (this.scale) {
+        this.getClassify('companyScale');
+        $('.so_condition .J_dropdown').eq(1).addClass('active');
+      }
+      // 工作性质
+      if (this.nat) {
+        this.getClassify('jobNature');
+        $('.so_condition .J_dropdown').eq(2).addClass('active');
+      }
+      // 学历要求
+      if (this.edu) {
+        this.getClassify('education');
+        $('.so_condition .J_dropdown').eq(3).addClass('active');
+      }
+      // 工作经验
+      if (this.exp) {
+        this.getClassify('experience');
+        $('.so_condition .J_dropdown').eq(4).addClass('active');
+      }
+      // 更新时间
+      if (this.settr) {
+        this.settrSelectedText = this.settr + '天内';
+        $('.so_condition .J_dropdown').eq(5).addClass('active');
+      }
+      // 是否显示已选条件
+      if (this.keyword || this.d1 || this.c1 || this.w1 || this.w2 || this.tag || this.trade || this.scale || this.nat || this.edu || this.exp || this.settr) {
+        this.showSelected = true;
+      }
+    },
+    methods: {
+      handlerListtype: function (listtype) {
+        if (listtype == 'detail') {
+          this.displayMethod = true
+        } else {
+          this.displayMethod = false
+        }
+        setStorageValue('joblist_type', listtype);
+      },
+      getClassify: function (type) {
+        var _this = this;
+        httpget(qscms.apiList.classify + '?type=' + type, {}).then(function (res) {
+          if (res.code === 200) {
+            if (type === 'citycategory') {
+              var cityList = res.data;
+              if (_this.d1) {
+                if (_this.cityLevel === 2) {
+                  // 地区为二级
+                  _this.citySelectedText = cityList.filter(function (item) {
+                    if (parseInt(item.value) === _this.d1) {
+                      return item
+                    }
+                  })[0].label;
+                }
+                if (_this.cityLevel === 3) {
+                  // 地区为三级
+                  var levelTwoList = cityList.filter(function (item) {
+                    if (parseInt(item.value) === _this.d1) {
+                      return item
+                    }
+                  })[0].children;
+                  if (_this.d3) {
+                    var levelThreeList = levelTwoList.filter(function (item) {
+                      if (parseInt(item.value) === _this.d2) {
+                        return item
+                      }
+                    })[0].children;
+                    _this.citySelectedText = levelThreeList.filter(function (item) {
+                      if (parseInt(item.value) === _this.d3) {
+                        return item
+                      }
+                    })[0].label;
+                  } else {
+                    _this.citySelectedText = levelTwoList.filter(function (item) {
+                      if (parseInt(item.value) === _this.d2) {
+                        return item
+                      }
+                    })[0].label;
+                  }
+                }
+              }
+            } else if (type === 'jobcategory') {
+              var categoryList = res.data;
+              if (_this.c1) {
+                if (_this.categoryLevel === 2) {
+                  // 地区为二级
+                  _this.categorySelectedText = categoryList.filter(function (item) {
+                    if (parseInt(item.value) === _this.c1) {
+                      return item
+                    }
+                  })[0].label;
+                }
+                if (_this.categoryLevel === 3) {
+                  // 地区为三级
+                  var levelTwoList = categoryList.filter(function (item) {
+                    if (parseInt(item.value) === _this.c1) {
+                      return item
+                    }
+                  })[0].children;
+                  if (_this.c3) {
+                    var levelThreeList = levelTwoList.filter(function (item) {
+                      if (parseInt(item.value) === _this.c2) {
+                        return item
+                      }
+                    })[0].children;
+                    _this.categorySelectedText = levelThreeList.filter(function (item) {
+                      if (parseInt(item.value) === _this.c3) {
+                        return item
+                      }
+                    })[0].label;
+                  } else {
+                    _this.categorySelectedText = levelTwoList.filter(function (item) {
+                      if (parseInt(item.value) === _this.c2) {
+                        return item
+                      }
+                    })[0].label;
+                  }
+                }
+              }
+            } else if (type === 'jobTag') {
+              var tagList = res.data;
+              var selectedTagList = _this.tag.split('_');
+              var tagTextArr = [];
+              selectedTagList.forEach(function (value) {
+                var cuText = tagList.filter(function (item) {
+                  if (parseInt(item.id) === parseInt(value)) {
+                    return item
+                  }
+                })[0].name;
+                tagTextArr.push(cuText);
+              })
+              _this.tagSelectedText = tagTextArr.join('+');
+              console.log(_this.tagSelectedText);
+            } else if (type === 'trade') {
+              var tradeList = res.data;
+              _this.tradeSelectedText = tradeList.filter(function (item) {
+                if (parseInt(item.id) === parseInt(_this.trade)) {
+                  return item
+                }
+              })[0].name;
+            } else if (type === 'companyScale') {
+              var scaleList = res.data;
+              _this.scaleSelectedText = scaleList.filter(function (item) {
+                if (parseInt(item.id) === parseInt(_this.scale)) {
+                  return item
+                }
+              })[0].name;
+            } else if (type === 'jobNature') {
+              var natureList = res.data;
+              _this.natSelectedText = natureList.filter(function (item) {
+                if (parseInt(item.id) === parseInt(_this.nat)) {
+                  return item
+                }
+              })[0].name;
+            } else if (type === 'education') {
+              var eduList = res.data;
+              _this.eduSelectedText = eduList.filter(function (item) {
+                if (parseInt(item.id) === parseInt(_this.edu)) {
+                  return item
+                }
+              })[0].name;
+            } else if (type === 'experience') {
+              var expList = res.data;
+              _this.expSelectedText = expList.filter(function (item) {
+                if (parseInt(item.id) === parseInt(_this.exp)) {
+                  return item
+                }
+              })[0].name;
+            }
+          } else {
+            console.log(res.message);
+          }
+        }).catch(function (err) {
+          console.log(err);
+        });
+      },
+      doApply: function (jobid) {
+        var that = this
+        if (qscms.loginUtype != 2) {
+          that.$confirm('当前操作需要登录求职者账号', '提示', {
+            type: 'warning',
+            confirmButtonText: '去登录',
+          }).then(function () {
+            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href;
+          }).catch(function () { });
+        } else {
+          var params = { jobid: jobid };
+          httppost(qscms.apiList.jobapply, params).then(function (res) {
+            that.$message({ type: 'success', message: res.message });
+          }).catch(function () { });
+        }
+      },
+      handlerRecommend: function (jobid) {
+        var that = this
+        if (qscms.loginUtype != 2) {
+          that.$confirm('当前操作需要登录求职者账号', '提示', {
+            type: 'warning',
+            confirmButtonText: '去登录',
+          }).then(function () {
+            location.href = qscms.locationList.loginPersonal + '?redirect=' +
+              qscms.locationList.recommendJob;
+          }).catch(function () { });
+        } else {
+          location.href = qscms.locationList.recommendJob;
+        }
+      },
+      doContrast: function () {
+        var that = this
+        var idArr = qscms.getSelItemArr()
+        if (idArr.length == 0) {
+          that.$message.error('请选择职位');
+          return
+        }
+        idArr = arrayUnique(idArr)
+        var idStr = idArr.join(",")
+        var url = "{#:url('index/job/contrast')#}"
+        window.open(url + '?id=' + idStr)
+      },
+      handlerResumeStick: function () {
+        location.href = qscms.locationList.personalService
+      },
+      handlerLogin: function () {
+        location.href = qscms.locationList.loginPersonal
+      },
+      handlerReg: function () {
+        location.href = qscms.locationList.regPersonal
+      },
+      handlerJump: function (param_name) {
+        if (param_name == 'famous') {
+          if ("{#$Request.param.famous#}" == '1') {
+            var url = "{#:P(['famous'=>null])#}"
+          } else {
+            var url = "{#:P(['famous'=>1])#}"
+          }
+          location.href = url
+        } else if (param_name == 'license') {
+          if ("{#$Request.param.license#}" == '1') {
+            var url = "{#:P(['license'=>null])#}"
+          } else {
+            var url = "{#:P(['license'=>1])#}"
+          }
+          location.href = url
+        } else if (param_name == 'filter_apply') {
+          if ("{#$Request.param.filter_apply#}" == '1') {
+            var url = "{#:P(['filter_apply'=>null])#}"
+          } else {
+            var url = "{#:P(['filter_apply'=>1])#}"
+          }
+          location.href = url
+        }
+      }
+    },
+  });
+</script>

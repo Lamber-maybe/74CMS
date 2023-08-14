@@ -1,0 +1,155 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="renderer" content="webkit">
+<title>{#$pageHeader.title#}</title>
+<meta name="keywords" content="{#$pageHeader.keywords#}">
+<meta name="description" content="{#$pageHeader.description#}">
+<meta property="og:type" content="{#$pageHeader.og.type#}" />
+<meta property="og:title" content="{#$pageHeader.og.title#}" />
+<meta property="og:url" content="{#$pageHeader.og.url#}" />
+<meta property="og:site_name" content="{#$pageHeader.og.site_name#}" />
+<meta property="og:description" content="{#$pageHeader.og.description#}" />
+<meta name="author" content="骑士CMS" />
+<meta name="copyright" content="74cms.com" />
+<link rel="shortcut icon" href="__ROOT__/favicon.ico" />
+{#load href="__ROOT__/assets/js/polyfill.7.11.5.min.js" /#}
+{#load href="__ROOT__/assets/css/base.css" /#}
+{#load href="__ROOT__/assets/css/layout.css" /#}
+{#load href="__ROOT__/assets/css/public.css" /#}
+{#load href="__ROOT__/assets/js/vue.js" /#}
+{#load href="__ROOT__/assets/js/axios.min.js" /#}
+{#load href="__ROOT__/assets/css/element-ui.css" /#}
+{#load href="__ROOT__/assets/js/element-ui.js" /#}
+{#load href="__ROOT__/assets/js/jquery.min.js" /#}
+{#load href="__ROOT__/assets/js/jquery.dropdown.js" /#}
+{#load href="__ROOT__/assets/js/jquery.listitem.js" /#}
+{#load href="__ROOT__/assets/js/utils.js" /#}
+{#load href="__ROOT__/assets/js/js.cookie.min.js" /#}
+<script>
+    var qscms = {
+        sitedomain: "{#$global_config.sitedomain#}",
+        sitedir: "{#$global_config.sitedir#}",
+        mobiledomain: "{#$global_config.mobile_domain#}",
+        memberDirname: "{#$global_config.member_dirname#}",
+        apiUrl: "{#$global_config.sitedomain#}{#$global_config.sitedir#}v1_0",
+        apiList: {
+            getLoginCode: '/member/sendsms/login',//获取登录验证码
+            userinfo: '/home/config/userinfo',//获取用户信息,用于查询用户登录状态
+            qrcode: '/home/qrcode/index',//获取推广二维码
+            jobContact: '/home/job/getContact',//获取职位联系方式
+            jobClick: '/home/job/click',//职位点击量加1
+            jobapply: '/member/index/jobApplyAdd',//申请职位,
+            jobFavCheck: '/home/job/checkFav',//查询职位是否已被收藏
+            jobFav: '/member/index/favJobAdd',//收藏职位
+            jobFavCancel: '/member/index/favJobCancel',//取消收藏职位
+            searchLocation: '/home/index/ajaxSearchLocation',//搜索时ajax跳转
+            resumeRefresh: '/personal/resume/refresh',//刷新简历
+            companyJobRefreshBatch: '/company/job/refreshBatch', // 企业刷新职位-批量
+            companyCheckJobaddNum: '/company/job/checkJobaddNumber',// 查询可发布职位数
+            resumeContact: '/home/resume/getContact',//获取简历联系方式
+            resumeFavCheck: '/home/resume/checkFav',//获取简历是否已被收藏
+            resumeFav: '/member/index/favResumeAdd',//收藏简历
+            resumeFavCancel: '/member/index/favResumeCancel',//取消收藏简历
+            resumeClick: '/home/resume/click',//简历点击量加1
+            resumeDownload: '/member/index/downResumeAdd',//下载简历
+            jobSupplementary: '/home/job/supplementary',//职位详情补充资料
+            companySupplementary: '/home/company/supplementary',//企业详情补充资料
+            resumeSupplementary: '/home/resume/supplementary',//简历详情补充资料
+            companyAttention: '/member/index/attentionCompanyAdd',// 关注企业
+            companyAttentionCancel: '/member/index/attentionCompanyCancel',// 取消关注企业
+            companyClick: '/home/company/click',//企业点击量加1
+            companyJoblist: '/home/job/index',//获取企业在招职位列表
+            company_published_jobslist: '/company/index/joball',// 获取企业在招职位面试邀请
+            interview_add: '/member/index/interviewAdd',// 邀请面试
+            member_setmeal: '/company/service/mysetmeal',// 我的套餐
+            classify: '/home/classify/index',// 获取枚举类数据
+            articleClick: '/home/article/click',//资讯点击量加1
+            noticeClick: '/home/notice/click',//公告点击量加1
+            jobContrast: '/home/contrast/job',//职位对比
+            resumeContrast: '/home/contrast/resume',//简历对比
+            mapsearch: '/home/job/map',//地图搜索
+            loginByPwd: '/member/login/password',//账号密码登录
+            loginByCode: '/member/login/code',//验证码登录
+            agreementAndPrivacy: '/home/config/agreementAndPrivacy',//注册协议和隐私政策
+            statAfterLogin: '/member/index/statAfterLogin',//获取登录后统计信息
+            tipoff: '/member/info/tipoff',//举报
+            captchaPicture: '/home/captcha/picture',//图片验证码
+            cronRun: '/home/cron/index',//计划任务
+        },
+        isLogin: false,
+        loginUtype: 0,
+        userToken: '',
+        platform: "web",
+    }
+
+    var locationUrl = qscms.sitedir + qscms.memberDirname
+    qscms.locationList = {
+        indexCompany: locationUrl + "/company",
+        indexPersonal: locationUrl + "/personal",
+        loginCompany: locationUrl + "/login/company",
+        loginPersonal: locationUrl + "/login/personal",
+        regCompany: locationUrl + "/reg/company",
+        regPersonal: locationUrl + "/reg/personal",
+        createResume: locationUrl + "/personal/resume/add_resume_step1",
+        recommendResume: locationUrl + "/company/recommend",
+        recommendJob: locationUrl + "/personal/recommend",
+        companyPassword: locationUrl + "/company/account/safety",
+        companyService: locationUrl + "/company/service/setmeal",
+        companyJobApplyList: locationUrl + "/company/resume/jobapply",
+        companyInterviewList: locationUrl + "/company/resume/interview",
+        personalJobApplyList: locationUrl + "/personal/job/jobapply",
+        personalInterviewList: locationUrl + "/personal/job/interview",
+        companyViewList: locationUrl + "/company/resume/browsing",
+        personalViewList: locationUrl + "/personal/job/viewjob",
+        companyJobAdd: locationUrl + "/company/jobadd",
+        companySetmealAdd: locationUrl + "/company/service/setmeal",
+        companyJoblist: locationUrl + "/company/joblist",
+        personalService: locationUrl + "/personal/service/stick",
+        personalPassword: locationUrl + "/personal/account/safety",
+        personalResume: locationUrl + "/personal/resume",
+        forget: locationUrl + "/forget/1",
+        appeal: locationUrl + "/appeal",
+    }
+    //获取列表中已选择的项目
+    qscms.getSelItemArr = function () {
+        var idArr = []
+        var listArray = $('.J_allListBox .J_allList:checked');
+        $.each(listArray, function (index, val) {
+            idArr.push(val.value)
+        });
+        return idArr
+    }
+    var visitor = Cookies.get('qscms_visitor');
+    if (visitor !== undefined && visitor !== null) {
+        visitor = JSON.parse(visitor)
+        qscms.userToken = visitor.token
+        qscms.isLogin = true
+        qscms.loginUtype = visitor.utype
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.J_allSelected').click(function () {
+            var isChecked = $(this).is(':checked');
+            var listArray = $('.J_allListBox .J_allList');
+            $.each(listArray, function (index, val) {
+                $(this).prop('checked', isChecked);
+            });
+        });
+        $('.J_allList').click(function () {
+            var isChecked = $(this).is(':checked');
+            if (isChecked) {
+                var listArray = $('.J_allListBox .J_allList');
+                var listCheckedArray = $('.J_allListBox .J_allList:checked');
+                if (listArray.length == listCheckedArray.length) {
+                    $('.J_allSelected').prop('checked', isChecked);
+                };
+            } else {
+                $('.J_allSelected').prop('checked', isChecked);
+            }
+        });
+    })
+</script>
+{#load href="__ROOT__/assets/js/error.js" /#}
+{#load href="__ROOT__/assets/js/http.js" /#}

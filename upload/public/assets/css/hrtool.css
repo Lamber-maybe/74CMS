@@ -1,0 +1,195 @@
+/* 工具箱列表 */
+.banner {
+	height: 160px;
+	background: url(../images/banner_img.png) no-repeat;
+	text-align: center;
+}
+
+.banner_maintitle {
+	color:#fff;
+	font-size: 24px;
+	padding-top: 50px;
+	padding-bottom: 16px;
+}
+
+.banner_subtitle {
+	color: #fff;
+	font-size: 16px;
+}
+
+.banner img {
+	width: 100%;
+	height: 100%;
+}
+
+.content {
+	width: 1200px;
+	margin: auto;
+}
+
+.toolCase_box {
+	margin-right: -50px;
+	margin-top: 30px;
+}
+
+.toolCase_box .toolCase_list {
+	width: 365px;
+	border-radius: 10px;
+	background: #fff;
+	margin-right: 50px;
+	margin-bottom: 50px;
+}
+.toolCase_box .toolCase_list:hover {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.toolCase_box .toolCase_list:last-child {
+	margin-right: 0;
+}
+
+.toolCase_box .toolCase_img {
+	height: 144px;
+}
+.toolCase_box .toolCase_img.p1{
+	background: url(../images/hrtool_img/1.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p2{
+	background: url(../images/hrtool_img/2.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p3{
+	background: url(../images/hrtool_img/3.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p4{
+	background: url(../images/hrtool_img/4.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p5{
+	background: url(../images/hrtool_img/5.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p6{
+	background: url(../images/hrtool_img/6.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p7{
+	background: url(../images/hrtool_img/7.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p8{
+	background: url(../images/hrtool_img/8.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p9{
+	background: url(../images/hrtool_img/9.png) no-repeat;
+}
+.toolCase_box .toolCase_img.p0{
+	background: url(../images/hrtool_img/10.png) no-repeat;
+}
+
+.toolCase_box .toolCase_img .img_text {
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, .5);
+	color: #fff;
+	font-size: 20px;
+	text-align: center;
+	line-height: 144px;
+	position: relative;
+	border-radius: 10px 10px 0 0;
+}
+
+.toolCase_box .img_text span {
+	display: inline-block;
+	width: 34px;
+	height: 1px;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 92px;
+	margin-left: -17px;
+}
+
+.toolCase_box .toolCase_text {
+	padding: 27px 32px;
+}
+
+.toolCase_box .toolCase_text p {
+	color: #999999;
+	font-size: 12px;
+	line-height: 19px;
+}
+
+.toolCase_box .toolCase_list .toolCase_btn {
+	width: 96px;
+	padding: 7px 21px 6px;
+	font-size: 13px;
+	border-radius: 5px;
+	color: #1787fb;
+	margin: 24px auto 0;
+	cursor: pointer;
+	border: 1px solid #1787fb;
+}
+.toolCase_box .toolCase_btn a{
+	color: #1787fb;
+}
+.toolCase_box .toolCase_btn:hover{
+	background: #1787fb;
+}
+
+.toolCase_box .toolCase_btn:hover .toolCase_more{
+	color: #fff;
+}
+
+/* 工具箱详情 */
+
+
+.toolChest_details{
+	padding: 0 30px;
+	background: #fff;
+}
+.toolChest_details .details_title{
+	text-align: center;
+	border-bottom: 1px solid #f3f3f3;
+}
+.toolChest_details .details_title .title1{
+	color:#333333 ;
+	font-size: 28px;
+	padding-top: 47px;
+	font-weight: bold;
+}
+.toolChest_details .details_title .title2{
+	color:#666666 ;
+	font-size: 14px;
+	margin: 22px 0 34px;
+}
+.toolChest_details .toolChest_details_box{
+	padding: 27px  20px  40px;
+}
+.toolChest_details .toolChest_details_list li{
+	width:220px;
+	padding-left: 25px;
+	color: #333333;
+	font-size: 14px;
+	margin-bottom: 20px;
+	float: left;
+	cursor: pointer;
+}
+.toolChest_details .toolChest_details_list li.word{
+	background: url(../images/hrtool_img/word.png) 0px 4px no-repeat;
+}
+.toolChest_details .toolChest_details_list li.ppt{
+	background: url(../images/hrtool_img/ppt.png) 0px 4px no-repeat;
+}
+.toolChest_details .toolChest_details_list li.excel{
+	background: url(../images/hrtool_img/excel.png) 0px 4px no-repeat;
+}
+.toolChest_details .toolChest_details_list li.pdf{
+	background: url(../images/hrtool_img/pdf.png) 0px 4px no-repeat;
+}
+.toolChest_details .toolChest_details_list li a{
+	color: #333;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 190px;
+    display: block;
+}
+.toolChest_details .margin{
+	margin-right: 20px;
+}

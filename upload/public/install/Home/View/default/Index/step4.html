@@ -1,0 +1,29 @@
+<layout name="public/layout" />
+<div class="content" style="text-align: center;">
+	<div class="title">
+		<i></i>
+		<div class="txt">程序安装完成</div>
+	</div>
+	<div class="finish_img"><img src="{$assets_path}/images/install_complete.gif" /></div>
+	<div class="finish_tit">您已成功安装骑士人才系统SE版</div>
+	<div class="finish_info">
+		<div class="item">您的管理员账号：<b>{$admin_name}</b></div>
+		<div class="item">您的管理员密码：<b>{$admin_pwd}</b></div>
+		<div class="item"><b>为了您的网站安全，请妥善保管系统超级管理员账号密码，切勿外泄！</b></div>
+		<div class="item">请删除public目录下的 <b>install目录</b> 和 <b>install.php</b></div>
+	</div>
+	<div class="btn blue" id="J_home">查看网站首页</div>
+	<div class="btn blue " id="J_admin" style="margin-left:50px;">查看网站后台</div>
+	<div class="clear"></div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$('#J_home').click(function () {
+			location.href = '{$home_url}';
+		})
+		$('#J_admin').click(function () {
+			location.href = '{$admin_url}';
+		})
+	})
+</script>

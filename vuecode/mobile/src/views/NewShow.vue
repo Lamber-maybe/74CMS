@@ -1,0 +1,192 @@
+<template>
+  <div id="app" v-wechat-title="this.pageTitle">
+    <Head>资讯详情</Head>
+    <div class="form_top_border"></div>
+    <div class="list_wrapper">
+      <div class="list_block">
+        <div class="title">
+          {{ info.title }}
+        </div>
+        <div class="some">
+          <div class="form" :class="info.source == 1 ? 'rep' : ''">
+            {{ info.source_text }}
+          </div>
+          <div class="time">{{ info.addtime | timeFilter }}</div>
+          <div class="num">{{ info.click }}</div>
+          <div class="clear"></div>
+        </div>
+      </div>
+      <div class="notice_content">
+        <span style="white-space: pre-line;" v-html="info.content"></span>
+      </div>
+    </div>
+    <div class="jump_block">
+      <div class="jump_content">
+        <div class="form_split_10"></div>
+        <router-link
+          class="link"
+          :to="!prev.link_url ? '/news/' + prev.id : prev.link_url"
+          v-if="prev !== null"
+        >
+          上一篇： {{ prev.title }}
+        </router-link>
+        <span class="link" v-else>上一篇： -</span>
+        <router-link
+          class="link next"
+          :to="!next.link_url ? '/news/' + next.id : next.link_url"
+          v-if="next !== null"
+        >
+          下一篇： {{ next.title }}
+        </router-link>
+        <span class="link next" v-else>下一篇： -</span>
+      </div>
+    </div>
+    <div class="form_split_10"></div>
+    <Subscribe></Subscribe>
+  </div>
+</template>
+
+<script>
+import wxshare from '@/assets/js/share.js'
+import { parseTime } from '@/utils/index'
+import http from '@/utils/http'
+import api from '@/api'
+import Subscribe from '@/components/Subscribe'
+export default {
+  name: 'NoticeShow',
+  components: {
+    Subscribe
+  },
+  filters: {
+    timeFilter (timestamp) {
+      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
+    }
+  },
+  data () {
+    return {
+      pageTitle: '',
+      id: 0,
+      info: {},
+      prev: {},
+      next: {}
+    }
+  },
+  watch: {
+    $route (to, from) {
+      this.fetchData()
+    }
+  },
+  created () {
+    // 请求列表数据
+    this.fetchData()
+  },
+  methods: {
+    fetchData () {
+      this.id = this.$route.params.id
+      http
+        .get(api.news_show, { id: this.id })
+        .then(res => {
+          const { info, prev, next } = { ...res.data }
+          this.info = info
+          this.prev = prev
+          this.next = next
+          this.pageTitle =
+            this.info.title + ' - ' + this.$store.state.config.sitename
+          let wechatShareInfo = {
+            title: info.title
+          }
+          wxshare(wechatShareInfo, 'newshow', location.href)
+        })
+        .catch(() => {})
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.jump_block {
+  .jump_content {
+    .link {
+      &.next {
+        padding: 4px 17px 12px;
+      }
+      padding: 12px 17px 4px;
+      font-size: 14px;
+      color: #333333;
+      line-height: 18px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
+    }
+    background-color: #ffffff;
+    width: 100%;
+  }
+  position: relative;
+}
+.notice_content {
+  img {
+    max-width: 100%;
+  }
+  line-height: 1.8;
+  font-size: 14px;
+  color: #333333;
+  padding: 10px 0;
+  word-break: break-all;
+  overflow: hidden;
+}
+.list_wrapper {
+  .list_block {
+    .some {
+      .form {
+        &.rep {
+          color: #ff6600;
+          background-color: #fff5e8;
+        }
+        float: left;
+        line-height: 16px;
+        padding: 0 6px;
+        font-size: 11px;
+        color: #1787fb;
+        border-radius: 3px;
+        background-color: #e7f3ff;
+        margin-right: 10px;
+      }
+      .time {
+        float: left;
+        padding-left: 17px;
+        font-size: 12px;
+        color: #999999;
+        height: 16px;
+        background: url("../assets/images/com_man_i3.png") 0 2px no-repeat;
+        background-size: 12px;
+      }
+      .num {
+        float: left;
+        font-size: 12px;
+        color: #999999;
+        height: 16px;
+        margin-left: 10px;
+        background: url("../assets/images/com_man_ic2.png") 0 3px no-repeat;
+        background-size: 13px 10px;
+        padding-left: 17px;
+      }
+    }
+    .title {
+      line-height: 1.6;
+      word-break: break-all;
+      font-size: 18px;
+      color: #333333;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+    width: 100%;
+    position: relative;
+    padding: 13px 0;
+    display: block;
+    border-bottom: 1px solid #f3f3f3;
+  }
+  background-color: #ffffff;
+  padding: 0 17px;
+}
+</style>

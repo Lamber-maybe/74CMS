@@ -1,0 +1,12 @@
+<el-form ref="captchaForm" :rules="captchaRules" :model="captchaForm" label-width="0px" :inline="true" :hide-required-asterisk="true">
+	<el-form-item label=" " prop="code">
+        <el-input v-model="captchaForm.code" style="width:120px;"></el-input>
+	</el-form-item>
+	<el-form-item label=" ">
+        <img class="captcha_img" :src="catpchaSrc" @click="changeImg" width="130"/>
+    </el-form-item>
+    <div class="clearfix"></div>
+	<el-form-item label=" ">
+	    <el-button type="primary" @click="submitPictureCaptcha" style="width:280px;">确定</el-button>
+	</el-form-item>
+</el-form>

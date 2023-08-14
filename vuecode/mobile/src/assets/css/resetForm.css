@@ -1,0 +1,197 @@
+.van-cell {
+  padding: 13px 30px 13px 28px; font-size: 14px;
+}
+
+.van-cell:not(:last-child).reset_after::after {
+  left: 0; border-bottom: 1PX solid #ebebeb;
+}
+
+.van-cell:not(:last-child).reset_ac_after::after {
+  left: 18px; right: 18px;
+}
+
+.van-cell:not(:last-child).reset_read_after::after {
+  left: 18px;
+}
+
+.van-cell.reset_ac_after {
+  padding: 13px 30px 13px 18px;
+}
+
+.van-cell.reset_read_after {
+  padding: 13px 30px 13px 18px;
+}
+
+.van-cell.big_label .van-field__label {
+  width: 100px;
+}
+
+.form_choose {
+  font-size: 14px; color: #333333;
+}
+
+.van-cell:not(:last-child).no_border::after {
+  border-bottom: 0;
+}
+
+.van-field__label, .van-field__body {
+  line-height: inherit;
+}
+
+.van-cell__value {
+  line-height: 24px;
+}
+
+.form_choose .van-cell__value::after {
+  position: absolute; right: -22px; top: 50%; transform: translate(0, -50%); content: ' '; display: block;
+  height: 100%; background: url("../images/form_choose_arrow.svg") center no-repeat; background-size: 16px;
+  border: 0; width: 16px;
+}
+
+.form_choose.reset_ac_after .van-cell__value::after {
+  position: absolute; right: -13px; top: 50%; transform: translate(0, -50%); content: ' '; display: block;
+  height: 100%; background: url("../images/form_choose_arrow.svg") center no-repeat; background-size: 16px;
+  border: 0; width: 16px;
+}
+
+.van-field__control {
+  font-size: 14px; color: #333333;
+}
+
+.van-field--error .van-field__control, .van-field--error .van-field__control::placeholder {
+  color: #323233;
+}
+
+.van-cell--required::before {
+  left: 17px; top: 50%; transform: translate(0, -50%); content: '*';
+}
+
+.van-field__label {
+  color: #333333;
+}
+
+.van-field__control::placeholder {
+  color: #c9c9c9;
+}
+
+.van-field__control {
+  font-size: 14px;
+}
+
+.form_split_title {
+  width: 100%; padding: 11px 17px; color: #666666; font-size: 13px; background-color: #f3f3f3;
+}
+
+.form_split_title .sub {
+  float: right;
+  color: #999;
+  font-size: 12px;
+}
+
+.add_handle_bar {
+  width: 100%; background-color: #ffffff; text-align: center; padding: 15px 0;
+}
+
+.add_handle_bar .add_handle {
+  display: inline-block; font-size: 14px; color: #333333; padding-left: 23px; vertical-align: middle;
+  background: url("../images/add_handle.svg") 0 center no-repeat; background-size: 20px;
+}
+
+.form_active_title {
+  padding: 60px 0 31px; font-size: 18px; color: #333333; font-weight: bold; text-align: center;
+  background-color: #ffffff;
+}
+
+.form_active_title_2 {
+  padding: 31px 0 31px 18px; font-size: 20px; color: #333333; font-weight: bold; background-color: #ffffff;
+  position: relative;
+}
+
+.form_active_title_2 .title_close {
+  position: absolute; right: 0; top: 0; width: 54px; height: 100%;
+  background: url("../images/form_title_close.svg") center no-repeat; background-size: 30px;
+}
+
+.form_active_title_2.mt_9 {
+  margin-top: 9px;
+}
+
+.form_split_18 {
+  width: 100%; height: 9px; background-color: #f3f3f3;
+}
+
+.form_split_10 {
+  width: 100%; height: 5px; background-color: #f3f3f3;
+}
+
+.for_btn {
+  position: relative;width: 100%;height: 0;
+}
+
+.for-pop-title {
+  position: absolute; left: 50%; top: 15px; transform: translate(-50%, 0); z-index: 1; font-size: 15px; font-weight: 600;
+}
+
+.form_top_border { width: 100%; position: relative; }
+
+.form_top_border::after {
+  position: fixed; box-sizing: border-box; content: ' '; pointer-events: none; right: 0; top: 53px; left: 0;
+  border-bottom: 1PX solid #ebebeb; -webkit-transform: scaleY(.5); transform: scaleY(.5);z-index: 10;
+}
+
+.van-cell__title, .van-cell__value { line-height: inherit; }
+
+.van-field__left-icon .van-icon.mt { margin-top: 4px; }
+
+.filter_menu .van-dropdown-menu__bar { box-shadow: none; }
+
+.filter_menu .van-dropdown-menu__bar::after {
+  position: absolute; box-sizing: border-box; content: ' '; pointer-events: none; right: 0; bottom: 0; left: 0;
+  border-bottom: 0.026667rem solid #ebedf0; -webkit-transform: scaleY(.5); transform: scaleY(.5);
+}
+
+.right_handle {
+  position: absolute; right: 0; top: -50px; height: 50px; line-height: 50px; padding: 0 15px; font-size: 14px;
+}
+
+.van-field__left-icon {line-height: inherit}
+
+/*弹框提示公用样式*/
+.dialog_tip_wrapper {padding: 20px 0;}
+
+.dialog_tip_wrapper .tx1 {padding: 0 35px;font-size: 15px;color: #666666;line-height: 1.8;margin-bottom: 15px;}
+
+.dialog_tip_wrapper .tx2 {font-size: 13px;color: #999999;text-align: center;line-height: 2}
+
+.dialog_tip_wrapper .red {color: #ff0000;}
+
+.dialog_tip_wrapper .blue {color: #1787fb;text-decoration: none;}
+
+/*绑定微信公众号*/
+.dialog_wx_qr {padding: 8px 0 17px;}
+
+.dialog_wx_qr .tip {font-size: 13px;text-align: center;margin-bottom: 25px;}
+
+.dialog_wx_qr .orange {color: #ff6600;}
+
+.dialog_wx_qr .qr_img {width: 155px;height: 155px;margin: 0 auto 20px;}
+
+.dialog_wx_qr .qr_img img {width: 155px;height: 155px;border: 0;}
+
+.dialog_wx_qr .tip_text {font-size: 13px;line-height: 1.8;text-align: left;padding: 0 30px;word-break: break-all;}
+
+.arrow_for::after {position: absolute;right: 17px;top: 21px;width: 7px;height: 7px;border-top: 1px solid #999999;
+  border-right: 1px solid #999999;transform: rotate(45deg);content: "";}
+
+.absolute_for_x {transform: translate(-50%, 0)}
+
+.absolute_for_y {transform: translate(0, -50%)}
+
+/*转发引导*/
+.alw-layer { top: 0; z-index: 50000; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8) url(../../assets/images/share/wzp_layer.png) no-repeat center;
+  background-size: 320px auto; position: fixed; }
+
+.alw-wx-layer { top: 0; z-index: 50000; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8) url(../../assets/images/share/wx_layer.png) no-repeat center top;
+  background-size: contain; position: fixed; }

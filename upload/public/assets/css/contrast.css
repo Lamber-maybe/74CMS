@@ -1,0 +1,182 @@
+/* 内容 */
+.content {
+	width: 1200px;
+	margin: auto;
+	padding: 20px 0;
+}
+
+.content_box {
+	background: #fff;
+	border: 1px solid #e2e2e2;
+	text-align: center;
+}
+
+.box1_list {
+	width: 212.5px;
+	border-right: 1px solid #e2e2e2;
+	float: left;
+	font-size: 14px;
+}
+.box1_list.last{
+	border-right: 0;
+}
+.box1_list_height1 {
+	height: 249px;
+}
+.box1_list_height2 {
+	height: 216px;
+}
+.box1_list p{
+	width: 154px;
+	margin: auto;
+}
+
+.user {
+	width: 134px;
+	float: left;
+	color: #666;
+	font-size: 14px;
+	border-right: 1px solid #e2e2e2;
+	height: 216px;
+}
+.user.resume{
+	height: 249px;
+}
+.user p{
+	color: #666;
+}
+
+.photo {
+	margin-top: 50px;
+	margin-bottom: 44px;
+}
+
+ .photo2 {
+	margin-top: 24px;
+	margin-bottom: 32px;
+}
+
+.name{
+	margin-bottom: 15px;
+}
+
+ .name2 {
+	margin-bottom: 10px;
+}
+
+
+
+ .List_img {
+	width: 70px;
+	height: 70px;
+	margin-top: 25px;
+}
+.List_img.avatar{
+	border-radius: 50%;
+}
+
+
+
+.box1_list .List_name {
+	font-size: 14px;
+	margin-top: 15px;
+	color: #333333;
+}
+.box1_list .List_name a{
+	font-size: 14px;
+	color: #333333;
+	cursor: pointer;
+}
+
+.box1_list .List_sex {
+	margin-top: 14px;
+	margin-bottom: 28px;
+	color: #333333;
+}
+
+
+.box1_list .List_name2 {
+	font-size: 14px;
+	margin-top: 24px;
+	display: inline-block;
+	cursor: pointer;
+	color: #333;
+}
+
+.box1_list .List_sex2 {
+	margin-top: 30px;
+	margin-bottom: 12px;
+}
+
+
+
+
+.list_money{
+	color: #ff6600;
+}
+
+.box1_list .List_company{
+	height: 36px;
+	margin-bottom: 22px;
+	font-size: 14px;
+	display: inline-block;
+	cursor: pointer;
+	color: #333;
+	width:200px;
+}
+
+
+
+.content_box2 {
+	background: #fff;
+	margin-top: 10px;
+	border: 1px solid #e2e2e2;
+	border-right: none;
+	border-top:0;
+}
+
+.box2_title {
+	background: #f9f9f9;
+	font-weight: bold;
+	font-size: 16px;
+	padding: 9px 0 9px 28px;
+	border-top: 1px solid #e2e2e2;
+	border-right: 1px solid #e2e2e2;
+	color: #333333;
+}
+
+.content_box2 .item {
+	border-top: 1px solid #e2e2e2;
+	border-right: 1px solid #e2e2e2;
+}
+
+.content_box2 .item div {
+	float: left;
+	font-size: 14px;
+}
+
+.content_box2 .item .item_text {
+	width: 134px;
+	padding: 18px 0px;
+	text-align: center;
+	border-right: 1px solid #e2e2e2;
+	color: #666666;
+}
+.content_box2 .item .item_text.btn{
+	height: 68px;
+}
+.content_box2 .ite_details {
+	width: 212.5px;
+	padding: 18px 0;
+	text-align: center;
+	border-right: 1px solid #e2e2e2;
+	color: #333;
+	height: 52px;
+}
+.content_box2 .ite_details.last{
+	border-right: 0;
+}
+
+.content_box2 .ite_details.btn{
+	height: 68px;
+}

@@ -1,0 +1,752 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/highslide.css" /#}
+{#load href="__ROOT__/assets/css/jobshow.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content">
+        <div class="content1_wrapper clearfix">
+            <div class="content1_text float">
+                <h3 class="post_name">{#$return.base_info.jobname#}</h3>
+                <p class="salary">{#$return.base_info.wage_text#}
+                    {#eq name="return.base_info.negotiable" value="0"#}<span>/月</span>{#/eq#} </p>
+                <div class="see_num" v-cloak>
+                    <p>更新：<span>{#$return.base_info.refreshtime#}</span></p>
+                    <p>浏览：<span>{{clickNum}}人</span></p>
+                    <p>投递：<span>{{supplementary.apply_num}}人</span></p>
+                </div>
+            </div>
+            <div class="content1_btn float" v-cloak>
+                <button class="btn" @click="doApply">投递简历</button>
+                <p class="operate">
+                    <span class="collect" :class="hasFav===true?'has':''"
+                        @click="doFav">{{hasFav===true?'已收藏':'收藏'}}</span>
+                    <el-popover placement="bottom-end" width="200" trigger="hover">
+                        <span>
+                            <img :src="shareQrcode" width="174" height="174" />
+                            <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                        </span>
+                        <span class="share" slot="reference">分享</span>
+                    </el-popover>
+                </p>
+            </div>
+        </div>
+        <div class="content2 clearfix">
+            <div class="left_sidebar">
+                <div>
+                    <div class="post_wrapper">
+                        <div>
+                            <div class="title post_title_margin">任职要求</div>
+                            <div class="post_box1">
+                                <div class="clearfix">
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            工作性质
+                                        </span>
+                                        {#$return.base_info.nature_text#}
+                                    </div>
+                                    {#if condition="$return.field_rule.amount.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            招聘人数
+                                        </span>
+                                        {#$return.base_info.amount_text#}
+                                    </div>
+                                    {#/if#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            学历要求
+                                        </span>
+                                        {#$return.base_info.education_text#}
+                                    </div>
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            工作经验
+                                        </span>
+                                        {#$return.base_info.experience_text#}
+                                    </div>
+                                    {#if condition="$return.field_rule.department.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            招聘部门
+                                        </span>
+                                        {#$return.base_info.department#}
+                                    </div>
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.age.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            年龄要求
+                                        </span>
+                                        {#if condition="$return.base_info.age_text == '不限' || $return.base_info.age_text == ''"#}
+                                            不限
+                                        {#else#}
+                                            {#$return.base_info.age_text#}岁
+                                        {#/if#}
+                                    </div>
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.custom_field_1.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            {#$return.field_rule.custom_field_1.field_cn#}
+                                        </span>
+                                        {#$return.base_info.custom_field_1#}
+                                    </div>
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.custom_field_2.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            {#$return.field_rule.custom_field_2.field_cn#}
+                                        </span>
+                                        {#$return.base_info.custom_field_2#}
+                                    </div>
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.custom_field_3.is_display==1"#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            {#$return.field_rule.custom_field_3.field_cn#}
+                                        </span>
+                                        {#$return.base_info.custom_field_3#}
+                                    </div>
+                                    {#/if#}
+                                    <div class="post_box1_font2 float">
+                                        <span class="post_box1_font">
+                                            工作地区
+                                        </span>
+                                        {#$return.base_info.district_text#}
+                                    </div>
+                                </div>
+                                <div class="post_box1_local">
+                                    <span class="post_box1_font">工作地点</span>
+                                    {#$return.base_info.address#}
+                                    <span class="post_route" @click="showMap=true">查看上班路线</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post_box2">
+                            <div class="resume_contact" v-if="contactData.show_contact==0">
+                                <div class="details_wrapper contact_margin"
+                                    v-if="contactData.show_contact_note=='need_login'">
+                                    <div class="contact_details_title">
+                                        联系方式
+                                    </div>
+                                    <div class="contact_details">
+                                        <p class="box_text">您尚未登录，点击登录后可获取企业联系方式</p>
+                                        <div class="contact_btn" @click="handlerLoginForContact">点击登录</div>
+                                    </div>
+                                </div>
+                                <div class="details_wrapper contact_margin"
+                                    v-if="contactData.show_contact_note=='need_personal_login'">
+                                    <div class="contact_details_title">
+                                        联系方式
+                                    </div>
+                                    <div class="contact_details">
+                                        <p class="box_text2">职位联系方式</p>
+                                        <p>仅对求职者会员开放</p>
+                                    </div>
+                                </div>
+                                <div class="details_wrapper contact_margin"
+                                    v-if="contactData.show_contact_note=='need_resume'">
+                                    <div class="contact_details_title">
+                                        联系方式
+                                    </div>
+                                    <div class="contact_details">
+                                        <p class="box_text">您还没有简历，创建简历后可查看企业联系方式</p>
+                                        <div class="contact_btn" @click="doCreateResume">创建简历</div>
+                                    </div>
+                                </div>
+                                <div class="details_wrapper contact_margin"
+                                    v-if="contactData.show_contact_note=='need_apply'">
+                                    <div class="contact_details_title">
+                                        联系方式
+                                    </div>
+                                    <div class="contact_details">
+                                        <p class="box_text">您还没有投递简历，投递简历后可查看企业联系方式</p>
+                                        <div class="contact_btn" @click="doApply">投递简历</div>
+                                    </div>
+                                </div>
+                                <div class="details_wrapper contact_margin"
+                                    v-if="contactData.show_contact_note=='company_close'">
+                                    <div class="contact_details_title">
+                                        联系方式
+                                    </div>
+                                    <div class="contact_details" v-if="hasApply===false">
+                                        <p class="box_text">企业未开启查看联系方式，请直接投递简历</p>
+                                        <div class="contact_btn" @click="doApply" v-if="hasApply===false">投递简历</div>
+                                    </div>
+                                    <div class="contact_details" v-else>
+                                        <p class="box_text">企业未开启查看联系方式<br /><br />您已投递简历，请等待企业联系</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="title box2_title_padding">联系方式</div>
+                                <div class="contact_list" v-cloak>
+                                    <div class="contact_item">
+                                        <span class="contact_width">联系手机：</span>
+                                        {{contactData.contact_info.mobile}}
+                                    </div>
+                                    <div class="contact_item" v-if="contactData.field_rule.telephone.is_display==1">
+                                        <span class="contact_width">联系座机：</span>
+                                        {{contactData.contact_info.telephone}}
+                                    </div>
+                                    <div class="contact_item" v-if="contactData.field_rule.weixin.is_display==1">
+                                        <span class="contact_width">联系微信：</span>
+                                        {{contactData.contact_info.weixin}}
+                                    </div>
+                                    <div class="contact_item" v-if="contactData.field_rule.email.is_display==1">
+                                        <span class="contact_width">联系邮箱：</span>
+                                        {{contactData.contact_info.email}}
+                                    </div>
+                                    <div class="contact_item" v-if="contactData.field_rule.qq.is_display==1">
+                                        <span class="contact_width">联系QQ：</span>
+                                        {{contactData.contact_info.qq}}
+                                    </div>
+                                </div>
+                                <div class="post_box2_btn">
+                                    <span class="contact_btn1" @click="doApply">投递简历</span>
+                                    <el-popover placement="right" width="200" trigger="hover">
+                                        <span>
+                                            <img :src="imQrcode" width="174" height="174" />
+                                            <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                                        </span>
+                                        <span class="contact_btn2" slot="reference">在线聊天</span>
+                                    </el-popover>
+                                </div>
+                            </div>
+                        </div>
+                        {#if condition="$return.field_rule.tag.is_display==1 && count($return.base_info.tag_text_arr) gt 0"#}
+                        <div>
+                            <div class="title welfare_padding">职位亮点</div>
+                            <div class="box3_welfare">
+                                {#volist name="return.base_info.tag_text_arr" id="vo"#}
+                                <span>{#$vo#}</span>
+                                {#/volist#}
+                            </div>
+                        </div>
+                        {#/if#}
+                        <div class="post_box4">
+                            <div class="title title_padding">职位描述</div>
+                            <div>
+                                <p ref="jobContent" :class="contentAll ? 'describe' : 'describe all'">
+                                    <span>{#$return.base_info.content#}</span>
+                                </p>
+                                <div class="bottom_more" v-if="contentHeight > 450" @click="contentAll = !contentAll">
+                                    <div :class="contentAll ? 'cte' : 'cte up'">{{contentAll ? '查看更多' : '收起'}}</div>
+                                </div>
+                                <div class="s_tip_h">联系我时，请说是在{#$global_config.sitename#}上看到的，谢谢！</div>
+                                <div class="tips clearfix">
+                                    <div class="left_tips float">
+                                        <p class="left_title_icon">温馨提醒</p>
+                                        <p class="tips_item">1.用人单位招聘人才，以任何名义收取费用（如体检费、服装费等）都属于违法，请应聘者提高警惕！</p>
+                                        <p class="tips_item">2.如遇无效、虚假、诈骗信息，请立即举报！<a class="J_tipoff"
+                                                href="javascript:;" @click="doTipoff">我要举报 >></a></p>
+                                    </div>
+                                    <div class="right_tips">
+                                        <div class="tips_code">
+                                            <img src="{#$global_config.wechat_qrcode#}">
+                                        </div>
+                                        <p>扫描关注更多招聘信息</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#if condition="count($return.similar) gt 0"#}
+                    <div class="similar_wrapper">
+                        <div class="border_bottom similar_title  title clearfix">
+                            相似职位
+                            <a class="right_text" target="_blank" href="{#:url('index/job/index')#}">更多职位&gt;</a>
+                        </div>
+                        <div class="similar_list clearfix">
+                            {#volist name="return.similar" id="vo"#}
+                            <div>
+                                <p class="similar_post_name clearfix">
+                                    <a href="{#:url('index/job/show',['id'=>$vo.id])#}"
+                                        target="_blank">{#$vo.jobname#}</a>
+                                    <span class="similar_right_text">{#$vo.refreshtime#}</span>
+                                </p>
+                                <p class="similar_data">
+                                    <span
+                                        class="color similar_font">{#$vo.wage_text#}{#eq name="vo.negotiable" value="0"#}/月{#/eq#}</span>
+                                    <span class="similar_text">{#$vo.district_text#}</span>
+                                    <span class="similar_text similar_border">{#$vo.education_text#}</span>
+                                    <span class="similar_text  similar_border">{#$vo.experience_text#}</span>
+                                </p>
+                            </div>
+                            {#/volist#}
+                        </div>
+                    </div>
+                    {#/if#}
+                    <div class="employer_wrapper"
+                        v-if="supplementary.famous_list!==undefined && supplementary.famous_list.length>0">
+                        <div class="border_bottom similar_title title clearfix">
+                            明星雇主
+                            <a class="right_text" target="_blank" href="{#:url('index/company/index')#}">更多企业&gt;</a>
+                        </div>
+                        <div class="clearfix">
+                            <div class="employer_list float" v-for="(item,index) in supplementary.famous_list"
+                                :key="index">
+                                <a class="img" target="_blank" :href="item.link_url">
+                                    <img :src="item.logo">
+                                </a>
+                                <a class="c_name substring" target="_blank" :title="item.companyname" :href="item.link_url">{{item.companyname}}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="periphery">
+                        <div class="periphery_title">
+                            <span :class="relationActive=='near'?'active':''"
+                                @click="changeRelationList('near')">周边招聘</span>
+                            <span :class="relationActive=='hot'?'active':''"
+                                @click="changeRelationList('hot')">热门搜索</span>
+                        </div>
+                        <div class="periphery_list" v-if="relationActive=='near'">
+                            <div class="list_box peripheryMargin">
+                                {#volist name="return.near_district_list" id="vo"#}
+                                <a target="_blank" href="{#:url('index/job/index',$vo['params'])#}">{#$vo.text#}招聘</a>
+                                {#/volist#}
+                            </div>
+                        </div>
+                        <div class="periphery_list" v-if="relationActive=='hot'">
+                            <div class="list_box peripheryMargin">
+                                {#volist name="return.hotword_list" id="vo"#}
+                                <a target="_blank"
+                                    href="{#:url('index/job/index',['key'=>$vo['word']])#}">{#$vo.word#}</a>
+                                {#/volist#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right_sidebar">
+                <div @click="handlerResumeStick" class="resume_stick">
+                    <img src="__ROOT__/assets/images/job_icon.jpg">
+                </div>
+                <div class="company_wrapper">
+                    <div class="company_name clearfix">
+                        <a class="cn substring"
+                            href="{#:url('index/company/show',['id'=>$return.com_info.id])#}">{#$return.com_info.companyname#}</a>
+                        {#eq name="return.com_info.audit" value="1"#}
+                        <div title="企业已认证" class="ic1"></div>
+                        {#/eq#}
+                        {#if condition="$return.com_info.setmeal_icon!=''"#}
+                        <div class="ic2"><img src="{#$return.com_info.setmeal_icon#}" /></div>
+                        {#/if#}
+                    </div>
+                    <div class="company_data clearfix">
+                        <div class="float">
+                            <p class="color">{{supplementary.watch_percent}}</p>
+                            <p class="text2">简历查看率</p>
+                        </div>
+                        <div class="float border ">
+                            <p class="color">{{supplementary.last_login_time}}</p>
+                            <p class="text2">登录时间</p>
+                        </div>
+                        <div class="float">
+                            <p class="color">{{supplementary.reg_duration}}</p>
+                            <p class="text2">入驻时长</p>
+                        </div>
+                    </div>
+                    <div class="company_type clearfix">
+                        <div class="img_box float">
+                            <img src="{#$return.com_info.logo_src#}" />
+                        </div>
+                        <div class="company_type_text float">
+                            <p>{#$return.com_info.trade_text#}</p>
+                            <p>
+                                <span class="similar_border">{#$return.com_info.nature_text#}</span>
+                                <span class="similar_border">{#$return.com_info.scale_text#}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="nrtBanner" v-if="supplementary.img_list!==undefined && supplementary.img_list.length>0">
+                        <div class="infopicBg">
+                            <div class="infopic">
+                                <div class="picbox">
+                                    <ul class="piclist clearfix">
+                                        <li class="highslide-gallery" v-for="(item,index) in supplementary.img_list"
+                                            :key="index">
+                                            <a :href="item.img_src" class="highslide"
+                                                onclick="return hs.expand(this)"><img :src="item.img_src"></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="pic_prev"></div>
+                            <div class="pic_next"></div>
+                        </div>
+                    </div>
+                    <div class="bottom_title clearfix" v-if="supplementary.report==1">
+                        该企业已通过实地认证<span @click="handlerReport">认证报告&gt;</span>
+                    </div>
+                </div>
+                <div class=" codeImg_box clearfix">
+                    <img class="float" :src="rightQrcode">
+                    <div class=" code_text float">
+                        开启掌上求职特权<br>
+                        使用微信扫一扫<br />
+                        此职位即刻传送到手机
+                    </div>
+                </div>
+                {#if condition="count($return.hotjob_list) gt 0"#}
+                <div class="company_list">
+                    <div class="company_title clearfix">
+                        热门职位
+                        <a target="_blank" href="{#:url('index/job/index')#}">查看更多&gt;</a>
+                    </div>
+                    {#volist name="return.hotjob_list" id="vo"#}
+                    <div class="right_box2_text">
+                        <a class="box2_text1 {#eq name="vo.emergency" value="1"#}emergency{#/eq#}" target="_blank"
+                            href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}</a>
+                        <p class="box2_text2">{#$vo.companyname#}</p>
+                        <p class="box2_text3">{#$vo.wage_text#}{#eq name="vo.negotiable" value="0"#}/月{#/eq#}</p>
+                    </div>
+                    {#/volist#}
+                </div>
+                {#/if#}
+            </div>
+        </div>
+    </div>
+    <div class="show_nav" :class="rightFixed===true?'beFixed':''">
+        <div class="show_nav_box  clearfix">
+            <div class="float">
+                <h3 class="nav_text">{#$return.base_info.jobname#}</h3>
+                <p class="price">{#$return.base_info.wage_text#}
+                    {#eq name="return.base_info.negotiable" value="0"#}<span>/月</span>{#/eq#}</p>
+            </div>
+            <div class="show_nav_btn">
+                <div class="nav_btn1" @click="doApply">投递简历</div>
+            </div>
+        </div>
+    </div>
+    <el-dialog title="查看地图" :visible.sync="showMap" @opened="mapOpened">
+        <div class="jobshow_map">
+            <div id="bdMap" style="width:100%;height:500px;"></div>
+            <div class="code">
+                <div class="code_img">
+                    <img :src="mapQrcode" />
+                    <p>微信扫描上方二维码<br />手机查看上班路线</p>
+                </div>
+                <div class="itinerary">
+                    <p>1.微信扫描二维码</p>
+                    <p>2.关注公众号</p>
+                    <p>3.查看该职位的上班路线</p>
+                </div>
+            </div>
+        </div>
+    </el-dialog>
+    <el-dialog title="举报职位" :visible.sync="showTipoff" @opened="tipoffOpened" width="30%">
+        {#include file="public/tipoff" /#}
+    </el-dialog>
+</div>
+{#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
+<script>
+    $(document).ready(function () {
+        $(function () {
+            setTimeout(function () {
+                handlePic();
+            }, 500)
+            function handlePic() {
+                var liw = 0, ml, r, s, al = 188;
+                $('.piclist li').each(function () {
+                    liw += $(this).width() + 0;
+                    $(this).css('width', $(this).width() + 'px');
+                })
+                $('.piclist').width(liw + 'px');
+
+                $('.pic_next').click(function () {
+
+                    if ($('.piclist').is(':animated')) {
+                        $('.piclist').stop(true, true);
+                    }/* 避免点击事件重复 */
+
+                    ml = parseInt($('.piclist').css('left'));
+                    r = liw - (al - ml);  /* 700为外部区块.infopic的宽度，15为li之间的距离，即.piclist li的margin-right的值 */
+                    if (r < al) {
+                        s = r - 0;
+                    } else {
+                        s = al;
+                    }
+                    $('.piclist').animate({ left: ml - s + 'px' }, 'slow');
+                })
+
+                $('.pic_prev').click(function () {
+
+                    if ($('.piclist').is(':animated')) {
+                        $('.piclist').stop(true, true);
+                    }/* 避免点击事件重复 */
+
+                    ml = parseInt($('.piclist').css('left'));
+                    if (ml > -al) {
+                        s = ml;
+                    } else {
+                        s = -al;
+                    }
+                    $('.piclist').animate({ left: ml - s + 'px' }, 'slow');
+                });
+            }
+            hs.graphicsDir = "__ROOT__/assets/js/graphics/";
+            hs.align = 'center';
+            hs.transitions = ['expand', 'crossfade'];
+            hs.outlineType = 'rounded-white';
+            hs.fadeInOut = true;
+            hs.addSlideshow({
+                interval: 5000,
+                repeat: false,
+                useControls: true,
+                fixedControls: 'fit',
+                overlayOptions: {
+                    opacity: 0.75,
+                    position: 'bottom center',
+                    hideOnMouseOut: true
+                }
+            });
+        })
+    })
+    function loadBdMap() {
+        if (window.BMap !== undefined) {
+            return
+        }
+        var script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap'
+        document.body.appendChild(script)
+    }
+    function initBdMap() {
+        var map = new BMap.Map('bdMap') // 创建Map实例
+        var lng = parseFloat("{#$return.base_info.map_lng#}")
+        var lat = parseFloat("{#$return.base_info.map_lat#}")
+        var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+        var point = new BMap.Point(lng, lat) // 创建点坐标
+        map.centerAndZoom(point, zoom)
+        map.enableScrollWheelZoom() //启用滚轮放大缩小
+        var marker = new BMap.Marker(new BMap.Point(lng, lat));
+        map.addOverlay(marker);
+        var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT });
+        var top_left_navigation = new BMap.NavigationControl();
+        map.addControl(top_left_control);
+        map.addControl(top_left_navigation);
+    }
+    var id = parseInt("{#$return.base_info.id#}")
+    var app = new Vue({
+        el: '#app',
+        data: {
+            showTipoff: false,
+            tipoffForm: {
+                reason: '',
+                content: ''
+            },
+            tipoffRules: {
+                reason: [
+                    { required: true, message: '请选择举报原因', trigger: 'change' }
+                ],
+                content: [
+                    { required: true, message: '请输入备注说明', trigger: 'blur' },
+                    { min: 20, max: 100, message: '长度在 20 到 100 个字符', trigger: 'blur' }
+                ],
+            },
+            classifyTipoffJob: [],
+            isLogin: false,
+            utype: 0,
+            showMap: false,
+            hasFav: false,
+            hasApply: false,
+            clickNum: 0,
+            shareQrcode: '',
+            rightQrcode: '',
+            imQrcode: '',
+            mapQrcode: '',
+            relationActive: 'near',
+            contactData: {
+                field_rule: {
+                    email: {},
+                    qq: {},
+                    telephone: {},
+                    weixin: {}
+                },
+                contact_info: {},
+                show_contact: 0,
+                show_contact_note: ''
+            },
+            rightFixed: false,
+            supplementary: {},
+            contentAll: false,
+            contentHeight: 0
+        },
+        created: function () {
+            this.getUserInfo()
+            this.getSupplementary()
+            this.getContact()
+            this.getFavStatus()
+            this.addClick()
+            var locationUrl = "{#$return.share_url#}"
+            this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_job&url=' + locationUrl + '&jobid=' + id
+            this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+            this.imQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url={#$return.im_url#}'
+            this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode&jobid=' + id
+        },
+        mounted: function () {
+            // 滚动条的获取
+            window.addEventListener('scroll', this.getScrollTop)
+            this.contentHeight = this.$refs.jobContent.clientHeight
+            this.contentAll = this.contentHeight > 450
+        },
+        computed: {
+            options_tipoff: function () {
+                return this.classifyTipoffJob
+            }
+        },
+        methods: {
+            getUserInfo: function () {
+                var that = this
+                httpget(qscms.apiList.userinfo).then(function (res) {
+                    if (res.data.login === true) {
+                        that.isLogin = true
+                        that.utype = res.data.userinfo.utype
+                    }
+                }).catch(function () { })
+            },
+            // 监听页面滚动
+            getScrollTop: function () {
+                var scrollTop = 0
+                if (document.documentElement && document.documentElement.scrollTop) {
+                    scrollTop = document.documentElement.scrollTop
+                } else if (document.body) {
+                    scrollTop = document.body.scrollTop
+                }
+                this.rightFixed = scrollTop >= 400
+            },
+            mapOpened: function () {
+                loadBdMap()
+            },
+            getSupplementary: function () {
+                var that = this
+                httpget(qscms.apiList.jobSupplementary, { id: id }).then(function (res) {
+                    if (res.data !== null) {
+                        that.supplementary = res.data
+                    }
+                }).catch(function () { })
+            },
+            getFavStatus: function () {
+                var that = this
+                httpget(qscms.apiList.jobFavCheck, { id: id }).then(function (res) {
+                    that.hasFav = res.data == 1 ? true : false
+                }).catch(function () { })
+            },
+            addClick: function () {
+                var that = this
+                httppost(qscms.apiList.jobClick, { id: id }).then(function (res) {
+                    that.clickNum = res.data
+                }).catch(function () { })
+            },
+            getContact: function () {
+                var that = this
+                httpget(qscms.apiList.jobContact, { id: id }).then(function (res) {
+                    that.contactData = res.data
+                    that.hasApply = res.data.has_apply == 1 ? true : false
+                }).catch(function () { })
+            },
+            changeRelationList: function (alias) {
+                this.relationActive = alias
+            },
+            doFav: function () {
+                var that = this
+                if (this.utype != 2) {
+                    this.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    var params = {
+                        jobid: id
+                    }
+                    var _api_url = that.hasFav === true ? qscms.apiList.jobFavCancel : qscms.apiList.jobFav
+                    httppost(_api_url, params)
+                        .then(function (res) {
+                            that.hasFav = that.hasFav === true ? false : true
+                            that.$message({ type: 'success', message: res.message })
+                        })
+                        .catch(function () { })
+                }
+            },
+            doApply: function () {
+                var that = this
+                if (that.utype != 2) {
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    var params = {
+                        jobid: id
+                    }
+                    httppost(qscms.apiList.jobapply, params)
+                        .then(function (res) {
+                            that.$message({ type: 'success', message: res.message })
+                        })
+                        .catch(function () { })
+                }
+            },
+            doCreateResume: function () {
+                location.href = qscms.locationList.createResume
+            },
+            handlerLoginForContact: function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+            },
+            handlerResumeStick: function () {
+                location.href = qscms.locationList.personalService
+            },
+            handlerReport: function () {
+                window.open("{#:url('index/company/report',['id'=>$return.com_info.id])#}")
+            },
+            doTipoff: function () {
+                var that = this
+                if (that.utype != 2) {
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    that.showTipoff = true
+                }
+            },
+            tipoffOpened: function () {
+                var that = this
+                httpget(qscms.apiList.classify + '?type=tipoffJob', {}).then(function (res) {
+                    if (res.code === 200) {
+                        that.classifyTipoffJob = res.data
+                    }
+                }).catch(function () { });
+            },
+            handleSubmitTipoff: function () {
+                let that = this
+                this.$refs.tipoffForm.validate(function (valid) {
+                    if (valid) {
+                        httppost(qscms.apiList.tipoff, { target_id: id, type: 1, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })
+                            .then(function (res) {
+                                that.showTipoff = false
+                                that.$message({
+                                    type: 'success',
+                                    message: res.message
+                                })
+                            })
+                            .catch(function () { })
+                    } else {
+                        return false;
+                    }
+                });
+            },
+        }
+    })
+</script>

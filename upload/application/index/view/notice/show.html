@@ -1,0 +1,67 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/notice.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content">
+        <div class="notice_details clearfix">
+            <div class="notice_details_left float">
+                <div class="details_titleBox">
+                    <p class="notice_details_title">{#$info.title#}</p>	
+                    <p class="notice_details_handel clearfix">
+                        <span class="notice_time">{#:date('Y-m-d H:i',$info.addtime)#}</span>
+                        <span class="notice_see" v-cloak>{{clickNum}}</span>
+                    </p>
+                </div>
+                <div class="details_con">
+                    {#$info.content#}
+                </div>
+                <div class="details_paging clearfix">
+                    {#if condition="$prev===null"#}
+                    <a>上一篇： 没有了</a>
+                    {#else /#}
+                    <a href="{#$prev.link_url#}" target="_blank">上一篇： {#$prev.title#}</a>
+                    {#/if#}
+                    {#if condition="$next===null"#}
+                    <a>下一篇： 没有了</a>
+                    {#else /#}
+                    <a href="{#$next.link_url#}" target="_blank">下一篇： {#$next.title#}</a>
+                    {#/if#}
+                </div>
+            </div>
+            <div class="notice_details_right float">
+                <div class=" new_notice clearfix">
+                    最新公告
+                    <a href="{#:url('index/notice/index')#}">查看更多&gt;</a>
+                </div>
+                <div class="notice_list_wrapper">
+                    {#volist name="newNoticeList" id="vo"#}
+                    <div class="notice_list">
+                        <a href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
+                        <span>{#:date('Y-m-d H:i')#}</span>
+                    </div>
+                    {#/volist#}
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var id = parseInt("{#$info.id#}")
+var app = new Vue({
+    el: '#app',
+    data: {
+        clickNum:0,
+    },
+    created:function(){
+        this.addClick()
+    },
+    methods:{
+        addClick:function(){
+            var that = this
+            httppost(qscms.apiList.noticeClick,{id:id}).then(function(res){
+                that.clickNum = res.data
+            }).catch(function(){})
+        }
+    }
+})
+</script>

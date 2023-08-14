@@ -1,0 +1,20 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/hrtool.css" /#}
+<div class="content_wrapper">
+    <div class="content">
+        <div class="toolChest_details">
+            <div class="details_title">
+                <p class="title1">{#$info.name#}</p>
+                <p class="title2">{#$info.describe#}</p>
+            </div>
+            <div class="toolChest_details_box ">
+                <ul class="toolChest_details_list clearfix">
+                    {#volist name="list" id="vo"#}
+                    <li class="{#$vo.filetype#}"><a href="{#:url('index/hrtool/download',['id'=>$vo.id])#}">{#$vo.filename#}</a> </li>
+                    {#/volist#}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+</div>

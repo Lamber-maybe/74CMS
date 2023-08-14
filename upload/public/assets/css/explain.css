@@ -1,0 +1,64 @@
+.sidebar{
+	width:200px ;
+	margin-right: 8px;
+	background: #fff;
+	padding-bottom: 10px;
+}
+.sidebar .sidebar_item{
+	color: #333;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.sidebar .hover_sidebarBox{
+	display: none;
+	padding-top: 10px;
+}
+
+.sidebar .hover_sidebarBox li{
+	padding:5px 0  ;
+}
+.sidebar .hover_sidebarBox li a{
+	color: #999;
+	font-size:14px ;
+	font-weight: normal;
+	text-decoration: none;
+}
+.sidebar .hover_sidebarBox li:hover{
+	background: #1787fb;
+}
+.sidebar .hover_sidebarBox li:hover a{
+	color: #fff;
+}
+.sidebar .hover_sidebarBox li.active{
+	background: #1787fb;
+}
+.sidebar .hover_sidebarBox li.active a{
+	color: #fff;
+	display: block;
+}
+
+.sidebar .sidebar_item.active .hover_sidebarBox{
+	display: block;
+}
+
+.right_con{
+	width: 990px;
+	background: #fff;
+	padding: 20px 70px 20px 50px;
+}
+.right_con .right_con_title{
+	color:#333 ;
+	font-size:18px ;
+	padding: 15px 0 28px;
+	font-weight: bold;
+	word-break: break-all;
+}
+.right_con .right_con_article{
+	text-indent: 2em;
+	line-height: 25px;
+	color: #666;
+	font-size: 14px;
+	word-break: break-all;
+}

@@ -1,0 +1,108 @@
+@charset "UTF-8";
+.content_box3 { margin-top: 8px; }
+
+.left_sidebar { float: left; margin-right: 10px; width: 920px; }
+
+.company { float: left; }
+
+.company_title, .company_title a { color: #666; font-size: 14px; line-height: 22px; }
+
+.company_title { margin-bottom: 14px; }
+.company_title.j { margin-bottom: 0; }
+
+.company_title .c_name { display: block; float: left; max-width: 300px; }
+
+.company_title .s_ic1 { float: left; width: 19px; height: 22px; background: url("../images/details_icon_1.png") 0 center no-repeat; margin-left: 5px; }
+
+.company_title .s_ic2 { float: left; width: 15px; height: 22px; margin-left: 5px; }
+
+.company .in_p { font-size: 12px; color: #999; line-height: 22px; }
+
+.company .company_span { position: relative; margin-right: 15px; }
+
+.company .company_span::before { content: ''; width: 1px; height: 12px; position: absolute; right: -10px; top: 2px; background: #efefef; }
+
+.company .company_span:last-child::before { content: ''; width: 0px; height: 0px; }
+
+.right_box2 { margin-top: 10px; }
+
+.right_box2_title { font-size: 16px; color: #333333; padding: 17px 20px 15px; border-bottom: 1px solid #f3f3f3; background: #fff; }
+
+.job_list2 { padding: 18px 22px 22px 40px; border-bottom: 1px dashed  #f3f3f3; background-color: #fff; position: relative; }
+
+.job_list2 .l_chk { position: absolute; left: 20px; top: 21px; }
+
+.job_list2:hover { background-color: #f9f9f9; }
+
+.job_list2 .job_title { padding-right: 20px; line-height: 22px; margin-bottom: 13px; }
+
+.job_title:hover .job_list_hover { display: block; }
+
+.job_welfare_margin { width: 720px; margin-top: 8px; }
+
+.seekJob_list_box { width: 920px; margin-right: 10px; }
+
+.operation .operation_btn { margin-right: 10px; color: #b8b8b8; font-size: 14px; padding: 5px 13px; border: 1px solid #e2e2e2; display: inline-block; border-radius: 5px; cursor: pointer; }
+
+.operation .operation_btn:hover { border: 1px #B4B4B4 solid; }
+
+.operation_wrapper { padding: 15px 20px; background: #fff; }
+
+.operation input { margin-right: 12px; }
+
+.operation .operation_btn_active { background: #1787fb; color: #fff; border: none; }
+
+.job_list2 .job_list_hover { width: 500px; position: absolute; right: -500px; top: -113px; background: #fff; box-shadow: 0px 0px 5px 5px #e8e8e8; display: none; z-index: 1; }
+
+.triangle { width: 10px; display: inline-block; height: 5px; border: 5px solid transparent; border-right: 10px solid #fff; position: absolute; left: -15px; top: 118px; }
+
+.hover_title_box { padding: 10px 20px; background: #fafbfd; }
+
+.hover_title { float: left; }
+
+.hover_text1 { color: #333333; font-size: 18px; padding-bottom: 11px; padding-top: 15px; }
+
+.hover_text1 a { color: #333333; font-size: 18px; }
+
+.hover_text2 { color: #ff6600; font-size: 16px; padding-bottom: 10px; }
+
+.hover_img { width: 80px; height: 80px; float: right; background: #fff; text-align: center; margin-right: -5px; }
+
+.hover_img img { width: 70px; height: 70px; margin-top: 5px; }
+
+.job_duty { padding: 0 20px 15px; }
+
+.duty_list { color: #666; font-size: 12px; font-weight: normal; max-height: 190px; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 10; word-break: break-all; }
+
+.duty_list li { margin-bottom: 6px; }
+
+.duty_title { padding: 19px 0 10px 0; }
+
+.duty_title div { margin-bottom: 10px; }
+
+.require_text { width: 130px; font-size: 12px; color: #999; font-weight: normal; float: left; margin-right: 90px; }
+
+.require_text span { margin-left: 10px; color: #666666; }
+
+.box2_nav .tel { float: right; color: #ff6600; font-size: 12px; padding: 0; margin-right: 16px; }
+
+.right_box1 { width: 270px; height: 300px; }
+
+.right_box1 img { width: 100%; height: 100%; }
+
+/*搜索蒙版*/
+.jobslist-login-layer { width: 100%; height: 580px; background: url(../images/223.jpg) no-repeat; background-size: 100% 100%; }
+
+.jobslist-login-layer .tip-block { height: 160px; text-align: center; font-size: 22px; margin: 0 auto; padding-top: 140px; }
+
+.jobslist-login-layer .tip-block .tip-block-title p { padding-bottom: 20px; }
+
+.jobslist-login-layer .tip-block .tip-block-title .small { font-size: 16px; color: #666; }
+
+.jobslist-login-layer .tip-block .tip-block-title .middle { color: #333; font-weight: bold; }
+
+.jobslist-login-layer .tip-block .tip-block-title .large { font-size: 40px; }
+
+.jobslist-login-layer .tip-block .btn_inline { font-size: 14px; padding: 10px 24px; }
+
+/*# sourceMappingURL=joblist.css.map */
