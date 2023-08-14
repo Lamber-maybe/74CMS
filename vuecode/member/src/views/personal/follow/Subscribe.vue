@@ -7,6 +7,7 @@
           v-model="form.categoryArr"
           placeholder="请选择期望职位"
           :options="columnsJobcategory"
+          filterable
           ></el-cascader>
       </el-form-item>
       <el-form-item label="工作地区" prop="districtArr">
@@ -16,6 +17,7 @@
           placeholder="请选择期望地区"
           :options="columnsCitycategory"
           :props="{ checkStrictly: true }"
+          filterable
          ></el-cascader>
       </el-form-item>
         <el-form-item label="最低薪资" prop="minwage">

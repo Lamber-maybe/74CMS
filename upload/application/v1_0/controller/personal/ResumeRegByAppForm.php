@@ -26,7 +26,10 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
                     '',
                     'trim'
                 ),
-                'current' => input('post.basic.current/d', 0, 'intval')
+                'current' => input('post.basic.current/d', 0, 'intval'),
+                'major1' => input('post.basic.major1/d', 0, 'intval'),
+                'major2' => input('post.basic.major2/d', 0, 'intval'),
+                'major' => input('post.basic.major/d', 0, 'intval')
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,

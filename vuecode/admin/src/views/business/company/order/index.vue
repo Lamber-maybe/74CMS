@@ -304,14 +304,14 @@ export default {
     fetchData() {
       this.listLoading = true
 
-      getClassify({ type: 'orderStatus,orderPayment,orderServiceType' })
+      getClassify({ type: 'orderStatus,orderPayment,orderServiceTypeCompany' })
         .then(response => {
           const options_status_arr = [...response.data.orderStatus]
           options_status_arr.forEach(el => {
             this.options_status[el.id] = el.name
           })
           this.options_payment = [...response.data.orderPayment]
-          this.options_service_type = [...response.data.orderServiceType]
+          this.options_service_type = [...response.data.orderServiceTypeCompany]
 
           const param = {
             utype: 1,

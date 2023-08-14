@@ -20,7 +20,16 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                 'fullname' => input('post.basic.fullname/s', '', 'trim'),
                 'sex' => input('post.basic.sex/d', 0, 'intval'),
                 'birthday' => input('post.basic.birthday/s', '', 'trim'),
-                'education' => input('post.basic.education/d', 0, 'intval')
+                'education' => input('post.basic.education/d', 0, 'intval'),
+                'enter_job_time' => input(
+                    'post.basic.enter_job_time/s',
+                    '',
+                    'trim'
+                ),
+                'current' => input('post.basic.current/d', 0, 'intval'),
+                'major1' => input('post.basic.major1/d', 0, 'intval'),
+                'major2' => input('post.basic.major2/d', 0, 'intval'),
+                'major' => input('post.basic.major/d', 0, 'intval')
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,

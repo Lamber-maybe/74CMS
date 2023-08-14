@@ -97,6 +97,7 @@
               v-model="modelCategory"
               placeholder="请选择期望职位"
               :options="optionCategory"
+              filterable
               @change="handleValues([...arguments, 'category'])"></el-cascader>
           </div>
           <div class="clear"></div>
@@ -133,6 +134,7 @@
               v-model="modelDistrict"
               placeholder="请选择期望地区"
               :options="optionDistrict"
+              filterable
               @change="handleValues([...arguments, 'district'])"></el-cascader>
           </div>
           <div class="clear"></div>

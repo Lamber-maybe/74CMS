@@ -229,6 +229,7 @@
             v-model="form.basic.citycategory_arr"
             :options="areaDistrict"
             :show-all-levels="false"
+            filterable
           ></el-cascader>
           <el-input
             class="el-select_width"

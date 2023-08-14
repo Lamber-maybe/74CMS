@@ -46,13 +46,6 @@
           <el-button round plain @click="handlerDel">删除订单</el-button>
         </div>
     </div>
-    <el-dialog  title="支付提醒"  :visible.sync="showWaitingPay"  width="400px" >
-      <span class="payment_text">请在新打开的页面上完成支付。支付完成后，请根据您支付的情况点击下面按钮。</span>
-      <span slot="footer" class="dialog-footer">
-      <el-button type="primary"  @click="handlerPaySuccess">支付成功</el-button>
-      <el-button   @click="handlerPayFail">支付失败</el-button>
-      </span>
-    </el-dialog>
     <PaySubmit ref="paySubmit" :showWaiting="true" :payment="payment" successUrl="/personal/service/order" failUrl="/personal/service/order"></PaySubmit>
   </el-card>
 </template>

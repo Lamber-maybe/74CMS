@@ -186,6 +186,7 @@
                     v-model="basicMajor"
                     :placeholder="`请选择${fieldStore.basic.major.field_cn}`"
                     :options="optionMajor"
+                    filterable
                     @change="handleValues([...arguments, 'major', 'basic'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -362,6 +363,7 @@
                     v-model="intentionItemCategory"
                     placeholder="请选择期望职位"
                     :options="optionCategory"
+                    filterable
                     @change="handleValues([...arguments, 'category', 'intention'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -377,6 +379,7 @@
                     placeholder="请选择期望地区"
                     :options="optionDistrict"
                     :props="{ checkStrictly: true }"
+                    filterable
                     @change="handleValues([...arguments, 'district', 'intention'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -1800,9 +1803,11 @@
           }
         }
         this.intentionItem.nature_text = this.optionNature.filter(
-          item => item.id === this.intentionItem.nature)[0].text
+          item => item.id === this.intentionItem.nature)[0]!==undefined?this.optionNature.filter(
+          item => item.id === this.intentionItem.nature)[0].text:''
         this.intentionItem.trade_text = this.optionTrade.filter(
-          item => item.id === this.intentionItem.trade)[0].text
+          item => item.id === this.intentionItem.trade)[0]!==undefined?this.optionTrade.filter(
+          item => item.id === this.intentionItem.trade)[0].text:''
         this.intentionItem.district1 = this.intentionItemDistrict[0]
         this.intentionItem.district2 = this.intentionItemDistrict[1]
         this.intentionItem.district3 = this.intentionItemDistrict[2]

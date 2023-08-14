@@ -427,6 +427,28 @@ class Classify extends \app\common\controller\Backend
         }
         return $return;
     }
+    private function orderServiceTypeCompany($params = [])
+    {
+        $list = model('Order')->map_service_type_company;
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr['id'] = $key;
+            $arr['name'] = $value;
+            $return[] = $arr;
+        }
+        return $return;
+    }
+    private function orderServiceTypePersonal($params = [])
+    {
+        $list = model('Order')->map_service_type_personal;
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr['id'] = $key;
+            $arr['name'] = $value;
+            $return[] = $arr;
+        }
+        return $return;
+    }
     private function resumeModule($params = [])
     {
         $list = model('ResumeModule')->select();

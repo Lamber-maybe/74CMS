@@ -28,7 +28,11 @@ export default {
         that.jsApiParameters,
         function (res) {
           // alert(res.err_code + res.err_desc + res.err_msg)
-          that.$router.push(that.successUrl)
+          if (that.$route.path === that.successUrl) {
+            location.reload()
+          } else {
+            that.$router.push(that.successUrl)
+          }
           // window.WeixinJSBridge.log(res.err_msg)
         }
       )
@@ -60,7 +64,11 @@ export default {
               return false
             } else {
               setTimeout(() => {
-                that.$router.push(that.successUrl)
+                if (that.$route.path === that.successUrl) {
+                  location.reload()
+                } else {
+                  that.$router.push(that.successUrl)
+                }
               }, 1500)
             }
             return false
@@ -68,7 +76,15 @@ export default {
             this.handlerPay(res.data, callback)
           }
         })
-        .catch(() => {})
+        .catch(() => {
+          setTimeout(() => {
+            if (that.$route.path === that.successUrl) {
+              location.reload()
+            } else {
+              that.$router.push(that.successUrl)
+            }
+          }, 1500)
+          })
     },
     handlerPay (data, callback) {
       if (this.payment == 'wxpay') {

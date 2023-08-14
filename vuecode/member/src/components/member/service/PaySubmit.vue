@@ -36,7 +36,11 @@ import http from '@/utils/http'
                             return false
                         }else{
                             setTimeout(() => {
+                                if (that.$route.path === that.successUrl) {
+                                location.reload()
+                                } else {
                                 that.$router.push(that.successUrl)
+                                }
                             }, 1500)
                         }
                         return false
@@ -44,7 +48,15 @@ import http from '@/utils/http'
                         this.handlerPay(res.data,callback)
                     }
                 })
-                .catch(() => {})
+                .catch(() => {
+                    setTimeout(() => {
+                        if (that.$route.path === that.successUrl) {
+                        location.reload()
+                        } else {
+                        that.$router.push(that.successUrl)
+                        }
+                    }, 1500)
+                })
         },
         handlerPay (data,callback) {
             if(this.showWaiting === true){
@@ -69,12 +81,22 @@ import http from '@/utils/http'
             }
         },
         handlerPaySuccess(){
-            this.showWaitingPay = false
-            this.$router.push(this.successUrl)
+            var that = this
+            that.showWaitingPay = false
+            if (that.$route.path === that.successUrl) {
+                location.reload()
+            } else {
+                that.$router.push(that.successUrl)
+            }
         },
         handlerPayFail(){
-            this.showWaitingPay = false
-            this.$router.push(this.failUrl)
+            var that = this
+            that.showWaitingPay = false
+            if (that.$route.path === that.failUrl) {
+                location.reload()
+            } else {
+                that.$router.push(that.failUrl)
+            }
         }
     }
   }
