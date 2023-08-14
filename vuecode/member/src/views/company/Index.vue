@@ -12,7 +12,7 @@
                 <a class="text_2" @click="showServicerComplaint=true">我要投诉客服>></a>
               </div>
               <div class="text_3" v-if="isMobile">
-                <div class="text_3_box">手机号：<span>{{serviceInfo.mobile?serviceInfo.mobile:'暂无'}}</span></div>
+                <div class="text_3_box" v-if="serviceInfo.mobile">手机号：<span>{{serviceInfo.mobile?serviceInfo.mobile:'暂无'}}</span></div>
               </div>
               <div class="text_4"  v-if="isTel">
                 <div class="text_4_box" v-if="serviceInfo.tel">联系电话：<span>{{serviceInfo.tel?serviceInfo.tel:'暂无'}}</span></div>

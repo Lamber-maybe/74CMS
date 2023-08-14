@@ -139,6 +139,9 @@ export default {
           case 'recommend_resumelist':
             this.$router.push('/member/company/recommend')
             break
+          case 'company_shortvideo':
+            this.$router.push('/shortvideo/videoManage')
+            break
           default:
             break
         }
@@ -170,6 +173,9 @@ export default {
             break
           case 'recommend_joblist':
             this.$router.push('/member/personal/recommend')
+            break
+          case 'personal_shortvideo':
+            this.$router.push('/shortvideo/videoManage')
             break
           default:
             break

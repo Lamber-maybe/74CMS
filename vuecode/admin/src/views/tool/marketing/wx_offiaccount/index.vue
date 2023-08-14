@@ -297,7 +297,14 @@ export default {
       jobBodyOption: {},
       companyBodyOption: {},
       progressFlag: false,
-      progressPercent: 0
+      progressPercent: 0,
+      /**
+       * 【bug】公众号营销生成条数条件改变无效
+       * zch 2022.10.10
+       * 新增条件判断
+       * */
+      is_concat: false
+
     }
   },
   created() {
@@ -647,12 +654,11 @@ export default {
     },
     // 复制
     copy() {
-      const that = this
       const copyHandler = this.copys(this.preview)
       document.addEventListener('copy', copyHandler)
       document.execCommand('copy')
-      removeEventListener('copy', copyHandler)
-      that.$message.success('复制成功')
+      document.removeEventListener('copy', copyHandler)
+      this.$message.success('复制成功')
     },
     copys(article) {
       return function (event) {
@@ -697,7 +703,16 @@ export default {
       marketingSearch(this.data)
         .then((response) => {
           this.submiting = false
-          this.datalist = this.datalist.concat(response.data.items)
+          /**
+           * 【bug】公众号营销生成条数条件改变无效
+           * zch 2022.10.10
+           * 新增条件判断
+           * */
+          if (this.is_concat === true) {
+            this.datalist = this.datalist.concat(response.data.items)
+          } else {
+            this.datalist = response.data.items
+          }
           this.common = response.data.common
           this.checkList = []
           if (response.code == 200) {
@@ -714,10 +729,22 @@ export default {
                 }
               }, 200)
               // this.progressPercent = parseInt(100 / this.totalList) * this.data.condition.page_num
+              /**
+               * 【bug】公众号营销生成条数条件改变无效
+               * zch 2022.10.10
+               * 新增条件判断
+               * */
+              this.is_concat = true
               this.getData()
             } else {
               this.progressPercent = 100
               this.progressFlag = false
+              /**
+               * 【bug】公众号营销生成条数条件改变无效
+               * zch 2022.10.10
+               * 新增条件判断
+               * */
+              this.is_concat = false
               clearInterval(time)
             }
           }

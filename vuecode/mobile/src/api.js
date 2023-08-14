@@ -31,7 +31,7 @@ export default {
   companylist: '/home/company/index',
   // 企业详情
   companyshow: '/home/company/show',
-  //企业详情补充
+  // 企业详情补充
   companySupplementary: '/home/company/supplementary',
   // 职位竞争力分析
   competitiveness: '/home/job/competitiveness',
@@ -500,5 +500,7 @@ export default {
   // 获取优化简历详情
   defectResumeInfo: '/personal/resume/getNoComplete',
   // 查看企业套餐是否允许发布视频招聘
-  isAllowPublishing: '/home/short_video/isAllowPublishing'
+  isAllowPublishing: '/home/short_video/isAllowPublishing',
+  // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
+  im_keyword_replace: '/member/im/keywordReplace'
 }

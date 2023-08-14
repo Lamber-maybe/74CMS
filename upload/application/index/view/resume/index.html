@@ -613,7 +613,11 @@
           tagActiveArray.push($(this).data('id'));
         });
         var tagUrl = '{#:P([\'tag\'=>\'_tag_\'])#}';
-        tagUrl = tagUrl.replace('_tag_', tagActiveArray.join('_'));
+        if (tagActiveArray.length>0){
+          tagUrl = tagUrl.replace('_tag_', tagActiveArray.join('_'));
+        }else {
+          tagUrl = '{#:P([\'tag\'=>null])#}';
+        }
         window.location.href = tagUrl;
       });
 

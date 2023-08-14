@@ -506,7 +506,16 @@ var getCascaderObj = function (val, opt) {
   });
 }
 import Mapset from '@/components/company/Mapset'
-import { validMobile, validEmail, validUrl } from "@/utils/validate";
+
+/*
+      * 【优化】企业会员中心网址格式验证
+      * zch 2022.10.13
+      * 【旧】
+      * import { validMobile, validEmail, validUrl } from "@/utils/validate";
+      * 【新】
+      * import { validMobile, validEmail } from "@/utils/validate";
+      * */
+import { validMobile, validEmail } from "@/utils/validate";
 import http from "@/utils/http";
 import api from "@/api";
 export default {
@@ -659,7 +668,15 @@ export default {
       if (value === "" || value === undefined) {
         callback();
       }
-      if (!validUrl(value)) {
+      /*
+      * 【优化】企业会员中心网址格式验证
+      * zch 2022.10.13
+      * 【旧】
+      * !validUrl(value)
+      * 【新】
+      * !/^http[s]?:\/\/.*.test(value)
+      * */
+      if (!/^http[s]?:\/\/.*/.test(value)) {
         callback(new Error("请输入正确的网址 https://www.xxx.com"));
       } else {
         callback();

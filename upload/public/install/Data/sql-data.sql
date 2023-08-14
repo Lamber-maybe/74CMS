@@ -1078,8 +1078,8 @@ INSERT INTO `qs_link` VALUES
 (NULL, 1, '电销管理系统', 'https://www.xiaohuatong.cn/', 0, '电话外呼+客户管理软件');
 
 INSERT INTO `qs_mail_tpl` VALUES
-(NUll,'set_auth_email','邮箱验证','{sitename}提醒您，请验证您的Email','<p style=\"font-size:20px;\"><b>你正在验证邮箱，你的验证码为：</b></p>\r\n<p>{code}</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','',1),
-(NUll,'set_forget','找回密码','{sitename}找回密码','<p style=\"font-size:20px;\"><b>你正在找回密码，你的验证码为：</b></p>\r\n<p>{code}</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','a:2:{s:5:\"{url}\";s:12:\"验证地址\";s:12:\"{sitedomain}\";s:12:\"官方网站\";}',1);
+(NUll,'set_auth_email','邮箱验证','{sitename}提醒您，请验证您的Email','<p style=\"font-size:20px;\"><b>你正在验证邮箱，你的验证码为：</b></p>\r\n<p>{code} (有效期3分钟)</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','',1),
+(NUll,'set_forget','找回密码','{sitename}找回密码','<p style=\"font-size:20px;\"><b>你正在找回密码，你的验证码为：</b></p>\r\n<p>{code} (有效期3分钟)</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','a:2:{s:5:\"{url}\";s:12:\"验证地址\";s:12:\"{sitedomain}\";s:12:\"官方网站\";}',1);
 
 INSERT INTO `qs_microposte_tpl` VALUES
 (NUll,1,'模板1-1','1_1'),
@@ -1142,7 +1142,7 @@ INSERT INTO `qs_navigation` VALUES
 (null, 1, '视频招聘', 1, 'videoRecruitment', '', '_self', 0);
 
 INSERT INTO `qs_notify_rule` VALUES
-(NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}，联系微信：{weixin}）','',0,1,1,0,0),
+(NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}）','',0,1,1,0,0),
 (NUll,'job_apply',1,1,'收到简历','{fullname}投递了您的职位{jobname}，可能是您需要的人才，建议立即查看','resumeshow',1,0,0,1,0),
 (NUll,'job_audit_success',1,2,'职位审核通过','您发布的{jobname}已通过审核，建议开启招聘加速通道，省心快招人','job_manage',1,0,0,0,0),
 (NUll,'job_audit_fail',1,2,'职位审核未通过','您发布的{jobname}未通过审核，未通过原因：{reason}。请修改后再次发布。','job_manage',1,0,0,1,0),
@@ -1175,8 +1175,11 @@ INSERT INTO `qs_notify_rule` VALUES
 (NUll,'cron_recommend',1,1,'简历推荐','为您筛选了一些符合招聘条件的简历，快来看看有没有合适的人选','recommend_resumelist',1,1,1,0,0),
 (NUll,'cron_interview_video',1,1,'视频面试推送','您今天有视频面试安排，建议您提前联系确认求职者面试时间','interview_list_video',1,1,1,1,0),
 (NUll,'cron_interview_video',2,1,'视频面试推送','您今天有一个视频面试安排，不要错过哦','interview_list_video',1,1,1,1,0),
-(NUll,'interview_video',2,1,'视频面试邀请','{companyname}刚刚给你发了一份视频面试邀请，请于{interview_time}准时参加{jobname}\\({wage})的视频面试。','interview_list_video',1,1,1,1,0);
-
+(NUll,'interview_video',2,1,'视频面试邀请','{companyname}刚刚给你发了一份视频面试邀请，请于{interview_time}准时参加{jobname}\\({wage})的视频面试。','interview_list_video',1,1,1,1,0),
+(NULL,'company_video_success',1,1,'视频招聘审核通过','您发布的视频【{video_title}】已通过审核。','company_shortvideo',1,-1,-1,0,0),
+(NULL,'company_video_fail',1,1,'视频招聘审核未通过','您发布的视频【{video_title}】未通过审核，未通过原因：{reason}。请修改后再次发布。','company_shortvideo',1,-1,-1,0,0),
+(NULL,'personal_video_success',2,2,'视频求职审核通过','视频求职审核通过 您发布的视频【{video_title}】已通过审核。','personal_shortvideo',1,-1,-1,0,0),
+(NULL,'personal_video_fail',2,2,'视频求职审核未通过','您发布的视频【{video_title}】未通过审核，未通过原因：{reason}。请修改后再次发布。','personal_shortvideo',1,-1,-1,0,0);
 
 INSERT INTO `qs_page` VALUES
 (NUll,'首页','index',1,0,'{sitename}PHP高端人才系统(www.74cms.com)——更懂运营的地方人才招聘系统','{sitename},74cms,骑士cms,人才网站源码,php人才网程序','{sitename}CMS是基于PHP+MYSQL的免费网站管理系统，提供完善的人才招聘网站建设方案','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),

@@ -2,6 +2,7 @@
 /**
  * 会员信息相关
  */
+
 namespace app\v1_0\controller\member;
 
 class Info extends \app\v1_0\controller\common\Base
@@ -17,6 +18,7 @@ class Info extends \app\v1_0\controller\common\Base
             $this->interceptPersonalResume();
         }
     }
+
     /**
      * 我的积分
      */
@@ -27,29 +29,30 @@ class Info extends \app\v1_0\controller\common\Base
         );
         if ($this->userinfo->utype == 1) {
             $return['logo'] =
-            $this->company_profile['logo'] > 0
-            ? model('Uploadfile')->getFileUrl(
-                $this->company_profile['logo']
-            )
-            : default_empty('logo');
+                $this->company_profile['logo'] > 0
+                    ? model('Uploadfile')->getFileUrl(
+                    $this->company_profile['logo']
+                )
+                    : default_empty('logo');
 
             $return['companyname'] = $this->company_profile['companyname'];
         } else {
             $return['photo'] =
-            $this->resume_info['photo_img'] > 0
-            ? model('Uploadfile')->getFileUrl(
-                $this->resume_info['photo_img']
-            )
-            : default_empty('photo');
+                $this->resume_info['photo_img'] > 0
+                    ? model('Uploadfile')->getFileUrl(
+                    $this->resume_info['photo_img']
+                )
+                    : default_empty('photo');
             $return['fullname'] = $this->resume_info['fullname'];
         }
         $return['task'] = model('Task')->taskSituation(
             $this->userinfo->uid,
             $this->userinfo->utype
         );
-        $return['taskPoints'] = model('Task')->countTaskPoints($this->userinfo->uid,$this->userinfo->utype);
+        $return['taskPoints'] = model('Task')->countTaskPoints($this->userinfo->uid, $this->userinfo->utype);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 积分明细
      */
@@ -77,6 +80,7 @@ class Info extends \app\v1_0\controller\common\Base
             ->select();
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
     }
+
     /**
      * 积分明细统计
      */
@@ -99,6 +103,7 @@ class Info extends \app\v1_0\controller\common\Base
             ->count();
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
+
     /**
      * 套餐日志
      */
@@ -117,6 +122,7 @@ class Info extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
     }
+
     /**
      * 套餐日志总数统计
      */
@@ -130,6 +136,7 @@ class Info extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
+
     /**
      * 获取专属客服信息
      * CRM客服修改
@@ -137,18 +144,24 @@ class Info extends \app\v1_0\controller\common\Base
     public function customerService()
     {
         $customer_service = model('b2bcrm.CrmCustomerService')->alias('s')
-            ->join('Company c','s.admin_id=c.admin_id','left')
-            ->where(['c.uid'=>$this->userinfo->uid])
+            ->join('Company c', 's.admin_id=c.admin_id', 'left')
+            ->where([
+                'c.uid' => $this->userinfo->uid,
+                's.admin_id' => ['>', 0]
+            ])
             ->field('s.id as id,s.photo,s.name,s.mobile,s.tel,s.wx_qrcode,s.qq')
             ->find();
-        if (empty($customer_service))
-        {
-            $customer_service['name'] = '网站客服';
-            $customer_service['mobile'] = config('global_config.contact_tel');
+
+        if (empty($customer_service)) {
+            $customer_service['name'] = '暂未分配客服';
+            $customer_service['tel'] = config('global_config.contact_tel');
             $customer_service['photo'] = model('Uploadfile')
                 ->getFileUrl(config('global_config.square_logo'));
-        }else
-        {
+        } else {
+            if (empty($customer_service['mobile']) && empty($customer_service['tel'])) {
+                $customer_service['tel'] = config('global_config.contact_tel');
+            }
+
             $customer_service['photo'] = model('Uploadfile')
                 ->getFileUrl(!empty($customer_service['photo'])
                     ? $customer_service['photo'] : config('global_config.square_logo'));
@@ -159,10 +172,9 @@ class Info extends \app\v1_0\controller\common\Base
         }
         $customer_service['weixin'] = '';
 
-
-
         $this->ajaxReturn(200, '获取数据成功', ['info' => $customer_service]);
     }
+
     /**
      * 投诉客服
      */
@@ -183,9 +195,10 @@ class Info extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $validate->getError());
         }
         model('CustomerServiceComplaint')->save($input_data);
-        $this->writeMemberActionLog($this->userinfo->uid,'投诉客服【客服ID：'.$input_data['cs_id'].'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '投诉客服【客服ID：' . $input_data['cs_id'] . '】');
         $this->ajaxReturn(200, '投诉成功');
     }
+
     /**
      * 意见反馈
      */
@@ -210,6 +223,7 @@ class Info extends \app\v1_0\controller\common\Base
         $this->writeMemberActionLog($this->userinfo->uid,'提交意见反馈信息');
         $this->ajaxReturn(200, '感谢您的反馈，我们会尽快处理');
     }
+
     /**
      * 投诉
      */
@@ -234,9 +248,9 @@ class Info extends \app\v1_0\controller\common\Base
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        $input_data['img'] = !empty($input_data['img'])?implode(",",$input_data['img']):'';
+        $input_data['img'] = !empty($input_data['img']) ? implode(",", $input_data['img']) : '';
         model('Tipoff')->save($input_data);
-        if($input_data['type']==1){
+        if ($input_data['type'] == 1) {
             model('Task')->doTask($this->userinfo->uid, 2, 'report_job');
         }
         $this->writeMemberActionLog($this->userinfo->uid,'举报'.($input_data['type']==1?'职位':'简历').'信息【举报信息ID：'.$input_data['target_id'].'】');

@@ -78,6 +78,12 @@
   cursor: pointer;
 }
 
+.cat_nav_list .cnl_item .cnl_item_text .cnl_item_text_title {
+  overflow: hidden;
+  max-width: 153px;
+  white-space: nowrap;
+}
+
 .cat_nav_list .cnl_item .all_job {
   text-decoration: none;
 }

@@ -167,7 +167,9 @@
       </div>
       <div class="box_7">
         <div class="btn" @click="handlerJump('/member/company/mysetmeal',1)">
-          <div class="btn_content">了解我的招聘特权</div>
+          <div class="btn_content">
+            <span class="text">了解我的招聘特权</span>
+          </div>
         </div>
       </div>
       <Ad
@@ -619,14 +621,18 @@ export default {
       font-size: 12px;
       color: #ff813c;
       padding: 11.5px 0 11.5px 20px;
-      background: url("../../assets/images/company_index_box7_ic1.png") 0 center
-        no-repeat;
-      background-size: 12px 11.5px;
-      width: 116px;
-      margin: 0 auto;
+      //width: 100%;
+      text-align: center;
+      margin: 0 36px 0;
+      .text{
+        padding:0 15px;
+        background: url("../../assets/images/company_index_box7_ic1.png") 0 center no-repeat;
+        background-size: 12px 11.5px;
+
+      }
     }
     width: 340px;
-    margin: 0 auto;
+    margin: auto;
     background-color: #fff6f0;
     text-align: center;
     border-radius: 35px;

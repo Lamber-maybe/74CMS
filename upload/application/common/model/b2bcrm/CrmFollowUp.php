@@ -82,11 +82,16 @@ class CrmFollowUp extends BaseModel
 
             $limit_start = $start * $limit_size;
             $data = $data->group('a.id')->limit($limit_start, $limit_size)->select();
+            if(!isset($map['next_time'])){
+                $count = 0;
+            }else{
+                $count = $this->getDataNums($map);
+            }
             $return_data['pages'] = array(
                 'now_page' => $page_num,
                 'total_page' => $total_page,
                 'record_num' => $total,
-                'count' => $this->getDataNums($map)
+                'count' => $count
             );
         }
         else

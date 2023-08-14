@@ -56,7 +56,7 @@
         <navbar />
         <div v-if="new_version_notice==1 && $route.path != '/upgrade'" class="newversion">
           <span class="text">发现新版本</span>
-          <span class="btn" @click="$router.push('/upgrade')">立即更新</span>
+          <span class="btn" @click="jumpPath('/upgrade','您的权限不足，请联系超级管理员升级系统。')">立即更新</span>
         </div>
       </div>
       <app-main />
@@ -74,103 +74,148 @@
       :with-header="false"
       :visible.sync="FollowDrawer"
     >
-      <div class="follow_header">
-        <div class="follow_title">今日跟进提醒(<span style="color:red">{{ record_num }}</span>)</div>
-        <div class="follow_select">
-          <el-select v-model="followScreen" placeholder="不限类别" @change="funFollowScreen">
-            <el-option
-              v-for="item in followData"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+      <div class="follow">
+        <div class="follow_header">
+          <div class="follow_title">
+            <span v-if="switch_type == 0">今日跟进提醒(<span style="color:red">{{ record_num }}</span>)</span>
+            <span v-if="switch_type == 1">全部跟进提醒</span>
+            <span v-if="switch_type == 0" class="switch" @click="setSwitch">
+              <img style="width: 10px;height:10px;margin-left: 14px;" src="../assets/images/switch.png" alt="">
+              全部跟进提醒
+            </span>
+            <span v-if="switch_type == 1" class="switch" @click="setSwitch">
+              <img style="width: 10px;height:10px;margin-left: 14px;" src="../assets/images/switch.png" alt="">
+              今日跟进提醒
+            </span>
+          </div>
+          <div v-if="switch_type == 1" class="follow_select">
+            <el-date-picker
+              v-model="select_time"
+              :picker-options="pickerOptions"
+              type="daterange"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              style="width: 227px;height: 34px;"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              @change="followSelectTime"
             />
-          </el-select>
+          </div>
         </div>
-      </div>
-      <div class="follow_table">
-        <el-table
-          v-loading="loading"
-          :data="tableData"
-          style="width: 100%"
-          :header-cell-style="{padding:'20px 0px'}"
-          :cell-style="{padding:'20px 0px'}"
-        >
-          <el-table-column
-            prop="type_name"
-            label="类别"
-            width="180"
+        <div class="follow_table">
+          <el-table
+            v-loading="loading"
+            :data="tableData"
+            style="width: 100%"
+            :header-cell-style="{padding:'20px 0px'}"
+            :cell-style="{padding:'20px 0px'}"
           >
-            <template slot="header" scope="scope">
-              <div style="text-align: center">类别</div>
-            </template>
-            <template scope="scope">
-              <div v-if="scope.row.type == 1 && scope.row.next_time > time" class="clue">线索</div>
-              <div v-if="scope.row.type == 2 && scope.row.next_time > time" class="customer">客户</div>
-              <div v-if="scope.row.type == 1 && scope.row.next_time <= time" class="overdue">线索</div>
-              <div v-if="scope.row.type == 2 && scope.row.next_time <= time" class="overdue">客户</div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="名称"
-          >
-            <template scope="scope">
-              <div v-if="scope.row.name != ''">
+            <el-table-column
+              prop="type_name"
+              label="类别"
+              width="180"
+            >
+              <template slot="header" scope="scope">
+                <div style="text-align: center;">
+                  类别
+                  <el-popover
+                    placement="bottom"
+                    trigger="hover"
+                  >
+                    <el-checkbox-group>
+                      <div v-for="item in followData" class="screenStyle">
+                        <el-radio :key="item.value" v-model="followScreen" :label="item.value" @change="funFollowScreen">{{ item.label }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                    <i slot="reference" style="margin-top:5px;" class="el-icon-arrow-down" />
+                  </el-popover>
+                </div>
+              </template>
+              <template scope="scope">
+                <div v-if="scope.row.type == 1 && scope.row.next_time > time" class="clue">线索</div>
+                <div v-if="scope.row.type == 2 && scope.row.next_time > time" class="customer">客户</div>
+                <div v-if="scope.row.type == 3 && scope.row.next_time > time" class="resume">简历</div>
+                <div v-if="scope.row.type == 1 && scope.row.next_time <= time" class="overdue">线索</div>
+                <div v-if="scope.row.type == 2 && scope.row.next_time <= time" class="overdue">客户</div>
+                <div v-if="scope.row.type == 3 && scope.row.next_time <= time" class="overdue">简历</div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="名称"
+            >
+              <template scope="scope">
+                <div v-if="scope.row.type != 3">
+                  <div v-if="scope.row.name != ''">
+                    <span v-if="scope.row.next_time <= time" style="color:#929191">
+                      {{ scope.row.name }}
+                    </span>
+                    <span v-else>{{ scope.row.name }}</span>
+                  </div>
+                  <div v-else>
+                    未完善企业资料
+                  </div>
+                </div>
+                <div v-else>
+                  <span>{{ scope.row.name }}（{{ scope.row.age }} · {{ scope.row.sex }} · {{ scope.row.education_cn }} · {{ scope.row.experience_cn }}）</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="address"
+              label="联系电话"
+            >
+              <template scope="scope">
+                <div v-if="scope.row.type != 3">
+                  <span v-if="scope.row.next_time <= time" style="color:#929191">
+                    {{ scope.row.link_mobile }}({{ scope.row.link_man }})
+                  </span>
+                  <span v-else>{{ scope.row.link_mobile }}({{ scope.row.link_man }})</span>
+                </div>
+                <div v-else>
+                  <span>{{ scope.row.link_mobile }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="预约时间"
+            >
+              <template scope="scope">
                 <span v-if="scope.row.next_time <= time" style="color:#929191">
-                  {{ scope.row.name }}
+                  <span v-if="scope.row.next_time == 0">-</span>
+                  <span v-else>{{ scope.row.next_time | timeFilter }}     <div class="overdue_s">过期</div></span>
                 </span>
-                <span v-else>{{ scope.row.name }}</span>
-              </div>
-              <div v-else>
-                未完善企业资料
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="联系电话"
-          >
-            <template scope="scope">
-              <span v-if="scope.row.next_time <= time" style="color:#929191">
-                {{ scope.row.link_mobile }}({{ scope.row.link_man }})
-              </span>
-              <span v-else>{{ scope.row.link_mobile }}({{ scope.row.link_man }})</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="预约时间"
-          >
-            <template scope="scope">
-              <span v-if="scope.row.next_time <= time" style="color:#929191">
-                {{ scope.row.next_time | timeFilter }}
-                <div class="overdue_s">过期</div>
-              </span>
-              <span v-else>{{ scope.row.next_time | timeFilter }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="操作"
-          >
-            <template scope="scope">
-              <el-button v-if="scope.row.next_time <= time" size="mini" type="info" plain disabled>立即跟进</el-button>
-              <el-button v-else size="mini" type="primary" @click="followUpImmediately(scope.row)">立即跟进</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="bortton-page">
-          <el-col :span="24" style="text-align: right">
-            <el-pagination
-              background
-              :current-page="currentPage"
-              :page-sizes="[10, 15, 20, 30, 40]"
-              :page-size="pagesize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </el-col>
+                <span v-else>
+                  <span v-if="scope.row.next_time == 0">-</span>
+                  <span v-else>{{ scope.row.next_time | timeFilter }}  </span>
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="操作"
+            >
+              <template scope="scope">
+                <el-button v-if="scope.row.next_time <= time" size="mini" type="info" plain disabled>立即跟进</el-button>
+                <el-button v-else size="mini" type="primary" @click="followUpImmediately(scope.row)">立即跟进</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="bortton-page">
+            <el-col :span="24" style="text-align: right">
+              <el-pagination
+                background
+                :current-page="currentPage"
+                :page-sizes="[10, 15, 20, 30, 40]"
+                :page-size="pagesize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </el-col>
+          </div>
         </div>
       </div>
       <!-- 关闭按钮 -->
@@ -190,6 +235,7 @@ import { clearCache } from '@/api/configuration'
 import { officialData } from '@/api/dashboard'
 import { toBeFollowedup } from '@/api/company_crm'
 import { parseTime } from '@/utils'
+import { checkRoleAuth } from '@/utils/role'
 export default {
   name: 'Layout',
   filters: {
@@ -206,6 +252,63 @@ export default {
   mixins: [ResizeMixin],
   data() {
     return {
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: '今天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '明天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() + 3600 * 1000 * 24)
+              start.setTime(start.getTime() + 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '昨天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() - 3600 * 1000 * 24)
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '本周',
+            onClick(picker) {
+              const now = new Date()
+              var nowYear = now.getYear()
+              const end = new Date()
+              nowYear += nowYear < 2000 ? 1900 : 0
+              const start = new Date(
+                nowYear,
+                now.getMonth(),
+                now.getDate() - now.getDay() + 1
+              )
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '本月',
+            onClick(picker) {
+              const now = new Date()
+              var nowYear = now.getYear()
+              const end = new Date()
+              nowYear += nowYear < 2000 ? 1900 : 0
+              const start = new Date(nowYear, now.getMonth(), 1)
+              picker.$emit('pick', [start, end])
+            }
+          }]
+      },
       loading: false,
       followData: [{
         value: '0',
@@ -216,6 +319,9 @@ export default {
       }, {
         value: '2',
         label: '客户跟进'
+      }, {
+        value: '3',
+        label: '简历跟进'
       }],
       followScreen: '0',
       time: Date.parse(new Date()) / 1000,
@@ -226,7 +332,9 @@ export default {
       total: 0,
       selectedModulePath: '/',
       new_version_notice: 0,
-      FollowDrawer: false
+      FollowDrawer: false,
+      switch_type: 0,
+      select_time: ''
     }
   },
   computed: {
@@ -274,6 +382,19 @@ export default {
     this.toBeFollowedup()
   },
   methods: {
+    followSelectTime(){
+      this.currentPage = 1
+      this.toBeFollowedup()
+    },
+    setSwitch(){
+      if (this.switch_type == 0){
+        this.switch_type = 1
+      } else {
+        this.switch_type = 0
+      }
+      this.currentPage = 1
+      this.toBeFollowedup()
+    },
     followUpImmediately(row){
       if (row.type == 1){
         this.FollowDrawer = false
@@ -285,6 +406,17 @@ export default {
         })
         localStorage.setItem('clue_type', 'follow')
         localStorage.setItem('clue_id', row.clue_id)
+      } else if (row.type == 3){
+        this.FollowDrawer = false
+        this.$router.push({
+          path: '/user/urmList',
+          query: {
+            'time': Date.parse(new Date()) / 1000
+          }
+        })
+        console.log(row)
+        localStorage.setItem('clue_type', 'follow')
+        localStorage.setItem('clue_resume_id', row.relation_id)
       } else {
         this.$router.push({
           path: '/user/company/crm/myClient',
@@ -306,7 +438,14 @@ export default {
     },
     toBeFollowedup() {
       this.loading = true
-      toBeFollowedup({ 'page': this.currentPage, 'pagesize': this.pagesize, 'type': this.followScreen }).then(response => {
+      var start_time = ''
+      var end_time = ''
+      console.log(this.select_time)
+      if (this.select_time != '' && this.select_time != null){
+        start_time = this.select_time[0]
+        end_time = this.select_time[1]
+      }
+      toBeFollowedup({ 'page': this.currentPage, 'pagesize': this.pagesize, 'type': this.followScreen, 'switch_type': this.switch_type, 'start_time': start_time, 'end_time': end_time }).then(response => {
         if (response.data){
           this.tableData = response.data.rows
           this.record_num = response.data.pages.count
@@ -382,6 +521,9 @@ export default {
     },
     personal(){
       this.$router.push('/corpwechat/personal')
+    },
+    jumpPath(routePath, message) {
+      checkRoleAuth(routePath, message)
     }
   }
 }
@@ -395,6 +537,20 @@ export default {
 }
 ::v-deep  .el-drawer{
   overflow:visible
+}
+.follow{
+  height: calc(100vh);
+  overflow-y: auto;
+}
+.screenStyle {
+  margin: 10px 0px;
+}
+.switch{
+  font-size: 12px;
+  font-family: Microsoft YaHei;
+  font-weight: 400;
+  color: #048CFC;
+  cursor:pointer;
 }
 .close {
   width: 40px;
@@ -422,9 +578,21 @@ export default {
 }
 .follow_select{
   float:right;
-  margin-top: 20px;
+  margin-top: 25px;
   margin-right: 55px;
   display: inline-block;
+  ::v-deep .el-range-input{
+    font-size: 13px;
+  }
+  ::v-deep .el-range-separator{
+    line-height: 26px;
+  }
+  ::v-deep .el-icon-date{
+    line-height: 28px;
+  }
+  ::v-deep .el-range__close-icon{
+    line-height: 28px;
+  }
 }
 .overdue_s{
   width: 44px;
@@ -456,6 +624,19 @@ export default {
 .bortton-page{
   margin-top: 20px;
   padding-bottom: 40px;
+}
+.resume{
+  width: 44px;
+  height: 22px;
+  background: #FFF1E5;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: Microsoft YaHei;
+  font-weight: 400;
+  color: #FC7904;
+  text-align: center;
+  line-height: 22px;
+  margin:0 auto;
 }
 .customer{
   width: 44px;

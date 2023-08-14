@@ -52,7 +52,7 @@
 <script>
 import { resumeTrainingAddAndEdit } from '@/api/resume'
 export default {
-  props: ['itemId'],
+  props: ['itemId', 'rid'],
   data() {
     var validateStarttime = (rule, value, callback) => {
       if (value) {
@@ -146,7 +146,7 @@ export default {
             this.form = { ...response.data.info }
             this.form.todate = this.form.todate == 1
           } else {
-            this.form.rid = this.$route.query.id
+            this.form.rid = this.rid
           }
 
           this.infoLoading = false
@@ -170,7 +170,9 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              this.submitLoading = false
+            })
         } else {
           this.submitLoading = false
           return false

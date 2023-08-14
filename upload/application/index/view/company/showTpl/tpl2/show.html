@@ -121,7 +121,6 @@
         <div class="list_box2 clearfix">
             <div class="box2_left">
                 <div class="company" v-show="tab=='introduce'">
-                    {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
                     <div class="introduce">
                         <div class="introduce_title title_margin1 clearfix">
                             <span class="title_item1">公司简介</span>
@@ -129,11 +128,14 @@
                                 该企业已通过实地认证<span @click="handlerReport">查看报告</span>
                             </div>
                         </div>
+<!--                        【bug】企业详情模板二，企业资料未填标签介绍也出不来修改 zch 2022.10.11-->
+                        {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
                         <div class="welfare_list">
                             {#volist name="return.base_info.tag_text_arr" id="vo"#}
                             <span>{#$vo#}</span>
                             {#/volist#}
                         </div>
+                        {#/if#}
                         <div ref="companyContent" :class="contentAll ? 'introduce_con' : 'introduce_con all'">
                             <p>{#$return.base_info.content#}</p>
                         </div>
@@ -141,7 +143,6 @@
                             {{contentAll ? '查看更多' : '收起'}}
                         </div>
                     </div>
-                    {#/if#}
                     {#if condition="$return.base_info.address!=''"#}
                     <div class="address_con">
                         <div class="introduce_title">

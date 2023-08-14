@@ -117,7 +117,7 @@ class Marketing extends Backend
 
             $item['company_link'] = config('global_config.mobile_domain') . 'company/' . $job_value['company_id'];
 
-            $item['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $job_value['company_id'];
+            $item['company_mini_path'] = '/pages/jobs/company_show/company_show?id=' . $job_value['company_id'];
 
             $job_qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_job', 'jobid' => $job_value['job_id']]);
             $item['job_wx_qrcode'] = $job_qrcode ? $job_qrcode : '';
@@ -317,7 +317,7 @@ class Marketing extends Backend
             $qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_company', 'comid' => $company_info['company_id']]);
             $return[$company_key]['company_wx_qrcode'] = $qrcode ? $qrcode : '';
             $return[$company_key]['company_link'] = config('global_config.mobile_domain') . 'company/' . $company_info['company_id'];
-            $return[$company_key]['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $company_info['company_id'];
+            $return[$company_key]['company_mini_path'] = '/pages/jobs/company_show/company_show?id=' . $company_info['company_id'];
 
             // 查询企业职位
             $job_list = model('Job')
@@ -551,7 +551,7 @@ class Marketing extends Backend
             $qrcode = $wechat_class->makeQrcode(['alias' => 'subscribe_company', 'comid' => $company_info['company_id']]);
             $return[$company_key]['company_wx_qrcode'] = $qrcode ? $qrcode : '';
             $return[$company_key]['company_link'] = config('global_config.mobile_domain') . 'company/' . $company_info['company_id'];
-            $return[$company_key]['company_mini_path'] = '/pages/jobs/jobs_show/jobs_show?id=' . $company_info['company_id'];
+            $return[$company_key]['company_mini_path'] = '/pages/jobs/company_show/company_show?id=' . $company_info['company_id'];
 
             // 查询企业职位
             $job_list = model('Job')

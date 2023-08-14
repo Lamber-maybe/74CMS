@@ -436,6 +436,13 @@ class Screen extends \app\v1_0\controller\common\Base
                 'LEFT'
             )
             ->where($where)
+            /**
+             * 【bug】职位删除后在数据大屏的热门里显示null
+             * zch 2022.10.11
+             * 【新增】
+             * ->where('b.jobname','not null')
+             */
+            ->where('b.jobname','not null')
             ->group('a.jobid')
             ->order('total desc,b.refreshtime desc')
             ->limit(10)
@@ -496,7 +503,19 @@ class Screen extends \app\v1_0\controller\common\Base
      */
     protected function personalEventList(){
         //申请职位
-        $list1 = model('JobApply')->alias('a')->join(config('database.prefix').'resume b','a.resume_id=b.id','LEFT')->order('a.id desc')->limit(15)->column('a.addtime,a.resume_id,a.jobid,a.jobname,b.fullname,b.sex,b.display_name','a.id');
+        /*
+         * 【bug】数据大屏数据过滤优化
+         * zch 2022.10.17
+         * 【新增】
+         * ->where('b.id','not null')
+         * */
+        $list1 = model('JobApply')
+            ->alias('a')
+            ->join(config('database.prefix').'resume b','a.resume_id=b.id','LEFT')
+            ->where('b.id','not null')
+            ->order('a.id desc')
+            ->limit(15)
+            ->column('a.addtime,a.resume_id,a.jobid,a.jobname,b.fullname,b.sex,b.display_name','a.id');
         //刷新简历
         $list2 = model('ResumeSearchRtime')->alias('a')->join(config('database.prefix').'resume b','a.id=b.id','LEFT')->order('a.refreshtime desc')->where('addtime','egt',strtotime('-1 hour'))->limit(15)->column('a.refreshtime,a.id,b.fullname,b.sex,b.display_name','a.id');
         $list = [];

@@ -1062,4 +1062,15 @@ class Im extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200,'已绑定',1);
     }
+
+    /*
+     * 【新增】职聊关键字屏蔽功能
+     * zch 2022.10.18
+     * */
+    public function keywordReplace()
+    {
+        $content = input('get.content/s','','trim');
+        $string = badword_filter($content);
+        $this->ajaxReturn(200,'获取成功',$string);
+    }
 }

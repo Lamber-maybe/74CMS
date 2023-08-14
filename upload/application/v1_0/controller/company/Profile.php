@@ -1,4 +1,5 @@
 <?php
+
 namespace app\v1_0\controller\company;
 
 class Profile extends \app\v1_0\controller\common\Base
@@ -8,6 +9,7 @@ class Profile extends \app\v1_0\controller\common\Base
         parent::_initialize();
         $this->checkLogin(1);
     }
+
     /**
      * 获取企业联系方式
      */
@@ -21,11 +23,12 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
-        $return['contact'] = isset($return['contact']) ? htmlspecialchars_decode($return['contact'],ENT_QUOTES):'';
-        $return['weixin'] = isset($return['weixin'])? htmlspecialchars_decode($return['weixin'],ENT_QUOTES):'';
-        $return['telephone'] = isset($return['telephone'])?htmlspecialchars_decode($return['telephone'],ENT_QUOTES):'';
+        $return['contact'] = isset($return['contact']) ? htmlspecialchars_decode($return['contact'], ENT_QUOTES) : '';
+        $return['weixin'] = isset($return['weixin']) ? htmlspecialchars_decode($return['weixin'], ENT_QUOTES) : '';
+        $return['telephone'] = isset($return['telephone']) ? htmlspecialchars_decode($return['telephone'], ENT_QUOTES) : '';
         return $return === null ? [] : $return;
     }
+
     /**
      * 获取企业详细信息
      */
@@ -39,11 +42,12 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
-        $return['address'] = isset($return['address'])?htmlspecialchars_decode($return['address'],ENT_QUOTES):'';
-        $return['short_desc'] = isset($return['short_desc'])?htmlspecialchars_decode($return['short_desc'],ENT_QUOTES):'';
-        $return['content'] = isset($return['content'])?htmlspecialchars_decode($return['content'],ENT_QUOTES):'';
+        $return['address'] = isset($return['address']) ? htmlspecialchars_decode($return['address'], ENT_QUOTES) : '';
+        $return['short_desc'] = isset($return['short_desc']) ? htmlspecialchars_decode($return['short_desc'], ENT_QUOTES) : '';
+        $return['content'] = isset($return['content']) ? htmlspecialchars_decode($return['content'], ENT_QUOTES) : '';
         return $return === null ? [] : $return;
     }
+
     /**
      * 获取企业认证信息
      */
@@ -59,6 +63,7 @@ class Profile extends \app\v1_0\controller\common\Base
             ->find();
         return $return === null ? [] : $return;
     }
+
     /**
      * 获取企业风采
      */
@@ -85,15 +90,16 @@ class Profile extends \app\v1_0\controller\common\Base
             $value['audit_text'] = isset(
                 model('CompanyImg')->map_audit[$value['audit']]
             )
-            ? model('CompanyImg')->map_audit[$value['audit']]
-            : '待审核';
+                ? model('CompanyImg')->map_audit[$value['audit']]
+                : '待审核';
             $value['img_src'] = isset($file_arr[$value['img']])
-            ? $file_arr[$value['img']]
-            : '';
+                ? $file_arr[$value['img']]
+                : '';
             $img_list[$key] = $value;
         }
         return $img_list;
     }
+
     /**
      * 获取企业资料详情
      */
@@ -111,46 +117,51 @@ class Profile extends \app\v1_0\controller\common\Base
                 'contact' => [],
                 'info' => [],
                 'img_list' => [],
+                /**
+                 * APP跳转完善企业信息页
+                 * 如果未完善企业信息，跳转至长页面完善
+                 */
+                'profile_code' => ['err_code' => 50003]
             ];
         }
-        $basic['short_name'] = htmlspecialchars_decode($basic['short_name'],ENT_QUOTES);
+        $basic['short_name'] = htmlspecialchars_decode($basic['short_name'], ENT_QUOTES);
 
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         $basic['nature_text'] = isset(
             $category_data['QS_company_type'][$basic['nature']]
         )
-        ? $category_data['QS_company_type'][$basic['nature']]
-        : '';
+            ? $category_data['QS_company_type'][$basic['nature']]
+            : '';
         $basic['trade_text'] = isset(
             $category_data['QS_trade'][$basic['trade']]
         )
-        ? $category_data['QS_trade'][$basic['trade']]
-        : '';
+            ? $category_data['QS_trade'][$basic['trade']]
+            : '';
         $basic['district_text'] = isset(
             $category_district_data[$basic['district']]
         )
-        ? $category_district_data[$basic['district']]
-        : '';
+            ? $category_district_data[$basic['district']]
+            : '';
         $basic['district_text_full'] = '';
-        if($basic['district1']){
+        if ($basic['district1']) {
             $basic['district_text_full'] = isset(
                 $category_district_data[$basic['district1']]
             )
                 ? $category_district_data[$basic['district1']]
                 : '';
-        }else{
+        } else {
             $basic['district_text_full'] = '';
         }
 
-        if($basic['district_text_full']!='' && $basic['district2']>0){
+        if ($basic['district_text_full'] != '' && $basic['district2'] > 0) {
             $basic['district_text_full'] .= isset(
                 $category_district_data[$basic['district2']]
             )
                 ? $category_district_data[$basic['district2']]
                 : '';
         }
-        if($basic['district_text_full']!='' && $basic['district3']>0){
+        if ($basic['district_text_full'] != '' && $basic['district3'] > 0) {
             $basic['district_text_full'] .= isset(
                 $category_district_data[$basic['district3']]
             )
@@ -160,8 +171,8 @@ class Profile extends \app\v1_0\controller\common\Base
         $basic['scale_text'] = isset(
             $category_data['QS_scale'][$basic['scale']]
         )
-        ? $category_data['QS_scale'][$basic['scale']]
-        : '';
+            ? $category_data['QS_scale'][$basic['scale']]
+            : '';
         $basic['tag'] = $basic['tag'] == '' ? [] : explode(',', $basic['tag']);
         $basic['tag_text'] = '';
         $basic['tag_text_arr'] = [];
@@ -181,9 +192,9 @@ class Profile extends \app\v1_0\controller\common\Base
         }
 
         $basic['logo_src'] =
-        $basic['logo'] > 0
-        ? model('Uploadfile')->getFileUrl($basic['logo'])
-        : default_empty('logo');
+            $basic['logo'] > 0
+                ? model('Uploadfile')->getFileUrl($basic['logo'])
+                : default_empty('logo');
         //联系方式
         $contact = $this->getDetailContact($basic['id']);
         //详细信息
@@ -206,11 +217,11 @@ class Profile extends \app\v1_0\controller\common\Base
             $value['audit_text'] = isset(
                 model('CompanyImg')->map_audit[$value['audit']]
             )
-            ? model('CompanyImg')->map_audit[$value['audit']]
-            : '待审核';
+                ? model('CompanyImg')->map_audit[$value['audit']]
+                : '待审核';
             $value['img_src'] = isset($file_arr[$value['img']])
-            ? $file_arr[$value['img']]
-            : '';
+                ? $file_arr[$value['img']]
+                : '';
             $img_list[$key] = $value;
         }
 
@@ -219,8 +230,10 @@ class Profile extends \app\v1_0\controller\common\Base
             'contact' => $contact,
             'info' => $info,
             'img_list' => $img_list,
+            'profile_code' => ['err_code' => 0]
         ];
     }
+
     /**
      * 保存基本信息
      */
@@ -281,10 +294,10 @@ class Profile extends \app\v1_0\controller\common\Base
                     'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 ],
             ];
-            if(!empty($input_data['basic']['citycategory_arr'])){
-                $input_data['basic']['district1'] = isset($input_data['basic']['citycategory_arr'][0])?$input_data['basic']['citycategory_arr'][0]:0;
-                $input_data['basic']['district2'] = isset($input_data['basic']['citycategory_arr'][1])?$input_data['basic']['citycategory_arr'][1]:0;
-                $input_data['basic']['district3'] = isset($input_data['basic']['citycategory_arr'][2])?$input_data['basic']['citycategory_arr'][2]:0;
+            if (!empty($input_data['basic']['citycategory_arr'])) {
+                $input_data['basic']['district1'] = isset($input_data['basic']['citycategory_arr'][0]) ? $input_data['basic']['citycategory_arr'][0] : 0;
+                $input_data['basic']['district2'] = isset($input_data['basic']['citycategory_arr'][1]) ? $input_data['basic']['citycategory_arr'][1] : 0;
+                $input_data['basic']['district3'] = isset($input_data['basic']['citycategory_arr'][2]) ? $input_data['basic']['citycategory_arr'][2] : 0;
             }
 
             $company_profile = model('Company')
@@ -335,14 +348,14 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['basic']['tag'] = [];
             }
             $input_data['basic']['tag'] = !empty($input_data['basic']['tag'])
-            ? implode(',', $input_data['basic']['tag'])
-            : '';
+                ? implode(',', $input_data['basic']['tag'])
+                : '';
             $input_data['basic']['district'] =
-            $input_data['basic']['district3'] > 0
-            ? $input_data['basic']['district3']
-            : ($input_data['basic']['district2'] > 0
-                ? $input_data['basic']['district2']
-                : $input_data['basic']['district1']);
+                $input_data['basic']['district3'] > 0
+                    ? $input_data['basic']['district3']
+                    : ($input_data['basic']['district2'] > 0
+                    ? $input_data['basic']['district2']
+                    : $input_data['basic']['district1']);
 
             if (input('?post.info.website')) {
                 $input_data['info']['website'] = input(
@@ -350,6 +363,14 @@ class Profile extends \app\v1_0\controller\common\Base
                     '',
                     'trim,badword_filter'
                 );
+                /*
+                  * 【优化】企业会员中心网址格式验证
+                  * zch 2022.10.13
+                  * 【新增正则验证】
+                  * */;
+                if(!fieldRegex($input_data['info']['website'],'url')){
+                    $this->ajaxReturn(500, '请填写正确的网址');
+                }
             } elseif ($company_info === null) {
                 $input_data['info']['website'] = '';
             }
@@ -372,7 +393,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['info']['content'] = '';
             }
 
-             if (input('?post.contact.weixin')) {
+            if (input('?post.contact.weixin')) {
                 $input_data['contact']['weixin'] = input(
                     'post.contact.weixin/s',
                     '',
@@ -412,8 +433,8 @@ class Profile extends \app\v1_0\controller\common\Base
             \think\Db::startTrans();
             try {
                 if ($company_profile === null) {
-                    $input_data['basic']['registered'] = isset($input_data['basic']['registered'])?$input_data['basic']['registered']:'';
-                    $input_data['basic']['currency'] = isset($input_data['basic']['currency'])?$input_data['basic']['currency']:0;
+                    $input_data['basic']['registered'] = isset($input_data['basic']['registered']) ? $input_data['basic']['registered'] : '';
+                    $input_data['basic']['currency'] = isset($input_data['basic']['currency']) ? $input_data['basic']['currency'] : 0;
                     //新添加的企业，根据配置赋值审核状态
                     $input_data['basic']['audit'] = config(
                         'global_config.audit_new_com'
@@ -429,15 +450,15 @@ class Profile extends \app\v1_0\controller\common\Base
                     $input_data['basic']['robot'] = 0;
                     $input_data['basic']['platform'] = config('platform');
                     $input_data['basic']['cs_id'] = model('Member')->distributionCustomerService();
-                    $member_setmeal = model('MemberSetmeal')->where('uid',$this->userinfo->uid)->find();
-                    $input_data['basic']['setmeal_id'] = $member_setmeal===null?0:$member_setmeal->setmeal_id;
+                    $member_setmeal = model('MemberSetmeal')->where('uid', $this->userinfo->uid)->find();
+                    $input_data['basic']['setmeal_id'] = $member_setmeal === null ? 0 : $member_setmeal->setmeal_id;
                     $result = model('Company')
                         ->validate(true)
                         ->allowField(true)
                         ->save($input_data['basic']);
                     $company_id = model('Company')->id;
                 } else {
-                    if($company_profile['district']==0){
+                    if ($company_profile['district'] == 0) {
                         //新添加的企业，根据配置赋值审核状态
                         $input_data['basic']['audit'] = config(
                             'global_config.audit_new_com'
@@ -446,17 +467,17 @@ class Profile extends \app\v1_0\controller\common\Base
                         $input_data['basic']['is_display'] = config(
                             'global_config.display_new_com'
                         );
-                    }else{
+                    } else {
                         //修改企业资料，根据配置赋值审核状态
                         if (config('global_config.audit_edit_com') == 1) {
                             $input_data['basic']['audit'] = 0;
                         }
                     }
-                    if($company_profile['companyname']!=''){
+                    if ($company_profile['companyname'] != '') {
                         $input_data['basic']['companyname'] = $company_profile['companyname'];
                     }
                     $input_data['basic']['uid'] = $company_profile['uid'];
-                    if($company_profile['cs_id']==0){
+                    if ($company_profile['cs_id'] == 0) {
                         $input_data['basic']['cs_id'] = model('Member')->distributionCustomerService();
                     }
                     $result = model('Company')
@@ -537,10 +558,11 @@ class Profile extends \app\v1_0\controller\common\Base
                 \think\Db::rollBack();
                 $this->ajaxReturn(500, $e->getMessage());
             }
-            $this->writeMemberActionLog($this->userinfo->uid,'修改企业基本资料');
+            $this->writeMemberActionLog($this->userinfo->uid, '修改企业基本资料');
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 上传企业风采
      */
@@ -549,7 +571,7 @@ class Profile extends \app\v1_0\controller\common\Base
         $this->interceptCompanyProfile();
         $this->interceptCompanyAuth();
         $file = input('file.file');
-        $extra = input('post.extra/s','','trim');
+        $extra = input('post.extra/s', '', 'trim');
         if (!$file) {
             $this->ajaxReturn(500, '请选择文件');
         }
@@ -570,13 +592,11 @@ class Profile extends \app\v1_0\controller\common\Base
             $img['audit'] = 0;
             model('CompanyImg')->save($img);
             $result['audit'] = 0;
-            $result['audit_text'] = model('CompanyImg')->map_audit[
-                $result['audit']
-            ];
+            $result['audit_text'] = model('CompanyImg')->map_audit[$result['audit']];
             $result['id'] = model('CompanyImg')->id;
-            if($extra=='company_img'){
+            if ($extra == 'company_img') {
                 $img_list = $this->getCompanyImg($this->userinfo->uid);
-                cache('scan_upload_result_company_img_'.$this->userinfo->uid,json_encode($img_list));
+                cache('scan_upload_result_company_img_' . $this->userinfo->uid, json_encode($img_list));
             }
             $this->writeMemberActionLog($this->userinfo->uid,'上传企业风采');
             $this->ajaxReturn(200, '上传成功', $result);
@@ -584,6 +604,7 @@ class Profile extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $filemanager->getError());
         }
     }
+
     /**
      * 删除企业风采
      */
@@ -592,16 +613,16 @@ class Profile extends \app\v1_0\controller\common\Base
         $this->interceptCompanyProfile();
         $this->interceptCompanyAuth();
         $id = input('post.id/d', 0, 'intval');
-        $extra = input('post.extra/s','','trim');
+        $extra = input('post.extra/s', '', 'trim');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
         model('CompanyImg')->destroy($id);
-        if($extra=='company_img'){
+        if ($extra == 'company_img') {
             $img_list = $this->getCompanyImg($this->userinfo->uid);
-            cache('scan_upload_result_company_img_'.$this->userinfo->uid,json_encode($img_list));
+            cache('scan_upload_result_company_img_' . $this->userinfo->uid, json_encode($img_list));
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'删除企业风采【风采id：'.$id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '删除企业风采【风采id：' . $id . '】');
 
         $this->ajaxReturn(200, '删除成功');
     }

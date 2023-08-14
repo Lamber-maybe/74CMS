@@ -45,11 +45,12 @@
             <div class="bottom-ipt-box">
               <div class="shortcut" @click="handleOpenCommonList()"></div>
               <div class="ipt">
-                <van-field v-model.trim="msgText" @keydown.enter.native="handleSendText" class="ipt-inner"  @focus.stop="handleMsgInput" placeholder="请输入消息内容" />
+<!--                【新增】职聊关键字屏蔽功能 zch 2022.10.18-->
+                <van-field v-model.trim="msgText" @keydown.enter.native="keywordReplace" class="ipt-inner"  @focus.stop="handleMsgInput" placeholder="请输入消息内容" />
               </div>
               <div class="emoji" @click.stop="handleBottmeMore('emoji')"></div>
               <div :class="moreClass" @click.stop="handleBottmeMore('more')"></div>
-              <div :class="isSend ? 'send' : 'send none-send'" @click="handleSendText">发送</div>
+              <div :class="isSend ? 'send' : 'send none-send'" @click="keywordReplace">发送</div>
             </div>
             <div class="bottom-more-wrapper">
               <ul v-show="isBottomText == 'more'" class="bottom-more-box">
@@ -1011,6 +1012,15 @@ export default {
       window.history.length > 1
         ? this.$router.go(-1)
         : this.$router.push('/')
+    },
+    // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
+    keywordReplace () {
+      http
+        .get(api.im_keyword_replace, {content: this.msgText})
+        .then(res => {
+          this.msgText = res.data
+          this.handleSendText()
+        }).catch(() => {})
     }
   }
 }

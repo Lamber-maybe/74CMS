@@ -1,4 +1,5 @@
 <?php
+
 namespace app\v1_0\controller\personal;
 
 class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
@@ -56,14 +57,14 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             $input_data['intention']['category3'] > 0
                 ? $input_data['intention']['category3']
                 : ($input_data['intention']['category2'] > 0
-                    ? $input_data['intention']['category2']
-                    : $input_data['intention']['category1']);
+                ? $input_data['intention']['category2']
+                : $input_data['intention']['category1']);
         $input_data['intention']['district'] =
             $input_data['intention']['district3'] > 0
                 ? $input_data['intention']['district3']
                 : ($input_data['intention']['district2'] > 0
-                    ? $input_data['intention']['district2']
-                    : $input_data['intention']['district1']);
+                ? $input_data['intention']['district2']
+                : $input_data['intention']['district1']);
         if (input('?post.work')) {
             $input_data['work'] = [
                 'uid' => $this->userinfo->uid,
@@ -200,15 +201,16 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         }
 
         model('Resume')->refreshSearch($resume_id);
-        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历基本信息');
+        $this->writeMemberActionLog($this->userinfo->uid, '注册 - 保存简历基本信息');
         $this->ajaxReturn(200, '保存成功');
     }
+
     /**
      * 第二步：保存简历教育经历
      */
     public function step2()
     {
-        
+
         $input_data = [
             'education' => [
                 'uid' => $this->userinfo->uid,
@@ -292,8 +294,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
                     $basic_info =
                         $basic_info === null
                             ? model('Resume')
-                                ->where('uid', $this->userinfo->uid)
-                                ->find()
+                            ->where('uid', $this->userinfo->uid)
+                            ->find()
                             : $basic_info;
                     if ($basic_info === null) {
                         throw new \Exception('请先填写基本资料');
@@ -339,10 +341,10 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历');
+        $this->writeMemberActionLog($this->userinfo->uid, '注册 - 保存简历教育经历');
         $this->ajaxReturn(200, '保存成功');
     }
-    
+
     /**
      * 第二步：保存简历教育经历、工作经历、自我描述
      */
@@ -358,7 +360,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
                 'endtime' => input('post.education.endtime/s', '', 'trim'),
                 'todate' => input('post.education.todate/d', 0, 'intval')
             ],
-            'work'=>[
+            'work' => [
                 'uid' => $this->userinfo->uid,
                 'companyname' => input('post.work.companyname/s', '', 'trim,badword_filter'),
                 'jobname' => input('post.work.jobname/s', '', 'trim,badword_filter'),
@@ -486,7 +488,26 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历、工作经历、自我描述');
+        $this->writeMemberActionLog($this->userinfo->uid, '注册 - 保存简历教育经历、工作经历、自我描述');
         $this->ajaxReturn(200, '保存成功');
+    }
+
+
+    /**
+     * 检查简历工作经历
+     * @return void
+     */
+    public function enterJobTime()
+    {
+        $enterJobTime = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->value('enter_job_time');
+
+        if (null === $enterJobTime) {
+            $this->ajaxReturn(200, '获取数据成功', null);
+        }
+
+        $this->ajaxReturn(200, '获取数据成功', ['enter_job_time' => $enterJobTime]);
+
     }
 }

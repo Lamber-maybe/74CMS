@@ -61,10 +61,14 @@ class Qrcode extends \app\v1_0\controller\common\Base
      */
     protected function makeBindWechatQrcode(){
         $alias = 'member_bind_weixin';
+        /*
+         * 未登录时报错（Trying to get property of non-object）
+         * zch 2022.10.19
+         * */
         $params = [
             'alias'=>$alias,
-            'uid'=>$this->userinfo->uid,
-            'utype'=>$this->userinfo->utype
+            'uid'=> !empty($this->userinfo->uid) ? $this->userinfo->uid : 0,
+            'utype'=> !empty($this->userinfo->utype) ? $this->userinfo->utype : 0
         ];
         $class = new \app\common\lib\Wechat;
         $qrcode = $class->makeQrcode($params);

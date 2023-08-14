@@ -65,70 +65,91 @@ const userRouter = {
       title: '个人简历管理',
       access: 'resume'
     },
-    children: [{
-      path: '/user/resume/noaudit',
-      name: 'resumeNoaudit',
-      component: () =>
-        import('@/views/user/resume/noaudit'),
-      meta: {
-        title: '未审核简历',
-        access: 'resumeNoaudit'
-      }
-    },
-    {
-      path: '/user/resume/list',
-      name: 'resumeList',
-      component: () =>
-        import('@/views/user/resume/list'),
-      meta: {
-        title: '简历管理',
-        access: 'resumeList'
-      }
-    },
-    {
-      path: '/user/resume/edit',
-      name: 'resumeEdit',
-      component: () =>
-        import('@/views/user/resume/edit'),
-      meta: {
-        title: '编辑简历',
-        access: 'resumeList',
-        activeMenu: '/user/resume/list'
+    children: [
+    // {
+    //   path: '/user/resume/noaudit',
+    //   name: 'resumeNoaudit',
+    //   component: () =>
+    //     import('@/views/user/resume/noaudit'),
+    //   meta: {
+    //     title: '未审核简历',
+    //     access: 'resumeNoaudit'
+    //   }
+    // },
+    // {
+    //   path: '/user/resume/list',
+    //   name: 'resumeList',
+    //   component: () =>
+    //     import('@/views/user/resume/list'),
+    //   meta: {
+    //     title: '简历管理',
+    //     access: 'resumeList'
+    //   }
+    // },
+    // {
+    //   path: '/user/resume/edit',
+    //   name: 'resumeEdit',
+    //   component: () =>
+    //     import('@/views/user/resume/edit'),
+    //   meta: {
+    //     title: '编辑简历',
+    //     access: 'resumeList',
+    //     activeMenu: '/user/resume/list'
+    //   },
+    //   hidden: true
+    // },
+    // {
+    //   path: '/user/resume_img',
+    //   name: 'resume_img',
+    //   component: () =>
+    //     import('@/views/user/resume_img/index'),
+    //   meta: {
+    //     title: '照片/作品',
+    //     access: 'resume_img'
+    //   }
+    // },
+      {
+        path: '/user/resume/add',
+        name: 'resumeAdd',
+        component: () =>
+          import('@/views/user/resume/add'),
+        meta: {
+          title: '添加简历',
+          access: 'resumeList',
+          activeMenu: '/user/resume/list'
+        },
+        hidden: true
       },
-      hidden: true
-    },
-    {
-      path: '/user/resume/add',
-      name: 'resumeAdd',
-      component: () =>
-        import('@/views/user/resume/add'),
-      meta: {
-        title: '添加简历',
-        access: 'resumeList',
-        activeMenu: '/user/resume/list'
+      {
+        path: '/user/urmList',
+        name: 'urmList',
+        component: () =>
+          import('@/views/user/resume/urm/List'),
+        meta: {
+          title: '全部简历',
+          access: 'urmList'
+        }
       },
-      hidden: true
-    },
-    {
-      path: '/user/resume_img',
-      name: 'resume_img',
-      component: () =>
-        import('@/views/user/resume_img/index'),
-      meta: {
-        title: '照片/作品',
-        access: 'resume_img'
+      {
+        path: '/user/urm/trashcan',
+        name: 'urmTrashcan',
+        component: () =>
+          import('@/views/user/resume/urm/Trashcan'),
+        meta: {
+          title: '简历回收站',
+          access: 'urmTrashcan'
+        }
+      },
+      {
+        path: '/user/job_apply',
+        name: 'job_apply',
+        component: () =>
+          import('@/views/user/job_apply/index'),
+        meta: {
+          title: '投递简历记录',
+          access: 'job_apply'
+        }
       }
-    },
-    {
-      path: '/user/job_apply',
-      name: 'job_apply',
-      component: () =>
-        import('@/views/user/job_apply/index'),
-      meta: {
-        title: '投递简历记录',
-        access: 'job_apply'
-      }
-    }
     ]
   },
   {
@@ -590,7 +611,7 @@ const userRouter = {
       //     access: 'company_down'
       //   }
       // }
-       {
+      {
         path: '/user/cancel_apply',
         name: 'cancel_apply',
         component: () =>

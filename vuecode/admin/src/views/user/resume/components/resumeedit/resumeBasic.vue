@@ -2,17 +2,25 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>基本信息</span>
+        <span style="font-weight: 600;color: #333;">
+          基本信息
+          <div class="must">必填</div>
+        </span>
         <el-button
           v-if="is_edit === false"
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="is_edit = !is_edit"
         >
           修改
         </el-button>
       </div>
       <div v-if="is_edit === false">
+        <div class="photo">
+          <img :src="photoUrl" alt="">
+          <div style="color: #999;font-size: 14px;">个人照片</div>
+        </div>
         <span class="item-row">姓名：{{ form.fullname }}</span>
         <span class="item-row">出生日期：{{ form.birthday }}</span>
         <span class="item-row">性别：{{ form.sex_ }}</span>
@@ -284,6 +292,7 @@ export default {
       return data == '' ? '未填写' : data
     }
   },
+  props: ['id'],
   data() {
     var validateContactMobile = (rule, value, callback) => {
       if (!validMobile(value)) {
@@ -634,7 +643,7 @@ export default {
           this.options_current = [...response.data.current]
           this.options_marriage = [...response.data.marriage]
           const param = {
-            id: this.$route.query.id
+            id: this.id
           }
           return resumeBasic(param, 'get')
         })
@@ -656,6 +665,7 @@ export default {
             this.form.major_arr.push(this.form.major2)
           }
           this.infoLoading = false
+          this.$emit('setLoading', 'resumeBasic')
         })
         .catch(() => { })
     },
@@ -677,15 +687,18 @@ export default {
                 this.is_edit = false
                 this.submitLoading = false
                 this.$message.success(response.message)
+                this.$emit('resumeDetails')
                 this.fetchInfo()
                 return true
               } else {
+                this.$emit('resumeDetails')
                 this.$message.error(response.message)
                 return false
               }
             })
             .catch(() => {
               this.submitLoading = false
+              this.$emit('resumeDetails')
             })
         } else {
           this.submitLoading = false
@@ -726,7 +739,33 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.photo{
+  text-align: center;
+  display: inline-block;
+  float:right;
+  width: 100px;
+  height:100px;
+  img{
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+}
+.must{
+  display: inline-block;
+  width: 38.6px;
+  height: 19.3px;
+  line-height: 19.3px;
+  text-align: center;
+  background: #feefea;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fe6135;
+  -webkit-transform: scale(.83);
+  transform: scale(.83);
+}
 .photo-uploader {
   display: inline-block;
   border: 1px dashed #d9d9d9;

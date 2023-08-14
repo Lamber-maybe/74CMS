@@ -273,7 +273,11 @@ class Resume extends \app\common\controller\Backend
                 $info['contact'] = model('ResumeContact')
                     ->where('rid', $id)
                     ->find();
-                $photoUrl = model('Uploadfile')->getFileUrl($info['photo_img']);
+                $photoUrl = $info['photo_img'] > 0
+                    ? model('Uploadfile')->getFileUrl(
+                        $info['photo_img']
+                    )
+                    : default_empty('photo');
             } else {
                 $info['contact'] = [];
                 $photoUrl = '';
@@ -1297,7 +1301,12 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['obtaintime'] = date('Y-m', $info['obtaintime']);
+                /**
+                 * 2022-10-23
+                 * zdq 编辑时拨错 obtaintime 未定义，排查前端没有渲染次字段数据也无此字段。
+                 * 暂时注释
+                 */
+//              $info['obtaintime'] = date('Y-m', $info['obtaintime']);
             }
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info

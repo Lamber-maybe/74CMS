@@ -13,8 +13,8 @@
         <el-button
           style="float: right; padding: 0;"
           type="text"
-          @click="onSubmit('form')"
           :disabled="issubmit"
+          @click="onSubmit('form')"
         >
           保存
         </el-button>
@@ -58,11 +58,11 @@
             <Toolbar
               style="border-bottom: 1px solid #ccc"
               :editor="editor"
-              :defaultConfig="toolbarConfig"
+              :default-config="toolbarConfig"
             />
             <Editor
-              style="height: 400px; overflow-y: hidden;"
               v-model="form.content"
+              style="height: 400px; overflow-y: hidden;"
               @onCreated="onCreated"
             />
           </div>
@@ -78,7 +78,7 @@
             :before-upload="beforeAttachUpload"
           >
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传excel,word,ppt文件，且不超过{{ fileupload_size }}kb</div>
+            <div slot="tip" class="el-upload__tip">只能上传excel,word,ppt,pdf,zip,rar文件，且不超过{{ fileupload_size }}kb</div>
           </el-upload>
         </el-form-item>
         <el-form-item label="是否显示">
@@ -115,7 +115,7 @@
         </el-form-item>
 
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
+          <el-button type="primary" :disabled="issubmit" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/content/article/list')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -171,7 +171,7 @@ export default {
         title: '',
         cid: '',
         content: '',
-        attach:[],
+        attach: [],
         thumb: '',
         is_display: true,
         link_url: '',
@@ -274,12 +274,12 @@ export default {
       this.editor.getMenuConfig('uploadVideo').server = window.global.RequestBaseUrl + apiArr.uploadEditorVideo
     },
     handleRemove(file, fileList) {
-      let index = this.form.attach.indexOf({name:file.name,url:file.url})
-      this.form.attach.splice(index,1)
+      const index = this.form.attach.indexOf({ name: file.name, url: file.url })
+      this.form.attach.splice(index, 1)
     },
     handleAttachSuccess(res, file) {
       if (res.code == 200) {
-        let info = {name:res.data.name,url:res.data.url}
+        const info = { name: res.data.name, url: res.data.url }
         this.form.attach.push(info)
       } else {
         this.$message.error(res.message)
@@ -287,9 +287,9 @@ export default {
       }
     },
     beforeAttachUpload(file) {
-      const configFileExtArr = 'doc,docx,xls,xlsx,csv,ppt,pptx,pdf'
+      const configFileExtArr = 'doc,docx,xls,xlsx,csv,ppt,pptx,pdf,zip,rar'
       const filename_arr = file.name.split('.')
-      const filetype = filename_arr[filename_arr.length-1]
+      const filetype = filename_arr[filename_arr.length - 1]
       if (!configFileExtArr.includes(filetype)) {
         this.$message.error('上传文件格式不允许')
         return false

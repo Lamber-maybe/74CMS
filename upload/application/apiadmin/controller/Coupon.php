@@ -15,8 +15,7 @@ class Coupon extends \app\common\controller\Backend
             ->select();
         $setmeal_list = model('Setmeal')->column('id,name');
         foreach ($list as $key => $value) {
-            $list[$key]['bind_setmeal_name'] =
-                $setmeal_list[$value['bind_setmeal_id']];
+            $list[$key]['bind_setmeal_name'] = !empty($setmeal_list[$value['bind_setmeal_id']]) ? $setmeal_list[$value['bind_setmeal_id']] : '';
         }
         $return['items'] = $list;
         $return['total'] = $total;

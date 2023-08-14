@@ -1,4 +1,5 @@
 <?php
+
 namespace app\v1_0\controller\home;
 
 class Article extends \app\v1_0\controller\common\Base
@@ -7,6 +8,7 @@ class Article extends \app\v1_0\controller\common\Base
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $where = ['is_display' => 1];
@@ -22,12 +24,12 @@ class Article extends \app\v1_0\controller\common\Base
          * 【新增】
          * $where['addtime'] = ['lt',time()];
          */
-        $where['addtime'] = ['lt',time()];
+        $where['addtime'] = ['lt', time()];
         $list = model('Article')
             ->field('id,title,thumb,link_url,click,addtime,source')
             ->where($where)
             ->page($current_page, $pagesize)
-            ->order('sort_id desc,id desc')
+            ->order('sort_id desc,addtime desc')  // 【优化】小程序资讯列表按时间排序 zch 2022.10.11 id desc 改为 addtime desc
             ->select();
         $thumb_id_arr = $thumb_arr = [];
         foreach ($list as $key => $value) {
@@ -47,6 +49,7 @@ class Article extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function category()
     {
         $list = model('ArticleCategory')
@@ -55,6 +58,7 @@ class Article extends \app\v1_0\controller\common\Base
             ->select();
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);
     }
+
     public function show()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -71,21 +75,26 @@ class Article extends \app\v1_0\controller\common\Base
         $info->click++;
         $info->save();
         $info = $info->toArray();
+        if (isset($info['attach']) && !empty($info['attach'])) {
+            $info['attach_info'] = json_decode($info['attach'], true);
+        } else {
+            $info['attach_info'] = [];
+        }
         $info['thumb'] =
             $info['thumb'] > 0
                 ? model('Uploadfile')->getFileUrl($info['thumb'])
                 : default_empty('thumb');
         $info['source_text'] = $info['source'] == 1 ? '转载' : '原创';
-        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
+        $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
         $prev = model('Article')
             ->where('id', '>', $info['id'])
-            ->where('is_display',1)
+            ->where('is_display', 1)
             ->order('id asc')
             ->field('id,title')
             ->find();
         $next = model('Article')
             ->where('id', '<', $info['id'])
-            ->where('is_display',1)
+            ->where('is_display', 1)
             ->order('id desc')
             ->field('id,title')
             ->find();
@@ -96,8 +105,10 @@ class Article extends \app\v1_0\controller\common\Base
             'next' => $next
         ]);
     }
-    public function click(){
-        $id = input('post.id/d',0,'intval');
+
+    public function click()
+    {
+        $id = input('post.id/d', 0, 'intval');
         $info = model('Article')
             ->where('id', 'eq', $id)
             ->field('id,click')
@@ -105,15 +116,15 @@ class Article extends \app\v1_0\controller\common\Base
         if ($info !== null) {
 
             //新增资讯随机阅读量添加
-            $rand_click_article = empty(config('global_config.rand_click_article')) ? 0 :intval(config('global_config.rand_click_article'));
-            $num = $rand_click_article>0 ? rand(1,$rand_click_article) : 1;
+            $rand_click_article = empty(config('global_config.rand_click_article')) ? 0 : intval(config('global_config.rand_click_article'));
+            $num = $rand_click_article > 0 ? rand(1, $rand_click_article) : 1;
 
-            $info->click = $info->click+$num;
+            $info->click = $info->click + $num;
             $info->save();
             $click = $info['click'];
-        }else{
+        } else {
             $click = 0;
         }
-        $this->ajaxReturn(200, '数据添加成功',$click);
+        $this->ajaxReturn(200, '数据添加成功', $click);
     }
 }

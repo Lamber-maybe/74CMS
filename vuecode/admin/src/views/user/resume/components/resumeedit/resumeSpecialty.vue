@@ -2,11 +2,12 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>自我描述</span>
+        <span  style="font-weight: 600;color: #333;">自我描述</span>
         <el-button
           v-if="is_edit === false"
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="is_edit = !is_edit"
         >
           修改
@@ -53,6 +54,7 @@
 import { resumeSpecialty } from '@/api/resume'
 
 export default {
+  props: ['id'],
   data() {
     return {
       is_edit: false,
@@ -79,12 +81,13 @@ export default {
     fetchInfo() {
       this.infoLoading = true
       const param = {
-        id: this.$route.query.id
+        id: this.id
       }
       resumeSpecialty(param, 'get')
         .then(response => {
           this.form = { ...response.data.info }
           this.infoLoading = false
+          this.$emit('setLoading', 'resumeSpecialty')
         })
         .catch(() => {})
     },

@@ -2,11 +2,12 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>特长标签</span>
+        <span  style="font-weight: 600;color: #333;">特长标签</span>
         <el-button
           v-if="is_edit === false"
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="is_edit = !is_edit"
         >
           修改
@@ -65,6 +66,7 @@ import { getClassify } from '@/api/classify'
 import { resumeTag } from '@/api/resume'
 
 export default {
+  props: ['id'],
   data() {
     return {
       is_edit: false,
@@ -84,7 +86,7 @@ export default {
     fetchInfo() {
       this.infoLoading = true
       const param = {
-        id: this.$route.query.id
+        id: this.id
       }
 
       resumeTag(param, 'get')
@@ -92,17 +94,20 @@ export default {
           this.form = { ...response.data.info }
 
           const tagIds = this.form.tag.toString()
-          const arrData = tagIds.split(',')
-          for (var i = 0; i < arrData.length; i++) {
-            if (!isNaN(arrData[i])) {
-              arrData[i] = parseInt(arrData[i])
+          if (tagIds != ''){
+            const arrData = tagIds.split(',')
+            for (var i = 0; i < arrData.length; i++) {
+              if (!isNaN(arrData[i]) && arrData[i] != '') {
+                arrData[i] = parseInt(arrData[i])
+              }
             }
+            this.form.tag = arrData
           }
-          this.form.tag = arrData
           return getClassify({ type: 'resumeTag' })
         })
         .then(response => {
           this.options_tag = [...response.data]
+          this.$emit('setLoading', 'resumeTag')
           this.infoLoading = false
         })
         .catch(() => {})

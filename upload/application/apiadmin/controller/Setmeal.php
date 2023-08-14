@@ -270,6 +270,21 @@ class Setmeal extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
 
+        /*
+         * 【bug】优惠卷绑定套餐后，删除套餐后台优惠卷报错
+         * zch 2022.10.18
+         * 新增套餐是否被套餐和优惠卷使用验证
+         * */
+        $company_setmeal = model('Company')->where('setmeal_id',$id)->find();
+        if (!empty($company_setmeal))
+        {
+            $this->ajaxReturn(500, '此套餐已被企业使用，不可删除！');
+        }
+        $coupon = model('Coupon')->where('bind_setmeal_id',$id)->find();
+        if (!empty($coupon))
+        {
+            $this->ajaxReturn(500, '此套餐已被优惠卷绑定，不可删除！');
+        }
         $info = model('Setmeal')
             ->where('id', $id)
             ->find();

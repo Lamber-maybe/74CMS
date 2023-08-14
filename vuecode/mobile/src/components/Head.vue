@@ -145,6 +145,12 @@ export default {
     if (this.bg) {
       this.classname = `head_content ${this.bg}`
     }
+    /**
+     * 【ID1000360】
+     * 【优化】触屏会员中心顶部头重叠
+     * yx 2022.10.17
+     */
+    this.scrollToTop()
     // 根据登录状态和会员类型设置对应的数据
     if (this.isLogin) {
       if (parseInt(this.loginType) === 1) {
@@ -202,7 +208,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setImToken']),
-    ...mapActions(['initWebSocket', 'webSocket_send','getConfig']),
+    ...mapActions(['initWebSocket', 'webSocket_send', 'getConfig']),
     /**
      * 获取imToken
      */
@@ -238,10 +244,10 @@ export default {
       if (item.name === '刷新简历') {
         this.refreshResume()
         this.showMore = false
-      }else if (item.name === '一键刷新'){
+      } else if (item.name === '一键刷新') {
         this.handlerRefreshBatch()
         this.showMore = false
-      }  else {
+      } else {
         this.$router.push(item.url)
       }
     },

@@ -33,9 +33,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="客服" width="120">
+        <el-table-column label="客服" width="205">
           <template slot-scope="scope">
-            {{ scope.row.name }}
+            {{ scope.row.name }} 【{{ scope.row.username }}】
           </template>
         </el-table-column>
         <el-table-column label="内容" show-overflow-tooltip>
@@ -43,7 +43,7 @@
             <span>{{ scope.row.content }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="投诉人" width="200">
+        <el-table-column label="投诉人" width="205">
           <template slot-scope="scope">
             {{ scope.row.mobile }} 【uid：{{ scope.row.uid }}】
           </template>

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\validate;
 
 use app\common\validate\BaseValidate;
@@ -10,6 +11,7 @@ class Company extends BaseValidate
         parent::__construct();
         $this->initValidateRule('Company');
     }
+
     protected $rule = [
         'uid' => 'number|gt:0',
         'companyname' => 'require|max:60|uniqueCompanyname',
@@ -32,20 +34,9 @@ class Company extends BaseValidate
         'robot' => 'number|in:0,1'
     ];
     protected $message = [
-        'district1.gt' =>  '请选择所在地区'
+        'district1.gt' => '请选择所在地区'
     ];
 
-    protected $scene = [
-        'edit' => [
-            'uid',
-            'companyname',
-            'short_name',
-            'logo',
-            'nature',
-            'trade',
-            'scale'
-        ]
-    ];
     protected function uniqueCompanyname($value, $rule, $data)
     {
         if (config('global_config.company_repeat') == 1) {
@@ -61,4 +52,20 @@ class Company extends BaseValidate
             }
         }
     }
+
+    /**
+     * 场景验证
+     */
+    protected $scene = [
+        'edit' => ['uid', 'companyname', 'short_name', 'logo', 'nature', 'trade', 'scale'],
+        'location' => ['district1', 'district2', 'district3', 'map_zoom'],
+        'registered' => ['registered', 'currency'],
+        'logo' => ['logo'],
+        'short_name' => ['short_name'],
+        'nature' => ['nature'],
+        'trade' => ['trade'],
+        'scale' => ['scale'],
+        'tag' => ['tag'],
+        'audit' => ['audit']
+    ];
 }

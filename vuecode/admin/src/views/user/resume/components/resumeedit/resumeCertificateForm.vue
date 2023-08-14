@@ -36,7 +36,7 @@
 <script>
 import { resumeCertificateAddAndEdit } from '@/api/resume'
 export default {
-  props: ['itemId'],
+  props: ['itemId', 'rid'],
   data() {
     var validateObtaintime = (rule, value, callback) => {
       if (value) {
@@ -90,7 +90,7 @@ export default {
           if (response.data.info != null) {
             this.form = { ...response.data.info }
           } else {
-            this.form.rid = this.$route.query.id
+            this.form.rid = this.rid
           }
 
           this.infoLoading = false
@@ -113,7 +113,9 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              this.submitLoading = false
+            })
         } else {
           this.submitLoading = false
           return false

@@ -751,25 +751,6 @@ CREATE TABLE `qs_hrtool_category` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_hrtool_category||-_-||
 
-DROP TABLE IF EXISTS `qs_im_forbid`;
-CREATE TABLE `qs_im_forbid` (
-  `uid` int(10) NOT NULL COMMENT 'uid',
-  `addtime` int(10) unsigned NOT NULL COMMENT '最后登录时间',
-  `reason` varchar(30) NOT NULL COMMENT '最后登录ip'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-||-_-||qs_im_forbid||-_-||
-
-DROP TABLE IF EXISTS `qs_im_rule`;
-CREATE TABLE `qs_im_rule` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) NOT NULL,
-  `value` varchar(100) NOT NULL,
-  `utype` tinyint(1) unsigned NOT NULL,
-  `note` varchar(30) NOT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-||-_-||qs_im_rule||-_-||
-
 DROP TABLE IF EXISTS `qs_im_quickmsg`;
 CREATE TABLE `qs_im_quickmsg` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -790,6 +771,25 @@ CREATE TABLE `qs_im_token` (
   UNIQUE KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_im_token||-_-||
+
+DROP TABLE IF EXISTS `qs_im_forbid`;
+CREATE TABLE `qs_im_forbid` (
+  `uid` int(10) NOT NULL COMMENT 'uid',
+  `addtime` int(10) unsigned NOT NULL COMMENT '最后登录时间',
+  `reason` varchar(30) NOT NULL COMMENT '最后登录ip'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_im_forbid||-_-||
+
+DROP TABLE IF EXISTS `qs_im_rule`;
+CREATE TABLE `qs_im_rule` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL,
+  `value` varchar(100) NOT NULL,
+  `utype` tinyint(1) unsigned NOT NULL,
+  `note` varchar(30) NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_im_rule||-_-||
 
 DROP TABLE IF EXISTS `qs_job`;
 CREATE TABLE `qs_job` (
@@ -1449,6 +1449,10 @@ CREATE TABLE `qs_resume` (
   `platform` varchar(30) NOT NULL DEFAULT '',
   `remark` varchar(200) NOT NULL DEFAULT '',
   `comment` varchar(200) NOT NULL DEFAULT '',
+  `last_visit_time` int(11) DEFAULT '0' COMMENT '最后跟进时间',
+  `last_visit_admin` int(11) DEFAULT '0' COMMENT '最后跟进人',
+  `is_status_weixin` tinyint(1) DEFAULT '1' COMMENT '联系状态微信:1=未联系,2=已联系',
+  `is_status_phone` tinyint(1) DEFAULT '1' COMMENT '联系状态电话:1=未联系,2=已联系',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_refreshtime` (`refreshtime`),
@@ -2398,6 +2402,20 @@ PRIMARY KEY (`id`)
 
 
 
+
+DROP TABLE IF EXISTS `qs_job_recommend_sort`;
+CREATE TABLE `qs_job_recommend_sort` (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`jobid` int(10) NOT NULL DEFAULT '0',
+`uid` int(10) NOT NULL DEFAULT '0',
+`sort` int(10) NOT NULL DEFAULT '0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='app推荐职位排序';
+||-_-||qs_job_recommend_sort||-_-||
+
+
+
+
 DROP TABLE IF EXISTS `qs_crm_clue`;
 CREATE TABLE `qs_crm_clue` (
 `id` int(10) NOT NULL AUTO_INCREMENT,
@@ -2655,3 +2673,56 @@ CREATE TABLE `qs_custom_list` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '自定义表单记录表';
 ||-_-||qs_custom_list||-_-||
+
+
+
+DROP TABLE IF EXISTS `qs_urm_back_up`;
+CREATE TABLE `qs_urm_back_up`  (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '备份ID',
+`model` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '模型',
+`value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '数据',
+`recycle_bin_id` int(10) NOT NULL COMMENT '回收站ID',
+`create_time` int(10) NULL DEFAULT NULL COMMENT '备份时间',
+PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = 'URM备份表';
+||-_-||qs_urm_back_up||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_urm_recycle_bin`;
+CREATE TABLE `qs_urm_recycle_bin`  (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`uid` int(11) NULL DEFAULT NULL COMMENT '会员ID',
+`rid` int(11) NULL DEFAULT NULL COMMENT '简历ID',
+`photo_img_src` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '简历照片',
+`fullname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '姓名',
+`is_bind` tinyint(1) NULL DEFAULT NULL COMMENT '是否绑定微信',
+`contact_mobile` char(12) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '简历联系方式',
+`education_cn` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '学历',
+`experience_cn` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '经验',
+`complete_percent` int(11) NULL DEFAULT NULL COMMENT '完整度',
+`high_quality` int(11) NULL DEFAULT NULL COMMENT '等级',
+`delivery_num` int(11) NULL DEFAULT NULL COMMENT '投递数',
+`downloaded` int(11) NULL DEFAULT NULL COMMENT '被下载数',
+`viewed` int(11) NULL DEFAULT NULL COMMENT '被查看',
+`invitation` int(11) NULL DEFAULT NULL COMMENT '被面邀',
+`audit` int(11) NULL DEFAULT NULL COMMENT '审核状态',
+`works` int(11) NULL DEFAULT NULL COMMENT '简历作品数',
+`refreshtime` int(11) NULL DEFAULT NULL COMMENT '刷新时间',
+`last_login_time` int(11) NULL DEFAULT NULL COMMENT '登录时间',
+`reg_time` int(11) NULL DEFAULT NULL COMMENT '注册时间',
+`contact_status` int(11) NULL DEFAULT NULL COMMENT '联系状态',
+`member_mobile` char(12) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '会员联系方式',
+`follow_num` int(11) NULL DEFAULT NULL COMMENT '跟进次数',
+`final_follow` int(11) NULL DEFAULT NULL COMMENT '最后跟进时间',
+`remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '简历备注',
+`operate_id` int(11) NULL DEFAULT NULL COMMENT '操作者ID',
+`operate_admin` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作管理员',
+`operate_time` int(11) NULL DEFAULT NULL COMMENT '操作时间',
+`status` tinyint(1) NULL DEFAULT 1,
+`is_status_weixin` tinyint(11) NULL DEFAULT 1 COMMENT '联系状态微信:1=未联系,2=已联系',
+`is_status_phone` tinyint(11) NULL DEFAULT 1 COMMENT '联系状态电话:1=未联系,2=已联系',
+PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = 'Urm回收站表';
+||-_-||qs_urm_recycle_bin||-_-||

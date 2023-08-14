@@ -105,7 +105,7 @@ for (let i = 0; i < 37; i++) {
   wage_data.push(current)
 }
 export default {
-  props: ['itemId'],
+  props: ['itemId','rid'],
   data() {
     return {
       submitLoading: false,
@@ -263,7 +263,7 @@ export default {
               this.form.citycategory_arr.push(this.form.district3)
             }
           } else {
-            this.form.rid = this.$route.query.id
+            this.form.rid = this.rid
           }
           if (this.form.minwage) {
             this.handle_maxwage(this.form.minwage)

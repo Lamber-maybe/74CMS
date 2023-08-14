@@ -439,6 +439,18 @@ class Account extends \app\v1_0\controller\common\Base
         $data['status'] = 0;
         $data['handlertime'] = 0;
         $data['mobile'] = $this->userinfo->mobile;
+        /*
+         * 【排查】注销连点问题
+         * zch 2022.10.17
+         * 新增是否已提交验证
+         * */
+        $cance_apply_count = model('MemberCancelApply')
+            ->where(['uid'=>$data['uid'],'status'=>0])
+            ->count();
+        if ($cance_apply_count > 0)
+        {
+            $this->ajaxReturn(500, '您已提交注销申请，管理员正在处理。');
+        }
         $company_profile = model('Company')->where('uid',$this->userinfo->uid)->find();
         if($company_profile===null){
             $data['companyname'] = '不详';

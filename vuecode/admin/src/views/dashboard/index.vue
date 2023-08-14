@@ -24,7 +24,7 @@
         <a
           style="color: #1e88e5"
           href="javascript:;"
-          @click="$router.push('/upgrade')"
+          @click="jumpPath('/upgrade','您的权限不足，请联系超级管理员升级系统。')"
         >
           立即升级
         </a>
@@ -255,7 +255,8 @@
               >
                 <el-link target="_blank" :href="item.url">{{
                   item.title
-                }}</el-link>
+                }}
+                </el-link>
               </el-timeline-item>
             </el-timeline>
           </el-card>
@@ -268,7 +269,7 @@
           <span>服务器信息</span>
         </div>
         <el-row :gutter="20" style="font-size: 13px">
-          <el-col :span="6"> 操作系统：{{ baseinfo.server_info.os }} </el-col>
+          <el-col :span="6"> 操作系统：{{ baseinfo.server_info.os }}</el-col>
           <el-col :span="6">
             PHP版本：{{ baseinfo.server_info.php_version }}
           </el-col>
@@ -306,7 +307,11 @@
           </el-col>
           <el-col :span="8">
             最新版本：<span class="color-link2">v{{ latest_version }}</span>
-            <span v-if="new_version_notice==1" style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3" @click="$router.push('/upgrade')">立即升级</span></span>
+            <!--            <span v-if="new_version_notice==1" style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3" @click="$router.push('/upgrade')">立即升级</span></span>-->
+            <span v-if="new_version_notice==1" style="margin-left:10px;">请您及时更新到最新版本 <span
+              class="color-link3"
+              @click="jumpPath('/upgrade','您的权限不足，请联系超级管理员升级系统。')"
+            >立即升级</span></span>
           </el-col>
           <el-col :span="8">
             授权类型：<a
@@ -322,7 +327,7 @@
               target="_blank"
             >www.74cms.com</a>
           </el-col>
-          <el-col :span="8"> 程序开发：74CMS程序开发组 </el-col>
+          <el-col :span="8"> 程序开发：74CMS程序开发组</el-col>
         </el-row>
         <el-row :gutter="20" style="font-size: 13px; margin-top: 10px">
           <el-col>
@@ -364,6 +369,7 @@ import reg_line from './components/reg_line.vue'
 import down_resume_line from './components/down_resume_line.vue'
 import jobapply_line from './components/jobapply_line.vue'
 import income_line from './components/income_line.vue'
+import { checkRoleAuth } from '@/utils/role'
 
 export default {
   name: 'Dashboard',
@@ -393,8 +399,7 @@ export default {
       new_version_notice: 0
     }
   },
-  computed: {
-  },
+  computed: {},
   mounted() {
     this.fetchData()
   },
@@ -433,6 +438,9 @@ export default {
           this.$router.push('/content/feedback/suggest')
           return
       }
+    },
+    jumpPath(routePath, message) {
+      checkRoleAuth(routePath, message)
     }
   }
 }
@@ -443,27 +451,33 @@ export default {
   &-container {
     margin: 20px;
   }
+
   &-text {
     font-size: 30px;
     line-height: 46px;
   }
 }
+
 .el-col--4 {
   width: 20%;
 }
+
 .a-link {
   color: #409eff;
 }
+
 .a-link:hover {
   color: #66b1ff;
   text-decoration: underline;
 }
+
 .el-timeline {
   padding-top: 10px;
   height: 227px;
   overflow-y: scroll;
   margin-left: -25px;
 }
+
 .official-news-list {
   font-size: 14px;
   margin-bottom: 20px;
@@ -472,6 +486,7 @@ export default {
     height: 30px;
     line-height: 30px;
     border-bottom: 1px dotted #e3e3e3;
+
     a {
       width: 80%;
       display: inline-block;
@@ -479,6 +494,7 @@ export default {
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+
     .time {
       font-size: 13px;
       color: #999;
@@ -486,29 +502,36 @@ export default {
     }
   }
 }
+
 .qrcode {
   // width:600px;
 }
+
 .today-info {
   cursor: pointer;
+
   .tit1 {
     font-size: 14px;
     color: #999;
   }
+
   .num {
     font-size: 18px;
     color: #666;
     margin-top: 6px;
   }
+
   .tit2 {
     font-size: 12px;
     color: #999;
     margin-top: 6px;
   }
 }
+
 .clearfix {
   clear: both;
 }
+
 .num-circle {
   color: #fff;
   margin-right: 10px;
@@ -517,6 +540,7 @@ export default {
   padding: 2px 6px;
   font-size: 12px;
 }
+
 .color-link {
   font-size: 12px;
   padding: 3px 6px;
@@ -524,21 +548,25 @@ export default {
   color: #fff;
   border-radius: 4px;
 }
+
 .color-link:hover {
   color: #fff;
   text-decoration: none;
 }
+
 .color-link2 {
   color: #ff5722;
 }
+
 .color-link3 {
   font-size: 12px;
   padding: 3px 6px;
   background-color: #33a70d;
   color: #fff;
   border-radius: 2px;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .no-border {
   border: 0;
 }

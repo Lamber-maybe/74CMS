@@ -171,7 +171,7 @@ class Member extends \app\common\model\BaseModel
                 $data['download_resume_point'] = $setmeal_info['download_resume_point'];
                 $data['im_total'] = $setmeal_info['im_total'];
             }
-            
+
             model('MemberSetmeal')
                 ->allowField(true)
                 ->save($data, ['uid' => $data['uid']]);
@@ -530,22 +530,30 @@ class Member extends \app\common\model\BaseModel
         }
 
 
-        if(isset($insert_data_company['cs_id'])){
-            $customer_service = model('CustomerService')
-                ->where('id', $insert_data_company['cs_id'])
+        if(!empty($insert_data_company['admin_id'])){
+            /**
+             * 【bug】注册发送短信，微信号获取不到的问题
+             * 【ID1000362】
+             * yx - 2022.10.13
+             */
+            $customer_service = model('b2bcrm.CrmCustomerService')
+                ->where('admin_id', $insert_data_company['admin_id'])
+                ->field('name, mobile, tel')
                 ->find();
-            model('NotifyRule')->notify($this->uid, 1, 'reg', [
-                'sitename' => config('global_config.sitename'),
-                'contact' => isset($customer_service['name'])
-                ? $customer_service['name']
-                : '',
-                'mobile' => isset($customer_service['mobile'])
-                ? $customer_service['mobile']
-                : '',
-                'weixin' => isset($customer_service['weixin'])
-                ? $customer_service['weixin']
-                : '',
-            ]);
+
+            if (!empty($customer_service)){
+                if (!empty($customer_service['mobile']) || !empty($customer_service['tel'])){
+                    model('NotifyRule')->notify($this->uid, 1, 'reg', [
+                        'sitename' => config('global_config.sitename'),
+                        'contact' => isset($customer_service['name'])
+                            ? $customer_service['name']
+                            : '',
+                        'mobile' => !empty($customer_service['mobile'])
+                            ? $customer_service['mobile']
+                            : $customer_service['tel']
+                    ]);
+                }
+            }
         }
 
         return [
@@ -821,6 +829,18 @@ class Member extends \app\common\model\BaseModel
             ->where('uid', 'in', $uid)
             ->delete();
         model('b2bcrm.CrmFollowUp')
+            ->where('uid', 'in', $uid)
+            ->delete();
+
+        /*
+         * 【bug】后台删除账号后，前台仍为登录状态，操作提示请登录
+         * zch 2022.10.13
+         * 【新增】
+         * model('IdentityToken')
+            ->where('uid', 'in', $uid)
+            ->delete();
+         * */
+        model('IdentityToken')
             ->where('uid', 'in', $uid)
             ->delete();
         return;

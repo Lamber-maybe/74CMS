@@ -478,5 +478,7 @@ export default {
     //即时通讯检查绑定状态
     im_check_bind:'/member/im/imCheckBind',
     // 获取优化简历详情
-    defectResumeInfo: '/personal/resume/getNoComplete'
+    defectResumeInfo: '/personal/resume/getNoComplete',
+    // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
+    im_keyword_replace: '/member/im/keywordReplace',
 }

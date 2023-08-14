@@ -5,10 +5,11 @@
         slot="header"
         class="clearfix"
       >
-        <span>语言能力</span>
+        <span  style="font-weight: 600;color: #333;">语言能力</span>
         <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="funAdd"
         >添加</el-button>
       </div>
@@ -47,6 +48,7 @@
       </div>
     </el-card>
     <el-dialog
+      append-to-body
       v-if="dialogFormVisible"
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
@@ -56,6 +58,7 @@
     >
       <diaform
         :item-id="itemId"
+        :rid="id"
         @setDialogFormVisible="closeDialog"
         @pageReload="fetchData"
       />
@@ -71,6 +74,7 @@ export default {
   components: {
     diaform
   },
+  props: ['id'],
   data() {
     return {
       list: null,
@@ -85,10 +89,11 @@ export default {
   methods: {
     fetchData() {
       const param = {
-        rid: this.$route.query.id
+        rid: this.id
       }
       resumeLanguageList(param).then(response => {
         this.list = response.data.items
+        this.$emit('setLoading', 'resumeLanguage')
       })
     },
     funAdd() {
@@ -141,10 +146,14 @@ export default {
 	border-bottom: 0;
 }
 .item-li {
-	width: 32%;
-	display: inline-block;
+	width: 24%;
+  margin-right: 20px;
+  height: 30px;
+  line-height: 30px;
+  display: inline-block;
 }
 .item-li.lr {
+  float: right;
 	text-align: right;
 }
 .empty {

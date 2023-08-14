@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>照片作品</span>
+        <span  style="font-weight: 600;color: #333;">照片作品</span>
       </div>
       <el-upload
         :action="apiUpload"
@@ -16,7 +16,7 @@
       >
         <i class="el-icon-plus" />
       </el-upload>
-      <el-dialog :visible.sync="dialogVisible">
+      <el-dialog :visible.sync="dialogVisible"  append-to-body>
         <img width="100%" :src="dialogImageUrl" alt="">
       </el-dialog>
     </el-card>
@@ -29,6 +29,7 @@ import apiArr from '@/api'
 import { getToken } from '@/utils/auth'
 
 export default {
+  props: ['id'],
   data() {
     return {
       dialogImageUrl: '',
@@ -53,7 +54,7 @@ export default {
   methods: {
     fetchInfo() {
       const param = {
-        rid: this.$route.query.id
+        rid: this.id
       }
       this.img_src_arr = []
       resumeImg(param, 'get').then(response => {
@@ -64,12 +65,13 @@ export default {
             url: img_data_arr[index].img_src
           })
         }
+        this.$emit('setLoading', 'resumeImg')
       })
     },
     handleRemove(file, fileList) {
       const param = {
         id: file.name,
-        rid: this.$route.query.id
+        rid: this.id
       }
       resumeImgDelete(param).then(response => {
         this.$message.success(response.message)
@@ -83,7 +85,7 @@ export default {
     handlePhotoSuccess(res, file) {
       if (res.code == 200) {
         const param = {
-          rid: this.$route.query.id,
+          rid: this.id,
           imgid: res.data.file_id
         }
         resumeImgAdd(param).then(response => {

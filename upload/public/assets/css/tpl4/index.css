@@ -277,6 +277,13 @@ body, html {
     box-sizing: border-box;
 }
 
+.occupationList li .occupationTitle {
+    position: absolute;
+    max-width: 225px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .occupationList li:hover .occupationTitle a {
     color: #FF0F2D;
 }
@@ -2130,3 +2137,21 @@ a:hover {
 .cursor {
     cursor: pointer;
 }
+
+/*底部引导*/
+.bottom_guide { position: fixed;left: 0;right: 0;bottom: 0;width: 100%;height: 101px;z-index: 200;display: none; }
+.bottom_guide .btg_pop { position: absolute;left: 0;top: 0;z-index: 3;background-color: #000000;opacity: .80;filter: alpha(opacity=80);width: 100%;height: 101px; }
+.bottom_guide .btg_container { position:relative;width: 1200px;height: 101px;margin: 0 auto;z-index: 4; }
+.bottom_guide .btg_container .btg_icon { position: absolute;left: 0;bottom: 0;width: 147px;height: 144px;background: url("../../images/index_bt_guide_ico.png") 0 no-repeat; }
+.bottom_guide .btg_container .btg_t1 { position: absolute;left: 160px;top: 24px;line-height: 1;font-size: 28px;color: #ffffff; }
+.bottom_guide .btg_container .btg_t2 { position: absolute;left: 160px;top: 65px;line-height: 1;font-size: 16px;color: #ffffff; }
+.bottom_guide .btg_container .btg_btn_1 { position: absolute;left: 655px;top: 33px;width: 120px;height: 36px;line-height: 36px;text-align: center;display: block;cursor: pointer;border: 0;font-size: 15px;color: #ffffff;border-radius: 36px;background: linear-gradient(to right, #06c97e, #099d81); }
+.bottom_guide .btg_container .btg_btn_1:hover { background: linear-gradient(to right, #0fa26b, #069378); }
+.bottom_guide .btg_container .btg_btn_2 { position: absolute;right: 289px;top: 33px;width: 120px;height: 36px;line-height: 36px;text-align: center;display: block;cursor: pointer;border: 0;font-size: 15px;color: #ffffff;border-radius: 36px;background: linear-gradient(to right, #f0a54f, #f26e5c); }
+.bottom_guide .btg_container .btg_btn_2:hover { background: linear-gradient(to right, #d49144, #db6453); }
+.bottom_guide .btg_container .btg_icon_1 { position: absolute;right: 3px;bottom: 33px;width: 253px;height: 131px;background: url("../../images/index_bt_guide_ico_1.png") 0 no-repeat; }
+.bottom_guide .btg_container .btg_qr_box { position: absolute;right: 56px;bottom: 33px;width: 105px;height: 105px;background-color: #ffffff;z-index: 5;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); }
+.bottom_guide .btg_container .btg_qr_box .qr_img { width: 94px;height: 94px;display: block;margin: 5px auto 0; }
+.bottom_guide .btg_container .btg_close { position: absolute;right: 44px;top: -48px;width: 24px;height: 24px;border-radius: 24px;cursor: pointer;background: #cccccc url("../../images/index_bt_guide_ico_2.png") center no-repeat;z-index: 5; }
+.bottom_guide .btg_container .btg_close:hover { background: #bcbbbb url("../../images/index_bt_guide_ico_2.png") center no-repeat; }
+.bottom_guide .btg_container .btg_t3 { position: absolute;right: 51px;bottom: 10px;line-height: 1;font-size: 12px;color: #ffffff; }

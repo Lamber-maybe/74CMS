@@ -358,3 +358,7 @@ button{
 	font-size: 12px;
 	margin-left: 17px;
 }
+
+.information_detailed .editor-content-view img {
+	max-width: 100% !important;
+}

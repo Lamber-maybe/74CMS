@@ -31,7 +31,8 @@ class Company extends Backend
         $customer_type = input('get.list_type/d', 0, 'intval'); // 客户类型 0-全部企业 1-企业公海 2-我的客户
         $setmeal_deadline = input('get.setmeal_deadline', 0, 'intval');// 套餐是否过期 1-未过期 2-已过期
         $weixin = input('get.weixin/d', 0, 'intval');// 微信绑定 1-已绑定 2-未绑定
-
+        $trade = input('get.trade/d',0,'intval'); // 所属行业
+        $district = input('get.district/a',[]); //所在地区
 
         // 排序规则【ASC|DESC】
         if (!in_array($sort, ['ASC', 'DESC'])) {
@@ -54,6 +55,10 @@ class Company extends Backend
             case 'collection_time':
                 // 领取时间
                 $order = 'c.collection_time ' . $sort;
+                break;
+            case 'last_login_time': // 【优化】客户模块增加登录时间排序 zch 2022.10.12
+                // 登录时间
+                $order = 'me.last_login_time ' . $sort;
                 break;
             default:
                 if ($customer_type === 2) {
@@ -140,6 +145,26 @@ class Company extends Backend
         // 查询条件 - 所属销售
         if (!empty($admin_id)) {
             $where['c.admin_id'] = $admin_id;
+        }
+
+        // 查询条件 - 所属行业
+        if (!empty($trade))
+        {
+            $where['c.trade'] = $trade;
+        }
+
+        // 查询条件 - 所在地区
+        if (!empty($district[0]))
+        {
+            $where['c.district1'] = $district[0];
+        }
+        if (!empty($district[1]))
+        {
+            $where['c.district2'] = $district[1];
+        }
+        if (!empty($district[2]))
+        {
+            $where['c.district3'] = $district[2];
         }
 
         // 查询条件 套餐剩余时间【1即将到期、2已过期、3未到期】
@@ -304,8 +329,11 @@ class Company extends Backend
             contact.mobile as contact_mobile,
             m.deadline,
             c.collection_time,
+            me.last_login_time,
             ifnull(bind.id,0) as is_bind,
-	    a.id as auth_id')
+	    a.id as auth_id,
+	    c.trade,
+	    c.district1,c.district2,c.district3')
             ->group('c.id');
 
         // 认证状态 - 【0:待认证;1:已认证;2:未通过;3:未认证;】
@@ -377,7 +405,8 @@ class Company extends Backend
 
         $clueObj = new Clue();
         $adminList = $clueObj->adminlist();
-
+        $category_data = model('Category')->getCache();
+        $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $comId => $comInfo) {
             // 2.公司名称
             $list[$comId]['companyname'] = htmlspecialchars_decode($comInfo['companyname'], ENT_QUOTES);
@@ -487,6 +516,32 @@ class Company extends Backend
             } else {
                 $list[$comId]['is_bind'] = '已绑定';
             }
+            /*
+             * 【优化】客户模块增加登录时间的列
+             * zch 2022.10.12
+             * 【新增】
+             * $list[$comId]['last_login_time'] = !empty($comInfo['last_login_time'])  ? date('Y-m-d H:i:s',$comInfo['last_login_time']) : '';
+             * */
+            $list[$comId]['last_login_time'] = !empty($comInfo['last_login_time'])  ? date('Y-m-d H:i:s',$comInfo['last_login_time']) : '';
+            $list[$comId]['trade'] = isset($category_data['QS_trade'][$comInfo['trade']])
+                ? $category_data['QS_trade'][$comInfo['trade']]
+                : '';
+            $district1 = isset(
+                $category_district_data[$comInfo['district1']]
+            )
+                ? $category_district_data[$comInfo['district1']]
+                : '';
+            $district2 = isset(
+                $category_district_data[$comInfo['district2']]
+            )
+                ? $category_district_data[$comInfo['district2']]
+                : '';
+            $district3 = isset(
+                $category_district_data[$comInfo['district3']]
+            )
+                ? $category_district_data[$comInfo['district3']]
+                : '';
+            $list[$comId]['district'] = $district1.$district2.$district3;
             $list[$comId]['link'] = url('index/company/show', ['id' => $comInfo['id']]);
         }
 

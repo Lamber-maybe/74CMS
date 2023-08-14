@@ -42,7 +42,8 @@
           authenticationFilter !='' ||
           positionFilter !='' ||
           saleFilter !='' ||
-          deadlineFilter !=''"
+          deadlineFilter !='' || districtFilter !='' ||
+          tradeFilter !='' "
         class="filterCriteria"
       >
         <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
@@ -101,6 +102,18 @@
               <i class="el-icon-close" />
             </div>
           </div>
+          <div v-if="tradeFilter !=''" class="selected">
+            <div class="name">所属行业：{{ tradeFilter.name }}</div>
+            <div class="closes" @click="reset(tradeFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="districtFilter !=''" class="selected">
+            <div class="name">所在地区：{{ districtFilter.name }}</div>
+            <div class="closes" @click="reset(districtFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
         </div>
         <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
           <i class="el-icon-delete" /> 清空条件
@@ -117,7 +130,8 @@
             authenticationFilter !='' ||
             positionFilter !='' ||
             saleFilter !='' ||
-            deadlineFilter !='' ? 'setField_s' : 'setField'"
+            deadlineFilter !='' || districtFilter !='' ||
+            tradeFilter !='' ? 'setField_s' : 'setField'"
         >
           <el-popover
             v-model="visiblepop"
@@ -176,6 +190,25 @@
                   placement="bottom"
                   trigger="hover"
                 >
+                  <!-- 所属行业-->
+                  <div v-if="items.field == 'trade'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in trade_list" class="screenStyle">
+                        <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 所属行业-->
+                  <!-- 所在地区-->
+                  <div v-if="items.field == 'district'">
+                    <el-cascader-panel
+                      v-model="district"
+                      :props="props"
+                      clearable
+                      :options="districtData"
+                    />
+                  </div>
+                  <!-- 所在地区-->
                   <!-- 微信绑定-->
                   <div v-if="items.field == 'is_bind'" class="screen_s">
                     <el-checkbox-group>
@@ -262,7 +295,7 @@
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm(items.field)">确认</el-button>
                   </div>
-                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
+                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind' || items.field == 'trade' || items.field == 'district'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
                 </el-popover>
                 <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
                 <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
@@ -276,6 +309,14 @@
               <div v-if="items.field == 'companyname'">
                 <span v-if="scope.row.companyname == ''"> 未完善企业资料 </span>
                 <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)"> {{ scope.row.companyname }} </span>
+              </div>
+              <div v-if="items.field == 'trade'">
+                <span v-if="scope.row.trade == ''"> - </span>
+                <span v-else> {{ scope.row.trade }} </span>
+              </div>
+              <div v-if="items.field == 'district'">
+                <span v-if="scope.row.district == ''"> - </span>
+                <span v-else> {{ scope.row.district }} </span>
               </div>
               <div v-if="items.field == 'is_bind'">
                 <span v-if="scope.row.is_bind == ''"> - </span>
@@ -332,6 +373,11 @@
               <div v-if="items.field == 'addtime'">
                 <span v-if="scope.row.addtime == ''"> - </span>
                 <span v-else> {{ scope.row.addtime }} </span>
+              </div>
+              <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
+              <div v-if="items.field == 'last_login_time'">
+                <span v-if="scope.row.last_login_time == ''"> - </span>
+                <span v-else> {{ scope.row.last_login_time }} </span>
               </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
@@ -465,11 +511,30 @@
                     </el-checkbox-group>
                   </div>
                   <!-- 微信绑定-->
+                  <!-- 所属行业-->
+                  <div v-if="items.field == 'trade'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in trade_list" class="screenStyle">
+                        <el-radio :key="item.id" v-model="trade" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 所属行业-->
+                  <!-- 所在地区-->
+                  <div v-if="items.field == 'district'">
+                    <el-cascader-panel
+                      v-model="district"
+                      :props="props"
+                      clearable
+                      :options="districtData"
+                    />
+                  </div>
+                  <!-- 所在地区-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
                   </div>
-                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
+                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind' || items.field == 'trade' || items.field == 'district'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
                 </el-popover>
                 <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
                 <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
@@ -483,6 +548,14 @@
               <div v-if="items.field == 'companyname'">
                 <span v-if="scope.row.companyname == ''"> 未完善企业资料 </span>
                 <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)"> {{ scope.row.companyname }} </span>
+              </div>
+              <div v-if="items.field == 'trade'">
+                <span v-if="scope.row.trade == ''"> - </span>
+                <span v-else> {{ scope.row.trade }} </span>
+              </div>
+              <div v-if="items.field == 'district'">
+                <span v-if="scope.row.district == ''"> - </span>
+                <span v-else> {{ scope.row.district }} </span>
               </div>
               <div v-if="items.field == 'is_bind'">
                 <span v-if="scope.row.is_bind == ''"> - </span>
@@ -540,6 +613,11 @@
                 <span v-if="scope.row.addtime == ''"> - </span>
                 <span v-else> {{ scope.row.addtime }} </span>
               </div>
+              <!--              【优化】客户模块增加登录时间的列 zch 2022.10.12-->
+              <div v-if="items.field == 'last_login_time'">
+                <span v-if="scope.row.last_login_time == ''"> - </span>
+                <span v-else> {{ scope.row.last_login_time }} </span>
+              </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
                 <span v-else> {{ scope.row.admin_username }} </span>
@@ -590,7 +668,7 @@
           </el-table-column>
         </el-table>
         <div class="bortton-page">
-          <el-col :span="12">
+          <el-col :span="10">
             <el-button size="small" type="primary" @click="choose">
               全选/反选
             </el-button>
@@ -613,7 +691,7 @@
               导出
             </el-button>
           </el-col>
-          <el-col :span="12" style="text-align: right">
+          <el-col :span="14" style="text-align: right">
             <el-pagination
               background
               :current-page="currentPage"
@@ -866,7 +944,14 @@ export default {
       authenticationFilter: '',
       positionFilter: '',
       saleFilter: '',
-      deadlineFilter: ''
+      deadlineFilter: '',
+      trade_list: [], // 所属行业
+      trade: '',
+      districtData: [], // 地区
+      district: '',
+      tradeFilter: '',
+      districtFilter: '',
+      props: { multiple: false, checkStrictly: true }
     }
   },
   computed: {
@@ -942,17 +1027,6 @@ export default {
     },
     funIsDisplayBtn(){
       companySetDisplay({ 'id': this.multipleSelection, 'is_display': this.is_display }).then(response => {
-        if (response.code == 200){
-          this.$message.success(response.message)
-          this.dialogIsDispay = false
-          this.clueList()
-        } else {
-          this.$message.error(response.message)
-        }
-      })
-    },
-    setmealDeadline(){
-      companySetDisplay({ 'id': this.multipleSelection, 'setmeal_deadline': this.is_setmeal_deadline }).then(response => {
         if (response.code == 200){
           this.$message.success(response.message)
           this.dialogIsDispay = false
@@ -1168,6 +1242,9 @@ export default {
         this.keyword = ''
         this.setmealDeadline = []
         this.weixin = []
+        this.trade_name = ''
+        this.trade = ''
+        this.district = ''
       }
       if (field == 'audit'){
         this.authenticationScreen = ''
@@ -1195,6 +1272,12 @@ export default {
       }
       if (field == 'deadline'){
         this.setmealDeadline = ''
+      }
+      if (field == 'trade_name' || field == 'trade') {
+        this.trade = ''
+      }
+      if (field == 'district') {
+        this.district = ''
       }
       this.confirm()
     },
@@ -1298,6 +1381,54 @@ export default {
       } else {
         this.deadlineFilter = ''
       }
+      if (this.trade != ''){
+        for (var i = 0; i <= this.trade_list.length - 1; i++){
+          if (this.trade == this.trade_list[i].id){
+            this.tradeFilter = {
+              'field': 'trade_name', 'name': this.trade_list[i].name
+            }
+          }
+        }
+      } else {
+        this.tradeFilter = ''
+      }
+      if (this.district != ''){
+        if (this.district.length == 1){
+          for (var i = 0; i <= this.districtData.length - 1; i++){
+            if (this.district[0] == this.districtData[i].value){
+              this.districtFilter = {
+                'field': 'district', 'name': this.districtData[i].label
+              }
+            }
+          }
+        }
+        if (this.district.length == 2){
+          for (var i = 0; i <= this.districtData.length - 1; i++){
+            for (var a = 0; a <= this.districtData[i].children.length - 1; a++){
+              if (this.district[1] == this.districtData[i].children[a].value){
+                this.districtFilter = {
+                  'field': 'district', 'name': this.districtData[i].children[a].label
+                }
+              }
+            }
+          }
+        }
+        if (this.district.length == 3){
+          for (var i = 0; i <= this.districtData.length - 1; i++){
+            for (var a = 0; a <= this.districtData[i].children.length - 1; a++){
+              for (var b = 0; b <= this.districtData[i].children[a].children.length - 1; b++){
+                if (this.district[2] == this.districtData[i].children[a].children[b].value){
+                  this.districtFilter = {
+                    'field': 'district', 'name': this.districtData[i].children[a].children[b].label
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        this.districtFilter = ''
+      }
       this.currentPage = 1
       this.clueList()
       this.crmCustomList()
@@ -1307,8 +1438,10 @@ export default {
       this.clueList()
     },
     classify(){
-      classify({ 'type': 'setmealList,companyAudit' }).then(res => {
+      classify({ 'type': 'setmealList,companyAudit,trade,citycategory' }).then(res => {
         this.mealScreenData = res.data.setmealList
+        this.trade_list = res.data.trade
+        this.districtData = res.data.citycategory
         const options_audit_arr = [...res.data.companyAudit]
         options_audit_arr.forEach(el => {
           this.authenticationScreenData[el.id] = el.name
@@ -1350,7 +1483,9 @@ export default {
         'sort': this.sort,
         'search_type': this.followupScreen,
         'setmeal_deadline': this.setmealDeadline,
-        'weixin': this.weixin
+        'weixin': this.weixin,
+        'trade': this.trade,
+        'district': this.district
       }
       )
         .then(res => {
@@ -1424,7 +1559,10 @@ export default {
         .then(res => {
           this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++){
-            if (this.fieldData[i].field == 'addtime' || this.fieldData[i].field == 'refreshtime' || this.fieldData[i].field == 'last_visit_time' || this.fieldData[i].field == 'collection_time'){
+            // 【优化】客户模块增加登录时间的列 zch 2022.10.12
+            // 【新增】
+            // || this.fieldData[i].field == 'last_login_time'
+            if (this.fieldData[i].field == 'addtime' || this.fieldData[i].field == 'refreshtime' || this.fieldData[i].field == 'last_visit_time' || this.fieldData[i].field == 'collection_time' || this.fieldData[i].field == 'last_login_time'){
               this.fieldData[i].is_sortable = 'custom'
             } else {
               this.fieldData[i].is_sortable = false

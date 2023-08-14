@@ -223,6 +223,7 @@ export default {
   width: 280px;
   height: 762px;
   float: left;
+  border-right: 1px solid #ededed;
   .l-top {
     width: 100%;
     height: 50px;

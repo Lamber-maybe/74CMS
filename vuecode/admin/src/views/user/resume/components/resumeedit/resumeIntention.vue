@@ -5,10 +5,11 @@
         slot="header"
         class="clearfix"
       >
-        <span>求职意向</span>
+        <span  style="font-weight: 600;color: #333;">求职意向</span><div class="must">必填</div>
         <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="funAdd"
         >添加</el-button>
       </div>
@@ -66,6 +67,7 @@
       </div>
     </el-card>
     <el-dialog
+      append-to-body
       v-if="dialogFormVisible"
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
@@ -74,6 +76,7 @@
       @close="closeDialog"
     >
       <diaform
+        :rid="id"
         :item-id="itemId"
         @setDialogFormVisible="closeDialog"
         @pageReload="fetchData"
@@ -91,6 +94,7 @@ export default {
   components: {
     diaform
   },
+  props: ['id'],
   data() {
     return {
       li4_width: '24%',
@@ -116,12 +120,13 @@ export default {
             this.live_fields.trade = false
           }
           const param = {
-            rid: this.$route.query.id
+            rid: this.id
           }
           return resumeIntentionList(param)
         })
         .then(response => {
           this.list = response.data.items
+          this.$emit('setLoading', 'resumeIntention')
         })
     },
     funAdd() {
@@ -174,7 +179,22 @@ export default {
 }
 </script>
 <style scoped>
+.must{
+  display: inline-block;
+  width: 38.6px;
+  height: 19.3px;
+  line-height: 19.3px;
+  text-align: center;
+  background: #feefea;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fe6135;
+  -webkit-transform: scale(.83);
+  transform: scale(.83);
+}
 .item-row {
+  padding: 10px 0px;
 	font-size: 14px;
 	color: #666;
 	border-bottom: 1px dashed #f3f3f3;
@@ -186,6 +206,7 @@ export default {
 	display: inline-block;
 }
 .item-li.lr {
+  float: right;
 	text-align: right;
 }
 .empty {

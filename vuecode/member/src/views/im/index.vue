@@ -5,16 +5,15 @@
         <div class="emp_text">与您沟通过的信息都会在左侧列表中显示</div>
       </div>
       <div class="clear"></div>
-      <div style="width:1190px;" v-show="noChat===false">
+      <div style="width:1190px;display: flex" v-show="noChat===false">
         <!--左侧会话列表-->
         <ChatList :websocketOk="websocketOk" ref="chatlist" @showPhrase="showPhrase=true" @setTatgetinfo="setTatgetinfo" @changeNoChat="changeNoChat" />
-        <div class="mid-line"></div>
         <!--右侧空信息-->
-        <div class="right-empty" v-show="target_userinfo.nickname==''">
+        <div class="right-empty" v-if="target_userinfo.nickname==''">
           <div class="emp_text">与您沟通过的信息都会在左侧列表中显示</div>
         </div>
         <!--右侧聊天记录列表-->
-        <div class="right" v-show="target_userinfo.nickname!=''">
+        <div class="right" v-if="target_userinfo.nickname!=''">
           <div class="r-top">
             <!--企业会员时显示tab标签-->
             <div class="tablist" v-if="$store.state.LoginType==1">
@@ -220,7 +219,7 @@
                   <div
                     class="submit"
                     :class="enableSubmit === true ? '' : 'disabled'"
-                    @click="sendText"
+                    @click="keywordReplace"
                   >
                     发送
                   </div>
@@ -506,7 +505,8 @@ export default {
         //ctrl+enter
         this.message += "\n";
       } else {
-        this.sendText();
+        // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
+        this.keywordReplace();
       }
     },
     initWebSocket() {
@@ -972,6 +972,15 @@ export default {
     },
     chooseEmojiDefault(e) {
       this.message += e;
+    },
+    // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
+    keywordReplace() {
+      http
+        .get(api.im_keyword_replace, {content:this.message})
+        .then(res => {
+          this.message = res.data
+          this.sendText()
+        }).catch(()=>{})
     }
   }
 };

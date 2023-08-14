@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container">
+  <div v-loading="loading" class="app-container">
     <div
       v-for="(item,index) in moduleList"
       :key="index"
       :name="index"
     >
-      <component :is="'resume_'+index" />
+      <component :is="'resume_'+index" :id="id" @resumeDetails="resumeDetails" @setLoading="setLoading($event)" />
     </div>
   </div>
 </template>
@@ -38,20 +38,52 @@ export default {
     resume_tag,
     resume_img
   },
+  props: ['id'],
   data() {
     return {
-      moduleList: {}
+      moduleList: {},
+      loading: true,
+      resumeBasic: false,
+      resumeIntention: false,
+      resumeSpecialty: false,
+      resumeEducation: false,
+      resumeWork: false,
+      resumeTag: false
     }
   },
   created() {
     this.getModuleList()
   },
   methods: {
+    setLoading(e){
+      this[e] = true
+      if (this.resumeBasic &&
+        this.resumeIntention &&
+        this.resumeSpecialty &&
+        this.resumeEducation &&
+        this.resumeWork &&
+        this.resumeTag
+      ){
+        this.loading = false
+      }
+    },
     getModuleList() {
       resumeModuleList().then(response => {
         this.moduleList = { ...response.data.items }
       })
+    },
+    resumeDetails(){
+      this.$emit('resumeDetails')
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+::v-deep .app-container{
+  padding: 0px 20px;
+}
+::v-deep .el-card{
+  border: 0px solid #EBEEF5;
+  box-shadow:0 0px 0px;
+}
+</style>

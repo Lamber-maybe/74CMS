@@ -4,52 +4,19 @@
     <Head>简历列表</Head>
     <div class="box_1">
       <div class="content" @click="toggleSearch">
-        <div :class="params.keyword === '' ? 'search_ico' : 'search_ico has'">
-          {{ params.keyword === "" ? "请输入关键字" : params.keyword }}
-        </div>
+        <div :class="params.keyword === '' ? 'search_ico' : 'search_ico has'">{{ params.keyword === '' ? '请输入关键字' : params.keyword }}</div>
       </div>
     </div>
-    <van-popup
-      v-model="show"
-      position="top"
-      :overlay="true"
-      :style="{ height: '90%', width: '100%' }"
-    >
-      <TopSearch
-        type="resume"
-        @hideSearch="toggleSearch"
-        @doSearch="doSearchByKeyword"
-      ></TopSearch>
+    <van-popup v-model="show" position="top" :overlay="true" :style="{ height: '90%', width: '100%' }">
+      <TopSearch type="resume" @hideSearch="toggleSearch" @doSearch="doSearchByKeyword"></TopSearch>
     </van-popup>
     <div class="box_2">
       <van-dropdown-menu class="filter_menu">
-        <van-dropdown-item
-          :title="districtTitle"
-          :lock-scroll="false"
-          ref="dropDistrict"
-          @opened="openedDistrict"
-          @closed="closedDistrict"
-        >
-          <DistrictFilter
-            :districts="[params.district1, params.district2, params.district3]"
-            :type="true"
-            @doSearch="doSearchByDistrict"
-          ></DistrictFilter>
+        <van-dropdown-item :title="districtTitle" :lock-scroll="false" ref="dropDistrict" @opened="openedDistrict" @closed="closedDistrict">
+          <DistrictFilter :districts="[params.district1, params.district2, params.district3]" :type="true" @doSearch="doSearchByDistrict"></DistrictFilter>
         </van-dropdown-item>
-        <van-dropdown-item
-          :title="experienceTitle"
-          v-model="params.experience"
-          :options="optionExperience"
-          @change="handleExperience"
-          @opened="openedExperience"
-        />
-        <van-dropdown-item
-          :title="educationTitle"
-          v-model="params.education"
-          :options="optionEducation"
-          @change="handleEducation"
-          @opened="openedEducation"
-        />
+        <van-dropdown-item :title="experienceTitle" v-model="params.experience" :options="optionExperience" @change="handleExperience" @opened="openedExperience" />
+        <van-dropdown-item :title="educationTitle" v-model="params.education" :options="optionEducation" @change="handleEducation" @opened="openedEducation" />
         <van-dropdown-item :title="otherTitle" ref="dropMore">
           <div class="more_box">
             <div class="item_wrapper">
@@ -59,13 +26,7 @@
                   :class="item.select ? 'item select' : 'item'"
                   v-for="(item, index) in optionGender"
                   :key="index"
-                  @click="
-                    optionGender = restructureData(
-                      optionGender,
-                      item.id,
-                      'gender'
-                    )
-                  "
+                  @click="optionGender = restructureData(optionGender, item.id, 'gender')"
                 >
                   {{ item.text }}
                 </div>
@@ -73,36 +34,17 @@
               </div>
               <div class="item_title">年龄</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item select' : 'item'"
-                  v-for="(item, index) in optionAge"
-                  :key="index"
-                  @click="handleAge(item)"
-                >
-                  {{ item.text }}
-                </div>
+                <div :class="item.select ? 'item select' : 'item'" v-for="(item, index) in optionAge" :key="index" @click="handleAge(item)">{{ item.text }}</div>
                 <div class="clear"></div>
               </div>
               <div class="item_title">期望薪资</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item select' : 'item'"
-                  v-for="(item, index) in optionWage"
-                  :key="index"
-                  @click="handleWage(item)"
-                >
-                  {{ item.text }}
-                </div>
+                <div :class="item.select ? 'item select' : 'item'" v-for="(item, index) in optionWage" :key="index" @click="handleWage(item)">{{ item.text }}</div>
                 <div class="clear"></div>
               </div>
               <div class="item_title">简历标签</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item select' : 'item'"
-                  v-for="(item, index) in optionResumeTag"
-                  :key="index"
-                  @click="handleCheckResumeTag(item)"
-                >
+                <div :class="item.select ? 'item select' : 'item'" v-for="(item, index) in optionResumeTag" :key="index" @click="handleCheckResumeTag(item)">
                   {{ item.text }}
                 </div>
                 <div class="clear"></div>
@@ -113,9 +55,7 @@
                   :class="item.select ? 'item select' : 'item'"
                   v-for="(item, index) in optionSettr"
                   :key="index"
-                  @click="
-                    optionSettr = restructureData(optionSettr, item.id, 'settr')
-                  "
+                  @click="optionSettr = restructureData(optionSettr, item.id, 'settr')"
                 >
                   {{ item.text }}
                 </div>
@@ -131,31 +71,16 @@
       </van-dropdown-menu>
     </div>
     <div class="form_split_10"></div>
-    <van-empty
-      image="search"
-      description="没有找到对应的数据"
-      style="background-color:#fff"
-      v-if="show_empty === true && showLayer === false"
-    />
-    <van-list
-      v-if="dataset.length > 0"
-      v-model="loading"
-      :finished="finished"
-      :finished-text="finished_text"
-      @load="onLoad"
-      :immediate-check="true"
-    >
+    <van-empty image="search" description="没有找到对应的数据" style="background-color:#fff" v-if="show_empty === true && showLayer === false" />
+    <van-list v-if="dataset.length > 0" v-model="loading" :finished="finished" :finished-text="finished_text" @load="onLoad" :immediate-check="true">
       <div class="box_3">
-        <div v-for="(item,index) in dataset" :key="index" @click="toDetail(item.id)">
+        <div v-for="(item, index) in dataset" :key="index" @click="toDetail(item.id)">
           <div class="list">
             <div class="top" v-if="item.stick == 1">置顶</div>
             <div class="up">
               <div class="avatar_box">
                 <img :src="item.photo_img_src" :alt="item.fullname" />
-                <div
-                  class="gender "
-                  :class="item.sex == 1 ? 'male' : 'female'"
-                ></div>
+                <div class="gender " :class="item.sex == 1 ? 'male' : 'female'"></div>
               </div>
               <div class="tx1">
                 <div class="name">{{ item.fullname }}</div>
@@ -164,8 +89,7 @@
                 <div class="wage">{{ item.intention_wage }}</div>
               </div>
               <div class="tx2">
-                {{ item.age_text }}岁 · {{ item.experience_text }} ·
-                {{ item.education_text }}
+                {{ item.age_text }}岁 · {{ item.experience_text }} · {{ item.education_text }}
                 <div class="time">{{ item.refreshtime }}</div>
               </div>
             </div>
@@ -180,9 +104,7 @@
               工作
             </div>
             <div class="tx4">{{ item.current_text }}</div>
-            <div class="tag" v-if="item.service_tag != ''">
-              {{ item.service_tag }}
-            </div>
+            <div class="tag" v-if="item.service_tag != ''">{{ item.service_tag }}</div>
           </div>
           <div class="form_split_10"></div>
         </div>
@@ -191,7 +113,7 @@
     <div class="login_layer" v-if="showLayer">
       <div class="ll_tip">注册企业会员，海量简历任你选</div>
       <div class="ll_tip_more">登录后可查看更多简历</div>
-      <div class="ll_qr_box"><img :src="$store.state.config.wechat_qrcode" alt="" class="ll_qr"></div>
+      <div class="ll_qr_box"><img :src="$store.state.config.wechat_qrcode" alt="" class="ll_qr" /></div>
       <div class="ll_tip_more">微信扫一扫，招聘更轻松</div>
       <div class="ll_tip_bth">
         <router-link to="/member/login" class="a_btn">登录</router-link>
@@ -200,6 +122,8 @@
       <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}</div>
     </div>
     <BottomNav></BottomNav>
+    <!-- 企业未创建提示 -->
+    <NoResume :show="showWarn" origin="resumeList" @showChange="showChange"></NoResume>
   </div>
 </template>
 
@@ -209,10 +133,12 @@ import { obj2Param } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import DistrictFilter from '@/components/DistrictFilter'
+import NoResume from '@/components/NoResume'
 export default {
   name: 'ResumeList',
   components: {
-    DistrictFilter
+    DistrictFilter,
+    NoResume
   },
   data () {
     return {
@@ -263,22 +189,15 @@ export default {
         { text: '40-50岁', id: 4, min: 40, max: 50, select: false },
         { text: '50岁以上', id: 5, min: 50, max: '', select: false }
       ],
-      optionGender: [
-        { text: '男', id: 1 },
-        { text: '女', id: 2 }
-      ],
-      optionSettr: [
-        { text: '3天内', id: 3 },
-        { text: '7天内', id: 7 },
-        { text: '15天内', id: 15 },
-        { text: '30天内', id: 30 }
-      ],
+      optionGender: [{ text: '男', id: 1 }, { text: '女', id: 2 }],
+      optionSettr: [{ text: '3天内', id: 3 }, { text: '7天内', id: 7 }, { text: '15天内', id: 15 }, { text: '30天内', id: 30 }],
       optionEducation: [],
       optionExperience: [],
       optionResumeTag: [],
       selectResumeTag: [],
       // 未登录引导
-      showLayer: false
+      showLayer: false,
+      showWarn: true
     }
   },
   watch: {
@@ -303,41 +222,11 @@ export default {
       next()
     }
   },
+  activated () {
+    this.initdata()
+  },
   created () {
-    // 请求列表数据
-    this.initQuery(this.$route.query)
-    this.fetchData(true)
-    this.$store.dispatch('getClassify', 'citycategory')
-    this.$store.dispatch('getClassify', 'experience').then(() => {
-      // 经验
-      let storeExperience = this.$store.state.classifyExperience
-      storeExperience.unshift({ id: '', text: '不限' })
-      this.optionExperience = storeExperience.map(function (item) {
-        return { text: item.text, value: item.id }
-      })
-      // 得到缓存分类之后，再次尝试恢复选中项
-      this.restoreFilter()
-    })
-    this.$store.dispatch('getClassify', 'education').then(() => {
-      // 学历
-      let storeEducation = this.$store.state.classifyEdu
-      storeEducation.unshift({ id: '', text: '不限' })
-      this.optionEducation = storeEducation.map(function (item) {
-        return { text: item.text, value: item.id }
-      })
-      this.restoreFilter()
-    })
-    this.$store.dispatch('getClassify', 'resumeTag').then(() => {
-      // 重构简历标签
-      let storeResumeTag = (JSON.parse(JSON.stringify(this.$store.state.classifyJobTag)))
-      storeResumeTag = storeResumeTag.map(function (item) {
-        return { id: item.id, text: item.text, select: false }
-      })
-      storeResumeTag.unshift({ id: '', text: '全部', select: true })
-      this.optionResumeTag = storeResumeTag
-      this.restoreFilter()
-    })
-    wxshare({}, 'resumelist', location.href)
+    this.initdata()
   },
   mounted () {
     // 重构筛选项数据格式
@@ -348,6 +237,50 @@ export default {
     this.restoreFilter()
   },
   methods: {
+    initdata () {
+      // 请求列表数据
+      this.initQuery(this.$route.query)
+      this.fetchData(true)
+      this.$store.dispatch('getClassify', 'citycategory')
+      this.$store.dispatch('getClassify', 'experience').then(() => {
+        // 经验
+        let storeExperience = this.$store.state.classifyExperience
+        storeExperience.unshift({ id: '', text: '不限' })
+        this.optionExperience = storeExperience.map(function (item) {
+          return { text: item.text, value: item.id }
+        })
+        // 得到缓存分类之后，再次尝试恢复选中项
+        this.restoreFilter()
+      })
+      this.$store.dispatch('getClassify', 'education').then(() => {
+        // 学历
+        let storeEducation = this.$store.state.classifyEdu
+        storeEducation.unshift({ id: '', text: '不限' })
+        this.optionEducation = storeEducation.map(function (item) {
+          return { text: item.text, value: item.id }
+        })
+        this.restoreFilter()
+      })
+      this.$store.dispatch('getClassify', 'resumeTag').then(() => {
+        // 重构简历标签
+        /*
++      * 【bug】触屏简历列表页更多筛选项标签调用错误
++      * zch 2022.10.19
++      * 【旧】
++      * classifyJobTag
++      * 【新】
++      * classifyResumeTag
++      * */
+        let storeResumeTag = (JSON.parse(JSON.stringify(this.$store.state.classifyResumeTag)))
+        storeResumeTag = storeResumeTag.map(function (item) {
+          return { id: item.id, text: item.text, select: false }
+        })
+        storeResumeTag.unshift({ id: '', text: '全部', select: true })
+        this.optionResumeTag = storeResumeTag
+        this.restoreFilter()
+      })
+      wxshare({}, 'resumelist', location.href)
+    },
     // 清空
     handleClearMore () {
       this.params.sex = ''
@@ -471,9 +404,7 @@ export default {
     // 筛选学历
     handleEducation (value) {
       if (value) {
-        let thisEducation = this.optionEducation.filter(
-          item => parseInt(item.value) === value
-        )
+        let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === value)
         this.educationTitle = thisEducation[0].text
         this.params.education = value
       } else {
@@ -485,9 +416,7 @@ export default {
     // 筛选经验
     handleExperience (value) {
       if (value) {
-        let thisExperience = this.optionExperience.filter(
-          item => parseInt(item.value) === parseInt(value)
-        )
+        let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(value))
         this.experienceTitle = thisExperience[0].text
         this.params.experience = value
       } else {
@@ -525,22 +454,15 @@ export default {
         this.params.district3 = queryData['district3']
         let storeCity = this.$store.state.classifyCityOriginal
         let selectText = []
-        let topItem = storeCity.filter(
-          item => parseInt(item.value) === parseInt(this.params.district1)
-        )[0]
+        let topItem = storeCity.filter(item => parseInt(item.value) === parseInt(this.params.district1))[0]
         selectText.push(topItem.label)
         if (topItem.children.length) {
           if (parseInt(this.params.district2)) {
-            let secondItem = topItem.children.filter(
-              item => parseInt(item.value) === parseInt(this.params.district2)
-            )[0]
+            let secondItem = topItem.children.filter(item => parseInt(item.value) === parseInt(this.params.district2))[0]
             selectText.push(secondItem.label)
             if (secondItem.children.length) {
               if (parseInt(this.params.district3)) {
-                let lowestItem = secondItem.children.filter(
-                  item =>
-                    parseInt(item.value) === parseInt(this.params.district3)
-                )[0]
+                let lowestItem = secondItem.children.filter(item => parseInt(item.value) === parseInt(this.params.district3))[0]
                 selectText.push(lowestItem.label)
               } else {
                 selectText.push(`全${selectText[selectText.length - 1]}`)
@@ -559,9 +481,7 @@ export default {
       }
       // 恢复经验
       if (queryData['experience'] && this.optionExperience) {
-        let thisExperience = this.optionExperience.filter(
-          item => parseInt(item.value) === parseInt(queryData['experience'])
-        )
+        let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(queryData['experience']))
         this.experienceTitle = thisExperience[0].text
         this.params.experience = parseInt(thisExperience[0].value)
       } else {
@@ -570,9 +490,7 @@ export default {
       }
       // 恢复学历
       if (queryData['education'] && this.optionEducation) {
-        let thisEducation = this.optionEducation.filter(
-          item => parseInt(item.value) === parseInt(queryData['education'])
-        )
+        let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === parseInt(queryData['education']))
         this.educationTitle = thisEducation[0].text
         this.params.education = parseInt(thisEducation[0].value)
       } else {
@@ -584,11 +502,7 @@ export default {
       if (queryData['sex']) {
         resetGender = queryData['sex']
       }
-      this.optionGender = this.restructureData(
-        this.optionGender,
-        resetGender,
-        'gender'
-      )
+      this.optionGender = this.restructureData(this.optionGender, resetGender, 'gender')
       // 恢复年龄
       if (queryData['minage']) {
         this.params.minage = queryData['minage']
@@ -648,11 +562,7 @@ export default {
       if (queryData['settr']) {
         resetSettr = queryData['settr']
       }
-      this.optionSettr = this.restructureData(
-        this.optionSettr,
-        resetSettr,
-        'settr'
-      )
+      this.optionSettr = this.restructureData(this.optionSettr, resetSettr, 'settr')
     },
     // 地区筛选
     doSearchByDistrict (data) {
@@ -725,8 +635,7 @@ export default {
       }
       conditions.page = this.page
       conditions.pagesize = this.pagesize
-      http
-        .get(api.resumelist, conditions)
+      http.get(api.resumelist, conditions)
         .then(res => {
           if (init === true) {
             this.dataset = [...res.data.items]
@@ -784,6 +693,9 @@ export default {
     },
     toggleSearch () {
       this.show = !this.show
+    },
+    showChange (e) {
+      this.showWarn = e
     }
   }
 }
@@ -791,79 +703,102 @@ export default {
 
 <style lang="scss" scoped>
 .more_box {
-    .item_wrapper {
-      .item_group {
-        .item {
-          &.select {
-            background-color: #e5f1ff;
-            color: #5da9fc;
-          }
-          display: block;
-          float: left;
-          width: 81px;
-          margin: 0 7px 10px 0;
-          text-align: center;
-          background-color: #f4f4f4;
-          font-size: 13px;
-          padding: 6.5px 0;
-          &:nth-of-type(4n) {
-            margin-right: 0;
-          }
+  .item_wrapper {
+    .item_group {
+      .item {
+        &.select {
+          background-color: #e5f1ff;
+          color: #5da9fc;
         }
-      }
-      .item_title {
-        padding: 15px 0;
-        font-size: 15px;
-        color: #333333;
-      }
-      padding: 0 15px;
-      position: relative;
-      .wrapper_bottom {
-        .btn_c {
-          &.blue {
-            background-color: #1787fb;
-            color: #ffffff;
-          }
-          flex: 1;
-          background-color: #f4f4f4;
-          color: #333333;
-          font-size: 15px;
-          text-align: center;
-          padding: 10.5px 0;
+        display: block;
+        float: left;
+        width: 81px;
+        margin: 0 7px 10px 0;
+        text-align: center;
+        background-color: #f4f4f4;
+        font-size: 13px;
+        padding: 6.5px 0;
+        &:nth-of-type(4n) {
+          margin-right: 0;
         }
-        position: fixed;
-        left: 0;
-        top: 79%;
-        display: flex;
-        width: 100%;
-        z-index: 3;
       }
     }
+    .item_title {
+      padding: 15px 0;
+      font-size: 15px;
+      color: #333333;
+    }
+    padding: 0 15px;
     position: relative;
-    padding-bottom: 41px;
+    .wrapper_bottom {
+      .btn_c {
+        &.blue {
+          background-color: #1787fb;
+          color: #ffffff;
+        }
+        flex: 1;
+        background-color: #f4f4f4;
+        color: #333333;
+        font-size: 15px;
+        text-align: center;
+        padding: 10.5px 0;
+      }
+      position: fixed;
+      left: 0;
+      top: 79%;
+      display: flex;
+      width: 100%;
+      z-index: 3;
+    }
   }
+  position: relative;
+  padding-bottom: 41px;
+}
 .login_layer {
-  width: 100%;padding: 40px 0;text-align: center;background: url("../assets/images/login_layer_resume_bg.jpg") 0 no-repeat;
+  width: 100%;
+  padding: 40px 0;
+  text-align: center;
+  background: url('../assets/images/login_layer_resume_bg.jpg') 0 no-repeat;
   background-size: 100%;
   .ll_tip_tel {
-    font-size: 14px;color: #666;padding-top: 10px;
+    font-size: 14px;
+    color: #666;
+    padding-top: 10px;
   }
   .ll_tip_bth {
     .a_btn {
-      &.blue { background: #128bed; }
-      display: inline-block;padding: 6px 25px;background: #e33244;color: #fff;border-radius: 3px;margin: 0 10px;
+      &.blue {
+        background: #128bed;
+      }
+      display: inline-block;
+      padding: 6px 25px;
+      background: #e33244;
+      color: #fff;
+      border-radius: 3px;
+      margin: 0 10px;
       font-size: 14px;
     }
   }
   .ll_qr_box {
-    .ll_qr { width: 100px;height: 100px;border: 0; }
-    width: 100px;height: 100px;margin: 10px auto 5px;
+    .ll_qr {
+      width: 100px;
+      height: 100px;
+      border: 0;
+    }
+    width: 100px;
+    height: 100px;
+    margin: 10px auto 5px;
   }
   .ll_tip {
-    font-size: 16px;font-weight: bold;margin-bottom: 5px;color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
   }
   .ll_tip_more {
-    font-size: 14px;color: #666;margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
   }
 }
 .box_3 {
@@ -876,8 +811,7 @@ export default {
       position: absolute;
       right: 17px;
       bottom: 15px;
-      background: #ffa57d url("../assets/images/fab_ico.svg") 5px center
-        no-repeat;
+      background: #ffa57d url('../assets/images/fab_ico.svg') 5px center no-repeat;
       background-size: 10px;
     }
     .top {
@@ -942,8 +876,7 @@ export default {
           margin-left: 10px;
           width: 36px;
           height: 25px;
-          background: url("../assets/images/resume_list_level_ico.png") 0 center
-            no-repeat;
+          background: url('../assets/images/resume_list_level_ico.png') 0 center no-repeat;
           background-size: 36px 15px;
         }
         .name {
@@ -958,13 +891,11 @@ export default {
       .avatar_box {
         .gender {
           &.female {
-            background: #ff8d65 url("../assets/images/female_ico.svg") center
-              no-repeat;
+            background: #ff8d65 url('../assets/images/female_ico.svg') center no-repeat;
             background-size: 9px;
           }
           &.male {
-            background: #4fa5fa url("../assets/images/male_ico.svg") center
-              no-repeat;
+            background: #4fa5fa url('../assets/images/male_ico.svg') center no-repeat;
             background-size: 9px;
           }
           position: absolute;
@@ -1010,11 +941,13 @@ export default {
       font-size: 12px;
       color: #c9c9c9;
       padding: 10px 0 10px 23px;
-      background: url("../assets/images/search_ico_gray.svg") 0 center no-repeat;
+      background: url('../assets/images/search_ico_gray.svg') 0 center no-repeat;
       background-size: 15px;
       position: absolute;
-      top:0;
-      left:50%;transform:translate(-50%,0);line-height: normal;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, 0);
+      line-height: normal;
       &.has {
         color: #333;
       }

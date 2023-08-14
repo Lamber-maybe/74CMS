@@ -9,7 +9,8 @@ import {
   refreshCrmJob, setDisplay
 } from '@/api/company_crm'
 import { customerServiceEdit } from '@/api/personal'
-import {bindSeat, customLndex, dataBoardcallRecordList, outboundSeat, recordDetails} from "@/api/outbound";
+import { bindSeat, customLndex, dataBoardcallRecordList, outboundSeat, recordDetails } from '@/api/outbound'
+import {resumeDel, resumeUrmInterview, resumeUrmViewJob, urmList} from '@/api/resume_urm'
 
 export default {
   // 首页仪表盘
@@ -877,5 +878,20 @@ export default {
   bindSeat: 'outbound/Seat/bindSeat',
   unbindSeat: 'outbound/Seat/unbindSeat',
   outboundCall: 'outbound/outbound_call/call',
-  UnbindList: 'outbound/seat/unbindList'
+  UnbindList: 'outbound/seat/unbindList',
+  // urm
+  urmList: 'b2burm/Resume/index',
+  resumeDetails: 'b2burm/Resume/resumeDetail',
+  resumeUrmJobApply: 'b2burm/Resume/jobApply',
+  resumeUrmInterview: 'b2burm/Resume/interview',
+  resumeUrmAttentionMe: 'b2burm/Resume/attentionMe',
+  resumeUrmViewJob: 'b2burm/Resume/viewjob',
+  urmAddVisit: 'b2burm/follow_up/addVisit',
+  urmFollowUpList: 'b2burm/follow_up/index',
+  updateResume: 'b2burm/Resume/updateResume',
+  urmRecycleBinList: 'b2burm/recycle_bin/index',
+  urmRecycleBinDel: 'b2burm/recycle_bin/del',
+  urmRecycleBinReturn: 'b2burm/recycle_bin/recover',
+  resumeDel: 'b2burm/recycle_bin/put',
+  setContactStatus: 'b2burm/resume/setContactStatus'
 }

@@ -168,7 +168,15 @@ import Captcha from '@/components/captcha/index'
               this.isregister = false
             }
           })
-          .catch(() => {})
+          .catch(() => {
+            /*
+            * 【bug】注册会员接口返回错误后修改后再次提交不能点击
+            * zch 2022.10.14
+            * 【新增】
+            * this.isregister = false
+            * */
+            this.isregister = false
+          })
       },
       //zdq 短信验证码重复发送修改
       // 发送验证码

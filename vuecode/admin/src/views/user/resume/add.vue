@@ -876,7 +876,7 @@ export default {
                 this.$message.success(response.message)
                 setTimeout(() => {
                   this.$router.push(
-                    '/user/resume/edit?id=' + response.data.resumeid
+                    '/user/urmList'
                   )
                 }, 1500)
                 return true

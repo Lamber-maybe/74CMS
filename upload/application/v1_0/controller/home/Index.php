@@ -191,7 +191,7 @@ class Index extends \app\v1_0\controller\common\Base
             ->where('is_display', 1)
             ->where('addtime','lt',time()) // 【优化】新闻资讯发布时间按显示时间出现 zch 2022.9.20
             ->limit(5)
-            ->order('sort_id desc,id desc')
+            ->order('sort_id desc,addtime desc') // 【优化】小程序资讯列表按时间排序 zch 2022.10.26 'sort_id desc,id desc' 改为 'sort_id desc,addtime desc'
             ->select();
         $thumb_id_arr = $thumb_arr = [];
         foreach ($list as $key => $value) {

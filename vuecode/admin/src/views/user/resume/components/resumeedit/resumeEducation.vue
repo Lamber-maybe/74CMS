@@ -5,10 +5,11 @@
         slot="header"
         class="clearfix"
       >
-        <span>教育经历</span>
+        <span style="font-weight: 600;color: #333;">教育经历</span>
         <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="funAdd"
         >添加</el-button>
       </div>
@@ -52,12 +53,10 @@
         <div class="clearfix" />
         <span
           class="item-li"
-          style="width:20%"
         >学校：{{ item.school }}</span>
         <span
           v-if="live_fields.major===true"
           class="item-li"
-          style="width:20%"
         >专业：{{ item.major==''?'未填写':item.major }}</span>
         <span
           class="item-li"
@@ -67,6 +66,7 @@
     </el-card>
     <el-dialog
       v-if="dialogFormVisible"
+      append-to-body
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
       width="35%"
@@ -75,6 +75,7 @@
     >
       <diaform
         :item-id="itemId"
+        :rid="id"
         @setDialogFormVisible="closeDialog"
         @pageReload="fetchData"
       />
@@ -91,6 +92,7 @@ export default {
   components: {
     diaform
   },
+  props: ['id'],
   data() {
     return {
       li4_width: '24%',
@@ -116,12 +118,13 @@ export default {
             this.live_fields.major = false
           }
           const param = {
-            rid: this.$route.query.id
+            rid: this.id
           }
           return resumeEducationList(param)
         })
         .then(response => {
           this.list = response.data.items
+          this.$emit('setLoading', 'resumeEducation')
         })
     },
     funAdd() {
@@ -177,11 +180,15 @@ export default {
 	border-bottom: 0;
 }
 .item-li {
+  max-width: 48%;
+  min-width: 20%;
+  margin-right: 20px;
 	height: 30px;
 	line-height: 30px;
 	display: inline-block;
 }
 .item-li.lr {
+  float: right;
 	text-align: right;
 }
 .empty {

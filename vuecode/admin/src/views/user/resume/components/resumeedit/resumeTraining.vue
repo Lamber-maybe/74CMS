@@ -5,10 +5,11 @@
         slot="header"
         class="clearfix"
       >
-        <span>培训经历</span>
+        <span  style="font-weight: 600;color: #333;">培训经历</span>
         <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
+          style="float: right; padding: 6px 18px;font-size: 13px;"
+          type="primary"
+          round
           @click="funAdd"
         >添加</el-button>
       </div>
@@ -57,6 +58,7 @@
       </div>
     </el-card>
     <el-dialog
+      append-to-body
       v-if="dialogFormVisible"
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
@@ -66,6 +68,7 @@
     >
       <diaform
         :item-id="itemId"
+        :rid="id"
         @setDialogFormVisible="closeDialog"
         @pageReload="fetchData"
       />
@@ -81,6 +84,7 @@ export default {
   components: {
     diaform
   },
+  props: ['id'],
   data() {
     return {
       list: null,
@@ -95,10 +99,11 @@ export default {
   methods: {
     fetchData() {
       const param = {
-        rid: this.$route.query.id
+        rid: this.id
       }
       resumeTrainingList(param).then(response => {
         this.list = response.data.items
+        this.$emit('setLoading', 'resumeTraining')
       })
     },
     funAdd() {
@@ -154,7 +159,9 @@ export default {
 	border-bottom: 0;
 }
 .item-li {
-	width: 24%;
+	max-width: 48%;
+  min-width: 24%;
+  margin-right: 20px;
 	height: 30px;
 	line-height: 30px;
 	display: inline-block;
@@ -163,6 +170,7 @@ export default {
 	width: 70%;
 }
 .item-li.lr {
+  float: right;
 	text-align: right;
 }
 .empty {

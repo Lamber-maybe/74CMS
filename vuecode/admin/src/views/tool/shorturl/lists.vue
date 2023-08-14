@@ -217,7 +217,7 @@ export default {
       const copyHandler = this.copys(output)
       document.addEventListener('copy', copyHandler)
       document.execCommand('copy')
-      removeEventListener('copy', copyHandler)
+      document.removeEventListener('copy', copyHandler)
       this.$message({ type: 'success', message: '复制成功' })
       // /**
       //  * 【ID1000130】

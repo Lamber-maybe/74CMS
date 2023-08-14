@@ -226,7 +226,7 @@ import api from '@/api'
           this.submitData.starttime == ''
         ) {
           this.$message.error('请选择开始刷新时间')
-	  this.ispay = false
+          this.ispay = false
           return false
         }
         if (
@@ -234,7 +234,7 @@ import api from '@/api'
           this.submitData.timerange == ''
         ) {
           this.$message.error('请选择刷新时间间隔')
-	  this.ispay = false
+          this.ispay = false
           return false
         }
         this.submitData.return_url =

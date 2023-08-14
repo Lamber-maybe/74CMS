@@ -46,7 +46,7 @@
 import { getClassify } from '@/api/classify'
 import { resumeLanguageAddAndEdit } from '@/api/resume'
 export default {
-  props: ['itemId'],
+  props: ['itemId', 'rid'],
   data() {
     return {
       submitLoading: false,
@@ -90,7 +90,7 @@ export default {
           if (response.data.info != null) {
             this.form = { ...response.data.info }
           } else {
-            this.form.rid = this.$route.query.id
+            this.form.rid = this.rid
           }
           return getClassify({ type: 'language,languageLevel' })
         })

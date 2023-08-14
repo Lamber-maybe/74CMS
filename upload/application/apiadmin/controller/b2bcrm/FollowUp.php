@@ -15,30 +15,25 @@ class FollowUp extends Backend
     {
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
-        $clue_id = input('get.clue_id/d',0,'intval');
-        $uid = input('get.uid/d',0,'intval');
-        if ($clue_id == 0 && $uid == 0)
-        {
+        $clue_id = input('get.clue_id/d', 0, 'intval');
+        $uid = input('get.uid/d', 0, 'intval');
+        if ($clue_id == 0 && $uid == 0) {
             $this->ajaxReturn(200, '缺少参数线索id或uid', []);
         }
         $where = [];
-        if ($uid > 0)
-        {
+        if ($uid > 0) {
             $where['a.uid'] = $uid;
         }
-        if ($clue_id > 0)
-        {
+        if ($clue_id > 0) {
             $where['a.clue_id'] = $clue_id;
         }
         $field = 'a.mode,a.result,a.enclosure,a.admin_id,a.create_time,b.username,b.avatar,a.link_man as name,a.uid';
         $list = model('b2bcrm.CrmFollowUp')
-            ->getList($where,['a.create_time DESC'],$field,$current_page,$pagesize);
-        if(empty($list))
-        {
+            ->getList($where, ['a.create_time DESC'], $field, $current_page, $pagesize);
+        if (empty($list)) {
             $this->ajaxReturn(200, '获取成功', []);
         }
-        foreach($list['rows'] as $k=>$v)
-        {
+        foreach ($list['rows'] as $k => $v) {
             $list['rows'][$k]['mode'] = isset(model('b2bcrm.CrmFollowUp')->method[$v['mode']]) ? model('b2bcrm.CrmFollowUp')->method[$v['mode']] : '';
         }
         $return['items'] = $list['rows'];
@@ -52,22 +47,22 @@ class FollowUp extends Backend
      * */
     public function addVisit()
     {
-        try{
+        try {
             $data = [
-                'type' => input('post.type/d',1,'intval'),
+                'type' => input('post.type/d', 1, 'intval'),
                 'clue_id' => input('post.clue_id/d', 0, 'intval'),
-                'uid' => input('post.uid/d',0,'intval'),
-                'relation_id' => input('post.relation_id/d',0,'intval'),
+                'uid' => input('post.uid/d', 0, 'intval'),
+                'relation_id' => input('post.relation_id/d', 0, 'intval'),
                 'admin_id' => $this->admininfo->id,
-                'utype' => input('post.utype/d',0,'intval'),
-                'mode' =>  input('post.mode/d', 0, 'intval'),
-                'next_time' =>  input('post.next_time/d', 0, 'intval'),
-                'result' =>  input('post.result/s', '', 'trim'),
-                'enclosure' => input('post.enclosure/s','','trim'),
+                'utype' => input('post.utype/d', 0, 'intval'),
+                'mode' => input('post.mode/d', 0, 'intval'),
+                'next_time' => input('post.next_time/d', 0, 'intval'),
+                'result' => input('post.result/s', '', 'trim'),
+                'enclosure' => input('post.enclosure/s', '', 'trim'),
                 'create_time' => time(),
-                'link_man' => input('post.link_man/s','','trim'),
-                'link_mobile' => input('post.link_mobile/d','','trim'),
-                'linkman_id' => input('post.linkman_id/d',0,'intval'),
+                'link_man' => input('post.link_man/s', '', 'trim'),
+                'link_mobile' => input('post.link_mobile/d', '', 'trim'),
+                'linkman_id' => input('post.linkman_id/d', 0, 'intval'),
             ];
 
             $rule = [
@@ -99,17 +94,16 @@ class FollowUp extends Backend
                 $this->ajaxReturn(500, $validate->getError());
             }
             Db::startTrans();
-            if ($data['uid'] > 0)
-            {
+            if ($data['uid'] > 0) {
                 model('Company')
                     ->isUpdate(true)
-                    ->save(['last_visit_time'=>time(),'last_visit_admin'=>$this->admininfo->id],['uid'=>$data['uid']]);
+                    ->save(['last_visit_time' => time(), 'last_visit_admin' => $this->admininfo->id], ['uid' => $data['uid']]);
             }
             model('b2bcrm.CrmFollowUp')->saveData($data, $this->admininfo);
 
             Db::commit();
             $this->ajaxReturn(200, '保存成功');
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             Db::rollback();
             $this->ajaxReturn(500, $e->getMessage());
         }
@@ -122,17 +116,26 @@ class FollowUp extends Backend
     {
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
-        $type = input('get.type/d',0,'intval');
-
-        $s = strtotime(date('Y-m-d').'00:00:00');
-        $l = strtotime(date('Y-m-d').'23:59:59');
-
-        $where['next_time'] = ['between',[$s, $l]];
+        $type = input('get.type/d', 0, 'intval');
+        $switch_type = input('get.switch_type/d', 0, 'intval');
+        $start_time = input('get.start_time/s', '', 'trim');
+        $end_time = input('get.end_time/s', '', 'trim');
+        $s = strtotime(date('Y-m-d') . '00:00:00');
+        $l = strtotime(date('Y-m-d') . '23:59:59');
+        if ($switch_type == 0) {
+            $where['next_time'] = ['between', [$s, $l]];
+        } else {
+            if ($start_time != '' && $end_time != '') {
+                $where['next_time'] = [['>=', strtotime($start_time . '00:00:00')], ['<=', strtotime($end_time . '23:59:59')], 'and'];
+            }
+        }
         $where['a.admin_id'] = $this->admininfo->id;
         $field = "
         a.type,
         a.clue_id,
+        a.link_man,
         a.uid,
+        a.relation_id,
         a.link_man,
         a.link_mobile,
         a.next_time,
@@ -145,14 +148,12 @@ class FollowUp extends Backend
           ELSE 0
         END 
           AS is_outtime";
-        if ($type > 0)
-        {
+        if ($type > 0) {
             $where['type'] = $type;
         }
         $order = ['is_outtime DESC', 'a.next_time ASC'];
-        $list = model('b2bcrm.CrmFollowUp')->getList($where,$order,$field,$current_page,$pagesize);
-        if (empty($list))
-        {
+        $list = model('b2bcrm.CrmFollowUp')->getList($where, $order, $field, $current_page, $pagesize);
+        if (empty($list)) {
             $data = [
                 'rows' => [],
                 'pages' => [
@@ -163,16 +164,37 @@ class FollowUp extends Backend
             ];
             $this->ajaxReturn(200, '获取数据成功', $data);
         }
-        foreach ($list['rows'] as $k=>$v)
-        {
-            switch ($v['type'])
-            {
+        foreach ($list['rows'] as $k => $v) {
+            switch ($v['type']) {
                 case 1:
                     $list['rows'][$k]['type_name'] = '线索';
                     break;
                 case 2:
                     $list['rows'][$k]['type_name'] = '客户';
                     $list['rows'][$k]['name'] = $v['companyname'];
+                    break;
+                case 3:
+                    $list['rows'][$k]['type_name'] = '简历';
+                    $list['rows'][$k]['name'] = $v['link_man'];
+                    $resume = model('Resume')->where('id', $v['relation_id'])->find();
+                    $list['rows'][$k]['age'] =
+                        intval($resume['birthday']) == 0
+                            ? '年龄未知'
+                            : date('Y') - intval($resume['birthday']) . '岁';
+                    $list['rows'][$k]['education_cn'] = isset(
+                        model('BaseModel')->map_education[$resume['education']]
+                    )
+                        ? model('BaseModel')->map_education[$resume['education']]
+                        : '学历未知';
+                    $list['rows'][$k]['experience_cn'] =
+                        $resume['enter_job_time'] == 0
+                            ? '无经验'
+                            : format_date($resume['enter_job_time']);
+                    $list['rows'][$k]['sex'] =
+                        intval($resume['sex']) == 1
+                            ? '男'
+                            : '女';
+                    $list['rows'][$k]['name'] = $v['link_man'];
                     break;
                 default:
                     $list['rows'][$k]['type_name'] = '';

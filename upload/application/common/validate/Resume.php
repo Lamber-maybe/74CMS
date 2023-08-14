@@ -17,7 +17,7 @@ class Resume extends BaseValidate
         'audit' => 'in:0,1,2',
         'stick' => 'in:0,1',
         'fullname' => 'require|max:15',
-        'sex' => 'require|in:1,2',
+        'sex' => 'require|in:0,1,2',
         'birthday' => 'require|max:15',
         'residence' => 'max:30',
         'height' => 'max:5',

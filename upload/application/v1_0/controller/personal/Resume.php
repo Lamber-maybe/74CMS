@@ -1319,8 +1319,16 @@ class Resume extends \app\v1_0\controller\common\Base
             ->allowField(true)
             ->save($save_data, ['uid' => $this->userinfo->uid]);
 
-        if (config('global_config.audit_edit_resume') == 1) {
+        /*
+         * 【bug】搜索简历时，按简历标签筛选是无效（修改后未更新索引表）
+         * zch 2022.10.19
+         * */
+        if (config('global_config.audit_edit_resume') == 0) {
             model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        }else
+        {
+            model('ResumeSearchRtime')->where('uid',$this->userinfo->uid)->delete();
+            model('ResumeSearchKey')->where('uid',$this->userinfo->uid)->delete();
         }
 
         model('Resume')->updateComplete(

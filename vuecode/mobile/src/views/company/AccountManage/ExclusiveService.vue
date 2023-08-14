@@ -9,11 +9,11 @@
     </div>
     <div class="form_split_10"></div>
     <div class="box_2">
-      <div class="handle_line l1">
+      <div class="handle_line l1" v-if="info.mobile" @click.stop="handlerDial(info.mobile)">
         手机号
         <div class="right_txt">{{ info.mobile ? info.mobile : "暂无" }}</div>
       </div>
-      <div class="handle_line l2">
+      <div class="handle_line l2" v-if="info.tel" @click.stop="handlerDial(info.tel)">
         联系电话
         <div class="right_txt">{{ info.tel ? info.tel : "暂无" }}</div>
       </div>
@@ -21,7 +21,7 @@
         微信
         <div class="right_txt">点击查看二维码</div>
       </div>
-      <div class="handle_line l4">
+      <div class="handle_line l4" v-if="info.qq">
         联系QQ
         <div class="right_txt">{{ info.qq ? info.qq : "暂无" }}</div>
       </div>
@@ -88,6 +88,9 @@ export default {
     },
     closeComplaint () {
       this.showComplaint = false
+    },
+    handlerDial (phoneNum) {
+      location.href = `tel:${phoneNum}`
     }
   }
 }
