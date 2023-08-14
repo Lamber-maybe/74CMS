@@ -118,7 +118,7 @@
           />
           <span class="smalltip">
             <i class="el-icon-info" />
-            例如：id=1&keyword=74cms
+            填写需跳转的页面ID值(数字)
           </span>
         </el-form-item>
         <el-form-item v-if="form.target == 2" label="企业ID" prop="company_id">

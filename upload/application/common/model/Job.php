@@ -306,6 +306,33 @@ class Job extends \app\common\model\BaseModel
             )
                 ? $category_company_nature[$companyinfo['nature']]
                 : '';
+
+            $job_category = [];
+            $category_job_data = model('CategoryJob')->getCache();
+
+            $category_cn_1 = !empty($category_job_data[$jobinfo['category1']])
+                ? $category_job_data[$jobinfo['category1']]
+                : '';
+            $category_cn_2 = !empty($category_job_data[$jobinfo['category2']])
+                ? $category_job_data[$jobinfo['category2']]
+                : '';
+            $category_cn_3 = !empty($category_job_data[$jobinfo['category3']])
+                ? $category_job_data[$jobinfo['category3']]
+                : '';
+
+            if (isset($category_cn_1) && !empty($category_cn_1)) {
+                $job_category[] = $category_cn_1;
+            }
+            if (isset($category_cn_2) && !empty($category_cn_2)) {
+                $job_category[] = $category_cn_2;
+            }
+            if (isset($category_cn_3) && !empty($category_cn_3)) {
+                $job_category[] = $category_cn_3;
+            }
+
+            $job_category = array_unique($job_category);
+            $search_key_data['job_category'] = implode(' ', $job_category);
+
             $insert_rtime_data[] = $search_rtime_data;
             $insert_key_data[] = $search_key_data;
         }

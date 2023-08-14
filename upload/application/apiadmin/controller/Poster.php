@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class Poster extends \app\common\controller\Backend
 {
     public function lists()
@@ -24,14 +26,14 @@ class Poster extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('Poster')->getError());
         }
-        model('AdminLog')->record(
-            '添加海报。海报ID【' .
-            model('Poster')->id .
-            '】;海报名称【' .
-            $input_data['name'] .
-            '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '海报设置-' . model('Poster')->map_type[$input_data['type']] . '，添加海报，海报名称:' . $input_data['name'] . '；显示状态:' . model('Poster')->map_is_display[$input_data['is_display']],
+            $this->admininfo,
+            0,
+            2
         );
+
         $this->ajaxReturn(200, '保存成功');
     }
 
@@ -50,14 +52,14 @@ class Poster extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('Poster')->getError());
         }
-        model('AdminLog')->record(
-            '编辑海报。海报ID【' .
-            $input_data['id'] .
-            '】;海报名称【' .
-            $input_data['name'] .
-            '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '海报设置-' . model('Poster')->map_type[$input_data['type']] . '，修改海报，海报名称:' . $input_data['name'] . '；显示状态:' . model('Poster')->map_is_display[$input_data['is_display']],
+            $this->admininfo,
+            0,
+            3
         );
+
         $this->ajaxReturn(200, '保存成功');
     }
 
@@ -67,28 +69,56 @@ class Poster extends \app\common\controller\Backend
         $info = model('Poster')->find($id);
         if ($info['is_display'] == 1) {
             model('Poster')->save(['is_display' => 0], ['id' => $id]);
+            $display_info = '不显示';
         } else {
             model('Poster')->save(['is_display' => 1], ['id' => $id]);
+            $display_info = '显示';
         }
-        model('AdminLog')->record(
-            '编辑海报显示状态。海报ID【' .
-            $id .
-            '】',
-            $this->admininfo
+
+        $poster_info = model('Poster')
+            ->field('name,type')
+            ->where('id', $id)
+            ->find();
+        model('AdminLog')->writeLog(
+            '海报设置-' . model('Poster')->map_type[$poster_info['type']] . '，修改海报，海报名称:' . $poster_info['name'] . '；显示状态:' . $display_info,
+            $this->admininfo,
+            0,
+            3
         );
+
         $this->ajaxReturn(200, '设置成功');
     }
 
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
-        model('Poster')->deleteOne($id);
-        model('AdminLog')->record(
-            '删除海报。海报ID【' . $id .
-            '】',
-            $this->admininfo
-        );
-        $this->ajaxReturn(200, '删除成功');
+
+        try {
+            Db::startTrans();
+
+            $poster_info = model('Poster')
+                ->field('name,type')
+                ->where('id', $id)
+                ->find();
+
+            model('Poster')->deleteOne($id);
+
+            model('AdminLog')->writeLog(
+                '海报设置-' . model('Poster')->map_type[$poster_info['type']] . '，删除海报，海报名称:' . $poster_info['name'],
+                $this->admininfo,
+                0,
+                4
+            );
+
+            //提交事务
+            Db::commit();
+
+            $this->ajaxReturn(200, '删除成功');
+
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 
     public function index()
@@ -98,18 +128,40 @@ class Poster extends \app\common\controller\Backend
         $index = input('get.index/d', 0, 'intval');
         $result = false;
         $poster = new \app\common\lib\Poster;
+        $log_field = '';
         if ($type == 'job') {
             $result = $poster->makeJobPoster($index, $id);
+            $job_name = model('Job')
+                ->where('id', $id)
+                ->field('uid')
+                ->value('jobname');
+            $log_field = '生成职位海报【' . $job_name . '】(职位ID:' . $id . ')';
         }
         if ($type == 'resume') {
             $result = $poster->makeResumePoster($index, $id);
+            $fullname = model('Resume')
+                ->where('id', $id)
+                ->value('fullname');
+            $log_field = '生成简历海报{' . $fullname . '}(简历ID:' . $id . ')';
         }
         if ($type == 'company') {
             $result = $poster->makeCompanyPoster($index, $id);
+            $company_name = model('Company')
+                ->where('id', $id)
+                ->value('companyname');
+            $log_field = '生成企业海报{' . $company_name . '}(企业ID:' . $id . ')';
         }
         if ($result === false) {
             $this->ajaxReturn(500, $poster->getError());
         }
+
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            1
+        );
+
         $this->ajaxReturn(200, '生成海报成功', $result);
     }
 

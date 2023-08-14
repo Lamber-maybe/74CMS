@@ -1,6 +1,8 @@
 <?php
 namespace app\apiadmin\controller;
 
+use Think\Db;
+
 class PromotionResume extends \app\common\controller\Backend
 {
     public function index()
@@ -124,9 +126,11 @@ class PromotionResume extends \app\common\controller\Backend
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
+
         if ($input_data['type'] == 'tag' && $input_data['tag'] == '') {
             $this->ajaxReturn(500, '请填写标签');
         }
+
         $check_has = model('ServiceQueue')
             ->where('pid', 'eq', intval($input_data['pid']))
             ->where('type', $input_data['type'])
@@ -139,40 +143,64 @@ class PromotionResume extends \app\common\controller\Backend
         $data['pid'] = $input_data['pid'];
         $data['addtime'] = time();
         $data['deadline'] = strtotime('+' . $input_data['days'] . ' day');
-        if (
-            false ===
-            model('ServiceQueue')
-                ->allowField(true)
-                ->save($data)
-        ) {
-            $this->ajaxReturn(500, model('ServiceQueue')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('ServiceQueue')
+                    ->allowField(true)
+                    ->save($data)
+            ) {
+                throw new \Exception(model('ServiceQueue')->getError());
+            }
+
+            if ($data['type'] == 'stick') {
+                model('Resume')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+                model('ResumeSearchRtime')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+                model('ResumeSearchKey')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+            } elseif ($data['type'] == 'tag') {
+                model('Resume')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('service_tag', $input_data['tag']);
+            }
+
+            $fullname = model('Resume')->where('id', $input_data['pid'])->value('fullname');
+
+            $log_field = '添加推广，{'
+                . $fullname
+                . '}(简历ID:'
+                . $input_data['pid']
+                . ')；推广天数:'
+                . $input_data['days']
+                . '；推广方案:'
+                . model('ServiceQueue')->map_type[$input_data['type']];
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
 
-        if ($data['type'] == 'stick') {
-            model('Resume')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-            model('ResumeSearchRtime')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-            model('ResumeSearchKey')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-        } elseif ($data['type'] == 'tag') {
-            model('Resume')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('service_tag', $input_data['tag']);
-        }
-        model('AdminLog')->record(
-            '添加简历推广。简历ID【' .
-                $data['pid'] .
-                '】；推广类型【' .
-                ($data['type'] == 'stick' ? '置顶' : '醒目标签') .
-                '】；推广天数【' .
-                $input_data['days'] .
-                '】',
-            $this->admininfo
-        );
         $this->ajaxReturn(200, '保存成功');
     }
     public function edit()
@@ -183,34 +211,70 @@ class PromotionResume extends \app\common\controller\Backend
         ];
         $rule = [
             'id' => 'require',
-            'days' => 'require'
+            'days' => 'require|>:0'
         ];
         $msg = [
             'id.require' => '请选择推广记录',
-            'days.require' => '请输入延长推广天数'
+            'days.require' => '请输入延长推广天数',
+            'days.gt' => '请输入大于0的延长推广天数'
         ];
         $validate = new \think\Validate($rule, $msg);
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        $info = model('ServiceQueue')
-            ->where('id', $input_data['id'])
-            ->find();
-        $info->deadline = strtotime(
-            '+' . $input_data['days'] . ' day',
-            $info->deadline
-        );
-        if (false === $info->save()) {
-            $this->ajaxReturn(500, model('ServiceQueue')->getError());
+
+        Db::startTrans();
+        try {
+            $info = model('ServiceQueue')
+                ->where('id', $input_data['id'])
+                ->find();
+
+            $old_deadline = $info->deadline;
+
+            $info->deadline = strtotime(
+                '+' . $input_data['days'] . ' day',
+                $info->deadline
+            );
+            if (false === $info->save()) {
+                throw new \Exception(model('ServiceQueue')->getError());
+            }
+
+            $fullname = model('Resume')->where('id', $info['pid'])->value('fullname');
+
+            $log_field = '修改推广，{'
+                . $fullname
+                . '}(简历ID:'
+                . $info['pid']
+                . ')；推广类型:'
+                . model('ServiceQueue')->map_type[$info['type']]
+                . '；原推广期限:'
+                . date('Y-m-d H:i:s', $info['addtime'])
+                . ' ~ '
+                . date('Y-m-d H:i:s', $old_deadline)
+                . '；延长推广天数: '
+                . $input_data['days'] .
+                '；延长至: '
+                . date('Y-m-d H:i:s', $info->deadline);
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '编辑简历推广。推广记录ID【' .
-                $input_data['id'] .
-                '】；延长推广天数【' .
-                $input_data['days'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
     public function cancel()
@@ -219,30 +283,65 @@ class PromotionResume extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('ServiceQueue')
-            ->where('id', 'eq', $id)
-            ->find();
 
-        if ($info['type'] == 'stick') {
-            model('Resume')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-            model('ResumeSearchRtime')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-            model('ResumeSearchKey')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-        } elseif ($info['type'] == 'tag') {
-            model('Resume')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('service_tag', '');
+        Db::startTrans();
+        try {
+            $info = model('ServiceQueue')
+                ->where('id', 'eq', $id)
+                ->find();
+
+            $days = ($info['deadline'] - $info['addtime']) / 3600 / 24;
+            $days = ceil($days);
+
+            $fullname = model('Resume')->where('id', $info['pid'])->value('fullname');
+
+            $log_field = '取消推广，{'
+                . $fullname
+                . '}(简历ID:'
+                . $info['pid']
+                . ')；推广类型:'
+                . model('ServiceQueue')->map_type[$info['type']]
+                . '；推广天数:'
+                . $days
+                . '天；开始时间:' . date('Y-m-d', $info['addtime']);
+
+            if ($info['type'] == 'stick') {
+                model('Resume')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+                model('ResumeSearchRtime')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+                model('ResumeSearchKey')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+            } elseif ($info['type'] == 'tag') {
+                model('Resume')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('service_tag', '');
+            }
+
+            $info->delete();
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '取消失败', ['err_msg' => $e->getMessage()]);
         }
-        $info->delete();
-        model('AdminLog')->record(
-            '取消简历推广。推广ID【' . $id . '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '取消成功');
     }
 }

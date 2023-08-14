@@ -145,7 +145,7 @@
           v-model="info.address"
           placeholder="详细地址"
         />
-        <div class="tag" @click="handlerShowMap">标注</div>
+        <div class="tag" @click="handlerShowMap" v-if="$store.state.config.is_open_map == 1">标注</div>
       </div>
       <van-field
         v-if="field_rule.info.short_desc.is_display == 1"

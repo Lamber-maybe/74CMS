@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class CompanySetmeal extends \app\common\controller\Backend
 {
     public function _initialize()
@@ -178,7 +180,7 @@ class CompanySetmeal extends \app\common\controller\Backend
                 'im_total' => input('post.im_total/d', 0, 'intval'),
                 'im_max_perday' => input('post.im_max_perday/d', 0, 'intval'),
             ];
-            $info = model('MemberSetmeal')->where('uid',$input_data['uid'])->find();
+            $info = $member_setmeal = model('MemberSetmeal')->where('uid', $input_data['uid'])->find();
             
             if($input_data['days']!=0){
                 if($info['deadline']==0){
@@ -206,28 +208,92 @@ class CompanySetmeal extends \app\common\controller\Backend
                 $input_data['expired'] = 0;
             }
 
-            $result = model('MemberSetmeal')
-                ->allowField(true)
-                ->save($input_data, ['uid' => $input_data['uid']]);
-            if (false === $result) {
-                $this->ajaxReturn(500, model('MemberSetmeal')->getError());
+            Db::startTrans();
+            try {
+                $result = model('MemberSetmeal')
+                    ->allowField(true)
+                    ->save($input_data, ['uid' => $input_data['uid']]);
+                if (false === $result) {
+                    throw new \Exception(model('MemberSetmeal')->getError());
+                }
+
+                $company_info = model('Company')->field('id,companyname')->where('uid', $input_data['uid'])->find();
+                $log_field = '编辑{' . $company_info['companyname'] . '}(企业ID:' . $company_info['id'] . ')的套餐信息，';
+
+                $note = '系统操作【管理员：' . $this->admininfo->username . '】。' . $input_data['explain'];
+                if ($input_data['is_charge'] == 1 && $input_data['charge_val'] > 0) {
+                    $note .= '；收费' . $input_data['charge_val'] . '元';
+                    $log_field .= '收费金额: ' . $input_data['charge_val'] . '；';
+                } else {
+                    $log_field .= '收费金额: 0；';
+                }
+
+                $log['uid'] = $input_data['uid'];
+                $log['content'] = '修改企业套餐内容。' . $note;
+                $log['addtime'] = time();
+                model('MemberSetmealLog')
+                    ->allowField(true)
+                    ->save($log);
+
+                if ($input_data['deadline'] != $member_setmeal['deadline']) {
+                    $old_deadline = $member_setmeal['deadline'] == 0 ? '无限期' : date('Y-m-d', $member_setmeal['deadline']);
+                    $new_deadline = $input_data['deadline'] == 0 ? '无限期' : date('Y-m-d', $input_data['deadline']);
+                    $log_field .= '到期时间:' . $old_deadline . '->' . $new_deadline . '；';
+                }
+
+                if ($input_data['jobs_meanwhile'] != $member_setmeal['jobs_meanwhile']) {
+                    $log_field .= '同时在招职位数:' . $member_setmeal['jobs_meanwhile'] . '->' . $input_data['jobs_meanwhile'] . '；';
+                }
+
+                if ($input_data['download_resume_point'] != $member_setmeal['download_resume_point']) {
+                    $log_field .= '下载简历点数:' . $member_setmeal['download_resume_point'] . '->' . $input_data['download_resume_point'] . '；';
+                }
+
+                if ($input_data['im_total'] != $member_setmeal['im_total']) {
+                    $log_field .= '职聊次数:' . $member_setmeal['im_total'] . '->' . $input_data['im_total'] . '；';
+                }
+
+                if ($input_data['im_max_perday'] != $member_setmeal['im_max_perday']) {
+                    $log_field .= '允许发起聊天数:' . $member_setmeal['im_max_perday'] . '次/天->' . $input_data['im_max_perday'] . '次/天；';
+                }
+
+                if ($input_data['refresh_jobs_free_perday'] != $member_setmeal['refresh_jobs_free_perday']) {
+                    $log_field .= '免费刷新职位:' . $member_setmeal['refresh_jobs_free_perday'] . '次/天->' . $input_data['refresh_jobs_free_perday'] . '次/天；';
+                }
+
+                if ($input_data['enable_video_interview'] != $member_setmeal['enable_video_interview']) {
+                    $log_field .= '使用视频面试:' . model('Setmeal')->map_enable[$member_setmeal['enable_video_interview']] . '->' . model('Setmeal')->map_enable[$input_data['enable_video_interview']] . '；';
+                }
+
+                if ($input_data['show_apply_contact'] != $member_setmeal['show_apply_contact']) {
+                    $log_field .= '收到简历免费查看:' . model('Setmeal')->map_enable[$member_setmeal['show_apply_contact']] . '->' . model('Setmeal')->map_enable[$input_data['show_apply_contact']] . '；';
+                }
+
+                if ($input_data['download_resume_max_perday'] != $member_setmeal['download_resume_max_perday']) {
+                    $log_field .= '下载简历上限:' . $member_setmeal['download_resume_max_perday'] . '份/天->' . $input_data['download_resume_max_perday'] . '份/天；';
+                }
+
+                $log_field .= '操作说明:' . (empty($input_data['explain']) ? '无' : $input_data['explain']);
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    5
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            $note = '系统操作【管理员：'.$this->admininfo->username.'】。' . $input_data['explain'];
-            if ($input_data['is_charge'] == 1 && $input_data['charge_val'] > 0) {
-                $note .= '；收费' . $input_data['charge_val'] . '元';
-            }
-            $log['uid'] = $input_data['uid'];
-            $log['content'] = '修改企业套餐内容。' . $note;
-            $log['addtime'] = time();
-            model('MemberSetmealLog')
-                ->allowField(true)
-                ->save($log);
-            model('AdminLog')->record(
-                '修改企业套餐内容。企业UID【' .
-                $input_data['uid'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
@@ -235,15 +301,39 @@ class CompanySetmeal extends \app\common\controller\Backend
     {
         $uid = input('post.uid/d', 0, 'intval');
         $setmeal_id = input('post.setmeal_id/d', 0, 'intval');
-        
-        model('Member')->setMemberSetmeal(['uid'=>$uid,'setmeal_id'=>$setmeal_id,'note'=>'管理员更换套餐'],0,$this->admininfo->id);
-        
-        model('AdminLog')->record(
-            '更换企业套餐。企业UID【' .
-            $uid .
-                '】；套餐ID【'.$setmeal_id.'】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $company_info = model('Company')
+                ->alias('c')
+                ->join('setmeal s', 's.id = c.setmeal_id', 'LEFT')
+                ->field('c.id as comid,c.companyname,s.name as setmeal_name')
+                ->where('uid', $uid)
+                ->find();
+
+            $new_setmeal = model('Setmeal')->where('id', $setmeal_id)->value('name');
+
+            model('Member')->setMemberSetmeal(['uid' => $uid, 'setmeal_id' => $setmeal_id, 'note' => '管理员更换套餐'], 0, $this->admininfo->id);
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '{' . $company_info['companyname'] . '}(企业ID:' . $company_info['comid'] . ')更换套餐，' . $company_info['setmeal_name'] . ' -> ' . $new_setmeal,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '更换套餐成功', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '更换套餐成功');
     }
     /**

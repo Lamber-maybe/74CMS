@@ -113,11 +113,10 @@ class NewDataStatistics extends \app\common\controller\Backend
         $member_login_data = model('MemberActionLog')
             ->where('is_login', 1)
             ->where('utype', 1)
-            ->where('addtime', 'between time', $daterange);
-        $member_login_data = $member_login_data
+            ->where('addtime', 'between time', $daterange)
             ->group('time')
             ->column(
-                'UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num'
+                'UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(DISTINCT uid) as num'
             );
 
         $add_job_data = model('Job')->where(
@@ -188,11 +187,10 @@ class NewDataStatistics extends \app\common\controller\Backend
         $member_login_data = model('MemberActionLog')
             ->where('is_login', 1)
             ->where('utype', 2)
-            ->where('addtime', 'between time', $daterange);
-        $member_login_data = $member_login_data
+            ->where('addtime', 'between time', $daterange)
             ->group('time')
             ->column(
-                'UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num'
+                'UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(DISTINCT uid) as num'
             );
 
         $refresh_resume_times_data = model('RefreshResumeLog')->where(

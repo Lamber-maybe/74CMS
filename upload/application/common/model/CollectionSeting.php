@@ -10,6 +10,11 @@ class CollectionSeting extends BaseModel
 {
     protected $table = 'collection_seting';
 
+    public $map_status = [
+        0 => '关闭',
+        1 => '开启'
+    ];
+
     /**
      * 修改
      * @access public

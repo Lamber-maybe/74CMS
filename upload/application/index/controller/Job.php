@@ -413,6 +413,11 @@ class Job extends \app\index\controller\Base
         if (!empty($logo) && $logo['last_login_time'] > 0) {
             $last_login_time = date('Y/m/d H:i:s', $logo['last_login_time']);
         }
+
+        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'],$return['base_info']['map_lat']);
+        $return['base_info']['map_lng'] = $coordinate['lng'];
+        $return['base_info']['map_lat'] = $coordinate['lat'];
+
         $logo['last_time'] = $last_login_time;
         $this->assign('logo', $logo);
        

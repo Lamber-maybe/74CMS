@@ -141,6 +141,10 @@ class Resume extends \app\common\model\BaseModel
     public $map_sex = [0 => '保密',1 => '男', 2 => '女'];
     public $map_marriage = [0 => '保密', 1 => '未婚', 2 => '已婚'];
     public $map_nature = [1 => '全职', 2 => '兼职', 3 => '实习'];
+    public $map_is_display = [0 => '关闭', 1 => '开启'];
+    public $map_high_quality = [0 => '普通', 1 => '优质'];
+    public $map_is_status_weixin = [1 => '未添加微信', 2 => '已添加微信'];
+    public $map_is_status_phone = [1 => '未电话联系', 2 => '已电话联系'];
     protected $readonly = ['id', 'uid', 'addtime'];
     protected $insert = [
         'audit',
@@ -1352,6 +1356,15 @@ class Resume extends \app\common\model\BaseModel
             }
         }
         return ['status' => true, 'msg' => 'SUCCESS'];
+    }
+
+
+    public function getFullnameByUid($uid, $fault = false)
+    {
+        $fullname = $this->where('uid', $uid)
+            ->value('fullname');
+
+        return (null === $fullname) ? $fault : $fullname;
     }
 
 }

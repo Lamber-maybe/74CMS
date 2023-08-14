@@ -148,7 +148,7 @@ export default {
           }
           apiDelete(param).then(response => {
             that.$message.success(response.message)
-            that.fetchData()
+            that.pageReload()
             return true
           })
         })
@@ -173,7 +173,7 @@ export default {
           apiDelete(param)
             .then(response => {
               that.$message.success(response.message)
-              that.fetchData()
+              that.pageReload()
               return true
             })
             .catch(() => {})

@@ -680,6 +680,11 @@ export default {
       if (that.submiting === true) {
         return false
       }
+
+      // 【ID1000617】【优化】公众号营销筛选企业 yx - 20223.04.13
+      this.checkList = []
+      this.checkAll = false
+
       // 显示进度条
       this.progressFlag = true
       // 初始化后加载进度，加载到百分之多少由stopVal决定

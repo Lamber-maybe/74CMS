@@ -1051,6 +1051,7 @@ cursor: pointer;
 	position: absolute;
 	right: 20px;
 	top: 17px;
+	z-index: 10;
 }
 
 .jobshow_map .code .code_img{

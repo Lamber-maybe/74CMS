@@ -2,8 +2,18 @@
 
 namespace app\common\model;
 
-class NotifyRule extends \app\common\model\BaseModel
+class NotifyRule extends BaseModel
 {
+    /**
+     * 开启状态
+     * @var string[]
+     */
+    public $map_is_open = [
+        -1 => '不可编辑',
+        0 => '关闭',
+        1 => '开启'
+    ];
+
     protected static function init()
     {
         self::event('after_write', function () {

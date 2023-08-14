@@ -113,9 +113,11 @@ class Personal extends Backend
             }
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '修改头像',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '个人会员中心修改账号资料，个人头像',
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -204,9 +206,11 @@ class Personal extends Backend
             }
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '修改账号名称【' . $old_username . ' => ' . $input_data['username'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '个人会员中心修改账号资料，账户名称:' . $old_username . '->' . $input_data['username'],
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -312,9 +316,11 @@ class Personal extends Backend
             }
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '修改登录密码',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '个人会员中心修改账号资料，修改登录密码',
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -468,6 +474,7 @@ class Personal extends Backend
         // 开启事务
         Db::startTrans();
         try {
+            $old_mobile = $model->mobile;
             $model->mobile = $input_data['mobile'];
             $result = $model->save();
             if (false === $result) {
@@ -478,9 +485,12 @@ class Personal extends Backend
             }
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '绑定手机【' . $input_data['mobile'] . '】',
-                $this->admininfo
+            $old_mobile = (!empty($old_mobile)) ? $old_mobile : '无';
+            $log_result = model('AdminLog')->writeLog(
+                '个人会员中心修改账号资料，修改绑定手机:' . $old_mobile . '->' . $input_data['mobile'],
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());

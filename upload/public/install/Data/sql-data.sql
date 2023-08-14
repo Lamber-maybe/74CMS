@@ -961,7 +961,11 @@ INSERT INTO `qs_config` VALUES
 (NULL,'account_zhitoo_document',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','智兔在线文档预览配置',0),
 (NULL,'account_qy_directory',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','企业名录配置',0),
 (NULL,'resume_search_engine',0,'1','简历搜索方式 1全文搜索 2模糊搜索',0),
-(NULL,'job_search_engine',0,'1','职位搜索方式 1全文搜索 2模糊搜索',0);
+(NULL,'job_search_engine',0,'1','职位搜索方式 1全文搜索 2模糊搜索',0),
+(null,'is_open_map',1,'1','是否开启电子地图',0),
+(null,'map_type',1,'1','地图类型 1-百度地图 2-天地图',0),
+(null,'tian_map_ak',1,'','天地图ak',0),
+(null,'tian_map_server_ak',0,'','天地图服务端ak',0);
 
 
 INSERT INTO `qs_cron` VALUES

@@ -237,7 +237,7 @@
             filterable
             @change="setLocation"
           ></el-cascader>
-          <span @click="handlerShowMap">
+          <span v-if="config.is_open_map == 1" @click="handlerShowMap">
             <el-input
               class="el-select_width"
               v-model="form.info.address"
@@ -245,7 +245,14 @@
               disabled
             ></el-input>
           </span>
-          <div class="inp_bz_map" @click="handlerShowMap">标注</div>
+          <span v-else >
+            <el-input
+              class="el-select_width"
+              v-model="form.info.address"
+              placeholder="请输入详细地址"
+            ></el-input>
+          </span>
+          <div class="inp_bz_map" @click="handlerShowMap" v-if="config.is_open_map == 1">标注</div>
         </el-form-item>
         <el-form-item
           v-if="field_rule.info.short_desc.is_display == 1"
@@ -393,7 +400,7 @@
           >
           &nbsp;
           <el-checkbox v-model="weixin_sync_mobile" @change="handlerSync"
-            >同手机号</el-checkbox
+          >同手机号</el-checkbox
           >
         </el-form-item>
         <el-form-item
@@ -438,7 +445,7 @@
             v-model="form.contact.email"
             class="el-select_width"
             :placeholder="'请输入' + field_rule.contact.email.field_cn"
-            >></el-input
+          >></el-input
           >
         </el-form-item>
         <el-form-item
@@ -457,7 +464,7 @@
             v-model="form.contact.qq"
             class="el-select_width"
             :placeholder="'请输入' + field_rule.contact.qq.field_cn"
-            >></el-input
+          >></el-input
           >
         </el-form-item>
         <el-form-item label="">
@@ -466,7 +473,7 @@
             type="primary"
             @click="onSubmit('form')"
             :loading="isSubmit"
-            >保存</el-button
+          >保存</el-button
           >
         </el-form-item>
       </el-card>
@@ -631,6 +638,9 @@ export default {
     },
     columnsTag() {
       return this.$store.state.classifyJobTag;
+    },
+    config() {
+      return this.$store.state.config
     }
   },
   methods: {

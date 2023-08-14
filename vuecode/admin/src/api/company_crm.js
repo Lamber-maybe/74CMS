@@ -176,13 +176,6 @@ export function getAllCrmTags(data) {
     data
   })
 }
-export function companyCrmEdit(data) {
-  return request({
-    url: apiArr.companyCrmEdit,
-    method: 'post',
-    data
-  })
-}
 export function deleteImg(data) {
   return request({
     url: apiArr.deleteImg,

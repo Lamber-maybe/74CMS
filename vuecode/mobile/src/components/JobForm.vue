@@ -159,7 +159,7 @@
           placeholder="详细地址"
           class="reset_after"
         />
-        <div class="tag" @click="handlerShowMap">标注</div>
+        <div class="tag" @click="handlerShowMap" v-if="$store.state.config.is_open_map == 1">标注</div>
       </div>
       <van-field
         readonly
@@ -177,6 +177,7 @@
           label=""
           type="textarea"
           placeholder="请输入详细的职位描述"
+          wrap="hard"
         />
         <van-tag type="primary" class="tpl_tag" size="medium" v-for="(item, index) in tpllist" :key="index" @click="basic.content = item.content">{{ item.title }}</van-tag>
       </div>

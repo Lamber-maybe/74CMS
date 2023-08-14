@@ -286,7 +286,7 @@ export default {
           wechatMenuDelete(param)
             .then(response => {
               that.$message.success(response.message)
-              that.fetchData()
+              that.pageReload()
               return true
             })
             .catch(() => {})
@@ -312,7 +312,7 @@ export default {
           wechatMenuDelete(param)
             .then(response => {
               that.$message.success(response.message)
-              that.fetchData()
+              that.pageReload()
               return true
             })
             .catch(() => {})

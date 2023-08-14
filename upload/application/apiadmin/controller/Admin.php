@@ -1,11 +1,11 @@
 <?php
+
 namespace app\apiadmin\controller;
 
-use app\common\model\AdminLog;
-use app\common\model\b2bcrm\CrmClueRelease;
+use app\common\controller\Backend;
 use think\Db;
 
-class Admin extends \app\common\controller\Backend
+class Admin extends Backend
 {
     public function index()
     {
@@ -39,6 +39,7 @@ class Admin extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -47,6 +48,7 @@ class Admin extends \app\common\controller\Backend
             'role_id' => input('post.role_id/d', 0, 'intval'),
             'is_sc' => input('post.is_sc/d', 0, 'intval')
         ];
+        $password = $input_data['password'];
         $input_data['pwd_hash'] = randstr();
         $input_data['password'] = model('Admin')->makePassword(
             $input_data['password'],
@@ -59,16 +61,18 @@ class Admin extends \app\common\controller\Backend
         if (false === $result) {
             $this->ajaxReturn(500, model('Admin')->getError());
         }
-        model('AdminLog')->record(
-            '添加管理员。管理员ID【' .
-                model('Admin')->id .
-                '】;管理员登录名【' .
-                $input_data['username'] .
-                '】',
-            $this->admininfo
+
+        $role_name = model('AdminRole')->where('id', $input_data['role_id'])->value('name');
+        model('AdminLog')->writeLog(
+            '系统-系统管理员-管理员列表，添加管理员，角色:' . $role_name . '；登录名:' . $input_data['username'] . '；密码:' . $password,
+            $this->admininfo,
+            0,
+            2
         );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -95,15 +99,41 @@ class Admin extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            $info = model('Admin')->find($id);
+            $info = model('Admin')
+                ->alias('a')
+                ->join('admin_role r', 'r.id = a.role_id', 'LEFT')
+                ->field('a.username,a.role_id,a.password,a.pwd_hash,a.status,r.name as role_name')
+                ->where('a.id', $id)
+                ->find();
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
+
+            $log_field = '系统-系统管理员-管理员列表，修改管理员，';
+            $is_update = false;
+
+            if ($input_data['role_id'] != $info['role_id']) {
+                $role_name = model('AdminRole')->where('id', $input_data['role_id'])->value('name');
+                $log_field .= '角色:' . $info['role_name'] . '->' . $role_name . '；';
+                $is_update = true;
+            } else {
+                $log_field .= '角色:' . $info['role_name'] . '；';
+            }
+
+            if ($input_data['username'] != $info['username']) {
+                $log_field .= '登录名:' . $info['username'] . '->' . $input_data['username'] . '；';
+                $is_update = true;
+            } else {
+                $log_field .= '登录名:' . $info['username'] . '；';
+            }
+
             if (isset($input_data['password']) && $input_data['password']) {
+                $log_field .= '密码:' . $input_data['password'];
                 $input_data['password'] = model('Admin')->makePassword(
                     $input_data['password'],
                     $info['pwd_hash']
                 );
+                $is_update = true;
             } else {
                 $input_data['password'] = $info['password'];
             }
@@ -117,18 +147,37 @@ class Admin extends \app\common\controller\Backend
                 if (false === $result) {
                     $this->ajaxReturn(500, model('Admin')->getError());
                 }
-                model('AdminLog')->record(
-                    '编辑管理员。管理员ID【' .
-                    $id .
-                    '】;管理员登录名【' .
-                    $input_data['username'] .
-                    '】',
-                    $this->admininfo
-                );
 
-                if (isset($is_release) && $is_release ===1){
-                    $this->adminCrmRelease($id);
+                if ($info['status'] != $input_data['status']) {
+                    if ($input_data['status'] === 1) {
+                        $deblocking = model('AdminLog')->writeLog(
+                            '系统-系统管理员-管理员列表，解锁管理员，角色:' . $info['role_name'] . '；登录名:' . $info['username'] . '。',
+                            $this->admininfo,
+                            0,
+                            7
+                        );
+                        if (false === $deblocking) {
+                            throw new \Exception(model('AdminLog')->getError());
+                        }
+                    } else {
+                        if (isset($is_release) && $is_release === 1) {
+                            $this->adminCrmRelease($id);
+                        }
+                    }
                 }
+
+                if ($is_update) {
+                    $log_result = model('AdminLog')->writeLog(
+                        $log_field,
+                        $this->admininfo,
+                        0,
+                        3
+                    );
+                    if (false === $log_result) {
+                        throw new \Exception(model('AdminLog')->getError());
+                    }
+                }
+
                 //提交事务
                 Db::commit();
             } catch (\Exception $e) {
@@ -140,6 +189,7 @@ class Admin extends \app\common\controller\Backend
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -153,26 +203,29 @@ class Admin extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
         $info->delete();
-        model('AdminLog')->record(
+        model('AdminLog')->writeLog(
             '删除管理员。管理员ID【' .
-                $id .
-                '】;管理员登录名【' .
-                $info['username'] .
-                '】',
+            $id .
+            '】;管理员登录名【' .
+            $info['username'] .
+            '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function roleoptions()
     {
         $list = model('AdminRole')->select();
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
+
     public function loglist()
     {
         $where = [];
         $is_login = input('get.is_login/d', 0, 'intval');
         $admin_id = input('get.admin_id/d', 0, 'intval');
+        $type = input('get.type/d', 0, 'intval');
         $keyword = input('get.keyword/s', '', 'trim');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
@@ -180,11 +233,15 @@ class Admin extends \app\common\controller\Backend
             $where['admin_id'] = $admin_id;
         }
 
+        if ($type > 0) {
+            $where['type'] = $type;
+        }
+
         if ($is_login > 0) {
             $where['is_login'] = $is_login;
             $wherefulltext = '';
         } else {
-            if ($keyword!='') {
+            if ($keyword != '') {
                 $against = '';
                 $keyword = trim($keyword);
                 if (false !== stripos($keyword, ' ')) {
@@ -198,7 +255,7 @@ class Admin extends \app\common\controller\Backend
                     $against = $keyword;
                 }
                 $wherefulltext = " MATCH (`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
-            }else{
+            } else {
                 $wherefulltext = '';
             }
         }
@@ -213,6 +270,12 @@ class Admin extends \app\common\controller\Backend
             ->order('id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
+        $typeAll = model('AdminLog')->map_type;
+        foreach ($list as &$log) {
+            $log['type_name'] = isset($typeAll[$log['type']])
+                ? $typeAll[$log['type']]
+                : '未知';
+        }
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -220,6 +283,7 @@ class Admin extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function alladmin()
     {
         $list = model('Admin')
@@ -227,38 +291,48 @@ class Admin extends \app\common\controller\Backend
             ->select();
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
-    public function getBindQrcode(){
-        $id = input('get.id/d',0,'intval');
-        $info = model('Admin')->where('id',$id)->find();
-        if($info===null){
+
+    public function getBindQrcode()
+    {
+        $id = input('get.id/d', 0, 'intval');
+        $info = model('Admin')->where('id', $id)->find();
+        if ($info === null) {
             $this->ajaxReturn(500, '没有找到管理员信息');
         }
-        if(config('global_config.wechat_open')==0){
+        if (config('global_config.wechat_open') == 0) {
             $this->ajaxReturn(500, '微信公众号功能未开启，请先开启');
         }
-        if(config('global_config.wechat_appid')=='' || config('global_config.wechat_appsecret')==''){
+        if (config('global_config.wechat_appid') == '' || config('global_config.wechat_appsecret') == '') {
             $this->ajaxReturn(500, '微信公众号功能未正确配置，请先配置');
         }
         $params = [
-            'alias'=>'admin_bind',
-            'admin_id'=>$id
+            'alias' => 'admin_bind',
+            'admin_id' => $id
         ];
         $class = new \app\common\lib\Wechat;
         $qrcode = $class->makeQrcode($params);
-        if($qrcode){
+        if ($qrcode) {
             $this->ajaxReturn(200, '', $qrcode);
-        }else{
+        } else {
             $this->ajaxReturn(500, '生成二维码失败');
         }
     }
-    public function bindQrcodeCancel(){
-        $id = input('post.id/d',0,'intval');
-        $info = model('Admin')->where('id',$id)->find();
-        if($info===null){
+
+    public function bindQrcodeCancel()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        $info = model('Admin')->where('id', $id)->find();
+        if ($info === null) {
             $this->ajaxReturn(500, '没有找到管理员信息');
         }
         $info->openid = '';
         $info->save();
+        model('AdminLog')->writeLog(
+            '个人会员中心修改账号资料，绑定微信，解绑成功',
+            $this->admininfo,
+            0,
+            1
+        );
         $this->ajaxReturn(200, '解绑成功');
     }
 
@@ -338,7 +412,10 @@ class Admin extends \app\common\controller\Backend
             $this->ajaxReturn(500, '不允许操作内置admin账号');
         }
         $info = model('Admin')
-            ->where('id', $adminId)
+            ->alias('a')
+            ->join('admin_role r', 'r.id = a.role_id', 'LEFT')
+            ->field('a.username,r.name as role_name')
+            ->where('a.id', $adminId)
             ->find();
         if (null === $info) {
             $this->ajaxReturn(500, '要解锁的管理员不存在');
@@ -358,14 +435,15 @@ class Admin extends \app\common\controller\Backend
             }
 
             # 2.写入管理员操作日志
-            model('AdminLog')->record(
-                '解锁管理员。管理员ID【' .
-                $adminId .
-                '】;管理员登录名【' .
-                $info['username'] .
-                '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '系统-系统管理员-管理员列表，解锁管理员，角色:' . $info['role_name'] . '；登录名:' . $info['username'] . '。',
+                $this->admininfo,
+                0,
+                7
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();
@@ -424,7 +502,10 @@ class Admin extends \app\common\controller\Backend
     private function adminCrmRelease($adminId)
     {
         $info = model('Admin')
-            ->where('id', $adminId)
+            ->alias('a')
+            ->join('admin_role r', 'r.id = a.role_id', 'LEFT')
+            ->field('a.username,r.name as role_name')
+            ->where('a.id', $adminId)
             ->find();
         if (null === $info) {
             $this->ajaxReturn(500, '要锁定的管理员不存在');
@@ -484,14 +565,81 @@ class Admin extends \app\common\controller\Backend
             ->destroy(['admin_id' => $adminId]);
 
         # 5.写入管理员操作日志
-        $adminLogModel = new AdminLog();
-        $adminLogModel->record(
-            '锁定管理员。管理员ID【' .
-            $adminId .
-            '】;管理员登录名【' .
-            $info['username'] .
-            '】',
-            $this->admininfo
+        $log_result = model('AdminLog')->writeLog(
+            '系统-系统管理员-管理员列表，锁定管理员，角色:' . $info['role_name'] . '；登录名:' . $info['username'] . '。',
+            $this->admininfo,
+            0,
+            7
         );
+        if (false === $log_result) {
+            throw new \Exception(model('AdminLog')->getError());
+        }
+    }
+
+    public function adminLogTypeAll()
+    {
+        $typeAll = model('AdminLog')->map_type;
+        $this->ajaxReturn(200, '获取数据成功', $typeAll);
+    }
+
+    public function delAdminLog()
+    {
+        $this->checkIsAdministrator();
+
+        $days = input('post.days/d', 0, 'intval');
+
+        switch ($days) {
+            case '1':
+                $log_field = '清理一个月前的管理员日志';
+                break;
+
+            case '3':
+                $log_field = '清理三个月前的管理员日志';
+                break;
+
+            case '6':
+                $log_field = '清理半年前的管理员日志';
+                break;
+
+            case '12':
+                $log_field = '清理一年前的管理员日志';
+                break;
+
+            default:
+                $this->ajaxReturn(500, '请选择删除日志的时间节点');
+                break;
+        }
+
+        Db::startTrans();
+        try {
+            # 1.删除日志
+            $del_result = model('AdminLog')
+                ->whereTime('addtime', '<', "-{$days} month")
+                ->delete();
+            if (false === $del_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            # 2.写入管理员操作日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+
+            $this->ajaxReturn(200, '日志清理成功');
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '日志清理失败', ['err_msg' => $e->getMessage()]);
+        }
+
     }
 }

@@ -262,6 +262,11 @@ class Profile extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(500, '没有找到企业信息');
             }
             $company_profile['field_rule'] = $field_rule;
+
+            $coordinate = model('Config')->bd09ToWgs84($company_profile['basic']['map_lng'],$company_profile['basic']['map_lat']);
+            $company_profile['basic']['map_lng'] = $coordinate['lng'];
+            $company_profile['basic']['map_lat'] = $coordinate['lat'];
+
             $this->ajaxReturn(200, '获取数据成功', $company_profile);
         } else {
             $input_data = [
@@ -295,6 +300,10 @@ class Profile extends \app\v1_0\controller\common\Base
                     'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
                 ]
             ];
+            $coordinate = model('Config')->bd09ToWgs84($input_data['basic']['map_lng'],$input_data['basic']['map_lat']);
+            $input_data['basic']['map_lng'] = $coordinate['lng'];
+            $input_data['basic']['map_lat'] = $coordinate['lat'];
+
             if (!empty($input_data['basic']['citycategory_arr'])) {
                 $input_data['basic']['district1'] = isset($input_data['basic']['citycategory_arr'][0]) ? $input_data['basic']['citycategory_arr'][0] : 0;
                 $input_data['basic']['district2'] = isset($input_data['basic']['citycategory_arr'][1]) ? $input_data['basic']['citycategory_arr'][1] : 0;

@@ -177,7 +177,7 @@
             filterable
             @change="setLocation"
           ></el-cascader>
-          <span @click="handlerShowMap">
+          <span @click="handlerShowMap" v-if="config.is_open_map == 1">
             <el-input
               class="region_width"
               v-model="form.basic.address"
@@ -185,12 +185,20 @@
               disabled
             ></el-input>
           </span>
+          <span v-else>
+            <el-input
+              class="region_width"
+              v-model="form.basic.address"
+              placeholder="请输入详细地址"
+            ></el-input>
+          </span>
           <img
             class="taggingImg"
             src="../../assets/images/tagging.png"
             @click="handlerShowMap"
+            v-if="config.is_open_map == 1"
           />
-          <span @click="handlerShowMap">标注</span>
+          <span @click="handlerShowMap" v-if="config.is_open_map == 1">标注</span>
         </el-form-item>
 
         <el-form-item
@@ -296,7 +304,7 @@
                 ]
               : []
           "
-        >
+        >````
           <el-select
             :disabled="form.basic.age_na !== false"
             v-model="form.basic.minage"
@@ -610,6 +618,9 @@ export default {
     this.$store.dispatch('getClassifyAge')
   },
   computed: {
+    config() {
+      return this.$store.state.config
+    },
     columnsCitycategory() {
       return this.$store.state.classifyCityCategory
     },

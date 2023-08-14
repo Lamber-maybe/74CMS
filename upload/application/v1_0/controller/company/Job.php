@@ -90,7 +90,9 @@ class Job extends \app\v1_0\controller\common\Base
                 'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
             ]
         ];
-
+        $coordinate = model('Config')->wgs84ToBd09($input_data['basic']['map_lng'],$input_data['basic']['map_lat']);
+        $input_data['basic']['map_lng'] = $coordinate['lng'];
+        $input_data['basic']['map_lat'] = $coordinate['lat'];
         /**
          * 【优化】触屏端发布职位薪资待遇问题
          * zch 2022.10.9
@@ -457,6 +459,9 @@ class Job extends \app\v1_0\controller\common\Base
                 $field_rule[$key][$field] = $_arr;
             }
         }
+        $coordinate = model('Config')->bd09ToWgs84($jobinfo['basic']['map_lng'],$jobinfo['basic']['map_lat']);
+        $jobinfo['basic']['map_lng'] = $coordinate['lng'];
+        $jobinfo['basic']['map_lat'] = $coordinate['lat'];
         $this->ajaxReturn(200, '获取数据成功', [
             'basic' => $jobinfo['basic'],
             'contact' => $jobinfo['contact'],
@@ -504,6 +509,10 @@ class Job extends \app\v1_0\controller\common\Base
                 'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
             ]
         ];
+        $coordinate = model('Config')->wgs84ToBd09($input_data['basic']['map_lng'],$input_data['basic']['map_lat']);
+        $input_data['basic']['map_lng'] = $coordinate['lng'];
+        $input_data['basic']['map_lat'] = $coordinate['lat'];
+
         $jobid = $input_data['basic']['id'];
         if ($jobid == 0) {
             $this->ajaxReturn(500, '请选择职位');

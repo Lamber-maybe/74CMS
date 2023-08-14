@@ -2,7 +2,9 @@
   <div id="app">
     <Head>地图找工作</Head>
     <div class="map-wrapper">
+
       <baidu-map
+        v-if="config.map_type == 1"
         class="bm-view"
         :ak="$store.state.config.map_ak"
         :center="center"
@@ -28,6 +30,20 @@
           </div>
         </bml-marker-clusterer>
       </baidu-map>
+
+      <TianMap
+        v-if="config.map_type == 2"
+        class="bm-view"
+        style="z-index: 1;"
+        :ak="$store.state.config.tian_map_ak"
+        :center="center"
+        :zoom="zoom"
+        @ready="handlerTianMap"
+        @touchend="handleTianMapTouchend"
+        @moveend="handleTianMapTouchend"
+      >
+      <Geolocation position="BOTTOM_RIGHT" @geolocationReady="geolocationReady" @positionSuccess="positionSuccess" @positionError="positionError"></Geolocation>
+      </TianMap>
     </div>
     <van-search
       v-model="params.keyword"
@@ -93,6 +109,9 @@
 import Vue from 'vue'
 import http from '@/utils/http'
 import api from '@/api'
+import TianMap from '@/components/map/TianMap/TianMap'
+import Geolocation from '@/components/map/TianMap/Geolocation'
+import { mapState } from 'vuex'
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -121,6 +140,10 @@ Vue.component('BmlMarkerClusterer', function (resolve, reject) {
 })
 export default {
   name: 'JobMap',
+  components: {
+    TianMap,
+    Geolocation
+  },
   data () {
     return {
       show: true,
@@ -146,6 +169,9 @@ export default {
       finished: false
     }
   },
+  computed: {
+    ...mapState(['config'])
+  },
   created () {
     this.center = {
       lat: this.$store.state.config.map_lat,
@@ -169,10 +195,11 @@ export default {
           company_audit: res.data.base_info.company_audit,
           setmeal_icon: res.data.base_info.setmeal_icon
         }
-        this.joblist = [detail]
+        this.joblist.push(detail)
       }).catch(() => {})
-
-      this.moveShow()
+      setTimeout(() => {
+        this.moveShow()
+      }, 500)
     },
     syncCenterAndZoom (e) {
       if (this.map_done === false) {
@@ -180,6 +207,18 @@ export default {
       }
       let cur_bssw = this.map.getBounds().getSouthWest()
       let cur_bsne = this.map.getBounds().getNorthEast()
+      this.params.south_west_lat = cur_bssw.lat
+      this.params.south_west_lng = cur_bssw.lng
+      this.params.north_east_lat = cur_bsne.lat
+      this.params.north_east_lng = cur_bsne.lng
+      this.fetchData(true)
+    },
+    handleTianMapTouchend () {
+      // if (this.map_done === false) {
+      //   return
+      // }
+      let cur_bssw = this.tianMap.getBounds().getSouthWest()
+      let cur_bsne = this.tianMap.getBounds().getNorthEast()
       this.params.south_west_lat = cur_bssw.lat
       this.params.south_west_lng = cur_bssw.lng
       this.params.north_east_lat = cur_bsne.lat
@@ -201,12 +240,37 @@ export default {
         { enableHighAccuracy: true }
       )
     },
+    setTianMaplocation () {
+      const that = this
+      const {TMap} = this
+      var geolocation = new TMap.Geolocation()
+      geolocation.getCurrentPosition(function (res) {
+        if (this.getStatus() == 0) {
+          that.center.lat = res.lnglat.lat
+          that.center.lng = res.lnglat.lng
+          that.map_done = true
+        } else {
+          that.$notify('获取定位失败')
+          console.log('获取定位失败')
+        }
+      }, { enableHighAccuracy: true })
+    },
     handler ({ BMap, map }) {
       this.BMap = BMap
       this.map = map
       //   console.log(this.map)
       //   return false
       this.setlocation()
+    },
+    handlerTianMap ({TMap, map}) {
+      this.TMap = TMap
+      this.tianMap = map
+      // eslint-disable-next-line no-undef
+      const control = new this.TMap.Control.Zoom({position: T_ANCHOR_BOTTOM_LEFT})
+      // 添加缩放平移控件
+      this.tianMap.addControl(control)
+      control.setOffset({x: 5, y: 5})
+      this.setTianMaplocation()
     },
     moveShow () {
       this.contentShow = true
@@ -231,6 +295,9 @@ export default {
           } else {
             this.joblist = this.joblist.concat(res.data.items)
           }
+          if (this.config.map_type == 2) {
+            this.addMarkers()
+          }
           // 加载状态结束
           this.loading = false
           // 数据全部加载完成
@@ -246,6 +313,32 @@ export default {
     },
     onKeywordSearch () {
       this.fetchData(true)
+    },
+    addMarkers () {
+      const that = this
+      const {TMap, marklist} = this
+      // onHandlerMark
+      var markers = []
+      marklist.forEach((element) => {
+        var point = new TMap.LngLat(element.map_lng, element.map_lat)
+        var marker = new TMap.Marker(point)// 创建标注
+        marker.markerId = element.id
+        markers.push(marker)
+        marker.addEventListener('click', function (e) {
+          that.onHandlerMark({id: e.target.markerId})
+        })
+      })
+      var clustererObject = new TMap.MarkerClusterer(this.tianMap, { markers: markers })
+    },
+    geolocationReady (control) {
+      control.setOffset({x: 5, y: -19})
+    },
+    positionSuccess (e) {
+      const {tianMap} = this
+      tianMap.panTo(e.lnglat.lnglat)
+    },
+    positionError (e) {
+      console.log(e)
     }
   },
   mounted () {

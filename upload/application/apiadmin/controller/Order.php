@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class Order extends \app\common\controller\Backend
 {
     /**
@@ -259,21 +261,52 @@ class Order extends \app\common\controller\Backend
             $this->ajaxReturn(500, '该订单不是待支付状态');
         }
         $note = input('post.note/s', '', 'trim');
-        model('Order')->orderPaid(
-            $order_detail['oid'],
-            'backend',
-            time(),
-            $note,
-            $this->admininfo->id
-        );
-        model('AdminLog')->record(
-            '更改订单状态为【支付成功】。订单ID【' .
-                $id .
-                '】；订单号【' .
-                $order_detail['oid'] .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            model('Order')->orderPaid(
+                $order_detail['oid'],
+                'backend',
+                time(),
+                $note,
+                $this->admininfo->id
+            );
+
+            $uid = $order_detail['uid'];
+            $member_name = model('Member')->getMemberNickNameByUid($uid, '', false);
+            if ($order_detail['utype'] === 1) {
+                $comId = model('Company')->where('uid', $uid)->value('id');
+                $log_field = '后台设置{' . $member_name . '}(企业ID:' . $comId . ')';
+            } else {
+                $log_field = '后台设置{' . $member_name . '}(会员ID:' . $uid . ')';
+            }
+
+            $log_field .= '订单确认付款，业务开通成功，订单号:'
+                . $order_detail['oid']
+                . '；服务内容:'
+                . $order_detail['service_name']
+                . '；订单金额 :￥'
+                . $order_detail['amount'];
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '订单确认收款失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '订单确认收款成功');
     }
     /**
@@ -289,15 +322,42 @@ class Order extends \app\common\controller\Backend
         if ($order_detail['status'] != 0) {
             $this->ajaxReturn(500, '该订单不是待支付状态');
         }
-        model('Order')->orderClose($order_detail['id'], $order_detail['uid']);
-        model('AdminLog')->record(
-            '更改订单状态为【已关闭】。订单ID【' .
-                $id .
-                '】；订单号【' .
-                $order_detail['oid'] .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            model('Order')->orderClose($order_detail['id'], $order_detail['uid']);
+
+            $uid = $order_detail['uid'];
+            $member_name = model('Member')->getMemberNickNameByUid($uid, '', false);
+            if ($order_detail['utype'] === 1) {
+                $comId = model('Company')->where('uid', $uid)->value('id');
+                $log_field = '后台设置{' . $member_name . '}(企业ID:' . $comId . ')';
+            } else {
+                $log_field = '后台设置{' . $member_name . '}(会员ID:' . $uid . ')';
+            }
+
+            $log_field .= '订单关闭，订单号:'
+                . $order_detail['oid'];
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '关闭订单失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '关闭订单成功');
     }
     public function detail(){

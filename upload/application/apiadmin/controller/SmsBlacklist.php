@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class SmsBlacklist extends \app\common\controller\Backend
 {
@@ -34,12 +37,13 @@ class SmsBlacklist extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
             'mobile' => input('post.mobile/s', '', 'trim'),
             'note' => input('post.note/s', '', 'trim'),
-            'addtime'=>time()
+            'addtime' => time()
         ];
         $validate = new \think\Validate([
             'mobile' => 'require|max:60|checkMobile'
@@ -63,20 +67,42 @@ class SmsBlacklist extends \app\common\controller\Backend
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        if (
-            false ===
-            model('SmsBlacklist')->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('SmsBlacklist')->getError());
+
+        try {
+            Db::startTrans();
+
+            if (
+                false ===
+                model('SmsBlacklist')->save($input_data)
+            ) {
+                throw new \Exception(model('SmsBlacklist')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-基础配置-短信配置，添加短信黑名单，电话:'
+                . $input_data['mobile']
+                . '，备注:'
+                . (empty($input_data['note']) ? '未填写' : $input_data['note']);
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加黑名单手机号。手机号【' .
-                $input_data['mobile'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -94,7 +120,7 @@ class SmsBlacklist extends \app\common\controller\Backend
                 'id' => input('post.id/d', 0, 'intval'),
                 'mobile' => input('post.mobile/s', '', 'trim'),
                 'note' => input('post.note/s', '', 'trim'),
-                'addtime'=>time()
+                'addtime' => time()
             ];
             $validate = new \think\Validate([
                 'mobile' => 'require|max:60|checkMobile'
@@ -105,7 +131,7 @@ class SmsBlacklist extends \app\common\controller\Backend
                         ->where([
                             'mobile' => $value
                         ])
-                        ->where('id','neq',$input_data['id'])
+                        ->where('id', 'neq', $input_data['id'])
                         ->find();
                     if (null === $info) {
                         return true;
@@ -123,38 +149,96 @@ class SmsBlacklist extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('SmsBlacklist')
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('SmsBlacklist')->getError());
+
+            try {
+                $info = model('SmsBlacklist')->find($id);
+                if (null === $info) {
+                    $this->ajaxReturn(500, '要修改的短信黑名单不存在');
+                }
+                $info = $info->toArray();
+
+                Db::startTrans();
+
+                if (
+                    false ===
+                    model('SmsBlacklist')
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('SmsBlacklist')->getError());
+                }
+
+                // 日志
+                $log_field = '系统-基础配置-短信配置，修改短信黑名单，电话:' . $info['mobile'];
+                if ($input_data['mobile'] != $info['mobile']) {
+                    $log_field .= '->' . $input_data['mobile'];
+                }
+                if ($input_data['note'] != $info['note']) {
+                    $log_field .= '，备注:' . (empty($info['note']) ? '未填写' : $info['note']) . '->' . (empty($input_data['note']) ? '未填写' : $input_data['note']);
+                }
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                //提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑黑名单手机号。手机号【' .
-                    $input_data['mobile'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('SmsBlacklist')
-            ->where('id', 'in', $id)
-            ->column('mobile');
-        model('SmsBlacklist')->destroy($id);
-        model('AdminLog')->record(
-            '删除黑名单手机号。手机号【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model('SmsBlacklist')
+                ->where('id', 'in', $id)
+                ->column('mobile');
+            if (null === $list) {
+                $this->ajaxReturn(500, '没有要删除的短信黑名单');
+            }
+
+            Db::startTrans();
+
+            if (
+                false ===
+                model('SmsBlacklist')->destroy($id)
+            ) {
+                throw new \Exception(model('SmsBlacklist')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-基础配置-短信配置，删除短信黑名单，电话:' . implode('；', $list);
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

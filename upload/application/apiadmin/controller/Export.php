@@ -148,10 +148,29 @@ class Export extends \app\common\controller\Backend
             }
             $return[] = $arr;
         }
+
         if (!empty($return)) {
-            model('AdminLog')->record(
-                '导出职位信息【' . count($return) . '条】',
-                $this->admininfo
+            $log_field = '职位信息导出，';
+            if (!empty($daterange[0]) && !empty($daterange[1])) {
+                $log_field .= '添加时间:' . $daterange[0] . '至' . $daterange[1] . '；';
+            } else {
+                $log_field .= '添加时间:不限；';
+            }
+            $log_field .= '学历要求:'
+            . (!empty(model('BaseModel')->map_education[$education])
+                ? model('BaseModel')->map_education[$education]
+                : '不限'). '；';
+            $log_field .= '工作经验要求:'
+            . (!empty(model('BaseModel')->map_experience[$experience])
+                ? model('BaseModel')->map_experience[$experience]
+                : '不限'). '；';
+            $log_field .= '导出条数:' . $limit . '；';
+            $log_field .= '开始位置:' . $offset;
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                8
             );
         }
 
@@ -287,9 +306,11 @@ class Export extends \app\common\controller\Backend
             $return[] = $arr;
         }
         if (!empty($return)) {
-            model('AdminLog')->record(
-                '导出职位信息【' . count($return) . '条】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '列表导出职位信息' . count($return) . '条',
+                $this->admininfo,
+                0,
+                8
             );
         }
 
@@ -401,9 +422,54 @@ class Export extends \app\common\controller\Backend
         }
 
         if (!empty($return)) {
-            model('AdminLog')->record(
-                '导出企业信息【' . count($return) . '条】',
-                $this->admininfo
+            $log_field = '企业信息导出，';
+            if (!empty($daterange[0]) && !empty($daterange[1])) {
+                $log_field .= '注册时间:' . $daterange[0] . '至' . $daterange[1] . '；';
+            } else {
+                $log_field .= '注册时间:不限；';
+            }
+            $log_field .= '企业认证:'
+                . (!empty(model('Company')->map_audit[$audit])
+                    ? model('Company')->map_audit[$audit]
+                    : '不限'). '；';
+            if (!empty($setmeal)) {
+                $setmeal_name = model('Setmeal')->where('id', $setmeal)->value('name');
+                $log_field .= '套餐类型:' . $setmeal_name . '；';
+            } else {
+                $log_field .= '套餐类型:不限；';
+            }
+            switch ($setmeal_overtime){
+                case '0':
+                    $log_field .= '套餐到期:已到期；';
+                    break;
+                case '3':
+                    $log_field .= '套餐到期:三天内；';
+                    break;
+                case '7':
+                    $log_field .= '套餐到期:一周内；';
+                    break;
+                case '30':
+                    $log_field .= '套餐到期:一月内；';
+                    break;
+                case '180':
+                    $log_field .= '套餐到期:半年内；';
+                    break;
+                case '':
+                default:
+                    $log_field .= '套餐到期:不限；';
+                    break;
+            }
+            $log_field .= '所属行业:'
+                . (!empty($category_data['QS_trade'][$trade])
+                    ? $category_data['QS_trade'][$trade]
+                    : '不限'). '；';
+            $log_field .= '导出条数:' . $limit . '；';
+            $log_field .= '开始位置:' . $offset;
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                8
             );
         }
 
@@ -485,8 +551,8 @@ class Export extends \app\common\controller\Backend
         }
 
         if (!empty($return)) {
-            model('AdminLog')->record(
-                '导出企业信息【' . count($return) . '条】',
+            model('AdminLog')->checkLog(
+                '列表导出企业信息【' . count($return) . '条】',
                 $this->admininfo
             );
         }
@@ -501,6 +567,7 @@ class Export extends \app\common\controller\Backend
     {
         $where = [];
         $daterange = input('post.daterange/a', []);
+        $sex = input('post.sex/s', '', 'trim');
         $education = input('post.education/d', 0, 'intval');
         $experience = input('post.experience/d', 0, 'intval');
         $limit = input('post.limit/d', 100, 'intval');
@@ -520,11 +587,42 @@ class Export extends \app\common\controller\Backend
             $end = strtotime($daterange[1]);
             $list = $list->where('a.addtime', 'BETWEEN', [$start, $end]);
         }
+        if ($sex != '') {
+            $list = $list->where('a.sex', 'EQ', $sex);
+        }
         if ($education > 0) {
-            $list = $list->where('education', 'EQ', $education);
+            $list = $list->where('a.education', 'EQ', $education);
         }
         if ($experience > 0) {
-            $list = $list->where('experience', 'EQ', $experience);
+            $experience_where = [];
+            switch ($experience) {
+                case 1: //无经验/应届生
+                    $experience_where['a.enter_job_time'] = ['=', 0];
+                    break;
+                case 2://1年以下
+                    $experience_where['a.enter_job_time'] = ['>', strtotime('-1 year')];
+                    break;
+                case 3://1年-2年
+                    $experience_where['a.enter_job_time'] = [['<=', strtotime('-1 year')], ['>', strtotime('-2 year')], 'and'];
+                    break;
+                case 4://2年-3年
+                    $experience_where['a.enter_job_time'] = [['<=', strtotime('-2 year')], ['>', strtotime('-3 year')], 'and'];
+                    break;
+                case 5://3年-5年
+                    $experience_where['a.enter_job_time'] = [['<=', strtotime('-3 year')], ['>', strtotime('-5 year')], 'and'];
+                    break;
+                case 6://5年-10年
+                    $experience_where['a.enter_job_time'] = [['<=', strtotime('-5 year')], ['>', strtotime('-10 year')], 'and'];
+                    break;
+                case 7://10年以上
+                    $experience_where['a.enter_job_time'] = [['<', strtotime('-10 year')], ['<>', 0], 'and'];
+                    break;
+                default:
+                    break;
+            }
+            if (!empty($experience_where)) {
+                $list = $list->where($experience_where);
+            }
         }
         $list = $list
             ->order('a.id asc')
@@ -662,9 +760,36 @@ class Export extends \app\common\controller\Backend
         }
 
         if (!empty($return)) {
-            model('AdminLog')->record(
-                '导出简历信息【' . count($return) . '条】',
-                $this->admininfo
+            //
+            $log_field = '简历信息导出，';
+            if (!empty($daterange[0]) && !empty($daterange[1])) {
+                $log_field .= '注册时间:' . $daterange[0] . '至' . $daterange[1] . '；';
+            } else {
+                $log_field .= '注册时间:不限；';
+            }
+            if ($sex != '') {
+                $log_field .= '性别:'
+                    . (!empty(model('Resume')->map_sex[$sex])
+                        ? model('Resume')->map_sex[$sex]
+                        : '不限') . '；';
+            } else {
+                $log_field .= '性别:不限；';
+            }
+            $log_field .= '学历:'
+                . (!empty(model('BaseModel')->map_education[$education])
+                    ? model('BaseModel')->map_education[$education]
+                    : '不限'). '；';
+            $log_field .= '工作经验:'
+                . (!empty(model('BaseModel')->map_experience[$experience])
+                    ? model('BaseModel')->map_experience[$experience]
+                    : '不限'). '；';
+            $log_field .= '导出条数:' . $limit . '；';
+            $log_field .= '开始位置:' . $offset;
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                8
             );
         }
 

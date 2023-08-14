@@ -674,10 +674,17 @@ class Company extends Backend
             }
 
             // 日志
-            $uid = implode(',', $uid);
-            $log_result = model('AdminLog')->record(
-                '释放企业所属销售【ID:' . $uid . '】',
-                $this->admininfo
+            $company_list = model('Company')->whereIn('uid', $uid)->column('id,companyname');
+
+            $log_field = '释放';
+            foreach ($company_list as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                1
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -833,7 +840,7 @@ class Company extends Backend
             if ($receive === false) {
                 $this->ajaxReturn(500, '领取失败', []);
             }
-            model('Company')
+            $receive_result = model('Company')
                 ->isUpdate('true')
                 ->save(
                     [
@@ -844,6 +851,9 @@ class Company extends Backend
                         'uid' => ['in', $uid]
                     ]
                 );
+            if ($receive_result === false) {
+                throw new \Exception(model('Company')->getError());
+            }
 
             # 设置管理员销售客户总数上限
             $exceed_result = model('Admin')->setCustomerExceed($this->admininfo->id);
@@ -851,11 +861,18 @@ class Company extends Backend
                 throw new \Exception(model('Admin')->getError());
             }
 
+            $company_list = model('Company')->whereIn('uid', $uid)->column('id,companyname');
+
             // 日志
-            $uid = implode(',', $uid);
-            $log_result = model('AdminLog')->record(
-                '领取企业【ID:' . $uid . '】',
-                $this->admininfo
+            $log_field = '领取';
+            foreach ($company_list as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                1
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -1191,14 +1208,22 @@ class Company extends Backend
                     db('crm_company_contact')->insertAll($contactList);
                 }
             }
-            model('AdminLog')->record(
-                '添加企业。企业ID【' .
-                model('Company')->id .
-                '】;企业名称【' .
-                $input_data['companyname'] .
-                '】',
-                $this->admininfo
+
+            // 日志
+            $log_field = '新增客户，公司名称:' . $input_data['companyname']
+                . '(企业ID:' . model('Company')->id
+                . ')；会员手机号:' . $input_data['member']['mobile']
+                . '；所属销售:' . ($sale > 0 ? '我的客户' : '公共客户');
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
             Db::commit();
             $this->ajaxReturn(200, '保存成功');
         } catch (\Exception $e) {
@@ -1207,37 +1232,6 @@ class Company extends Backend
         }
     }
 
-    /*
-     * 企业编辑
-     * */
-    public function edit()
-    {
-        $input_data = [
-            'id' => input('post.id/d', 0, 'intval'),
-            'uid' => input('post.uid/d', 0, 'intval'),
-            'companyname' => input('post.companyname/s', '', 'trim'),
-            'short_name' => input('post.short_name/s', '', 'trim'),
-            'logo' => input('post.logo/d', 0, 'intval'),
-            'nature' => input('post.nature/d', 0, 'intval'),
-            'scale' => input('post.scale/d', 0, 'intval'),
-            'trade' => input('post.trade/d', 0, 'intval')
-        ];
-
-        $backend_edit = model('b2bcrm.Company')->backendEdit($input_data);
-        if (false === $backend_edit) {
-            $this->ajaxReturn(500, model('Company')->getError());
-        }
-        model('AdminLog')->record(
-            '编辑企业。企业ID【' .
-            $input_data['id'] .
-            '】;企业名称【' .
-            $input_data['companyname'] .
-            '】',
-            $this->admininfo
-        );
-        $this->ajaxReturn(200, '保存成功');
-
-    }
 
     /*
      * 导出企业ById
@@ -1343,9 +1337,11 @@ class Company extends Backend
         }
 
         if (!empty($return)) {
-            model('AdminLog')->record(
+            model('AdminLog')->writeLog(
                 '导出企业信息【' . count($return) . '条】',
-                $this->admininfo
+                $this->admininfo,
+                0,
+                1
             );
         }
 
@@ -1357,11 +1353,10 @@ class Company extends Backend
      * */
     public function updateCompany()
     {
-        $uid = input('post.uid/s', '', 'trim');
+        $uid = input('post.uid/d', 0, 'intval');
         $post = input('post.');
         $reason = isset($post['reason']) ? trim($post['reason']) : '';
         $examine = isset($post['examine']) ? intval($post['examine']) : 0;
-
 
         if (!$uid) {
             $this->ajaxReturn(500, '参数错误');
@@ -1396,11 +1391,11 @@ class Company extends Backend
             }
             if (isset($post['company_img'])) {
                 $post['company_img'] = empty($post['company_img']) ? '' : $post['company_img'];
-                $this->setAudit($post['company_img'], $examine);
+                $this->setImgAudit($post['company_img'], $examine);
             }
             if (isset($post['company_mobile'])) {
                 $post['company_mobile'] = empty($post['company_mobile']) ? '' : $post['company_mobile'];
-                $this->updateEmail($uid, $post['company_mobile']);
+                $this->updateCompanyMobile($uid, $post['company_mobile']);
             }
             $this->ajaxReturn(200, '修改成功');
         } catch (\Exception $e) {
@@ -1410,7 +1405,7 @@ class Company extends Backend
     }
 
     // 修改企业手机号
-    private function updateEmail($uid, $company_mobile)
+    private function updateCompanyMobile($uid, $company_mobile)
     {
         $data = ['uid' => $uid];
 
@@ -1421,89 +1416,119 @@ class Company extends Backend
             }
             $data['mobile'] = $company_mobile;
         }
+
+        $companyInfo = model('Company')->where(['uid' => $uid])->find();
+        if (null === $companyInfo) {
+            throw new \Exception('企业信息不存在');
+        }
+
         $company_contact = model('CompanyContact')->where(['uid' => $uid])->find();
         $isupdate = false;
+        $mobile = '未填写';
         if (!empty($company_contact)) {
             $company_contact = $company_contact->toArray();
             $isupdate = true;
             $data['id'] = $company_contact['id'];
+            $mobile = $company_contact['mobile'];
         }
+
         $update_email = model('CompanyContact')
             ->isUpdate($isupdate)
             ->save($data);
         if (false === $update_email) {
             throw new \Exception(model('CompanyContact')->getError());
         }
-        model('AdminLog')->record(
-            '编辑企业手机。企业UID【' . $uid . '】' . '修改后企业手机【' . $company_mobile . '】',
-            $this->admininfo
+        $log_field = '修改{'
+            . $companyInfo['companyname']
+            . '}(企业ID:' . $companyInfo['id']
+            . ')企业联系手机，' . $mobile . ' -> ' . $company_mobile;
+        $log_result = model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            3
         );
+        if (false === $log_result) {
+            throw new \Exception(model('AdminLog')->getError());
+        }
 
         return true;
     }
 
     // 修改企业风采
-    private function setAudit($id, $audit)
+    private function setImgAudit($id, $audit)
     {
         if (!is_array($id)) {
             throw new \Exception('企业风采id请传入数组格式');
         }
+
+        $list = model('CompanyImg')
+            ->where('id', 'in', $id)
+            ->select();
+        if (empty($list)) {
+            throw new \Exception('没有要审核的企业风采');
+        }
+
         model('CompanyImg')
             ->where('id', 'in', $id)
             ->setField('audit', $audit);
 
         //完成上传企业风采任务
         if ($audit == 1) {
-            $list = model('CompanyImg')
-                ->where('id', 'in', $id)
-                ->select();
             foreach ($list as $key => $value) {
                 model('Task')->doTask($value['uid'], 1, 'upload_img');
             }
         }
 
-        model('AdminLog')->record(
-            '将企业风采认证状态变更为【' .
-            model('CompanyImg')->map_audit[$audit] .
-            '】。企业风采ID【' .
-            implode(",", $id) .
-            '】',
-            $this->admininfo
+        $log_field = '审核';
+        $comIds = array_column($list, 'comid', 'comid');
+        $company_arr = model('Company')->whereIn('id', $comIds)->column('id,companyname');
+        foreach ($company_arr as $c_id => $c_name) {
+            $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+        }
+        $log_field = rtrim($log_field, '；') . '的企业风采，' . model('CompanyImg')->map_audit[$audit];
+        $log_result = model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            6
         );
+        if (false === $log_result) {
+            throw new \Exception(model('AdminLog')->getError());
+        }
         return true;
     }
 
     // 修改企业
     private function editCompany($uid, $input_data, $reason = '')
     {
-        $company_id = model('Company')
-            ->where(['uid' => ['in', $uid]])
-            ->column('id');
-        if (empty($company_id)) {
-            throw new \Exception('企业uid错误');
+        $companyInfo = model('Company')
+            ->where('uid', $uid)
+            ->find();
+        if (null === $companyInfo) {
+            throw new \Exception('企业信息不存在');
         }
+        $companyInfo = $companyInfo->toArray();
+        $company_id = $companyInfo['id'];
 
-        /**
-         * 【ID1000596】
-         * 【bug】职位显示状态（企业不显示）
-         *  zch 2023.3.21
-         * 【增加】
-         *  事务
-         *  $jobid_arr = model('Job')->whereIn('company_id', $company_id)->column('id');
-         *  model('Job')->refreshSearchBatch($jobid_arr);
-         */
         Db::startTrans();
         try {
             $jobid_arr = model('Job')->whereIn('company_id', $company_id)->column('id');
-            if (isset($input_data['audit']) && !empty($input_data['audit'])) {
+            if (isset($input_data['audit'])) {
                 model('Company')->setAudit($company_id, $input_data['audit'], $reason);
-                model('AdminLog')->record(
-                    '将企业认证状态变更为【' .
-                    model('Company')->map_audit[$input_data['audit']] .
-                    '】。企业ID【' .
-                    implode(',', $company_id) .
-                    '】',
-                    $this->admininfo
+                $log_field = '审核{'
+                    . $companyInfo['companyname']
+                    . '}(企业ID:'
+                    . $company_id
+                    . ')的认证资料，'
+                    . model('Company')->map_audit[$companyInfo['audit']]
+                    . '->'
+                    . model('Company')->map_audit[$input_data['audit']];
+                model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    6
                 );
 
                 model('Job')->refreshSearchBatch($jobid_arr);
@@ -1515,13 +1540,64 @@ class Company extends Backend
                 if (false === $update_member) {
                     throw new \Exception(model('Company')->getError());
                 }
+
+                $log_field = [];
+
+                if (isset($input_data['life_cycle_id'])) {
+                    $lifeCycleList = model('b2bcrm.CrmLifeCycle')
+                        ->where(['is_open' => 1])
+                        ->column('name', 'id');
+
+                    $log_field[] = '设置{'
+                        . $companyInfo['companyname']
+                        . '}(企业ID:'
+                        . $company_id
+                        . ')客户等级，'
+                        . (isset($lifeCycleList[$companyInfo['life_cycle_id']]) ? $lifeCycleList[$companyInfo['life_cycle_id']] : '未知')
+                        . '->'
+                        . (isset($lifeCycleList[$input_data['life_cycle_id']]) ? $lifeCycleList[$input_data['life_cycle_id']] : '未知');
+                }
+
+                if (isset($input_data['labels'])) {
+                    $log_field[] = '修改{'
+                        . $companyInfo['companyname']
+                        . '}(企业ID:'
+                        . $company_id
+                        . ')的客户标签';
+                }
+
                 if (isset($input_data['is_display'])) {
                     model('Job')->refreshSearchBatch($jobid_arr);
+                    $log_field[] = '修改{'
+                        . $companyInfo['companyname']
+                        . '}(企业ID:'
+                        . $company_id
+                        . ')的显示状态，'
+                        . model('Company')->map_is_display[$companyInfo['is_display']]
+                        . '->'
+                        . model('Company')->map_is_display[$input_data['is_display']]
+                        . ($input_data['is_display'] == 0 ? '，企业及其发布的职位将不对外' : '');
                 }
-                model('AdminLog')->record(
-                    '编辑企业。企业UID【' . $uid . '】',
-                    $this->admininfo
-                );
+
+                if (isset($input_data['remark'])) {
+                    $log_field[] = '修改{'
+                        . $companyInfo['companyname']
+                        . '}(企业ID:'
+                        . $company_id
+                        . ')的备注信息，'
+                        . (empty($companyInfo['remark']) ? '未填写' : $companyInfo['remark'])
+                        . '->'
+                        . (empty($input_data['remark']) ? '未填写' : $input_data['remark']);
+                }
+
+                if (!empty($log_field) && count($log_field) > 0) {
+                    model('AdminLog')->writeLog(
+                        $log_field,
+                        $this->admininfo,
+                        0,
+                        3
+                    );
+                }
             }
             // 提交事务
             Db::commit();
@@ -1536,11 +1612,35 @@ class Company extends Backend
     // 修改密码或手机号
     private function updateMember($uid, $post, $info)
     {
+        $companyInfo = model('Company')
+            ->where('uid', $uid)
+            ->find();
+        if (null === $companyInfo) {
+            throw new \Exception('要修改的企业不存在');
+        }
+
+        $memberInfo = model('Member')
+            ->find($uid);
+        if (null === $memberInfo) {
+            throw new \Exception('要修改的企业会员信息不存在');
+        }
+
         $input_data = ['username' => $info['username']];
         if (!empty($post['password'])) {
             $input_data['password'] = model('Member')->makePassword(
                 $post['password'],
                 $info['pwd_hash']
+            );
+            model('AdminLog')->writeLog(
+                '修改{'
+                . $companyInfo['companyname']
+                . '}(企业ID:'
+                . $companyInfo['id']
+                . ')的密码，新密码:'
+                . $post['password'],
+                $this->admininfo,
+                0,
+                3
             );
         }
 
@@ -1553,6 +1653,20 @@ class Company extends Backend
                 }
             }
             $input_data['email'] = $post['email'];
+
+            model('AdminLog')->writeLog(
+                '修改{'
+                . $companyInfo['companyname']
+                . '}(企业ID:'
+                . $companyInfo['id']
+                . ')的会员绑定邮箱，'
+                . (!empty($memberInfo['email']) ? $memberInfo['email'] : '未填写')
+                . '->'
+                . (!empty($post['email']) ? $post['email'] : '未填写'),
+                $this->admininfo,
+                0,
+                3
+            );
         }
 
         if (isset($post['mobile'])) {
@@ -1579,6 +1693,20 @@ class Company extends Backend
                 throw new \Exception('手机号已存在');
             }
             $input_data['mobile'] = $post['mobile'];
+
+            model('AdminLog')->writeLog(
+                '修改{'
+                . $companyInfo['companyname']
+                . '}(企业ID:'
+                . $companyInfo['id']
+                . ')会员手机，'
+                . (!empty($memberInfo['mobile']) ? $memberInfo['mobile'] : '未填写')
+                . '->'
+                . (!empty($post['mobile']) ? $post['mobile'] : '未填写'),
+                $this->admininfo,
+                0,
+                3
+            );
         }
         $update_member = model('Member')
             ->allowField(true)
@@ -1600,10 +1728,6 @@ class Company extends Backend
             model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
         }
 
-        model('AdminLog')->record(
-            '编辑会员。会员UID【' . $uid . '】',
-            $this->admininfo
-        );
         return true;
     }
 
@@ -1624,17 +1748,59 @@ class Company extends Backend
         }
         $is_display = input('post.is_display/d', 1, 'intval');
 
-        $update = model('Company')->whereIn('id', $id)->setField('is_display', $is_display);
-        $jobid_arr = model('Job')->whereIn('company_id', $id)->column('id');
-        model('Job')->refreshSearchBatch($jobid_arr);
-        model('AdminLog')->record(
-            '将企业显示状态变更为【' .
-            ($is_display == 1 ? '显示' : '不显示') .
-            '】。企业ID【' .
-            implode(',', $id) .
-            '】',
-            $this->admininfo
-        );
+        Db::startTrans();
+        try {
+            $list = model('Company')
+                ->where('id', 'in', $id)
+                ->column('id,companyname,is_display');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要修改的企业');
+            }
+
+            model('Company')->whereIn('id', $id)->setField('is_display', $is_display);
+            $jobid_arr = model('Job')->whereIn('company_id', $id)->column('id');
+            model('Job')->refreshSearchBatch($jobid_arr);
+
+            $is_display_set = model('Company')->map_is_display[$is_display];
+
+            if (count($list) === 1) {
+                $log_field = '设置';
+            } else {
+                $log_field = '修改';
+            }
+            foreach ($list as $company) {
+                $log_field .= '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')；';
+                $is_display_original = model('Company')->map_is_display[$company['is_display']];
+            }
+            $log_field = rtrim($log_field, '；') . '的显示状态，';
+            if (count($list) === 1) {
+                $log_field .= $is_display_original . '->' . $is_display_set;
+            } else {
+                $log_field .= $is_display_set;
+            }
+            if ($is_display != 1) {
+                $log_field .= '，企业及其发布的职位将不对外';
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '设置失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '设置成功');
     }
 

@@ -344,7 +344,16 @@ function make_file_url($path, $type = 'default')
             break;
         case 'qiniu':
             $qiniu_config = config('global_config.account_qiniu');
-            return $qiniu_config['protocol'] . $qiniu_config['domain'] . '/' . $path;
+            $url = $qiniu_config['protocol'] . $qiniu_config['domain'] . '/' . $path;
+            if (isset($qiniu_config['quality']) && $qiniu_config['quality'] === '1') {
+                $image_types = '.psd|.jpeg|.png|.gif|.webp|.tiff|.bmp|.avif|.heif';//定义检查的图片类型
+                $ext = strrchr($url, '.');
+                $is_image = stripos($image_types, $ext);
+                if (false != $is_image) {
+                    $url .= '?imageMogr2/auto-orient/quality/75';
+                }
+            }
+            return $url;
             break;
         case 'original':
             return $path;

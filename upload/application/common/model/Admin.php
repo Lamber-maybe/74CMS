@@ -48,7 +48,12 @@ class Admin extends \app\common\model\BaseModel
             ]
         );
         $admin_token = $JwtAuth->getString();
-        model('AdminLog')->record('登录成功',$admininfo,1);
+        model('AdminLog')->writeLog(
+            '登录成功',
+            $admininfo,
+            1,
+            1
+        );
 
         return [
             'token'=>$admin_token,

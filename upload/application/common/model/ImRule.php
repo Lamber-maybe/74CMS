@@ -1,8 +1,36 @@
 <?php
+
 namespace app\common\model;
 
-class ImRule extends \app\common\model\BaseModel
+class ImRule extends BaseModel
 {
+    /**
+     * 开关状态
+     * @var string[] 性别 0:关闭|1:开启
+     */
+    public $map_is_open = [
+        '0' => '关闭',
+        '1' => '开启'
+    ];
+
+    /**
+     * 审核状态要求
+     * @var string[] 性别 0:不限|1:审核通过
+     */
+    public $map_audit_status = [
+        '1' => '审核通过',
+        '3' => '不限'
+    ];
+
+    /**
+     * 企业显示要求
+     * @var string[] 性别 0:不限|1:显示中
+     */
+    public $map_display_status = [
+        '1' => '显示中',
+        '3' => '不限'
+    ];
+
     protected static function init()
     {
         self::event('after_write', function () {
@@ -12,6 +40,7 @@ class ImRule extends \app\common\model\BaseModel
             cache('cache_im_rule', null);
         });
     }
+
     public function getCache($utype = 1)
     {
         if (false === ($data = cache('cache_im_rule'))) {

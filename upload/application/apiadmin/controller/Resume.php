@@ -4,6 +4,7 @@ namespace app\apiadmin\controller;
 
 use app\common\lib\FileManager;
 use phpDocumentor\Reflection\File;
+use think\Db;
 
 class Resume extends \app\common\controller\Backend
 {
@@ -11,6 +12,7 @@ class Resume extends \app\common\controller\Backend
     {
         parent::_initialize();
     }
+
     /**
      * 简历列表
      */
@@ -44,15 +46,15 @@ class Resume extends \app\common\controller\Backend
                     break;
             }
         }
-        if($audit!=''){
+        if ($audit != '') {
             $where['r.audit'] = intval($audit);
         }
-        if($sort!=''){
+        if ($sort != '') {
             $order = 'r.addtime desc,r.refreshtime desc';
-        }else{
+        } else {
             $order = 'r.refreshtime desc';
         }
-        if($level!=''){
+        if ($level != '') {
             $where['r.high_quality'] = intval($level);
         }
 
@@ -63,14 +65,14 @@ class Resume extends \app\common\controller\Backend
         }
         $total = model('Resume')
             ->alias('r')
-            ->join(config('database.prefix').'member m','r.uid=m.uid','LEFT')
+            ->join(config('database.prefix') . 'member m', 'r.uid=m.uid', 'LEFT')
             // ->force($force_index_name)
             ->where($where)
             ->count();
         $list = model('Resume')
             ->alias('r')
-            ->join(config('database.prefix').'member m','r.uid=m.uid','LEFT')
-            ->join(config('database.prefix').'resume_contact c','r.id=c.rid','LEFT')
+            ->join(config('database.prefix') . 'member m', 'r.uid=m.uid', 'LEFT')
+            ->join(config('database.prefix') . 'resume_contact c', 'r.id=c.rid', 'LEFT')
             ->field('r.id,r.uid,r.is_display,r.high_quality,r.display_name,r.audit,r.stick,r.service_tag,r.fullname,r.sex,r.birthday,r.residence,r.height,r.marriage,r.education,r.enter_job_time,r.householdaddress,r.major1,r.major2,r.major,r.tag,r.idcard,r.specialty,r.photo_img,r.addtime,r.refreshtime,r.current,r.click,r.tpl,r.custom_field_1,r.custom_field_2,r.custom_field_3,r.platform,r.remark,r.comment,m.mobile,c.mobile as contact_mobile')
             ->where($where)
             ->order($order)
@@ -98,12 +100,12 @@ class Resume extends \app\common\controller\Backend
         }
 
         $bindarr = [];
-        if(!empty($uidarr)){
-            $bindarr = model('MemberBind')->whereIn('uid',$uidarr)->where('type','weixin')->where('is_subscribe',1)->column('uid,id');
+        if (!empty($uidarr)) {
+            $bindarr = model('MemberBind')->whereIn('uid', $uidarr)->where('type', 'weixin')->where('is_subscribe', 1)->column('uid,id');
         }
 
         foreach ($list as $key => $value) {
-            $value['fullname'] = htmlspecialchars_decode($value['fullname'],ENT_QUOTES);
+            $value['fullname'] = htmlspecialchars_decode($value['fullname'], ENT_QUOTES);
             $value['photo_img_src'] = isset($photo_arr[$value['photo_img']])
                 ? $photo_arr[$value['photo_img']]
                 : default_empty('photo');
@@ -128,8 +130,8 @@ class Resume extends \app\common\controller\Backend
                 ? $complete_list[$value['id']]
                 : 0;
             $value['link'] = url('index/resume/show', ['id' => $value['id']]);
-            $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;
-            $value['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
+            $value['bind_weixin'] = isset($bindarr[$value['uid']]) ? 1 : 0;
+            $value['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']]) ? model('BaseModel')->map_platform[$value['platform']] : '未知平台';
 
             $list[$key] = $value;
         }
@@ -156,6 +158,7 @@ class Resume extends \app\common\controller\Backend
         }
         $this->ajaxReturn(200, '获取数据成功', ['items' => $return]);
     }
+
     /**
      * 创建简历
      */
@@ -216,16 +219,15 @@ class Resume extends \app\common\controller\Backend
         if ($r === false) {
             $this->ajaxReturn(500, model('Resume')->getError());
         }
-        model('AdminLog')->record(
-            '添加简历。简历ID【' .
-                model('Resume')->id .
-                '】；姓名【' .
-                $input_data['fullname'] .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '后台新增简历{' . $input_data['fullname'] . '}(简历ID:' . model('Resume')->id . ')',
+            $this->admininfo,
+            0,
+            2
         );
         $this->ajaxReturn(200, '保存成功', ['resumeid' => $r]);
     }
+
     /**
      * 简历基本资料
      */
@@ -238,7 +240,7 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['fullname'] = htmlspecialchars_decode($info['fullname'],ENT_QUOTES);
+                $info['fullname'] = htmlspecialchars_decode($info['fullname'], ENT_QUOTES);
 
                 $value['major_'] = isset($category_major_data[$info['major']])
                     ? $category_major_data[$info['major']]
@@ -342,6 +344,12 @@ class Resume extends \app\common\controller\Backend
                 ]
             ];
 
+            $resume = model('Resume')
+                ->where('id', $input_data['id'])
+                ->find();
+            if (null === $resume) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
             $input_data['enter_job_time'] =
                 $input_data['enter_job_time'] == ''
                     ? 0
@@ -350,8 +358,8 @@ class Resume extends \app\common\controller\Backend
                 $input_data['major2'] != 0
                     ? $input_data['major2']
                     : ($input_data['major1'] != 0
-                        ? $input_data['major1']
-                        : 0);
+                    ? $input_data['major1']
+                    : 0);
 
             $data_contact = $input_data['contact'];
             unset($input_data['contact']);
@@ -386,13 +394,16 @@ class Resume extends \app\common\controller\Backend
             }
             model('Resume')->refreshSearch($resume_id);
 
-            model('AdminLog')->record(
-                '编辑简历基本资料。简历ID【' . $resume_id . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $resume['fullname'] . '}(简历ID:' . $resume['id'] . ')简历，修改基本信息',
+                $this->admininfo,
+                0,
+                3
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 求职意向列表
      */
@@ -412,8 +423,8 @@ class Resume extends \app\common\controller\Backend
                 $value['category3'] != 0
                     ? $value['category3']
                     : ($value['category2'] != 0
-                        ? $value['category2']
-                        : $value['category1']);
+                    ? $value['category2']
+                    : $value['category1']);
             $value['category_cn'] = isset($category_job_data[$category_index])
                 ? $category_job_data[$category_index]
                 : '';
@@ -421,8 +432,8 @@ class Resume extends \app\common\controller\Backend
                 $value['district3'] != 0
                     ? $value['district3']
                     : ($value['district2'] != 0
-                        ? $value['district2']
-                        : $value['district1']);
+                    ? $value['district2']
+                    : $value['district1']);
             $value['district_cn'] = isset(
                 $category_district_data[$district_index]
             )
@@ -440,6 +451,7 @@ class Resume extends \app\common\controller\Backend
             'items' => $list
         ]);
     }
+
     /**
      * 求职意向添加修改
      */
@@ -476,17 +488,20 @@ class Resume extends \app\common\controller\Backend
                 $input_data['category3'] != 0
                     ? $input_data['category3']
                     : ($input_data['category2'] != 0
-                        ? $input_data['category2']
-                        : $input_data['category1']);
+                    ? $input_data['category2']
+                    : $input_data['category1']);
             $input_data['district'] =
                 $input_data['district3'] != 0
                     ? $input_data['district3']
                     : ($input_data['district2'] != 0
-                        ? $input_data['district2']
-                        : $input_data['district1']);
+                    ? $input_data['district2']
+                    : $input_data['district1']);
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if ($id > 0) {
                 $result = model('ResumeIntention')
@@ -513,13 +528,16 @@ class Resume extends \app\common\controller\Backend
             );
             model('Resume')->refreshSearch($basic['id']);
 
-            model('AdminLog')->record(
-                '编辑简历求职意向。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '求职意向',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 求职意向删除
      */
@@ -531,6 +549,14 @@ class Resume extends \app\common\controller\Backend
         if (empty($id) || empty($rid)) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         $intention_total = model('ResumeIntention')
             ->where(['rid' => $rid])
             ->count();
@@ -551,9 +577,6 @@ class Resume extends \app\common\controller\Backend
             ->where(['rid' => $rid])
             ->count();
         if ($intention_count === 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['intention' => 0],
                 $basic['id'],
@@ -562,16 +585,15 @@ class Resume extends \app\common\controller\Backend
         }
         model('Resume')->refreshSearch($rid);
 
-        model('AdminLog')->record(
-            '删除简历求职意向。简历意向ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除求职意向',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 自我描述
      */
@@ -584,7 +606,7 @@ class Resume extends \app\common\controller\Backend
                 ->where('id', $id)
                 ->field('id,specialty')
                 ->find();
-            $info['specialty'] = htmlspecialchars_decode($info['specialty'],ENT_QUOTES);
+            $info['specialty'] = htmlspecialchars_decode($info['specialty'], ENT_QUOTES);
 
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
         } else {
@@ -597,6 +619,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $id)
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if (
                 false ===
@@ -613,13 +638,16 @@ class Resume extends \app\common\controller\Backend
             );
             model('Resume')->refreshSearch($basic['id']);
 
-            model('AdminLog')->record(
-                '编辑简历自我描述。简历ID【' . $id . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，修改自我描述',
+                $this->admininfo,
+                0,
+                3
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 教育经历列表
      */
@@ -642,14 +670,15 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
-            $value['school'] = htmlspecialchars_decode($value['school'],ENT_QUOTES);
-            $value['major'] = htmlspecialchars_decode($value['major'],ENT_QUOTES);
+            $value['school'] = htmlspecialchars_decode($value['school'], ENT_QUOTES);
+            $value['major'] = htmlspecialchars_decode($value['major'], ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
             'items' => $list
         ]);
     }
+
     /**
      * 教育经历添加修改
      */
@@ -663,8 +692,8 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['school'] = htmlspecialchars_decode($info['school'],ENT_QUOTES);
-                $info['major'] = htmlspecialchars_decode($info['major'],ENT_QUOTES);
+                $info['school'] = htmlspecialchars_decode($info['school'], ENT_QUOTES);
+                $info['major'] = htmlspecialchars_decode($info['major'], ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -694,6 +723,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if ($id > 0) {
                 $result = model('ResumeEducation')
@@ -718,13 +750,16 @@ class Resume extends \app\common\controller\Backend
                 $basic['uid']
             );
 
-            model('AdminLog')->record(
-                '编辑简历教育经历。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '教育经历',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 教育经历删除
      */
@@ -736,14 +771,19 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeEducation')->destroy($id);
         $education_total = model('ResumeEducation')
             ->where(['rid' => $rid])
             ->count();
         if ($education_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['education' => 0],
                 $basic['id'],
@@ -751,16 +791,15 @@ class Resume extends \app\common\controller\Backend
             );
         }
 
-        model('AdminLog')->record(
-            '删除简历教育经历。教育经历ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除教育经历',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 工作经历列表
      */
@@ -778,15 +817,16 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
-            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
-            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
-            $value['duty'] = htmlspecialchars_decode($value['duty'],ENT_QUOTES);
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'], ENT_QUOTES);
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'], ENT_QUOTES);
+            $value['duty'] = htmlspecialchars_decode($value['duty'], ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
             'items' => $list
         ]);
     }
+
     /**
      * 工作经历添加修改
      */
@@ -800,9 +840,9 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['companyname'] = htmlspecialchars_decode($info['companyname'],ENT_QUOTES);
-                $info['jobname'] = htmlspecialchars_decode($info['jobname'],ENT_QUOTES);
-                $info['duty'] = htmlspecialchars_decode($info['duty'],ENT_QUOTES);
+                $info['companyname'] = htmlspecialchars_decode($info['companyname'], ENT_QUOTES);
+                $info['jobname'] = htmlspecialchars_decode($info['jobname'], ENT_QUOTES);
+                $info['duty'] = htmlspecialchars_decode($info['duty'], ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -833,6 +873,10 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
+
             if ($id > 0) {
                 $result = model('ResumeWork')
                     ->validate(true)
@@ -857,13 +901,16 @@ class Resume extends \app\common\controller\Backend
             );
             model('Resume')->refreshSearch($basic['id']);
 
-            model('AdminLog')->record(
-                '编辑简历工作经历。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '工作经历',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 工作经历删除
      */
@@ -875,14 +922,19 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeWork')->destroy($id);
         $work_total = model('ResumeWork')
             ->where(['rid' => $rid])
             ->count();
         if ($work_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['work' => 0],
                 $basic['id'],
@@ -891,16 +943,15 @@ class Resume extends \app\common\controller\Backend
         }
         model('Resume')->refreshSearch($rid);
 
-        model('AdminLog')->record(
-            '删除简历工作经历。工作经历ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除工作经历',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 培训经历列表
      */
@@ -918,14 +969,15 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
-            $value['agency'] = htmlspecialchars_decode($value['agency'],ENT_QUOTES);
-            $value['course'] = htmlspecialchars_decode($value['course'],ENT_QUOTES);
+            $value['agency'] = htmlspecialchars_decode($value['agency'], ENT_QUOTES);
+            $value['course'] = htmlspecialchars_decode($value['course'], ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
             'items' => $list
         ]);
     }
+
     /**
      * 培训经历添加修改
      */
@@ -939,8 +991,8 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['agency'] = htmlspecialchars_decode($info['agency'],ENT_QUOTES);
-                $info['course'] = htmlspecialchars_decode($info['course'],ENT_QUOTES);
+                $info['agency'] = htmlspecialchars_decode($info['agency'], ENT_QUOTES);
+                $info['course'] = htmlspecialchars_decode($info['course'], ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -994,13 +1046,16 @@ class Resume extends \app\common\controller\Backend
                 $basic['uid']
             );
 
-            model('AdminLog')->record(
-                '编辑简历培训经历。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '培训经历',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 培训经历删除
      */
@@ -1008,6 +1063,13 @@ class Resume extends \app\common\controller\Backend
     {
         $id = input('post.id/d', 0, 'intval');
         $rid = input('post.rid/d', 0, 'intval');
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
 
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
@@ -1017,25 +1079,21 @@ class Resume extends \app\common\controller\Backend
             ->where(['rid' => $rid])
             ->count();
         if ($training_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['training' => 0],
                 $basic['id'],
                 $basic['uid']
             );
         }
-        model('AdminLog')->record(
-            '删除简历培训经历。培训经历ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除培训经历',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 项目经历列表
      */
@@ -1053,15 +1111,16 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
-            $value['projectname'] = htmlspecialchars_decode($value['projectname'],ENT_QUOTES);
-            $value['role'] = htmlspecialchars_decode($value['role'],ENT_QUOTES);
-            $value['description'] = htmlspecialchars_decode($value['description'],ENT_QUOTES);
+            $value['projectname'] = htmlspecialchars_decode($value['projectname'], ENT_QUOTES);
+            $value['role'] = htmlspecialchars_decode($value['role'], ENT_QUOTES);
+            $value['description'] = htmlspecialchars_decode($value['description'], ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
             'items' => $list
         ]);
     }
+
     /**
      * 项目经历添加修改
      */
@@ -1075,9 +1134,9 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['projectname'] = htmlspecialchars_decode($info['projectname'],ENT_QUOTES);
-                $info['role'] = htmlspecialchars_decode($info['role'],ENT_QUOTES);
-                $info['description'] = htmlspecialchars_decode($info['description'],ENT_QUOTES);
+                $info['projectname'] = htmlspecialchars_decode($info['projectname'], ENT_QUOTES);
+                $info['role'] = htmlspecialchars_decode($info['role'], ENT_QUOTES);
+                $info['description'] = htmlspecialchars_decode($info['description'], ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -1107,6 +1166,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if ($id > 0) {
                 $result = model('ResumeProject')
@@ -1132,13 +1194,16 @@ class Resume extends \app\common\controller\Backend
             );
             model('Resume')->refreshSearch($basic['id']);
 
-            model('AdminLog')->record(
-                '编辑简历项目经历。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '项目经历',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 项目经历删除
      */
@@ -1150,14 +1215,18 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeProject')->destroy($id);
         $project_total = model('ResumeProject')
             ->where(['rid' => $rid])
             ->count();
         if ($project_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['project' => 0],
                 $basic['id'],
@@ -1165,16 +1234,17 @@ class Resume extends \app\common\controller\Backend
             );
         }
         model('Resume')->refreshSearch($rid);
-        model('AdminLog')->record(
-            '删除简历项目经历。项目经历ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除项目经历',
+            $this->admininfo,
+            0,
+            4
         );
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 证书列表
      */
@@ -1187,7 +1257,7 @@ class Resume extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             $value['time'] = date('Y年m月', $value['obtaintime']);
-            $value['name'] = htmlspecialchars_decode($value['name'],ENT_QUOTES);
+            $value['name'] = htmlspecialchars_decode($value['name'], ENT_QUOTES);
             $list[$key] = $value;
         }
 
@@ -1195,6 +1265,7 @@ class Resume extends \app\common\controller\Backend
             'items' => $list
         ]);
     }
+
     /**
      * 证书添加修改
      */
@@ -1208,7 +1279,7 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
-                $info['name'] = htmlspecialchars_decode($info['name'],ENT_QUOTES);
+                $info['name'] = htmlspecialchars_decode($info['name'], ENT_QUOTES);
                 $info['obtaintime'] = date('Y-m', $info['obtaintime']);
             }
 
@@ -1229,6 +1300,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if ($id > 0) {
                 $result = model('ResumeCertificate')
@@ -1252,13 +1326,16 @@ class Resume extends \app\common\controller\Backend
                 $basic['id'],
                 $basic['uid']
             );
-            model('AdminLog')->record(
-                '编辑简历证书。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '简历证书',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 证书删除
      */
@@ -1270,26 +1347,34 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeCertificate')->destroy($id);
         $certificate_total = model('ResumeCertificate')
             ->where(['rid' => $rid])
             ->count();
         if ($certificate_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['certificate' => 0],
                 $basic['id'],
                 $basic['uid']
             );
         }
-        model('AdminLog')->record(
-            '删除简历证书。证书ID【' . $id . '】；简历ID【' . $rid . '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除简历证书',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 语言能力列表
      */
@@ -1317,6 +1402,7 @@ class Resume extends \app\common\controller\Backend
             'items' => $list
         ]);
     }
+
     /**
      * 语言能力添加修改
      */
@@ -1353,6 +1439,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $input_data['rid'])
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
 
             if ($id > 0) {
                 $result = model('ResumeLanguage')
@@ -1376,13 +1465,16 @@ class Resume extends \app\common\controller\Backend
                 $basic['id'],
                 $basic['uid']
             );
-            model('AdminLog')->record(
-                '编辑简历语言能力。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，' . ($id > 0 ? '修改' : '添加') . '语言能力',
+                $this->admininfo,
+                0,
+                ($id > 0 ? 3 : 2)
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 语言能力删除
      */
@@ -1394,30 +1486,34 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeLanguage')->destroy($id);
         $language_total = model('ResumeLanguage')
             ->where(['rid' => $rid])
             ->count();
         if ($language_total == 0) {
-            $basic = model('Resume')
-                ->where('id', $rid)
-                ->find();
             model('Resume')->updateComplete(
                 ['language' => 0],
                 $basic['id'],
                 $basic['uid']
             );
         }
-        model('AdminLog')->record(
-            '删除简历语言能力。语言能力ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除语言能力',
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 特长标签
      */
@@ -1464,6 +1560,9 @@ class Resume extends \app\common\controller\Backend
             $basic = model('Resume')
                 ->where('id', $id)
                 ->find();
+            if (null === $basic) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
             if (
                 false ===
                 model('Resume')
@@ -1479,13 +1578,16 @@ class Resume extends \app\common\controller\Backend
                 $basic['uid']
             );
             model('Resume')->refreshSearch($basic['id']);
-            model('AdminLog')->record(
-                '编辑简历特长标签。简历ID【' . $basic['id'] . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，修改特长标签',
+                $this->admininfo,
+                0,
+                3
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     /**
      * 照片作品列表
      */
@@ -1513,6 +1615,7 @@ class Resume extends \app\common\controller\Backend
             'items' => $list
         ]);
     }
+
     /**
      * 照片作品添加
      */
@@ -1538,6 +1641,10 @@ class Resume extends \app\common\controller\Backend
         $basic = model('Resume')
             ->where('id', $rid)
             ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         $data['uid'] = $basic['uid'];
         $data['rid'] = $rid;
         $data['img'] = $imgid;
@@ -1558,12 +1665,15 @@ class Resume extends \app\common\controller\Backend
             $basic['id'],
             $basic['uid']
         );
-        model('AdminLog')->record(
-            '添加简历照片作品。简历ID【' . $basic['id'] . '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，添加简历作品',
+            $this->admininfo,
+            0,
+            2
         );
         $this->ajaxReturn(200, '上传成功', model('ResumeImg')->id);
     }
+
     /**
      * 照片作品删除
      */
@@ -1575,6 +1685,14 @@ class Resume extends \app\common\controller\Backend
         if (!$id || !$rid) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        $basic = model('Resume')
+            ->where('id', $rid)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         model('ResumeImg')->destroy($id);
 
         $img_total = model('ResumeImg')
@@ -1583,16 +1701,15 @@ class Resume extends \app\common\controller\Backend
         if ($img_total == 0) {
             model('Resume')->updateComplete(['img' => 0], $rid, 0);
         }
-        model('AdminLog')->record(
-            '删除简历照片作品。照片作品ID【' .
-                $id .
-                '】；简历ID【' .
-                $rid .
-                '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除简历作品',
+            $this->admininfo,
+            0,
+            2
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 审核简历
      */
@@ -1604,17 +1721,50 @@ class Resume extends \app\common\controller\Backend
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('Resume')->setAudit($id, $audit, $reason);
-        model('AdminLog')->record(
-            '将简历审核状态变更为【' .
-                model('Resume')->map_audit[$audit] .
-                '】。简历ID【' .
-                implode(',', $id) .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model('Resume')
+                ->whereIn('id', $id)
+                ->column('id,uid,fullname');
+            if (null === $list) {
+                $this->ajaxReturn(500, '没有要审核的简历');
+            }
+
+            Db::startTrans();
+
+            model('Resume')->setAudit($id, $audit, $reason);
+
+            /**
+             * 日志
+             */
+            $log_field = '审核简历';
+            foreach ($list as $one) {
+                $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
+            }
+
+            $log_field = rtrim($log_field, '；') . '，审核状态:' . model('Resume')->map_audit[$audit];
+            if ($audit === 2) {
+                $log_field .= '，原因：' . (empty($reason) ? '未填写' : $reason);
+            }
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                6
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '审核失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '审核成功');
     }
+
     /**
      * 简历等级
      */
@@ -1625,31 +1775,79 @@ class Resume extends \app\common\controller\Backend
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('Resume')->setLevel($id, $level);
-        model('AdminLog')->record(
-            '将简历等级变更为【' .
-                ($level==1?'优质简历':'普通简历') .
-                '】。简历ID【' .
-                implode(',', $id) .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model('Resume')
+                ->whereIn('id', $id)
+                ->column('id,uid,fullname');
+            if (null === $list) {
+                $this->ajaxReturn(500, '没有要操作的简历');
+            }
+
+            Db::startTrans();
+
+            model('Resume')->setLevel($id, $level);
+
+            /**
+             * 日志
+             */
+            $log_field = '设置简历等级';
+            foreach ($list as $one) {
+                $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
+            }
+            $log_field = rtrim($log_field, '；') . '，简历等级:' . ($level === 1 ? '优质简历' : '普通简历');
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '操作失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '操作成功');
     }
+
     /**
      * 简历点评
      */
     public function setComment()
     {
-        $id = input('post.id/d',0,'intval');
-        $comment = input('post.comment/s','', 'trim');
-        if ($id==0) {
+        $id = input('post.id/d', 0, 'intval');
+        $comment = input('post.comment/s', '', 'trim');
+        if ($id == 0) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('Resume')->save(['comment'=>$comment],['id'=>$id]);
-        model('AdminLog')->record('将简历点评内容变更为“' .$comment.'”。简历ID【'.$id.'】',$this->admininfo);
+
+        $basic = model('Resume')
+            ->where('id', $id)
+            ->find();
+        if (null === $basic) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
+        if ($basic['comment'] == $comment) {
+            $this->ajaxReturn(500, '简历点评内容未发生变化');
+        }
+
+        model('Resume')->save(['comment' => $comment], ['id' => $id]);
+
+        model('AdminLog')->writeLog(
+            '修改{' . $basic['fullname'] . '}(简历ID:' . $basic['id'] . ')简历，删除简历点评，' . $basic['comment'] . '->' . $comment,
+            $this->admininfo,
+            0,
+            3
+        );
         $this->ajaxReturn(200, '操作成功');
     }
+
     /**
      * 删除简历
      */
@@ -1660,21 +1858,31 @@ class Resume extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择');
         }
         model('Member')->deleteMemberByUids($uid);
-        model('AdminLog')->record('删除简历。简历UID【'.implode(",",$uid).'】',$this->admininfo);
+        model('AdminLog')->writeLog('删除简历。简历UID【'.implode(",",$uid).'】',$this->admininfo);
         $this->ajaxReturn(200, '删除成功');
     }
+
     /**
      * 刷新简历
      */
-    public function refresh(){
+    public function refresh()
+    {
         $uidArr = input('post.uid/a');
         if (empty($uidArr)) {
             $this->ajaxReturn(500, '请选择');
         }
+
+        $list = model('Resume')
+            ->whereIn('uid', $uidArr)
+            ->column('id,uid,fullname');
+        if (null === $list) {
+            $this->ajaxReturn(500, '没有要刷新的简历');
+        }
+
         // 刷新简历信息 chenyang 2022年3月15日15:32:33
         foreach ($uidArr as $uid) {
             $refreshParams = [
-                'uid'   => $uid,
+                'uid' => $uid,
                 'utype' => 2
             ];
             $result = model('Resume')->refreshResumeData($refreshParams, 2);
@@ -1683,9 +1891,22 @@ class Resume extends \app\common\controller\Backend
             }
         }
 
-        model('AdminLog')->record('刷新简历。简历ID【'.implode(",",$uidArr).'】',$this->admininfo);
+        /**
+         * 日志
+         */
+        $log_field = '刷新简历';
+        foreach ($list as $one) {
+            $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
+        }
+        $log_result = model('AdminLog')->writeLog(
+            rtrim($log_field, '；'),
+            $this->admininfo,
+            0,
+            1
+        );
         $this->ajaxReturn(200, '刷新成功');
     }
+
     /**
      * 简历导入
      */
@@ -1708,11 +1929,11 @@ class Resume extends \app\common\controller\Backend
         $resumeModel = model('Resume');
         $resumeid_arr = [];
         \think\Db::startTrans();
-        try{
+        try {
             foreach ($post_data as $key => $value) {
                 $_member_model = clone $memberModel;
                 $_resume_model = clone $resumeModel;
-                if($_member_model->where('mobile',$value['basic']['contact']['mobile'])->find()!==null){
+                if ($_member_model->where('mobile', $value['basic']['contact']['mobile'])->find() !== null) {
                     continue;
                 }
                 $insert_data_member = [
@@ -1735,222 +1956,237 @@ class Resume extends \app\common\controller\Backend
                 $_member_model->validate(false)->allowField(true)->save($insert_data_member);
                 $insert_uid = $_member_model->uid;
                 $insert_data_resume = [
-                    'uid'=>$insert_uid,
-                    'service_tag'=>'',
-                    'fullname'=>$value['basic']['fullname'],
-                    'sex'=>$value['basic']['sex'],
-                    'birthday'=>$value['basic']['birthday'],
-                    'residence'=>$value['basic']['residence'],
-                    'height'=>$value['basic']['height'],
-                    'marriage'=>array_search($value['basic']['marriage'],$_resume_model->map_marriage),
-                    'education'=>array_search($value['basic']['education'],model('BaseModel')->map_education),
-                    'enter_job_time'=>$value['basic']['enter_job_time']?strtotime($value['basic']['enter_job_time']):0,
-                    'householdaddress'=>$value['basic']['householdaddress'],
-                    'major1'=>0,
-                    'major2'=>0,
-                    'major'=>0,
-                    'current'=>0,
-                    'click'=>0,
-                    'custom_field_1'=>'',
-                    'custom_field_2'=>'',
-                    'custom_field_3'=>'',
-                    'platform'=>$value['basic']['platform'],
-                    'remark'=>'',
-                    'comment'=>''
+                    'uid' => $insert_uid,
+                    'service_tag' => '',
+                    'fullname' => $value['basic']['fullname'],
+                    'sex' => $value['basic']['sex'],
+                    'birthday' => $value['basic']['birthday'],
+                    'residence' => $value['basic']['residence'],
+                    'height' => $value['basic']['height'],
+                    'marriage' => array_search($value['basic']['marriage'], $_resume_model->map_marriage),
+                    'education' => array_search($value['basic']['education'], model('BaseModel')->map_education),
+                    'enter_job_time' => $value['basic']['enter_job_time'] ? strtotime($value['basic']['enter_job_time']) : 0,
+                    'householdaddress' => $value['basic']['householdaddress'],
+                    'major1' => 0,
+                    'major2' => 0,
+                    'major' => 0,
+                    'current' => 0,
+                    'click' => 0,
+                    'custom_field_1' => '',
+                    'custom_field_2' => '',
+                    'custom_field_3' => '',
+                    'platform' => $value['basic']['platform'],
+                    'remark' => '',
+                    'comment' => ''
                 ];
                 //插入resume表
                 $_resume_model->validate(false)->save($insert_data_resume);
                 $insert_resumeid = $_resume_model->id;
-                if($value['basic']['specialty']!=''){
-                    model('Resume')->where('id',$insert_resumeid)->setField('specialty',$value['basic']['specialty']);
+                if ($value['basic']['specialty'] != '') {
+                    model('Resume')->where('id', $insert_resumeid)->setField('specialty', $value['basic']['specialty']);
                 }
-                
+
                 $resumeid_arr[] = $insert_resumeid;
-                
+
                 $contact_list[] = [
-                    'rid'=>$insert_resumeid,
-                    'uid'=>$insert_uid,
-                    'mobile'=>$value['basic']['contact']['mobile'],
-                    'email'=>$value['basic']['contact']['email'],
-                    'qq'=>'',
-                    'weixin'=>''
+                    'rid' => $insert_resumeid,
+                    'uid' => $insert_uid,
+                    'mobile' => $value['basic']['contact']['mobile'],
+                    'email' => $value['basic']['contact']['email'],
+                    'qq' => '',
+                    'weixin' => ''
                 ];
                 foreach ($value['intention_list'] as $k => $v) {
                     $arr = [
-                        'rid'=>$insert_resumeid,
-                        'uid'=>$insert_uid,
-                        'nature'=>array_search($v['nature'],$_resume_model->map_nature),
-                        'category1'=>0,
-                        'category2'=>0,
-                        'category3'=>0,
-                        'category'=>0,
-                        'district1'=>0,
-                        'district2'=>0,
-                        'district3'=>0,
-                        'district'=>0,
-                        'minwage'=>$v['minwage'],
-                        'maxwage'=>$v['maxwage'],
-                        'trade'=>array_search($v['trade'],$category_data['QS_trade'])===false?0:array_search($v['trade'],$category_data['QS_trade'])
+                        'rid' => $insert_resumeid,
+                        'uid' => $insert_uid,
+                        'nature' => array_search($v['nature'], $_resume_model->map_nature),
+                        'category1' => 0,
+                        'category2' => 0,
+                        'category3' => 0,
+                        'category' => 0,
+                        'district1' => 0,
+                        'district2' => 0,
+                        'district3' => 0,
+                        'district' => 0,
+                        'minwage' => $v['minwage'],
+                        'maxwage' => $v['maxwage'],
+                        'trade' => array_search($v['trade'], $category_data['QS_trade']) === false ? 0 : array_search($v['trade'], $category_data['QS_trade'])
                     ];
-                    $district_arr = explode("/",$v['district']);
-                    $v['district'] = $district_arr[count($district_arr)-1];
-                    $district_id = array_search($v['district'],$category_district_data);
-                    if($district_id!==false){
-                        $district_info = model('CategoryDistrict')->where('id',$district_id)->find();
-                        if($district_info!==null){
-                            if($district_info['pid']==0){
+                    $district_arr = explode("/", $v['district']);
+                    $v['district'] = $district_arr[count($district_arr) - 1];
+                    $district_id = array_search($v['district'], $category_district_data);
+                    if ($district_id !== false) {
+                        $district_info = model('CategoryDistrict')->where('id', $district_id)->find();
+                        if ($district_info !== null) {
+                            if ($district_info['pid'] == 0) {
                                 $arr['district1'] = $district_id;
                                 $arr['district'] = $district_id;
-                            }else{
-                                $parent_district_info = model('CategoryDistrict')->where('id',$district_info['pid'])->find();
-                                if($parent_district_info['pid']==0){
+                            } else {
+                                $parent_district_info = model('CategoryDistrict')->where('id', $district_info['pid'])->find();
+                                if ($parent_district_info['pid'] == 0) {
                                     $arr['district1'] = $parent_district_info['id'];
                                     $arr['district2'] = $district_id;
                                     $arr['district'] = $district_id;
-                                }else{
+                                } else {
                                     $arr['district1'] = $parent_district_info['pid'];
                                     $arr['district2'] = $parent_district_info['id'];
                                     $arr['district3'] = $district_id;
                                     $arr['district'] = $district_id;
                                 }
                             }
-                            
+
                         }
                     }
-                    $category_arr = explode("/",$v['category']);
-                    $v['category'] = $category_arr[count($category_arr)-1];
-                    $category_id = array_search($v['category'],$category_job_data);
-                    if($category_id!==false){
-                        $category_info = model('CategoryJob')->where('id',$category_id)->find();
-                        if($category_info!==null){
-                            if($category_info['pid']==0){
+                    $category_arr = explode("/", $v['category']);
+                    $v['category'] = $category_arr[count($category_arr) - 1];
+                    $category_id = array_search($v['category'], $category_job_data);
+                    if ($category_id !== false) {
+                        $category_info = model('CategoryJob')->where('id', $category_id)->find();
+                        if ($category_info !== null) {
+                            if ($category_info['pid'] == 0) {
                                 $arr['category1'] = $category_id;
                                 $arr['category'] = $category_id;
-                            }else{
-                                $parent_category_info = model('CategoryJob')->where('id',$category_info['pid'])->find();
-                                if($parent_category_info['pid']==0){
+                            } else {
+                                $parent_category_info = model('CategoryJob')->where('id', $category_info['pid'])->find();
+                                if ($parent_category_info['pid'] == 0) {
                                     $arr['category1'] = $parent_category_info['id'];
                                     $arr['category2'] = $category_id;
                                     $arr['category'] = $category_id;
-                                }else{
+                                } else {
                                     $arr['category1'] = $parent_category_info['pid'];
                                     $arr['category2'] = $parent_category_info['id'];
                                     $arr['category3'] = $category_id;
                                     $arr['category'] = $category_id;
                                 }
                             }
-                            
+
                         }
                     }
                     $intention_list[] = $arr;
                 }
                 foreach ($value['certificate_list'] as $k => $v) {
                     $arr = [
-                        'rid'=>$insert_resumeid,
-                        'uid'=>$insert_uid,
-                        'name'=>$v['name'],
-                        'obtaintime'=>strtotime($v['obtaintime'])
+                        'rid' => $insert_resumeid,
+                        'uid' => $insert_uid,
+                        'name' => $v['name'],
+                        'obtaintime' => strtotime($v['obtaintime'])
                     ];
                     $certificate_list[] = $arr;
                 }
                 foreach ($value['education_list'] as $k => $v) {
                     $arr = [
-                        'rid'=>$insert_resumeid,
-                        'uid'=>$insert_uid,
-                        'starttime'=>strtotime($v['starttime']),
-                        'endtime'=>strtotime($v['endtime']),
-                        'todate'=>0,
-                        'school'=>$v['school'],
-                        'major'=>$v['major'],
-                        'education'=>array_search($v['education'],model('BaseModel')->map_education)
+                        'rid' => $insert_resumeid,
+                        'uid' => $insert_uid,
+                        'starttime' => strtotime($v['starttime']),
+                        'endtime' => strtotime($v['endtime']),
+                        'todate' => 0,
+                        'school' => $v['school'],
+                        'major' => $v['major'],
+                        'education' => array_search($v['education'], model('BaseModel')->map_education)
                     ];
                     $education_list[] = $arr;
                 }
                 foreach ($value['language_list'] as $k => $v) {
                     $arr = [
-                        'rid'=>$insert_resumeid,
-                        'uid'=>$insert_uid,
-                        'language'=>array_search($v['language'],$category_data['QS_language'])===false?0:array_search($v['language'],$category_data['QS_language']),
-                        'level'=>array_search($v['level'],$category_data['QS_language_level'])===false?0:array_search($v['level'],$category_data['QS_language_level'])
+                        'rid' => $insert_resumeid,
+                        'uid' => $insert_uid,
+                        'language' => array_search($v['language'], $category_data['QS_language']) === false ? 0 : array_search($v['language'], $category_data['QS_language']),
+                        'level' => array_search($v['level'], $category_data['QS_language_level']) === false ? 0 : array_search($v['level'], $category_data['QS_language_level'])
                     ];
                     $language_list[] = $arr;
                 }
                 foreach ($value['work_list'] as $k => $v) {
                     $arr = [
-                        'rid'=>$insert_resumeid,
-                        'uid'=>$insert_uid,
-                        'starttime'=>strtotime($v['starttime']),
-                        'endtime'=>strtotime($v['endtime']),
-                        'todate'=>0,
-                        'companyname'=>$v['companyname'],
-                        'jobname'=>$v['jobname'],
-                        'duty'=>$v['duty']
+                        'rid' => $insert_resumeid,
+                        'uid' => $insert_uid,
+                        'starttime' => strtotime($v['starttime']),
+                        'endtime' => strtotime($v['endtime']),
+                        'todate' => 0,
+                        'companyname' => $v['companyname'],
+                        'jobname' => $v['jobname'],
+                        'duty' => $v['duty']
                     ];
                     $work_list[] = $arr;
                 }
                 $compelete_list[] = [
-                    'rid'=>$insert_resumeid,
-                    'uid'=>$insert_uid,
-                    'basic'=>1,
-                    'intention'=>!empty($intention_list)?1:0,
-                    'specialty'=>$value['basic']['specialty']==''?0:1,
-                    'education'=>!empty($education_list)?1:0,
-                    'work'=>!empty($work_list)?1:0,
-                    'training'=>0,
-                    'project'=>0,
-                    'certificate'=>!empty($certificate_list)?1:0,
-                    'language'=>!empty($language_list)?1:0,
-                    'tag'=>0,
-                    'img'=>0
+                    'rid' => $insert_resumeid,
+                    'uid' => $insert_uid,
+                    'basic' => 1,
+                    'intention' => !empty($intention_list) ? 1 : 0,
+                    'specialty' => $value['basic']['specialty'] == '' ? 0 : 1,
+                    'education' => !empty($education_list) ? 1 : 0,
+                    'work' => !empty($work_list) ? 1 : 0,
+                    'training' => 0,
+                    'project' => 0,
+                    'certificate' => !empty($certificate_list) ? 1 : 0,
+                    'language' => !empty($language_list) ? 1 : 0,
+                    'tag' => 0,
+                    'img' => 0
                 ];
             }
-            unset($_member_model,$_resume_model);
-            if(!empty($compelete_list)){
+            unset($_member_model, $_resume_model);
+            if (!empty($compelete_list)) {
                 model('ResumeComplete')->saveAll($compelete_list);
             }
-            if(!empty($contact_list)){
+            if (!empty($contact_list)) {
                 model('ResumeContact')->saveAll($contact_list);
             }
-            if(!empty($intention_list)){
+            if (!empty($intention_list)) {
                 model('ResumeIntention')->saveAll($intention_list);
             }
-            if(!empty($certificate_list)){
+            if (!empty($certificate_list)) {
                 model('ResumeCertificate')->saveAll($certificate_list);
             }
-            if(!empty($education_list)){
+            if (!empty($education_list)) {
                 model('ResumeEducation')->saveAll($education_list);
             }
-            if(!empty($language_list)){
+            if (!empty($language_list)) {
                 model('ResumeLanguage')->saveAll($language_list);
             }
-            if(!empty($work_list)){
+            if (!empty($work_list)) {
                 model('ResumeWork')->saveAll($work_list);
             }
-            if(!empty($resumeid_arr)){
-                model('Resume')->where('id','in',$resumeid_arr)->setField('audit',1);
+            if (!empty($resumeid_arr)) {
+                model('Resume')->where('id', 'in', $resumeid_arr)->setField('audit', 1);
             }
+
+            if (!empty($resumeid_arr)) {
+                $import_total = count($resumeid_arr);
+                $resume_ids = implode(',', $resumeid_arr);
+
+                model('AdminLog')->writeLog(
+                    '后台导入简历' . $import_total . '份(简历ID:' . $resume_ids . ')',
+                    $this->admininfo,
+                    0,
+                    1
+                );
+            }
+
             \think\Db::commit();
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             \think\Db::rollBack();
-            $this->ajaxReturn(500,$e->getMessage());
+            $this->ajaxReturn(500, $e->getMessage());
         }
-        if(!empty($resumeid_arr)){
+        if (!empty($resumeid_arr)) {
             model('Resume')->refreshSearchBatch($resumeid_arr);
         }
         $this->ajaxReturn(200, '导入成功');
     }
-    public function downloadImportResumeTpl(){
-        $file = SYS_UPLOAD_PATH.'resource/import_resume.xls';
+
+    public function downloadImportResumeTpl()
+    {
+        $file = SYS_UPLOAD_PATH . 'resource/import_resume.xls';
         $result = file_get_contents($file);
-        ob_start(); 
-        echo "$result"; 
-        header("Cache-Control: public"); 
-        Header("Content-type: application/octet-stream"); 
-        Header("Accept-Ranges: bytes"); 
-        header('Content-Disposition: attachment; filename=简历导入模板.xls'); 
-        header("Pragma:no-cache"); 
-        header("Expires:0"); 
-        ob_end_flush(); 
+        ob_start();
+        echo "$result";
+        header("Cache-Control: public");
+        Header("Content-type: application/octet-stream");
+        Header("Accept-Ranges: bytes");
+        header('Content-Disposition: attachment; filename=简历导入模板.xls');
+        header("Pragma:no-cache");
+        header("Expires:0");
+        ob_end_flush();
     }
 
     /**
@@ -1996,7 +2232,7 @@ class Resume extends \app\common\controller\Backend
 
         // 3.未上传时，上传附件简历
         $fileManager = new FileManager();
-        $result = $fileManager->upload($file,false);
+        $result = $fileManager->upload($file, false);
         if (false === $result) {
             $this->ajaxReturn(500, $fileManager->getError());
         }
@@ -2007,6 +2243,10 @@ class Resume extends \app\common\controller\Backend
             $resume = model('Resume')
                 ->where('id', $resume_id)
                 ->find();
+            if (null === $resume) {
+                $this->ajaxReturn(500, '要修改的简历不存在');
+            }
+
             $data = [
                 'rid' => $resume_id,
                 'uid' => $resume['uid'],
@@ -2017,9 +2257,11 @@ class Resume extends \app\common\controller\Backend
             ];
             model('ResumeEnclosure')->save($data);
 
-            model('AdminLog')->record(
-                '添加简历附件简历。简历ID【' . $resume_id . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $resume['fullname'] . '}(简历ID:' . $resume['id'] . ')简历，添加附件简历',
+                $this->admininfo,
+                0,
+                2
             );
 
             \think\Db::commit();
@@ -2070,6 +2312,14 @@ class Resume extends \app\common\controller\Backend
             $this->ajaxReturn(500, '要删除的附加简历状态异常');
         }
 
+        // 3.判断并获取简历基本信息
+        $resume = model('Resume')
+            ->where('id', $resume_id)
+            ->find();
+        if (null === $resume) {
+            $this->ajaxReturn(500, '要修改的简历不存在');
+        }
+
         \think\Db::startTrans();
         try {
             $delete_result = model('ResumeEnclosure')
@@ -2081,9 +2331,11 @@ class Resume extends \app\common\controller\Backend
                 throw new \Exception(model('ResumeEnclosure')->getError());
             }
 
-            model('AdminLog')->record(
-                '删除简历附件简历。简历ID【' . $resume_id . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '修改{' . $resume['fullname'] . '}(简历ID:' . $resume['id'] . ')简历，删除附件简历',
+                $this->admininfo,
+                0,
+                4
             );
 
             \think\Db::commit();

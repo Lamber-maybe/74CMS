@@ -31,7 +31,7 @@ class Setting extends Backend
             $lifeCycleModel = model('b2bcrm.CrmLifeCycle');
             $res = $lifeCycleModel->getDate();
             $data['res'] = $res;
-            $data['open_count'] =  $lifeCycleModel->where(['is_open'=>1,'id'=>['elt',6]])->count();
+            $data['open_count'] = $lifeCycleModel->where(['is_open' => 1, 'id' => ['elt', 6]])->count();
             if (false === $res) {
                 $this->ajaxReturn(500, '数据获取失败');
             } else {
@@ -108,10 +108,9 @@ class Setting extends Backend
                 $this->ajaxReturn(500, '生命周期阶段不存在');
             } else {
                 $use_lables = model('Company')
-                    ->where(['life_cycle_id'=>$input_data['id']])
-                ->find();
-                if (!empty($use_lables))
-                {
+                    ->where(['life_cycle_id' => $input_data['id']])
+                    ->find();
+                if (!empty($use_lables)) {
                     $this->ajaxReturn(500, '当前生命周期下有客户，不可关闭');
                 }
                 $life_cycle = $life_cycle->toArray();
@@ -141,6 +140,12 @@ class Setting extends Backend
             $lifeCycleModel = model('b2bcrm.CrmLifeCycle');
             $update_result = $lifeCycleModel->switch($input_data['id'], $input_data['is_open']);
             if ($update_result) {
+                model('AdminLog')->writeLog(
+                    '修改CRM设置，客户生命周期',
+                    $this->admininfo,
+                    0,
+                    3
+                );
                 $this->ajaxReturn(200, '操作成功');
             } else {
                 $this->ajaxReturn(500, '操作失败');
@@ -206,6 +211,12 @@ class Setting extends Backend
             $lifeCycleModel = model('b2bcrm.CrmLifeCycle');
             $update_result = $lifeCycleModel->rename($input_data['id'], $input_data['name']);
             if ($update_result) {
+                model('AdminLog')->writeLog(
+                    '修改CRM设置，客户生命周期',
+                    $this->admininfo,
+                    0,
+                    3
+                );
                 $this->ajaxReturn(200, '生命周期阶段名修改成功');
             } else {
                 $this->ajaxReturn(500, '生命周期阶段名修改失败');
@@ -223,10 +234,14 @@ class Setting extends Backend
     public function getSysConfigByCategory()
     {
         $category = input('post.category/s', '', 'trim');  // 是否关闭 bool 0:否;1:是
+        $need_admin = 0;
 
         switch ($category) {
             case 'customer':
                 // 客户配置
+                $need_admin = 1;
+                break;
+
             case 'thread':
                 // 线索配置
                 break;
@@ -242,24 +257,27 @@ class Setting extends Backend
                 $this->ajaxReturn(500, '数据获取失败');
             } else {
                 $arr = [];
-                foreach ($res as $k=>$v)
-                {
+                foreach ($res as $k => $v) {
                     $arr[$v['key']]['is_open'] = $v['is_open'];
                     $arr[$v['key']]['name'] = $v['name'];
                     $arr[$v['key']]['value'] = $v['value'];
                     $arr[$v['key']]['is_system'] = $v['is_system'];
                     $arr[$v['key']]['remark'] = $v['remark'];
                 }
-                $arr['admin_id'] = model('b2bcrm.CrmAutoAssign')
-                    ->alias('caa')
-                    ->join(
-                        config('database.prefix') . 'admin a',
-                        'caa.admin_id=a.id',
-                        'LEFT'
-                    )
-                    ->where('caa.type', 2) // yx-2023.03.17【剔除已锁定的管理员账号】
-                    ->where('a.status', 1) // yx-2023.03.17【剔除已锁定的管理员账号】
-                    ->column('admin_id');
+
+                if ($need_admin === 1) {
+                    $arr['admin_id'] = model('b2bcrm.CrmAutoAssign')
+                        ->alias('caa')
+                        ->join(
+                            config('database.prefix') . 'admin a',
+                            'caa.admin_id=a.id',
+                            'LEFT'
+                        )
+                        ->where('caa.type', 2) // yx-2023.03.17【剔除已锁定的管理员账号】
+                        ->where('a.status', 1) // yx-2023.03.17【剔除已锁定的管理员账号】
+                        ->column('admin_id');
+                }
+
                 $this->ajaxReturn(200, '数据获取成功', $arr);
             }
         } catch (\Exception $e) {
@@ -406,6 +424,12 @@ class Setting extends Backend
             if (false === $res) {
                 $this->ajaxReturn(500, '新增标签失败');
             } else {
+                model('AdminLog')->writeLog(
+                    '修改CRM设置，标签新增，标签名称:' . $input_data['name'] . '，排序:' . $input_data['order'],
+                    $this->admininfo,
+                    0,
+                    2
+                );
                 $this->ajaxReturn(200, '新增标签成功');
             }
         } catch (\Exception $e) {
@@ -431,8 +455,7 @@ class Setting extends Backend
         $use_lables = model('Company')
             ->where("find_in_set($tagId,labels)")
             ->find();
-        if (!empty($use_lables))
-        {
+        if (!empty($use_lables)) {
             $this->ajaxReturn(500, '该标签已被使用，请勿删除！');
         }
         try {
@@ -440,6 +463,12 @@ class Setting extends Backend
             if (false === $res) {
                 $this->ajaxReturn(500, '标签删除失败');
             } else {
+                model('AdminLog')->writeLog(
+                    '修改CRM设置，标签删除，标签名称:' . $crm_tag_info['name'] . '，排序:' . $crm_tag_info['order'],
+                    $this->admininfo,
+                    0,
+                    4
+                );
                 $this->ajaxReturn(200, '标签删除成功');
             }
         } catch (\Exception $e) {
@@ -495,9 +524,23 @@ class Setting extends Backend
             $res = $crmTagModel->editTag($input_data);
             if (false === $res) {
                 $this->ajaxReturn(500, '标签修改失败');
-            } else {
-                $this->ajaxReturn(200, '标签修改成功');
             }
+
+            $log_field = '修改CRM设置，标签设置，标签名称:' . $crm_tag_info['name'];
+            if ($input_data['name'] != $crm_tag_info['name']) {
+                $log_field .= '->' . $input_data['name'];
+            }
+            if ($input_data['order'] != $crm_tag_info['order']) {
+                $log_field .= '，排序:' . $crm_tag_info['order'] . '->' . $input_data['order'];
+            }
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            $this->ajaxReturn(200, '标签修改成功');
+
         } catch (\Exception $e) {
             $this->ajaxReturn(500, $e->getMessage());
         }
@@ -552,21 +595,45 @@ class Setting extends Backend
     {
         $inputdata = input('post.');
         $configlist = model('b2bcrm.CrmSysConfig')->column('key,id');
-        $admin_id = input('post.admin_id/a',[]);
+        $admin_id = input('post.admin_id/a', []);
 
         try {
-            Db::startTrans();
+            $fieldKeys = array_keys($inputdata);
+            $fieldList = model('b2bcrm.CrmSysConfig')
+                ->whereIn('key', $fieldKeys)
+                ->column('*', 'id');
+            if (null === $fieldList) {
+                $this->ajaxReturn(500, '没有要修改的CRM设置项');
+            }
 
-            if (isset($inputdata['customer_allocation_rule']['value']) && $inputdata['customer_allocation_rule']['value'] == 1)
-            {
+            $category = model('b2bcrm.CrmSysConfig')->whereIn('key', $fieldKeys)
+                ->value('category');
+            switch ($category) {
+                case 'customer':
+                    $log_field = '修改CRM设置，客户配置';
+                    break;
+
+                case 'thread':
+                    $log_field = '修改CRM设置，线索设置';
+                    break;
+
+                default:
+                    $this->ajaxReturn(500, '错误的CRM设置项');
+                    break;
+            }
+
+            if (isset($inputdata['customer_allocation_rule']['value']) && $inputdata['customer_allocation_rule']['value'] == 1) {
                 if (!is_array($admin_id) || empty($admin_id)) {
                     $this->ajaxReturn(500, '请选择客户自动分配线索的销售');
                 }
                 $this->customerAutoAssign($admin_id);
+                $admin_list = model('Admin')
+                    ->whereIn('id', $admin_id)
+                    ->field('username')
+                    ->select();
             }
 
-            if (isset($inputdata['customer_total_limit']['value']))
-            {
+            if (isset($inputdata['customer_total_limit']['value'])) {
                 $admin_id_arr = model('Admin')->column('id');
                 foreach ($admin_id_arr as $adminId) {
                     $customer_total_now = model('Company')
@@ -604,21 +671,28 @@ class Setting extends Backend
                 $sqldata[] = $arr;
             }
 
-            model('b2bcrm.CrmSysConfig')
+            Db::startTrans();
+
+            $save_result = model('b2bcrm.CrmSysConfig')
                 ->isUpdate()
                 ->saveAll($sqldata);
-            $name_list = [];
-            foreach ($sqldata as $key => $value) {
-                $name_list[] = $value['name'];
+            if (false === $save_result) {
+                throw new \Exception(model('b2bcrm.CrmSysConfig')->getError());
             }
-            model('AdminLog')->record(
-                '修改配置信息。配置标识【' . implode(',', $name_list) . '】',
-                $this->admininfo
+
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
             Db::commit();
             $this->ajaxReturn(200, '保存数据成功');
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             Db::rollback();
             $this->ajaxReturn(500, $e->getMessage());
         }

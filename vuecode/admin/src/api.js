@@ -235,6 +235,8 @@ export default {
   getAdminCrmData: '/admin/getAdminCrmData',
   adminLock: '/admin/lock',
   adminDeblocking: '/admin/deblocking',
+  adminLogTypeAll: '/admin/adminLogTypeAll',
+  delAdminLog: '/admin/delAdminLog',
 
   // 管理员角色
   adminRoleList: '/admin_role/index',
@@ -870,7 +872,6 @@ export default {
   clueContactList: 'b2bcrm/Clue/getContactList',
   updateCompany: 'b2bcrm/Company/updateCompany',
   getAllCrmTags: 'b2bcrm/Setting/getAllCrmTags',
-  companyCrmEdit: 'b2bcrm/Company/edit',
   deleteImg: 'b2bcrm/Profile/deleteImg',
   delContact: 'b2bcrm/Company_Contact/delContact',
   addContact: 'b2bcrm/Company_Contact/addContact',

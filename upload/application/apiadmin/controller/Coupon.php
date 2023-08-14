@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class Coupon extends \app\common\controller\Backend
 {
@@ -24,6 +27,7 @@ class Coupon extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -33,25 +37,43 @@ class Coupon extends \app\common\controller\Backend
             'days' => input('post.days/d', 1, 'intval')
         ];
         $input_data['addtime'] = time();
-        if (
-            false ===
-            model('Coupon')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Coupon')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Coupon')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('Coupon')->getError());
+            }
+
+            $setmeal_name = model('Setmeal')->where('id', $input_data['bind_setmeal_id'])->value('name');
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加系统优惠券，名称:' . $input_data['name'] . '；抵扣金额:' . $input_data['face_value'] . '；绑定套餐:' . $setmeal_name . '；有效期:' . $input_data['days'] . '天',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加优惠券。优惠券ID【' .
-                model('Coupon')->id .
-                '】；优惠券名称【' .
-                $input_data['name'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -79,46 +101,116 @@ class Coupon extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Coupon')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Coupon')->getError());
+
+            Db::startTrans();
+            try {
+                $info = model('Coupon')->find($id);
+                if (!$info) {
+                    $this->ajaxReturn(500, '要修改的优惠券不存在');
+                }
+
+                if (
+                    false ===
+                    model('Coupon')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Coupon')->getError());
+                }
+
+                $log_field = '修改系统优惠券，';
+
+                if ($input_data['name'] != $info['name']) {
+                    $log_field .= '名称:' . $info['name'] . '->' . $input_data['name'] . '；';
+                } else {
+                    $log_field .= '名称:' . $info['name'] . '；';
+                }
+
+                if ($input_data['face_value'] != $info['face_value']) {
+                    $log_field .= '抵扣金额:' . $info['face_value'] . '->' . $input_data['face_value'] . '；';
+                }
+
+                if ($input_data['bind_setmeal_id'] != $info['bind_setmeal_id']) {
+                    $setmeal_old = model('Setmeal')->where('id', $info['bind_setmeal_id'])->value('name');
+                    $setmeal_new = model('Setmeal')->where('id', $input_data['bind_setmeal_id'])->value('name');
+                    $log_field .= '绑定套餐:' . $setmeal_old . '->' . $setmeal_new . '；';
+                }
+
+                if ($input_data['days'] != $info['days']) {
+                    $log_field .= '有效期:' . $info['days'] . '天->' . $input_data['days'] . '天；';
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    rtrim($log_field, '；'),
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑优惠券。优惠券ID【' .
-                    $id .
-                    '】；优惠券名称【' .
-                    $input_data['name'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Coupon')
-            ->where('id', 'in', $id)
-            ->column('name');
-        model('Coupon')->destroy($id);
-        model('AdminLog')->record(
-            '删除优惠券。优惠券ID【' .
-                implode(',', $id) .
-                '】;优惠券名称【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Coupon')
+                ->where('id', 'in', $id)
+                ->column('id,name,face_value,bind_setmeal_id,days');
+
+            $del_result = model('Coupon')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('Coupon')->getError());
+            }
+
+            $log_field = '删除系统优惠券，';
+
+            foreach ($list as $coupon) {
+                $setmeal_name = model('Setmeal')->where('id', $coupon['bind_setmeal_id'])->value('name');
+                $log_field .= '名称:' . $coupon['name'] . '；抵扣金额:' . $coupon['face_value'] . '；绑定套餐:' . $setmeal_name . '；有效期:' . $coupon['days'] . '天，';
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '，'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function send()
     {
         $input_data = [
@@ -129,14 +221,32 @@ class Coupon extends \app\common\controller\Backend
         if (false === model('Coupon')->send($input_data, $this->admininfo)) {
             $this->ajaxReturn(500, model('Coupon')->getError());
         }
-        model('AdminLog')->record(
-            '发放优惠券。优惠券ID【' .
-                implode(',', $input_data['coupon_id']) .
-                '】',
-            $this->admininfo
+
+        $coupons = model('Coupon')->where('id', 'in', $input_data['coupon_id'])->column('name');
+        $coupons_name = implode('，', $coupons);
+
+        switch ($input_data['setmeal_id']) {
+            case '0':
+                $check_company = '全部企业';
+                break;
+            case '-1':
+                $check_company = '自定义企业类型';
+                break;
+            default:
+                $check_company = model('Setmeal')->where('id', $input_data['setmeal_id'])->value('name');
+                break;
+        }
+
+        model('AdminLog')->writeLog(
+            '发放优惠券，优惠券名称:' . $coupons_name . '；企业:' . $check_company,
+            $this->admininfo,
+            0,
+            1
         );
+
         $this->ajaxReturn(200, '发放成功');
     }
+
     public function log()
     {
         $current_page = input('get.page/d', 1, 'intval');
@@ -162,6 +272,7 @@ class Coupon extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function record()
     {
         $log_id = input('get.log_id/d', 0, 'intval');

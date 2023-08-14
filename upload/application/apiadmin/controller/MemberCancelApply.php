@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class MemberCancelApply extends \app\common\controller\Backend
 {
@@ -7,6 +10,7 @@ class MemberCancelApply extends \app\common\controller\Backend
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $where = [];
@@ -14,25 +18,23 @@ class MemberCancelApply extends \app\common\controller\Backend
         $keyword = input('get.keyword/s', '', 'trim');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
-        $utype = input('get.utype/d',0,'intval');
-        $status = input('get.status/d',0,'intval');
-        $sortType = input('get.sortType/s','','trim');
-        $sort = input('get.sort/s','desc','trim');
+        $utype = input('get.utype/d', 0, 'intval');
+        $status = input('get.status/d', 0, 'intval');
+        $sortType = input('get.sortType/s', '', 'trim');
+        $sort = input('get.sort/s', 'desc', 'trim');
 
-        switch ($sortType)
-        {
+        switch ($sortType) {
             case 'addtime':
-                $order = 'addtime '.$sort;
+                $order = 'addtime ' . $sort;
                 break;
             case 'handlertime':
-                $order = 'handlertime '.$sort;
+                $order = 'handlertime ' . $sort;
                 break;
             default:
                 $order = 'status asc,id desc ';
                 break;
         }
-        switch ($status)
-        {
+        switch ($status) {
             case 1: // 待处理
                 $where['status'] = 0;
                 break;
@@ -50,15 +52,14 @@ class MemberCancelApply extends \app\common\controller\Backend
                     break;
             }
         }
-        if($utype > 0)
-        {
+        if ($utype > 0) {
             $where['utype'] = $utype;
         }
         $total = model('MemberCancelApply')->where($where)->count();
         $list = model('MemberCancelApply')->where($where)
-                ->order($order)
-                ->page($current_page . ',' . $pagesize)
-                ->select();
+            ->order($order)
+            ->page($current_page . ',' . $pagesize)
+            ->select();
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -66,40 +67,123 @@ class MemberCancelApply extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function delete()
     {
-        $id = input('post.id/d',0,'intval');
+        $id = input('post.id/d', 0, 'intval');
 
-        if ($id==0) {
+        if ($id == 0) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('MemberCancelApply')->where('id',$id)->delete();
-        model('AdminLog')->record(
-            '删除账号注销申请。申请ID【' . $id . '】',
-            $this->admininfo
-        );
+
+        try {
+            $info = model('MemberCancelApply')->find($id);
+            if (null === $info) {
+                $this->ajaxReturn(500, '没有要删除的账号注销申请');
+            }
+            $info = $info->toArray();
+
+            Db::startTrans();
+
+            $del_result = model('MemberCancelApply')->where('id', $id)->delete();
+            if (false === $del_result) {
+                $this->ajaxReturn(500, model('MemberCancelApply')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            if ($info['utype'] === 1) {
+                $log_field = '删除企业账号注销申请{' . $info['companyname'] . '}';
+            } else {
+                $log_field = '删除个人账号注销申请{' . $info['contact'] . '}';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function deleteAll()
     {
-        $id = input('post.id/a',[]);
+        $id = input('post.id/a', []);
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择');
         }
-        model('MemberCancelApply')->whereIn('id',$id)->delete();
-        model('AdminLog')->record(
-            '删除账号注销申请。申请ID【' . implode(',',$id) . '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model('MemberCancelApply')->whereIn('id', $id)->select();
+            if (null === $list) {
+                $this->ajaxReturn(500, '没有要删除的账号注销申请');
+            }
+
+            Db::startTrans();
+
+            $del_result = model('MemberCancelApply')->whereIn('id', $id)->delete();
+            if (false === $del_result) {
+                $this->ajaxReturn(500, model('MemberCancelApply')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '';
+            $utype = 1;
+            foreach ($list as $one) {
+                $utype = $one['utype'];
+                if ($utype === 1) {
+                    $log_field .= '{' . $one['companyname'] . '}；';
+
+                } else {
+                    $log_field .= '{' . $one['contact'] . '}；';
+                }
+            }
+
+            if ($utype === 1) {
+                $log_field = '批量删除企业账号注销申请' . $log_field;
+            } else {
+                $log_field = '批量删除个人账号注销申请' . $log_field;
+            }
+
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function handle()
     {
-        $id = input('post.id/d',0,'intval');
-        if ($id==0) {
+        $id = input('post.id/d', 0, 'intval');
+        if ($id == 0) {
             $this->ajaxReturn(500, '请选择');
         }
-        $info = model('MemberCancelApply')->where('id',$id)->find();
+        $info = model('MemberCancelApply')->where('id', $id)->find();
         $uid = $info['uid'];
         \think\Db::startTrans();
         try {
@@ -110,19 +194,35 @@ class MemberCancelApply extends \app\common\controller\Backend
             ) {
                 throw new \Exception(model('Member')->getError());
             }
+
+            if ($info['utype'] === 1) {
+                $comId = model('Company')->where('uid', $info['uid'])->value('id');
+                $log_field = '处理{' . $info['companyname'] . '}(企业ID:' . $comId . ')账号注销申请，处理成功，用户已无法登录';
+            } else {
+                $log_field = '处理{' . $info['contact'] . '}(会员ID:' . $info['uid'] . ')账号注销申请，处理成功，用户已无法登录';
+            }
+
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            $info->status = 1;
+            $info->handlertime = time();
+            $info->save();
+
             //提交事务
             \think\Db::commit();
         } catch (\Exception $e) {
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
-        $info->status = 1;
-        $info->handlertime = time();
-        $info->save();
-        model('AdminLog')->record(
-            '处理账号注销申请。申请ID【' . $id . '】；会员UID【' . $uid . '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '处理成功');
     }
 
@@ -132,8 +232,8 @@ class MemberCancelApply extends \app\common\controller\Backend
     private function addBackups($id)
     {
         $cancel_apply = model('MemberCancelApply')
-            ->where('id',$id)
-            ->where('is_backups',0)
+            ->where('id', $id)
+            ->where('is_backups', 0)
             ->field('id,uid,utype,addtime')
             ->find();
         if (count($cancel_apply) > 0) {
@@ -150,7 +250,7 @@ class MemberCancelApply extends \app\common\controller\Backend
                     $company = model('company')
                         ->alias('c')
                         ->join('member m', 'c.uid=m.uid', 'left')
-                        ->join('setmeal s','s.id=c.setmeal_id','left')
+                        ->join('setmeal s', 's.id=c.setmeal_id', 'left')
                         ->where('m.uid', $cancel_apply['uid'])
                         ->field('c.*,m.mobile,m.username,m.reg_time,s.name as setmeal_name')
                         ->find();
@@ -162,20 +262,22 @@ class MemberCancelApply extends \app\common\controller\Backend
                         $arrs['reg_time'] = $company['reg_time'];
                         $arrs['setmeal_id'] = $company['setmeal_id'];
                         $arrs['setmeal_name'] = $company['setmeal_name'];
-                        $arrs['jobs_num'] =  model('JobSearchKey')->where('uid',$cancel_apply['uid'])->count();
-                        $arrs['job_apply_count'] = model('JobApply')->where('company_uid',$cancel_apply['uid'])->count();
-                        $arrs['download_resume_num'] = model('CompanyDownResume')->where('uid',$cancel_apply['uid'])->count();
-                        $company_contact = model('CompanyContact')->where('uid',$cancel_apply['uid'])->field('contact,mobile')->find();
-                        $arrs['contact'] = !empty($company_contact['contact']) ?$company_contact['contact'] : '';
-                        $arrs['contact_mobile'] = !empty($company_contact['mobile']) ?$company_contact['mobile'] : '';
+                        $arrs['jobs_num'] = model('JobSearchKey')->where('uid', $cancel_apply['uid'])->count();
+                        $arrs['job_apply_count'] = model('JobApply')->where('company_uid', $cancel_apply['uid'])->count();
+                        $arrs['download_resume_num'] = model('CompanyDownResume')->where('uid', $cancel_apply['uid'])->count();
+                        $company_contact = model('CompanyContact')->where('uid', $cancel_apply['uid'])->field('contact,mobile')->find();
+                        $arrs['contact'] = !empty($company_contact['contact']) ? $company_contact['contact'] : '';
+                        $arrs['contact_mobile'] = !empty($company_contact['mobile']) ? $company_contact['mobile'] : '';
                     }
                     $getCompany = $this->getCompany($cancel_apply['uid']);
-                    if ($getCompany)
-                    {
+                    if ($getCompany) {
                         $arrs['content'] = json_encode($getCompany);
                     }
 
                     $model = 'CompanyCancelApplyBackups';
+
+                    $log_field = '企业注销前备份{' . $arrs['companyname'] . '}(企业ID:' . $arrs['cid'] . ')账号信息';
+
                     break;
 
                 case 2:
@@ -186,7 +288,7 @@ class MemberCancelApply extends \app\common\controller\Backend
                         ->field('m.mobile,m.reg_time,r.*')
                         ->find();
                     if ($resume) {
-                        $contact_mobile = model('ResumeContact')->where('uid',$cancel_apply['uid'])->view('mobile');
+                        $contact_mobile = model('ResumeContact')->where('uid', $cancel_apply['uid'])->view('mobile');
                         $arrs = [
                             'cancel_apply_id' => $cancel_apply['id'],
                             'uid' => $cancel_apply['uid'],
@@ -200,63 +302,73 @@ class MemberCancelApply extends \app\common\controller\Backend
                             'create_time' => time(),
                             'education' => $resume['education'],// 学历id
                             'education_name' => !empty(
-                                model('BaseModel')->map_education[$resume['education']]
+                            model('BaseModel')->map_education[$resume['education']]
                             )
                                 ? model('BaseModel')->map_education[$resume['education']]
                                 : '学历未知',// 学历名称
                             'enter_job_time' => $resume['enter_job_time'],// 参加工作时间
-                            'delivery_num' => model('JobApply')->where('personal_uid',$cancel_apply['uid'])->count(),// 投递数
-                            'download_num' => model('CompanyDownResume')->where('personal_uid',$cancel_apply['uid'])->count(),// 被下载数
-                            'viewed_num' => model('ViewResume')->where('personal_uid',$cancel_apply['uid'])->count(),// 被查看数
-                            'invitation_num' => model('CompanyInterview')->where('personal_uid',$cancel_apply['uid'])->count(),// 被邀请数
+                            'delivery_num' => model('JobApply')->where('personal_uid', $cancel_apply['uid'])->count(),// 投递数
+                            'download_num' => model('CompanyDownResume')->where('personal_uid', $cancel_apply['uid'])->count(),// 被下载数
+                            'viewed_num' => model('ViewResume')->where('personal_uid', $cancel_apply['uid'])->count(),// 被查看数
+                            'invitation_num' => model('CompanyInterview')->where('personal_uid', $cancel_apply['uid'])->count(),// 被邀请数
                         ];
                         $getResume = $this->getResume($cancel_apply['uid']);
-                        if ($getResume)
-                        {
+                        if ($getResume) {
                             $arrs['content'] = json_encode($getResume);
                         }
                     }
+
                     $model = 'PersonCancelApplyBackups';
+
+                    $log_field = '个人注销前备份{' . $arrs['fullname'] . '}(会员ID:' . $arrs['uid'] . ')账号信息';
+
                     break;
             }
             \think\Db::startTrans();
             try {
                 $add_backups = model($model)->insert($arrs);
-                if ($add_backups === false)
-                {
+                if ($add_backups === false) {
                     throw new \Exception(model($model)->getError());
                 }
                 $save_member_cancel_apply = model('MemberCancelApply')
                     ->where('id', $id)
-                    ->update(['is_backups'=>1]);
-                if ($save_member_cancel_apply === false)
-                {
+                    ->update(['is_backups' => 1]);
+                if ($save_member_cancel_apply === false) {
                     throw new \Exception(model('MemberCancelApply')->getError());
                 }
+
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    1
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
                 //提交事务
                 \think\Db::commit();
-                return ['code'=>200,'msg'=>'备注成功'];
+                return ['code' => 200, 'msg' => '备注成功'];
 
             } catch (\Exception $e) {
                 \think\Db::rollBack();
-                return ['code'=>500,'msg'=>$e->getMessage()];
+                return ['code' => 500, 'msg' => $e->getMessage()];
 
             }
         }
-        return ['code'=>500,'msg'=>'此条注销数据已备注'];
+        return ['code' => 500, 'msg' => '此条注销数据已备注'];
 
     }
 
     public function backups()
     {
-        $id = input('post.id/d',0,'intval');
-        if (!$id)
-        {
+        $id = input('post.id/d', 0, 'intval');
+        if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
         $data = $this->addBackups($id);
-        if ($data['code'] === 500)
-        {
+        if ($data['code'] === 500) {
             $this->ajaxReturn(500, $data['msg']);
         }
         $this->ajaxReturn(200, '备份成功');
@@ -272,29 +384,26 @@ class MemberCancelApply extends \app\common\controller\Backend
         $keyword = input('get.keyword/s', '', 'trim');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
-        $utype = input('get.utype/d',0,'intval');
-        $setmeal_id = input('get.setmeal_id/d',0,'intval');
-        $sort_type = input('get.sort_type/s','','trim');
-        $sort = input('get.sort/s','desc','trim');
+        $utype = input('get.utype/d', 0, 'intval');
+        $setmeal_id = input('get.setmeal_id/d', 0, 'intval');
+        $sort_type = input('get.sort_type/s', '', 'trim');
+        $sort = input('get.sort/s', 'desc', 'trim');
 
-        switch ($sort_type)
-        {
+        switch ($sort_type) {
             case 'reg_time':
-                $order = 'reg_time '.$sort;
+                $order = 'reg_time ' . $sort;
                 break;
             case 'cancel_apply_time':
-                $order = 'cancel_apply_time '.$sort;
+                $order = 'cancel_apply_time ' . $sort;
                 break;
             default:
-                $order = 'cancel_apply_time '.$sort;
+                $order = 'cancel_apply_time ' . $sort;
                 break;
         }
-        if ($setmeal_id > 0 && $utype === 1)
-        {
+        if ($setmeal_id > 0 && $utype === 1) {
             $where['setmeal_id'] = $setmeal_id;
         }
-        switch ($utype)
-        {
+        switch ($utype) {
             case 1:
                 if ($keyword && $key_type) {
                     switch ($key_type) {
@@ -347,13 +456,11 @@ class MemberCancelApply extends \app\common\controller\Backend
     public function exportBackups()
     {
         $id = input('post.id/s', '', 'trim');
-        $utype = input('post.utype/d',0,'intval');
-        if (empty($id))
-        {
+        $utype = input('post.utype/d', 0, 'intval');
+        if (empty($id)) {
             $this->ajaxReturn(500, '请选择要导出的数据');
         }
-        switch ($utype)
-        {
+        switch ($utype) {
             case 1:
                 $model = 'CompanyCancelApplyBackups';
                 break;
@@ -365,13 +472,12 @@ class MemberCancelApply extends \app\common\controller\Backend
                 break;
         }
         $backups = model($model)
-            ->whereIn('id',$id)
+            ->whereIn('id', $id)
             ->order('create_time desc,id desc')
             ->field('content')
             ->select();
         $list = [];
-        foreach ($backups as $k => $v)
-        {
+        foreach ($backups as $k => $v) {
             $content = json_decode($v['content']);
             $list[] = $content;
         }
@@ -383,31 +489,62 @@ class MemberCancelApply extends \app\common\controller\Backend
      */
     public function backupsDelete()
     {
-        $id = input('post.id/a',[]);
-        $utype = input('post.utype/d',0,'intval');
+        $id = input('post.id/a', []);
+        $utype = input('post.utype/d', 0, 'intval');
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择');
         }
-        switch ($utype)
-        {
+        switch ($utype) {
             case 1:
                 $model = 'CompanyCancelApplyBackups';
-                $msg = '删除企业注销申请备注';
+                $log_field = '删除企业注销备份信息';
+                $field = 'companyname';
                 break;
             case 2:
                 $model = 'PersonCancelApplyBackups';
-                $msg = '删除个人注销申请备注';
+                $log_field = '删除个人注销备份信息';
+                $field = 'fullname';
                 break;
             default:
-                $model = 'CompanyCancelApplyBackups';
-                $msg = '删除企业注销申请备注';
+                $this->ajaxReturn(500, '会员角色信息错误');
                 break;
         }
-        model($model)->whereIn('id',$id)->delete();
-        model('AdminLog')->record(
-            $msg.'。申请ID【' . implode(',',$id) . '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model($model)->whereIn('id', $id)->column($field);
+            if (null === $list) {
+                $this->ajaxReturn(500, '没有要删除的注销备份信息');
+            }
+
+            Db::startTrans();
+
+            $del_result = model($model)->whereIn('id', $id)->delete();
+            if (false === $del_result) {
+                $this->ajaxReturn(500, model($model)->getError());
+            }
+
+            /**
+             * 日志
+             */
+            foreach ($list as $one) {
+                $log_field .= '{' . $one . '}；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 
@@ -426,9 +563,8 @@ class MemberCancelApply extends \app\common\controller\Backend
             ->field(
                 'a.id,a.fullname,a.sex,a.birthday,a.residence,a.height,a.marriage,a.education,a.enter_job_time,a.householdaddress,a.major,a.idcard,a.current,a.addtime,a.refreshtime,b.mobile,b.weixin,b.qq,b.email'
             );
-        $resume = $resume->where('a.uid',$uid)->find();
-        if ($resume === null)
-        {
+        $resume = $resume->where('a.uid', $uid)->find();
+        if ($resume === null) {
             return false;
         }
         $category_data = model('Category')->getCache();
@@ -445,110 +581,108 @@ class MemberCancelApply extends \app\common\controller\Backend
             }
         }
 
-            $arr['id'] = $resume['id'];
-            $arr['fullname'] = $resume['fullname'];
-            $arr['sex'] = isset(model('Resume')->map_sex[$resume['sex']])
-                ? model('Resume')->map_sex[$resume['sex']]
+        $arr['id'] = $resume['id'];
+        $arr['fullname'] = $resume['fullname'];
+        $arr['sex'] = isset(model('Resume')->map_sex[$resume['sex']])
+            ? model('Resume')->map_sex[$resume['sex']]
+            : '未知';
+        $arr['age'] =
+            $resume['birthday'] != ''
+                ? date('Y') - intval($resume['birthday'])
                 : '未知';
-            $arr['age'] =
-                $resume['birthday'] != ''
-                    ? date('Y') - intval($resume['birthday'])
-                    : '未知';
-            $arr['residence'] = $resume['residence'];
-            $arr['height'] = $resume['height'];
-            $arr['marriage'] = isset(
-                model('Resume')->map_marriage[$resume['marriage']]
-            )
-                ? model('Resume')->map_marriage[$resume['marriage']]
-                : '未知';
-            $arr['education'] = isset(
-                model('BaseModel')->map_education[$resume['education']]
-            )
-                ? model('BaseModel')->map_education[$resume['education']]
-                : '未知';
-            $arr['experience'] =
-                $resume['enter_job_time'] == 0
-                    ? '尚未工作'
-                    : format_date($resume['enter_job_time']);
-            $arr['householdaddress'] = $resume['householdaddress'];
-            $arr['major'] =
-                $resume['major'] && isset($category_major_data[$resume['major']])
-                    ? $category_major_data[$resume['major']]
-                    : '';
-            $arr['idcard'] = $resume['idcard'];
-            $arr['current'] = isset(
-                $category_data['QS_current'][$resume['current']]
-            )
-                ? $category_data['QS_current'][$resume['current']]
+        $arr['residence'] = $resume['residence'];
+        $arr['height'] = $resume['height'];
+        $arr['marriage'] = isset(
+            model('Resume')->map_marriage[$resume['marriage']]
+        )
+            ? model('Resume')->map_marriage[$resume['marriage']]
+            : '未知';
+        $arr['education'] = isset(
+            model('BaseModel')->map_education[$resume['education']]
+        )
+            ? model('BaseModel')->map_education[$resume['education']]
+            : '未知';
+        $arr['experience'] =
+            $resume['enter_job_time'] == 0
+                ? '尚未工作'
+                : format_date($resume['enter_job_time']);
+        $arr['householdaddress'] = $resume['householdaddress'];
+        $arr['major'] =
+            $resume['major'] && isset($category_major_data[$resume['major']])
+                ? $category_major_data[$resume['major']]
                 : '';
-            $district_arr = $category_arr = $wage_arr = $nature_arr = $trade_arr = [];
-            if (isset($intention_arr[$resume['id']])) {
-                foreach ($intention_arr[$resume['id']] as $k => $v) {
-                    if ($v['trade']) {
-                        $trade_arr[] = $category_data['QS_trade'][$v['trade']];
-                    }
-                    if ($v['nature']) {
-                        $nature_arr[] = model('Resume')->map_nature[
-                        $v['nature']
-                        ];
-                    }
-                    $wage_arr[0] = model('BaseModel')->handle_wage(
-                        $v['minwage'],
-                        $v['maxwage']
-                    );
-                    if ($v['category']) {
-                        $category_arr[] = isset(
-                            $category_job_data[$v['category']]
-                        )
-                            ? $category_job_data[$v['category']]
-                            : '';
-                    }
-                    if ($v['district']) {
-                        $district_arr[] = isset(
-                            $category_district_data[$v['district']]
-                        )
-                            ? $category_district_data[$v['district']]
-                            : '';
-                    }
+        $arr['idcard'] = $resume['idcard'];
+        $arr['current'] = isset(
+            $category_data['QS_current'][$resume['current']]
+        )
+            ? $category_data['QS_current'][$resume['current']]
+            : '';
+        $district_arr = $category_arr = $wage_arr = $nature_arr = $trade_arr = [];
+        if (isset($intention_arr[$resume['id']])) {
+            foreach ($intention_arr[$resume['id']] as $k => $v) {
+                if ($v['trade']) {
+                    $trade_arr[] = $category_data['QS_trade'][$v['trade']];
+                }
+                if ($v['nature']) {
+                    $nature_arr[] = model('Resume')->map_nature[$v['nature']];
+                }
+                $wage_arr[0] = model('BaseModel')->handle_wage(
+                    $v['minwage'],
+                    $v['maxwage']
+                );
+                if ($v['category']) {
+                    $category_arr[] = isset(
+                        $category_job_data[$v['category']]
+                    )
+                        ? $category_job_data[$v['category']]
+                        : '';
+                }
+                if ($v['district']) {
+                    $district_arr[] = isset(
+                        $category_district_data[$v['district']]
+                    )
+                        ? $category_district_data[$v['district']]
+                        : '';
                 }
             }
-            if (!empty($trade_arr)) {
-                $trade_arr = array_unique($trade_arr);
-                $arr['intention_trade'] = implode(',', $trade_arr);
-            } else {
-                $arr['intention_trade'] = '';
-            }
-            if (!empty($category_arr)) {
-                $category_arr = array_unique($category_arr);
-                $arr['intention_jobs'] = implode(',', $category_arr);
-            } else {
-                $arr['intention_jobs'] = '';
-            }
-            if (!empty($wage_arr)) {
-                $wage_arr = array_unique($wage_arr);
-                $arr['intention_wage'] = implode(',', $wage_arr);
-            } else {
-                $arr['intention_wage'] = '';
-            }
-            if (!empty($district_arr)) {
-                $district_arr = array_unique($district_arr);
-                $arr['intention_district'] = implode(',', $district_arr);
-            } else {
-                $arr['intention_district'] = '';
-            }
-            if (!empty($nature_arr)) {
-                $nature_arr = array_unique($nature_arr);
-                $arr['intention_nature'] = implode(',', $nature_arr);
-            } else {
-                $arr['intention_nature'] = '';
-            }
-            $arr['addtime'] = date('Y-m-d H:i', $resume['addtime']);
-            $arr['refreshtime'] = date('Y-m-d H:i', $resume['refreshtime']);
-            $arr['mobile'] = $resume['mobile'];
-            $arr['weixin'] = $resume['weixin'];
-            $arr['qq'] = $resume['qq'];
-            $arr['email'] = $resume['email'];
-            return $arr;
+        }
+        if (!empty($trade_arr)) {
+            $trade_arr = array_unique($trade_arr);
+            $arr['intention_trade'] = implode(',', $trade_arr);
+        } else {
+            $arr['intention_trade'] = '';
+        }
+        if (!empty($category_arr)) {
+            $category_arr = array_unique($category_arr);
+            $arr['intention_jobs'] = implode(',', $category_arr);
+        } else {
+            $arr['intention_jobs'] = '';
+        }
+        if (!empty($wage_arr)) {
+            $wage_arr = array_unique($wage_arr);
+            $arr['intention_wage'] = implode(',', $wage_arr);
+        } else {
+            $arr['intention_wage'] = '';
+        }
+        if (!empty($district_arr)) {
+            $district_arr = array_unique($district_arr);
+            $arr['intention_district'] = implode(',', $district_arr);
+        } else {
+            $arr['intention_district'] = '';
+        }
+        if (!empty($nature_arr)) {
+            $nature_arr = array_unique($nature_arr);
+            $arr['intention_nature'] = implode(',', $nature_arr);
+        } else {
+            $arr['intention_nature'] = '';
+        }
+        $arr['addtime'] = date('Y-m-d H:i', $resume['addtime']);
+        $arr['refreshtime'] = date('Y-m-d H:i', $resume['refreshtime']);
+        $arr['mobile'] = $resume['mobile'];
+        $arr['weixin'] = $resume['weixin'];
+        $arr['qq'] = $resume['qq'];
+        $arr['email'] = $resume['email'];
+        return $arr;
     }
 
     /**

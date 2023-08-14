@@ -33,9 +33,11 @@ class CrmTransform extends Backend
                 'username' => 'system'
             ];
             $adminInfo = (object)$adminInfo;
-            model('AdminLog')->record(
-                '完成CRM数据转换',
-                $adminInfo
+            model('AdminLog')->writeLog(
+                'CRM升级，完成CRM数据转换',
+                $adminInfo,
+                0,
+                1
             );
 
             //提交事务

@@ -65,15 +65,38 @@ class CompanyDirectoryLogic
             $updateData = [
                 'value' => json_encode($params)
             ];
+
+            // 获取原先配置
+            $config = $configModel->where($updateWhere)->find();
+            if (null === $config) {
+                responseJson(400, '配置项异常');
+            }
+            $config = $config->toArray();
+            $configValue = json_decode($config['value'], true);
+
             $result = $configModel->where($updateWhere)->update($updateData);
             if (false === $result) {
                 throw new \Exception('保存配置失败-请求SQL为：' . $configModel->getLastSql());
             }
 
-            model('AdminLog')->record(
-                '修改企业名录配置。配置标识【account_qy_directory】',
-                $adminInfo
+
+            $log_field = '企业名录，修改基础配置，';
+            if ($params['app_key'] != $configValue['app_key']) {
+                $log_field .= 'AppKey：' . $configValue['app_key'] . '->' . $params['app_key'] . '；';
+            }
+            if ($params['app_secret'] != $configValue['app_secret']) {
+                $log_field .= 'AppSecret：' . $configValue['app_secret'] . '->' . $params['app_secret'];
+            }
+
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $adminInfo,
+                0,
+                3
             );
+            if (false === $log_result) {
+                throw new \Exception('日志记录失败：' . model('AdminLog')->getError());
+            }
 
             // 清理缓存
             rmdirs(RUNTIME_PATH . '/cache/');
@@ -148,9 +171,14 @@ class CompanyDirectoryLogic
         ];
         $cacheModel = db('company_directory_cache');
         $cacheInfo = $cacheModel->field($cacheField)->where($cacheWhere)->find();
+
+        // 生成可见的查询条件
+        $visibleQuery = $this->_generateVisibleQueryCondition($params);
+
         // 缓存中没有或已过期就调取接口获取
         if (!is_null($cacheInfo) && !empty($cacheInfo) && $cacheInfo['expire_time'] >= time()) {
             $list = json_decode($cacheInfo['result'], true);
+            $cost = 0;
         } else {
             // 调取搜客宝接口获取
             $soukebao = new Soukebao();
@@ -186,9 +214,6 @@ class CompanyDirectoryLogic
                 }
                 // 记录接口的查询明细
                 if (!empty($list['items'])) {
-                    // 生成可见的查询条件
-                    $visibleQuery = $this->_generateVisibleQueryCondition($params);
-
                     $recordData = [
                         'admin_id' => $adminInfo['id'],
                         'keyword' => $condition['keyword'],
@@ -205,7 +230,7 @@ class CompanyDirectoryLogic
                         throw new \Exception('记录查询明细失败-请求SQL为：' . $recordModel->getLastSql());
                     }
                 }
-
+                $cost = 1;
                 // 提交事务
                 $cacheModel->commit();
             } catch (\Exception $e) {
@@ -215,6 +240,25 @@ class CompanyDirectoryLogic
                 responseJson(400, '获取失败');
             }
         }
+
+        $visibleQueryStr = '';
+        foreach ($visibleQuery as $query_field) {
+            $visibleQueryStr .= $query_field['title'] . ':' . $query_field['name'] . '；';
+        }
+        $visibleQueryStr = rtrim($visibleQueryStr, '；');
+
+        $accountBalance = $this->getAccountBalance();
+        $balanceTotal = (isset($accountBalance['total']) && !empty($accountBalance['total'])) ? $accountBalance['total'] : 0;
+
+        model('AdminLog')->writeLog(
+            '企业名录搜索，搜索词:' . $condition['keyword']
+            . '；搜索条件：' . $visibleQueryStr
+            . '。扣除查询余额' . $cost
+            . '次，剩余' . $balanceTotal . '次查询额度。',
+            $adminInfo,
+            0,
+            1
+        );
 
         // 获取当前线索中通过企业名录导入的数据
         $clueModel = model('b2bcrm.CrmClue');
@@ -315,7 +359,7 @@ class CompanyDirectoryLogic
             /**
              *【ID1000464】
              * 【bug】企业名录30天内搜索同一条件时重复扣费(存储排序问题)
-             * yx - 2022.12.12
+             * yx - .12.12
              */
             sort($condition['contact']);
         }
@@ -405,6 +449,8 @@ class CompanyDirectoryLogic
         $clueContactModel = db('crm_clue_contact');
         $successSum = 0;
         $currentTime = time();
+        $clueList = [];
+
         foreach ($params['clue_list'] as $clueInfo) {
             // 生成联系方式
             $contactList = $this->_generateContact($clueInfo['contacts']);
@@ -422,9 +468,11 @@ class CompanyDirectoryLogic
             $insertInfo['trade'] = 0;
             $insertInfo['tripartite_id'] = $clueInfo['id'];
             // 导入位置：1|我的线索，2|线索公海
+            $placeName = '线索公海';
             if ($params['place'] == 1) {
                 $insertInfo['admin_id'] = $adminInfo['id'];
                 $insertInfo['collection_time'] = $currentTime; // 添加领取时间
+                $placeName = '我的线索';
             }
 
             // 开启事务
@@ -447,10 +495,7 @@ class CompanyDirectoryLogic
                     }
                 }
 
-                model('AdminLog')->record(
-                    '导入CRM线索【ID:' . $clueId . '】,线索名称【' . $insertInfo['name'] . '】',
-                    $adminInfo
-                );
+                $clueList[] = '{' . $insertInfo['name'] . '}(线索ID:' . $clueId . ')';
 
                 // 提交事务
                 $clueModel->commit();
@@ -464,6 +509,14 @@ class CompanyDirectoryLogic
                 continue;
             }
         }
+
+        model('AdminLog')->writeLog(
+            '企业名录导入线索，导入CRM线索：' . implode($clueList, '；') . '，导入位置：' . $placeName,
+            $adminInfo,
+            0,
+            1
+        );
+
         return ['success_num' => $successSum];
     }
 

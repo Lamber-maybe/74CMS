@@ -131,13 +131,38 @@ class SceneQrcode extends \app\common\controller\Backend
                 $qrcodeSrc = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/qrcode/index?type=normal&url=' . $locationUrl;
             }
 
-            model('SceneQrcode')->save(['qrcode_src' => $qrcodeSrc], ['id' => $insertid]);
-            model('AdminLog')->record(
-                '添加场景码。场景码ID【' .
-                $insertid .
-                '】',
-                $this->admininfo
+            // DB1：写入场景码
+            $save_result = model('SceneQrcode')->save(['qrcode_src' => $qrcodeSrc], ['id' => $insertid]);
+            if (false === $save_result) {
+                throw new Exception(model('SceneQrcode')->getError());
+            }
+
+            // DB2：写入日志
+            $deadline = empty($input_data['deadline']) ? '永久有效' : date('Y-m-d', $input_data['deadline']);
+            $platform = model('SceneQrcode')->platform_arr[$input_data['platform']];
+            $typeInfo = model('SceneQrcode')->type_arr[$input_data['type']];
+            $log_field = '营销工具-添加场景码，名称:'
+                . $input_data['title']
+                . '；类型:' . $platform
+                . '；到期时间:' . $deadline
+                . '；页面:' . $typeInfo['name'];
+            if (!empty($typeInfo['query_model']) && !empty($typeInfo['query_field_en'])) {
+                $query_value = model($typeInfo['query_model'])->where('id',$input_data['paramid'])->value($typeInfo['query_field_en']);
+                $log_field .= '；' . $typeInfo['query_field_zh'] . ':' . $query_value;
+            }
+            if (!empty($input_data['paramid'])){
+                $log_field .= '('.$typeInfo['pk_name'].':'.$input_data['paramid'].')';
+            }
+
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
             );
+            if (false === $log_result) {
+                throw new Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
 
@@ -155,28 +180,50 @@ class SceneQrcode extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('SceneQrcode')
-            ->whereIn('id', $id)
-            ->select();
 
-        $title = [];
-        foreach ($info as $k => $v) {
-            if (!empty($v['qrcode_src'])) {
-                @unlink($v['qrcode_src']);
+        try {
+            $info = model('SceneQrcode')
+                ->whereIn('id', $id)
+                ->select();
+            if (null === $info) {
+                $this->ajaxReturn(500, '要删除的场景码不存在');
             }
-            $title[] = $v['title'];
+
+            $title = [];
+            foreach ($info as $qr) {
+                if (!empty($qr['qrcode_src'])) {
+                    @unlink($qr['qrcode_src']);
+                }
+                $title[] = $qr['title'];
+            }
+            $title = implode(';', $title);
+
+            // DB1：删除场景码
+            $del_result = model('SceneQrcode')->whereIn('id', $id)->delete();
+            if (false === $del_result) {
+                throw new Exception(model('SceneQrcode')->getError());
+            }
+
+            // DB2：写入日志
+            $log_result = model('AdminLog')->writeLog(
+                '营销工具-删除场景码，名称:' . $title,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
-        $title = implode(',', $title);
-        model('SceneQrcode')->whereIn('id', $id)->delete();
-        $id = implode(',', $id);
-        model('AdminLog')->record(
-            '删除场景码。场景码ID【' .
-            $id .
-            '】;场景码名称【' .
-            $title .
-            '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '删除成功');
     }
 
@@ -186,22 +233,41 @@ class SceneQrcode extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('SceneQrcode')
-            ->where('id', $id)
-            ->find();
-        if (null === $info) {
-            $this->ajaxReturn(500, '请选择数据');
+
+        try {
+            $info = model('SceneQrcode')
+                ->where('id', $id)
+                ->find();
+            if (null === $info) {
+                $this->ajaxReturn(500, '请选择数据');
+            }
+
+            @unlink($info['qrcode_src']);
+
+            Db::startTrans();
+
+            $info->delete();
+
+            // DB2：写入日志
+            $log_result = model('AdminLog')->writeLog(
+                '营销工具-删除场景码，名称:' . $info['title'],
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
-        @unlink($info['qrcode_src']);
-        $info->delete();
-        model('AdminLog')->record(
-            '删除场景码。场景码ID【' .
-            $id .
-            '】;场景码名称【' .
-            $info['title'] .
-            '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '删除成功');
     }
 

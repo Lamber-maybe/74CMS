@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class Complaint extends \app\common\controller\Backend
 {
     public function index()
@@ -50,13 +52,60 @@ class Complaint extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
         $status = input('post.status/d', 0, 'intval');
-        model('CustomerServiceComplaint')->whereIn('id', $id)->setField('status', $status);
-        model('AdminLog')->record(
-            '处理投诉客服信息。投诉客服信息ID【' .
-            implode(',', $id) .
-            '】',
-            $this->admininfo
-        );
+
+
+        Db::startTrans();
+        try {
+            $list = model('CustomerServiceComplaint')
+                ->where('id', 'in', $id)
+                ->column('id,uid,cs_id,content,status');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要处理的数据');
+            }
+
+            $status_set = model('Feedback')->map_status[$status];
+
+            $log_field = '处理投诉客服，';
+
+            foreach ($list as $complaint) {
+                $cs_info = model('b2bcrm.CrmCustomerService')->field('admin_id,name')->where('id', $complaint['cs_id'])->find();
+                $log_field .= '被投诉客服:' . $cs_info['name'] . '(管理员ID:' . $cs_info['admin_id'] . ')；';
+                $log_field .= '投诉内容:' . $complaint['content'] . '；';
+                $member_mobile = model('Member')->where('uid', $complaint['uid'])->value('mobile');
+                $log_field .= '投诉人:' . $member_mobile . '(UID:' . $complaint['uid'] . ')，';
+                $status_original = model('CustomerServiceComplaint')->map_status[$complaint['status']];
+            }
+
+            if (count($list) === 1) {
+                $log_field .= '处理状态:' . $status_original . '->' . $status_set;
+            } else {
+                $log_field .= '处理状态:' . $status_set;
+            }
+
+            $handler_result = model('CustomerServiceComplaint')->whereIn('id', $id)->setField('status', $status);
+            if (false === $handler_result) {
+                throw new \Exception(model('CustomerServiceComplaint')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '处理失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '处理成功');
     }
 
@@ -66,13 +115,50 @@ class Complaint extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        model('CustomerServiceComplaint')->destroy($id);
-        model('AdminLog')->record(
-            '删除投诉客服信息。投诉客服信息ID【' .
-            implode(',', $id) .
-            '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('CustomerServiceComplaint')
+                ->where('id', 'in', $id)
+                ->column('id,uid,cs_id,content,status');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要处理的数据');
+            }
+
+            $log_field = '删除投诉客服，';
+
+            foreach ($list as $complaint) {
+                $cs_info = model('b2bcrm.CrmCustomerService')->field('admin_id,name')->where('id', $complaint['cs_id'])->find();
+                $log_field .= '被投诉客服:' . $cs_info['name'] . '(管理员ID:' . $cs_info['admin_id'] . ')；';
+                $log_field .= '投诉内容:' . $complaint['content'] . '；';
+                $member_mobile = model('Member')->where('uid', $complaint['uid'])->value('mobile');
+                $log_field .= '投诉人:' . $member_mobile . '(UID:' . $complaint['uid'] . ')，';
+            }
+
+            $del_result = model('CustomerServiceComplaint')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('CustomerServiceComplaint')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '，'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

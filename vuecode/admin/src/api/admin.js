@@ -100,3 +100,17 @@ export function adminDeblocking(data) {
     data
   })
 }
+export function adminLogTypeAll(data) {
+  return request({
+    url: apiArr.adminLogTypeAll,
+    method: 'post',
+    data
+  })
+}
+export function delAdminLog(data) {
+  return request({
+    url: apiArr.delAdminLog,
+    method: 'post',
+    data
+  })
+}

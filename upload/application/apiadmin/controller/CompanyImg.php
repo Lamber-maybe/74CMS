@@ -2,9 +2,10 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class CompanyImg extends \app\common\controller\Backend
+class CompanyImg extends Backend
 {
     public function index()
     {
@@ -87,28 +88,54 @@ class CompanyImg extends \app\common\controller\Backend
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        model('CompanyImg')
-            ->where('id', 'in', $id)
-            ->setField('audit', $audit);
 
-        //完成上传企业风采任务
-        if ($audit == 1) {
+        try {
+            Db::startTrans();
+
             $list = model('CompanyImg')
                 ->where('id', 'in', $id)
                 ->select();
-            foreach ($list as $key => $value) {
-                model('Task')->doTask($value['uid'], 1, 'upload_img');
+            if (empty($list)) {
+                throw new \Exception('没有要审核的企业风采');
             }
+
+            model('CompanyImg')
+                ->where('id', 'in', $id)
+                ->setField('audit', $audit);
+
+            //完成上传企业风采任务
+            if ($audit == 1) {
+                $list = model('CompanyImg')
+                    ->where('id', 'in', $id)
+                    ->select();
+                foreach ($list as $key => $value) {
+                    model('Task')->doTask($value['uid'], 1, 'upload_img');
+                }
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '批量审核';
+            $comIds = array_column($list, 'comid', 'comid');
+            $company_arr = model('Company')->whereIn('id', $comIds)->column('id,companyname');
+            foreach ($company_arr as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+            }
+            $log_field = rtrim($log_field, '；') . '上传的企业风采，审核结果:' . model('CompanyImg')->map_audit[$audit];
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                6
+            );
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '审核失败', ['err_msg' => $e->getMessage()]);
         }
 
-        model('AdminLog')->record(
-            '将企业风采认证状态变更为【' .
-            model('CompanyImg')->map_audit[$audit] .
-            '】。企业风采ID【' .
-            implode(",", $id) .
-            '】',
-            $this->admininfo
-        );
         $this->ajaxReturn(200, '审核成功');
     }
 
@@ -121,7 +148,7 @@ class CompanyImg extends \app\common\controller\Backend
         model('CompanyImg')
             ->where('id', 'in', $id)
             ->delete();
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '删除企业风采。企业风采ID【' . implode(",", $id) . '】',
             $this->admininfo
         );
@@ -145,17 +172,29 @@ class CompanyImg extends \app\common\controller\Backend
             if (!isset($companyImg) || empty($companyImg)) {
                 $this->ajaxReturn(500, '要删除的企业风采不存在');
             }
+            $companyImg = $companyImg->toArray();
 
             Db::startTrans();
 
-            model('CompanyImg')
-                ->where('id', $id)
-                ->delete();
+            if (
+                false ===
+                model('CompanyImg')
+                    ->where('id', $id)
+                    ->delete()
+            ) {
+                throw new \Exception(model('CompanyImg')->getError());
+            }
 
-            model('AdminLog')->record(
-                '删除企业风采。企业ID【' . $companyImg['comid'] . '】，企业风采ID【' . $id . '】。',
-                $this->admininfo
+            $company_name = model('Company')->where('id', $companyImg['comid'])->value('companyname');
+            $log_result = model('AdminLog')->writeLog(
+                '删除{' . $company_name . '}(企业ID:' . $companyImg['comid'] . ')的企业风采图片',
+                $this->admininfo,
+                0,
+                4
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
             $this->ajaxReturn(200, '删除成功');
@@ -184,21 +223,33 @@ class CompanyImg extends \app\common\controller\Backend
             if (!isset($companyImg) || empty($companyImg)) {
                 $this->ajaxReturn(500, '要修改的企业风采不存在');
             }
+            $companyImg = $companyImg->toArray();
 
             Db::startTrans();
 
-            model('CompanyImg')
-                ->allowField(true)
-                ->isUpdate(true)
-                ->save(
-                    $input_data,
-                    ['id' => $id]
-                );
+            if (
+                false ===
+                model('CompanyImg')
+                    ->allowField(true)
+                    ->isUpdate(true)
+                    ->save(
+                        $input_data,
+                        ['id' => $id]
+                    )
+            ) {
+                throw new \Exception(model('CompanyImg')->getError());
+            }
 
-            model('AdminLog')->record(
-                '编辑企业风采。企业ID【' . $companyImg['comid'] . '】，企业风采ID【' . $id . '】。',
-                $this->admininfo
+            $company_name = model('Company')->where('id', $companyImg['comid'])->value('companyname');
+            $log_result = model('AdminLog')->writeLog(
+                '修改{' . $company_name . '}(企业ID:' . $companyImg['comid'] . ')的企业风采图片',
+                $this->admininfo,
+                0,
+                3
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
             $this->ajaxReturn(200, '保存成功');

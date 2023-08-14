@@ -166,10 +166,15 @@ class RecycleBin extends Backend
             }
 
             // 写入操作日志表
-            model('AdminLog')->record(
-                '将会员移动到回收站。会员UID【' . $resume['uid'] . '】。企业ID【' . $resume['rid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '全部简历列表删除{' . $resume['fullname'] . '}(简历ID:' . $resume_id . ')，用户无法登录',
+                $this->admininfo,
+                0,
+                4
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();
@@ -230,10 +235,15 @@ class RecycleBin extends Backend
             }
 
             // c:写入操作日志表
-            model('AdminLog')->record(
-                '将会员从回收站中删除。会员UID【' . $recycle_bin_info['uid'] . '】。简历ID【' . $recycle_bin_info['rid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '简历回收站删除{' . $recycle_bin_info['fullname'] . '}(简历ID:' . $recycle_bin_info['rid'] . ')，数据已彻底删除，无法恢复',
+                $this->admininfo,
+                0,
+                4
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();
@@ -305,10 +315,15 @@ class RecycleBin extends Backend
             }
 
             // c:写入操作日志表
-            model('AdminLog')->record(
-                '将会员从回收站中恢复。会员UID【' . $recycle_bin_info['uid'] . '】。简历ID【' . $recycle_bin_info['rid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '简历回收站对{' . $recycle_bin_info['fullname'] . '}(简历ID:' . $recycle_bin_info['rid'] . ')简历还原，简历恢复成功',
+                $this->admininfo,
+                0,
+                1
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();

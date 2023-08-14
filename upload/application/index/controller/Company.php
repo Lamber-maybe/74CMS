@@ -321,6 +321,11 @@ class Company extends \app\index\controller\Base
         $return['share_url'] = config('global_config.mobile_domain') . 'company/' . $return['base_info']['id'];
         $seoData['companyname'] = $return['base_info']['companyname'];
         $seoData['content'] = $return['base_info']['short_desc'] == '' ? cut_str(strip_tags($return['base_info']['content']), 100) : $return['base_info']['short_desc'];
+
+        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'],$return['base_info']['map_lat']);
+        $return['base_info']['map_lng'] = $coordinate['lng'];
+        $return['base_info']['map_lat'] = $coordinate['lat'];
+
         $this->initPageSeo('companyshow', $seoData);
         $this->assign('return', $return);
         $this->assign('pageHeader', $this->pageHeader);

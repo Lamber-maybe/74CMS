@@ -46,7 +46,7 @@ class Login extends \app\apiadmin\controller\Login
                 ]
             );
             $admin_token = $JwtAuth->getString();
-            model('AdminLog')->record('登录成功', $admininfo, 1);
+            model('AdminLog')->writeLog('微信扫码登录成功', $admininfo, 1);
             $this->ajaxReturn(200, '登录成功', [
                 'token' => $admin_token,
                 'access' => $access_mobile,

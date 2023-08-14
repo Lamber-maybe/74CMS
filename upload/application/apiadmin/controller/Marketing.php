@@ -447,7 +447,7 @@ class Marketing extends Backend
              */
             $model = $model->where('c.setmeal_id', 'in', $condition['setmeal_id'])
                 ->join('MemberSetmeal ms', 'ms.uid=c.uid', 'LEFT')
-                ->where('ms.deadline',['gt', time()], ['eq', 0], 'or');
+                ->where('ms.deadline', ['gt', time()], ['eq', 0], 'or');
         }
 
         $filter = isset($condition['content']) ? $condition['content'] : 'all';
@@ -871,14 +871,14 @@ class Marketing extends Backend
                     throw new Exception(model('MarketingTemplate')->getError());
                 }
 
+                $tpl_type = model('MarketingTemplate')->map_type[$type];
+
                 // DB2：写入日志
-                $log_result = model('AdminLog')->record(
-                    '修改公众号营销模板。模板ID【' .
-                    $template_id .
-                    '】;模板名称【' .
-                    $name .
-                    '】',
-                    $this->admininfo
+                $log_result = model('AdminLog')->writeLog(
+                    '营销工具-公众号营销-模板管理，修改' . $tpl_type . '，模板名称:' . $name,
+                    $this->admininfo,
+                    0,
+                    3
                 );
 
                 if (false === $log_result) {
@@ -893,7 +893,7 @@ class Marketing extends Backend
             } catch (\Exception $e) {
                 // 回滚事务
                 Db::rollBack();
-                $this->ajaxReturn(500, $e->getMessage());
+                $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
             }
 
         } else {
@@ -917,14 +917,14 @@ class Marketing extends Backend
                     throw new Exception(model('MarketingTemplate')->getError());
                 }
 
+                $tpl_type = model('MarketingTemplate')->map_type[$type];
+
                 // DB2：写入日志
-                $log_result = model('AdminLog')->record(
-                    '新增公众号营销模板。模板ID【' .
-                    model('MarketingTemplate')->id .
-                    '】;模板名称【' .
-                    $name .
-                    '】',
-                    $this->admininfo
+                $log_result = model('AdminLog')->writeLog(
+                    '营销工具-公众号营销-模板管理，添加' . $tpl_type . '，模板名称:' . $name,
+                    $this->admininfo,
+                    0,
+                    2
                 );
 
                 if (false === $log_result) {
@@ -939,7 +939,7 @@ class Marketing extends Backend
             } catch (\Exception $e) {
                 // 回滚事务
                 Db::rollBack();
-                $this->ajaxReturn(500, $e->getMessage());
+                $this->ajaxReturn(500, '添加失败', ['err_msg' => $e->getMessage()]);
             }
         }
     }
@@ -1061,21 +1061,48 @@ class Marketing extends Backend
         }
 
         $template_info = model('MarketingTemplate')
-            ->field('id, built_in')
+            ->field('id, name, built_in, type')
             ->find($template_id);
 
         if (null === $template_info) {
             $this->ajaxReturn(500, '要删除的模板不存在');
-        } else {
-            if (1 === $template_info->built_in) {
-                $this->ajaxReturn(500, '内置模板不可删除');
+        }
+
+        if (1 === $template_info->built_in) {
+            $this->ajaxReturn(500, '内置模板不可删除');
+        }
+
+        Db::startTrans();
+        try {
+            // DB1：删除营销模板
+            $del_result = model('MarketingTemplate')->destroy($template_id);
+            if (false === $del_result) {
+                throw new Exception(model('MarketingTemplate')->getError());
             }
-            $del_result = $template_info->delete();
-            if (0 === $del_result) {
-                $this->ajaxReturn(500, '删除失败');
-            } else {
-                $this->ajaxReturn(200, '删除成功');
+
+            $tpl_type = model('MarketingTemplate')->map_type[$template_info['type']];
+
+            // DB2：写入日志
+            $log_result = model('AdminLog')->writeLog(
+                '营销工具-公众号营销-模板管理，删除' . $tpl_type . '，模板名称:' . $template_info['name'],
+                $this->admininfo,
+                0,
+                4
+            );
+
+            if (false === $log_result) {
+                throw new Exception(model('AdminLog')->getError());
             }
+
+            // 提交事务
+            Db::commit();
+
+            $this->ajaxReturn(200, '删除成功');
+
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
     }
 

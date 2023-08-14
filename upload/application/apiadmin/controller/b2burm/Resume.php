@@ -1217,6 +1217,7 @@ class Resume extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /*
      * 客户详情修改（侧拉）
      */
@@ -1230,7 +1231,7 @@ class Resume extends Backend
         $needle = model('resume')->needle;
         if ($type == '' && !isset($needle[$type])) {
             $this->ajaxReturn(500, '请选择正确的简历编辑项');
-        }else{
+        } else {
             $needle_arr = $needle[$type];
         }
         $input_data = [];
@@ -1253,48 +1254,108 @@ class Resume extends Backend
             $input_data[$k] = $data;
         }
         try {
+            Db::startTrans();
+
+            $member_info = model('Member')
+                ->where('uid', $uid)
+                ->field('password,mobile,email')
+                ->find();
+            $fullname = model('Resume')->getFullnameByUid($uid, '-');
+            $resumeId = model('Resume')->where('uid', $uid)->value('id');
+
+            $log_type = 3;
+
             switch ($type) {
                 case 'password':
+                    if (isset($input_data['password'])) {
+                        $log_field = '修改{' . $fullname . '}(会员ID:' . $uid . ')的账号密码，新密码:' . $input_data['password'];
+                    }
                 case 'member_mobile':
+                    if (isset($input_data['member_mobile'])) {
+                        $log_field = '修改{' . $fullname . '}(会员ID:' . $uid . ')的会员手机，' . $member_info['mobile'] . ' -> ' . $input_data['member_mobile'];
+                    }
                 case 'email':
+                    if (isset($input_data['email'])) {
+                        $old_email = (!empty($member_info['email'])) ? $member_info['email'] : '无';
+                        $new_email = (!empty($input_data['email'])) ? $input_data['email'] : '未填写';
+                        $log_field = '对{' . $fullname . '}(会员ID:' . $uid . ')修改会员绑定邮箱， ' . $old_email . ' -> ' . $new_email;
+                    }
                     $this->updateMember($uid, $input_data, $type);
                     break;
                 case 'resume_mobile':
+                    $resume_contact = model('ResumeContact')->where('uid', $uid)->value('mobile');
                     $this->updateResumeMobile($uid, $input_data);
+                    $old_contact = (!empty($resume_contact)) ? $resume_contact : '无';
+                    $log_field = '修改{' . $fullname . '}(简历ID:' . $resumeId . ')的简历手机，' . $old_contact . ' -> ' . $input_data['resume_mobile'];
                     break;
                 case 'resume_img':
                     $this->auditResumeImg($input_data);
+                    $log_field = '审核{' . $fullname . '}(简历ID:' . $resumeId . ')的简历作品，' . model('ResumeImg')->map_audit[$input_data['examine']];
+                    $log_type = 6;
                     break;
                 case 'is_display':
+                    if (isset($input_data['is_display'])) {
+                        $resume_display = model('Resume')->where('uid', $uid)->value('is_display');
+                        $log_field = '对{' . $fullname . '}(简历ID:' . $resumeId . ')的简历设置公开状态，' . model('Resume')->map_is_display[$resume_display] . ' -> ' . model('Resume')->map_is_display[$input_data['is_display']];
+                    }
                 case 'high_quality':
+                    if (isset($input_data['high_quality'])) {
+                        $high_quality = model('Resume')->where('uid', $uid)->value('high_quality');
+                        $log_field = '设置简历等级{' . $fullname . '}(简历ID:' . $resumeId . ')，简历等级:' . model('Resume')->map_high_quality[$high_quality] . ' -> ' . model('Resume')->map_high_quality[$input_data['high_quality']];
+                    }
                 case 'audit':
+                    if (isset($input_data['audit'])) {
+                        $resume_audit = model('Resume')->where('uid', $uid)->value('audit');
+                        $log_field = '审核简历{' . $fullname . '}(简历ID:' . $resumeId . ')，审核状态:' . model('Resume')->map_audit[$resume_audit] . ' -> ' . model('Resume')->map_audit[$input_data['audit']];
+                        if ($input_data['audit'] === 2) {
+                            $reason = (!empty($input_data['reason'])) ? $input_data['reason'] : '未填写';
+                            $log_field .= '，原因:' . $reason;
+                        }
+                        $log_type = 6;
+                    }
                 case 'comment':
+                    if (isset($input_data['comment'])) {
+                        $resume_comment = model('Resume')->where('uid', $uid)->value('comment');
+                        $old_comment = (!empty($resume_comment)) ? $resume_comment : '无';
+                        $new_comment = (!empty($input_data['comment'])) ? $input_data['comment'] : '未填写';
+                        $log_field = '对{' . $fullname . '}(简历ID:' . $resumeId . ')的简历填写客服评价，内容:' . $old_comment . ' -> ' . $new_comment;
+                    }
                 case 'remark':
+                    if (isset($input_data['remark'])) {
+                        $resume_remark = model('Resume')->where('uid', $uid)->value('remark');
+                        $old_remark = (!empty($resume_remark)) ? $resume_remark : '无';
+                        $new_remark = (!empty($input_data['remark'])) ? $input_data['remark'] : '未填写';
+                        $log_field = '修改{' . $fullname . '}(简历ID:' . $resumeId . ')的简历备注，' . $old_remark . ' -> ' . $new_remark;
+                    }
                 default:
                     $this->editResume($uid, $input_data, $type);
                     break;
             }
         } catch (\Exception $e) {
+            Db::rollback();
             $this->ajaxReturn(500, $e->getMessage());
         }
+
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            $log_type
+        );
+
+        Db::commit();
+
         $this->ajaxReturn(200, '修改成功');
     }
+
     // 审核简历作品
     private function auditResumeImg($data)
     {
         Db::startTrans();
-        try{
+        try {
             model('ResumeImg')
-                ->where('id', 'in', implode(',',$data['resume_img']))
+                ->where('id', 'in', implode(',', $data['resume_img']))
                 ->setField('audit', $data['examine']);
-            model('AdminLog')->record(
-                '将简历作品状态变更为【' .
-                model('ResumeImg')->map_audit[$data['examine']] .
-                '】。作品ID【' .
-                implode(",", $data['resume_img']) .
-                '】',
-                $this->admininfo
-            );
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -1327,10 +1388,6 @@ class Resume extends Backend
         if (false === $update_email) {
             throw new \Exception(model('ResumeContact')->getError());
         }
-        model('AdminLog')->record(
-            '编辑简历手机。简历UID【' . $uid . '】' . '修改后简历手机【' . $input_data['resume_mobile'] . '】',
-            $this->admininfo
-        );
         return true;
     }
 
@@ -1345,14 +1402,6 @@ class Resume extends Backend
         }
         if ($type == 'audit') {
             model('Resume')->setAudit($resume_id, $data['audit'], $data['reason']);
-            model('AdminLog')->record(
-                '将简历审核变更为【' .
-                model('Resume')->map_audit[$data['audit']] .
-                '】。简历ID【' .
-                implode(',', $resume_id) .
-                '】',
-                $this->admininfo
-            );
         } else {
             $is_refreshSearch = false;
             if ($type == 'high_quality' || $type == 'is_display') {
@@ -1367,10 +1416,6 @@ class Resume extends Backend
             if ($is_refreshSearch) {
                 model('Resume')->refreshSearch(0, $uid);//更新简历索引
             }
-            model('AdminLog')->record(
-                '编辑简历。简历UID【' . $uid . '】',
-                $this->admininfo
-            );
         }
         return true;
     }
@@ -1381,7 +1426,7 @@ class Resume extends Backend
         $clean_token = false;
         switch ($type) {
             case 'password':
-                $pwd_hash = model('Member')->where('uid',$uid)->value('pwd_hash');
+                $pwd_hash = model('Member')->where('uid', $uid)->value('pwd_hash');
                 $input_data['password'] = model('Member')->makePassword(
                     $data['password'],
                     $pwd_hash
@@ -1404,7 +1449,7 @@ class Resume extends Backend
                  */
                 $member_uid = model('Member')
                     ->where([
-                        'mobile' =>  $data['member_mobile'],
+                        'mobile' => $data['member_mobile'],
                         'utype' => 2
                     ])
                     ->value('mobile');
@@ -1415,7 +1460,7 @@ class Resume extends Backend
                 $clean_token = true;
                 break;
             case 'email':
-                if ( isset($data['email']) &&  $data['email'] != '') {
+                if (isset($data['email']) && $data['email'] != '') {
                     $preg_email = '/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@([a-zA-Z0-9]+[-.])+([a-z]{2,5})$/ims';
 
                     if (!preg_match($preg_email, $data['email'])) {
@@ -1440,11 +1485,6 @@ class Resume extends Backend
         if ($clean_token) {
             model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
         }
-
-        model('AdminLog')->record(
-            '编辑会员。会员UID【' . $uid . '】',
-            $this->admininfo
-        );
         return true;
     }
 
@@ -1464,25 +1504,41 @@ class Resume extends Backend
         }
         $data = [];
         $msg = '';
+
+        $log_field = '对{' . $resume['fullname'] . '}(简历ID:' . $id . ')的简历修改联系状态，';
+
         if ($type == 'weixin') {
             $msg = '设置微信';
             if ($resume['is_status_weixin'] == 1) {
                 $data['is_status_weixin'] = 2;
+                $log_field .= '未添加微信 -> 已添加微信';
             } else {
                 $data['is_status_weixin'] = 1;
+                $log_field .= '已添加微信 -> 未添加微信';
             }
         } else {
             $msg = '设置电话';
             if ($resume['is_status_phone'] == 1) {
                 $data['is_status_phone'] = 2;
+                $log_field .= '未电话联系 -> 已电话联系';
+
             } else {
                 $data['is_status_phone'] = 1;
+                $log_field .= '已电话联系 -> 未电话联系';
             }
         }
         $res = model('Resume')->save($data, ['id' => $id]);
         if (false === $res) {
             $this->ajaxReturn(500, $msg . '失败');
         }
+
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            1
+        );
+
         $this->ajaxReturn(200, $msg . '成功');
     }
 }

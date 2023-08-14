@@ -1,6 +1,7 @@
 <?php
 namespace app\common\model;
 
+use app\common\lib\CoordinateTransform;
 use think\Model;
 
 class BaseModel extends Model
@@ -146,5 +147,38 @@ class BaseModel extends Model
             $return = '面议';
         }
         return $return;
+    }
+
+    /**
+     * 天地图转百度地图坐标系
+     */
+    public function wgs84ToBd09($lng,$lat)
+    {
+        if (intval($lng) === 0 || intval($lat) === 0){
+            return ['lng'=>$lng, 'lat'=>$lat];
+        }
+        if (config('global_config.map_type') == 2){
+            $CoordinateTransform = new CoordinateTransform();
+            $coordinate = $CoordinateTransform->wgs84ToBd09($lng,$lat);
+            $lng = !empty($coordinate[0]) ? $coordinate[0] : 0;
+            $lat = !empty($coordinate[1]) ? $coordinate[1] : 0;
+        }
+        return ['lng'=>$lng, 'lat'=>$lat];
+    }
+    /**
+     * 百度地图转天地图坐标系
+     */
+    public function bd09ToWgs84($lng,$lat){
+
+        if (intval($lng) === 0 || intval($lat) === 0){
+            return ['lng'=>$lng, 'lat'=>$lat];
+        }
+        if (config('global_config.map_type') == 2){
+            $CoordinateTransform = new CoordinateTransform();
+            $coordinate = $CoordinateTransform->bd09ToWgs84($lng,$lat);
+            $lng = !empty($coordinate[1]) ? $coordinate[1] : 0;
+            $lat = !empty($coordinate[0]) ? $coordinate[0] : 0;
+        }
+        return ['lng'=>$lng, 'lat'=>$lat];
     }
 }

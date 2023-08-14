@@ -1,14 +1,17 @@
 <?php
+
 namespace app\apiadmin\controller;
 
-use app\common\model\MemberSetmeal;
+use app\common\controller\Backend;
+use think\Db;
 
-class Member extends \app\common\controller\Backend
+class Member extends Backend
 {
     public function _initialize()
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $where = [];
@@ -37,9 +40,9 @@ class Member extends \app\common\controller\Backend
                     $where['a.mobile'] = ['like', '%' . $keyword . '%'];
                     break;
                 case 4:
-                    if($list_type=='company'){
+                    if ($list_type == 'company') {
                         $where['b.companyname'] = ['like', '%' . $keyword . '%'];
-                    }else if($list_type=='personal'){
+                    } else if ($list_type == 'personal') {
                         $where['c.fullname'] = ['like', '%' . $keyword . '%'];
                     }
                     break;
@@ -60,61 +63,52 @@ class Member extends \app\common\controller\Backend
         //         $where['a.status'] = 0;
         //         break;
         // }
-        if($status!=''){
+        if ($status != '') {
             $where['a.status'] = intval($status);
         }
-        if($regtime!=''){
-            $cut_date = date('Y-m-d',strtotime('-'.intval($regtime).'day'));
-            $where['a.reg_time'] = ['egt',strtotime($cut_date)];
+        if ($regtime != '') {
+            $cut_date = date('Y-m-d', strtotime('-' . intval($regtime) . 'day'));
+            $where['a.reg_time'] = ['egt', strtotime($cut_date)];
         }
-        if($platform!=''){
+        if ($platform != '') {
             $where['a.platform'] = $platform;
         }
-        if($sort!=''){
+        if ($sort != '') {
             $order = 'a.last_login_time desc,a.uid desc';
-        }else{
+        } else {
             $order = 'a.uid desc';
         }
-        if($utype>0){
+        if ($utype > 0) {
             $where['a.utype'] = $utype;
         }
         $wheres = '';
-        if ($is_openid === 1)
-        {
+        if ($is_openid === 1) {
             $wheres .= 'd.id is not null';
-        }elseif ($is_openid === 2)
-        {
+        } elseif ($is_openid === 2) {
             $wheres .= 'd.id is null';
         }
-        if (empty($wheres))
-        {
-            if ($is_email === 1)
-            {
+        if (empty($wheres)) {
+            if ($is_email === 1) {
                 $wheres .= " a.email != ''";
-            }elseif ($is_email === 2)
-            {
+            } elseif ($is_email === 2) {
                 $wheres .= " a.email  = ''";
             }
-        }
-        else
-        {
-            if ($is_email === 1)
-            {
+        } else {
+            if ($is_email === 1) {
                 $wheres .= "  and a.email != ''";
-            }elseif ($is_email === 2)
-            {
+            } elseif ($is_email === 2) {
                 $wheres .= " and a.email = ''";
             }
         }
         $total = model('Member')->alias('a');
-        if($list_type=='company'){
-            $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')->where('a.utype',1)->where('b.companyname','neq','');
-        }else if($list_type=='personal'){
-            $total = $total->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')->where('a.utype',2)->where('c.fullname','NOT NULL');
-        }else{
-            $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
-                ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
-                ->where(function($query){
+        if ($list_type == 'company') {
+            $total = $total->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')->where('a.utype', 1)->where('b.companyname', 'neq', '');
+        } else if ($list_type == 'personal') {
+            $total = $total->join(config('database.prefix') . 'resume c', 'a.uid=c.uid', 'LEFT')->where('a.utype', 2)->where('c.fullname', 'NOT NULL');
+        } else {
+            $total = $total->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')
+                ->join(config('database.prefix') . 'resume c', 'a.uid=c.uid', 'LEFT')
+                ->where(function ($query) {
                     $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                 });
         }
@@ -128,32 +122,32 @@ class Member extends \app\common\controller\Backend
          * [join查询修改]：
          * $memberBindSql = model('MemberBind')->where(['type'=>'weixin'])->group('uid')->buildSql();
          */
-        $memberBindSql = model('MemberBind')->where(['type'=>'weixin'])->group('uid')->buildSql();
-        $total = $total->join([$memberBindSql=>'d'],'d.uid=a.uid','left')->where($wheres)->where($where)->count();
+        $memberBindSql = model('MemberBind')->where(['type' => 'weixin'])->group('uid')->buildSql();
+        $total = $total->join([$memberBindSql => 'd'], 'd.uid=a.uid', 'left')->where($wheres)->where($where)->count();
         $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform,a.disable_im,d.openid';
         $list = model('Member')->alias('a');
-        if($list_type=='company'){
+        if ($list_type == 'company') {
             $field .= ',b.companyname';
-            $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')->where('a.utype',1)->where('b.companyname','neq','');
-        }else if($list_type=='personal'){
+            $list = $list->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')->where('a.utype', 1)->where('b.companyname', 'neq', '');
+        } else if ($list_type == 'personal') {
             $field .= ',c.fullname';
-            $list = $list->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')->where('a.utype',2)->where('c.fullname','NOT NULL');
-        }else{
-            $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
-                    ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
-                    ->where(function($query){
-                        $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
-                    });
+            $list = $list->join(config('database.prefix') . 'resume c', 'a.uid=c.uid', 'LEFT')->where('a.utype', 2)->where('c.fullname', 'NOT NULL');
+        } else {
+            $list = $list->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')
+                ->join(config('database.prefix') . 'resume c', 'a.uid=c.uid', 'LEFT')
+                ->where(function ($query) {
+                    $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
+                });
         }
         $list = $list->field($field)->where($where)->where($wheres)
-                ->join([$memberBindSql=>'d'],'d.uid=a.uid','left')
-                ->order($order)
-                ->page($current_page . ',' . $pagesize)
-                ->select();
+            ->join([$memberBindSql => 'd'], 'd.uid=a.uid', 'left')
+            ->order($order)
+            ->page($current_page . ',' . $pagesize)
+            ->select();
 
         foreach ($list as $key => $value) {
-            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
-            $list[$key]['is_openid'] = empty($value['openid'])?'否':'是';
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']]) ? model('BaseModel')->map_platform[$value['platform']] : '未知平台';
+            $list[$key]['is_openid'] = empty($value['openid']) ? '否' : '是';
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -162,6 +156,7 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -173,6 +168,7 @@ class Member extends \app\common\controller\Backend
         ];
         $input_data['pwd_hash'] = randstr();
         if ($input_data['password'] != '') {
+            $initial_password = $input_data['password'];
             $input_data['password'] = model('Member')->makePassword(
                 $input_data['password'],
                 $input_data['pwd_hash']
@@ -182,13 +178,13 @@ class Member extends \app\common\controller\Backend
         if (
             false ===
             model('Member')
-            ->validate('Member.add')
-            ->allowField(true)
-            ->save($input_data)
+                ->validate('Member.add')
+                ->allowField(true)
+                ->save($input_data)
         ) {
             $this->ajaxReturn(500, model('Member')->getError());
         }
-        if($input_data['utype']==1){
+        if ($input_data['utype'] == 1) {
             $insert_data_company['uid'] = model('Member')->uid;
             $insert_data_company['companyname'] = '';
             $insert_data_company['short_name'] = '';
@@ -209,9 +205,7 @@ class Member extends \app\common\controller\Backend
             $insert_data_company['addtime'] = time();
             $insert_data_company['refreshtime'] =
                 $insert_data_company['addtime'];
-            $insert_data_company[
-                'cs_id'
-            ] = model('Member')->distributionCustomerService();
+            $insert_data_company['cs_id'] = model('Member')->distributionCustomerService();
             model('Company')->save($insert_data_company);
             //赠送套餐
             $data_setmeal['uid'] = model('Member')->uid;
@@ -220,12 +214,15 @@ class Member extends \app\common\controller\Backend
             model('Member')->setMemberSetmeal($data_setmeal);
         }
         model('Task')->doTask(model('Member')->uid, $input_data['utype'], 'reg');
-        model('AdminLog')->record(
-            '添加会员。会员UID【' . model('Member')->uid . '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            '新增' . ($input_data['utype'] === 1 ? '企业' : '个人') . '会员(UID:' . model('Member')->uid . ')，用户名:' . $input_data['username'] . '；手机号:' . $input_data['mobile'] . '; 密码:' . $initial_password,
+            $this->admininfo,
+            0,
+            2
         );
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $uid = input('get.uid/d', 0, 'intval');
@@ -253,13 +250,21 @@ class Member extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            if (fieldRegex($input_data['username'], 'mobile')){
+            $log_field = '编辑个人会员(UID:' . $uid . ')信息；';
+            if (fieldRegex($input_data['username'], 'mobile')) {
                 $this->ajaxReturn(500, '用户名不可以是手机号');
             }
-            if (fieldRegex($input_data['username'], 'email')){
+            if (fieldRegex($input_data['username'], 'email')) {
                 $this->ajaxReturn(500, '用户名不可以是邮箱');
             }
+            if ($input_data['username'] != $info['username']) {
+                $log_field .= '用户名:' . $info['username'] . '->' . $input_data['username'] . '，';
+            }
+            if ($input_data['mobile'] != $info['mobile']) {
+                $log_field .= '手机号:' . $info['mobile'] . '->' . $input_data['mobile'] . '，';
+            }
             if (isset($input_data['password']) && $input_data['password']) {
+                $log_field .= '密码:' . $input_data['password'] . '，';
                 $input_data['password'] = model('Member')->makePassword(
                     $input_data['password'],
                     $info['pwd_hash']
@@ -267,13 +272,18 @@ class Member extends \app\common\controller\Backend
             } else {
                 $input_data['password'] = $info['password'];
             }
+
+            if ($log_field == '编辑个人会员(UID:' . $uid . ')信息；') {
+                $this->ajaxReturn(200, '未作修改');
+            }
+
             $input_data['utype'] = $info['utype'];
             if (
                 false ===
                 model('Member')
-                ->validate('Member.edit')
-                ->allowField(true)
-                ->save($input_data, ['uid' => $uid])
+                    ->validate('Member.edit')
+                    ->allowField(true)
+                    ->save($input_data, ['uid' => $uid])
             ) {
                 $this->ajaxReturn(500, model('Member')->getError());
             }
@@ -289,14 +299,16 @@ class Member extends \app\common\controller\Backend
             ) {
                 model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
             }
-
-            model('AdminLog')->record(
-                '编辑会员。会员UID【' . $uid . '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $uid = input('post.uid/a');
@@ -304,6 +316,13 @@ class Member extends \app\common\controller\Backend
         if (empty($uid)) {
             $this->ajaxReturn(500, '请选择数据');
         }
+
+        $log_field = '删除';
+        foreach ($uid as $id) {
+            $utype = model('Member')->where('uid', $id)->value('utype');
+            $log_field .= ($utype === 1 ? '企业' : '个人') . '会员(UID:' . $id . ')，';
+        }
+
         \think\Db::startTrans();
         try {
 
@@ -320,12 +339,15 @@ class Member extends \app\common\controller\Backend
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
-        model('AdminLog')->record(
-            '删除会员。会员UID【' . implode(",",$uid) . '】',
-            $this->admininfo
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            4
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function isUnique()
     {
         $field = input('post.field/s', '', 'trim');
@@ -346,14 +368,15 @@ class Member extends \app\common\controller\Backend
         $where[$field] = ['eq', $value];
         if (
             model('Member')
-            ->where($where)
-            ->find()
+                ->where($where)
+                ->find()
         ) {
             $this->ajaxReturn(200, $field . '已被占用', 0);
         } else {
             $this->ajaxReturn(200, $field . '可用', 1);
         }
     }
+
     public function lock()
     {
         $uid = input('post.uid/d', 0, 'intval');
@@ -362,17 +385,87 @@ class Member extends \app\common\controller\Backend
         if (!$uid || !in_array($status, [0, 1])) {
             $this->ajaxReturn(500, '非法请求');
         }
-        model('Member')->setStatus($uid, $status);
-        model('AdminLog')->record(
-            '变更会员状态为' .
-            ($status == 1 ? '正常' : '暂停') .
-            '。会员UID【' .
-            $uid .
-            '】',
-            $this->admininfo
-        );
+
+        try {
+            $memberInfo = model('Member')->where('uid', $uid)->find();
+            if (null === $memberInfo) {
+                $this->ajaxReturn(500, '要锁定/解锁的会员不存在');
+            }
+            $memberInfo = $memberInfo->toArray();
+
+            switch ($memberInfo['utype']) {
+                case 1:
+                    // 企业
+                    $status_zh = $status == 1
+                        ? '用户账号解锁'
+                        : '用户账号锁定，用户无法登录';
+
+                    $companyInfo = model('Company')->where('uid', $uid)->find();
+                    if (null === $companyInfo) {
+                        // 无效企业
+                        if ($status === 1) {
+                            $log_field = '对无效企业会员{手机号:' . $memberInfo['mobile'] . '}(会员ID:' . $uid . ')用户账号解锁';
+                        } else {
+                            $log_field = '锁定无效企业会员{手机号:' . $memberInfo['mobile'] . '}(会员ID:' . $uid . ')的账号，用户无法登录';
+                        }
+                    } else {
+                        if ($status === 1) {
+                            $log_field = '对{' . $companyInfo['companyname'] . '}(企业ID:' . $companyInfo['id'] . ')用户账号解锁';
+                        } else {
+                            $log_field = '锁定{' . $companyInfo['companyname'] . '}(企业ID:' . $companyInfo['id'] . ')的账号，用户无法登录';
+                        }
+                    }
+                    break;
+
+                case 2:
+                    // 个人
+                    $status_zh = $status == 1
+                        ? '用户账号解锁'
+                        : '用户账号锁定，用户无法登录';
+
+                    $resumeInfo = model('Resume')->where('uid', $uid)->find();
+                    if (null === $resumeInfo) {
+                        // 无效个人
+                        $log_field = '对无效个人会员{手机号:' . $memberInfo['mobile'] . '}(会员ID:' . $uid . ')' . $status_zh;
+                    } else {
+                        $log_field = '对{' . $resumeInfo['fullname'] . '}(会员ID:' . $uid . ')' . $status_zh;
+                    }
+                    break;
+
+                default:
+                    $this->ajaxReturn(500, '会员类型异常【会员ID：' . $uid . '】');
+                    break;
+            }
+
+            Db::startTrans();
+
+            $set_result = model('Member')->setStatus($uid, $status);
+            if (false === $set_result) {
+                throw new \Exception(model('Member')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                7
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '操作失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '操作成功');
-    }    
+    }
+
     public function im()
     {
         $uid = input('post.uid/d', 0, 'intval');
@@ -382,16 +475,39 @@ class Member extends \app\common\controller\Backend
             $this->ajaxReturn(500, '非法请求');
         }
         model('Member')->setIm($uid, $disable_im, $reason);
-        model('AdminLog')->record(
-            '变更会员聊天状态为' .
-            ($disable_im == 1 ? '设置禁聊' : '解除禁聊') .
-            '。会员UID【' .
-            $uid .
-            '】',
-            $this->admininfo
+
+        $utype = model('Member')->where('uid', $uid)->value('utype');
+        if ($utype === 1) {
+            $company_info = model('Company')
+                ->field('id,companyname')
+                ->where('uid', $uid)
+                ->find();
+
+            if ($disable_im == 1) {
+                $log_field = '对{' . $company_info['companyname'] . '}(企业ID:' . $company_info['id'] . ')设置禁聊，该企业无法使用聊天功能';
+            } else {
+                $username = model('Member')->where('uid', $uid)->value('username');
+                $log_field = '即时通讯解除' . $username . '(企业会员)用户禁聊状态';
+            }
+        } else {
+            if ($disable_im == 1) {
+                $log_field = '禁聊' . '个人会员(UID:' . $uid . ')';
+            } else {
+                $username = model('Member')->where('uid', $uid)->value('username');
+                $log_field = '即时通讯解除' . $username . '(个人会员)用户禁聊状态';
+            }
+        }
+
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            7
         );
+
         $this->ajaxReturn(200, '操作成功');
     }
+
     public function detail()
     {
         $uid = input('get.uid/d', 0, 'intval');
@@ -404,28 +520,29 @@ class Member extends \app\common\controller\Backend
         if (!$info) {
             $this->ajaxReturn(500, '数据获取失败');
         }
-        $info->platform_cn = isset(model('BaseModel')->map_platform[$info->platform])?model('BaseModel')->map_platform[$info->platform]:'未知平台';
+        $info->platform_cn = isset(model('BaseModel')->map_platform[$info->platform]) ? model('BaseModel')->map_platform[$info->platform] : '未知平台';
         $resume = model('Resume')
             ->where('uid', $uid)
             ->find();
-        if($resume!==null){
-            $resume->complete_percent = model('Resume')->countCompletePercent(0,$uid);
-            $resume->web_link = url('index/resume/show',['id'=>$resume->id]);
-            $resume->mobile_link = config('global_config.mobile_domain').'resume/'.$resume->id;
+        if ($resume !== null) {
+            $resume->complete_percent = model('Resume')->countCompletePercent(0, $uid);
+            $resume->web_link = url('index/resume/show', ['id' => $resume->id]);
+            $resume->mobile_link = config('global_config.mobile_domain') . 'resume/' . $resume->id;
         }
         $company = model('Company')
-                ->where('uid', $uid)
-                ->find();
-        if($company!==null){
-            $company->web_link = url('index/company/show',['id'=>$company->id]);
-            $company->mobile_link = config('global_config.mobile_domain').'company/'.$company->id;
+            ->where('uid', $uid)
+            ->find();
+        if ($company !== null) {
+            $company->web_link = url('index/company/show', ['id' => $company->id]);
+            $company->mobile_link = config('global_config.mobile_domain') . 'company/' . $company->id;
         }
         $this->ajaxReturn(200, '获取数据成功', [
             'info' => $info,
             'resume' => $resume,
-            'company'=>$company
+            'company' => $company
         ]);
     }
+
     //积分管理
     public function points_list()
     {
@@ -464,8 +581,8 @@ class Member extends \app\common\controller\Backend
                         ->where(['utype' => ['eq', 1]])
                         ->column('uid');
                     $map_uid_arr = is_array($map_uid_arr)
-                    ? $map_uid_arr
-                    : [$map_uid_arr];
+                        ? $map_uid_arr
+                        : [$map_uid_arr];
                     if (!empty($map_uid_arr)) {
                         $where['c.uid'] = ['in', $map_uid_arr];
                     } else {
@@ -504,7 +621,7 @@ class Member extends \app\common\controller\Backend
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {
-            $list[$key]['points'] = $value['points']?$value['points']:0;
+            $list[$key]['points'] = $value['points'] ? $value['points'] : 0;
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -513,6 +630,7 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     //个人积分管理
     protected function points_list_personal()
     {
@@ -549,7 +667,7 @@ class Member extends \app\common\controller\Backend
                 'LEFT'
             )
             ->where($where)
-            ->where('r.id','not null')
+            ->where('r.id', 'not null')
             ->count();
         $list = model('Member')
             ->alias('m')
@@ -565,13 +683,13 @@ class Member extends \app\common\controller\Backend
             )
             ->field('m.uid,m.mobile,m.reg_time,p.points,r.fullname')
             ->where($where)
-            ->where('r.id','not null')
+            ->where('r.id', 'not null')
             ->order('m.uid desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
 
         foreach ($list as $key => $value) {
-            $list[$key]['points'] = $value['points']?$value['points']:0;
+            $list[$key]['points'] = $value['points'] ? $value['points'] : 0;
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -580,6 +698,7 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function points_set()
     {
         $uid = input('post.uid/d', 0, 'intval');
@@ -594,27 +713,49 @@ class Member extends \app\common\controller\Backend
         if ($points_val == 0) {
             $this->ajaxReturn(500, '请输入增减' . config('global_config.points_byname') . '数');
         }
-        $note = '系统操作【管理员：'.$this->admininfo->username.'】。' . $explain;
+
+        $member_utype = model('Member')->where('uid', $uid)->value('utype');
+        $member_name = model('Member')->getMemberNickNameByUid($uid, '', false);
+        $comid = model('Company')->where('uid', $uid)->value('id');
+        if ($member_utype === 1) {
+            $log_field = '编辑{' . $member_name . '}(企业ID:' . $comid;
+        } else {
+            $log_field = '编辑{' . $member_name . '}(UID:' . $uid;
+        }
+
+        $points_byname = config('global_config.points_byname');
+        $log_field .= ')的'
+            . $points_byname
+            . '，'
+            . ($op == 1 ? '增加' : '减少')
+            . $points_byname
+            . ' ' . $points_val . ' 点，操作说明:' . $explain;
+
+        $note = '系统操作【管理员：' . $this->admininfo->username . '】。' . $explain;
         if ($is_charge == 1 && $charge_val > 0) {
             $note .= '；收费' . $charge_val . '元';
+            $log_field .= '；收费金额:' . $charge_val;
+        } else {
+            $log_field .= '；收费金额:0';
         }
 
         model('Member')->setMemberPoints(
             ['uid' => $uid, 'points' => $points_val, 'note' => $note],
             $op
         );
-        model('AdminLog')->record(
-            '变更会员' . config('global_config.points_byname') . '。' .
-            ($op == 1 ? '增加' : '减少') .
-            '【' .
-            $points_val .
-            '】;会员UID【' .
-            $uid .
-            '】',
-            $this->admininfo
+
+        $memberPoints = model('Member')->getMemberPoints($uid);
+        $log_field .= '；当前' . $points_byname . ':' . $memberPoints;
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            5
         );
+
         $this->ajaxReturn(200, '操作成功');
     }
+
     public function points_log()
     {
         $where = [];
@@ -640,6 +781,7 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function loginlog()
     {
         $where = [];
@@ -660,7 +802,7 @@ class Member extends \app\common\controller\Backend
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {
-            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'-';
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']]) ? model('BaseModel')->map_platform[$value['platform']] : '-';
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -669,6 +811,7 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function actionlog()
     {
         $where = [];
@@ -683,7 +826,7 @@ class Member extends \app\common\controller\Backend
         if ($utype > 0) {
             $where['a.utype'] = $utype;
         }
-        if ($keyword!='') {
+        if ($keyword != '') {
             $against = '';
             $keyword = trim($keyword);
             if (false !== stripos($keyword, ' ')) {
@@ -697,7 +840,7 @@ class Member extends \app\common\controller\Backend
                 $against = $keyword;
             }
             $wherefulltext = " MATCH (a.`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
-        }else{
+        } else {
             $wherefulltext = '';
         }
         $total = model('MemberActionLog')
@@ -706,11 +849,11 @@ class Member extends \app\common\controller\Backend
             ->where($wherefulltext)
             ->count();
         $list = model('MemberActionLog')->alias('a');
-        if($utype==1){
-            $list = $list->field('a.*,b.companyname')->join(config('database.prefix').'company b','a.uid=b.uid','LEFT');
+        if ($utype == 1) {
+            $list = $list->field('a.*,b.companyname')->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT');
         }
-        if($utype==2){
-            $list = $list->field('a.*,b.fullname')->join(config('database.prefix').'resume b','a.uid=b.uid','LEFT');
+        if ($utype == 2) {
+            $list = $list->field('a.*,b.fullname')->join(config('database.prefix') . 'resume b', 'a.uid=b.uid', 'LEFT');
         }
         $list = $list
             ->where($where)
@@ -719,7 +862,7 @@ class Member extends \app\common\controller\Backend
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {
-            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'-';
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']]) ? model('BaseModel')->map_platform[$value['platform']] : '-';
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -728,7 +871,9 @@ class Member extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    public function management(){
+
+    public function management()
+    {
         $uid = input('get.uid/d', 0, 'intval');
         $this->ajaxReturn(
             200,
@@ -736,9 +881,11 @@ class Member extends \app\common\controller\Backend
             $this->managementExtra($uid)
         );
     }
+
     protected function managementExtra($uid)
     {
-        $userinfo = model('Member')->where('uid',$uid)->find();
+        $userinfo = model('Member')->where('uid', $uid)->find();
+
         $JwtAuth = \app\common\lib\JwtAuth::mkToken(
             config('sys.safecode'),
             31212000, //360天有效期
@@ -752,7 +899,7 @@ class Member extends \app\common\controller\Backend
         );
         $user_token = $JwtAuth->getString();
         //把token存入数据表，并设置有效期
-        model('IdentityToken')->makeToken($uid, $user_token,$this->expire_platform['web']);
+        model('IdentityToken')->makeToken($uid, $user_token, $this->expire_platform['web']);
         $next_code = 200;
         if ($userinfo['utype'] == 1) {
             $company_profile = model('Company')
@@ -769,6 +916,12 @@ class Member extends \app\common\controller\Backend
                     }
                 }
             }
+
+            $log_field = '进入{'
+                . (!empty($company_profile['companyname']) ? $company_profile['companyname'] : '-')
+                . '}(企业ID:'
+                . (!empty($company_profile['id']) ? $company_profile['id'] : '-')
+                . ')会员中心';
         } else {
             do {
                 $resume_info = model('Resume')
@@ -788,13 +941,26 @@ class Member extends \app\common\controller\Backend
                     break;
                 }
             } while (0);
+            $log_field = '进入{'
+                . (!empty($resume_info['fullname']) ? $resume_info['fullname'] : '-')
+                . '}(会员ID:'
+                . $uid
+                . ')会员中心';
         }
         $visitor = new \app\common\lib\Visitor;
         $visitor->setLogin([
-            'uid'=>$uid,
-            'utype'=>$userinfo['utype'],
-            'token'=>$user_token
-        ],$this->expire_platform['web']);
+            'uid' => $uid,
+            'utype' => $userinfo['utype'],
+            'token' => $user_token
+        ], $this->expire_platform['web']);
+
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            1
+        );
+
         return [
             'uid' => $uid,
             'token' => $user_token,

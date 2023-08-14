@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class Flink extends \app\common\controller\Backend
 {
@@ -43,6 +46,7 @@ class Flink extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -52,25 +56,41 @@ class Flink extends \app\common\controller\Backend
             'link_url' => input('post.link_url/s', '', 'trim'),
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
-        if (
-            false ===
-            model('Link')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Link')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Link')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('HrtoolCategory')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加友情链接，' . $input_data['name'] . '(ID:' . model('Link')->id . ')',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加友情链接。友情链接ID【' .
-                model('Link')->id .
-                '】;友情链接名称【' .
-                $input_data['name'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -93,44 +113,84 @@ class Flink extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Link')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Link')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('Link')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Link')->getError());
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改友情链接，' . $input_data['name'] . '(ID:' . $id . ')',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑友情链接。友情链接ID【' .
-                    $id .
-                    '】;友情链接名称【' .
-                    $input_data['name'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Link')
-            ->where('id', 'in', $id)
-            ->column('name');
-        model('Link')->destroy($id);
-        model('AdminLog')->record(
-            '删除友情链接。友情链接ID【' .
-                implode(',', $id) .
-                '】;友情链接名称【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Link')
+                ->where('id', 'in', $id)
+                ->column('id,name');
+
+            $log_field = '删除友情链接，';
+            foreach ($list as $lid => $name) {
+                $log_field .= $name . '(ID:' . $lid . ')；';
+            }
+
+            $del_result = model('Link')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('Link')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

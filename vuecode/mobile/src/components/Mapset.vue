@@ -6,6 +6,7 @@
     <img class="mapicon" src="../assets/images/plus.png" />
     <div class="map-wrapper">
       <baidu-map
+        v-if="config.map_type ==1"
         class="bm-view"
         :ak="$store.state.config.map_ak"
         :center="center"
@@ -32,6 +33,18 @@
           :pageCapacity="50"
         ></bm-local-search>
       </baidu-map>
+      <TianMap
+        v-if="config.map_type == 2"
+        :ak="config.tian_map_ak"
+        :center="center"
+        :zoom="zoom"
+        class="bm-view"
+        @ready="handleTianMapReady"
+        @zoomend="handlerTianMapZoomend"
+        @touchend="handleTouchend"
+      >
+        <Geolocation position="BOTTOM_RIGHT" @geolocationReady="geolocationReady" @positionSuccess="positionSuccess" @positionError="positionError"></Geolocation>
+      </TianMap>
     </div>
     <div class="btn_box">
       <van-button type="info" round class="btn" native-type="button" @click="confirm"
@@ -61,6 +74,10 @@
 
 <script>
 import Vue from 'vue'
+import { mapState } from 'vuex'
+import TianMap from '@/components/map/TianMap/TianMap'
+import Geolocation from '@/components/map/TianMap/Geolocation'
+import {debounce} from '@/utils/index.js'
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -85,6 +102,10 @@ Vue.component('BmLocalSearch', function (resolve, reject) {
 export default {
   name: 'Mapset',
   props: ['mapLat', 'mapLng', 'mapZoom', 'address'],
+  components: {
+    TianMap,
+    Geolocation
+  },
   data () {
     return {
       location: '',
@@ -98,6 +119,14 @@ export default {
       mapData: { lat: '', lng: '', zoom: 0, address: '' }
     }
   },
+  computed: {
+    ...mapState(['config'])
+  },
+  watch: {
+    keyword (val) {
+      this.tianMapSearch()
+    }
+  },
   created () {
     this.center = {
       lat: parseFloat(this.$store.state.config.map_lat),
@@ -108,18 +137,44 @@ export default {
     this.keyword = ''
   },
   methods: {
+    tianMapSearch: debounce(function () {
+      const {TMap, tianMap, keyword} = this
+      const that = this
+      var config = {
+        pageCapacity: 1000,
+        onSearchComplete: function (result) {
+          var list = result.getPois()
+          // var s = []
+          if (list.length > 0) {
+            list.forEach(element => {
+              const poit = element.lonlat.split(' ')
+              that.dataset.push({
+                address: element.address,
+                title: element.name,
+                point: {lng: poit[0], lat: poit[1]}
+              })
+            })
+            if (that.dataset.length > 0) {
+              that.showList = true
+            }
+          }
+        }
+      }
+      const localsearch = new TMap.LocalSearch(tianMap, config)
+      localsearch.search(keyword, 1)
+    }, 800),
     setPosition (pt) {
       let _this = this
       var offsetY = 0
       var map = _this.map
       var BMap = _this.BMap
-      console.log(pt)
       map.panTo(pt)
       let centerPixel = map.pointToOverlayPixel(map.getCenter())
       map.setCenter(map.overlayPixelToPoint({x: centerPixel.x, y: centerPixel.y + offsetY}))
       map.addEventListener('dragend', function () {
         let pixel = map.pointToOverlayPixel(map.getCenter())
         let point = map.overlayPixelToPoint({x: pixel.x, y: pixel.y - offsetY})
+
         _this.mapData.zoom = map.getZoom()
         let geoc = new BMap.Geocoder()
         geoc.getLocation(point, function (rs) {
@@ -165,10 +220,25 @@ export default {
       }
     },
     handlerItem (item) {
+      if (this.config.map_type == 1) {
+        this.itemBMapClick(item)
+      } else if (this.config.map_type == 2) {
+        this.itemTianMapClick(item)
+      }
+    },
+    itemBMapClick (item) {
       this.map.panTo(item.point)
       let centerPixel = this.map.pointToOverlayPixel(this.map.getCenter())
       this.map.setCenter(this.map.overlayPixelToPoint({x: centerPixel.x, y: centerPixel.y}))
       this.mapData.zoom = this.map.getZoom()
+      this.mapData.lat = item.point.lat
+      this.mapData.lng = item.point.lng
+      this.mapData.address = item.address
+      this.showList = false
+    },
+    itemTianMapClick (item) {
+      this.tianMap.panTo(item.point)
+      this.mapData.zoom = this.tianMap.getZoom()
       this.mapData.lat = item.point.lat
       this.mapData.lng = item.point.lng
       this.mapData.address = item.address
@@ -192,6 +262,74 @@ export default {
     },
     handlerZoomend (e) {
       this.zoom = e.target.getZoom()
+    },
+    // 天地图
+    handleTianMapReady ({TMap, map}) {
+      this.TMap = TMap
+      this.tianMap = map
+      this.tianMap.disableScrollWheelZoom()
+      // eslint-disable-next-line no-undef
+      const control = new this.TMap.Control.Zoom({position: T_ANCHOR_BOTTOM_LEFT})
+      // 添加缩放平移控件
+      this.tianMap.addControl(control)
+      control.setOffset({x: 5, y: -40})
+      this.setTianMaplocation()
+    },
+    geolocationReady (control) {
+      control.setOffset({x: 5, y: -62})
+    },
+    // 天地图缩放结束
+    handlerTianMapZoomend (e) {
+      this.zoom = e.target.getZoom()
+    },
+    // 获取用户定位
+    setTianMaplocation () {
+      const {TMap} = this
+      var that = this
+      if (this.mapLat > 0 && this.mapLng > 0) {
+        this.setTianMapPosition(new TMap.LngLat(this.mapLng, this.mapLat))
+      } else {
+        // 获取用户定位
+        var geolocation = new TMap.Geolocation()
+        geolocation.getCurrentPosition(function (r) {
+          if (this.getStatus() == 0) {
+            that.setTianMapPosition(r.lnglat)
+          }
+        }, { enableHighAccuracy: true })
+      }
+    },
+    setTianMapPosition (pt) {
+      var _this = this
+      const {TMap, tianMap} = this
+      tianMap.panTo(pt)
+      // 只要在touchstart 或者 touchmove 里面加上event.preventDefault()就正常了。
+      tianMap.addEventListener('touchstart', function (event) {
+        event.preventDefault()
+      })
+      tianMap.addEventListener('touchend', function () {
+        _this.handleTouchend()
+      })
+    },
+    handleTouchend () {
+      var _this = this
+      const {TMap, tianMap} = this
+      let geoc = new TMap.Geocoder()
+      geoc.getLocation(tianMap.getCenter(), function (rs) {
+        _this.mapData.address = rs.formatted_address
+      })
+      _this.mapData.zoom = tianMap.getZoom()
+      _this.mapData.lat = tianMap.getCenter().lat
+      _this.mapData.lng = tianMap.getCenter().lng
+    },
+    positionSuccess (e) {
+      const {tianMap} = this
+      tianMap.panTo(e.lnglat.lnglat)
+      this.mapData.zoom = tianMap.getZoom()
+      this.mapData.lat = e.lnglat.lnglat.lat
+      this.mapData.lng = e.lnglat.lnglat.lng
+    },
+    positionError (e) {
+      console.log(e)
     }
   }
 }
@@ -202,6 +340,7 @@ export default {
   width: 100%;
   position: absolute;
   bottom: 10px;
+  z-index: 10;
   .btn {
     width: 350px;
     margin: 0 auto;
@@ -223,6 +362,7 @@ export default {
   height: 100%;
   position: absolute;
   margin-top:-53px;
+  z-index: 1;
 }
 
 .search-float {
@@ -244,6 +384,6 @@ export default {
   left:50%;
   transform:translateX(-50%) translateY(-100%);
   width:52px;
-  z-index:1;
+  z-index:5;
 }
 </style>

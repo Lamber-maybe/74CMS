@@ -209,7 +209,7 @@ export default {
     handlerRefresh(row){
       var that = this
       const param = {
-        id: row.resume_id
+        uid: row.uid
       }
       resumeRefresh(param).then(response => {
         that.$message.success(response.message)
@@ -225,11 +225,11 @@ export default {
       const arr = []
       this.list.forEach(element => {
         if (that.tableIdarr.indexOf(element.id) !== -1){
-          arr.push(element.resume_id)
+          arr.push(element.uid)
         }
       })
       const param = {
-        id: arr
+        uid: arr
       }
       resumeRefresh(param).then(response => {
         that.$message.success(response.message)

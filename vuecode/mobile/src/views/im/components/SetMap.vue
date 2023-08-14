@@ -3,53 +3,81 @@
         <Head :goback_custom="true" @gobackCustomMethod="handleBack">选择位置</Head>
         <div class="map-wrapper">
             <div class="map-search-box">
-                <van-field left-icon="search" v-model="mapSearchText" label="" placeholder="搜索地点" @input="searchKeyword" />
+                <van-field left-icon="search" v-model="mapSearchText" label="" placeholder="搜索地点" @input="handleSearch" />
             </div>
             <div class="bm-view-con">
               <img class="img" src="../../../assets/images/im/pos.png" alt="">
-              <BaiduMap class="bm-view" ak="map_ak" :center="center" :zoom="zoom" @ready="mapReady" @moveend="mapMoveend"></BaiduMap>
+              <BaiduMap
+                v-if="config.is_open_map == 1 && config.map_type == 1"
+                class="bm-view"
+                ak="map_ak"
+                :center="center"
+                :zoom="zoom"
+                @ready="mapReady"
+                @moveend="mapMoveend"
+              ></BaiduMap>
+              <TianMap
+                v-if="config.is_open_map == 1 && config.map_type == 2"
+                class="bm-view"
+                :style="{'z-index': '1','position': 'relative','height': isMap == true ? '9.466667rem' : '100vh'}"
+                :ak="$store.state.config.tian_map_ak"
+                :center="center"
+                :zoom="zoom"
+                @ready="handleTianMapReady"
+                @touchend="handleTianMapTouchend"
+              >
+              </TianMap>
             </div>
-            <div v-if="!isMap">
-                <van-tabs v-model="tabActive" title-active-color="#007AFF" color="#007AFF">
-                  <van-tab title="全部" name="all">
-                    <div class="tab-wrapper">
-                      <div class="tab-item" v-for="(item,index) in nearbyAddrList[0]" :key="index" @click="handleSendMap(item)">
-                        <div class="addr-title substring">{{item.title}}</div>
-                        <div class="addr-text substring">{{item.address}}</div>
+            <div v-if="!isMap && config.map_type == 1">
+              <div v-if="!isMap">
+                  <van-tabs v-model="tabActive" title-active-color="#007AFF" color="#007AFF">
+                    <van-tab title="全部" name="all">
+                      <div class="tab-wrapper">
+                        <div class="tab-item" v-for="(item,index) in nearbyAddrList[0]" :key="index" @click="handleSendMap(item)">
+                          <div class="addr-title substring">{{item.title}}</div>
+                          <div class="addr-text substring">{{item.address}}</div>
+                        </div>
                       </div>
-                    </div>
-                  </van-tab>
-                  <van-tab title="写字楼" name="office">
-                    <div class="tab-wrapper">
-                      <div class="tab-item" v-for="(item,index) in nearbyAddrList[1]" :key="index" @click="handleSendMap(item)">
-                        <div class="addr-title substring">{{item.title}}</div>
-                        <div class="addr-text substring">{{item.address}}</div>
+                    </van-tab>
+                    <van-tab title="写字楼" name="office">
+                      <div class="tab-wrapper">
+                        <div class="tab-item" v-for="(item,index) in nearbyAddrList[1]" :key="index" @click="handleSendMap(item)">
+                          <div class="addr-title substring">{{item.title}}</div>
+                          <div class="addr-text substring">{{item.address}}</div>
+                        </div>
                       </div>
-                    </div>
-                  </van-tab>
-                  <van-tab title="小区" name="community">
-                    <div class="tab-wrapper">
-                      <div class="tab-item" v-for="(item,index) in nearbyAddrList[2]" :key="index" @click="handleSendMap(item)">
-                        <div class="addr-title substring">{{item.title}}</div>
-                        <div class="addr-text substring">{{item.address}}</div>
+                    </van-tab>
+                    <van-tab title="小区" name="community">
+                      <div class="tab-wrapper">
+                        <div class="tab-item" v-for="(item,index) in nearbyAddrList[2]" :key="index" @click="handleSendMap(item)">
+                          <div class="addr-title substring">{{item.title}}</div>
+                          <div class="addr-text substring">{{item.address}}</div>
+                        </div>
                       </div>
-                    </div>
-                  </van-tab>
-                  <van-tab title="学校" name="school">
-                    <div class="tab-wrapper">
-                      <div class="tab-item" v-for="(item,index) in nearbyAddrList[3]" :key="index" @click="handleSendMap(item)">
-                        <div class="addr-title substring">{{item.title}}</div>
-                        <div class="addr-text substring">{{item.address}}</div>
+                    </van-tab>
+                    <van-tab title="学校" name="school">
+                      <div class="tab-wrapper">
+                        <div class="tab-item" v-for="(item,index) in nearbyAddrList[3]" :key="index" @click="handleSendMap(item)">
+                          <div class="addr-title substring">{{item.title}}</div>
+                          <div class="addr-text substring">{{item.address}}</div>
+                        </div>
                       </div>
-                    </div>
-                  </van-tab>
-              </van-tabs>
+                    </van-tab>
+                </van-tabs>
+              </div>
+              <div v-else class="point-wrapper">
+                <div class="point-item" v-for="(item,index) in pointAddrList" :key="index" @click="handleSendMap(item)">
+                  <div class="addr-title substring">{{item.title}}</div>
+                  <div  class="addr-text substring">{{item.address}}</div>
+                </div>
+              </div>
             </div>
-
-            <div v-else class="point-wrapper">
-              <div class="point-item" v-for="(item,index) in pointAddrList" :key="index" @click="handleSendMap(item)">
-                <div class="addr-title substring">{{item.title}}</div>
-                <div  class="addr-text substring">{{item.address}}</div>
+            <div v-else>
+              <div v-if="isMap == true" class="point-wrapper">
+                <div class="point-item" v-for="(item,index) in pointAddrList" :key="index" @click="handleSendMap(item)">
+                  <div class="addr-title substring">{{item.title}}</div>
+                  <div  class="addr-text substring">{{item.address}}</div>
+                </div>
               </div>
             </div>
 
@@ -59,7 +87,9 @@
 
 <script>
 import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
+import TianMap from '@/components/map/TianMap/TianMap'
 import {debounce} from '@/utils/index.js'
+import { mapState } from 'vuex'
 function get_distance (current_lat, current_lng, target_lat, target_lng) {
   const PI = '3.1415926535898'
   let radLat1 = current_lat * (PI / 180)
@@ -90,11 +120,16 @@ export default {
       tabActive: 'all', // 全部 写字楼 小区 学校
       pointAddrList: [], // 搜索职位数组
       isMap: false,
-      mapItem: {}
+      mapItem: {},
+      TMap: {}
     }
   },
   components: {
-    BaiduMap
+    BaiduMap,
+    TianMap
+  },
+  computed: {
+    ...mapState(['config'])
   },
   created () {
   },
@@ -102,14 +137,39 @@ export default {
     center (newVal, oldVal) {
       let that = this
       if (newVal.lat != oldVal.lat || newVal.lng != oldVal.lng) {
-        setTimeout(() => {
-          that.searchNeaybyList()
-        }, 100)
+        if (that.config.is_open_map == 1) {
+          if (that.config.map_type == 1) {
+            setTimeout(() => {
+              that.searchNeaybyList()
+            }, 100)
+          } else if (that.config.map_type == 2) {
+
+          }
+        }
       }
     }
   },
   methods: {
     handleSetupBack () {},
+    // 天地图加载完成
+    handleTianMapReady ({TMap, map}) {
+      this.TMap = TMap
+      this.TianMap = map
+      this.center = {
+        lat: parseFloat(this.$store.state.config.map_lat),
+        lng: parseFloat(this.$store.state.config.map_lng)
+      }
+      this.zoom = parseInt(this.$store.state.config.map_zoom)
+    },
+    // 天地图移动结束
+    handleTianMapTouchend (e) {
+      const { lng, lat } = e.target.getCenter()
+      this.center = {
+        lat: lat,
+        lng: lng
+      }
+      this.zoom = e.target.getZoom()
+    },
     /**
      * 地图加载完成
      */
@@ -133,6 +193,22 @@ export default {
       }
       this.zoom = e.target.getZoom()
     },
+    // 暂不使用
+    tianMapSearchList () {
+      let _this = this
+      let TMap = this.TMap
+      let TianMap = this.TianMap
+      _this.nearbyAddrList = []
+      _this.nearbyAddrList.push([])
+      var options = {
+        onSearchComplete (res) {
+          console.log(res)
+        }
+      }
+
+      var local = new TMap.LocalSearch(TianMap, options)
+      local.searchInBounds(['写字楼', '小区', '学校'], TianMap.getBounds())
+    },
     searchNeaybyList () {
       let _this = this
       let BMap = this.BMap
@@ -155,6 +231,7 @@ export default {
             // 重新排序-距离近的排前面
             p_arr = _this.sortList(p_arr)
             _this.nearbyAddrList.push(p_arr)
+            console.log(_this.nearbyAddrList)
           }
           _this.nearbyAddrList[0] = [..._this.nearbyAddrList[1], ..._this.nearbyAddrList[2], ..._this.nearbyAddrList[3]]
           _this.nearbyAddrList[0] = _this.sortList(_this.nearbyAddrList[0])
@@ -188,7 +265,7 @@ export default {
     /**
      * 搜索
      */
-    searchKeyword: debounce(function () {
+    searchKeyword () {
       let _this = this
       if (this.mapSearchText == '') {
         this.isMap = false
@@ -214,6 +291,45 @@ export default {
         }
       })
       local.search(this.mapSearchText)
+    },
+    tianSearchKeyWord () {
+      let _this = this
+      if (this.mapSearchText == '') {
+        this.isMap = false
+        return false
+      }
+      this.isMap = true
+      let TMap = this.TMap
+      let TianMap = this.TianMap
+      let options = {
+        pageCapacity: 1000,
+        onSearchComplete (result) {
+          _this.pointAddrList = []
+          var list = result.getPois()
+          console.log(list)
+          if (list.length > 0) {
+            list.forEach(element => {
+              const poit = element.lonlat.split(' ')
+              let arr = {
+                title: element.name,
+                address: element.address,
+                lng: poit.lng,
+                lat: poit.lat
+              }
+              _this.pointAddrList.push(arr)
+            })
+          }
+        }
+      }
+      var local = new TMap.LocalSearch(TianMap, options)
+      local.search(this.mapSearchText, 1)
+    },
+    handleSearch: debounce(function () {
+      if (this.config.map_type == 1) {
+        this.searchKeyword()
+      } else if (this.config.map_type == 2) {
+        this.tianSearchKeyWord()
+      }
     }, 300),
     /**
      * 是否发送位置

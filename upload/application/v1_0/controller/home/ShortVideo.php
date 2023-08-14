@@ -236,7 +236,9 @@ class ShortVideo extends \app\v1_0\controller\common\Base
         if(intval(config('global_config.shortvideo_enable'))==0){
             $this->ajaxReturn(500, '视频招聘功能已关闭');
         }
-
+        $coordinate = model('Config')->wgs84ToBd09($lon,$lat);
+        $lon = $coordinate['lng'];
+        $lat = $coordinate['lat'];
         try{
             $m = new SvCompanyVideo();
             if($type == 2){

@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class HrtoolCategory extends \app\common\controller\Backend
 {
@@ -23,6 +26,7 @@ class HrtoolCategory extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -31,25 +35,41 @@ class HrtoolCategory extends \app\common\controller\Backend
             'is_sys' => 0,
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
-        if (
-            false ===
-            model('HrtoolCategory')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('HrtoolCategory')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('HrtoolCategory')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('HrtoolCategory')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加HR工具箱分类，' . $input_data['name'] . '(ID:' . model('HrtoolCategory')->id . ')',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加hr工具箱分类。hr工具箱分类ID【' .
-                model('HrtoolCategory')->id .
-                '】;hr工具箱分类名称【' .
-                $input_data['name'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -72,44 +92,84 @@ class HrtoolCategory extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('HrtoolCategory')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('HrtoolCategory')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('HrtoolCategory')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('HrtoolCategory')->getError());
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改HR工具箱分类，' . $input_data['name'] . '(ID:' . $id . ')',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑hr工具箱分类。hr工具箱分类ID【' .
-                    $id .
-                    '】;hr工具箱分类名称【' .
-                    $input_data['name'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('HrtoolCategory')
-            ->where('id', 'in', $id)
-            ->column('name');
-        model('HrtoolCategory')->destroy($id);
-        model('AdminLog')->record(
-            '删除hr工具箱分类。hr工具箱分类ID【' .
-                implode(',', $id) .
-                '】;hr工具箱分类名称【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('HrtoolCategory')
+                ->where('id', 'in', $id)
+                ->column('id,name');
+
+            $log_field = '删除HR工具箱分类，';
+            foreach ($list as $cid => $name) {
+                $log_field .= $name . '(ID:' . $cid . ')；';
+            }
+
+            $del_result = model('HrtoolCategory')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('HrtoolCategory')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

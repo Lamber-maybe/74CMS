@@ -1,7 +1,11 @@
 <?php
+
 namespace app\apiadmin\controller;
 
-class Hotword extends \app\common\controller\Backend
+use app\common\controller\Backend;
+use think\Db;
+
+class Hotword extends Backend
 {
     public function index()
     {
@@ -26,7 +30,7 @@ class Hotword extends \app\common\controller\Backend
             ->order('id asc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-        
+
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -34,29 +38,49 @@ class Hotword extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $data = input('param.');
         if (!$data) {
             $this->ajaxReturn(500, '提交数据为空');
         }
-        $result = model('Hotword')
-            ->validate(true)
-            ->allowField(true)
-            ->save($data);
-        if (false === $result) {
-            $this->ajaxReturn(500, model('Hotword')->getError());
+
+        try {
+            Db::startTrans();
+
+            $result = model('Hotword')
+                ->validate(true)
+                ->allowField(true)
+                ->save($data);
+            if (false === $result) {
+                throw new \Exception(model('Hotword')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-基础配置-自定义数据配置，添加热门关键词，关键词:'
+                . $data['word']
+                . '；排序:' . $data['hot'];
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加热门关键词。关键词ID【' .
-                model('Hotword')->id .
-                '】;关键词【' .
-                $data['word'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -76,42 +100,98 @@ class Hotword extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '请选择数据');
             }
 
-            $result = model('Hotword')
-                ->validate(true)
-                ->allowField(true)
-                ->save($data, ['id' => $id]);
-            if (false === $result) {
-                $this->ajaxReturn(500, model('Hotword')->getError());
+            try {
+                $info = model('Hotword')->find($id);
+                if (null === $info) {
+                    $this->ajaxReturn(500, '要修改的热门关键词不存在');
+                }
+
+                Db::startTrans();
+
+                $result = model('Hotword')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($data, ['id' => $id]);
+                if (false === $result) {
+                    throw new \Exception(model('Hotword')->getError());
+                }
+
+                // 日志
+                $log_field = '系统-基础配置-自定义数据配置，修改热门关键词，关键词:' . $info['word'];
+
+                if ($data['word'] != $info['word']) {
+                    $log_field .= '->' . $data['word'];
+                }
+
+                if ($data['hot'] != $info['hot']) {
+                    $log_field .= '；排序:' . $info['hot'] . '->' . $data['hot'];
+                }
+
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                //提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollBack();
+                $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑热门关键词。关键词ID【' .
-                    $id .
-                    '】;关键词【' .
-                    $data['word'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('param.id/d', 0, 'intval');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('Hotword')->find($id);
-        model('Hotword')->destroy($id);
-        model('AdminLog')->record(
-            '删除热门关键词。关键词ID【' .
-                $id .
-                '】;关键词【' .
-                $info['word'] .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            $info = model('Hotword')->find($id);
+            if (null === $info) {
+                $this->ajaxReturn(500, '要删除的热门关键词不存在');
+            }
+
+            Db::startTrans();
+
+            $result = model('Hotword')->destroy($id);
+            if (false === $result) {
+                throw new \Exception(model('Hotword')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-基础配置-自定义数据配置，删除热门关键词，关键词:'
+                . $info['word']
+                . '；排序:' . $info['hot'];
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function saveAll()
     {
         $inputdata = input('post.');
@@ -134,10 +214,36 @@ class Hotword extends \app\common\controller\Backend
                 $this->ajaxReturn(500, $validate->getError());
             }
         }
-        model('Hotword')
-            ->isUpdate()
-            ->saveAll($sqldata);
-        model('AdminLog')->record('批量保存热门关键词', $this->admininfo);
+
+        try {
+            Db::startTrans();
+
+            $result = model('Hotword')
+                ->isUpdate()
+                ->saveAll($sqldata);
+            if (false === $result) {
+                throw new \Exception(model('Hotword')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-基础配置-自定义数据配置，批量保存热门关键词';
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '保存成功');
     }
 }

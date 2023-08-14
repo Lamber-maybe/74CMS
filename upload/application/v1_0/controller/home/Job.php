@@ -42,7 +42,12 @@ class Job extends \app\v1_0\controller\common\Base
         $count_total = input('get.count_total/d', 0, 'intval');
         $minage = input('get.minage/d',0,'intval'); // 最低年龄
         $maxage = input('get.maxage/d',0,'intval');  // 最高年龄
-
+        if (!empty($lat) && !empty($lng))
+        {
+            $coordinate = model('Config')->bd09ToWgs84($lng,$lat);
+            $lng = $coordinate['lng'];
+            $lat = $coordinate['lat'];
+        }
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
@@ -186,6 +191,12 @@ class Job extends \app\v1_0\controller\common\Base
 
         $searchResult = $instance->run();
         $return['items'] = $this->get_datalist($searchResult['items'],$distanceData);
+        foreach($return['items'] as $k=>$v)
+        {
+            $coordinate = model('Config')->bd09ToWgs84($v['map_lng'],$v['map_lat']);
+            $return['items'][$k]['map_lng'] = $coordinate['lng'];
+            $return['items'][$k]['map_lat'] = $coordinate['lat'];
+        }
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
         $return['show_mask'] = $show_mask;
@@ -211,6 +222,15 @@ class Job extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $marker_num = input('get.marker_num/d', 100, 'intval');
+
+        $coordinate = model('Config')->wgs84ToBd09($south_west_lng,$south_west_lat);
+        $south_west_lng = $coordinate['lng'];
+        $south_west_lat = $coordinate['lat'];
+
+        $coordinate = model('Config')->wgs84ToBd09($north_east_lng,$north_east_lat);
+        $north_east_lng = $coordinate['lng'];
+        $north_east_lat = $coordinate['lat'];
+
 
         $params['count_total'] = 0;
         $params['current_page'] = $current_page;
@@ -821,6 +841,9 @@ class Job extends \app\v1_0\controller\common\Base
         if($return['show_contact'] && $this->userinfo!==null){
             $return['cur_user_mobile'] = $this->userinfo->mobile;
         }
+        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'],$return['base_info']['map_lat']);
+        $return['base_info']['map_lng'] = $coordinate['lng'];
+        $return['base_info']['map_lat'] = $coordinate['lat'];
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     /**

@@ -97,9 +97,15 @@
                             <img src="__ROOT__/assets/images/address_icon.png" />
                             {#$return.base_info.address#}
                         </div>
-                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
+                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0 && $global_config.is_open_map==1"#}
                         <div class="map">
-                            <div id="bdMap" style="width:100%;height:300px;"></div>
+                            {#if condition="$global_config.map_type == 1 "#}
+                                <div id="bdMap" style="width:100%;height:300px;"></div>
+                            {#/if#}
+
+                            {#if condition="$global_config.map_type == 2 "#}
+                                <div id="tianMap" style="width:100%;height:300px;"></div>
+                            {#/if#}
                         </div>
                         {#/if#}
                     </div>
@@ -281,7 +287,7 @@
             });
         })
     })
-
+    // 初始化地图
     function loadBdMap() {
         if (window.BMap !== undefined) {
             return
@@ -302,9 +308,48 @@
         var marker = new BMap.Marker(new BMap.Point(lng, lat));
         map.addOverlay(marker);
     }
-    if ("{#$return.base_info.map_lat#}" > 0 && "{#$return.base_info.map_lng#}" > 0) {
-        loadBdMap()
+
+    if('{#$global_config.is_open_map#}' == 1){
+        if ("{#$return.base_info.map_lat#}" > 0 && "{#$return.base_info.map_lng#}" > 0) {
+            if ('{#$global_config.map_type#}' == 1) {
+                loadBdMap()
+            } else if ('{#$global_config.map_type#}' == 2) {
+                loadTianMap()
+            }
+        }
     }
+
+    
+
+    // 初始化天地图script标签
+    function loadTianMap(){
+        if (window.T !== undefined) {
+            return
+        }
+        var script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = "https://api.tianditu.gov.cn/api?v=4.0&tk={#$global_config.tian_map_ak#}"
+        document.body.appendChild(script)
+        script.onload = function (){
+		    initTianMap()
+        }
+    }
+    // 初始化地图
+    function initTianMap(){
+        var tianMap = new T.Map('tianMap') // 创建Map实例
+        var lng = parseFloat("{#$return.base_info.map_lng#}")
+        var lat = parseFloat("{#$return.base_info.map_lat#}")
+        var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+        var point = new T.LngLat(lng, lat) // 创建点坐标
+        tianMap.centerAndZoom(point, zoom)
+        var marker = new T.Marker(new T.LngLat(lng, lat));
+        tianMap.addOverLay(marker);
+    }
+
+
+
+
+
     var id = parseInt("{#$return.base_info.id#}")
     var app = new Vue({
         el: '#app',

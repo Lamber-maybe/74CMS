@@ -1,8 +1,28 @@
 <?php
+
 namespace app\apiadmin\controller;
 
 class LinkSubmit extends \app\common\controller\Backend
 {
+    /**
+     * 推送类型
+     * @var string[] 性别 job:职位|company:企业|article:资讯
+     */
+    public $map_type = [
+        'job' => '职位',
+        'company' => '企业',
+        'article' => '资讯'
+    ];
+
+    /**
+     * 时间段
+     * @var string[] 时间段 today:当天|all:全部
+     */
+    public $map_range = [
+        'today' => '当天',
+        'all' => '全部'
+    ];
+
     public function index()
     {
         $type = input('get.type/s', '', 'trim');
@@ -54,18 +74,17 @@ class LinkSubmit extends \app\common\controller\Backend
         }
         // 【ID1000255】【优化】百度推送提示修改（请先配置准入密钥） zch 2022/8/1
         $linksubmit_token = config('global_config.linksubmit_token');
-        if (empty($linksubmit_token))
-        {
+        if (empty($linksubmit_token)) {
             $this->ajaxReturn(500, '请先配置准入密钥');
         }
         if (empty($list)) {
             // 【ID1000255】【优化】百度推送提示修改 zch 2022/8/1
-            $this->ajaxReturn(200, '没有可提交链接',['status'=>2]);
+            $this->ajaxReturn(200, '没有可提交链接', ['status' => 2]);
         }
         $urls = [];
         $sitedomain = config('global_config.sitedomain');
         foreach ($list as $key => $value) {
-            $urls[] = url('index/'.$type.'/show',['id' => $value['id']]);
+            $urls[] = url('index/' . $type . '/show', ['id' => $value['id']]);
         }
         $site = str_replace('http://', '', $sitedomain);
         $site = str_replace('https://', '', $site);
@@ -85,11 +104,21 @@ class LinkSubmit extends \app\common\controller\Backend
         curl_setopt_array($ch, $options);
         $result = curl_exec($ch);
         $result = json_decode($result, true);
-        $count_not_valid = isset($result['not_valid'])?count($result['not_valid']):0;
+        $count_not_valid = isset($result['not_valid']) ? count($result['not_valid']) : 0;
         if (isset($result['success'])) {
-            model('AdminLog')->record(
-                '成功推送链接至百度【' . $result['success'] . '条】,不合法的URL有【'.$count_not_valid.'条】',
-                $this->admininfo
+            $log_field = '百度URL推送数据，推送'
+                . $this->map_range[$range]
+                . $this->map_type[$type]
+                . '，成功:'
+                . $result['success']
+                . '条，失败'
+                . $count_not_valid
+                . '条';
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
             );
             $this->ajaxReturn(200, '提交成功', [
                 'status' => 1,

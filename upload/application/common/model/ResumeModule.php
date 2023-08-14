@@ -1,15 +1,32 @@
 <?php
+
 namespace app\common\model;
 
-class ResumeModule extends \app\common\model\BaseModel
+class ResumeModule extends BaseModel
 {
-    protected $readonly = ['id', 'module_name', 'module_cn', 'enable_close'];
+    /**
+     * 是否显示
+     * @var string[]
+     */
+    public $map_is_display = [
+        0 => '不显示',
+        1 => '显示'
+    ];
+
+    protected $readonly = [
+        'id',
+        'module_name',
+        'module_cn',
+        'enable_close'
+    ];
+
     protected $type = [
         'id' => 'integer',
         'score' => 'integer',
         'is_display' => 'integer',
         'enable_close' => 'integer'
     ];
+
     protected static function init()
     {
         self::event('after_write', function () {
@@ -19,6 +36,7 @@ class ResumeModule extends \app\common\model\BaseModel
             cache('cache_resume_module', null);
         });
     }
+
     public function getCache()
     {
         if (false === ($data = cache('cache_resume_module'))) {

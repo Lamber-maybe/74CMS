@@ -65,7 +65,9 @@ CREATE TABLE `qs_admin_log` (
   `addtime` int(10) unsigned NOT NULL,
   `ip` varchar(30) NOT NULL,
   `ip_addr` varchar(30) NOT NULL,
+  `type` TINYINT (1) UNSIGNED DEFAULT 0 NOT NULL COMMENT '操作类型[0:-;1:常规;2:新增;3:修改;4:删除;5:业务;6:审核;7:锁定;8:导出]',
   PRIMARY KEY (`id`),
+  KEY `idx_type` (`type`) USING BTREE,
   FULLTEXT KEY `index_fulltext_index` (`content`) /*!50100 WITH PARSER `ngram` */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin_log||-_-||
@@ -125,6 +127,7 @@ CREATE TABLE `qs_article_category` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(10) NOT NULL,
   `sort_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `seo_title` varchar(100) NOT NULL DEFAULT '' COMMENT 'seo标题',
   `seo_description` varchar(200) NOT NULL DEFAULT '',
   `seo_keywords` varchar(100) NOT NULL DEFAULT '',
   `is_sys` tinyint(1) unsigned NOT NULL DEFAULT '1',

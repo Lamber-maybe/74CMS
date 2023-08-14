@@ -1,6 +1,8 @@
 <?php
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class Job extends \app\common\controller\Backend
 {
     public function _initialize()
@@ -236,13 +238,11 @@ class Job extends \app\common\controller\Backend
             if (false === model('Job')->backendEdit($input_data)) {
                 $this->ajaxReturn(500, model('Job')->getError());
             }
-            model('AdminLog')->record(
-                '编辑职位。职位ID【' .
-                    $input_data['id'] .
-                    '】;职位名称【' .
-                    $input_data['jobname'] .
-                    '】',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '编辑职位【' . $input_data['jobname'] . '】(职位ID:' . $input_data['id'] . ')',
+                $this->admininfo,
+                0,
+                3
             );
             $this->ajaxReturn(200, '保存成功');
         }
@@ -253,22 +253,46 @@ class Job extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择职位');
         }
-        $list = model('Job')
-            ->where('id', 'in', $id)
-            ->column('jobname');
-        if (false === model('Job')->deleteJobByIds($id)) {
-            $this->ajaxReturn(500, model('Job')->getError());
+
+        Db::startTrans();
+        try {
+            $list = model('Job')
+                ->where('id', 'in', $id)
+                ->column('id,jobname');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要删除的职位');
+            }
+
+            if (false === model('Job')->deleteJobByIds($id)) {
+                $this->ajaxReturn(500, model('Job')->getError());
+            }
+
+            $log_field = '删除职位';
+            foreach ($list as $j_id => $j_name) {
+                $log_field .= '{' . $j_name . '}(职位ID:' . $j_id . ')；';
+            }
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '删除职位。职位ID【' .
-                implode(',', $id) .
-                '】;职位名称【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function setAudit()
     {
         $id = input('post.id/a');
@@ -277,15 +301,54 @@ class Job extends \app\common\controller\Backend
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择职位');
         }
-        model('Job')->setAudit($id, $audit, $reason);
-        model('AdminLog')->record(
-            '将职位审核状态变更为【' .
-                model('Job')->map_audit[$audit] .
-                '】。职位ID【' .
-                implode(',', $id) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Job')
+                ->whereIn('id', $id)
+                ->column('id,jobname,audit');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要审核的职位');
+            }
+
+            model('Job')->setAudit($id, $audit, $reason);
+
+            $audit_set = model('Job')->map_audit[$audit];
+
+            $log_field = '审核职位，';
+            foreach ($list as $jobInfo) {
+                $log_field .= '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')；';
+                $audit_original = model('Job')->map_audit[$jobInfo['audit']];
+            }
+            $log_field = rtrim($log_field, '；') . '，';
+            if (count($list) === 1) {
+                $log_field .= $audit_original . '->' . $audit_set;
+            } else {
+                $log_field .= $audit_set;
+            }
+            if ($audit === 2) {
+                $log_field .= '，原因:' . (!empty($reason) ? $reason : '未填写');
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                6
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '审核失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '审核成功');
     }
     public function refresh()
@@ -313,13 +376,16 @@ class Job extends \app\common\controller\Backend
             $this->ajaxReturn(500, $result['msg']);
         }
 
-        $jobIdArr = array_column($result['data'], 'id');
-        model('AdminLog')->record(
-            '刷新职位；职位ID【' .
-                implode(',', $jobIdArr) .
-                '】',
-            $this->admininfo
+        $log_field = '刷新';
+        foreach ($result['data'] as $jobInfo) {
+            $log_field .= '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')；';
+        }
+        model('AdminLog')->writeLog(
+            rtrim($log_field, '；') . '，后台刷新不占用企业免费刷新额度',
+            $this->admininfo,
+            0,
+            1
         );
-        $this->ajaxReturn(200, '成功刷新'. count($jobIdArr) .'条职位');
+        $this->ajaxReturn(200, '成功刷新' . count($result['data']) . '条职位');
     }
 }

@@ -1,5 +1,9 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
+
 class WechatKeyword extends \app\common\controller\Backend
 {
     public function index()
@@ -34,6 +38,7 @@ class WechatKeyword extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -43,23 +48,44 @@ class WechatKeyword extends \app\common\controller\Backend
             'return_img_mediaid' => input('post.return_img_mediaid/s', '', 'trim'),
             'return_link' => input('post.return_link/s', '', 'trim')
         ];
-        if (
-            false ===
-            model('WechatKeyword')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('WechatKeyword')->getError());
+
+        try {
+            Db::startTrans();
+
+            if (
+                false ===
+                model('WechatKeyword')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('WechatKeyword')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-微信平台配置，自定义关键词，添加关键词，关键词:' . $input_data['word']
+                . '；返回文字:' . (!empty($input_data['return_text']) ? $input_data['return_text'] : '未填写')
+                . '；返回链接:' . (!empty($input_data['return_link']) ? $input_data['return_link'] : '未填写');
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加微信公众号自定义关键词。关键词【' .
-                $input_data['word'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -86,40 +112,107 @@ class WechatKeyword extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('WechatKeyword')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('WechatKeyword')->getError());
+
+            try {
+                $info = model('WechatKeyword')->find($id);
+                if (null === $info) {
+                    $this->ajaxReturn(500, '要修改的自定义关键词不存在');
+                }
+                $info = $info->toArray();
+
+                Db::startTrans();
+
+                if (
+                    false ===
+                    model('WechatKeyword')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('WechatKeyword')->getError());
+                }
+
+                // 日志
+                $log_field = '系统-微信平台配置，自定义关键词，修改关键词，关键词:' . $info['word'];
+                if ($input_data['word'] != $info['word']) {
+                    $log_field .= '->' . $input_data['word'];
+                }
+                if ($input_data['return_text'] != $info['return_text']) {
+                    $log_field .= '；返回文字:'
+                        . (!empty($info['return_text']) ? $info['return_text'] : '未填写')
+                        . '->'
+                        . (!empty($input_data['return_text']) ? $input_data['return_text'] : '未填写');
+                }
+                if ($input_data['return_link'] != $info['return_link']) {
+                    $log_field .= '；返回链接:'
+                        . (!empty($info['return_link']) ? $info['return_link'] : '未填写')
+                        . '->'
+                        . (!empty($input_data['return_link']) ? $input_data['return_link'] : '未填写');
+                }
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                //提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '添加微信公众号自定义关键词。关键词【' .
-                    $input_data['word'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('WechatKeyword')
-            ->where('id', 'in', $id)
-            ->column('word');
-        model('WechatKeyword')->destroy($id);
-        model('AdminLog')->record(
-            '删除微信公众号自定义关键词。关键词【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            $list = model('WechatKeyword')
+                ->whereIn('id', $id)
+                ->column('word');
+            if (empty($list)) {
+                $this->ajaxReturn(500, '没有要删除的自定义关键词');
+            }
+
+            Db::startTrans();
+
+            if (
+                false ===
+                model('WechatKeyword')->destroy($id)
+            ) {
+                throw new \Exception(model('WechatKeyword')->getError());
+            }
+
+            // 日志
+            $log_field = '系统-微信平台配置，自定义关键词，删除关键词，关键词:' . implode('；', $list);
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            //提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

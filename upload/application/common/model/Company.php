@@ -8,6 +8,10 @@ class Company extends \app\common\model\BaseModel
         1 => '已认证',
         2 => '未通过'
     ];
+    public $map_is_display = [
+        0 => '不显示',
+        1 => '显示'
+    ];
     protected $insert = ['updatetime'];
     protected $update = ['updatetime'];
     protected $readonly = ['id', 'uid', 'addtime', 'robot'];

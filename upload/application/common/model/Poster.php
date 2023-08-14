@@ -3,6 +3,10 @@ namespace app\common\model;
 
 class Poster extends \app\common\model\BaseModel
 {
+    public $map_is_display = [0 => '不显示', 1 => '显示'];
+
+    public $map_type = [1 => '职位海报', 2 => '简历海报', 3 => '企业海报'];
+
     public function getList($type){
         $list = $this->where('type',$type)->field('id,indexid,name,sort_id,is_display')->order('is_display desc,sort_id desc,id asc')->select();
         foreach ($list as $key => $value) {

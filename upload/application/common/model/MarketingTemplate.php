@@ -8,6 +8,11 @@ namespace app\common\model;
 
 class MarketingTemplate extends BaseModel
 {
+    public $map_type = [
+        1 => '职位模板',
+        2 => '企业模板'
+    ];
+
     protected $pk = 'id';
 
     protected $readonly = [

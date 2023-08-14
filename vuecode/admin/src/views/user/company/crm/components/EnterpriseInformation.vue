@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { classify, companyCrmEdit, deleteImg } from '@/api/company_crm'
+import { classify, deleteImg } from '@/api/company_crm'
 import { getToken } from '@/utils/auth'
 import CompayEdit from '@/views/user/company/edit'
 
@@ -146,17 +146,6 @@ export default {
       }).catch(() => {
 
       })
-    },
-    onSubmit() {
-      companyCrmEdit(this.form)
-        .then(response => {
-          this.$message.success(response.message)
-          this.$emit('companyDetails')
-          return true
-        })
-        .catch(() => {
-          this.submitLoading = false
-        })
     },
     classify(){
       classify({ 'type': 'companyNature,companyScale,trade' }).then(res => {

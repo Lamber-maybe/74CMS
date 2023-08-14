@@ -878,21 +878,21 @@ class Member extends \app\common\model\BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getMemberNickNameByUid($uid){
+    public function getMemberNickNameByUid($uid, $fault = false, $display = true){
         $member = $this->find($uid);
         if (null === $member){
-            return false;
+            return $fault;
         }
 
         switch ($member['utype']){
             case 1:
-                return $this->getCompanyNameByUid($uid);
+                return $this->getCompanyNameByUid($uid, $fault);
 
             case 2:
-                return $this->getMemberNameByUid($uid);
+                return $this->getMemberNameByUid($uid, $fault, $display);
 
             default:
-                return false;
+                return $fault;
         }
     }
 
@@ -901,13 +901,17 @@ class Member extends \app\common\model\BaseModel
      * @param $uid
      * @return void
      */
-    public function getMemberNameByUid($uid){
+    public function getMemberNameByUid($uid, $fault = false, $display = true){
         $resume = model('Resume')
             ->field('display_name, fullname, sex')
             ->where('uid',$uid)
             ->find();
         if (null == $resume){
-            return false;
+            return $fault;
+        }
+
+        if (!$display) {
+            return $resume['fullname'];
         }
 
         if ($resume['display_name'] == 0) {
@@ -943,12 +947,12 @@ class Member extends \app\common\model\BaseModel
      * @param $uid
      * @return void
      */
-    public function getCompanyNameByUid($uid){
+    public function getCompanyNameByUid($uid, $fault = false){
         $company_name = model('Company')
-            ->where('uid',$uid)
+            ->where('uid', $uid)
             ->value('companyname');
-        if (null == $company_name){
-            return false;
+        if (null == $company_name) {
+            return $fault;
         }
 
         return $company_name;

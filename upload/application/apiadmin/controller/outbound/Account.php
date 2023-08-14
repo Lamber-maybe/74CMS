@@ -46,8 +46,17 @@ class Account extends Backend
                 $this->ajaxReturn(500, '请填写AppSecret');
             }
 
-            Db::startTrans();
             try {
+                $configInfo = model('Config')
+                    ->where('name', 'account_outbound')
+                    ->find();
+                if (null === $configInfo) {
+                    $this->ajaxReturn(500, '在线文档预览配置项不存在');
+                }
+                $configValue = json_decode($configInfo['value'], true);
+
+                Db::startTrans();
+
                 $callSeat = new CallAccount($param);
                 $result = $callSeat->verifyAccountSecret();
                 if (false === $result) {
@@ -65,9 +74,19 @@ class Account extends Backend
                     throw new \Exception(model('Config')->getError());
                 }
 
-                model('AdminLog')->record(
-                    '修改外呼配置。配置标识【account_outbound】',
-                    $this->admininfo
+
+                $log_field = '外呼中心-外呼配置，修改外呼配置';
+                if ($param['app_id'] != $configValue['app_id']) {
+                    $log_field .= '，AppKey:' . $configValue['app_id'] . '->' . $param['app_id'];
+                }
+                if ($param['app_secret'] != $configValue['app_secret']) {
+                    $log_field .= '，AppSecret:' . $configValue['app_secret'] . '->' . $param['app_secret'];
+                }
+                model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
                 );
 
                 Db::commit();

@@ -43,14 +43,14 @@ class AdminRole extends \app\common\controller\Backend
         if (false === $result) {
             $this->ajaxReturn(500, model('AdminRole')->getError());
         }
-        model('AdminLog')->record(
-            '添加管理员角色。角色ID【' .
-                model('AdminRole')->id .
-                '】;角色名称【' .
-                $input_data['name'] .
-                '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '系统-系统管理员-角色权限管理，添加角色，角色名称:' . $input_data['name'],
+            $this->admininfo,
+            0,
+            2
         );
+
         $this->ajaxReturn(200, '保存成功');
     }
     public function edit()
@@ -86,6 +86,12 @@ class AdminRole extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
+            $info = model('AdminRole')
+                ->where('id', $id)
+                ->find();
+            if (null === $info) {
+                $this->ajaxReturn(500, '要编辑的角色信息异常');
+            }
             $input_data['access'] = serialize($input_data['access']);
             $input_data['access_mobile'] = serialize($input_data['access_mobile']);
             $result = model('AdminRole')
@@ -95,14 +101,19 @@ class AdminRole extends \app\common\controller\Backend
             if (false === $result) {
                 $this->ajaxReturn(500, model('AdminRole')->getError());
             }
-            model('AdminLog')->record(
-                '编辑管理员角色。角色ID【' .
-                    $id .
-                    '】;角色名称【' .
-                    $input_data['name'] .
-                    '】',
-                $this->admininfo
+
+            if ($info['name'] != $input_data['name']) {
+                $name_update = $info['name'] . '->' . $input_data['name'];
+            } else {
+                $name_update = $info['name'];
+            }
+            model('AdminLog')->writeLog(
+                '系统-系统管理员-角色权限管理，修改角色，角色名称:' . $name_update,
+                $this->admininfo,
+                0,
+                3
             );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
@@ -119,14 +130,14 @@ class AdminRole extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
         $info->delete();
-        model('AdminLog')->record(
-            '删除管理员角色。角色ID【' .
-                $id .
-                '】;角色名称【' .
-                $info['name'] .
-                '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '系统-系统管理员-角色权限管理，删除角色，角色名称:' . $info['name'],
+            $this->admininfo,
+            0,
+            4
         );
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

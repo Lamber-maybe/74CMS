@@ -350,6 +350,9 @@ class Company extends \app\v1_0\controller\common\Base
         } else {
             $return['report'] = 1;
         }
+        $coordinate = model('Config')->bd09ToWgs84($base_info['map_lng'],$base_info['map_lat']);
+        $base_info['map_lng'] = $coordinate['lng'];
+        $base_info['map_lat'] = $coordinate['lat'];
         $return['base_info'] = $base_info;
         $return['img_list'] = $img_list;
         $return['field_rule'] = $field_rule;

@@ -64,7 +64,7 @@ class CustomerService extends \app\common\controller\Backend
             $this->ajaxReturn(500, model('CustomerService')->getError());
         }
 
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '添加客服。客服ID【' .
                 model('CustomerService')->id .
                 '】；客服姓名【' .
@@ -110,7 +110,7 @@ class CustomerService extends \app\common\controller\Backend
             ) {
                 $this->ajaxReturn(500, model('CustomerService')->getError());
             }
-            model('AdminLog')->record(
+            model('AdminLog')->checkLog(
                 '编辑客服。客服ID【' .
                     $id .
                     '】；客服姓名【' .
@@ -137,7 +137,7 @@ class CustomerService extends \app\common\controller\Backend
             ->where('cs_id', 'eq', $id)
             ->setField('cs_id', 0);
         $info->delete();
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '删除客服。客服ID【' . $id . '】;客服姓名【' . $info['name'] . '】',
             $this->admininfo
         );

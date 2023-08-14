@@ -3,6 +3,7 @@
 namespace app\apiadmin\controller\b2bcrm;
 
 use app\common\controller\Backend;
+use think\Db;
 use think\Validate;
 
 class CompanyContact extends Backend
@@ -129,23 +130,58 @@ class CompanyContact extends Backend
             if ($count >= 6) {
                 $this->ajaxReturn(500, '联系人最多8个！');
             }
+
+            // 开启事务
+            Db::startTrans();
+
             $add = model('b2bcrm.CrmCompanyContact')
                 ->isUpdate(false)
                 ->save($data_input);
             if (false === $add) {
                 $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
             }
+
             // 日志
-            $log_result = model('AdminLog')->record(
-                '添加企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【' . $data_input['contact'] . '】',
-                $this->admininfo
+            $company_name = model('Company')->where('id', $data_input['comid'])->value('companyname');
+            $log_field = '为客户{'
+                . $company_name
+                . '}(企业ID:' . $data_input['comid']
+                . ')添加联系人，'
+                . $data_input['contact'];
+            if (!empty($data_input['sex'])) {
+                $log_field .= '；性别:' . model('b2bcrm.CrmCompanyContact')->map_sex[$data_input['sex']];
+            }
+            if (!empty($data_input['mobile'])) {
+                $log_field .= '；手机号:' . $data_input['mobile'];
+            }
+            if (!empty($data_input['telephone'])) {
+                $log_field .= '；公司座机:' . $data_input['telephone'];
+            }
+            if (!empty($data_input['email'])) {
+                $log_field .= '；邮箱:' . $data_input['email'];
+            }
+            if (!empty($data_input['qq'])) {
+                $log_field .= '；QQ:' . $data_input['qq'];
+            }
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
+
+            // 开启事务
+            Db::commit();
+
             $this->ajaxReturn(200, '添加成功', []);
         } catch (\Exception $e) {
-            $this->ajaxReturn(500, $e->getMessage());
+            // 回滚事务
+            Db::rollback();
+
+            $this->ajaxReturn(500, '添加失败', ['err_msg' => $e->getMessage()]);
         }
     }
 
@@ -170,6 +206,7 @@ class CompanyContact extends Backend
         if ($data_input['id'] == 0) {
             $this->ajaxReturn(500, '联系人id错误');
         }
+
         try {
             $validate = new Validate($this->rule, $this->message);
             $result = $validate->check($data_input);
@@ -183,23 +220,80 @@ class CompanyContact extends Backend
             if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email')) {
                 throw new \Exception('邮箱格式错误');
             }
+
+            $contact_info = model('b2bcrm.CrmCompanyContact')->find($data_input['id']);
+            if (null === $contact_info) {
+                $this->ajaxReturn(500, '要修改的企业联系人不存在');
+            }
+
+            // 开启事务
+            Db::startTrans();
+
             $edit = model('b2bcrm.CrmCompanyContact')
                 ->isUpdate(true)
                 ->save($data_input, ['id' => $data_input['id']]);
             if (false === $edit) {
-                $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
+                throw new \Exception(model('b2bcrm.CrmCompanyContact')->getError());
             }
+
             // 日志
-            $log_result = model('AdminLog')->record(
-                '编辑企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【' . $data_input['contact'] . '】',
-                $this->admininfo
+            $company_name = model('Company')->where('id', $data_input['comid'])->value('companyname');
+            $log_field = '为客户{'
+                . $company_name
+                . '}(企业ID:' . $data_input['comid']
+                . ')修改联系人，'
+                . $contact_info['contact'];
+            if ($data_input['contact'] != $contact_info['contact']) {
+                $log_field .= '->' . $data_input['contact'];
+            }
+            if ($data_input['sex'] != $contact_info['sex']) {
+                $log_field .= '；性别:'
+                    . model('b2bcrm.CrmCompanyContact')->map_sex[$contact_info['sex']]
+                    . '->'
+                    . model('b2bcrm.CrmCompanyContact')->map_sex[$data_input['sex']];
+            }
+            if ($data_input['mobile'] != $contact_info['mobile']) {
+                $log_field .= '；手机号:'
+                    . $contact_info['mobile']
+                    . '->'
+                    . $data_input['mobile'];
+            }
+            if ($data_input['telephone'] != $contact_info['telephone']) {
+                $log_field .= '；公司座机:'
+                    . $contact_info['telephone']
+                    . '->'
+                    . $data_input['telephone'];
+            }
+            if ($data_input['email'] != $contact_info['email']) {
+                $log_field .= '；邮箱:'
+                    . $contact_info['email']
+                    . '->'
+                    . $data_input['email'];
+            }
+            if ($data_input['qq'] != $contact_info['qq']) {
+                $log_field .= '；QQ:'
+                    . $contact_info['qq']
+                    . '->'
+                    . $data_input['qq'];
+            }
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
+
+            // 提交事务
+            Db::commit();
+
             $this->ajaxReturn(200, '编辑成功', []);
         } catch (\Exception $e) {
-            $this->ajaxReturn(500, $e->getMessage());
+            // 回滚事务
+            Db::rollback();
+            $this->ajaxReturn(500, '编辑失败', ['err_msg' => $e->getMessage()]);
         }
     }
 
@@ -213,17 +307,56 @@ class CompanyContact extends Backend
         if (empty($CrmCompanyContact)) {
             $this->ajaxReturn(500, '联系人id错误');
         }
-        $del = model('b2bcrm.CrmCompanyContact')->where(['id' => $id])->delete();
-        if ($del === false) {
-            $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
+
+        try {
+            // 开启事务
+            Db::startTrans();
+
+            $del = model('b2bcrm.CrmCompanyContact')->where(['id' => $id])->delete();
+            if ($del === false) {
+                throw new \Exception(model('b2bcrm.CrmCompanyContact')->getError());
+            }
+
+            // 日志
+            $company_name = model('Company')->where('id', $CrmCompanyContact['comid'])->value('companyname');
+            $log_field = '为客户{'
+                . $company_name
+                . '}(企业ID:' . $CrmCompanyContact['comid']
+                . ')删除联系人，'
+                . $CrmCompanyContact['contact'];
+            if (!empty($CrmCompanyContact['sex'])) {
+                $log_field .= '；性别:' . model('b2bcrm.CrmCompanyContact')->map_sex[$CrmCompanyContact['sex']];
+            }
+            if (!empty($CrmCompanyContact['mobile'])) {
+                $log_field .= '；手机号:' . $CrmCompanyContact['mobile'];
+            }
+            if (!empty($CrmCompanyContact['telephone'])) {
+                $log_field .= '；公司座机:' . $CrmCompanyContact['telephone'];
+            }
+            if (!empty($CrmCompanyContact['email'])) {
+                $log_field .= '；邮箱:' . $CrmCompanyContact['email'];
+            }
+            if (!empty($CrmCompanyContact['qq'])) {
+                $log_field .= '；QQ:' . $CrmCompanyContact['qq'];
+            }
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
-        $log_result = model('AdminLog')->record(
-            '删除企业联系人【ID:' . $id . '】,名称【' . $CrmCompanyContact['contact'] . '】',
-            $this->admininfo
-        );
-        if (false === $log_result) {
-            throw new \Exception(model('AdminLog')->getError());
-        }
+
         $this->ajaxReturn(200, '删除成功', []);
     }
 }

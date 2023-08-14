@@ -9,6 +9,15 @@ use think\Validate;
 
 class Resume extends Backend
 {
+    /**
+     * 启用简历解析
+     * @var string[] 启用简历解析 0:关闭|1:开启
+     */
+    public $map_is_open = [
+        0 => '关闭',
+        1 => '开启'
+    ];
+
     public function config()
     {
         if (request()->isGet()) {
@@ -54,8 +63,17 @@ class Resume extends Backend
                 $this->ajaxReturn(500, $validate->getError());
             }
 
-            Db::startTrans();
             try {
+                $configInfo = model('Config')
+                    ->where('name', 'account_zhitoo_resume')
+                    ->find();
+                if (null === $configInfo) {
+                    $this->ajaxReturn(500, '在线文档预览配置项不存在');
+                }
+                $configValue = json_decode($configInfo['value'], true);
+
+                Db::startTrans();
+
                 $save_config = model('Config')
                     ->isUpdate(true)
                     ->allowField(true)
@@ -67,10 +85,28 @@ class Resume extends Backend
                     throw new \Exception(model('Config')->getError());
                 }
 
-                model('AdminLog')->record(
-                    '修改配置信息。配置标识【account_zhitoo_resume】',
-                    $this->admininfo
+                $log_field = '系统-基础配置-合作账号，修改简历解析配置';
+                if ($data['is_open'] != $configValue['is_open']) {
+                    $log_field .= '，启用简历解析:'
+                        . $this->map_is_open[$configValue['is_open']]
+                        . '->'
+                        . $this->map_is_open[$data['is_open']];
+                }
+                if ($data['appKey'] != $configValue['appKey']) {
+                    $log_field .= '，AppKey:' . $configValue['appKey'] . '->' . $data['appKey'];
+                }
+                if ($data['appSecret'] != $configValue['appSecret']) {
+                    $log_field .= '，AppSecret:' . $configValue['appSecret'] . '->' . $data['appSecret'];
+                }
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
                 );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
 
                 Db::commit();
                 $this->ajaxReturn(200, '保存成功');

@@ -184,8 +184,12 @@
                     <div class="search_btn1" @click="handlerSearch"></div>
                 </div>
                 <div class="search_right">
-                    <span><a href="{#:url('index/job/index')#}">高级搜索</a></span><br />
-                    <span><a href="{#:url('index/map/index')#}">地图搜索</a></span>
+                    {#if condition="$global_config.is_open_map eq 1"#}
+                        <span><a href="{#:url('index/job/index')#}">高级搜索</a></span><br />
+                        <span><a href="{#:url('index/map/index')#}">地图搜索</a></span>
+                    {#else /#}
+                        <span><a href="{#:url('index/job/index')#}" style="line-height: 44px">高级搜索</a></span>
+                    {#/if#}
                 </div>
             </div>
             <div class="right_btn">

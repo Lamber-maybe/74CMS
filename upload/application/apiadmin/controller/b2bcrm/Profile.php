@@ -39,6 +39,14 @@ class Profile extends Backend
             $img_list = $this->getCompanyImg($company_id);
             cache('scan_upload_result_company_img_'.$uid,json_encode($img_list));
 
+            $company_name = model('Company')->where('id',$company_id)->value('companyname');
+            model('AdminLog')->writeLog(
+                '给{' . $company_name . '}(企业ID:' . $company_id . ')上传企业风采图片',
+                $this->admininfo,
+                0,
+                2
+            );
+
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());
@@ -58,6 +66,14 @@ class Profile extends Backend
         model('CompanyImg')->destroy($id);
         $img_list = $this->getCompanyImg($company_id);
         cache('scan_upload_result_company_img_'.$uid,json_encode($img_list));
+
+        $company_name = model('Company')->where('id',$company_id)->value('companyname');
+        model('AdminLog')->writeLog(
+            '删除{' . $company_name . '}(企业ID:' . $company_id . ')的企业风采图片',
+            $this->admininfo,
+            0,
+            4
+        );
 
         $this->ajaxReturn(200, '删除成功');
     }

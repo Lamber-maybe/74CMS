@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class CompanyReport extends \app\common\controller\Backend
 {
     public function index()
@@ -54,7 +56,7 @@ class CompanyReport extends \app\common\controller\Backend
             ->select();
 
         foreach ($list as $key => $value) {
-            $list[$key]['preview_link'] = url('index/company/report',['id'=>$value['company_id']]);
+            $list[$key]['preview_link'] = url('index/company/report', ['id' => $value['company_id']]);
         }
 
         $return['items'] = $list;
@@ -65,6 +67,7 @@ class CompanyReport extends \app\common\controller\Backend
 
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = input('post.');
@@ -87,21 +90,43 @@ class CompanyReport extends \app\common\controller\Backend
         } else {
             $input_data['addtime'] = time();
         }
-        if (
-            false ===
-            model('CompanyReport')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('CompanyReport')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('CompanyReport')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('CompanyReport')->getError());
+            }
+
+            $companyname = model('Company')->where('id', $input_data['company_id'])->value('companyname');
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加{' . $companyname . '}(企业ID:' . $input_data['company_id'] . ')的实地认证资料',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加企业实地认证。企业ID【' . $input_data['company_id'] . '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -139,22 +164,44 @@ class CompanyReport extends \app\common\controller\Backend
             } else {
                 $input_data['addtime'] = time();
             }
-            if (
-                false ===
-                model('CompanyReport')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('CompanyReport')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('CompanyReport')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('CompanyReport')->getError());
+                }
+
+                $companyname = model('Company')->where('id', $info['company_id'])->value('companyname');
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改{' . $companyname . '}(企业ID:' . $info['company_id'] . ')的实地认证资料',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑企业实地认证。企业ID【' . $info['company_id'] . '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -167,13 +214,35 @@ class CompanyReport extends \app\common\controller\Backend
         if (null === $info) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info->delete();
-        model('AdminLog')->record(
-            '删除企业实地认证。企业ID【' . $info['company_id'] . '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $companyname = model('Company')->where('id', $info['company_id'])->value('companyname');
+
+            $info->delete();
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '删除{' . $companyname . '}(企业ID:' . $info['company_id'] . ')的实地认证资料',
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function searchCompany()
     {
         $keyword = input('get.keyword/s', '', 'trim');

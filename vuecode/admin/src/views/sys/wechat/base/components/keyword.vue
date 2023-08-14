@@ -64,12 +64,6 @@
         >
           添加
         </el-button>
-        <el-button
-          size="small"
-          type="danger"
-        >
-          删除
-        </el-button>
       </el-col>
       <el-col
         :span="16"

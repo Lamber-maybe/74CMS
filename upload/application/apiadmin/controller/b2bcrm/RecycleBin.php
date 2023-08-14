@@ -144,10 +144,15 @@ class RecycleBin extends Backend
             }
 
             // 写入操作日志表
-            model('AdminLog')->record(
-                '将会员移动到回收站。会员UID【' . $company_info['uid'] . '】。企业ID【' . $company_info['cid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '删除{' . $company_info['companyname'] . '}(企业ID:' . $company_info['cid'] . ')，企业会员无法登录，相关信息隐藏，可在CRM回收站恢复',
+                $this->admininfo,
+                0,
+                4
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();
@@ -215,10 +220,15 @@ class RecycleBin extends Backend
             }
 
             // c:写入操作日志表
-            model('AdminLog')->record(
-                '将会员从回收站中删除。会员UID【' . $recycle_bin_info['uid'] . '】。企业ID【' . $recycle_bin_info['cid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                'CRM回收站删除{' . $recycle_bin_info['companyname'] . '}(企业ID:' . $recycle_bin_info['cid'] . ')，数据已彻底删除，无法恢复',
+                $this->admininfo,
+                0,
+                4
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();
@@ -290,10 +300,15 @@ class RecycleBin extends Backend
             }
 
             // c:写入操作日志表
-            model('AdminLog')->record(
-                '将会员从回收站中恢复。会员UID【' . $recycle_bin_info['uid'] . '】。企业ID【' . $recycle_bin_info['cid'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                'CRM回收站对{' . $recycle_bin_info['companyname'] . '}(企业ID:' . $recycle_bin_info['cid'] . ')还原，企业恢复成功',
+                $this->admininfo,
+                0,
+                1
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             //提交事务
             Db::commit();

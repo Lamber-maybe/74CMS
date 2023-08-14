@@ -64,7 +64,7 @@
                     </div>
                   </van-uploader> -->
                 <!-- </li> -->
-                <li class="more-item" @click="handleOpenMap" v-if="LoginType == 1">
+                <li class="more-item" @click="handleOpenMap" v-if="LoginType == 1 && $store.state.config.is_open_map == 1">
                   <div class="more-img bottom-more-position"></div>
                   <div class="more-text">发送位置</div>
                 </li>

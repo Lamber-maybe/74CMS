@@ -14,6 +14,12 @@ class JobfairOlExport extends \app\common\controller\Backend{
             ->where(['j.jobfair_id'=>$jobfair_id,'j.utype'=>1,'c.is_display'=>1])
             ->field('c.id as company_id,c.companyname')->select();
         if(!$company) $this->ajaxReturn(500,'暂无报名企业');
+        model('AdminLog')->writeLog(
+            '网络招聘会信息导出-文档资料，' . $jobfair['title'],
+            $this->admininfo,
+            0,
+            8
+        );
         $this->ajaxReturn(200,'获取成功',url('jobfair_ol_export/docxdownload'));
     }
     public function docxdownload(){
@@ -54,6 +60,14 @@ class JobfairOlExport extends \app\common\controller\Backend{
     public function exhibitors(){
         $reg = $this->getExhibitors();
         if(!$reg['state']) $this->ajaxReturn(500,$reg['msg']);
+        $jobfair_id = input('get.jobfair_id/d',0,'intval');
+        $jobfair = model('JobfairOnline')->find($jobfair_id);
+        model('AdminLog')->writeLog(
+            '网络招聘会信息导出-公众号模板，' . $jobfair['title'],
+            $this->admininfo,
+            0,
+            8
+        );
         $this->ajaxReturn(200, $reg['msg'],$reg['data']);
     }
     protected function getExhibitors(){

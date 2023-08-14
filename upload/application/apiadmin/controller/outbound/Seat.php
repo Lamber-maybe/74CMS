@@ -234,11 +234,16 @@ class Seat extends Backend
                 throw new \Exception(model('outbound.OutbountSeats')->getError());
             }
 
-            model('AdminLog')->record(
+            $log_result = model('AdminLog')->writeLog(
                 '给【adminid：' . $param['admin_id'] . '】绑定坐席。
                 坐席【' . $param['seat_id'] . '-' . $param['seat_number'] . '】',
-                $this->admininfo
+                $this->admininfo,
+                0,
+                1
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
         } catch (\Exception $e) {
@@ -285,11 +290,16 @@ class Seat extends Backend
                 throw new \Exception(model('outbound.OutbountSeats')->getError());
             }
 
-            model('AdminLog')->record(
+            $log_result = model('AdminLog')->writeLog(
                 '解绑坐席。
                 【坐席：' . $seat_id . '】',
-                $this->admininfo
+                $this->admininfo,
+                0,
+                1
             );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
         } catch (\Exception $e) {

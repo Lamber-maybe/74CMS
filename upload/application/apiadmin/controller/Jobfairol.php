@@ -108,14 +108,6 @@ class Jobfairol extends \app\common\controller\Backend{
         ];
         $reg = model('JobfairOnline')->jobfairOnlineAdd($input_data,$this->admininfo);
         if (!$reg['state']) $this->ajaxReturn(500, $reg['msg']);
-        model('AdminLog')->record(
-            '发布网络招聘会。招聘会ID【' .
-            $reg['data']['id'] .
-            '】;网络招聘会标题【' .
-            $input_data['title'] .
-            '】',
-            $this->admininfo
-        );
         $this->ajaxReturn(200, '保存成功');
     }
     // 编辑网络招聘会
@@ -138,10 +130,6 @@ class Jobfairol extends \app\common\controller\Backend{
             ];
             $reg = model('JobfairOnline')->jobfairOnlineEdit($input_data,$this->admininfo);
             if (!$reg['state']) $this->ajaxReturn(500, $reg['msg']);
-            model('AdminLog')->record(
-                '编辑网络招聘会。招聘会ID【' . $input_data['id'] . '】;招聘会标题【' . $input_data['title'] . '】',
-                $this->admininfo
-            );
             $this->ajaxReturn(200, $reg['msg']);
         }else{
             $id = input('get.id/d', 0, 'intval');
@@ -387,12 +375,6 @@ class Jobfairol extends \app\common\controller\Backend{
             $this->ajaxReturn(500, '请选择网络招聘会');
         }
         model('JobfairOnline')->setQrcode($jobfair_id,$uid,$qrcode,$note,$this->admininfo);
-        model('AdminLog')->record(
-            '网络招聘会添加微信直面。网络招聘会ID【' .
-            $jobfair_id .
-            '】',
-            $this->admininfo
-        );
         $this->ajaxReturn(200, '设置成功');
     }
     // 添加参会企业获取企业列表
@@ -461,7 +443,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $this->ajaxReturn(500, '网络招聘会编号错误');
         }
 
-        model('JobfairOnline')->setStatus($jobfair_id, $uid, $audit);
+        model('JobfairOnline')->setStatus($jobfair_id, $uid, $audit, $this->admininfo);
 
         $this->ajaxReturn(200, '设置成功');
     }
@@ -485,7 +467,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $data['qrcode'] = 0;
         $data['stick'] = 0;
         $data['addtime'] = time();
-        $reg = model('JobfairOnline')->participateAdd($data);
+        $reg = model('JobfairOnline')->participateAdd($data, $this->admininfo);
         $this->ajaxReturn($reg['state']?200:500, $reg['msg']);
     }
     // 批量添加企业
@@ -495,14 +477,43 @@ class Jobfairol extends \app\common\controller\Backend{
         if (empty($jobfair_id)) {
             $this->ajaxReturn(500, '请选择网络招聘会');
         }
+        $title = model('JobfairOnline')->where('id', $jobfair_id)->value('title');
+        if (empty($title)) {
+            $this->ajaxReturn(500, '网络招聘会信息异常');
+        }
+
         $settr = input('post.settr/d',0,'intval');
         if($settr){
             $where['a.refreshtime']=array('gt',strtotime("-".$settr." day"));
         }
-        $audit = input('post.audit/d',0,'intval');
-        if($audit){
-            $where['a.audit'] = $audit;
+
+        $audit = input('post.audit/s', '', 'trim');
+        switch ($audit) {
+            # 2:待认证;1:已认证;3:未通过;0:未认证
+            case '2':
+                $audit_zh = '待认证';
+                $where['a.audit'] = intval($audit);
+                $where['ca.id'] = ['not null', ''];
+                break;
+            case '1':
+                $audit_zh = '已认证';
+                $where['a.audit'] = intval($audit);
+                break;
+            case '3':
+                $audit_zh = '未通过';
+                $where['a.audit'] = intval($audit);
+                break;
+            case '0':
+                $audit_zh = '未认证';
+                $where['a.audit'] = intval($audit);
+                $where['ca.id'] = ['null', ''];
+                break;
+            case '':
+            default:
+                $audit_zh = '不限';
+                break;
         }
+
         $setmeal_id = input('post.setmeal_id/d',0,'intval');
         if($setmeal_id){
             $where['a.setmeal_id'] = $setmeal_id;
@@ -515,6 +526,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $total = model('Company')
                     ->alias('a')
                     ->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')
+                    ->join('company_auth ca', 'ca.uid=a.uid', 'LEFT')
                     ->where('a.uid','NOT IN',function($query) use ($jobfair_id){
                         $query->table(config('database.prefix').'jobfair_online_participate')->where('jobfair_id',$jobfair_id)->field('uid');
                     })
@@ -527,6 +539,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $list = model('Company')
                 ->alias('a')
                 ->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')
+                ->join('company_auth ca', 'ca.uid=a.uid', 'LEFT')
                 ->where('a.uid','NOT IN',function($query) use ($jobfair_id){
                     $query->table(config('database.prefix').'jobfair_online_participate')->where('jobfair_id',$jobfair_id)->field('uid');
                 })
@@ -553,8 +566,44 @@ class Jobfairol extends \app\common\controller\Backend{
             $post_data['note'] = '';
             $insert_data[] = $post_data;
         }
-        if(!empty($insert_data)){
+        $log_field = '批量添加网络招聘会参会企业，标题:' . $title . '；条件:';
+        switch ($settr) {
+            case '3':
+                $log_field .= '刷新时间-三天内，';
+                break;
+            case '7':
+                $log_field .= '刷新时间-一周内，';
+                break;
+            case '30':
+                $log_field .= '刷新时间-一月内，';
+                break;
+            case '180':
+                $log_field .= '刷新时间-半年内，';
+                break;
+            case '360':
+                $log_field .= '刷新时间-一年内，';
+                break;
+            case '0':
+            case '':
+            default:
+                $log_field .= '刷新时间-不限，';
+                break;
+        }
+        $log_field .= '企业认证-' . $audit_zh . '，';
+        if (!empty($setmeal_id)) {
+            $setmeal_name = model('Setmeal')->where('id', $setmeal_id)->value('name');
+            $log_field .= '套餐类型-' . $setmeal_name;
+        } else {
+            $log_field .= '套餐类型-不限';
+        }
+        if (!empty($insert_data)) {
             model('JobfairOnlineParticipate')->saveAll($insert_data);
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
         }
         $this->ajaxReturn(200, '已成功添加了'.$counter.'个企业！',0);
     }

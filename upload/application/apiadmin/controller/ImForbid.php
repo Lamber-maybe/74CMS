@@ -54,7 +54,7 @@ class ImForbid extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('ImQuickmsg')->getError());
         }
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '添加即时通讯快捷语。快捷语ID【' .
                 model('ImQuickmsg')->id .
                 '】;快捷语内容【' .
@@ -85,7 +85,7 @@ class ImForbid extends \app\common\controller\Backend
         ) {
             $this->ajaxReturn(500, model('ImQuickmsg')->getError());
         }
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '编辑即时通讯快捷语。快捷语ID【' .
                 $id .
                 '】;快捷语内容【' .
@@ -109,7 +109,7 @@ class ImForbid extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
         $info->delete();
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '删除即时通讯快捷语。快捷语ID【' .
                 $id .
                 '】;快捷语内容【' .

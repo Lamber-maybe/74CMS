@@ -131,8 +131,10 @@
                                 {#if condition="$return.base_info.address!=''"#}
                                     <span class="post_box1_font">工作地点</span>
                                     {#$return.base_info.address#}
-                                    {#if condition="!$return.base_info.map_lat || !$return.base_info.map_lng"#}
-                                    <span class="post_route" @click="showMap=true">查看上班路线</span>
+                                    {#if condition="$global_config.is_open_map eq 1"#}
+                                      {#if condition="$return.base_info.map_lat || $return.base_info.map_lng"#}
+                                      <span class="post_route" @click="showMap=true">查看上班路线</span>
+                                      {#/if#}
                                     {#/if#}
                                 {#/if#}
                                 </div>
@@ -476,7 +478,15 @@
     </div>
     <el-dialog title="查看地图" :visible.sync="showMap" @opened="mapOpened">
         <div class="jobshow_map">
-            <div id="bdMap" style="width:100%;height:500px;"></div>
+            {#if condition=" $global_config.is_open_map  == 1"#}
+              {#if condition=" $global_config.map_type  == 1"#}
+                <div id="bdMap" style="width:100%;height:500px;"></div>
+              {#/if#}
+
+              {#if condition=" $global_config.map_type  == 2"#}
+                <div id="tianMap" style="width:100%;height:500px;z-index: 1;"></div>
+              {#/if#}
+            {#/if#}
             <div class="code">
                 <div class="code_img">
                     <img :src="mapQrcode" />
@@ -609,6 +619,8 @@
         })
     })
     })
+
+    // 地图相关
     function loadBdMap() {
       if (window.BMap !== undefined) {
         return
@@ -618,6 +630,22 @@
       script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap'
       document.body.appendChild(script)
     }
+
+    function loadTMap(){
+      if (window.T !== undefined) {
+        return
+      }
+      var script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = "https://api.tianditu.gov.cn/api?v=4.0&tk={#$global_config.tian_map_ak#}"
+      document.body.appendChild(script)
+      script.onload = function (){
+		    initTianMap()
+      }
+    }
+
+
+    // tianMap
     function initBdMap() {
       var map = new BMap.Map('bdMap') // 创建Map实例
       var lng = parseFloat('{#$return.base_info.map_lng#}')
@@ -627,12 +655,24 @@
       map.centerAndZoom(point, zoom)
       map.enableScrollWheelZoom() // 启用滚轮放大缩小
       var marker = new BMap.Marker(new BMap.Point(lng, lat))
-    map.addOverlay(marker)
-    var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT })
-    var top_left_navigation = new BMap.NavigationControl()
-    map.addControl(top_left_control)
-    map.addControl(top_left_navigation)
-}
+      map.addOverlay(marker)
+      var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT })
+      var top_left_navigation = new BMap.NavigationControl()
+      map.addControl(top_left_control)
+      map.addControl(top_left_navigation)
+    }
+
+    function initTianMap(){
+      var tianMap = new T.Map('tianMap') // 创建Map实例
+      var lng = parseFloat("{#$return.base_info.map_lng#}")
+      var lat = parseFloat("{#$return.base_info.map_lat#}")
+      var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+      var point = new T.LngLat(lng, lat) // 创建点坐标
+      tianMap.centerAndZoom(point, zoom)
+      var marker = new T.Marker(new T.LngLat(lng, lat));
+      tianMap.addOverLay(marker);
+    }
+
     var id = parseInt('{#$return.base_info.id#}')
     var isWxOpen = !!parseInt('{#$global_config.wechat_open#}')
     function loadTencent() {
@@ -662,6 +702,7 @@ if (captcha_open == 1) {
         loadVaptcha()
       }
     }
+
     var app = new Vue({
       el: '#app',
       data: {
@@ -757,7 +798,9 @@ if (captcha_open == 1) {
           code: [
             { required: true, message: '请输入验证码', trigger: 'blur' }
           ]
-        }
+        },
+        mapType:"{#$global_config.map_type#}",
+        isOpenMap:"{#$global_config.is_open_map#}",
       },
       created: function () {
         this.getUserInfo()
@@ -1254,7 +1297,13 @@ if (captcha_open == 1) {
           this.rightFixed = scrollTop >= 400
         },
         mapOpened: function () {
-          loadBdMap()
+          if(this.isOpenMap == 1){
+            if (this.mapType == 1) {
+              loadBdMap()
+            } else if (this.mapType == 2) {
+              loadTMap()
+            }
+          }
         },
         getSupplementary: function () {
           var that = this

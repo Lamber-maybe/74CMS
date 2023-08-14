@@ -10,7 +10,7 @@
     </div>
     <el-divider content-position="left">套餐基础配置</el-divider>
     <el-form
-      ref="form"
+      ref="form1"
       class="common-form"
       :model="form"
       label-width="200px"
@@ -40,12 +40,12 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="">
-        <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+        <el-button type="primary" @click="onSubmit('form1')">保存</el-button>
       </el-form-item>
     </el-form>
     <el-divider content-position="left">重新开通套餐配置</el-divider>
     <el-form
-      ref="form"
+      ref="form2"
       class="common-form"
       :model="form"
       label-width="200px"
@@ -65,12 +65,12 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="">
-        <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+        <el-button type="primary" @click="onSubmit('form2')">保存</el-button>
       </el-form-item>
     </el-form>
     <el-divider content-position="left">会员到期套餐配置</el-divider>
     <el-form
-      ref="form"
+      ref="form3"
       class="common-form"
       :model="form"
       label-width="200px"
@@ -98,7 +98,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="">
-        <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+        <el-button type="primary" @click="onSubmit('form3')">保存</el-button>
       </el-form-item>
     </el-form>
     <el-dialog
@@ -180,8 +180,18 @@ export default {
         .catch(() => {})
     },
     onSubmit(formName) {
-      const insertData = { ...this.form }
-      insertData.famous_enterprises = insertData.famous_enterprises.length > 0 ? insertData.famous_enterprises.join(',') : ''
+      const insertData = {}
+      if (formName === 'form1'){
+        insertData.reg_service = this.form.reg_service
+        insertData.famous_enterprises = this.form.famous_enterprises.length > 0 ? this.form.famous_enterprises.join(',') : ''
+        insertData.meal_min_remind = this.form.meal_min_remind
+      } else if (formName === 'form2') {
+        insertData.reopen_setmeal_deadline = this.form.reopen_setmeal_deadline
+        insertData.reopen_setmeal_resource = this.form.reopen_setmeal_resource
+      } else {
+        insertData.overtime_setmeal_resource = this.form.overtime_setmeal_resource
+        insertData.overtime_setmeal_jobnum = this.form.overtime_setmeal_jobnum
+      }
       this.$refs[formName].validate(valid => {
         if (valid) {
           setConfig(insertData)

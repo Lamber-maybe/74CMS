@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class Cron extends \app\common\controller\Backend
 {
@@ -15,7 +18,7 @@ class Cron extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             $list[$key]['rule'] = $this->resolutionRule($value);
-            $list[$key]['runUrl'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/cron/outer?id='.$value['id'];
+            $list[$key]['runUrl'] = config('global_config.sitedomain') . config('global_config.sitedir') . 'v1_0/home/cron/outer?id=' . $value['id'];
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -24,6 +27,7 @@ class Cron extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 解析执行规则
      */
@@ -83,6 +87,7 @@ class Cron extends \app\common\controller\Backend
         }
         return $str_day . $str_hour . $str_minute;
     }
+
     public function add()
     {
         $input_data = [
@@ -100,25 +105,43 @@ class Cron extends \app\common\controller\Backend
         );
         $input_data['last_execute_time'] = 0;
         $input_data['is_sys'] = 0;
-        if (
-            false ===
-            model('Cron')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Cron')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Cron')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('Cron')->getError());
+            }
+
+            $rule = $this->resolutionRule($input_data);
+            $log_field = '添加' . $input_data['name'] . '计划任务，执行间隔:' . $rule . '；启用状态:' . ($input_data['status'] == 1 ? '启动' : '停用');
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加计划任务。计划任务ID【' .
-                model('Cron')->id .
-                '】;计划任务名称【' .
-                $input_data['name'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -149,26 +172,72 @@ class Cron extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Cron')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Cron')->getError());
+
+            Db::startTrans();
+            try {
+                $info = model('Cron')->find($id);
+                if (!$info) {
+                    $this->ajaxReturn(500, '要修改的计划任务不存在');
+                }
+
+                if (
+                    false ===
+                    model('Cron')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Cron')->getError());
+                }
+
+                $log_field = '修改' . $input_data['name'] . '计划任务，';
+
+                if ($input_data['name'] != $info['name']) {
+                    $log_field .= '计划任务名称:' . $info['name'] . '->' . $input_data['name'] . '；';
+                } else {
+                    $log_field .= '计划任务名称:' . $info['name'];
+                }
+
+                if ($input_data['action'] != $info['action']) {
+                    $log_field .= '任务脚本类名称:' . $info['action'] . '->' . $input_data['action'] . '；';
+                }
+
+                if ($input_data['weekday'] != $info['weekday'] ||
+                    $input_data['day'] != $info['day'] ||
+                    $input_data['hour'] != $info['hour'] ||
+                    $input_data['minute'] != $info['minute']) {
+                    $rule_old = $this->resolutionRule($info);
+                    $rule_new = $this->resolutionRule($input_data);
+                    $log_field .= '执行间隔:' . $rule_old . '->' . $rule_new . '；';
+                }
+
+                if ($input_data['status'] != $info['status']) {
+                    $log_field .= '启用状态:' . ($info['status'] == 1 ? '启动' : '停用') . '->' . ($input_data['status'] == 1 ? '启动' : '停用') . '；';
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    rtrim($log_field, '；'),
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑计划任务。计划任务ID【' .
-                    $id .
-                    '】;计划任务名称【' .
-                    $input_data['name'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -176,23 +245,41 @@ class Cron extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择数据');
         }
 
-        $info = model('Cron')
-            ->where('id', $id)
-            ->find();
-        if (null === $info) {
-            $this->ajaxReturn(500, '请选择数据');
+        Db::startTrans();
+        try {
+            $info = model('Cron')
+                ->where('id', $id)
+                ->find();
+            if (null === $info) {
+                $this->ajaxReturn(500, '请选择数据');
+            }
+
+            $log_field = '删除' . $info['name'] . '计划任务';
+
+            $info->delete();
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
         }
-        $info->delete();
-        model('AdminLog')->record(
-            '删除计划任务。计划任务ID【' .
-                $id .
-                '】;计划任务名称【' .
-                $info['name'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function setStatus()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -200,32 +287,74 @@ class Cron extends \app\common\controller\Backend
         if ($id == 0) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        model('Cron')
-            ->where('id', 'eq', $id)
-            ->setField('status', $status);
-        model('AdminLog')->record(
-            '变更计划任务状态为' .
-                ($status == 1 ? '可用' : '不可用') .
-                '。计划任务ID【' .
-                $id .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $info = model('Cron')
+                ->where('id', $id)
+                ->find();
+            if (null === $info) {
+                $this->ajaxReturn(500, '要设置的计划任务不存在');
+            }
+
+            model('Cron')
+                ->where('id', 'eq', $id)
+                ->setField('status', $status);
+
+            if ($status == 1) {
+                $log_field = '启用' . $info['name'] . '计划任务';
+            } else {
+                $log_field = '停用' . $info['name'] . '计划任务';
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '设置失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '设置成功');
     }
+
     public function run()
     {
         $id = input('post.id/d', 0, 'intval');
+
+        $info = model('Cron')
+            ->where('id', $id)
+            ->find();
+        if (null === $info) {
+            $this->ajaxReturn(500, '请选择数据');
+        }
+
         $instance = new \app\common\lib\Cron();
         if (false === ($return_data = $instance->runOne($id))) {
             $this->ajaxReturn(500, $instance->getError());
         }
-        model('AdminLog')->record(
-            '执行计划任务。计划任务ID【' . $id . '】',
-            $this->admininfo
+
+        model('AdminLog')->writeLog(
+            '手动执行' . $info['name'] . '计划任务，下次执行时间' . date('Y-m-d H:i', $return_data['next_execute_time']),
+            $this->admininfo,
+            0,
+            1
         );
+
         $this->ajaxReturn(200, '执行成功', $return_data);
     }
+
     public function loglist()
     {
         $where = [];

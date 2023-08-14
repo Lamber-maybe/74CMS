@@ -239,7 +239,8 @@ import Cancellation from './components/Cancellation.vue'
 				}
 				if(this.bind_weixin==0){
 					this.showBindWeixin = true
-				}else{
+          this.timer = setInterval(this.funBindResult, 3000)
+        }else{
 					this.$confirm('解绑后无法使用微信快速登录网站，无法接收面试通知，是否确定解绑？','系统提示',{type:'warning'})
 					.then(() => {
 						http
@@ -290,6 +291,20 @@ import Cancellation from './components/Cancellation.vue'
       },
       closeResetCancellation () {
         this.cancellation = false
+      },
+      // 绑定微信结果
+      funBindResult() {
+        http
+          .post(api.member_account, {})
+          .then(res => {
+            if (res.data.bind_weixin === 1){
+              clearInterval(this.timer)
+              this.showBindWeixin = false
+              this.$message({type:'success',message:'微信绑定成功'})
+              this.fetchData()
+            }
+          })
+          .catch(() => {})
       }
 		}
 	}

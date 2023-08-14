@@ -8,6 +8,7 @@
 	position: absolute;
 	right: 20px;
 	top: 15px;
+	z-index: 2;
 }
 
 .map_list_con .map_list_search {
@@ -229,6 +230,87 @@
 	font-size: 12px;
 	cursor: pointer;
 }
+
+/* 天地图markers 点击后弹窗样式 */
+.tian_map_hover{
+	width: 300px;
+}
+.tian_map_hover .tian_hover_title{
+	color: #333333;
+	font-size:16px ;
+	font-weight: bold;
+	cursor: pointer;
+}
+.tian_map_hover .tian_map_job_salary{
+	color:#ff6600 ;
+	font-size: 16px;
+	margin-top: 8px;
+	margin-bottom:6px ;
+}
+
+.tian_map_hover .tian_info{
+	margin-bottom:7px ;
+}
+
+.tian_map_hover .tian_info span{
+	font-size:12px ;
+	color:#999999 ;
+	position: relative;
+	margin-right:12px ;
+}
+.tian_map_hover .tian_info span::after{
+	content: '';
+	width: 1px;
+	height:12px ;
+	background:#efefef ;
+	position: absolute;
+	right: -8px;
+	top: 1px;
+}
+
+.tian_map_hover .tian_info span:last-child::after{
+	content: '';
+	width: 0;
+	height:0 ;
+}
+
+.tian_map_hover .tian_hover_company_box{
+	margin-bottom: 9px;
+}
+
+.tian_map_hover .tian_hover_company_box .img1{
+	vertical-align: -3px;
+}
+
+.tian_map_hover .tian_hover_company_box .img2{
+	vertical-align: -1px;
+}
+
+.tian_map_hover .tian_company_name{
+	color: #666666;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.tian_map_hover .tian_hover_details{
+	border-top: 1px dashed #f4f4f4;
+	padding-top: 10px;
+}
+
+.tian_map_hover .tian_hover_details a{
+	color:#1787fb;
+	font-size: 12px;
+	cursor: pointer;
+}
+.tian_map_hover .tian_hover_details .tian_hover_job_details{
+	float: left;
+}
+.tian_map_hover .tian_hover_details .tian_itinerary_details{
+	float: right;
+}
+/* 天地图markers 点击后弹窗样式 */
+
+
 
 .hover_details .hover_job_details{
 	float: left;

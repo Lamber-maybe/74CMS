@@ -1,6 +1,8 @@
 <?php
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class PromotionJob extends \app\common\controller\Backend
 {
     public function index()
@@ -158,46 +160,78 @@ class PromotionJob extends \app\common\controller\Backend
         $data['pid'] = $input_data['pid'];
         $data['addtime'] = time();
         $data['deadline'] = strtotime('+' . $input_data['days'] . ' day');
-        if (
-            false ===
-            model('ServiceQueue')
-                ->allowField(true)
-                ->save($data)
-        ) {
-            $this->ajaxReturn(500, model('ServiceQueue')->getError());
-        }
-        if ($data['type'] == 'jobstick') {
-            model('Job')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-            model('JobSearchRtime')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-            model('JobSearchKey')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('stick', 1);
-        } elseif ($data['type'] == 'emergency') {
-            model('Job')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('emergency', 1);
-            model('JobSearchRtime')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('emergency', 1);
-            model('JobSearchKey')
-                ->where('id', 'eq', $data['pid'])
-                ->setField('emergency', 1);
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('ServiceQueue')
+                    ->allowField(true)
+                    ->save($data)
+            ) {
+                throw new \Exception(model('ServiceQueue')->getError());
+            }
+            if ($data['type'] == 'jobstick') {
+                model('Job')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+                model('JobSearchRtime')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+                model('JobSearchKey')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('stick', 1);
+            } elseif ($data['type'] == 'emergency') {
+                model('Job')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('emergency', 1);
+                model('JobSearchRtime')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('emergency', 1);
+                model('JobSearchKey')
+                    ->where('id', 'eq', $data['pid'])
+                    ->setField('emergency', 1);
+            }
+
+            $job_info = model('Job')
+                ->alias('j')
+                ->join('company c', 'j.company_id=c.id', 'LEFT')
+                ->field('j.id as jobid,j.jobname,c.id as comid,c.companyname')
+                ->where('j.id', $input_data['pid'])
+                ->find();
+
+            $log_field = '添加推广，企业:{'
+                . $job_info['companyname']
+                . '}(企业ID:'
+                . $job_info['comid']
+                . ')；职位:'
+                . $job_info['jobname']
+                . '(ID:'
+                . $job_info['jobid']
+                . ')，推广天数:'
+                . $input_data['days']
+                . '；推广方案:'
+                . model('ServiceQueue')->map_type[$data['type']];
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
 
-        model('AdminLog')->record(
-            '添加企业推广。职位ID【' .
-            $data['pid'] .
-            '】；推广类型【' .
-            ($data['type'] == 'jobstick' ? '置顶' : '紧急') .
-            '】；推广天数【' .
-            $input_data['days'] .
-            '】',
-            $this->admininfo
-        );
         $this->ajaxReturn(200, '保存成功');
     }
 
@@ -209,34 +243,78 @@ class PromotionJob extends \app\common\controller\Backend
         ];
         $rule = [
             'id' => 'require',
-            'days' => 'require'
+            'days' => 'require|>:0'
         ];
         $msg = [
             'id.require' => '请选择推广记录',
-            'days.require' => '请输入延长推广天数'
+            'days.require' => '请输入延长推广天数',
+            'days.gt' => '请输入大于0的延长推广天数'
         ];
         $validate = new \think\Validate($rule, $msg);
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        $info = model('ServiceQueue')
-            ->where('id', $input_data['id'])
-            ->find();
-        $info->deadline = strtotime(
-            '+' . $input_data['days'] . ' day',
-            $info->deadline
-        );
-        if (false === $info->save()) {
-            $this->ajaxReturn(500, model('ServiceQueue')->getError());
+
+        Db::startTrans();
+        try {
+            $info = model('ServiceQueue')
+                ->where('id', $input_data['id'])
+                ->find();
+
+            $job_info = model('Job')
+                ->alias('j')
+                ->join('company c', 'j.company_id=c.id', 'LEFT')
+                ->field('j.id as jobid,j.jobname,c.id as comid,c.companyname')
+                ->where('j.id', $info['pid'])
+                ->find();
+
+            $old_deadline = $info->deadline;
+            $info->deadline = strtotime(
+                '+' . $input_data['days'] . ' day',
+                $info->deadline
+            );
+            if (false === $info->save()) {
+                throw new \Exception(model('ServiceQueue')->getError());
+            }
+
+            $log_field = '修改推广，企业:{'
+                . $job_info['companyname']
+                . '}(企业ID:'
+                . $job_info['comid']
+                . ')；职位:'
+                . $job_info['jobname']
+                . '(ID:'
+                . $job_info['jobid']
+                . ')，推广类型:'
+                . model('ServiceQueue')->map_type[$info['type']]
+                . '；原推广期限:'
+                . date('Y-m-d H:i:s', $info['addtime'])
+                . ' ~ '
+                . date('Y-m-d H:i:s', $old_deadline)
+                . '；延长推广天数: '
+                . $input_data['days'] .
+                '；延长至: '
+                . date('Y-m-d H:i:s', $info->deadline);
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '编辑企业推广。推广记录ID【' .
-            $input_data['id'] .
-            '】；延长推广天数【' .
-            $input_data['days'] .
-            '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
 
@@ -246,35 +324,80 @@ class PromotionJob extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $info = model('ServiceQueue')
-            ->where('id', 'eq', $id)
-            ->find();
-        if ($info['type'] == 'jobstick') {
-            model('Job')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-            model('JobSearchRtime')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-            model('JobSearchKey')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('stick', 0);
-        } elseif ($info['type'] == 'emergency') {
-            model('Job')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('emergency', 0);
-            model('JobSearchRtime')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('emergency', 0);
-            model('JobSearchKey')
-                ->where('id', 'eq', $info['pid'])
-                ->setField('emergency', 0);
+
+        Db::startTrans();
+        try {
+            $info = model('ServiceQueue')
+                ->where('id', 'eq', $id)
+                ->find();
+
+            $job_info = model('Job')
+                ->alias('j')
+                ->join('company c', 'j.company_id=c.id', 'LEFT')
+                ->field('j.id as jobid,j.jobname,c.id as comid,c.companyname')
+                ->where('j.id', $info['pid'])
+                ->find();
+
+            $days = ($info['deadline'] - $info['addtime']) / 3600 / 24;
+            $days = ceil($days);
+
+            $log_field = '取消推广状态，企业:{'
+                . $job_info['companyname']
+                . '}(企业ID:'
+                . $job_info['comid']
+                . ')；职位:'
+                . $job_info['jobname']
+                . '(ID:'
+                . $job_info['jobid']
+                . ')，推广类型:'
+                . model('ServiceQueue')->map_type[$info['type']]
+                . '；推广天数:'
+                . $days
+                . '天；开始时间:' . date('Y-m-d', $info['addtime']);
+
+            if ($info['type'] == 'jobstick') {
+                model('Job')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+                model('JobSearchRtime')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+                model('JobSearchKey')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('stick', 0);
+            } elseif ($info['type'] == 'emergency') {
+                model('Job')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('emergency', 0);
+                model('JobSearchRtime')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('emergency', 0);
+                model('JobSearchKey')
+                    ->where('id', 'eq', $info['pid'])
+                    ->setField('emergency', 0);
+            }
+
+            $info->delete();
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '取消失败', ['err_msg' => $e->getMessage()]);
         }
-        $info->delete();
-        model('AdminLog')->record(
-            '取消企业推广。推广ID【' . $id . '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '取消成功');
     }
 }

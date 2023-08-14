@@ -7,6 +7,7 @@
       background-color="#303439"
       text-color="#fff"
       active-text-color="#fff"
+      :unique-opened="true"
     >
       <el-menu-item class="i1" :style="{'padding-left':'84px'}" index="/company">
         <span slot="title">会员首页</span>
@@ -91,6 +92,11 @@
     background-color: rgb(48, 52, 57);
     padding-top: 20px;
     height: 100%;
+
+    /* 隐藏滚动条 */
+    overflow-y: auto;
+    scrollbar-width: none; /* firefox */
+    -ms-overflow-style: none; /* IE 10+ */
 
     .el-menu {
       border-right: 0;
@@ -304,5 +310,8 @@
     }
   }
   .i10.point span:after { content: ''; width: 10px; height: 10px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: 72px; top: 12px; z-index: 50 }
-
+  .com_menu::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+    width: 0;
+  }
 </style>

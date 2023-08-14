@@ -507,24 +507,28 @@
                             <!-- <img src="__ROOT__/assets/images/address_icon.png" /> -->
                             {#$return.base_info.address#}
                         </div>
-                        <div class="address_bg">
-                            <img class="img_bg" src="__ROOT__/assets/images/company/dtbj.png" alt="">
-                            <div class="adress_detail" @click="showMap=true">
-                                <p class="substring" style="font-size: 16px">{#$return.com_info.companyname#}</p>
-                                <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
-                            </div>
-                            <span class="rt_btn" @click="showMap=true">
-                                <img src="__ROOT__/assets/images/company/jr.png" alt="">
-                            </span>
-                        </div>
-                        <div class="address_title" style="margin-top:15px;">
-                            <img src="__ROOT__/assets/images/company/address.png" />
-                            <span id="distance"></span>
-                            <span class="address_link" @click="showMap=true">查看路线</span>
-                        </div>
-                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
+                        {#if condition="$global_config.is_open_map eq 1"#}
+                          <div class="address_bg" >
+                              <img class="img_bg" src="__ROOT__/assets/images/company/dtbj.png" alt="">
+                              <div class="adress_detail" @click="showMap=true">
+                                  <p class="substring" style="font-size: 16px">{#$return.com_info.companyname#}</p>
+                                  <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
+                              </div>
+                              <span class="rt_btn" @click="showMap=true">
+                                  <img src="__ROOT__/assets/images/company/jr.png" alt="">
+                              </span>
+                          </div>
+                          <div class="address_title" id="address_title" style="margin-top:15px;">
+                              <img src="__ROOT__/assets/images/company/address.png" />
+                              <span id="distance"></span>
+                              <span class="address_link" @click="showMap=true">查看路线</span>
+                          </div>
+                        {#/if#}
+                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0 && $global_config.is_open_map == 1"#}
                         <div class="map" style="display:none;">
-                            <div id="bdMap2" style="width:100%;height:300px;"></div>
+                            {#if condition="$global_config.map_type == 1"#}
+                              <div id="bdMap2" style="width:100%;height:300px;"></div>
+                            {#/if#}
                         </div>
                         {#/if#}
                     </div>
@@ -749,7 +753,12 @@
     </div>
     <el-dialog title="查看地图" :visible.sync="showMap" @opened="mapOpened">
         <div class="jobshow_map">
-            <div id="bdMap" style="width:100%;height:500px;"></div>
+            {#if condition="$global_config.map_type == 1"#}
+              <div id="bdMap" style="width:100%;height:500px;"></div>
+            {#/if#}
+            {#if condition="$global_config.map_type == 2"#}
+              <div id="tianMap" style="width:100%;height:500px;z-index: 1;"></div>
+            {#/if#}
             <div class="code">
                 <div class="code_img">
                     <img :src="mapQrcode" />
@@ -886,7 +895,7 @@
     })
     })
     var jobname = ('{#$return.base_info.jobname#}')
-function initBdMap() {
+    function initBdMap() {
       var map = new BMap.Map('bdMap') // 创建Map实例
       var lng = parseFloat('{#$return.base_info.map_lng#}')
       var lat = parseFloat('{#$return.base_info.map_lat#}')
@@ -895,15 +904,16 @@ function initBdMap() {
       map.centerAndZoom(point, zoom)
       map.enableScrollWheelZoom() // 启用滚轮放大缩小
       var marker = new BMap.Marker(new BMap.Point(lng, lat))
-    map.addOverlay(marker)
-    var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT })
-    var top_left_navigation = new BMap.NavigationControl()
-    map.addControl(top_left_control)
-    map.addControl(top_left_navigation)
-}
+      map.addOverlay(marker)
+      var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT })
+      var top_left_navigation = new BMap.NavigationControl()
+      map.addControl(top_left_control)
+      map.addControl(top_left_navigation)
+    }
 
     let current_lat = 0; let current_lng = 0
-function loadBdMap2() {
+    // 初始化地图script标签
+    function loadBdMap2() {
       if (window.BMap !== undefined) {
         return
       }
@@ -912,22 +922,60 @@ function loadBdMap2() {
       script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap2'
       document.body.appendChild(script)
     }
+
+    function loadTMap(){
+      if (window.T !== undefined) {
+        return
+      }
+      var script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = "https://api.tianditu.gov.cn/api?v=4.0&tk={#$global_config.tian_map_ak#}"
+      document.body.appendChild(script)
+      script.onload = function (){
+		    initTMap2()
+      }
+    }
+    // 天地图初始化
+    function initTianMap(){
+      var tianMap = new T.Map('tianMap') // 创建Map实例
+      var lng = parseFloat("{#$return.base_info.map_lng#}")
+      var lat = parseFloat("{#$return.base_info.map_lat#}")
+      var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+      var point = new T.LngLat(lng, lat) // 创建点坐标
+      console.log(point)
+      tianMap.centerAndZoom(point, zoom)
+      var marker = new T.Marker(new T.LngLat(lng, lat));
+      tianMap.addOverLay(marker);
+    }
+
+
     function initBdMap2() {
       var map = new BMap.Map('bdMap2') // 创建Map实例
       var geolocation = new BMap.Geolocation()
 	    geolocation.getCurrentPosition(function(r){
-    if (this.getStatus() == BMAP_STATUS_SUCCESS){
-          current_lat = r.point.lat
-          current_lng = r.point.lng
-          const distance = countDistance(current_lat, current_lng, parseFloat('{#$return.base_info.map_lat#}'), parseFloat('{#$return.base_info.map_lng#}'))
-          document.getElementById('distance').innerHTML = '距离您 ' + distance
-        } else {
-          console.log('failed' + this.getStatus())
-        }
+        if (this.getStatus() == BMAP_STATUS_SUCCESS){
+            current_lat = r.point.lat
+            current_lng = r.point.lng
+            const distance = countDistance(current_lat, current_lng, parseFloat('{#$return.base_info.map_lat#}'), parseFloat('{#$return.base_info.map_lng#}'))
+            document.getElementById('distance').innerHTML = '距离您 ' + distance
+          } else {
+            console.log('failed' + this.getStatus())
+          }
       })
     }
+
+    function initTMap2(){
+      document.getElementById('address_title').style.display = 'none'
+    }
+
     if ('{#$return.base_info.map_lat#}' > 0 && '{#$return.base_info.map_lng#}' > 0) {
-      loadBdMap2()
+      if("{#$global_config.is_open_map#}" == 1){
+        if("{#$global_config.map_type#}" == 1){
+          loadBdMap2()
+        } else if ("{#$global_config.map_type#}" == 2) {
+          loadTMap()
+        }
+      }
     }
     
     /**
@@ -1089,7 +1137,9 @@ if (captcha_open == 1) {
             { required: true, message: '请输入验证码', trigger: 'blur' }
           ]
         },
-        tplindexList: []// 海报索引列表
+        tplindexList: [],// 海报索引列表
+        mapType:"{#$global_config.map_type#}",
+        isOpenMap:"{#$global_config.is_open_map#}",
       },
       created: function () {
         this.getUserInfo()
@@ -1588,7 +1638,13 @@ if (captcha_open == 1) {
           this.rightFixed = scrollTop >= 400
         },
         mapOpened: function () {
-          initBdMap()
+          if (this.isOpenMap == 1) {
+            if (this.mapType == 1) {
+              initBdMap()
+            } else if (this.mapType == 2) {
+              initTianMap()
+            }
+          }
         },
         getSupplementary: function () {
           var that = this

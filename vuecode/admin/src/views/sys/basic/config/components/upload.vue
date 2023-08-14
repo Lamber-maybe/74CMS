@@ -76,7 +76,22 @@
         </el-radio-group>
         <span class="smalltip">
           <i class="el-icon-info" />
-          资源访问协议http(s)，请到七牛云管理平台设置
+          <a href="http://doc.74cms.com/#/se/qiniu?id=_4%e5%9f%9f%e5%90%8d%e5%bc%80%e5%90%afhttps" target="_blank" style="color:#409EFF">七牛云https配置</a>，(使用短视频必须使用https)
+        </span>
+      </el-form-item>
+      <el-form-item
+        v-if="form.fileupload_type == 'qiniu'"
+        label="七牛云图片压缩"
+        prop="quality"
+        class="is-required"
+      >
+        <el-radio-group v-model="form.account_qiniu.quality">
+          <el-radio label="0">关闭</el-radio>
+          <el-radio label="1">开启</el-radio>
+        </el-radio-group>
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          可节省调用流量，有一定免费额度，<a href="https://www.qiniu.com/prices/dora?source=dora&ref=developer.qiniu.com&s_path=%2Fdora%2F8259%2Fthe-quality-of-transformation" target="_blank" style="color:#409EFF">收费说明</a>
         </span>
       </el-form-item>
 
@@ -119,7 +134,8 @@ export default {
           access_key: '',
           secret_key: '',
           domain: '',
-          protocol: ''
+          protocol: '',
+          quality: ''
         }
       },
       rules: {
@@ -166,6 +182,7 @@ export default {
             fileupload_type == '' ? 'default' : fileupload_type
           this.form.fileupload_size = parseInt(fileupload_size)
           this.form.fileupload_ext = fileupload_ext
+          account_qiniu.quality = account_qiniu.quality === '1' ? '1' : '0'
           this.form.account_qiniu = account_qiniu
           this.infoLoading = false
         })

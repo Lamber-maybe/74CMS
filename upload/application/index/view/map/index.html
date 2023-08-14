@@ -1,7 +1,12 @@
 {#layout name="public/layout" /#}
 {#load href="__ROOT__/assets/css/map.css" /#}
 <div class="content_wrapper">
+    {#if condition="$global_config.map_type == 1 "#}
     <div id="bdMap" style="width:100%;height:700px;"></div>
+    {#/if#}
+    {#if condition="$global_config.map_type == 2 "#}
+    <div id="TianMap" style="width:100%;height:700px;z-index: 1;"></div>
+    {#/if#} 
     <div id="app">
         <div class="map_list_con" v-cloak>
             <div class="map_list_search">
@@ -44,11 +49,14 @@
         </div>
     </div>
 </div>
+{#if condition="$global_config.map_type == 1 "#}
 <script src="//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}"></script>
-<script type="text/javascript"
-    src="//api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
-<script type="text/javascript"
-    src="//api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+<script type="text/javascript" src="//api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script type="text/javascript" src="//api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+{#/if#}
+{#if condition="$global_config.map_type == 2 "#}
+<script type="text/javascript" src="https://api.tianditu.gov.cn/api?v=4.0&tk={#$global_config.tian_map_ak#}"></script>
+{#/if#}
 <script>
     var jobUrl = "{#:url('index/job/show',['id'=>'_id_'])#}"
     var companyUrl = "{#:url('index/company/show',['id'=>'_id_'])#}"
@@ -67,11 +75,51 @@
             pagesize: 5,
             joblist: [],
             marklist: [],
+            mapType:"{#$global_config.map_type#}",
+            TMap:null,
+            tianMap:null
         },
         created: function () {
-            this.initBdMap()
+            if(this.mapType == 1){
+                this.initBdMap()
+            } else if(this.mapType == 2) {
+                this.initTianMap()
+            }
         },
         methods: {
+            initTianMap:function(){
+                var that = this
+                var lng = parseFloat("{#$global_config.map_lng#}")
+                var lat = parseFloat("{#$global_config.map_lat#}")
+                var zoom = parseInt("{#$global_config.map_zoom#}")
+                that.TMap =  window.T
+                that.tianMap = new T.Map('TianMap',{
+                    attributionControl: false,
+                    inertia: false
+                }) // 创建Map实例
+                var lnglat = new T.LngLat(lng, lat)
+                that.tianMap.centerAndZoom(lnglat, zoom);
+                var scale = new T.Control.Scale();
+                //添加比例尺控件
+                that.tianMap.addControl(scale);
+                var cur_bssw = that.tianMap.getBounds().getSouthWest()
+                var cur_bsne = that.tianMap.getBounds().getNorthEast()
+                that.params.south_west_lat = cur_bssw.lat
+                that.params.south_west_lng = cur_bssw.lng
+                that.params.north_east_lat = cur_bsne.lat
+                that.params.north_east_lng = cur_bsne.lng
+                that.fetchData(true)
+                that.tianMap.addEventListener('zoomend',that.debounce(function(){
+                    var cur_bssw = that.tianMap.getBounds().getSouthWest()
+                    var cur_bsne = that.tianMap.getBounds().getNorthEast()
+                    that.params.south_west_lat = cur_bssw.lat
+                    that.params.south_west_lng = cur_bssw.lng
+                    that.params.north_east_lat = cur_bsne.lat
+                    that.params.north_east_lng = cur_bsne.lng
+                    that.fetchData(true)
+                },500))
+
+            },
             initBdMap: function () {
                 var that = this
                 this.map = new BMap.Map('bdMap') // 创建Map实例
@@ -106,7 +154,12 @@
                     if (init === true) {
                         that.marklist = JSON.parse(JSON.stringify(res.data.marks))
                         that.joblist = JSON.parse(JSON.stringify(res.data.items))
-                        that.addMarkers()
+                        if(that.mapType == 1){
+                            that.addMarkers()
+                        } else if(that.mapType == 2){
+                            that.tianAddMarkers()
+                        }
+                        
                     } else {
                         that.joblist = that.joblist.concat(res.data.items)
                     }
@@ -157,11 +210,71 @@
                 });
                 var markerClusterer = new BMapLib.MarkerClusterer(that.map, { markers: markers });
             },
+            tianAddMarkers(){
+                var that = this
+                // that.tianMap.clearOverlays()
+                var markers = []
+                that.marklist.forEach(function (element) {
+                    var point = new T.LngLat(element.map_lng, element.map_lat);
+                    marker = new T.Marker(point);// 创建标注
+                    // that.tianMap.addOverLay(marker);
+
+                    markers.push(marker);
+                    marker.addEventListener("click", function (e) {
+                        var point = e.lnglat;
+                        marker = new T.Marker(point);// 创建标注
+
+                        // 创建信息窗口
+                        var sContent = '<div class="tian_map_hover">'
+                        sContent += '<div>'
+                        sContent += '<a class="tian_hover_title">' + element.jobname + '</a>'
+                        sContent += '<div class="tian_map_job_salary">' + element.wage_text + '</div>'
+                        sContent += '<div class="tian_info">'
+                        sContent += '<span>' + element.district_text + '</span>'
+                        sContent += '<span>' + element.education_text + '</span>'
+                        sContent += '<span>' + element.experience_text + '</span>'
+                        sContent += '</div>'
+                        sContent += '<div class="tian_hover_company_box">'
+                        sContent += '<a class="tian_company_name" target="_blank" href="' + companyUrl.replace('_id_', element.id) + '">' + element.companyname + '</a>'
+                        if (element.company_audit == 1) {
+                            sContent += '<img class="setmeal_icon1 img1" src="__ROOT__/assets/images/details_icon_1.png" >'
+                        }
+                        sContent += '</div>'
+                        sContent += '</div>'
+                        sContent += '<div class="tian_hover_details clearfix">'
+                        sContent += '<a class="tian_hover_job_details" target="_blank" href="' + jobUrl.replace('_id_', element.id) + '">查看职位详情>></a>'
+                        sContent += '</div>'
+                        sContent += '</div>'
+                        var markerInfoWin = new T.InfoWindow(sContent,{offset:new T.Point(0,-30)}); // 创建信息窗口对象
+                        that.tianMap.openInfoWindow(markerInfoWin,point); //开启信息窗口
+
+                    });// 将标注添加到地图中
+                })
+
+                var clustererObject = new T.MarkerClusterer(that.tianMap, { markers: markers })
+            },
             handlerJobshow: function (id) {
                 window.open(jobUrl.replace('_id_', id))
             },
             handlerCompanyshow: function (id) {
                 window.open(companyUrl.replace('_id_', id))
+            },
+            debounce: function (fn, delay, immediate) {
+                //定时器变量
+                let timeout = null
+                return function(...args) {
+                    // 清除已存在定时任务
+                    if(timeout) {
+                        clearTimeout(timeout)
+                        timeout = null
+                    } else {
+                        if(immediate) fn.apply(this, args)
+                    }
+                    // 重新设置定时任务
+                    timeout = setTimeout(() => {
+                        fn.apply(this, ...args)
+                    }, delay)
+                }
             }
         }
     })

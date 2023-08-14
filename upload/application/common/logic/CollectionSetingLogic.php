@@ -22,11 +22,21 @@ class CollectionSetingLogic
      * Date Time：2022年4月11日13:46:18
      */
     public function saveSeting($params, $ruleSource, $adminInfo){
+        $model = new CollectionSeting();
+        $log_field = '';
         switch ($ruleSource) {
             // 采集设置
             case 1:
                 $updateData = $params;
-                $logMsg = '采集设置';
+                $select_model = clone $model;
+                $seting_info = $select_model->getInfo(['id' => 1]);
+                $log_field = '数据采集，修改采集设置，';
+                if ($seting_info['status'] != $params['status']) {
+                    $log_field .= '功能状态:' . $select_model->map_status[$seting_info['status']] . '->' . $select_model->map_status[$params['status']] . '；';
+                }
+                if ($seting_info['matching_accuracy'] != $params['matching_accuracy']) {
+                    $log_field .= '匹配精准度:' . $seting_info['matching_accuracy'] . '->' . $params['matching_accuracy'];
+                }
                 break;
             // 职位设置
             case 2:
@@ -43,14 +53,14 @@ class CollectionSetingLogic
                 $updateData = [
                     'job_seting' => json_encode($params),
                 ];
-                $logMsg = '职位设置';
+                $log_field = '数据采集，修改职位设置';
                 break;
             // 企业设置
             case 3:
                 $updateData = [
                     'company_seting' => json_encode($params),
                 ];
-                $logMsg = '企业设置';
+                $log_field = '数据采集，修改企业设置';
                 break;
             // 账号设置
             case 4:
@@ -64,7 +74,7 @@ class CollectionSetingLogic
                 $updateData = [
                     'account_seting' => json_encode($params),
                 ];
-                $logMsg = '账号设置';
+                $log_field = '数据采集，修改账号设置';
                 break;
             case 5://添加资讯才行参数验证
                 if (!isset($params['cid']) || intval($params['cid']) <=0)
@@ -74,7 +84,7 @@ class CollectionSetingLogic
                 $updateData = [
                     'article_seting' => json_encode($params),
                 ];
-                $logMsg = '资讯设置';
+                $log_field = '数据采集，修改资讯设置';
                 break;
             default:
                 return callBack(false, '规则来源有误');
@@ -83,14 +93,18 @@ class CollectionSetingLogic
         $updateWhere = [
             'id' => 1
         ];
-        $model = new CollectionSeting();
         $updateResult = $model->edit($updateWhere, $updateData);
         if ($updateResult === false) {
             saveLog('保存设置失败-请求SQL为：'.$model->getLastSql());
             return callBack(false, '保存设置失败');
         }
 
-        model('AdminLog')->record('保存数据采集-'.$logMsg.'【 ' . json_encode($params) . ' 】', $adminInfo);
+        model('AdminLog')->writeLog(
+            $log_field,
+            $adminInfo,
+            0,
+            3
+        );
 
         return callBack(true, 'success');
     }

@@ -153,25 +153,28 @@
                             <!-- <img src="__ROOT__/assets/images/address_icon.png" /> -->
                             {#$return.base_info.address#}
                         </div>
-                        <div class="address_bg">
-                            <img src="__ROOT__/assets/images/company/dtbj.png" alt="">
-                            <div class="adress_detail" @click="showMap=true">
-                                <p class="substring" style="font-size: 16px">{#$return.base_info.companyname#}</p>
-                                <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
+                        {#if condition="$global_config.is_open_map eq 1"#}
+                            <div class="address_bg">
+                                <img src="__ROOT__/assets/images/company/dtbj.png" alt="">
+                                <div class="adress_detail" @click="showMap=true">
+                                    <p class="substring" style="font-size: 16px">{#$return.base_info.companyname#}</p>
+                                    <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
+                                </div>
+                                <span class="rt_btn" @click="showMap=true">
+                                    <img src="__ROOT__/assets/images/company/jr.png" alt="">
+                                </span>
                             </div>
-                            <span class="rt_btn" @click="showMap=true">
-                                <img src="__ROOT__/assets/images/company/jr.png" alt="">
-                            </span>
-                        </div>
-                        <div id="address_title" class="address_title" style="margin-top:15px;margin-bottom: 0">
-                            <img src="__ROOT__/assets/images/company/address.png" />
-                            <span id="distance"></span>
-                            <span class="address_link" @click="showMap=true">查看路线</span>
-                        </div>
-                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
-                        <div class="map" style="display:none;">
-                            <div id="bdMap2" style="width:100%;height:300px;"></div>
-                        </div>
+                            <div id="address_title" class="address_title" style="margin-top:15px;margin-bottom: 0">
+                                <img src="__ROOT__/assets/images/company/address.png" />
+                                <span id="distance"></span>
+                                <span class="address_link" @click="showMap=true">查看路线</span>
+                            </div>
+
+                            {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
+                            <div class="map" style="display:none;">
+                                <div id="bdMap2" style="width:100%;height:300px;"></div>
+                            </div>
+                            {#/if#}
                         {#/if#}
                     </div>
                     {#/if#}
@@ -378,7 +381,15 @@
             </el-dialog>
             <el-dialog title="查看地图" :visible.sync="showMap" @opened="mapOpened">
                 <div class="jobshow_map">
-                    <div id="bdMap" style="width:100%;height:500px;"></div>
+                    {#if condition="$global_config.is_open_map == 1 "#}
+                        {#if condition="$global_config.map_type == 1 "#}
+                            <div id="bdMap" style="width:100%;height:500px;"></div>
+                        {#/if#}
+
+                        {#if condition="$global_config.map_type == 2 "#}
+                            <div id="tianMap" style="width:100%;height:500px;z-index: 1;"></div>
+                        {#/if#}
+                    {#/if#}
                     <div class="code">
                         <div class="code_img">
                             <img :src="mapQrcode" />
@@ -418,7 +429,7 @@
         })
     })
 
-
+    // 弹窗打开展示地图
     function initBdMap() {
         var map = new BMap.Map('bdMap') // 创建Map实例
         var lng = parseFloat("{#$return.base_info.map_lng#}")
@@ -431,7 +442,21 @@
         map.addOverlay(marker);
     }
 
+    // 弹窗打开展示地图
+    function initTianMap(){
+        var map = new T.Map('tianMap') // 创建Map实例
+        var lng = parseFloat("{#$return.base_info.map_lng#}")
+        var lat = parseFloat("{#$return.base_info.map_lat#}")
+        var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+        var point = new T.LngLat(lng, lat) // 创建点坐标
+        map.centerAndZoom(point, zoom)
+        var marker = new T.Marker(point);// 创建标注
+        map.addOverLay(marker);
+    }
+
+
     let current_lat = 0,current_lng=0;
+    // 动态创建script标签引入百度地图
     function loadBdMap2() {
         if (window.BMap !== undefined) {
             return
@@ -441,6 +466,23 @@
         script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap2'
         document.body.appendChild(script)
     }
+
+    // 动态创建script标签引入天地图
+    function loadTianMap (){
+        if (window.T !== undefined) {
+			return
+		}
+		var script = document.createElement('script')
+		script.type = 'text/javascript'
+		script.src = "https://api.tianditu.gov.cn/api?v=4.0&tk={#$global_config.tian_map_ak#}"
+		document.body.appendChild(script)
+		script.onload = function (){
+		    calculateDistance()
+        }
+    }
+
+
+    // 百度地图 计算距离
     function initBdMap2() {
         var map = new BMap.Map('bdMap2') // 创建Map实例
         var geolocation = new BMap.Geolocation();
@@ -455,9 +497,25 @@
             }        
         })
     }
-    if ("{#$return.base_info.map_lat#}" > 0 && "{#$return.base_info.map_lng#}" > 0) {
-        loadBdMap2()
+
+    //天地图计算距离
+    function calculateDistance(){
+        document.getElementById('address_title').style.display = 'none'
     }
+
+
+    if ("{#$return.base_info.map_lat#}" > 0 && "{#$return.base_info.map_lng#}" > 0) {
+        if("{#$global_config.is_open_map#}" == 1){
+            if ("{#$global_config.map_type#}" == 1) {
+                loadBdMap2()
+            } else if("{#$global_config.map_type#}" == 2){
+                loadTianMap()
+            }
+        }
+    }
+
+    
+    
     
     /**
      * 计算两坐标点之间的距离
@@ -533,6 +591,8 @@
             is_risk: false,
             showMap: false,
             mapQrcode: '',
+            mapType:'{#$global_config.map_type#}',
+            isOpenMap:'{#$global_config.is_open_map#}'
         },
         created: function () {
             this.getUserInfo()
@@ -587,7 +647,13 @@
         },
         methods: {
             mapOpened: function () {
-                initBdMap()
+                if(this.isOpenMap == 1){
+                    if(this.mapType == 1){
+                        initBdMap()
+                    }else if(this.mapType == 2){
+                        initTianMap()
+                    }
+                }
             },
             // 扫码入群 弹框
             centerDialogVisible:function()

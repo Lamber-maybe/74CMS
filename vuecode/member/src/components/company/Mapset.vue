@@ -16,6 +16,7 @@
       />
       </div>
       <baidu-map
+        v-if="config.map_type == 1"
         class="bm-view"
         :ak="$store.state.config.map_ak"
         :center="center"
@@ -35,6 +36,20 @@
           @locationError="locationError"
         ></bm-geolocation>
       </baidu-map>
+
+      <TianMap
+        v-if="config.map_type == 2"
+        class="bm-view"
+        :ak="config.tian_map_ak"
+        :center="tianCenter"
+        :zoom="tianZoom"
+        @ready="handleTianReady"
+        @click="handleTianMapClick"
+      >
+        <TianMarker :position="tianPos" :draggable="true" @dragend="handleTianMarkerDragend"></TianMarker>
+        <TianNavigation position="TOP_LEFT"></TianNavigation>
+        <TianGeolocation position="BOTTOM_RIGHT"></TianGeolocation>
+      </TianMap>
       <div class="location">
       <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="详细地址:">
@@ -67,6 +82,12 @@ import BmGeolocation from 'vue-baidu-map/components/controls/Geolocation.vue'; /
 import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
 import BmNavigation from 'vue-baidu-map/components/controls/Navigation'
 
+import TianMap from '@/components/map/TianMap/TianMap.vue'
+import TianNavigation from '@/components/map/TianMap/Navigation'
+import TianGeolocation from '@/components/map/TianMap/Geolocation'
+import TianMarker from '@/components/map/TianMap/Marker'
+
+import {mapState} from 'vuex'
 
 export default {
   name: 'Mapset',
@@ -75,28 +96,38 @@ export default {
     BaiduMap,
     BmNavigation,
     // eslint-disable-next-line vue/no-unused-components
-    BmGeolocation
+    BmGeolocation,
+    TianMap,
+    TianNavigation,
+    TianGeolocation,
+    TianMarker
   },
   data () {
     return {
-
       keyword:'',
       center: { lng: 0, lat: 0 },
       zoom: 12,
       BMap: {},
       map: {},
       mapData: { lat: '', lng: '', zoom: 0, address: '' },
-
       form: {
         location: '',
       },
-
       mapLocation: {
         address: undefined,
         coordinate: undefined
-      }
+      },
 
+      tianCenter:{lng: 0, lat: 0},
+      tianPos:{lng: 0, lat: 0},
+      tianZoom:12,
+      TMap:{},
+      tianMap:{},
+      tianGeocoder:{}
     }
+  },
+  computed: {
+    ...mapState(['config'])
   },
   created () {
   },
@@ -105,8 +136,14 @@ export default {
     onSubmit() {
       console.log('submit!');
     },
-
     handleSelect(item) {
+      if(this.config.map_type == 1){
+        this.BMapSelectClick(item)
+      } else if(this.config.map_type == 2){
+        this.TianMapSelectClick(item)
+      }
+    },
+    BMapSelectClick(item){
       var { point,value } = item
       this.mapLocation.coordinate = point
       this.form.location = value
@@ -120,7 +157,6 @@ export default {
       this.map.clearOverlays()
       this.mapZoom = 15
       this.makeMarker(point,value)
-
     },
 
     makerCenter(point) {
@@ -140,6 +176,36 @@ export default {
     },
 
     querySearch(queryString, cb) {
+      // 区分是百度地图还是天地图
+      if(this.config.map_type ==1){
+        this.BMapSearch(queryString, cb)
+      }else if(this.config.map_type ==2) {
+        this.TianMapSearch(queryString, cb)
+      }
+    },
+    TianMapSearch(queryString, cb){
+      const {tianMap,TMap} = this
+      var config = {
+          pageCapacity: 1000,	//每页显示的数量
+          onSearchComplete: function(result){
+            var list =  result.getPois()
+            var s = []
+            if(list.length>0){
+              list.forEach(x => {
+                var item = { value: x.address + x.name, point: x.lonlat }
+                s.push(item)
+                cb(s)
+              });
+            } else {
+              cb(s)
+            }
+          }	//接收数据的回调函数
+      };
+      const LocalSearch = new TMap.LocalSearch(tianMap,config)
+      // var bounds = tianMap.getBounds()
+      LocalSearch.search(queryString,1)
+    },
+    BMapSearch(queryString, cb){
       var that = this
       var myGeo = new this.BMap.Geocoder()
       myGeo.getPoint(queryString, function(point) {
@@ -169,17 +235,24 @@ export default {
       var local = new this.BMap.LocalSearch(this.map, options)
       local.search(queryString)
     },
-
-
-
     initCB(){
-      this.center = {
-        lat: (this.mapLat!==undefined && this.mapLat>0)?this.mapLat:parseFloat(this.$store.state.config.map_lat),
-        lng: (this.mapLng!==undefined && this.mapLng>0)?this.mapLng:parseFloat(this.$store.state.config.map_lng)
+      if(this.config.map_type == 1){
+        this.center = {
+          lat: (this.mapLat!==undefined && this.mapLat>0)?this.mapLat:parseFloat(this.$store.state.config.map_lat),
+          lng: (this.mapLng!==undefined && this.mapLng>0)?this.mapLng:parseFloat(this.$store.state.config.map_lng)
+        }
+        this.zoom = (this.zoom!==undefined && this.zoom>0)?this.zoom:parseInt(this.$store.state.config.map_zoom)
+        this.setlocation()
+      }else if(this.config.map_type == 2){
+        this.tianCenter = {
+          lat: (this.mapLat!==undefined && this.mapLat>0)?this.mapLat:parseFloat(this.$store.state.config.map_lat),
+          lng: (this.mapLng!==undefined && this.mapLng>0)?this.mapLng:parseFloat(this.$store.state.config.map_lng)
+        }
+        this.tianZoom = (this.tianZoom!==undefined && this.tianZoom>0)?this.tianZoom:parseInt(this.$store.state.config.map_zoom)
+        this.tianSetlocation()
       }
-      this.zoom = (this.zoom!==undefined && this.zoom>0)?this.zoom:parseInt(this.$store.state.config.map_zoom)
-      this.setlocation()
     },
+    
     setlocation () {
       let that = this
       let BMap = this.BMap
@@ -250,7 +323,6 @@ export default {
     handlerZoomend (e) {
       this.zoom = e.target.getZoom()
     },
-
     //定位成功回调
     locationSuccess(point){
       let that = this
@@ -275,6 +347,66 @@ export default {
     //定位失败回调
     locationError(StatusCode){
       console.log(StatusCode,'StatusCode')
+    },
+    //天地图
+    tianSetlocation(){
+      const {TMap} = this
+      this.tianGeocoder = new TMap.Geocoder()
+      this.tianPos ={...this.tianCenter}
+      this.form.location = this.address
+    },
+    // marker拖拽结束后
+    handleTianMarkerDragend(e){
+      this.tianGeocoder.getLocation(e.lnglat,(data)=>{
+        const {result:{result:{addressComponent:{city,county,province,address}}}} = data
+        let addr = province + city + county + address
+        this.form.location = addr
+        this.$store.commit('setBaiduMapFrom',{
+          data:this.form
+        })
+        this.handelSetTianMapData(e.lnglat,addr)
+      })
+    },
+    // 天地图初始化完成
+    handleTianReady({TMap,map}){
+      this.TMap = TMap
+      this.tianMap = map
+      this.tianSetlocation()
+    },
+    handleTianMapClick(e){
+      this.tianPos ={...e.lnglat}
+      this.tianGeocoder.getLocation(e.lnglat,(data)=>{
+        const {result:{result:{addressComponent:{city,county,province,address}}}} = data
+        let addr = province + city + county + address 
+        this.form.location = addr
+        this.$store.commit('setBaiduMapFrom',{
+          data:this.form
+        })
+        this.handelSetTianMapData(e.lnglat,addr)
+      })
+    },
+    handelSetTianMapData(point,address){
+      const {tianMap} = this
+      this.mapData.zoom = tianMap.getZoom()
+      this.mapData.lat = point.lat
+      this.mapData.lng = point.lng
+      this.mapData.address = address
+    },
+    TianMapSelectClick(item){
+      var { point,value } = item
+      const pointAry = point.split(' ')
+      var lnglat = {
+        lng:pointAry[0],
+        lat:pointAry[1]
+      }
+      this.mapLocation.coordinate = lnglat
+      this.form.location = value
+      this.$store.commit('setBaiduMapFrom',{
+        data:this.form
+      })
+      this.tianCenter = {...lnglat}
+      this.tianPos = {...lnglat}
+      this.handelSetTianMapData(lnglat,value)
     }
   }
 }

@@ -52,13 +52,13 @@
       <div class="box_3" v-if="base_info.address != ''">
         <div class="put">
           工作地址
-          <div class="distance" v-if="distance != ''">距您{{ distance }}</div>
+          <div class="distance" v-if="distance != '' && $store.state.config.is_open_map == 1">距您{{ distance }}</div>
         </div>
         <div class="address">
           {{ base_info.address }}
         </div>
-        <div class="bg">
-          <div class="box" @click="locationToBdmap">
+        <div class="bg" v-if="$store.state.config.is_open_map == 1">
+          <div :class="config.is_open_map == 1 && config.map_type == 2 ?  'box ac':'box'" @click="locationToBdmap">
             <div class="tx1">{{ com_info.companyname }}</div>
             <div class="tx2">{{ base_info.address }}</div>
           </div>
@@ -468,7 +468,15 @@
       class="bm-view"
       :ak="$store.state.config.map_ak"
       @ready="handlerMap"
+      v-if="config.is_open_map == 1 && config.map_type == 1"
     ></baidu-map>
+    <tian-map
+      v-if="config.is_open_map == 1 && config.map_type == 2"
+      class="bm-view"
+      :ak="config.tian_map_ak"
+      @ready="handlerTianMap"
+    ></tian-map>
+
     <van-popup
       v-model="showLogin"
       position="right"
@@ -589,7 +597,8 @@ import Login from '@/components/Login'
 import JobCompetitive from '@/components/JobCompetitive'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
-import { mapMutations } from 'vuex'
+import TianMap from '@/components/map/TianMap/TianMap'
+import { mapMutations, mapState } from 'vuex'
 let isSpider = new RegExp(
   '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
 ).test(navigator.userAgent)
@@ -606,7 +615,8 @@ export default {
     Tipoff,
     Subscribe,
     Share,
-    SharePoster
+    SharePoster,
+    TianMap
   },
   data () {
     return {
@@ -657,7 +667,8 @@ export default {
       bindWeixinShow: false,
       // 绑定微信二维码
       scanQrcodeImg: '',
-      mobile_company_show_tpl: 'def'
+      mobile_company_show_tpl: 'def',
+      TMap: {}
     }
   },
   created () {
@@ -683,6 +694,9 @@ export default {
         this.getScanQrcodeImg()
       }
     }
+  },
+  computed: {
+    ...mapState(['config'])
   },
   mounted () {},
   methods: {
@@ -733,6 +747,36 @@ export default {
     },
     toDetail (id) {
       this.$router.push('/job/' + id)
+    },
+    handlerTianMap ({TMap}) {
+      this.TMap = TMap
+    },
+    getTianMapPosition (mapLat, mapLng) {
+      if (!this.TMap || this.TMap.Geolocation === undefined) {
+        return
+      }
+      const {TMap} = this
+      const that = this
+      var geolocation = new TMap.Geolocation()
+      geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == 0) {
+          that.current_lat = r.lnglat.lat
+          that.current_lng = r.lnglat.lng
+          if (
+            that.current_lat > 0 &&
+              that.current_lng > 0 &&
+              mapLat > 0 &&
+              mapLng > 0
+          ) {
+            that.distance = countDistance(
+              that.current_lat,
+              that.current_lng,
+              mapLat,
+              mapLng
+            )
+          }
+        }
+      }, { enableHighAccuracy: true })
     },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap
@@ -831,7 +875,13 @@ export default {
         imgUrl: this.com_info.logo_src
       }
       wxshare(wechatShareInfo, 'jobshow', location.href)
-      this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
+      if (this.config.is_open_map == 1) {
+        if (this.config.map_type == 1) {
+          this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
+        } else if (this.config.map_type == 2) {
+          this.getTianMapPosition(this.base_info.map_lat, this.base_info.map_lng)
+        }
+      }
       this.getCompetitiveness()
       this.mainLoading = false
       if (next_method !== null) {
@@ -1125,10 +1175,11 @@ export default {
       this.showLogin = false
     },
     locationToBdmap () {
-      if (!this.base_info.map_lat || !this.base_info.map_lng) {
-        return false
-      }
-      let url =
+      if (this.config.is_open_map == 1 && this.config.map_type == 1) {
+        if (!this.base_info.map_lat || !this.base_info.map_lng) {
+          return false
+        }
+        let url =
         'http://api.map.baidu.com/marker?location=' +
         this.base_info.map_lat +
         ',' +
@@ -1138,7 +1189,10 @@ export default {
         '&content=' +
         this.base_info.address +
         '&output=html'
-      window.location.href = url
+        window.location.href = url
+      } else {
+        // this.$notify('暂不支持查看')
+      }
     },
     handlerReport () {
       if (this.is_personal_login === false) {
@@ -1989,6 +2043,9 @@ export default {
         border-right: 1px solid #666666;
         transform: rotate(45deg);
         content: " ";
+      }
+      &.ac::after{
+        display: none;
       }
 
       .tx2 {

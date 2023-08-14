@@ -6,6 +6,8 @@ class ImChatmanage extends \app\common\controller\Backend
 {
     public function _initialize()
     {
+        parent::_initialize();
+
         $this->baseUrl = 'https://imserv.v2.74cms.com';
         $this->config = config('global_config.account_im');
         $this->im_open = config('global_config.im_open');
@@ -34,6 +36,27 @@ class ImChatmanage extends \app\common\controller\Backend
         if ($result['code'] == 500) {
             $this->ajaxReturn(500, $result['msg'], null);
         } else {
+            $log_field = '撤回';
+            $from_uid = $result['result']['from_uid'];
+            $from_utype = model('Member')->where('uid', $from_uid)->value('utype');
+            $from_name = model('Member')->getMemberNickNameByUid($from_uid, '', false);
+            $to_uid = $result['result']['to_uid'];
+            $to_name = model('Member')->getMemberNickNameByUid($to_uid, '', false);
+            if ($from_utype === 1) {
+                $from_cid = model('Company')->where('uid', $from_uid)->value('id');
+                $to_rid = model('Resume')->where('uid', $to_uid)->value('id');
+                $log_field .= '{' . $from_name . '}(企业ID:' . $from_cid . ')与{' . $to_name . '}(简历ID:' . $to_rid . ')';
+            } else {
+                $from_rid = model('Resume')->where('uid', $from_uid)->value('id');
+                $to_cid = model('Company')->where('uid', $to_uid)->value('id');
+                $log_field .= '{' . $from_name . '}(简历ID:' . $from_rid . ')与{' . $to_name . '}(企业ID:' . $to_cid . ')';
+            }
+            model('AdminLog')->writeLog(
+                $log_field . '的聊天记录',
+                $this->admininfo,
+                0,
+                1
+            );
             $this->ajaxReturn(200, '撤回成功！', $datas);
         }
     }

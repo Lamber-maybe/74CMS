@@ -30,11 +30,12 @@
     </div>
     <div class="titlediv">
       <div class="title">您的位置</div>
-      <div class="titletisp">地址为自动获取，点击标注可修改位置</div>
+      <div class="titletisp" v-if="$store.state.config.is_open_map == 1">地址为自动获取，点击标注可修改位置</div>
+      <div class="titletisp" v-else>地址为自动获取</div>
     </div>
     <div class="addressdiv">
       <div class="addresss">{{sub.address}}</div>
-      <div class="addresssicon" @click="handlerShowMap">标注</div>
+      <div class="addresssicon" @click="handlerShowMap" v-if="$store.state.config.is_open_map == 1">标注</div>
     </div>
     <van-popup
       v-model="showMap"
@@ -78,10 +79,18 @@
       <van-loading size="24px" vertical>上传中...</van-loading>
     </van-popup>
     <baidu-map
+      v-if="config.map_type == 1"
       class="bm-view"
       :ak="$store.state.config.map_ak"
       @ready="handlerMap"
     ></baidu-map>
+    <TianMap
+      class="bm-view"
+      v-if="config.map_type == 2"
+      :ak="config.tian_map_ak"
+      @ready="handlerTianMap"
+    >
+    </TianMap>
     <div class="videodiv" @click="closevideo" v-if="videoshow">
       <video :src="videosrc" ref="video" @timeupdate="updateTime()" @click.stop="handleClickSlide()"
              style="width:321px;"></video>
@@ -95,8 +104,9 @@ import Mapset from '@/components/Mapset'
 import http from '@/utils/http'
 import api from '@/api'
 import Vue from 'vue'
+import TianMap from '@/components/map/TianMap/TianMap'
 import * as qiniu from 'qiniu-js'
-
+import {mapState} from 'vuex'
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -107,7 +117,8 @@ Vue.component('BaiduMap', function (resolve, reject) {
 export default {
   components: {
     Head,
-    Mapset
+    Mapset,
+    TianMap
   },
   data () {
     return {
@@ -135,7 +146,8 @@ export default {
       videoshow: false,
       playshow: true,
       progress: '',
-      isUpload: false
+      isUpload: false,
+      TMap: {}
     }
   },
   created () {
@@ -145,11 +157,42 @@ export default {
     }
     this.getqiniu()
   },
+  computed: {
+    ...mapState(['config'])
+  },
   methods: {
     previewVideo () {
       if (this.videosrc) {
         this.videoshow = true
       }
+    },
+    handlerTianMap ({TMap}) {
+      this.TMap = TMap
+      console.log(this.TMap)
+      this.setTianlocation()
+    },
+    setTianlocation () {
+      let that = this
+      that.sub.address = '正在获取位置信息...'
+      let TMap = that.TMap
+      var geolocation = new TMap.Geolocation()
+      var geocoder = new TMap.Geocoder()
+      geolocation.getCurrentPosition(
+        function (r) {
+          if (this.getStatus() == 0) {
+            geocoder.getLocation(r.lnglat, (data) => {
+              const {result: {result: {addressComponent: {city, county}, location}}} = data
+              const cityText = city + county
+              that.sub.address = cityText
+              that.sub.lat = location.lat
+              that.sub.lon = location.lng
+            })
+          } else {
+            that.sub.address = '获取定位失败'
+          }
+        },
+        {enableHighAccuracy: true}
+      )
     },
     handlerMap ({BMap, map}) {
       this.BMap = BMap

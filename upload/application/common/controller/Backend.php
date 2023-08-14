@@ -2,7 +2,7 @@
 
 namespace app\common\controller;
 
-class Backend extends \app\common\controller\Base
+class Backend extends Base
 {
     protected $admininfo;
 
@@ -84,6 +84,13 @@ class Backend extends \app\common\controller\Base
     {
         if ($this->admininfo->access_set_service == 0) {
             $this->ajaxReturn(500, '当前管理员没有分配客服权限');
+        }
+    }
+
+    protected function checkIsAdministrator()
+    {
+        if ($this->admininfo->role_id != 1) {
+            $this->ajaxReturn(500, '当前管理员非超级管理员');
         }
     }
 }

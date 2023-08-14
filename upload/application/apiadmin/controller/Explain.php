@@ -1,5 +1,8 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
 
 class Explain extends \app\common\controller\Backend
 {
@@ -54,6 +57,7 @@ class Explain extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -66,26 +70,42 @@ class Explain extends \app\common\controller\Backend
             'seo_description' => input('post.seo_description/s', '', 'trim'),
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
-        $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
-        if (
-            false ===
-            model('Explain')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Explain')->getError());
+        $input_data['attach'] = json_encode($input_data['attach'], JSON_UNESCAPED_UNICODE);
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Explain')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                $this->ajaxReturn(500, model('Explain')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加说明页文章，' . $input_data['title'] . '(ID:' . model('Explain')->id . ')',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加说明页。说明页ID【' .
-                model('Explain')->id .
-                '】;说明页标题【' .
-                $input_data['title'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -94,8 +114,8 @@ class Explain extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
-            $info['attach'] = json_decode($info['attach'],true);
+            $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
+            $info['attach'] = json_decode($info['attach'], true);
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
         } else {
             $input_data = [
@@ -113,49 +133,90 @@ class Explain extends \app\common\controller\Backend
                 ),
                 'sort_id' => input('post.sort_id/d', 0, 'intval')
             ];
-            $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
+            $input_data['attach'] = json_encode($input_data['attach'], JSON_UNESCAPED_UNICODE);
             $id = intval($input_data['id']);
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Explain')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Explain')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('Explain')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Explain')->getError());
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改说明页文章，' . $input_data['title'] . '(ID:' . $id . ')',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑说明页。说明页ID【' .
-                    $id .
-                    '】;说明页标题【' .
-                    $input_data['title'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Explain')
-            ->where('id', 'in', $id)
-            ->column('title');
-        model('Explain')->destroy($id);
-        model('AdminLog')->record(
-            '删除说明页。说明页ID【' .
-                implode(',', $id) .
-                '】;说明页标题【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Explain')
+                ->where('id', 'in', $id)
+                ->column('id,title');
+
+            $del_result = model('Explain')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('Explain')->getError());
+            }
+
+            $log_field = '删除说明页文章，';
+
+            foreach ($list as $eid => $title) {
+                $log_field .= $title . '(ID:' . $eid . ')；';
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field,'；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

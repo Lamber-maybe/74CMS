@@ -48,8 +48,17 @@ class Document extends Backend
                 }
             }
 
-            Db::startTrans();
             try {
+                $configInfo = model('Config')
+                    ->where('name', 'account_zhitoo_document')
+                    ->find();
+                if (null === $configInfo) {
+                    $this->ajaxReturn(500, '在线文档预览配置项不存在');
+                }
+                $configValue = json_decode($configInfo['value'], true);
+
+                Db::startTrans();
+
                 $save_config = model('Config')
                     ->isUpdate(true)
                     ->allowField(true)
@@ -61,10 +70,22 @@ class Document extends Backend
                     throw new \Exception(model('Config')->getError());
                 }
 
-                model('AdminLog')->record(
-                    '修改配置信息。配置标识【account_zhitoo_document】',
-                    $this->admininfo
+                $log_field = '系统-基础配置-合作账号，修改在线文档预览配置';
+                if ($data['appKey'] != $configValue['appKey']) {
+                    $log_field .= '，AppKey:' . $configValue['appKey'] . '->' . $data['appKey'];
+                }
+                if ($data['appSecret'] != $configValue['appSecret']) {
+                    $log_field .= '，AppSecret:' . $configValue['appSecret'] . '->' . $data['appSecret'];
+                }
+                $log_result = model('AdminLog')->writeLog(
+                    $log_field,
+                    $this->admininfo,
+                    0,
+                    3
                 );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
 
                 Db::commit();
                 $this->ajaxReturn(200, '保存成功');
@@ -73,7 +94,7 @@ class Document extends Backend
                 $this->ajaxReturn(500, $e->getMessage());
             }
         } else {
-            $this->ajaxReturn(200, '错误的请求');
+            $this->ajaxReturn(500, '错误的请求');
         }
     }
 

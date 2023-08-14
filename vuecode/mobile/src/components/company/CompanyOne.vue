@@ -84,13 +84,13 @@
       <div class="box_4" v-if="base_info.address != ''">
         <div class="put">
           公司地址
-          <div class="distance" v-if="distance != ''">距您{{ distance }}</div>
+          <div class="distance" v-if="distance != '' && $store.state.config.is_open_map == 1">距您{{ distance }}</div>
         </div>
         <div class="address">
           {{ base_info.address }}
         </div>
-        <div class="bg">
-          <div class="box" @click="locationToBdmap">
+        <div class="bg"  v-if="$store.state.config.is_open_map == 1">
+          <div :class="config.is_open_map == 1 && config.map_type == 2 ?  'box ac':'box'" @click="locationToBdmap">
             <div class="tx1">{{ base_info.companyname }}</div>
             <div class="tx2">{{ base_info.address }}</div>
           </div>
@@ -152,10 +152,19 @@
     </div>
 
     <baidu-map
+      v-if="config.is_open_map == 1 && config.map_type == 1"
       class="bm-view"
       :ak="$store.state.config.map_ak"
       @ready="handlerMap"
     ></baidu-map>
+    <TianMap
+      v-if="config.is_open_map == 1 && config.map_type == 2"
+      class="bm-view"
+      :ak="$store.state.config.tian_map_ak"
+      @ready="handlerTianMap"
+    >
+    </TianMap>
+
     <van-popup
       v-model="showLogin"
       position="right"
@@ -202,6 +211,9 @@ import Login from '@/components/Login'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import Report from '@/components/Report'
+import TianMap from '@/components/map/TianMap/TianMap'
+import { mapState } from 'vuex'
+
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -216,7 +228,8 @@ export default {
     Subscribe,
     Share,
     SharePoster,
-    Report
+    Report,
+    TianMap
   },
   data () {
     return {
@@ -261,7 +274,7 @@ export default {
       reportInfo: {},
       finished_text: '',
       jobnum: 0,
-      videonum: 0,
+      videonum: 0
     }
   },
   created () {
@@ -280,6 +293,9 @@ export default {
   mounted () {},
   watch: {
   },
+  computed: {
+    ...mapState(['config'])
+  },
   methods: {
     gettab (comShow) {
       this.comShow = comShow
@@ -291,6 +307,36 @@ export default {
           this.isMore = textHeight > styleHeight
         })
       }
+    },
+    handlerTianMap ({TMap}) {
+      this.TMap = TMap
+    },
+    getTianMapPosition (mapLat, mapLng) {
+      if (!this.TMap || this.TMap.Geolocation === undefined) {
+        return
+      }
+      const {TMap} = this
+      const that = this
+      var geolocation = new TMap.Geolocation()
+      geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == 0) {
+          that.current_lat = r.lnglat.lat
+          that.current_lng = r.lnglat.lng
+          if (
+            that.current_lat > 0 &&
+              that.current_lng > 0 &&
+              mapLat > 0 &&
+              mapLng > 0
+          ) {
+            that.distance = countDistance(
+              that.current_lat,
+              that.current_lng,
+              mapLat,
+              mapLng
+            )
+          }
+        }
+      }, { enableHighAccuracy: true })
     },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap
@@ -368,7 +414,13 @@ export default {
         imgUrl: base_info.logo_src
       }
       wxshare(wechatShareInfo, 'companyshow', location.href)
-      this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
+      if (this.config.is_open_map == 1) {
+        if (this.config.map_type == 1) {
+          this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
+        } else if (this.config.map_type == 2) {
+          this.getTianMapPosition(this.base_info.map_lat, this.base_info.map_lng)
+        }
+      }
       if (next_method !== null) {
         this[next_method]()
       } else {
@@ -471,10 +523,11 @@ export default {
       this.fetchData(method)
     },
     locationToBdmap () {
-      if (!this.base_info.map_lat || !this.base_info.map_lng) {
-        return false
-      }
-      let url =
+      if (this.config.is_open_map == 1 && this.config.map_type == 1) {
+        if (!this.base_info.map_lat || !this.base_info.map_lng) {
+          return false
+        }
+        let url =
         'http://api.map.baidu.com/marker?location=' +
         this.base_info.map_lat +
         ',' +
@@ -484,7 +537,10 @@ export default {
         '&content=' +
         this.base_info.address +
         '&output=html'
-      window.location.href = url
+        window.location.href = url
+      } else {
+        // this.$notify('暂不支持查看')
+      }
     },
     reportDetail () {
       http.get(api.company_report, {id: this.base_info.id}).then(res => {
@@ -711,6 +767,9 @@ export default {
         border-right: 1px solid #666666;
         transform: rotate(45deg);
         content: " ";
+      }
+      &.ac::after{
+        display: none;
       }
       .tx2 {
         font-size: 12px;

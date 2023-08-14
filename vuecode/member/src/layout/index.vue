@@ -3,7 +3,7 @@
     <el-header height="114px">
       <head-block />
     </el-header>
-    <el-container>
+    <el-container style="height: calc(100vh - 114px)">
       <el-aside width="240px">
         <side-nav />
       </el-aside>

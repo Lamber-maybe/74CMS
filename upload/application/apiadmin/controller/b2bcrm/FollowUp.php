@@ -96,13 +96,42 @@ class FollowUp extends Backend
                 $data['link_mobile'] = '';
             }
 
+            switch ($data['type']) {
+                case 1:
+                    // 1:线索跟进;
+                    $clue_name = model('b2bcrm.CrmClue')->where('id', $data['clue_id'])->value('name');
+                    $log_field = '对{' . $clue_name . '}(线索ID:' . $data['clue_id'];
+                    break;
+
+                case 2:
+                    // 2:客户跟进;
+                    $company_info = model('Company')->field('id,companyname')->where('uid', $data['uid'])->find();
+                    $log_field = '对{' . $company_info['companyname'] . '}(企业ID:' . $company_info['id'];
+                    break;
+
+                default:
+                    $this->ajaxReturn(500, '错误的跟进类型');
+                    break;
+            }
+
             Db::startTrans();
             if ($data['uid'] > 0) {
                 model('Company')
                     ->isUpdate(true)
                     ->save(['last_visit_time' => time(), 'last_visit_admin' => $this->admininfo->id], ['uid' => $data['uid']]);
             }
-            model('b2bcrm.CrmFollowUp')->saveData($data, $this->admininfo);
+            model('b2bcrm.CrmFollowUp')->saveData($data);
+
+            $log_field .= ')添加跟进，内容:' . model('b2bcrm.CrmFollowUp')->method[$data['mode']] . ':电话拜访；跟进结果:' . $data['result'];
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
 
             Db::commit();
             $this->ajaxReturn(200, '保存成功');

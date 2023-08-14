@@ -1,5 +1,9 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
+
 class Article extends \app\common\controller\Backend
 {
     public function index()
@@ -70,6 +74,7 @@ class Article extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -92,26 +97,44 @@ class Article extends \app\common\controller\Backend
         } else {
             $input_data['addtime'] = time();
         }
-        $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
-        if (
-            false ===
-            model('Article')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Article')->getError());
+        $input_data['attach'] = json_encode($input_data['attach'], JSON_UNESCAPED_UNICODE);
+
+        try {
+            Db::startTrans();
+
+            if (
+                false ===
+                model('Article')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('Article')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $category = model('ArticleCategory')->where('id', $input_data['cid'])->value('name');
+            $log_result = model('AdminLog')->writeLog(
+                '发布资讯信息，' . $input_data['title'] . '(ID:' . model('Article')->id . ')，分类:' . $category,
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加资讯。资讯ID【' .
-                model('Article')->id .
-                '】;资讯标题【' .
-                $input_data['title'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -120,8 +143,8 @@ class Article extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
-            $info['attach'] = json_decode($info['attach'],true);
+            $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
+            $info['attach'] = json_decode($info['attach'], true);
             $imageUrl = model('Uploadfile')->getFileUrl($info['thumb']);
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,
@@ -157,45 +180,87 @@ class Article extends \app\common\controller\Backend
             } else {
                 $input_data['addtime'] = time();
             }
-            $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
-            if (
-                false ===
-                model('Article')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Article')->getError());
+            $input_data['attach'] = json_encode($input_data['attach'], JSON_UNESCAPED_UNICODE);
+
+            try {
+                Db::startTrans();
+
+                if (
+                    false ===
+                    model('Article')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Article')->getError());
+                }
+
+                /**
+                 * 日志
+                 */
+                $category = model('ArticleCategory')->where('id', $input_data['cid'])->value('name');
+                $log_result = model('AdminLog')->writeLog(
+                    '修改资讯信息，' . $input_data['title'] . '(ID:' . $id . ')，分类:' . $category,
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollback();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑资讯。资讯ID【' .
-                    $id .
-                    '】;资讯标题【' .
-                    $input_data['title'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Article')
-            ->where('id', 'in', $id)
-            ->column('title');
-        model('Article')->destroy($id);
-        model('AdminLog')->record(
-            '删除资讯。资讯ID【' .
-                implode(',', $id) .
-                '】;资讯标题【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        try {
+            Db::startTrans();
+
+            $list = model('Article')
+                ->where('id', 'in', $id)
+                ->column('id,cid,title');
+
+            if (false === model('Article')->destroy($id)) {
+                throw new \Exception(model('Article')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '删除资讯信息，';
+            foreach ($list as $article) {
+                $category = model('ArticleCategory')->where('id', $article['cid'])->value('name');
+                $log_field .= $article['title'] . '(ID:' . $article['id'] . ')，分类:' . $category . '；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

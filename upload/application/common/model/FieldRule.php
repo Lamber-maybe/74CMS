@@ -1,13 +1,34 @@
 <?php
+
 namespace app\common\model;
 
 class FieldRule extends \app\common\model\BaseModel
 {
+    /**
+     * 是否显示
+     * @var string[]
+     */
+    public $map_is_display = [
+        0 => '不显示',
+        1 => '显示'
+    ];
+
+    /**
+     * 是否必填
+     * @var string[]
+     */
+    public $map_is_require = [
+        0 => '非必填',
+        1 => '必填'
+    ];
+
     protected $readonly = ['id', 'enable_close'];
+
     protected $type = [
         'id' => 'integer',
         'is_require' => 'integer'
     ];
+
     protected static function init()
     {
         self::event('after_write', function () {
@@ -17,6 +38,7 @@ class FieldRule extends \app\common\model\BaseModel
             cache('cache_field_rule', null);
         });
     }
+
     public function getCache($model_name = '')
     {
         if (false === ($data = cache('cache_field_rule'))) {

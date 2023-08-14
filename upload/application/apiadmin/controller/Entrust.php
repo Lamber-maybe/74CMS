@@ -2,6 +2,8 @@
 
 namespace app\apiadmin\controller;
 
+use think\Db;
+
 class Entrust extends \app\common\controller\Backend
 {
     public function index()
@@ -33,7 +35,7 @@ class Entrust extends \app\common\controller\Backend
             ->count();
         $list = model('Entrust')->alias('a')
             ->join(config('database.prefix').'resume b','a.uid=b.uid','LEFT')
-            ->field('a.id,a.days,a.deadline,b.id as resume_id,b.fullname,b.birthday,b.sex,b.education,b.enter_job_time,b.refreshtime,b.addtime')
+            ->field('a.id,a.uid,a.days,a.deadline,b.id as resume_id,b.fullname,b.birthday,b.sex,b.education,b.enter_job_time,b.refreshtime,b.addtime')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -245,15 +247,24 @@ class Entrust extends \app\common\controller\Backend
         $input_data['platform'] = config('platform');
         $result = model('JobApply')->save($input_data);
         if (false !== $result) {
-            model('AdminLog')->record(
-                '委托投递简历。姓名【' .
-                    $resume_info['fullname'] .
-                    '】;职位名称【' .
-                    $job_info['jobname'] .
-                    '】;企业名称【' .
-                    $company_info['companyname'] .
-                    '】',
-                $this->admininfo
+            $log_field = '委托投递职位，{'
+                . $resume_info['fullname']
+                . '}(简历ID:'
+                . $resume_info['id']
+                . ')；投递职位:'
+                . $job_info['jobname']
+                . '(职位ID:'
+                . $job_info['id']
+                . ')；所属企业:{'
+                . $company_info['companyname']
+                . '}(企业ID:'
+                . $company_info['id']
+                . ')';
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                5
             );
             //通知
             model('NotifyRule')->notify(
@@ -288,13 +299,40 @@ class Entrust extends \app\common\controller\Backend
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        model('Entrust')->destroy($id);
-        model('AdminLog')->record(
-            '删除委托投递。委托ID【' .
-                implode(',', $id) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $entrust = model('Entrust')->find($id);
+            if (null === $entrust) {
+                $this->ajaxReturn(500, '要删除的委托投递不存在');
+            }
+
+            $resume_info = model('Resume')->field('id,fullname')->where('uid', $entrust['uid'])->find();
+
+            $del_resule = model('Entrust')->destroy($id);
+            if (false === $del_resule) {
+                throw new \Exception(model('Entrust')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '删除{' . $resume_info['fullname'] . '}(简历ID:' . $resume_info['id'] . ')委托投递',
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

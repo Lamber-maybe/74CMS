@@ -257,14 +257,25 @@ class Clue extends Backend
                     'admin_id' => $this->admininfo->id,
                 ];
             }
-            model('b2bcrm.CrmClueRelease')
+            $release_result = model('b2bcrm.CrmClueRelease')
                 ->isUpdate(false)
                 ->saveAll($release);
-            $clue_id = implode(',', $clue_id);
+            if ($release_result === false) {
+                throw new \Exception(model('b2bcrm.CrmClueRelease')->getError());
+            }
+
+            $clue_list = model('b2bcrm.CrmClue')->where('id', 'in', $clue_id)->column('id,name');
+
             // 日志
-            $log_result = model('AdminLog')->record(
-                '释放CRM所属销售【ID:' . $clue_id . '】',
-                $this->admininfo
+            $log_field = '释放线索';
+            foreach ($clue_list as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                1
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -414,18 +425,41 @@ class Clue extends Backend
             }
 
             Db::startTrans();
+
             $receive = model('b2bcrm.CrmClueRelease')->releaseAdd($clue_id, $this->admininfo->id, 1, 1, 0);
             if ($receive === false) {
                 $this->ajaxReturn(500, '领取失败', []);
             }
-            model('b2bcrm.CrmClue')
+
+            $receive_result = model('b2bcrm.CrmClue')
                 ->isUpdate('true')
                 ->save(['admin_id' => $this->admininfo->id, 'collection_time' => time()], ['id' => ['in', $clue_id]]);
+            if ($receive_result === false) {
+                throw new \Exception(model('b2bcrm.CrmClueRelease')->getError());
+            }
+
+            $clue_list = model('b2bcrm.CrmClue')->where('id', 'in', $clue_id)->column('id,name');
+
+            // 日志
+            $log_field = '领取线索';
+            foreach ($clue_list as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                1
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
             Db::commit();
             $this->ajaxReturn(200, '领取成功', []);
         } catch (\Exception $e) {
             Db::rollback();
-            $this->ajaxReturn(500, $e->getMessage(), []);
+            $this->ajaxReturn(500, '领取成功', ['err_msg' => $e->getMessage()]);
         }
     }
 
@@ -568,9 +602,11 @@ class Clue extends Backend
             }
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '添加CRM线索【ID:' . model('b2bcrm.CrmClue')->id . '】,线索名称【' . $input_data['name'] . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '新增线索{' . $input_data['name'] . '}(线索ID:' . model('b2bcrm.CrmClue')->id . ')',
+                $this->admininfo,
+                0,
+                2
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -642,9 +678,11 @@ class Clue extends Backend
             $this->_handleClueContact($input, $clueInfo);
 
             // 日志
-            $log_result = model('AdminLog')->record(
-                '修改CRM线索【ID:' . $clue_id . '】',
-                $this->admininfo
+            $log_result = model('AdminLog')->writeLog(
+                '编辑线索{' . $input['name'] . '}(线索ID:' . $clue_id . ')资料',
+                $this->admininfo,
+                0,
+                3
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
@@ -720,18 +758,27 @@ class Clue extends Backend
         }
         try {
             Db::startTrans();
+            $clue_list = model('b2bcrm.CrmClue')->where('id', 'in', $clue_id)->column('id,name');
             $clue_del = model('b2bcrm.CrmClue')->clueDel($clue_id);
             if ($clue_del === false) {
-                $this->ajaxReturn(500, model('b2bcrm.CrmClue')->getError());
+                throw new \Exception(model('b2bcrm.CrmClue')->getError());
             }
+
             // 日志
-            $log_result = model('AdminLog')->record(
-                '删除CRM线索【ID:' . implode(',', $clue_id) . '】,线索名称【' . $clue_del . '】',
-                $this->admininfo
+            $log_field = '删除线索';
+            foreach ($clue_list as $c_id => $c_name) {
+                $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
+            }
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
+
             Db::commit();
             $this->ajaxReturn(200, '删除成功');
         } catch (\Exception $e) {
@@ -1045,6 +1092,7 @@ class Clue extends Backend
         }
         $clueField = [
             'id',
+            'name',
             'mobile',
             'contacts',
             'telephone'
@@ -1157,9 +1205,11 @@ class Clue extends Backend
                 throw new \Exception('更改线索联系人失败-请求SQL为：' . $clueContactModel->getLastSql());
             }
 
-            model('AdminLog')->record(
-                '设置【' . $contactInfo['mobile'] . '】为主要联系方式',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '设置{' . $contactInfo['contact'] . '}为线索{' . $clueInfo['name'] . '}(线索ID:' . $clueInfo['id'] . ')的主要联系人',
+                $this->admininfo,
+                0,
+                3
             );
 
             // 提交事务
@@ -1189,6 +1239,7 @@ class Clue extends Backend
         }
         $clueField = [
             'id',
+            'name',
             'mobile',
             'contacts'
         ];
@@ -1249,9 +1300,12 @@ class Clue extends Backend
                 throw new \Exception('新增联系人失败-请求SQL为：' . $clueContactModel->getLastSql());
             }
 
-            model('AdminLog')->record(
-                '添加线索联系人',
-                $this->admininfo
+            $link_phone = empty($inputData['mobile']) ? $inputData['telephone'] : $inputData['mobile'];
+            model('AdminLog')->writeLog(
+                '为线索{' . $clueInfo['name'] . '}(线索ID:' . $clueInfo['id'] . ')添加线索联系人，' . $inputData['contact'] . ' ' . $link_phone,
+                $this->admininfo,
+                0,
+                2
             );
 
             // 提交事务
@@ -1281,6 +1335,7 @@ class Clue extends Backend
         }
         $clueField = [
             'id',
+            'name',
             'mobile',
             'contacts'
         ];
@@ -1300,6 +1355,10 @@ class Clue extends Backend
                 'id',
                 'contact',
                 'mobile',
+                'telephone',
+                'qq',
+                'email',
+                'sex',
                 'is_main'
             ];
             $contactWhere = [
@@ -1374,9 +1433,32 @@ class Clue extends Backend
                 }
             }
 
-            model('AdminLog')->record(
-                '修改线索联系人',
-                $this->admininfo
+            $log_field = '修改线索{' . $clueInfo['name'] . '}(线索ID:' . $clueInfo['id'] . ')联系人，';
+            if ($contactInfo['contact'] != $inputData['contact']) {
+                $log_field .= '姓名:' . (!empty($contactInfo['contact']) ? $contactInfo['contact'] : '无') . '->' . (!empty($inputData['contact']) ? $inputData['contact'] : '未填写') . '；';
+            }
+            if ($contactInfo['mobile'] != $inputData['mobile']) {
+                $log_field .= '手机号:' . (!empty($contactInfo['mobile']) ? $contactInfo['mobile'] : '无') . '->' . (!empty($inputData['mobile']) ? $inputData['mobile'] : '未填写') . '；';
+            }
+            if ($contactInfo['telephone'] != $inputData['telephone']) {
+                $log_field .= '公司座机:' . (!empty($contactInfo['telephone']) ? $contactInfo['telephone'] : '无') . '->' . (!empty($inputData['telephone']) ? $inputData['telephone'] : '未填写') . '；';
+            }
+            if ($contactInfo['qq'] != $inputData['qq']) {
+                $log_field .= 'QQ:' . (!empty($contactInfo['qq']) ? $contactInfo['qq'] : '无') . '->' . (!empty($inputData['qq']) ? $inputData['qq'] : '未填写') . '；';
+            }
+            if ($contactInfo['email'] != $inputData['email']) {
+                $log_field .= '邮箱:' . (!empty($contactInfo['email']) ? $contactInfo['email'] : '无') . '->' . (!empty($inputData['email']) ? $inputData['email'] : '未填写') . '；';
+            }
+            if ($contactInfo['sex'] != $inputData['sex']) {
+                $log_field .= '性别:' . (!empty($contactInfo['sex']) ? model('Resume')->map_sex[$contactInfo['sex']] : '无') . '->' . (!empty($inputData['sex']) ? model('Resume')->map_sex[$inputData['sex']] : '未填写') . '；';
+            }
+
+            $log_field = rtrim($log_field, '；');
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
             );
 
             // 提交事务
@@ -1409,7 +1491,8 @@ class Clue extends Backend
             'id',
             'contact',
             'mobile',
-            'is_main'
+            'is_main',
+            'clue_id'
         ];
         $contactWhere = [
             'id' => $contactId
@@ -1421,6 +1504,19 @@ class Clue extends Backend
         }
         if ($contactInfo['is_main'] == 1) {
             $this->ajaxReturn(500, '主要联系方式不能被删除');
+        }
+
+        $clueField = [
+            'id',
+            'name',
+        ];
+        $clueWhere = [
+            'id' => $contactInfo['clue_id']
+        ];
+        $clueModel = db('crm_clue');
+        $clueInfo = $clueModel->field($clueField)->where($clueWhere)->find();
+        if (is_null($clueInfo) || empty($clueInfo)) {
+            $this->ajaxReturn(500, '未找到该线索信息');
         }
 
         $clueContactModel = db('crm_clue_contact');
@@ -1435,9 +1531,11 @@ class Clue extends Backend
                 throw new \Exception('删除联系人失败-请求SQL为：' . $clueContactModel->getLastSql());
             }
 
-            model('AdminLog')->record(
-                '删除线索联系人',
-                $this->admininfo
+            model('AdminLog')->writeLog(
+                '删除线索{' . $clueInfo['name'] . '}(线索ID:' . $clueInfo['id'] . ')联系人',
+                $this->admininfo,
+                0,
+                3
             );
 
             // 提交事务
@@ -1695,7 +1793,7 @@ class Clue extends Backend
                 throw new \Exception('线索跟进记录转换失败-错误：' . model('b2bcrm.CrmFollowUp')->getError());
             }
 
-            model('AdminLog')->record(
+            model('AdminLog')->writeLog(
                 '合并线索到客户【线索ID:' . $clueId . '】，【客户ID:' . $companyId . '】',
                 $this->admininfo
             );

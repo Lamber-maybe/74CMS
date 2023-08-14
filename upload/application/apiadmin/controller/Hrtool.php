@@ -1,5 +1,9 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
+
 class Hrtool extends \app\common\controller\Backend
 {
     public function index()
@@ -34,7 +38,7 @@ class Hrtool extends \app\common\controller\Backend
             ->order('sort_id desc,id asc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-        
+
         $category_arr = model('HrtoolCategory')->getCache();
         foreach ($list as $key => $value) {
             $value['cname'] = isset($category_arr[$value['cid']])
@@ -50,6 +54,7 @@ class Hrtool extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -59,25 +64,41 @@ class Hrtool extends \app\common\controller\Backend
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
         $input_data['addtime'] = time();
-        if (
-            false ===
-            model('Hrtool')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Hrtool')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Hrtool')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('Hrtool')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加HR工具箱文件，' . $input_data['filename'] . '(ID:' . model('Hrtool')->id . ')',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加hr工具箱。hr工具箱ID【' .
-                model('Hrtool')->id .
-                '】;hr工具箱文件名【' .
-                $input_data['filename'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -101,46 +122,88 @@ class Hrtool extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Hrtool')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Hrtool')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('Hrtool')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Hrtool')->getError());
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改HR工具箱文件，' . $input_data['filename'] . '(ID:' . $id . ')',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑hr工具箱。hr工具箱ID【' .
-                    $id .
-                    '】;hr工具箱文件名【' .
-                    $input_data['filename'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Hrtool')
-            ->where('id', 'in', $id)
-            ->column('filename');
-        model('Hrtool')->destroy($id);
-        model('AdminLog')->record(
-            '删除hr工具箱。hr工具箱ID【' .
-                implode(',', $id) .
-                '】;hr工具箱标题【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Hrtool')
+                ->where('id', 'in', $id)
+                ->column('id,filename');
+
+            $log_field = '删除HR工具箱文件，';
+
+            foreach ($list as $tid => $filename) {
+                $log_field .= $filename . '(ID:' . $tid . ')；';
+            }
+
+            $del_result = model('Hrtool')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('Hrtool')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function upload()
     {
         $file = input('file.file');

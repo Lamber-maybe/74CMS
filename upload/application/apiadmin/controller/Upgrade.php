@@ -219,6 +219,14 @@ class Upgrade extends \app\common\controller\Backend
         //清空压缩包目录和解压目录
         rmdirs($this->save_dir);
         rmdirs($this->unzip_dir);
+
+        model('AdminLog')->writeLog(
+            '系统升级至v' . config('version.version') . '版本',
+            $this->admininfo,
+            0,
+            1
+        );
+
         $this->ajaxReturn(200, '升级完成，共更新'.$num.'个文件');
     }
 

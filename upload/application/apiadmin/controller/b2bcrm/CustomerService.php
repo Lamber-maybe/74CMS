@@ -12,10 +12,9 @@ class CustomerService extends Backend
     {
         if ($request->method() == 'GET') {
             $customer_service = model('b2bcrm.CrmCustomerService')
-                ->where(['admin_id'=>$this->admininfo->id])
+                ->where(['admin_id' => $this->admininfo->id])
                 ->find();
-            if (empty($customer_service))
-            {
+            if (empty($customer_service)) {
                 $this->ajaxReturn(200, '获取数据成功', []);
             }
             $customer_service['photo_url'] = model('Uploadfile')->getFileUrl($customer_service['photo']);
@@ -34,9 +33,9 @@ class CustomerService extends Backend
             ];
 
             $rule = [
-                'photo'  =>  'require|max:10',
-                'name' =>  'require|max:6',
-                'mobile'=>'number|length:11',
+                'photo' => 'require|max:10',
+                'name' => 'require|max:6',
+                'mobile' => 'number|length:11',
                 'tel' => 'max:20',
                 'wx_qrcode' => 'require|max:10',
                 'qq' => 'max:15',
@@ -54,16 +53,14 @@ class CustomerService extends Backend
             if (!$validate->check($input_data)) {
                 $this->ajaxReturn(500, $validate->getError());
             }
-            if (empty($input_data['mobile']) && empty($input_data['tel']))
-            {
+            if (empty($input_data['mobile']) && empty($input_data['tel'])) {
                 $this->ajaxReturn(500, '请填写手机号和座机二选一');
             }
             $CrmCustomerService = model('b2bcrm.CrmCustomerService')
-                ->where(['admin_id'=>$this->admininfo->id])
+                ->where(['admin_id' => $this->admininfo->id])
                 ->find();
             $isUpdate = false;
-            if (!empty($CrmCustomerService))
-            {
+            if (!empty($CrmCustomerService)) {
                 $isUpdate = true;
                 $input_data['id'] = $CrmCustomerService['id'];
             }
@@ -75,12 +72,72 @@ class CustomerService extends Backend
             if (false === $save_config) {
                 $this->ajaxReturn(500, model('b2bcrm.CrmCustomerService')->getError());
             }
-            model('AdminLog')->record(
-                '编辑客服名片。客服姓名【' .
-                $input_data['name'] .
-                '】，客服手机号【'.$input_data['photo'].'】。',
-                $this->admininfo
+
+            $log_field = '个人会员中心设置客服名片,';
+
+            if (isset($CrmCustomerService['name'])) {
+                if (empty($input_data['name'])) {
+                    $log_field .= '称呼:' . $CrmCustomerService['name'] . '->未填写；';
+                } else {
+                    if ($CrmCustomerService['name'] != $input_data['name']) {
+                        $log_field .= '称呼:' . $CrmCustomerService['name'] . '->' . $input_data['name'] . '；';
+                    }
+                }
+            } else {
+                if (!empty($input_data['name'])) {
+                    $log_field .= '称呼:无->' . $input_data['name'] . '；';
+                }
+            }
+
+            if (isset($CrmCustomerService['mobile'])) {
+                if (empty($input_data['mobile'])) {
+                    $log_field .= '手机号:' . $CrmCustomerService['mobile'] . '->未填写；';
+                } else {
+                    if ($CrmCustomerService['mobile'] != $input_data['mobile']) {
+                        $log_field .= '手机号:' . $CrmCustomerService['mobile'] . '->' . $input_data['mobile'] . '；';
+                    }
+                }
+            } else {
+                if (!empty($input_data['mobile'])) {
+                    $log_field .= '手机号:无->' . $input_data['mobile'] . '；';
+                }
+            }
+
+            if (isset($CrmCustomerService['tel'])) {
+                if (empty($input_data['tel'])) {
+                    $log_field .= '座机:' . $CrmCustomerService['tel'] . '->未填写；';
+                } else {
+                    if ($CrmCustomerService['tel'] != $input_data['tel']) {
+                        $log_field .= '座机:' . $CrmCustomerService['tel'] . '->' . $input_data['tel'] . '；';
+                    }
+                }
+            } else {
+                if (!empty($input_data['tel'])) {
+                    $log_field .= '座机:无->' . $input_data['tel'] . '；';
+                }
+            }
+
+            if (isset($CrmCustomerService['qq'])) {
+                if (empty($input_data['qq'])) {
+                    $log_field .= 'QQ:' . $CrmCustomerService['qq'] . '->未填写；';
+                } else {
+                    if ($CrmCustomerService['qq'] != $input_data['qq']) {
+                        $log_field .= 'QQ:' . $CrmCustomerService['qq'] . '->' . $input_data['qq'] . '；';
+                    }
+                }
+            } else {
+                if (!empty($input_data['qq'])) {
+                    $log_field .= 'QQ:无->' . $input_data['qq'] . '；';
+                }
+            }
+
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                1
             );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }

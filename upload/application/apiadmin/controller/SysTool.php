@@ -99,6 +99,19 @@ class SysTool extends \app\common\controller\Backend
             model('JobSearchRtime')->where('uid','in',$not_display_comuid_arr)->delete();
             model('JobSearchKey')->where('uid','in',$not_display_comuid_arr)->delete();
         }
+
+        $log_field = '企业显示状态同步，
+        待审核(认证资料等待审核中):' . ($waiting === 1 ? '显示' : '不显示') . '；
+        已认证(认证资料已审核通过):' . ($pass === 1 ? '显示' : '不显示') . '；
+        未通过(认证资料审核不通过):' . ($nopass === 1 ? '显示' : '不显示') . '；
+        未认证(未认证-未提交认证资料):' . ($no_audit === 1 ? '显示' : '不显示');
+        model('AdminLog')->writeLog(
+            $log_field,
+            $this->admininfo,
+            0,
+            1
+        );
+
         $this->ajaxReturn(200, '同步成功');
     }
     /**

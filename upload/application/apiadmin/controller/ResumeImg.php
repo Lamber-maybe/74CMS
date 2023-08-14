@@ -61,7 +61,7 @@ class ResumeImg extends \app\common\controller\Backend
         model('ResumeImg')
             ->where('id','in',$id)
             ->setField('audit', $audit);
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '将简历照片/作品认证状态变更为【' .
                 model('ResumeImg')->map_audit[$audit] .
                 '】。简历照片/作品ID【' .
@@ -80,7 +80,7 @@ class ResumeImg extends \app\common\controller\Backend
         model('ResumeImg')
             ->where('id','in', $id)
             ->delete();
-        model('AdminLog')->record(
+        model('AdminLog')->checkLog(
             '删除简历照片/作品。简历照片/作品ID【' . implode(",",$id) . '】',
             $this->admininfo
         );

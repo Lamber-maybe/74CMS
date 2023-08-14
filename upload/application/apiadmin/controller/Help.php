@@ -1,5 +1,9 @@
 <?php
+
 namespace app\apiadmin\controller;
+
+use think\Db;
+
 class Help extends \app\common\controller\Backend
 {
     public function index()
@@ -38,13 +42,13 @@ class Help extends \app\common\controller\Backend
             ->order('sort_id desc,id asc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-        
+
         $category_arr = model('HelpCategory')->column('id,name');
         foreach ($list as $key => $value) {
             $value['link'] = url('index/help/show', [
                 'id' => $value['id']
             ]);
-            
+
             $value['cname'] = isset($category_arr[$value['cid']])
                 ? $category_arr[$value['cid']]
                 : '';
@@ -58,6 +62,7 @@ class Help extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -69,25 +74,41 @@ class Help extends \app\common\controller\Backend
             'seo_description' => input('post.seo_description/s', '', 'trim'),
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
-        if (
-            false ===
-            model('Help')
-                ->validate(true)
-                ->allowField(true)
-                ->save($input_data)
-        ) {
-            $this->ajaxReturn(500, model('Help')->getError());
+
+        Db::startTrans();
+        try {
+            if (
+                false ===
+                model('Help')
+                    ->validate(true)
+                    ->allowField(true)
+                    ->save($input_data)
+            ) {
+                throw new \Exception(model('Help')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                '添加帮助中心信息，' . $input_data['title'] . '(ID:' . model('Help')->id . ')',
+                $this->admininfo,
+                0,
+                2
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
         }
-        model('AdminLog')->record(
-            '添加帮助。帮助ID【' .
-                model('Help')->id .
-                '】;帮助标题【' .
-                $input_data['title'] .
-                '】',
-            $this->admininfo
-        );
+
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -96,7 +117,7 @@ class Help extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
+            $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info
             ]);
@@ -119,44 +140,84 @@ class Help extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            if (
-                false ===
-                model('Help')
-                    ->validate(true)
-                    ->allowField(true)
-                    ->save($input_data, ['id' => $id])
-            ) {
-                $this->ajaxReturn(500, model('Help')->getError());
+
+            Db::startTrans();
+            try {
+                if (
+                    false ===
+                    model('Help')
+                        ->validate(true)
+                        ->allowField(true)
+                        ->save($input_data, ['id' => $id])
+                ) {
+                    throw new \Exception(model('Help')->getError());
+                }
+
+                // 日志
+                $log_result = model('AdminLog')->writeLog(
+                    '修改帮助中心信息，' . $input_data['title'] . '(ID:' . $id . ')',
+                    $this->admininfo,
+                    0,
+                    3
+                );
+                if (false === $log_result) {
+                    throw new \Exception(model('AdminLog')->getError());
+                }
+
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollBack();
+                $this->ajaxReturn(500, '保存失败', ['err_msg' => $e->getMessage()]);
             }
-            model('AdminLog')->record(
-                '编辑帮助。帮助ID【' .
-                    $id .
-                    '】;帮助标题【' .
-                    $input_data['title'] .
-                    '】',
-                $this->admininfo
-            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
         if (!$id) {
             $this->ajaxReturn(500, '请选择数据');
         }
-        $list = model('Help')
-            ->where('id', 'in', $id)
-            ->column('title');
-        model('Help')->destroy($id);
-        model('AdminLog')->record(
-            '删除帮助。帮助ID【' .
-                implode(',', $id) .
-                '】;帮助标题【' .
-                implode(',', $list) .
-                '】',
-            $this->admininfo
-        );
+
+        Db::startTrans();
+        try {
+            $list = model('Help')
+                ->where('id', 'in', $id)
+                ->column('id,title');
+
+            $log_field = '删除帮助中心信息，';
+            foreach ($list as $hid => $title) {
+                $log_field .= $title . '(ID:' . $hid . ')；';
+            }
+
+            $del_result = model('Help')->destroy($id);
+            if (false === $del_result) {
+                throw new \Exception(model('Help')->getError());
+            }
+
+            // 日志
+            $log_result = model('AdminLog')->writeLog(
+                rtrim($log_field, '；'),
+                $this->admininfo,
+                0,
+                4
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollBack();
+            $this->ajaxReturn(500, '删除失败', ['err_msg' => $e->getMessage()]);
+        }
+
         $this->ajaxReturn(200, '删除成功');
     }
 }

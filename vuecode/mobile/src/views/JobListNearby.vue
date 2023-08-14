@@ -124,11 +124,10 @@
     <div class="form_split_10"></div>
     <div class="location_box">
       <div class="text">当前位置：{{ location_text }}</div>
-      <div class="refresh" @click="setlocation"></div>
-      <div class="location" @click="$router.push('/jobmap')"></div>
+      <div class="refresh" @click="handleCurrentLoaction"></div>
+      <div class="location" @click="$router.push('/jobmap')" v-if="$store.state.config.is_open_map == 1"></div>
       <div class="clear"></div>
     </div>
-
     <div class="form_split_10"></div>
     <van-empty
       image="search"
@@ -176,11 +175,14 @@
       </div>
     </van-list>
     <BottomNav></BottomNav>
+
     <baidu-map
+      v-if="$store.state.config.map_type == 1"
       class="bm-view"
       :ak="$store.state.config.map_ak"
       @ready="handlerMap"
     ></baidu-map>
+    <TianMap v-if="$store.state.config.map_type == 2" class="bm-view" :ak="$store.state.config.tian_map_ak" @ready="handleTianMap"></TianMap>
   </div>
 </template>
 
@@ -191,6 +193,7 @@ import { obj2Param } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import JobCategoryFilter from '@/components/JobCategoryFilter'
+import TianMap from '@/components/map/TianMap/TianMap.vue'
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
@@ -201,7 +204,8 @@ export default {
   name: 'JobListNearby',
   filters: {},
   components: {
-    JobCategoryFilter
+    JobCategoryFilter,
+    TianMap
   },
   data () {
     return {
@@ -264,7 +268,8 @@ export default {
       optionExperience: [],
       optionJobTag: [],
       selectJobTag: [],
-      BMap: {}
+      BMap: {},
+      TMap: {}
     }
   },
   watch: {
@@ -330,6 +335,13 @@ export default {
     this.restoreFilter()
   },
   methods: {
+    handleCurrentLoaction () {
+      if (this.$store.state.config.map_type == 1) {
+        this.setlocation()
+      } else if (this.$store.state.config.map_type == 2) {
+        this.setTianMaplocation()
+      }
+    },
     openedRange () {
       this.params.range = parseInt(this.params.range)
     },
@@ -659,12 +671,47 @@ export default {
         { enableHighAccuracy: true }
       )
     },
+    // 天地图获取位置
+    setTianMaplocation () {
+      let that = this
+      let old_location_text = that.location_text
+      that.location_text = '正在获取位置信息...'
+      let TMap = that.TMap
+      var geolocation = new TMap.Geolocation()
+      var geocoder = new TMap.Geocoder()
+      geolocation.getCurrentPosition(function (res) {
+        if (this.getStatus() == 0) {
+          that.lat = res.lnglat.lat
+          that.lng = res.lnglat.lng
+          geocoder.getLocation(res.lnglat, function (r) {
+            const {result: {result: {addressComponent: {city, county}}}} = r
+            const cityText = city + county
+            that.location_text = cityText
+            let wechatShareInfo = {
+              district: that.location_text
+            }
+            wxshare(wechatShareInfo, 'jobnearby', location.href)
+            if (old_location_text != that.location_text) {
+              that.initQuery(that.$route.query)
+              that.fetchData(true, 'setTianMaplocation')
+            }
+          })
+        } else {
+          that.location_text = '获取位置信息失败'
+        }
+      })
+    },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap
       this.setlocation()
     },
+    // 天地图初始化成功
+    handleTianMap ({TMap}) {
+      this.TMap = TMap
+      this.setTianMaplocation()
+    },
     // 请求列表数据，init为true时直接更改dataset值，false时代表上拉加载回的数据追加进dataset
-    fetchData (init) {
+    fetchData (init, type) {
       this.show_empty = false
 
       if (init === true) {

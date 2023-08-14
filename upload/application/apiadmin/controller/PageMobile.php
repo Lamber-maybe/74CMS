@@ -35,6 +35,12 @@ class PageMobile extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
+
+            $info = model('PageMobile')->find($id);
+            if (null === $info) {
+                $this->ajaxReturn(500, '要修改的页面不存在');
+            }
+
             if (
                 false ===
                 model('PageMobile')
@@ -43,7 +49,15 @@ class PageMobile extends \app\common\controller\Backend
             ) {
                 $this->ajaxReturn(500, model('PageMobile')->getError());
             }
-            model('AdminLog')->record('修改触屏页面管理。页面ID【' .$id .'】',$this->admininfo);
+
+            $log_field = '触屏端页面管理修改页面信息，页面名称:' . $info['name'];
+            model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+
             $this->ajaxReturn(200, '保存成功');
         }
     }

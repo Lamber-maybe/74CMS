@@ -85,6 +85,13 @@ class FollowUp extends Backend
             $data['link_man'] = $resume['fullname'];
             model('b2bcrm.CrmFollowUp')->saveData($data, $this->admininfo);
 
+            model('AdminLog')->writeLog(
+                '对{' . $resume['fullname'] . '}(简历ID:' . $resume['id'] . ')添加跟进，内容:跟进方式:' . model('b2bcrm.CrmFollowUp')->method[$data['mode']] . '；跟进结果:' . $data['result'],
+                $this->admininfo,
+                0,
+                1
+            );
+
             Db::commit();
             $this->ajaxReturn(200, '保存成功');
         } catch (\Exception $e) {

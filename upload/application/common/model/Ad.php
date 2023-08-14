@@ -3,6 +3,10 @@ namespace app\common\model;
 
 class Ad extends \app\common\model\BaseModel
 {
+    public $map_is_display = [
+        0 => '不显示',
+        1 => '显示'
+    ];
     protected $readonly = ['id', 'addtime'];
     protected $type = [
         'id' => 'integer',
