@@ -134,264 +134,264 @@
 </template>
 
 <script>
-	import wxshare from '@/assets/js/share.js'
-	import {
-		obj2Param
-	} from '@/utils/index'
-	import http from '@/utils/http'
-	import api from '@/api'
-	import DistrictFilter from '@/components/DistrictFilter'
-	import NoResume from '@/components/NoResume'
-	export default {
-		name: 'ResumeList',
-		components: {
-			DistrictFilter,
-			NoResume
-		},
-		data() {
-			return {
-				dataset: [],
-				selectResumeArrOnload: [],
-				loading: false,
-				finished: false,
-				finished_text: '',
-				show_empty: false,
-				params: {
-					keyword: '',
-					district1: '',
-					district2: '',
-					district3: '',
-					experience: '',
-					education: '',
-					sex: '',
-					minage: '',
-					maxage: '',
-					major: '',
-					minwage: '',
-					maxwage: '',
-					tag: '',
-					settr: ''
-				},
-				page: 1,
-				pagesize: 10,
-				show: false,
-				districtTitle: '地区',
-				experienceTitle: '经验',
-				educationTitle: '学历',
-				otherTitle: '其他',
-				optionWage: [{
-						text: '全部',
-						id: 0,
-						min: '',
-						max: '',
-						select: true
-					},
-					{
-						text: '1千以下',
-						id: 1,
-						min: 0,
-						max: 1000,
-						select: false
-					},
-					{
-						text: '1千-2千',
-						id: 2,
-						min: 1000,
-						max: 2000,
-						select: false
-					},
-					{
-						text: '2千-3千',
-						id: 3,
-						min: 2000,
-						max: 3000,
-						select: false
-					},
-					{
-						text: '3千-5千',
-						id: 4,
-						min: 3000,
-						max: 5000,
-						select: false
-					},
-					{
-						text: '5千-8千',
-						id: 5,
-						min: 5000,
-						max: 8000,
-						select: false
-					},
-					{
-						text: '8千-1万2',
-						id: 6,
-						min: 8000,
-						max: 12000,
-						select: false
-					},
-					{
-						text: '1万2-1万5',
-						id: 7,
-						min: 12000,
-						max: 15000,
-						select: false
-					},
-					{
-						text: '1万5以上',
-						id: 8,
-						min: 15000,
-						max: '',
-						select: false
-					}
-				],
-				optionAge: [{
-						text: '全部',
-						id: 0,
-						min: '',
-						max: '',
-						select: true
-					},
-					{
-						text: '16-20岁',
-						id: 1,
-						min: 16,
-						max: 20,
-						select: false
-					},
-					{
-						text: '20-30岁',
-						id: 2,
-						min: 20,
-						max: 30,
-						select: false
-					},
-					{
-						text: '30-40岁',
-						id: 3,
-						min: 30,
-						max: 40,
-						select: false
-					},
-					{
-						text: '40-50岁',
-						id: 4,
-						min: 40,
-						max: 50,
-						select: false
-					},
-					{
-						text: '50岁以上',
-						id: 5,
-						min: 50,
-						max: '',
-						select: false
-					}
-				],
-				optionGender: [{
-					text: '男',
-					id: 1
-				}, {
-					text: '女',
-					id: 2
-				}],
-				optionSettr: [{
-					text: '3天内',
-					id: 3
-				}, {
-					text: '7天内',
-					id: 7
-				}, {
-					text: '15天内',
-					id: 15
-				}, {
-					text: '30天内',
-					id: 30
-				}],
-				optionEducation: [],
-				optionExperience: [],
-				optionResumeTag: [],
-				selectResumeTag: [],
-				// 未登录引导
-				showLayer: false,
-				showWarn: true,
-				totalPage: 0
-			}
-		},
-		watch: {
-			$route(to, from) {
-				// 对路由变化作出响应...
-				if (from.name !== 'resumeShow' && to.name === 'resumeList') {
-					// 将地址栏中的url参数初始化到参数对象中
-					this.initQuery(to.query)
-					this.fetchData(true)
-					this.restoreFilter()
-				}
-			}
-		},
-		beforeRouteLeave(to, from, next) {
-			if (to.name === 'resumeShow') {
-				if (!from.meta.keepAlive) {
-					from.meta.keepAlive = true
-				}
-				next()
-			} else {
-				from.meta.keepAlive = false
-				next()
-			}
-		},
-		activated() {
-			// this.initdata()
-		},
-		created() {
-			this.initdata()
-		},
-		mounted() {
-			// 重构筛选项数据格式
-			// 性别
-			this.optionGender = this.restructureData(this.optionGender, '', 'gender')
-			// 更新时间
-			this.optionSettr = this.restructureData(this.optionSettr, '', 'settr')
-			this.restoreFilter()
-		},
-		methods: {
-			initdata() {
-				// 请求列表数据
-				this.initQuery(this.$route.query)
-				this.fetchData(true)
-				this.$store.dispatch('getClassify', 'citycategory')
-				this.$store.dispatch('getClassify', 'experience').then(() => {
-					// 经验
-					let storeExperience = this.$store.state.classifyExperience
-					storeExperience.unshift({
-						id: '',
-						text: '不限'
-					})
-					this.optionExperience = storeExperience.map(function(item) {
-						return {
-							text: item.text,
-							value: item.id
-						}
-					})
-					// 得到缓存分类之后，再次尝试恢复选中项
-					this.restoreFilter()
-				})
-				this.$store.dispatch('getClassify', 'education').then(() => {
-					// 学历
-					let storeEducation = this.$store.state.classifyEdu
-					storeEducation.unshift({
-						id: '',
-						text: '不限'
-					})
-					this.optionEducation = storeEducation.map(function(item) {
-						return {
-							text: item.text,
-							value: item.id
-						}
-					})
-					this.restoreFilter()
-				})
-				this.$store.dispatch('getClassify', 'resumeTag').then(() => {
-					// 重构简历标签
-					/*
+import wxshare from '@/assets/js/share.js'
+import {
+  obj2Param
+} from '@/utils/index'
+import http from '@/utils/http'
+import api from '@/api'
+import DistrictFilter from '@/components/DistrictFilter'
+import NoResume from '@/components/NoResume'
+export default {
+  name: 'ResumeList',
+  components: {
+    DistrictFilter,
+    NoResume
+  },
+  data () {
+    return {
+      dataset: [],
+      selectResumeArrOnload: [],
+      loading: false,
+      finished: false,
+      finished_text: '',
+      show_empty: false,
+      params: {
+        keyword: '',
+        district1: '',
+        district2: '',
+        district3: '',
+        experience: '',
+        education: '',
+        sex: '',
+        minage: '',
+        maxage: '',
+        major: '',
+        minwage: '',
+        maxwage: '',
+        tag: '',
+        settr: ''
+      },
+      page: 1,
+      pagesize: 10,
+      show: false,
+      districtTitle: '地区',
+      experienceTitle: '经验',
+      educationTitle: '学历',
+      otherTitle: '其他',
+      optionWage: [{
+        text: '全部',
+        id: 0,
+        min: '',
+        max: '',
+        select: true
+      },
+      {
+        text: '1千以下',
+        id: 1,
+        min: 0,
+        max: 1000,
+        select: false
+      },
+      {
+        text: '1千-2千',
+        id: 2,
+        min: 1000,
+        max: 2000,
+        select: false
+      },
+      {
+        text: '2千-3千',
+        id: 3,
+        min: 2000,
+        max: 3000,
+        select: false
+      },
+      {
+        text: '3千-5千',
+        id: 4,
+        min: 3000,
+        max: 5000,
+        select: false
+      },
+      {
+        text: '5千-8千',
+        id: 5,
+        min: 5000,
+        max: 8000,
+        select: false
+      },
+      {
+        text: '8千-1万2',
+        id: 6,
+        min: 8000,
+        max: 12000,
+        select: false
+      },
+      {
+        text: '1万2-1万5',
+        id: 7,
+        min: 12000,
+        max: 15000,
+        select: false
+      },
+      {
+        text: '1万5以上',
+        id: 8,
+        min: 15000,
+        max: '',
+        select: false
+      }
+      ],
+      optionAge: [{
+        text: '全部',
+        id: 0,
+        min: '',
+        max: '',
+        select: true
+      },
+      {
+        text: '16-20岁',
+        id: 1,
+        min: 16,
+        max: 20,
+        select: false
+      },
+      {
+        text: '20-30岁',
+        id: 2,
+        min: 20,
+        max: 30,
+        select: false
+      },
+      {
+        text: '30-40岁',
+        id: 3,
+        min: 30,
+        max: 40,
+        select: false
+      },
+      {
+        text: '40-50岁',
+        id: 4,
+        min: 40,
+        max: 50,
+        select: false
+      },
+      {
+        text: '50岁以上',
+        id: 5,
+        min: 50,
+        max: '',
+        select: false
+      }
+      ],
+      optionGender: [{
+        text: '男',
+        id: 1
+      }, {
+        text: '女',
+        id: 2
+      }],
+      optionSettr: [{
+        text: '3天内',
+        id: 3
+      }, {
+        text: '7天内',
+        id: 7
+      }, {
+        text: '15天内',
+        id: 15
+      }, {
+        text: '30天内',
+        id: 30
+      }],
+      optionEducation: [],
+      optionExperience: [],
+      optionResumeTag: [],
+      selectResumeTag: [],
+      // 未登录引导
+      showLayer: false,
+      showWarn: true,
+      totalPage: 0
+    }
+  },
+  watch: {
+    $route (to, from) {
+      // 对路由变化作出响应...
+      if (from.name !== 'resumeShow' && to.name === 'resumeList') {
+        // 将地址栏中的url参数初始化到参数对象中
+        this.initQuery(to.query)
+        this.fetchData(true)
+        this.restoreFilter()
+      }
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (to.name === 'resumeShow') {
+      if (!from.meta.keepAlive) {
+        from.meta.keepAlive = true
+      }
+      next()
+    } else {
+      from.meta.keepAlive = false
+      next()
+    }
+  },
+  activated () {
+    // this.initdata()
+  },
+  created () {
+    this.initdata()
+  },
+  mounted () {
+    // 重构筛选项数据格式
+    // 性别
+    this.optionGender = this.restructureData(this.optionGender, '', 'gender')
+    // 更新时间
+    this.optionSettr = this.restructureData(this.optionSettr, '', 'settr')
+    this.restoreFilter()
+  },
+  methods: {
+    initdata () {
+      // 请求列表数据
+      this.initQuery(this.$route.query)
+      this.fetchData(true)
+      this.$store.dispatch('getClassify', 'citycategory')
+      this.$store.dispatch('getClassify', 'experience').then(() => {
+        // 经验
+        let storeExperience = this.$store.state.classifyExperience
+        storeExperience.unshift({
+          id: '',
+          text: '不限'
+        })
+        this.optionExperience = storeExperience.map(function (item) {
+          return {
+            text: item.text,
+            value: item.id
+          }
+        })
+        // 得到缓存分类之后，再次尝试恢复选中项
+        this.restoreFilter()
+      })
+      this.$store.dispatch('getClassify', 'education').then(() => {
+        // 学历
+        let storeEducation = this.$store.state.classifyEdu
+        storeEducation.unshift({
+          id: '',
+          text: '不限'
+        })
+        this.optionEducation = storeEducation.map(function (item) {
+          return {
+            text: item.text,
+            value: item.id
+          }
+        })
+        this.restoreFilter()
+      })
+      this.$store.dispatch('getClassify', 'resumeTag').then(() => {
+        // 重构简历标签
+        /*
 +      * 【bug】触屏简历列表页更多筛选项标签调用错误
 +      * zch 2022.10.19
 +      * 【旧】
@@ -399,518 +399,518 @@
 +      * 【新】
 +      * classifyResumeTag
 +      * */
-					let storeResumeTag = (JSON.parse(JSON.stringify(this.$store.state.classifyResumeTag)))
-					storeResumeTag = storeResumeTag.map(function(item) {
-						return {
-							id: item.id,
-							text: item.text,
-							select: false
-						}
-					})
-					storeResumeTag.unshift({
-						id: '',
-						text: '全部',
-						select: true
-					})
-					this.optionResumeTag = storeResumeTag
-					this.restoreFilter()
-				})
-				wxshare({}, 'resumelist', location.href)
-			},
-			// 清空
-			handleClearMore() {
-				this.params.sex = ''
-				this.params.minage = ''
-				this.params.maxage = ''
-				this.params.minwage = ''
-				this.params.maxwage = ''
-				this.params.tag = ''
-				this.params.settr = ''
-				this.handleSelectMore()
-				this.optionGender = this.restructureData(this.optionGender, '', 'gender')
-				this.optionSettr = this.restructureData(this.optionSettr, '', 'settr')
-				this.optionAge = this.optionAge.map(function(item, index) {
-					return {
-						text: item.text,
-						id: item.id,
-						min: item.min,
-						max: item.max,
-						select: index === 0
-					}
-				})
-				this.optionWage = this.optionWage.map(function(item, index) {
-					return {
-						text: item.text,
-						id: item.id,
-						min: item.min,
-						max: item.max,
-						select: index === 0
-					}
-				})
-				this.optionResumeTag = this.optionResumeTag.map(function(item, index) {
-					return {
-						id: item.id,
-						text: item.text,
-						select: index === 0
-					}
-				})
-			},
-			// 恢复福利待遇
-			restoreResumeTag() {
-				let queryData = this.$route.query
-				if (queryData['tag'] && this.optionResumeTag) {
-					this.selectResumeTag = queryData['tag'].split(',')
-					this.selectResumeTag = this.selectResumeTag.map(function(item) {
-						return parseInt(item)
-					})
-					let _this = this
-					this.optionResumeTag = this.optionResumeTag.map(function(item) {
-						return {
-							id: item.id,
-							text: item.text,
-							select: _this.selectResumeTag.includes(item.id)
-						}
-					})
-				} else {
-					this.optionResumeTag = this.optionResumeTag.map(function(item, index) {
-						return {
-							id: item.id,
-							text: item.text,
-							select: index === 0
-						}
-					})
-				}
-			},
-			// 简历标签多选
-			handleCheckResumeTag(item) {
-				if (item.id) {
-					if (this.selectResumeTag.includes(item.id)) {
-						this.selectResumeTag.splice(this.selectResumeTag.findIndex(v => parseInt(v.id) === parseInt(item
-							.id)), 1)
-					} else {
-						if (this.selectResumeTag.length >= 5) {
-							this.$toast('简历标签最多可选5个')
-						} else {
-							this.selectResumeTag.push(item.id)
-						}
-					}
-					let _this = this
-					this.optionResumeTag = this.optionResumeTag.map(function(item) {
-						return {
-							id: item.id,
-							text: item.text,
-							select: _this.selectResumeTag.includes(item.id)
-						}
-					})
-				} else {
-					// 全部
-					this.selectResumeTag = []
-					this.optionResumeTag = this.optionResumeTag.map(function(item, index) {
-						return {
-							id: item.id,
-							text: item.text,
-							select: index === 0
-						}
-					})
-				}
-				this.params.tag = this.selectResumeTag.join(',')
-			},
-			initQuery(query) {
-				for (const key in this.params) {
-					if (query.hasOwnProperty(key)) {
-						this.params[key] = query[key]
-					} else {
-						this.params[key] = ''
-					}
-				}
-			},
-			openedEducation() {
-				this.params.education = parseInt(this.params.education)
-			},
-			openedExperience() {
-				this.params.experience = parseInt(this.params.experience)
-			},
-			// 筛选年龄
-			handleAge(option) {
-				this.params.minage = option.min
-				this.params.maxage = option.max
-				this.optionAge = this.optionAge.map(function(item) {
-					return {
-						text: item.text,
-						id: item.id,
-						min: item.min,
-						max: item.max,
-						select: parseInt(item.id) === parseInt(option.id)
-					}
-				})
-			},
-			// 筛选薪资
-			handleWage(option) {
-				this.params.minwage = option.min
-				this.params.maxwage = option.max
-				this.optionWage = this.optionWage.map(function(item) {
-					return {
-						text: item.text,
-						id: item.id,
-						min: item.min,
-						max: item.max,
-						select: parseInt(item.id) === parseInt(option.id)
-					}
-				})
-			},
-			// 筛选学历
-			handleEducation(value) {
-				if (value) {
-					let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === value)
-					this.educationTitle = thisEducation[0].text
-					this.params.education = value
-				} else {
-					this.educationTitle = '学历'
-					this.params.education = ''
-				}
-				this.doSearch({
-					education: value
-				})
-			},
-			// 筛选经验
-			handleExperience(value) {
-				if (value) {
-					let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(value))
-					this.experienceTitle = thisExperience[0].text
-					this.params.experience = value
-				} else {
-					this.experienceTitle = '经验'
-					this.params.experience = ''
-				}
-				this.doSearch({
-					experience: value
-				})
-			},
-			// 地区筛选打开之后给筛选组件赋值
-			openedDistrict() {
-				this.$refs.dropDistrict.$children[0].$children[0].initData()
-				setTimeout(() => {
-					this.setComponentAttribute(this.$refs.dropDistrict)
-				}, 300)
-			},
-			closedDistrict() {
-				this.$refs.dropDistrict.$children[0].$children[0].handleCityOverlay()
-			},
-			// 设置地区筛选组件高度
-			setComponentAttribute(component) {
-				if (component.$children[0]) {
-					let thisHeight = component.$children[0].$el.clientHeight
-					component.$children[0].$children[0].layHeight = thisHeight
-					let offTop = component.$el.offsetTop
-					component.$children[0].$children[0].offTop = parseInt(parseInt(offTop) + parseInt(thisHeight) / 2)
-				}
-			},
-			// 恢复选中项
-			restoreFilter() {
-				let queryData = this.$route.query
-				// 恢复地区
-				if (queryData['district1']) {
-					this.params.district1 = queryData['district1']
-					this.params.district2 = queryData['district2']
-					this.params.district3 = queryData['district3']
-					let storeCity = this.$store.state.classifyCityOriginal
-					let selectText = []
-					let topItem = storeCity.filter(item => parseInt(item.value) === parseInt(this.params.district1))[0]
-					selectText.push(topItem.label)
-					if (topItem.children.length) {
-						if (parseInt(this.params.district2)) {
-							let secondItem = topItem.children.filter(item => parseInt(item.value) === parseInt(this.params
-								.district2))[0]
-							selectText.push(secondItem.label)
-							if (secondItem.children.length) {
-								if (parseInt(this.params.district3)) {
-									let lowestItem = secondItem.children.filter(item => parseInt(item.value) === parseInt(
-										this.params.district3))[0]
-									selectText.push(lowestItem.label)
-								} else {
-									selectText.push(`全${selectText[selectText.length - 1]}`)
-								}
-							}
-						} else {
-							selectText.push(`全${selectText[selectText.length - 1]}`)
-						}
-					}
-					this.districtTitle = selectText[selectText.length - 1]
-				} else {
-					this.params.district1 = ''
-					this.params.district2 = ''
-					this.params.district3 = ''
-					this.districtTitle = '地区'
-				}
-				// 恢复经验
-				if (queryData['experience'] && this.optionExperience) {
-					let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(queryData[
-						'experience']))
-					this.experienceTitle = thisExperience[0].text
-					this.params.experience = parseInt(thisExperience[0].value)
-				} else {
-					this.experienceTitle = '经验'
-					this.params.experience = ''
-				}
-				// 恢复学历
-				if (queryData['education'] && this.optionEducation) {
-					let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === parseInt(queryData[
-						'education']))
-					this.educationTitle = thisEducation[0].text
-					this.params.education = parseInt(thisEducation[0].value)
-				} else {
-					this.educationTitle = '学历'
-					this.params.education = ''
-				}
-				// 恢复性别
-				let resetGender = ''
-				if (queryData['sex']) {
-					resetGender = queryData['sex']
-				}
-				this.optionGender = this.restructureData(this.optionGender, resetGender, 'gender')
-				// 恢复年龄
-				if (queryData['minage']) {
-					this.params.minage = queryData['minage']
-					this.params.maxage = queryData['maxage']
-					this.optionAge = this.optionAge.map(function(item) {
-						return {
-							text: item.text,
-							id: item.id,
-							min: item.min,
-							max: item.max,
-							select: parseInt(item.min) === parseInt(queryData['minage'])
-						}
-					})
-				} else {
-					this.params.minage = ''
-					this.params.maxage = ''
-					this.optionAge = this.optionAge.map(function(item, index) {
-						return {
-							text: item.text,
-							id: item.id,
-							min: item.min,
-							max: item.max,
-							select: index === 0
-						}
-					})
-				}
-				// 恢复薪资
-				if (queryData['minwage']) {
-					this.params.minwage = queryData['minwage']
-					this.params.maxwage = queryData['maxwage']
-					this.optionWage = this.optionWage.map(function(item) {
-						return {
-							text: item.text,
-							id: item.id,
-							min: item.min,
-							max: item.max,
-							select: parseInt(item.min) === parseInt(queryData['minwage'])
-						}
-					})
-				} else {
-					this.params.minwage = ''
-					this.params.maxwage = ''
-					this.optionWage = this.optionWage.map(function(item, index) {
-						return {
-							text: item.text,
-							id: item.id,
-							min: item.min,
-							max: item.max,
-							select: index === 0
-						}
-					})
-				}
-				// 恢复简历标签
-				this.restoreResumeTag()
-				// 恢复更新时间
-				let resetSettr = ''
-				if (queryData['settr']) {
-					resetSettr = queryData['settr']
-				}
-				this.optionSettr = this.restructureData(this.optionSettr, resetSettr, 'settr')
-			},
-			// 地区筛选
-			doSearchByDistrict(data) {
-				this.doSearch({
-					district1: data.district1,
-					district2: data.district2,
-					district3: data.district3
-				})
-				this.districtTitle = data.districtName
-				this.$refs.dropDistrict.toggle()
-			},
-			/**
+        let storeResumeTag = (JSON.parse(JSON.stringify(this.$store.state.classifyResumeTag)))
+        storeResumeTag = storeResumeTag.map(function (item) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: false
+          }
+        })
+        storeResumeTag.unshift({
+          id: '',
+          text: '全部',
+          select: true
+        })
+        this.optionResumeTag = storeResumeTag
+        this.restoreFilter()
+      })
+      wxshare({}, 'resumelist', location.href)
+    },
+    // 清空
+    handleClearMore () {
+      this.params.sex = ''
+      this.params.minage = ''
+      this.params.maxage = ''
+      this.params.minwage = ''
+      this.params.maxwage = ''
+      this.params.tag = ''
+      this.params.settr = ''
+      this.handleSelectMore()
+      this.optionGender = this.restructureData(this.optionGender, '', 'gender')
+      this.optionSettr = this.restructureData(this.optionSettr, '', 'settr')
+      this.optionAge = this.optionAge.map(function (item, index) {
+        return {
+          text: item.text,
+          id: item.id,
+          min: item.min,
+          max: item.max,
+          select: index === 0
+        }
+      })
+      this.optionWage = this.optionWage.map(function (item, index) {
+        return {
+          text: item.text,
+          id: item.id,
+          min: item.min,
+          max: item.max,
+          select: index === 0
+        }
+      })
+      this.optionResumeTag = this.optionResumeTag.map(function (item, index) {
+        return {
+          id: item.id,
+          text: item.text,
+          select: index === 0
+        }
+      })
+    },
+    // 恢复福利待遇
+    restoreResumeTag () {
+      let queryData = this.$route.query
+      if (queryData['tag'] && this.optionResumeTag) {
+        this.selectResumeTag = queryData['tag'].split(',')
+        this.selectResumeTag = this.selectResumeTag.map(function (item) {
+          return parseInt(item)
+        })
+        let _this = this
+        this.optionResumeTag = this.optionResumeTag.map(function (item) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: _this.selectResumeTag.includes(item.id)
+          }
+        })
+      } else {
+        this.optionResumeTag = this.optionResumeTag.map(function (item, index) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: index === 0
+          }
+        })
+      }
+    },
+    // 简历标签多选
+    handleCheckResumeTag (item) {
+      if (item.id) {
+        if (this.selectResumeTag.includes(item.id)) {
+          this.selectResumeTag.splice(this.selectResumeTag.findIndex(v => parseInt(v.id) === parseInt(item
+            .id)), 1)
+        } else {
+          if (this.selectResumeTag.length >= 5) {
+            this.$toast('简历标签最多可选5个')
+          } else {
+            this.selectResumeTag.push(item.id)
+          }
+        }
+        let _this = this
+        this.optionResumeTag = this.optionResumeTag.map(function (item) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: _this.selectResumeTag.includes(item.id)
+          }
+        })
+      } else {
+        // 全部
+        this.selectResumeTag = []
+        this.optionResumeTag = this.optionResumeTag.map(function (item, index) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: index === 0
+          }
+        })
+      }
+      this.params.tag = this.selectResumeTag.join(',')
+    },
+    initQuery (query) {
+      for (const key in this.params) {
+        if (query.hasOwnProperty(key)) {
+          this.params[key] = query[key]
+        } else {
+          this.params[key] = ''
+        }
+      }
+    },
+    openedEducation () {
+      this.params.education = parseInt(this.params.education)
+    },
+    openedExperience () {
+      this.params.experience = parseInt(this.params.experience)
+    },
+    // 筛选年龄
+    handleAge (option) {
+      this.params.minage = option.min
+      this.params.maxage = option.max
+      this.optionAge = this.optionAge.map(function (item) {
+        return {
+          text: item.text,
+          id: item.id,
+          min: item.min,
+          max: item.max,
+          select: parseInt(item.id) === parseInt(option.id)
+        }
+      })
+    },
+    // 筛选薪资
+    handleWage (option) {
+      this.params.minwage = option.min
+      this.params.maxwage = option.max
+      this.optionWage = this.optionWage.map(function (item) {
+        return {
+          text: item.text,
+          id: item.id,
+          min: item.min,
+          max: item.max,
+          select: parseInt(item.id) === parseInt(option.id)
+        }
+      })
+    },
+    // 筛选学历
+    handleEducation (value) {
+      if (value) {
+        let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === value)
+        this.educationTitle = thisEducation[0].text
+        this.params.education = value
+      } else {
+        this.educationTitle = '学历'
+        this.params.education = ''
+      }
+      this.doSearch({
+        education: value
+      })
+    },
+    // 筛选经验
+    handleExperience (value) {
+      if (value) {
+        let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(value))
+        this.experienceTitle = thisExperience[0].text
+        this.params.experience = value
+      } else {
+        this.experienceTitle = '经验'
+        this.params.experience = ''
+      }
+      this.doSearch({
+        experience: value
+      })
+    },
+    // 地区筛选打开之后给筛选组件赋值
+    openedDistrict () {
+      this.$refs.dropDistrict.$children[0].$children[0].initData()
+      setTimeout(() => {
+        this.setComponentAttribute(this.$refs.dropDistrict)
+      }, 300)
+    },
+    closedDistrict () {
+      this.$refs.dropDistrict.$children[0].$children[0].handleCityOverlay()
+    },
+    // 设置地区筛选组件高度
+    setComponentAttribute (component) {
+      if (component.$children[0]) {
+        let thisHeight = component.$children[0].$el.clientHeight
+        component.$children[0].$children[0].layHeight = thisHeight
+        let offTop = component.$el.offsetTop
+        component.$children[0].$children[0].offTop = parseInt(parseInt(offTop) + parseInt(thisHeight) / 2)
+      }
+    },
+    // 恢复选中项
+    restoreFilter () {
+      let queryData = this.$route.query
+      // 恢复地区
+      if (queryData['district1']) {
+        this.params.district1 = queryData['district1']
+        this.params.district2 = queryData['district2']
+        this.params.district3 = queryData['district3']
+        let storeCity = this.$store.state.classifyCityOriginal
+        let selectText = []
+        let topItem = storeCity.filter(item => parseInt(item.value) === parseInt(this.params.district1))[0]
+        selectText.push(topItem.label)
+        if (topItem.children.length) {
+          if (parseInt(this.params.district2)) {
+            let secondItem = topItem.children.filter(item => parseInt(item.value) === parseInt(this.params
+              .district2))[0]
+            selectText.push(secondItem.label)
+            if (secondItem.children.length) {
+              if (parseInt(this.params.district3)) {
+                let lowestItem = secondItem.children.filter(item => parseInt(item.value) === parseInt(
+                  this.params.district3))[0]
+                selectText.push(lowestItem.label)
+              } else {
+                selectText.push(`全${selectText[selectText.length - 1]}`)
+              }
+            }
+          } else {
+            selectText.push(`全${selectText[selectText.length - 1]}`)
+          }
+        }
+        this.districtTitle = selectText[selectText.length - 1]
+      } else {
+        this.params.district1 = ''
+        this.params.district2 = ''
+        this.params.district3 = ''
+        this.districtTitle = '地区'
+      }
+      // 恢复经验
+      if (queryData['experience'] && this.optionExperience) {
+        let thisExperience = this.optionExperience.filter(item => parseInt(item.value) === parseInt(queryData[
+          'experience']))
+        this.experienceTitle = thisExperience[0].text
+        this.params.experience = parseInt(thisExperience[0].value)
+      } else {
+        this.experienceTitle = '经验'
+        this.params.experience = ''
+      }
+      // 恢复学历
+      if (queryData['education'] && this.optionEducation) {
+        let thisEducation = this.optionEducation.filter(item => parseInt(item.value) === parseInt(queryData[
+          'education']))
+        this.educationTitle = thisEducation[0].text
+        this.params.education = parseInt(thisEducation[0].value)
+      } else {
+        this.educationTitle = '学历'
+        this.params.education = ''
+      }
+      // 恢复性别
+      let resetGender = ''
+      if (queryData['sex']) {
+        resetGender = queryData['sex']
+      }
+      this.optionGender = this.restructureData(this.optionGender, resetGender, 'gender')
+      // 恢复年龄
+      if (queryData['minage']) {
+        this.params.minage = queryData['minage']
+        this.params.maxage = queryData['maxage']
+        this.optionAge = this.optionAge.map(function (item) {
+          return {
+            text: item.text,
+            id: item.id,
+            min: item.min,
+            max: item.max,
+            select: parseInt(item.min) === parseInt(queryData['minage'])
+          }
+        })
+      } else {
+        this.params.minage = ''
+        this.params.maxage = ''
+        this.optionAge = this.optionAge.map(function (item, index) {
+          return {
+            text: item.text,
+            id: item.id,
+            min: item.min,
+            max: item.max,
+            select: index === 0
+          }
+        })
+      }
+      // 恢复薪资
+      if (queryData['minwage']) {
+        this.params.minwage = queryData['minwage']
+        this.params.maxwage = queryData['maxwage']
+        this.optionWage = this.optionWage.map(function (item) {
+          return {
+            text: item.text,
+            id: item.id,
+            min: item.min,
+            max: item.max,
+            select: parseInt(item.min) === parseInt(queryData['minwage'])
+          }
+        })
+      } else {
+        this.params.minwage = ''
+        this.params.maxwage = ''
+        this.optionWage = this.optionWage.map(function (item, index) {
+          return {
+            text: item.text,
+            id: item.id,
+            min: item.min,
+            max: item.max,
+            select: index === 0
+          }
+        })
+      }
+      // 恢复简历标签
+      this.restoreResumeTag()
+      // 恢复更新时间
+      let resetSettr = ''
+      if (queryData['settr']) {
+        resetSettr = queryData['settr']
+      }
+      this.optionSettr = this.restructureData(this.optionSettr, resetSettr, 'settr')
+    },
+    // 地区筛选
+    doSearchByDistrict (data) {
+      this.doSearch({
+        district1: data.district1,
+        district2: data.district2,
+        district3: data.district3
+      })
+      this.districtTitle = data.districtName
+      this.$refs.dropDistrict.toggle()
+    },
+    /**
 			 * 重构数据
 			 * @param data 需要重构的数据
 			 * @param id 标记是否选中
 			 * @param type 筛选条件
 			 * @returns {*}
 			 */
-			restructureData(data, id, type) {
-				let restoreArray = data
-				let existSub = restoreArray.findIndex(item => {
-					return item.id === ''
-				})
-				if (existSub === -1) {
-					// 防止重复添加
-					restoreArray.unshift({
-						id: '',
-						text: '全部'
-					})
-				}
-				if (type === 'gender') {
-					// 性别
-					this.params.sex = id
-				} else if (type === 'settr') {
-					// 更新时间
-					this.params.settr = id
-				}
-				restoreArray = restoreArray.map(function(item, index) {
-					let iSelect = false
-					if (id) {
-						// 标记选中项
-						iSelect = parseInt(item.id) === parseInt(id)
-					} else {
-						// 无选中项，选中全部
-						iSelect = index === 0
-					}
-					return {
-						id: item.id,
-						text: item.text,
-						select: iSelect
-					}
-				})
-				return restoreArray
-			},
-			// 更多选择确定
-			handleSelectMore() {
-				this.doSearch({
-					sex: this.params.sex,
-					minage: this.params.minage,
-					maxage: this.params.maxage,
-					minwage: this.params.minwage,
-					maxwage: this.params.maxwage,
-					tag: this.params.tag,
-					settr: this.params.settr
-				})
-				this.$refs.dropMore.toggle()
-			},
-			// 请求列表数据，init为true时直接更改dataset值，false时代表上拉加载回的数据追加进dataset
-			fetchData(init) {
-				this.show_empty = false
+    restructureData (data, id, type) {
+      let restoreArray = data
+      let existSub = restoreArray.findIndex(item => {
+        return item.id === ''
+      })
+      if (existSub === -1) {
+        // 防止重复添加
+        restoreArray.unshift({
+          id: '',
+          text: '全部'
+        })
+      }
+      if (type === 'gender') {
+        // 性别
+        this.params.sex = id
+      } else if (type === 'settr') {
+        // 更新时间
+        this.params.settr = id
+      }
+      restoreArray = restoreArray.map(function (item, index) {
+        let iSelect = false
+        if (id) {
+          // 标记选中项
+          iSelect = parseInt(item.id) === parseInt(id)
+        } else {
+          // 无选中项，选中全部
+          iSelect = index === 0
+        }
+        return {
+          id: item.id,
+          text: item.text,
+          select: iSelect
+        }
+      })
+      return restoreArray
+    },
+    // 更多选择确定
+    handleSelectMore () {
+      this.doSearch({
+        sex: this.params.sex,
+        minage: this.params.minage,
+        maxage: this.params.maxage,
+        minwage: this.params.minwage,
+        maxwage: this.params.maxwage,
+        tag: this.params.tag,
+        settr: this.params.settr
+      })
+      this.$refs.dropMore.toggle()
+    },
+    // 请求列表数据，init为true时直接更改dataset值，false时代表上拉加载回的数据追加进dataset
+    fetchData (init) {
+      this.show_empty = false
 
-				let conditions = {
-					...this.params
-				}
-				if (init === true) {
-					this.page = 1
-					this.finished = false
-					this.finished_text = ''
-				}
-				conditions.page = this.page
-				conditions.pagesize = this.pagesize
-				http.get(api.resumelist, conditions)
-					.then(res => {
-						this.totalPage = res.data.total_page
-						if (init === true) {
-							this.dataset = [...res.data.items]
-							this.showLayer = parseInt(res.data.show_mask) === 1
-						} else {
-							this.dataset = this.dataset.concat(res.data.items)
-						}
-						this.dataset.forEach(item => {
-							item.clicked = false
-						})
-						this.getColorChange(); //缓存数据标题是否变色
-						// 加载状态结束
-						this.loading = false
+      let conditions = {
+        ...this.params
+      }
+      if (init === true) {
+        this.page = 1
+        this.finished = false
+        this.finished_text = ''
+      }
+      conditions.page = this.page
+      conditions.pagesize = this.pagesize
+      http.get(api.resumelist, conditions)
+        .then(res => {
+          this.totalPage = res.data.total_page
+          if (init === true) {
+            this.dataset = [...res.data.items]
+            this.showLayer = parseInt(res.data.show_mask) === 1
+          } else {
+            this.dataset = this.dataset.concat(res.data.items)
+          }
+          this.dataset.forEach(item => {
+            item.clicked = false
+          })
+          this.getColorChange() // 缓存数据标题是否变色
+          // 加载状态结束
+          this.loading = false
 
-						// 数据全部加载完成
-						if (res.data.items.length === 0) {
-							this.show_empty = true
-						} else if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
-							this.finished = true
-							// if (init === false) {
-							this.finished_text = '暂无更多'
-							// }
-						}
-					})
-					.catch(() => {})
-			},
-			onLoad() {
-				if (this.page < this.totalPage) {
-					this.page++
-					this.fetchData(false)
-				}
-			},
-			toDetail(id) {
-				let selectResumeArr = this.selectResumeArrOnload == undefined ? [] : this.selectResumeArrOnload
-				if (selectResumeArr.indexOf(id) == -1) {
-					selectResumeArr.push(id)
-				}
-				let selectResumeArrStr = JSON.stringify(selectResumeArr)
-				localStorage.setItem('selectResumeArr', selectResumeArrStr)
-				for (let i in this.dataset) {
-					if (this.dataset[i].id == id && !this.dataset[i].clicked) {
-						this.dataset[i].clicked = true
-					}
-				}
-				/**
+          // 数据全部加载完成
+          if (res.data.items.length === 0) {
+            this.show_empty = true
+          } else if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
+            this.finished = true
+            if (this.showLayer === false) {
+              this.finished_text = '暂无更多'
+            }
+          }
+        })
+        .catch(() => {})
+    },
+    onLoad () {
+      if (this.page < this.totalPage) {
+        this.page++
+        this.fetchData(false)
+      }
+    },
+    toDetail (id) {
+      let selectResumeArr = this.selectResumeArrOnload == undefined ? [] : this.selectResumeArrOnload
+      if (selectResumeArr.indexOf(id) == -1) {
+        selectResumeArr.push(id)
+      }
+      let selectResumeArrStr = JSON.stringify(selectResumeArr)
+      localStorage.setItem('selectResumeArr', selectResumeArrStr)
+      for (let i in this.dataset) {
+        if (this.dataset[i].id == id && !this.dataset[i].clicked) {
+          this.dataset[i].clicked = true
+        }
+      }
+      /**
 				 * 【bug】触屏简历列表进入详情右下角通过多功能侧边栏按钮返回首页，再次进入简历列表页时，会出现重复数据
 				 *  zch 2022.10.9
 				 * 【新增】列表置空
 				 * this.dataset = []
 				 * */
-				// this.dataset = []
-				this.$router.push('/resume/' + id)
-			},
-			// 搜索通用函数
-			doSearch(data) {
-				for (const key in data) {
-					if (this.params.hasOwnProperty(key)) {
-						this.params[key] = data[key]
-					}
-				}
-				this.page = 1
-				this.$router.push('/resumelist' + obj2Param(this.params, '?'))
-			},
-			// 关键词搜索函数，重置所有参数，并且把当前页设置为第一页
-			doSearchByKeyword(data) {
-				for (const key in this.params) {
-					this.params[key] = ''
-				}
-				this.params.keyword = data.keyword
-				this.page = 1
-				this.$router.push('/resumelist' + obj2Param(this.params, '?'))
-			},
-			toggleSearch() {
-				this.show = !this.show
-			},
-			showChange(e) {
-				this.showWarn = e
-			},
-			getColorChange() {
-				let LoginOrNotLocal = localStorage.getItem('LoginOrNot');
-				let LoginOrNot = this.$store.state.LoginOrNot.toString();
-				localStorage.setItem('LoginOrNot', LoginOrNot); //更新缓存中登录状态
-				if (LoginOrNot != LoginOrNotLocal) { //登录状态改变时清空缓存数据
-					localStorage.setItem('selectArr', null); //职位
-					localStorage.setItem('selectResumeArr', null); //简历
-					localStorage.setItem('selectComArr', null); //企业
-				}
-				this.selectResumeArrOnload = localStorage.getItem('selectResumeArr') == null || localStorage.getItem('selectResumeArr') == 'null' || localStorage.getItem(
-					'selectResumeArr') == '' || localStorage.getItem(
-					'selectResumeArr') == undefined ? [] : JSON.parse(localStorage.getItem('selectResumeArr'))
-				this.selectResumeArrOnload.forEach(items => {
-					this.dataset.forEach(item => {
-						if (item.id == items) {
-							item.clicked = true
-						}
-					})
-				})
-			}
-		}
-	}
+      // this.dataset = []
+      this.$router.push('/resume/' + id)
+    },
+    // 搜索通用函数
+    doSearch (data) {
+      for (const key in data) {
+        if (this.params.hasOwnProperty(key)) {
+          this.params[key] = data[key]
+        }
+      }
+      this.page = 1
+      this.$router.push('/resumelist' + obj2Param(this.params, '?'))
+    },
+    // 关键词搜索函数，重置所有参数，并且把当前页设置为第一页
+    doSearchByKeyword (data) {
+      for (const key in this.params) {
+        this.params[key] = ''
+      }
+      this.params.keyword = data.keyword
+      this.page = 1
+      this.$router.push('/resumelist' + obj2Param(this.params, '?'))
+    },
+    toggleSearch () {
+      this.show = !this.show
+    },
+    showChange (e) {
+      this.showWarn = e
+    },
+    getColorChange () {
+      let LoginOrNotLocal = localStorage.getItem('LoginOrNot')
+      let LoginOrNot = this.$store.state.LoginOrNot.toString()
+      localStorage.setItem('LoginOrNot', LoginOrNot) // 更新缓存中登录状态
+      if (LoginOrNot != LoginOrNotLocal) { // 登录状态改变时清空缓存数据
+        localStorage.setItem('selectArr', null) // 职位
+        localStorage.setItem('selectResumeArr', null) // 简历
+        localStorage.setItem('selectComArr', null) // 企业
+      }
+      this.selectResumeArrOnload = localStorage.getItem('selectResumeArr') == null || localStorage.getItem('selectResumeArr') == 'null' || localStorage.getItem(
+        'selectResumeArr') == '' || localStorage.getItem(
+        'selectResumeArr') == undefined ? [] : JSON.parse(localStorage.getItem('selectResumeArr'))
+      this.selectResumeArrOnload.forEach(items => {
+        this.dataset.forEach(item => {
+          if (item.id == items) {
+            item.clicked = true
+          }
+        })
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

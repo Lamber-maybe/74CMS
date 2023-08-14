@@ -292,7 +292,8 @@ class Profile extends \app\v1_0\controller\common\Base
                     'uid' => $this->userinfo->uid,
                     'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
                     'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
-                ],
+                    'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
+                ]
             ];
             if (!empty($input_data['basic']['citycategory_arr'])) {
                 $input_data['basic']['district1'] = isset($input_data['basic']['citycategory_arr'][0]) ? $input_data['basic']['citycategory_arr'][0] : 0;

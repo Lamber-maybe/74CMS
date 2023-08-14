@@ -2,10 +2,16 @@ import { Message } from 'element-ui'
 import router from '@/router'
 import store from '@/store'
 
-export function checkRoleAuth(routePath, errMsg = '您的权限不足，请联系超级管理员。') {
+export function checkRoleAuth(routePath, errMsg = '您的权限不足，请联系超级管理员。', param = {}) {
   const routeList = store.state.permission.routers
   const isAllow = routeTree(routeList, routePath)
+
   if (isAllow && isAllow.isAllow) {
+    if (Object.keys(param).length > 0){
+      for (const key in param){
+        localStorage.setItem(key, param[key])
+      }
+    }
     router.push(routePath)
   } else {
     Message.error(errMsg)

@@ -161,6 +161,16 @@ const routes = [
     }
   },
   {
+    path: '/cancellation_person',
+    name: 'cancellationPersonList',
+    component: () => import('../views/Personal/cancellationPersonList.vue'),
+    meta: {
+      title: '个人注销申请',
+      keepAlive: false,
+      loginCheck: true
+    }
+  },
+  {
     path: '/job_list/:type',
     name: 'jobList',
     component: () => import('../views/Company/jobList'),

@@ -120,5 +120,6 @@ export default {
 <style scoped>
 .specialty {
   font-size: 14px;
+  max-width: 80%;
 }
 </style>

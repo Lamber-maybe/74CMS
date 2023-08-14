@@ -435,6 +435,13 @@
               placeholder="请填写手机号"
               @input="hanlderMobile"
             ></el-input>
+            <el-checkbox
+              @change="handlerSecrecyHidden"
+              v-model="secrecyHidden"
+              class="checkbox_mg"
+            >不对外显示仅接收通知
+            </el-checkbox
+            >
           </el-form-item>
           <el-form-item
             prop="contact.telephone"
@@ -531,7 +538,7 @@
 
         <div class="btn_wrapper">
 <!--          【ID1000214]连续点击多条职位发布修改-->
-          <el-button type="primary" @click="onSubmit('form')" :disabled="ispay">{{
+          <el-button type="primary" @click="onSubmit('form')" :loading="ispay">{{
               type == "add" ? "发布职位" : "保存修改"
             }}
           </el-button>
@@ -715,12 +722,14 @@ export default {
           weixin: '',
           telephone: '',
           email: '',
-          qq: ''
+          qq: '',
+          is_secrecy: 1
         }
       },
       contactHidden: false,
       weixin_sync_mobile: false,
-      tpllist: []
+      tpllist: [],
+      secrecyHidden: false
     }
   },
   methods: {
@@ -812,6 +821,7 @@ export default {
             tmp_citycategory_arr[1] !== undefined ? tmp_citycategory_arr[1] : 0
           submitData.basic.district3 =
             tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0
+          submitData.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
 
           this.$emit('submit', {
             basic: submitData.basic,
@@ -839,6 +849,13 @@ export default {
     handlerSync() {
       if (this.weixin_sync_mobile === true) {
         this.form.contact.weixin = this.form.contact.mobile
+      }
+    },
+    handlerSecrecyHidden () {
+      if (this.secrecyHidden === true) {
+        this.form.contact.is_secrecy = 0
+      } else {
+        this.form.contact.is_secrecy = 1
       }
     },
     handlerShowMap() {

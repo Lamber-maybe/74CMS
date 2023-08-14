@@ -379,6 +379,17 @@
           class="reset_after"
           @input="hanlderMobile"
         />
+        <div class="for_btn">
+          <div class="sync_phone">
+            <van-checkbox
+              v-model="secrecyHidden"
+              icon-size="16px"
+              @change="handlerSecrecyHidden"
+            >
+              隐藏不显示
+            </van-checkbox>
+          </div>
+        </div>
         <van-field
           v-if="field_rule.contact.weixin.is_display == 1"
           :required="field_rule.contact.weixin.is_require == 1 ? true : false"
@@ -590,7 +601,8 @@ export default {
         weixin: '',
         telephone: '',
         email: '',
-        qq: ''
+        qq: '',
+        is_secrecy: 1
       },
       showPickerJobCategory: false,
       showPickerExperience: false,
@@ -623,7 +635,8 @@ export default {
       educationDefaultIndex: 0,
       tpllist: [],
       nature_text: '全职',
-      is_submit: false
+      is_submit: false,
+      secrecyHidden: false
     }
   },
   created () {
@@ -836,6 +849,13 @@ export default {
         this.contact.weixin = this.contact.mobile
       }
     },
+    handlerSecrecyHidden () {
+      if (this.secrecyHidden === true) {
+        this.contact.is_secrecy = 0
+      } else {
+        this.contact.is_secrecy = 1
+      }
+    },
     onConfirmExperience (value) {
       this.basic.experience = value.id
       this.experience_text = value.text
@@ -908,6 +928,7 @@ export default {
     onSubmit (values) {
       this.is_submit = true
       this.contact.is_display = this.contactHidden === 1 ? 0 : 1
+      this.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
       this.$emit('submit', {
         basic: this.basic,
         contact: this.contact

@@ -87,7 +87,8 @@ class Job extends \app\v1_0\controller\common\Base
                 'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
                 'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 'is_display' => input('post.contact.is_display/d', 1, 'intval'),
-            ],
+                'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
+            ]
         ];
 
         /**
@@ -493,7 +494,8 @@ class Job extends \app\v1_0\controller\common\Base
                 'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
                 'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 'is_display' => input('post.contact.is_display/d', 1, 'intval'),
-            ],
+                'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
+            ]
         ];
         $jobid = $input_data['basic']['id'];
         if ($jobid == 0) {
@@ -679,7 +681,16 @@ class Job extends \app\v1_0\controller\common\Base
             case 3: //全部
                 break;
             case 1: //审核中
-                $list = $list->where('audit', 0);
+                /**
+                 * 【ID1000484】
+                 * 【优化】审核中的职位关闭
+                 * yx - 2022.01.03
+                 * PS：审核中，仅展示审核中并且未下线的职位
+                 * [新增]:
+                 * ->where('is_display', 1)
+                 */
+                $list = $list->where('audit', 0)
+                    ->where('is_display', 1);
                 break;
             case 2: //已下线
                 $list = $list->where(function ($query) {

@@ -1333,6 +1333,16 @@ class Job extends \app\v1_0\controller\common\Base
         $return['show_contact'] = $getJobContact['show_contact'];
         $return['show_contact_note'] = $getJobContact['show_contact_note'];
         $return['contact_info'] = $getJobContact['contact_info'];
+
+        /**
+         * 【ID1000443】
+         * 【新增】职位相关通知通知职位联系人及职位联系方式自主关闭显示联系手机号
+         * yx - 2022.12.30
+         * [新增]:
+         * $return['is_secrecy'] = $getJobContact['is_secrecy'];
+         */
+        $return['is_secrecy'] = $getJobContact['is_secrecy'];
+
         if($this->userinfo===null){
             $return['has_apply'] = 0;
         }else{

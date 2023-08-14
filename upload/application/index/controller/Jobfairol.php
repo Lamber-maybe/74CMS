@@ -28,7 +28,16 @@ class Jobfairol extends \app\index\controller\Base{
             ' THEN 1
         ELSE 0
         END AS score';
-        $list = model('JobfairOnline')->field($field)->order('score desc')->page($current_page, $pagesize)->select();
+        /**
+         * 【ID1000495】
+         * 【bug】网络招聘会列表页数据重复（order排序问题）
+         * yx - 2023.01.03
+         * [旧]:
+         * ->order('score DESC')
+         * [新]:
+         * ->order('score DESC, id DESC')
+         */
+        $list = model('JobfairOnline')->field($field)->order('score DESC, id DESC')->page($current_page, $pagesize)->select();
         $participate_company = $participate_personal = $jobfair_id_arr = $thumb_arr = $thumb_id_arr = [];
         foreach ($list as $key => $value) {
             $jobfair_id_arr[] = $value['id'];

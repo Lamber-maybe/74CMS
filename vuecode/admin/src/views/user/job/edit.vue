@@ -239,6 +239,10 @@
         </el-form-item>
         <el-form-item label="联系手机" prop="contact.mobile">
           <el-input v-model="form.contact.mobile" />
+          <el-checkbox
+            v-model="secrecyHidden"
+            style="margin-left:10px;"
+          >不对外显示仅接收通知</el-checkbox>
         </el-form-item>
         <el-form-item
           v-if="live_fields.contact.telephone === true"
@@ -278,7 +282,6 @@
         <el-button
           type="primary"
           :loading="submitLoading"
-          :disabled="issubmit"
           @click="onSubmit('form')"
         >
           保存
@@ -314,8 +317,9 @@ for (let i = 0; i < 37; i++) {
 }
 export default {
   props: {
-    id: {
-      default: ''
+    props_id: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -334,7 +338,7 @@ export default {
       }
     }
     return {
-      issubmit: false,
+      secrecyHidden: false,
       contactHidden: false,
       infoLoading: true,
       submitLoading: false,
@@ -400,7 +404,8 @@ export default {
           qq: '',
           email: '',
           is_display: 1,
-          use_company_contact: 1
+          use_company_contact: 1,
+          is_secrecy: 0
         }
       },
       rules: {
@@ -738,8 +743,10 @@ export default {
             }
             this.options_minage.push(tmp_json)
           }
-          if (this.id == ''){
+          if (this.props_id === 0){
             this.id = this.$route.query.id
+          } else {
+            this.id = this.props_id
           }
           return jobEdit({ id: this.id }, 'get')
         })
@@ -792,6 +799,7 @@ export default {
 
           this.form.tag = arrData
           this.contactHidden = this.form.contact.is_display != 1
+          this.secrecyHidden = this.form.contact.is_secrecy != 1
           this.infoLoading = false
         })
         .catch(() => {})
@@ -800,11 +808,10 @@ export default {
       if (this.submitLoading === true) {
         return false
       }
-      // this.submitLoading = true;
-      const that = this
-      that.issubmit = true
+      this.submitLoading = true
       const insertData = { ...this.form }
       insertData.contact.is_display = this.contactHidden === true ? 0 : 1
+      insertData.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
       this.$refs[formName].validate(valid => {
         if (valid) {
           const tmp_jobcategory_arr = this.form.jobcategory_arr
@@ -826,14 +833,14 @@ export default {
             .then(response => {
               this.$message.success(response.message)
               this.$emit('handleCloseJob')
+              this.submitLoading = false
               return true
             })
             .catch(() => {
-              that.issubmit = false
+              this.submitLoading = false
               return false
             })
         } else {
-          that.issubmit = false
           this.submitLoading = false
           return false
         }

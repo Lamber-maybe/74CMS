@@ -1,15 +1,20 @@
 <?php
 namespace app\common\lib\oauth;
+
+use think\Request;
+
 class qq
 {
     protected $appid;
     protected $appkey;
     protected $error = 0;
+
     public function __construct()
     {
         $this->appid = config('global_config.account_qqlogin_appid');
         $this->appkey = config('global_config.account_qqlogin_appkey');
     }
+
     /**
      * 获取openid
      */
@@ -30,6 +35,7 @@ class qq
         }
         return $user->openid;
     }
+
     /**
      * 获取unionid
      */
@@ -53,6 +59,7 @@ class qq
         }
         return $user;
     }
+
     /**
      * 获取用户信息
      */
@@ -83,16 +90,35 @@ class qq
             $this->error = $userinfo['error_description'];
             return false;
         }
+
+        /**
+         *【ID1000500】
+         * 【优化】QQ绑定头像不显示
+         * yx - 2023.01.06
+         * [优化]:
+         * HTTP和HTTPS识别，并修改
+         */
+        $isSsl = Request::instance()->isSsl();
+        if ($isSsl === true) {
+            if (!empty($userinfo['figureurl_qq_2'])) {
+                $userinfo['figureurl_qq_2'] = str_replace('http://', 'https://', $userinfo['figureurl_qq_2']);
+            } elseif (!empty($userinfo['figureurl_qq_1'])) {
+                $userinfo['figureurl_qq_1'] = str_replace('http://', 'https://', $userinfo['figureurl_qq_1']);
+            }
+        }
+
         return [
             'openid' => $openid,
             'unionid' => $unionid,
             'nickname' => $userinfo['nickname'],
-            'avatar' => $userinfo['figureurl_qq_2']?$userinfo['figureurl_qq_2']:$userinfo['figureurl_qq_1']
+            'avatar' => $userinfo['figureurl_qq_2'] ? $userinfo['figureurl_qq_2'] : $userinfo['figureurl_qq_1']
         ];
     }
+
     public function getError()
     {
         return $this->error;
     }
 }
+
 ?>

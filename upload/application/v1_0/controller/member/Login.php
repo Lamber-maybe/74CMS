@@ -1,4 +1,5 @@
 <?php
+
 namespace app\v1_0\controller\member;
 
 class Login extends \app\v1_0\controller\common\Base
@@ -7,6 +8,7 @@ class Login extends \app\v1_0\controller\common\Base
     {
         parent::_initialize();
     }
+
     protected function _verify($post_data)
     {
         if (config('global_config.captcha_open') == 1) {
@@ -23,21 +25,21 @@ class Login extends \app\v1_0\controller\common\Base
     }
     public function password()
     {
-        if(request()->isGet()){
+        if (request()->isGet()) {
             $error_mark = input('get.username/s', '', 'trim');
-        }else{
+        } else {
             $error_mark = input('post.username/s', '', 'trim');
         }
-        $error_mark = 'login_pwd_error_num_'.$error_mark;
-        $error_num = \think\Cache::get($error_mark)?\think\Cache::get($error_mark):0;
-        if(request()->isGet()){
+        $error_mark = 'login_pwd_error_num_' . $error_mark;
+        $error_num = \think\Cache::get($error_mark) ? \think\Cache::get($error_mark) : 0;
+        if (request()->isGet()) {
             $show = 0;
-            if(config('global_config.captcha_open')==1){
-                if($error_num>=config('global_config.captcha_show_by_pwd_error')){
+            if (config('global_config.captcha_open') == 1) {
+                if ($error_num >= config('global_config.captcha_show_by_pwd_error')) {
                     $show = 1;
                 }
             }
-            $this->ajaxReturn(200,'获取数据成功',$show);
+            $this->ajaxReturn(200, '获取数据成功', $show);
         }
         $input_data = [
             'username' => input('post.username/s', '', 'trim'),
@@ -60,10 +62,10 @@ class Login extends \app\v1_0\controller\common\Base
         } else {
             $field = 'username';
         }
-        if($error_num>=config('global_config.captcha_show_by_pwd_error')){
+        if ($error_num >= config('global_config.captcha_show_by_pwd_error')) {
             $this->_verify(input('post.'));
         }
-        
+
         $member = model('Member')
             ->where([
                 'utype' => ['eq', $input_data['utype']],
@@ -118,23 +120,24 @@ class Login extends \app\v1_0\controller\common\Base
             )
         );
     }
+
     public function code()
     {
-        if(request()->isGet()){
+        if (request()->isGet()) {
             $error_mark = input('get.mobile/s', '', 'trim');
-        }else{
+        } else {
             $error_mark = input('post.mobile/s', '', 'trim');
         }
-        $error_mark = 'login_code_error_num_'.$error_mark;
-        $error_num = \think\Cache::get($error_mark)?\think\Cache::get($error_mark):0;
-        if(request()->isGet()){
+        $error_mark = 'login_code_error_num_' . $error_mark;
+        $error_num = \think\Cache::get($error_mark) ? \think\Cache::get($error_mark) : 0;
+        if (request()->isGet()) {
             $show = 0;
-            if(config('global_config.captcha_open')==1){
-                if($error_num>=config('global_config.captcha_show_by_code_error')){
+            if (config('global_config.captcha_open') == 1) {
+                if ($error_num >= config('global_config.captcha_show_by_code_error')) {
                     $show = 1;
                 }
             }
-            $this->ajaxReturn(200,'获取数据成功',$show);
+            $this->ajaxReturn(200, '获取数据成功', $show);
         }
         $input_data = [
             'mobile' => input('post.mobile/s', '', 'trim'),
@@ -176,7 +179,7 @@ class Login extends \app\v1_0\controller\common\Base
             \think\Cache::inc($error_mark);
             $this->ajaxReturn(500, '验证码失效，请重新获取');
         }
-        if($error_num>=config('global_config.captcha_show_by_code_error')){
+        if ($error_num >= config('global_config.captcha_show_by_code_error')) {
             $this->_verify(input('post.'));
         }
         $member = model('Member')
@@ -187,6 +190,18 @@ class Login extends \app\v1_0\controller\common\Base
             ->find();
         $is_reg = 0;
         if (!$member) {
+
+            /**
+             *【ID1000501】
+             * 【bug】后台关闭注册后，部分渠道直接手机号验证码还能继续注册会员
+             * yx - 2023.01.05
+             * [新增]:
+             * 如果网站已关闭会员注册功能，登录及注册情况下，也不可注册
+             */
+            if (config('global_config.closereg') == 1) {
+                $this->ajaxReturn(500, '网站已关闭会员注册');
+            }
+
             $is_reg = 1;
             //如果未注册过，默认给注册一下
             if ($input_data['utype'] == 1) {
@@ -206,7 +221,7 @@ class Login extends \app\v1_0\controller\common\Base
         cache('smscode_' . $input_data['mobile'], null);
 
         //通知完整度
-        if ($input_data['utype'] == 2 && $is_reg==0) {
+        if ($input_data['utype'] == 2 && $is_reg == 0) {
             // 刷新简历信息 chenyang 2022年3月15日10:10:51
             model('Resume')->refreshResumeData($member);
 
@@ -237,6 +252,7 @@ class Login extends \app\v1_0\controller\common\Base
             )
         );
     }
+
     /**
      * qq登录
      */
@@ -253,7 +269,21 @@ class Login extends \app\v1_0\controller\common\Base
             ->where($where)
             ->find();
         if ($bind_info === null) {
-            $this->ajaxReturn(50006, '未绑定',['openid'=>$openid,'unionid'=>$unionid,'nickname'=>$nickname,'avatar'=>$avatar,'bindType'=>$mod]);
+            /**
+             *【ID1000500】
+             * 【优化】QQ绑定头像不显示
+             * yx - 2023.01.06
+             * [优化]:
+             * $avatar => htmlspecialchars_decode($avatar)
+             */
+            $return = [
+                'openid' => $openid,
+                'unionid' => $unionid,
+                'nickname' => $nickname,
+                'avatar' => htmlspecialchars_decode($avatar),
+                'bindType' => $mod
+            ];
+            $this->ajaxReturn(50006, '未绑定', $return);
         }
         $member = model('Member')
             ->where([
@@ -309,6 +339,7 @@ class Login extends \app\v1_0\controller\common\Base
             )
         );
     }
+
     /**
      * sina登录
      */
@@ -364,6 +395,7 @@ class Login extends \app\v1_0\controller\common\Base
             )
         );
     }
+
     /**
      * weixin登录
      */
@@ -375,16 +407,16 @@ class Login extends \app\v1_0\controller\common\Base
         $nickname = input('post.nickname/s', '', 'trim');
         $avatar = input('post.avatar/s', '', 'trim');
         $where['type'] = $mod;
-        if($unionid!=''){
+        if ($unionid != '') {
             $where['unionid'] = $unionid;
-        }else{
+        } else {
             $where['openid'] = $openid;
         }
         $bind_info = model('MemberBind')
             ->where($where)
             ->find();
         if ($bind_info === null) {
-            $this->ajaxReturn(50006, '未绑定',['openid'=>$openid,'unionid'=>$unionid,'nickname'=>$nickname,'avatar'=>$avatar,'bindType'=>$mod]);
+            $this->ajaxReturn(50006, '未绑定', ['openid' => $openid, 'unionid' => $unionid, 'nickname' => $nickname, 'avatar' => $avatar, 'bindType' => $mod]);
         }
         $member = model('Member')
             ->where([
@@ -397,7 +429,7 @@ class Login extends \app\v1_0\controller\common\Base
         if ($member['status'] == 0) {
             $this->ajaxReturn(500, '账号已被暂停使用');
         }
-        
+
         //通知完整度
         if ($member['utype'] == 2) {
             // 刷新简历信息 chenyang 2022年3月15日10:10:51
@@ -431,6 +463,23 @@ class Login extends \app\v1_0\controller\common\Base
     public function logout(){
         $visitor = new \app\common\lib\Visitor;
         $visitor->setLogout();
-        $this->ajaxReturn(200,'退出成功');
+        $this->ajaxReturn(200, '退出成功');
     }
+
+    public function isRegister()
+    {
+        $utype = input('post.utype/s', '', 'trim');
+        $mobile = input('post.mobile/s', '', 'trim');
+        $member = model('Member')
+            ->where([
+                'utype' => ['eq', $utype],
+                'mobile' => ['eq', $mobile]
+            ])
+            ->find();
+        if (!$member) {
+            $this->ajaxReturn(500, '账号未注册');
+        }
+        $this->ajaxReturn(200, '账号正常');
+    }
+
 }

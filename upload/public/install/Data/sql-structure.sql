@@ -286,6 +286,7 @@ CREATE TABLE `qs_company_contact` (
   `telephone` varchar(20) NOT NULL,
   `qq` varchar(15) NOT NULL,
   `email` varchar(30) NOT NULL,
+  `is_secrecy` TINYINT (1) UNSIGNED DEFAULT '1' NOT NULL COMMENT '隐私状态[0-不对外显示仅接收通知|1-对外显示并接收通知]',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_comid_uid` (`comid`,`uid`),
   UNIQUE KEY `index_uid` (`uid`)
@@ -890,6 +891,7 @@ CREATE TABLE `qs_job_contact` (
   `email` varchar(30) NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `use_company_contact` tinyint(1) unsigned NOT NULL,
+  `is_secrecy` TINYINT (1) UNSIGNED DEFAULT '1' NOT NULL COMMENT '隐私状态[0-不对外显示仅接收通知|1-对外显示并接收通知]',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_jid_uid` (`jid`,`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -2404,19 +2406,6 @@ CREATE TABLE `qs_im_unread_remind` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_im_unread_remind||-_-||
-
-
-
-
-DROP TABLE IF EXISTS `qs_job_recommend_sort`;
-CREATE TABLE `qs_job_recommend_sort` (
-`id` int(10) NOT NULL AUTO_INCREMENT,
-`jobid` int(10) NOT NULL DEFAULT '0',
-`uid` int(10) NOT NULL DEFAULT '0',
-`sort` int(10) NOT NULL DEFAULT '0',
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='app推荐职位排序';
-||-_-||qs_job_recommend_sort||-_-||
 
 
 

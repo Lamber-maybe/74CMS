@@ -28,6 +28,7 @@ export default {
           this.$refs.child.basic = res.data.basic
           this.$refs.child.contact = res.data.contact
           this.$refs.child.field_rule = res.data.field_rule
+          this.$refs.child.secrecyHidden = res.data.contact.is_secrecy == 1 ? false : true
           this.$refs.child.restoreCondition({
             basic: res.data.basic,
             contact: res.data.contact,

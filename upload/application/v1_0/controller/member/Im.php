@@ -89,14 +89,14 @@ class Im extends \app\v1_0\controller\common\Base
     protected function checkAuth(){
         $appkey = input('get.appkey/s', '', 'trim');
         $appsecret = input('get.appsecret/s', '', 'trim');
-        if(!$appkey){
-            $this->ajaxReturn(500,'appkey不能为空');
+        if (!$appkey) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => 'appkey不能为空']);
         }
-        if(!$appsecret){
-            $this->ajaxReturn(500,'appsecret不能为空');
+        if (!$appsecret) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => 'appsecret不能为空']);
         }
-        if($appkey!=$this->config['app_key'] || $appsecret!=$this->config['app_secret']){
-            $this->ajaxReturn(500,'appkey或appsecret错误');
+        if ($appkey != $this->config['app_key'] || $appsecret != $this->config['app_secret']) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => 'appkey或appsecret错误']);
         }
     }
     public function startConversation(){
@@ -311,6 +311,12 @@ class Im extends \app\v1_0\controller\common\Base
      */
     public function getToken(){
         $this->checkLogin();
+        if (empty($this->config['app_key'])) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => 'appkey不能为空']);
+        }
+        if (empty($this->config['app_secret'])) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => 'appsecret不能为空']);
+        }
         if($this->userinfo->utype==2){
             $resume = model('Resume')->field('id,fullname,photo_img')->where('uid',$this->userinfo->uid)->find();
             $resumeid = $resume===null?0:$resume['id'];
@@ -325,8 +331,8 @@ class Im extends \app\v1_0\controller\common\Base
         $url = $this->baseUrl.'/gettoken?appkey='.$this->config['app_key'].'&appsecret='.$this->config['app_secret'].'&userid='.$this->userinfo->uid.'&utype='.$this->userinfo->utype.'&resumeid='.$resumeid.'&avatar='.urlencode($avatar);
         $result = https_request($url);
         $result = json_decode($result,1);
-        if($result['code']==500){
-            $this->ajaxReturn(500,$result['msg']);
+        if ($result['code'] == 500) {
+            $this->ajaxReturn(500, '职聊暂时无法使用，请联系客服反馈。', ['error' => $result['msg']]);
         }
         $this->ajaxReturn(200,'获取数据成功',$result['result']);
     }

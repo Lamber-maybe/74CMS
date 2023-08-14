@@ -2,9 +2,16 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix"><span>全部简历</span></div>
-      <div style="float:right;z-index: 8;position: relative;"><el-button size="small" type="primary" @click="goto('/user/resume/add')">新增简历</el-button></div>
+      <div style="float:right;z-index: 8;position: relative;">
+        <el-button size="small" type="primary" @click="goto('/user/resume/add')">新增简历</el-button>
+      </div>
       <div class="list-search">
-        <el-input v-model="keyword" placeholder="请输入搜索内容" class="input-with-select" @keyup.enter.native="funSearchKeyword">
+        <el-input
+          v-model="keyword"
+          placeholder="请输入搜索内容"
+          class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
+        >
           <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
             <el-option label="简历名称" value="1" />
             <el-option label="简历联系方式" value="3" />
@@ -53,7 +60,11 @@
             invitationFilter != '' ||
             auditFilter != '' ||
             worksFilter != '' ||
-            enclosureResumeFilter != ''
+            enclosureResumeFilter != '' ||
+            imgAuditFilter != '' ||
+            sexFilter != '' ||
+            ageFilter != '' ||
+            isBindFilter != ''
         "
         class="filterCriteria"
       >
@@ -103,37 +114,73 @@
             <div class="name">附件：{{ enclosureResumeFilter.name }}</div>
             <div class="closes" @click="reset(enclosureResumeFilter.field)"><i class="el-icon-close" /></div>
           </div>
+          <div v-if="imgAuditFilter != ''" class="selected">
+            <div class="name">简历作品：{{ imgAuditFilter.name }}</div>
+            <div class="closes" @click="reset(imgAuditFilter.field)"><i class="el-icon-close" /></div>
+          </div>
+          <div v-if="sexFilter != ''" class="selected">
+            <div class="name">性别：{{ sexFilter.name }}</div>
+            <div class="closes" @click="reset(sexFilter.field)"><i class="el-icon-close" /></div>
+          </div>
+          <div v-if="ageFilter != ''" class="selected">
+            <div class="name">年龄：{{ ageFilter.name }}</div>
+            <div class="closes" @click="reset(ageFilter.field)"><i class="el-icon-close" /></div>
+          </div>
+          <div v-if="isBindFilter != ''" class="selected">
+            <div class="name">绑定微信：{{ isBindFilter.name }}</div>
+            <div class="closes" @click="reset(isBindFilter.field)"><i class="el-icon-close" /></div>
+          </div>
         </div>
-        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
+        <div
+          style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;"
+          @click="reset('all')"
+        >
           <i class="el-icon-delete" />
           清空条件
         </div>
         <div style="clear:both;" />
       </div>
-      <div style="position: relative;">
+      <div style="position: relative; padding-top: 15px;">
+        <span class="checkboxName">ID</span>
         <div
           :class="
-            educationFilter != '' ||
-              experienceFilter != '' ||
-              highQualityFilter != '' ||
-              deliveryNumFilter != '' ||
-              downloadedFilter != '' ||
-              viewedFilter != '' ||
-              invitationFilter != '' ||
-              auditFilter != '' ||
-              worksFilter != '' ||
-              contactStatusFilter != '' ||
-              citycategoryFilter != '' ||
-              enclosureResumeFilter != ''
-              ? 'setField_s'
-              : 'setField'
+          educationFilter != '' ||
+          experienceFilter != '' ||
+          highQualityFilter != '' ||
+          deliveryNumFilter != '' ||
+          downloadedFilter != '' ||
+          viewedFilter != '' ||
+          invitationFilter != '' ||
+          auditFilter != '' ||
+          worksFilter != '' ||
+          contactStatusFilter != '' ||
+          citycategoryFilter != '' ||
+          enclosureResumeFilter != '' ||
+          imgAuditFilter != '' ||
+          sexFilter != '' ||
+          ageFilter != ''
+          ? 'setField_s'
+          : 'setField'
           "
         >
           <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
             <div class="setField_h">
               <div v-for="item in fieldData" class="setFields">
-                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)">
-                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)">
+                <input
+                  v-if="item.select == true"
+                  type="checkbox"
+                  :name="item.name"
+                  :value="item.field"
+                  checked
+                  @change="select(item.field)"
+                >
+                <input
+                  v-if="item.select == false"
+                  type="checkbox"
+                  :name="item.name"
+                  :value="item.field"
+                  @change="select(item.field)"
+                >
                 <span style="margin-left: 10px;">{{ item.name }}</span>
               </div>
             </div>
@@ -149,7 +196,7 @@
         </div>
         <el-table
           ref="multipleTable"
-          v-loading="loading"
+          :v-loading="loading"
           :data="tableData"
           tooltip-effect="dark"
           :header-cell-style="{ background: '#f9f9f9', 'border-right': '1px solid #e4e6eb' }"
@@ -159,8 +206,68 @@
           style="width: 100%;"
           @sort-change="sortTable"
           @selection-change="handleSelectionChange"
+          @cell-mouse-enter="cellEnter"
+          @cell-mouse-leave="cellLeave"
+          @select-all="cellEnter"
         >
-          <el-table-column fixed type="selection" width="55" />
+          <!--          <el-table-column fixed type="selection" width="55" />-->
+          <el-table-column type="selection" width="80" align="left">
+            <template #default="{ row, $index }">
+              <div
+                v-if="columnCheckedId == row.id || checkedList[$index]"
+                @click.stop
+              >
+                <el-checkbox
+                  v-model="checkedList[$index]"
+                  @change="cellCheckbox(row, $index)"
+                />
+              </div>
+              <span v-else>{{ row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column fixed type="text" width="150" label="姓名">
+            <template slot="header" slot-scope="scope">
+              <div>
+                <span>姓名</span>
+                <el-popover placement="bottom" trigger="hover">
+                  <!-- 学历-->
+                  <div class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in isBindData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="isBind" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 学历-->
+                  <div style="margin-top: 10px;">
+                    <el-button class="filterOperation" type="text" size="small" @click="reset('is_bind')">重置
+                    </el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
+                  </div>
+                  <div slot="reference" class="drop_down"/>
+                </el-popover>
+              </div>
+            </template>
+            <template slot-scope="scope">
+              <div class="list_name_box_self">
+                <span class="list_name_item">
+                  <img class="head_portrait" :src="scope.row.photo_img_src" alt="">
+                </span>
+                &nbsp;&nbsp;
+                <span v-if="scope.row.fullname == ''" class="list_name_item">-</span>
+                <span v-else class="list_name_item">
+                  <el-link
+                    :href="scope.row.link"
+                    target="_blank"
+                    type="primary"
+                    class="text"
+                    :underline="false"
+                  >{{ scope.row.fullname }}</el-link>
+                  <img v-if="scope.row.is_bind != 0" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="" title="已绑定微信">
+                </span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="items in fieldData"
             v-if="items.is_locking == true && items.select == true"
@@ -170,7 +277,11 @@
             :width="items.width"
           >
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div
+                :class="items.is_sortable == 'custom' ? 'sotrTime' : ''"
+                @mouseenter="locks(items.field)"
+                @mouseleave="locks(items.field)"
+              >
                 <span>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 学历-->
@@ -249,7 +360,10 @@
                   <div v-if="items.field == 'contact_status'" class="screen_s">
                     <el-checkbox-group>
                       <div v-for="item in contactStatusData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{ item.name }}</el-radio>
+                        <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{
+                          item.name
+                        }}
+                        </el-radio>
                       </div>
                     </el-checkbox-group>
                   </div>
@@ -258,13 +372,44 @@
                   <div v-if="items.field == 'enclosure_resume'" class="screen_s">
                     <el-checkbox-group>
                       <div v-for="item in enclosureResumeData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{ item.name }}</el-radio>
+                        <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{
+                          item.name
+                        }}
+                        </el-radio>
                       </div>
                     </el-checkbox-group>
                   </div>
                   <!-- 附件简历-->
+                  <!-- 简历作品-->
+                  <div v-if="items.field == 'img_audit'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in imgAuditData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="imgAudit" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 简历作品-->
+                  <!-- 性别-->
+                  <div v-if="items.field == 'sex'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in sexData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="sex" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 性别-->
+                  <!-- 年龄-->
+                  <div v-if="items.field == 'age'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in ageData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="age" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 年龄-->
                   <div style="margin-top: 10px;">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置
+                    </el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
                   <div
@@ -279,46 +424,48 @@
                         items.field == 'audit' ||
                         // items.field == 'works' ||
                         items.field == 'contact_status' ||
-                        items.field == 'enclosure_resume'
+                        items.field == 'enclosure_resume' ||
+                        items.field == 'img_audit' ||
+                        items.field == 'sex' ||
+                        items.field == 'age'
                     "
                     slot="reference"
                     class="drop_down"
                   />
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
+                <div
+                  v-if="items.is_lock_display == true"
+                  slot="reference"
+                  class="unlock_display"
+                  @click="locking(items.field)"
+                />
+                <div
+                  v-if="items.is_lock_display == false"
+                  slot="reference"
+                  class="unlock"
+                  @click="locking(items.field)"
+                />
               </div>
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''">-</span>
-                <span v-else>{{ scope.row.id }}</span>
-              </div>
-              <div v-if="items.field == 'photo_img_src'">
-                <span><img style="width: 50px;height:50px;border-radius: 30px;" :src="scope.row.photo_img_src" alt=""></span>
-              </div>
-              <div v-if="items.field == 'fullname'">
-                <span v-if="scope.row.fullname == ''">-</span>
-                <span v-else>
-                  <el-link :href="scope.row.link" target="_blank" type="primary" class="text" :underline="false">{{ scope.row.fullname }}</el-link>
-                </span>
-              </div>
-              <div v-if="items.field == 'is_bind'">
-                <span v-if="scope.row.is_bind == 0">未绑定</span>
-                <span v-else>已绑定</span>
-              </div>
               <div v-if="items.field == 'contact_mobile'">
                 <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
                 <span v-else>
                   {{ scope.row.contact_mobile }}
-                  <div class="dial" title="拨打简历手机号"><div class="disal_img" @click="clickDial(scope.row.contact_mobile, scope.row.fullname)" /></div>
+                  <div class="dial" title="拨打简历手机号"><div
+                    class="disal_img"
+                    @click="clickDial(scope.row.contact_mobile, scope.row.fullname)"
+                  /></div>
                 </span>
               </div>
               <div v-if="items.field == 'member_mobile'">
                 <span v-if="scope.row.member_mobile == ''">-</span>
                 <span v-else>
                   {{ scope.row.member_mobile }}
-                  <div class="dial" title="拨打会员手机号"><div class="disal_img" @click="clickDial(scope.row.member_mobile, scope.row.fullname)" /></div>
+                  <div class="dial" title="拨打会员手机号"><div
+                    class="disal_img"
+                    @click="clickDial(scope.row.member_mobile, scope.row.fullname)"
+                  /></div>
                 </span>
               </div>
               <div v-if="items.field == 'education_cn'">
@@ -333,14 +480,26 @@
                 <span v-if="scope.row.complete_percent == ''">-</span>
                 <!--                <span v-else> {{ scope.row.complete_percent }}% </span>-->
                 <div class="complete_percent">
-                  <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e"><el-progress color="#f51e1e" :percentage="scope.row.complete_percent" /></span>
-                  <span v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45" style="color:#fb3c11">
+                  <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e"><el-progress
+                    color="#f51e1e"
+                    :percentage="scope.row.complete_percent"
+                  /></span>
+                  <span
+                    v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45"
+                    style="color:#fb3c11"
+                  >
                     <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
                   </span>
-                  <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
+                  <span
+                    v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60"
+                    style="color:#1db75a"
+                  >
                     <el-progress color="#1db75a" :percentage="scope.row.complete_percent" />
                   </span>
-                  <span v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
+                  <span
+                    v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80"
+                    style="color:#409eff"
+                  >
                     <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
                   </span>
                 </div>
@@ -366,9 +525,9 @@
                 <span v-else>{{ scope.row.invitation }}</span>
               </div>
               <div v-if="items.field == 'audit'">
-                <span v-if="scope.row.audit == 0">待审核</span>
-                <span v-if="scope.row.audit == 1">已审核</span>
-                <span v-if="scope.row.audit == 2">已拒绝</span>
+                <span v-if="scope.row.audit == 0" style="color:#e6a23c;">待审核</span>
+                <span v-if="scope.row.audit == 1" style="color:#67c23a;">已通过</span>
+                <span v-if="scope.row.audit == 2" style="color:#f56c6c;">未通过</span>
               </div>
               <div v-if="items.field == 'works'">
                 <span v-if="scope.row.works == ''">0</span>
@@ -387,17 +546,61 @@
                 <span v-else>{{ scope.row.reg_time | timeFilter }}</span>
               </div>
               <div v-if="items.field == 'contact_status'" style="text-align: center">
-                <el-tooltip v-if="scope.row.is_status_phone == 1" class="item" effect="dark" content="未电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1.png" alt="" @click="setContactStatus('phone', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_phone == 1"
+                  class="item"
+                  effect="dark"
+                  content="未电话联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/1.png"
+                    alt=""
+                    @click="setContactStatus('phone', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_phone == 2" class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt="" @click="setContactStatus('phone', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_phone == 2"
+                  class="item"
+                  effect="dark"
+                  content="已电话联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/1-1.png"
+                    alt=""
+                    @click="setContactStatus('phone', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 1" class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/2.png" alt="" @click="setContactStatus('weixin', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_weixin == 1"
+                  class="item"
+                  effect="dark"
+                  content="未微信联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/2.png"
+                    alt=""
+                    @click="setContactStatus('weixin', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 2" class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/2-1.png" alt="" @click="setContactStatus('weixin', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_weixin == 2"
+                  class="item"
+                  effect="dark"
+                  content="已微信联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/2-1.png"
+                    alt=""
+                    @click="setContactStatus('weixin', scope.row.id)"
+                  >
                 </el-tooltip>
               </div>
               <div v-if="items.field == 'follow_num'">
@@ -414,8 +617,42 @@
               </div>
               <div v-if="items.field == 'enclosure_resume'">
                 <span v-if="scope.row.enclosure_resume == ''">-</span>
-                <span v-if="scope.row.enclosure_resume!=''&&is_check==1" style="cursor:pointer;color:#409EFF;" @click="seeResumeAttachment(scope.row)">查看</span>
-                <span v-if="scope.row.enclosure_resume!=''&&is_check==0"><a style="cursor:pointer;color:#409EFF;" :href="scope.row.enclosure_resume" :download="scope.row.enclosure_resume">下载</a></span>
+                <span
+                  v-if="scope.row.enclosure_resume!=''&&is_check==1"
+                  style="cursor:pointer;color:#409EFF;"
+                  @click="seeResumeAttachment(scope.row)"
+                >查看</span>
+                <span v-if="scope.row.enclosure_resume!=''&&is_check==0"><a
+                  style="cursor:pointer;color:#409EFF;"
+                  :href="scope.row.enclosure_resume"
+                  :download="scope.row.enclosure_resume"
+                >下载</a></span>
+              </div>
+              <div v-if="items.field == 'img_audit'">
+                <div slot="reference" class="name-wrapper">
+                  <el-tooltip class="item" effect="dark" placement="top">
+                    <div slot="content">
+                      <div>
+                        待审核：{{ scope.row.resume_img_audit_num.img_audit_0_num }}，
+                        未通过：{{ scope.row.resume_img_audit_num.img_audit_2_num }}，
+                        通过：{{ scope.row.resume_img_audit_num.img_audit_1_num }}
+                      </div>
+                    </div>
+                    <span v-if="scope.row.img_audit_id == 1">{{ scope.row.img_audit_cn }}</span>
+                    <span v-if="scope.row.img_audit_id == 2" style="color:#e6a23c;">{{ scope.row.img_audit_cn }}</span>
+                    <span v-if="scope.row.img_audit_id == 3" style="color:#f56c6c;">{{ scope.row.img_audit_cn }}</span>
+                    <span v-if="scope.row.img_audit_id == 4" style="color:#67c23a;">{{ scope.row.img_audit_cn }}</span>
+                  </el-tooltip>
+                </div>
+              </div>
+              <div v-if="items.field == 'sex'">
+                <span v-if="scope.row.sex == 1">男</span>
+                <span v-else-if="scope.row.sex == 2">女</span>
+                <span v-else>-</span>
+              </div>
+              <div v-if="items.field == 'age'">
+                <span v-if="scope.row.age">{{ scope.row.age }}</span>
+                <span v-else>-</span>
               </div>
             </template>
           </el-table-column>
@@ -427,7 +664,11 @@
             :width="items.width"
           >
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime' : ''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div
+                :class="items.is_sortable == 'custom' ? 'sotrTime' : ''"
+                @mouseenter="locks(items.field)"
+                @mouseleave="locks(items.field)"
+              >
                 <span>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 学历-->
@@ -515,7 +756,10 @@
                   <div v-if="items.field == 'contact_status'" class="screen_s">
                     <el-checkbox-group>
                       <div v-for="item in contactStatusData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{ item.name }}</el-radio>
+                        <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{
+                          item.name
+                        }}
+                        </el-radio>
                       </div>
                     </el-checkbox-group>
                   </div>
@@ -524,13 +768,44 @@
                   <div v-if="items.field == 'enclosure_resume'" class="screen_s">
                     <el-checkbox-group>
                       <div v-for="item in enclosureResumeData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{ item.name }}</el-radio>
+                        <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{
+                          item.name
+                        }}
+                        </el-radio>
                       </div>
                     </el-checkbox-group>
                   </div>
                   <!-- 附件简历-->
+                  <!-- 简历作品-->
+                  <div v-if="items.field == 'img_audit'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in imgAuditData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="imgAudit" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 简历作品-->
+                  <!-- 性别-->
+                  <div v-if="items.field == 'sex'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in sexData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="sex" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 性别-->
+                  <!-- 年龄-->
+                  <div v-if="items.field == 'age'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in ageData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="age" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 年龄-->
                   <div style="margin-top: 10px;">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置
+                    </el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
                   <div
@@ -545,46 +820,43 @@
                         items.field == 'audit' ||
                         // items.field == 'works' ||
                         items.field == 'contact_status' ||
-                        items.field == 'enclosure_resume'
+                        items.field == 'enclosure_resume' ||
+                        items.field == 'img_audit' ||
+                        items.field == 'sex' ||
+                        items.field == 'age'
                     "
                     slot="reference"
                     class="drop_down"
                   />
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
+                <div
+                  v-if="items.is_lock_display == true"
+                  slot="reference"
+                  class="lock_display"
+                  @click="locking(items.field)"
+                />
                 <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
               </div>
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''">-</span>
-                <span v-else>{{ scope.row.id }}</span>
-              </div>
-              <div v-if="items.field == 'photo_img_src'">
-                <span><img style="width: 50px;height:50px;border-radius: 30px;" :src="scope.row.photo_img_src" alt=""></span>
-              </div>
-              <div v-if="items.field == 'fullname'">
-                <span v-if="scope.row.fullname == ''">-</span>
-                <span v-else>
-                  <el-link :href="scope.row.link" target="_blank" type="primary" class="text" :underline="false">{{ scope.row.fullname }}</el-link>
-                </span>
-              </div>
-              <div v-if="items.field == 'is_bind'">
-                <span v-if="scope.row.is_bind == 0">未绑定</span>
-                <span v-else>已绑定</span>
-              </div>
               <div v-if="items.field == 'contact_mobile'">
                 <span v-if="scope.row.contact_mobile == '' || scope.row.contact_mobile == null">-</span>
                 <span v-else>
                   {{ scope.row.contact_mobile }}
-                  <div class="dial" title="拨打简历手机号"><div class="disal_img" @click="clickDial(scope.row.contact_mobile, scope.row.fullname)" /></div>
+                  <div class="dial" title="拨打简历手机号"><div
+                    class="disal_img"
+                    @click="clickDial(scope.row.contact_mobile, scope.row.fullname)"
+                  /></div>
                 </span>
               </div>
               <div v-if="items.field == 'member_mobile'">
                 <span v-if="scope.row.member_mobile == ''">-</span>
                 <span v-else>
                   {{ scope.row.member_mobile }}
-                  <div class="dial" title="拨打会员手机号"><div class="disal_img" @click="clickDial(scope.row.member_mobile, scope.row.fullname)" /></div>
+                  <div class="dial" title="拨打会员手机号"><div
+                    class="disal_img"
+                    @click="clickDial(scope.row.member_mobile, scope.row.fullname)"
+                  /></div>
                 </span>
               </div>
               <div v-if="items.field == 'education_cn'">
@@ -599,14 +871,26 @@
                 <span v-if="scope.row.complete_percent == ''">-</span>
                 <!--                <span v-else> {{ scope.row.complete_percent }}% </span>-->
                 <div class="complete_percent">
-                  <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e"><el-progress color="#f51e1e" :percentage="scope.row.complete_percent" /></span>
-                  <span v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45" style="color:#fb3c11">
+                  <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e"><el-progress
+                    color="#f51e1e"
+                    :percentage="scope.row.complete_percent"
+                  /></span>
+                  <span
+                    v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45"
+                    style="color:#fb3c11"
+                  >
                     <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
                   </span>
-                  <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
+                  <span
+                    v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60"
+                    style="color:#1db75a"
+                  >
                     <el-progress color="#1db75a" :percentage="scope.row.complete_percent" />
                   </span>
-                  <span v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
+                  <span
+                    v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80"
+                    style="color:#409eff"
+                  >
                     <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
                   </span>
                 </div>
@@ -632,9 +916,9 @@
                 <span v-else>{{ scope.row.invitation }}</span>
               </div>
               <div v-if="items.field == 'audit'">
-                <span v-if="scope.row.audit == 0">待审核</span>
-                <span v-if="scope.row.audit == 1">已审核</span>
-                <span v-if="scope.row.audit == 2">已拒绝</span>
+                <span v-if="scope.row.audit == 0" style="color:#e6a23c;">待审核</span>
+                <span v-if="scope.row.audit == 1" style="color:#67c23a;">已通过</span>
+                <span v-if="scope.row.audit == 2" style="color:#f56c6c;">未通过</span>
               </div>
               <div v-if="items.field == 'works'">
                 <span v-if="scope.row.works == ''">0</span>
@@ -653,17 +937,61 @@
                 <span v-else>{{ scope.row.reg_time | timeFilter }}</span>
               </div>
               <div v-if="items.field == 'contact_status'" style="text-align: center">
-                <el-tooltip v-if="scope.row.is_status_phone == 1" class="item" effect="dark" content="未电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1.png" alt="" @click="setContactStatus('phone', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_phone == 1"
+                  class="item"
+                  effect="dark"
+                  content="未电话联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/1.png"
+                    alt=""
+                    @click="setContactStatus('phone', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_phone == 2" class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt="" @click="setContactStatus('phone', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_phone == 2"
+                  class="item"
+                  effect="dark"
+                  content="已电话联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/1-1.png"
+                    alt=""
+                    @click="setContactStatus('phone', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 1" class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/2.png" alt="" @click="setContactStatus('weixin', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_weixin == 1"
+                  class="item"
+                  effect="dark"
+                  content="未微信联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/2.png"
+                    alt=""
+                    @click="setContactStatus('weixin', scope.row.id)"
+                  >
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 2" class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/2-1.png" alt="" @click="setContactStatus('weixin', scope.row.id)">
+                <el-tooltip
+                  v-if="scope.row.is_status_weixin == 2"
+                  class="item"
+                  effect="dark"
+                  content="已微信联系，点击切换状态"
+                  placement="top-start"
+                >
+                  <img
+                    class="contact_status"
+                    src="../../../../assets/images/urm/2-1.png"
+                    alt=""
+                    @click="setContactStatus('weixin', scope.row.id)"
+                  >
                 </el-tooltip>
               </div>
               <div v-if="items.field == 'follow_num'">
@@ -680,8 +1008,40 @@
               </div>
               <div v-if="items.field == 'enclosure_resume'">
                 <span v-if="scope.row.enclosure_resume == ''">-</span>
-                <span v-if="scope.row.enclosure_resume!=''&&is_check==1" style="cursor:pointer;color:#409EFF;" @click="seeResumeAttachment(scope.row)">查看</span>
-                <span v-if="scope.row.enclosure_resume!=''&&is_check==0"><a style="cursor:pointer;color:#409EFF;" :href="scope.row.enclosure_resume" :download="scope.row.enclosure_resume">下载</a></span>
+                <span
+                  v-if="scope.row.enclosure_resume!=''&&is_check==1"
+                  style="cursor:pointer;color:#409EFF;"
+                  @click="seeResumeAttachment(scope.row)"
+                >查看</span>
+                <span v-if="scope.row.enclosure_resume!=''&&is_check==0"><a
+                  style="cursor:pointer;color:#409EFF;"
+                  :href="scope.row.enclosure_resume"
+                  :download="scope.row.enclosure_resume"
+                >下载</a></span>
+              </div>
+              <div v-if="items.field == 'img_audit'">
+                <el-tooltip class="item" effect="dark" placement="top">
+                  <div slot="content">
+                    <div>
+                      待审核：{{ scope.row.resume_img_audit_num.img_audit_0_num }}，
+                      未通过：{{ scope.row.resume_img_audit_num.img_audit_2_num }}，
+                      通过：{{ scope.row.resume_img_audit_num.img_audit_1_num }}
+                    </div>
+                  </div>
+                  <span v-if="scope.row.img_audit_id == 1">{{ scope.row.img_audit_cn }}</span>
+                  <span v-if="scope.row.img_audit_id == 2" style="color:#e6a23c;">{{ scope.row.img_audit_cn }}</span>
+                  <span v-if="scope.row.img_audit_id == 3" style="color:#f56c6c;">{{ scope.row.img_audit_cn }}</span>
+                  <span v-if="scope.row.img_audit_id == 4" style="color:#67c23a;">{{ scope.row.img_audit_cn }}</span>
+                </el-tooltip>
+              </div>
+              <div v-if="items.field == 'sex'">
+                <span v-if="scope.row.sex == 1">男</span>
+                <span v-else-if="scope.row.sex == 2">女</span>
+                <span v-else>-</span>
+              </div>
+              <div v-if="items.field == 'age'">
+                <span v-if="scope.row.age">{{ scope.row.age }}</span>
+                <span v-else>-</span>
               </div>
             </template>
           </el-table-column>
@@ -689,8 +1049,12 @@
             <template slot-scope="scope">
               <el-button class="operation" type="text" size="small" @click="see(scope.row.id)">查看</el-button>
               <el-button class="operation" type="text" size="small" @click="see(scope.row.id)">跟进</el-button>
-              <el-button class="operation" type="text" size="small" @click="funAuditBatch('single', scope.row.id)">审核</el-button>
-              <el-button class="operation" type="text" size="small" @click="operationResumeDel('single', scope.row.id)">删除</el-button>
+              <el-button class="operation" type="text" size="small" @click="funAuditBatch('single', scope.row.id)">
+                审核
+              </el-button>
+              <el-button class="operation" type="text" size="small" @click="operationResumeDel('single', scope.row.id)">
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -721,7 +1085,15 @@
         </el-col>
       </div>
     </el-card>
-    <el-drawer v-if="drawer" size="75%" :show-close="false" :with-header="false" :wrapper-closable="false" :visible.sync="drawer" :before-close="handleClose">
+    <el-drawer
+      v-if="drawer"
+      size="75%"
+      :show-close="false"
+      :with-header="false"
+      :wrapper-closable="false"
+      :visible.sync="drawer"
+      :before-close="handleClose"
+    >
       <urmShow :row-id="rowId" />
       <!-- 关闭按钮 -->
       <div class="close" @click="handleClose"><i class="el-icon-close" /></div>
@@ -769,7 +1141,8 @@
     <div class="meet">
       <el-dialog :visible.sync="meetDialogVisible" width="30%" :before-close="meetHandleClose">
         <div class="box-content">
-          <div id="animation" class="img"><!--            <img src="../../../../assets/images/outbound/meet.png" alt="">--></div>
+          <div id="animation" class="img">
+            <!--            <img src="../../../../assets/images/outbound/meet.png" alt="">--></div>
           <div class="hu">正在呼叫客户</div>
           <div class="telephone">{{ dialPhone }}</div>
           <div class="company">{{ dialName }}</div>
@@ -784,7 +1157,9 @@
             <el-radio v-for="item in auditData" :key="item.id" :label="item.id">{{ item.name }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="setAuditVal == 2" label="原因"><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
+        <el-form-item v-if="setAuditVal == 2" label="原因">
+          <el-input v-model="setAuditReason" type="textarea" rows="3" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -826,7 +1201,9 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog :visible.sync="showIframe"><iframe width="100%" height="600" frameborder="0" scrolling="auto" :src="iframeUrl" /></el-dialog>
+    <el-dialog :visible.sync="showIframe">
+      <iframe width="100%" height="600" frameborder="0" scrolling="auto" :src="iframeUrl" />
+    </el-dialog>
   </div>
 </template>
 
@@ -859,14 +1236,13 @@ export default {
       key_type: '1',
       menu_icon: 'menu',
       fieldData: [
-        { name: 'ID', field: 'id', select: true, is_locking: false, is_lock_display: false, width: 80, is_sortable: false },
-        { name: '照片', field: 'photo_img_src', select: true, is_locking: false, is_lock_display: false, width: 80, is_sortable: false },
-        { name: '姓名', field: 'fullname', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
-        { name: '微信绑定', field: 'is_bind', select: true, is_locking: false, is_lock_display: false, width: 100, is_sortable: false },
+        { name: '性别', field: 'sex', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
+        { name: '年龄', field: 'age', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
         { name: '学历', field: 'education_cn', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
         { name: '经验', field: 'experience_cn', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
         { name: '简历完整度', field: 'complete_percent', select: true, is_locking: false, is_lock_display: false, width: 170, is_sortable: false },
         { name: '审核状态', field: 'audit', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
+        { name: '简历作品', field: 'img_audit', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
         { name: '简历联系方式', field: 'contact_mobile', select: true, is_locking: false, is_lock_display: false, width: 130, is_sortable: false },
         { name: '会员联系方式', field: 'member_mobile', select: true, is_locking: false, is_lock_display: false, width: 130, is_sortable: false },
         { name: '等级', field: 'high_quality', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
@@ -874,7 +1250,6 @@ export default {
         { name: '被下载', field: 'downloaded', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
         { name: '被查看', field: 'viewed', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
         { name: '被面邀', field: 'invitation', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        // { 'name': '简历作品', 'field': 'works', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 120, 'is_sortable': false },
         { name: '刷新时间', field: 'refreshtime', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
         { name: '登录时间', field: 'last_login_time', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
         { name: '注册时间', field: 'reg_time', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
@@ -885,6 +1260,9 @@ export default {
         { name: '简历备注', field: 'remark', select: true, is_locking: false, is_lock_display: false, width: 180, is_sortable: false }
       ],
       tableData: [],
+      columnCheckedId: '',
+      multipleSelection: [], // table多选数据
+      checkedList: [], // table多选选中数据
       loading: false,
       currentPage: 1,
       pagesize: 10,
@@ -921,11 +1299,20 @@ export default {
       auditScreen: '',
       contactStatusData: [{ id: 1, name: '已电话联系' }, { id: 2, name: '已微信联系' }, { id: 3, name: '未联系' }],
       contactStatusScreen: '',
-      deliveryNumData: [{ id: 1, name: '今日投递' }, { id: 3, name: '7日内投递' }, { id: 4, name: '3日内投递' }, { id: 2, name: '30日内投递' }, { id: 5, name: '从未投递过' }],
+      deliveryNumData: [{ id: 1, name: '今日投递' }, { id: 3, name: '7日内投递' }, { id: 4, name: '3日内投递' }, {
+        id: 2,
+        name: '30日内投递'
+      }, { id: 5, name: '从未投递过' }],
       deliveryNumScreen: '',
-      downloadedData: [{ id: 1, name: '今日下载' }, { id: 4, name: '3日内下载' }, { id: 3, name: '7日内下载' }, { id: 2, name: '30日内下载' }, { id: 5, name: '从未下载过' }],
+      downloadedData: [{ id: 1, name: '今日下载' }, { id: 4, name: '3日内下载' }, { id: 3, name: '7日内下载' }, {
+        id: 2,
+        name: '30日内下载'
+      }, { id: 5, name: '从未下载过' }],
       downloadedScreen: '',
-      viewedData: [{ id: 1, name: '今日被查看' }, { id: 4, name: '3日内被查看' }, { id: 3, name: '7日内被查看' }, { id: 2, name: '30日内被查看' }, { id: 5, name: '从未被查看过' }],
+      viewedData: [{ id: 1, name: '今日被查看' }, { id: 4, name: '3日内被查看' }, { id: 3, name: '7日内被查看' }, {
+        id: 2,
+        name: '30日内被查看'
+      }, { id: 5, name: '从未被查看过' }],
       viewedScreen: '',
       invitationData: [
         { id: 1, name: '今日被面邀' },
@@ -985,7 +1372,40 @@ export default {
       configInfo: {},
       is_check: 0,
       resumeLink: '',
-      tabelHeight: 0
+      tabelHeight: 0,
+      imgAuditData: [
+        { id: 0, name: '全部' },
+        { id: 1, name: '未上传' },
+        { id: 2, name: '待审核' },
+        { id: 3, name: '未通过' },
+        { id: 4, name: '已通过' }
+      ],
+      imgAudit: '',
+      imgAuditFilter: '',
+      sexData: [
+        { id: 0, name: '全部' },
+        { id: 1, name: '男' },
+        { id: 2, name: '女' }
+      ],
+      sex: '',
+      sexFilter: '',
+      ageData: [
+        { id: 0, name: '不限' },
+        { id: 1, name: '16-20岁' },
+        { id: 2, name: '20-30岁' },
+        { id: 3, name: '30-40岁' },
+        { id: 4, name: '40-50岁' },
+        { id: 5, name: '50岁以上' }
+      ],
+      age: '',
+      ageFilter: '',
+      isBindData: [
+        { id: 0, name: '不限' },
+        { id: 1, name: '已绑定微信' },
+        { id: 2, name: '未绑定微信' }
+      ],
+      isBind: '',
+      isBindFilter: ''
     }
   },
   computed: {
@@ -1006,22 +1426,22 @@ export default {
       }
     }
   },
-  updated(){
+  updated() {
     this.$nextTick(() => {
       this.$refs.multipleTable.doLayout()
-      if (!this.loading){
+      if (!this.loading) {
         setTimeout(() => {
           var classStr = this.$refs.multipleTable.$el.className
           var classAry = classStr.split(' ')
           var a = document.querySelectorAll('.el-table__fixed-right')[0]
           var b = document.querySelectorAll('.el-table__empty-block')[0]
-          if (b != undefined){
+          if (b != undefined) {
             b.style.width = 100 + '%'
           }
-          var isClass = classAry.find(function(value, index, arr){
+          var isClass = classAry.find(function (value, index, arr) {
             return value == 'el-table--scrollable-y'
           })
-          if (isClass){
+          if (isClass) {
             a.style.right = 10 + 'px'
           } else {
             a.style.right = 0 + 'px'
@@ -1030,9 +1450,9 @@ export default {
       }
     })
   },
-  mounted(){
+  mounted() {
     this.$nextTick(() => {
-      var docHeight = document.documentElement.clientHeight
+      const docHeight = document.documentElement.clientHeight
       this.tabelHeight = docHeight - 316 - 60
     })
   },
@@ -1060,7 +1480,8 @@ export default {
             this.$message.error(res.message)
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     operationResumeDel(type, id) {
       var data = ''
@@ -1084,9 +1505,11 @@ export default {
                 this.$message.error(res.message)
               }
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     screenList() {
       this.currentPage = 1
@@ -1116,9 +1539,11 @@ export default {
                 this.callDialogVisible = true
               }
             })
-            .catch(res => {})
+            .catch(res => {
+            })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     getFieldData() {
       customLndex({
@@ -1129,7 +1554,8 @@ export default {
             this.fieldData = JSON.parse(res.data)
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     sortTable({ column, order }) {
       if (order == 'ascending') {
@@ -1151,7 +1577,8 @@ export default {
           this.citycategory = res.data.citycategory
           this.jobcategory = res.data.jobcategory
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     urmList() {
       this.getDocumentCheck()
@@ -1181,7 +1608,11 @@ export default {
         citycategory: this.citycategoryScreen,
         jobcategory: this.jobcategoryScreen,
         platform: this.platformScreen,
-        enclosure_resume: this.enclosureResumeScreen
+        enclosure_resume: this.enclosureResumeScreen,
+        img_audit: this.imgAudit,
+        sex: this.sex,
+        age: this.age,
+        is_bind: this.isBind
       })
         .then(res => {
           this.tableData = res.data.items
@@ -1223,6 +1654,10 @@ export default {
         this.invitationScreen = ''
         this.worksScreen = ''
         this.enclosureResumeScreen = ''
+        this.imgAudit = ''
+        this.imgSex = ''
+        this.imgAge = ''
+        this.isBind = ''
       }
       if (field == 'education_cn') {
         this.educationScreen = ''
@@ -1256,6 +1691,18 @@ export default {
       }
       if (field == 'enclosure_resume') {
         this.enclosureResumeScreen = ''
+      }
+      if (field == 'img_audit') {
+        this.imgAudit = ''
+      }
+      if (field == 'sex') {
+        this.sex = ''
+      }
+      if (field == 'age') {
+        this.age = ''
+      }
+      if (field == 'is_bind') {
+        this.isBind = ''
       }
       this.confirm()
     },
@@ -1303,7 +1750,7 @@ export default {
       }
     },
     confirm(type) {
-      if (type != 'reset'){
+      if (type != 'reset') {
         this.tabelHeight = 'calc(100vh - 446px)'
         this.$nextTick(() => {
           this.$refs.multipleTable.doLayout()
@@ -1442,6 +1889,54 @@ export default {
       } else {
         this.enclosureResumeFilter = ''
       }
+      if (this.imgAudit != '') {
+        for (var i = 0; i <= this.imgAuditData.length - 1; i++) {
+          if (this.imgAudit == this.imgAuditData[i].id) {
+            this.imgAuditFilter = {
+              field: 'img_audit',
+              name: this.imgAuditData[i].name
+            }
+          }
+        }
+      } else {
+        this.imgAuditFilter = ''
+      }
+      if (this.sex != '') {
+        for (var i = 0; i <= this.sexData.length - 1; i++) {
+          if (this.sex == this.sexData[i].id) {
+            this.sexFilter = {
+              field: 'sex',
+              name: this.sexData[i].name
+            }
+          }
+        }
+      } else {
+        this.sexFilter = ''
+      }
+      if (this.age != '') {
+        for (var i = 0; i <= this.ageData.length - 1; i++) {
+          if (this.age == this.ageData[i].id) {
+            this.ageFilter = {
+              field: 'age',
+              name: this.ageData[i].name
+            }
+          }
+        }
+      } else {
+        this.ageFilter = ''
+      }
+      if (this.isBind != '') {
+        for (var i = 0; i <= this.isBindData.length - 1; i++) {
+          if (this.isBind == this.isBindData[i].id) {
+            this.isBindFilter = {
+              field: 'is_bind',
+              name: this.isBindData[i].name
+            }
+          }
+        }
+      } else {
+        this.isBindFilter = ''
+      }
       this.urmList()
     },
     setFieldConfirm() {
@@ -1458,7 +1953,8 @@ export default {
           this.visiblepop = false
           this.menu_icon = 'menu'
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     locking(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
@@ -1477,14 +1973,41 @@ export default {
       this.setFieldConfirm()
     },
     handleSelectionChange(val) {
-      var tableUidarr = []
-      var tableIdarr = []
+      const tableUidarr = []
+      const tableIdarr = []
       val.forEach(row => {
         tableUidarr.push(row.uid)
         tableIdarr.push(row.id)
       })
       this.tableUidarr = tableUidarr
       this.tableIdarr = tableIdarr
+      this.multipleSelection = val
+      if (this.multipleSelection.length == this.tableData.length) {
+        this.multipleSelection.forEach((item, index) => {
+          this.checkedList[index] = true
+        })
+      }
+      if (this.multipleSelection.length == 0) {
+        this.checkedList = []
+      }
+      this.$forceUpdate()
+      this.$emit('selectList', this.multipleSelection)
+    },
+    // 鼠标移入表格当前行
+    cellEnter(row, column, cell, event) {
+      this.columnCheckedId = row.id
+    },
+    // 鼠标移出表格当前行
+    cellLeave(row, column, cell, event) {
+      this.columnCheckedId = ''
+    },
+    // 选中与否塞数据
+    cellCheckbox(row, index) {
+      if (this.checkedList[index]) {
+        this.$refs.multipleTable.toggleRowSelection(row, true)
+      } else {
+        this.$refs.multipleTable.toggleRowSelection(row, false)
+      }
     },
     choose() {
       this.tableData.forEach(row => {
@@ -1603,12 +2126,12 @@ export default {
       // 用FileReader来读取
       var reader = new FileReader()
       // 重写FileReader上的readAsBinaryString方法
-      FileReader.prototype.readAsBinaryString = function(f) {
+      FileReader.prototype.readAsBinaryString = function (f) {
         var binary = ''
         var wb // 读取完成的数据
         var outdata // 你需要的数据
         var reader = new FileReader()
-        reader.onload = function() {
+        reader.onload = function () {
           // 读取成Uint8Array，再转换为Unicode编码（Unicode占两个字节）
           var bytes = new Uint8Array(reader.result)
           var length = bytes.byteLength
@@ -1755,7 +2278,7 @@ export default {
       } else {
         if (data != '') {
           const listArray = data.split('【#】')
-          listArray.forEach(function(val, index, arr) {
+          listArray.forEach(function (val, index, arr) {
             const valArray = val.split('|')
             if (type === 'education') {
               returnArray.push({
@@ -1820,7 +2343,8 @@ export default {
             sign
           this.showIframe = true
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     getDocumentCheck() {
       documentCheck().then(res => {
@@ -1847,12 +2371,14 @@ export default {
     color: unset;
   }
 }
+
 .contact_status {
   display: inline-block;
   margin-right: 10px;
   width: 16px;
   height: 16px;
 }
+
 .el-progress-bar__inner {
   position: absolute;
   left: 10px;
@@ -1865,31 +2391,37 @@ export default {
   white-space: nowrap;
   -webkit-transition: width 0.6s ease;
   transition: width 0.6s ease;
+
   .el-progress-bar__innerText {
     color: #fff;
     font-size: 12px;
     margin: 0 5px;
   }
 }
+
 .list-screen {
   margin-left: 10px;
 }
+
 .screen_s {
   max-height: 220px;
   overflow: auto;
 }
+
 ::v-deep .caret-wrapper {
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
 }
+
 .dial {
   position: relative;
   top: 2px;
   width: 14px;
   height: 14px;
   display: inline-block;
+
   .disal_img {
     cursor: pointer;
     width: 14px;
@@ -1897,6 +2429,7 @@ export default {
     background: url('../../../../assets/images/outbound/dial.png') no-repeat center;
   }
 }
+
 .meet {
   .box-content {
     .img {
@@ -1907,6 +2440,7 @@ export default {
       margin: 0 auto;
       background: url('../../../../assets/images/outbound/meet.png') no-repeat center;
     }
+
     .hu {
       text-align: center;
       margin-top: 30px;
@@ -1915,6 +2449,7 @@ export default {
       font-weight: 400;
       color: #949494;
     }
+
     .telephone {
       text-align: center;
       font-size: 30px;
@@ -1923,6 +2458,7 @@ export default {
       color: #333333;
       margin-top: 26px;
     }
+
     .company {
       text-align: center;
       margin-top: 25px;
@@ -1931,6 +2467,7 @@ export default {
       font-weight: 400;
       color: #666666;
     }
+
     .tips {
       text-align: center;
       height: 80px;
@@ -1942,34 +2479,42 @@ export default {
     }
   }
 }
+
 .meet {
   ::v-deep .el-dialog__body {
-    padding: 0px 0px 0px 0px;
+    padding: 0 0 0 0;
     border-radius: 5px;
   }
+
   ::v-deep .el-dialog {
     border-radius: 16px;
   }
 }
+
 .call {
   .box-content {
     padding: 20px 30px 35px 30px;
+
     .advantage {
       .advantage-box {
         display: inline-block;
         width: 170px;
+
         .title {
           display: inline-block;
           float: left;
         }
+
         .img {
           display: inline-block;
           float: left;
           margin-right: 8px;
         }
       }
+
       margin-top: 25px;
     }
+
     .slogan {
       font-size: 14px;
       font-family: Microsoft YaHei;
@@ -1977,6 +2522,7 @@ export default {
       color: #ff550a;
       margin-top: 24px;
     }
+
     .code {
       display: inline-block;
       margin-right: 30px;
@@ -1987,20 +2533,24 @@ export default {
       box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.14);
       border-radius: 8px;
       padding: 10px 10px;
+
       img {
         width: 100%;
         height: 100%;
       }
     }
+
     .content {
       display: inline-block;
       float: left;
+
       .title1 {
         font-size: 18px;
         font-family: Microsoft YaHei;
         font-weight: 400;
         color: #ff550a;
       }
+
       .title2 {
         margin-top: 18px;
         font-size: 18px;
@@ -2008,6 +2558,7 @@ export default {
         font-weight: 400;
         color: #555555;
       }
+
       .title3 {
         width: 133px;
         height: 24px;
@@ -2024,9 +2575,10 @@ export default {
     }
   }
 }
+
 .call {
   ::v-deep .el-dialog__body {
-    padding: 0px 0px 0px 0px;
+    padding: 0 0 0 0;
     border-radius: 5px;
   }
 
@@ -2034,6 +2586,7 @@ export default {
     border-radius: 16px;
   }
 }
+
 .sotrTime {
   display: inline-block;
   width: 94%;
@@ -2042,6 +2595,7 @@ export default {
 ::v-deep .el-popover {
   position: fixed;
 }
+
 .list-search {
   z-index: 1;
   position: relative;
@@ -2187,16 +2741,28 @@ export default {
 }
 
 .setFields {
-  margin: 15px 0px;
+  margin: 15px 0;
   font-size: 14px;
 }
 
 .setField {
-  top: 20px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 6;
   margin-left: 10px;
+}
+
+.checkboxName{
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  z-index: 9;
+  font-size: 14px;
+  color: #909399;
+  font-weight: bold;
+  height: 48px;
+  line-height: 48px;
 }
 
 .screenStyle {
@@ -2210,15 +2776,15 @@ export default {
 
 .input-with-select {
   float: left;
-  margin-bottom: 20px;
 }
+
 .filterCriteria {
   border: 1px dashed #eeeeee;
   font-size: 13px;
   color: #999999;
   margin-top: 15px;
-  margin-bottom: 16px;
   padding: 15px 16px 15px 16px;
+
   .selected {
     display: inline-block;
     font-size: 12px;
@@ -2231,25 +2797,54 @@ export default {
     margin-right: 10px;
     margin-bottom: 6px;
     border-radius: 3px;
+
     .name {
       display: inline-block;
     }
+
     .closes {
       display: inline-block;
       margin-left: 10px;
     }
   }
 }
+
 .setField_s {
-  top: 0px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
 }
+
+.list_name_box_self {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  .list_name_item {
+    display: flex;
+    align-items: center;
+
+    .chat_icon {
+      display: block;
+      width: 15px;
+      height: 15px;
+      margin-left: 6px;
+    }
+
+    .head_portrait {
+      width: 20px;
+      height: 20px;
+      border-radius: 30px;
+    }
+  }
+}
+
 #animation {
   animation: pulse 1s 0.2s ease both infinite;
 }
+
 @-webkit-keyframes pulse {
   0% {
     -webkit-transform: scale(1);
@@ -2261,6 +2856,7 @@ export default {
     -webkit-transform: scale(1);
   }
 }
+
 @-moz-keyframes pulse {
   0% {
     -moz-transform: scale(1);

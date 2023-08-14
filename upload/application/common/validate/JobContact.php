@@ -19,6 +19,7 @@ class JobContact extends BaseValidate
         'telephone' => 'max:20',
         'qq' => 'max:15|checkQq',
         'email' => 'max:30|checkEmail',
-        'is_display' => 'require|in:0,1'
+        'is_display' => 'require|in:0,1',
+        'is_secrecy' => 'require|in:0,1'
     ];
 }

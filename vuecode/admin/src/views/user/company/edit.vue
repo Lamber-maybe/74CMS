@@ -165,6 +165,10 @@
       </el-form-item>
       <el-form-item label="联系手机" prop="contact.mobile">
         <el-input v-model="form.contact.mobile" />
+        <el-checkbox
+          v-model="secrecyHidden"
+          style="margin-left:10px;"
+        >隐藏不显示</el-checkbox>
       </el-form-item>
       <el-form-item
         v-if="live_fields.contact.weixin === true"
@@ -253,6 +257,7 @@ export default {
       }
     }
     return {
+      secrecyHidden: false,
       infoLoading: true,
       submitLoading: false,
       headers: { admintoken: getToken() },
@@ -627,6 +632,7 @@ export default {
           if (response.data.info.district3 != 0) {
             citycategory_arr.push(response.data.info.district3)
           }
+          this.secrecyHidden = this.form.contact.is_secrecy != 1
           this.$set(this.form, 'citycategory_arr', citycategory_arr)
           this.infoLoading = false
         })
@@ -650,6 +656,7 @@ export default {
             tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0
           insertData.contact = { ...this.form.contact }
           insertData.info = { ...this.form.info }
+          insertData.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
           companyEdit(insertData)
             .then(response => {
               this.$message.success(response.message)
@@ -758,7 +765,7 @@ export default {
 .el-select,
 .el-cascader,
 .el-textarea {
-  width: 450px;
+  width: 445px;
 }
 .el-form.common-form .input-sel {
   width: 120px;

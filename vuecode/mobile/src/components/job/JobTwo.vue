@@ -240,7 +240,8 @@
           </div>
           <div class="info_line">
             联系手机：
-            <span>{{ contact_info.mobile }}</span>
+            <span v-if="contact_info.is_secrecy === 1">{{ contact_info.mobile }}</span>
+            <span style="color: #1787FB" v-else>企业已隐藏当前手机号</span>
           </div>
           <div
             class="info_line"
@@ -657,64 +658,64 @@
 </template>
 
 <script>
-import Vue from "vue";
-import wxshare from "@/assets/js/share.js";
-import Subscribe from "@/components/Subscribe";
-import Tipoff from "@/components/Tipoff";
-import { countDistance } from "@/utils/index";
-import http from "@/utils/http";
-import api from "@/api";
-import Login from "@/components/Login";
-import JobCompetitive from "@/components/JobCompetitive";
-import Share from "@/components/share/Share";
-import SharePoster from "@/components/share/SharePoster";
-import { mapMutations } from "vuex";
+import Vue from 'vue'
+import wxshare from '@/assets/js/share.js'
+import Subscribe from '@/components/Subscribe'
+import Tipoff from '@/components/Tipoff'
+import { countDistance } from '@/utils/index'
+import http from '@/utils/http'
+import api from '@/api'
+import Login from '@/components/Login'
+import JobCompetitive from '@/components/JobCompetitive'
+import Share from '@/components/share/Share'
+import SharePoster from '@/components/share/SharePoster'
+import { mapMutations } from 'vuex'
 let isSpider = new RegExp(
-  "^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)"
-).test(navigator.userAgent);
-Vue.component("BaiduMap", function (resolve, reject) {
+  '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
+).test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
-    require(["vue-baidu-map/components/map/Map.vue"], resolve);
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
   }
-});
+})
 export default {
-  name: "JobShow",
+  name: 'JobShow',
   components: {
     Login,
     JobCompetitive,
     Tipoff,
     Subscribe,
     Share,
-    SharePoster,
+    SharePoster
   },
-  data() {
+  data () {
     return {
       jobSearchGroupData: [],
       codePro: {
         show: false,
-        x: "",
+        x: '',
         timeout: 0,
-        a: "",
-        btnCn: "立即拔打",
+        a: '',
+        btnCn: '立即拔打'
       },
       isRetrunBtn: null,
       showTipoff: false,
       mainLoading: true,
-      query_id: "",
+      query_id: '',
       showLogin: false,
       is_personal_login: false,
       showCompetitive: false,
       base_info: {},
       field_rule: { basic: {}, contact: {} },
       show_contact: 0,
-      show_contact_note: "",
+      show_contact_note: '',
       contact_info: {},
-      watch_percent: "",
-      last_login_time: "",
+      watch_percent: '',
+      last_login_time: '',
       com_info: {},
       similar: [],
       match_level: 0,
-      distance: "",
+      distance: '',
       current_lat: 0,
       current_lng: 0,
       BMap: null,
@@ -727,105 +728,105 @@ export default {
       showWxLayer: false,
       showLayer: false,
       showPoster: false,
-      cur_user_mobile: "",
+      cur_user_mobile: '',
       phone_protect_open: false,
       phone_protect_timeout: 0,
       phone_protect_type: 0,
-      shortUrl: "",
+      shortUrl: '',
       // 绑定微信
       bindWeixinShow: false,
       // 绑定微信二维码
-      scanQrcodeImg: "",
-      putAway: true,
-    };
+      scanQrcodeImg: '',
+      putAway: true
+    }
   },
-  created() {
-    this.query_id = this.$route.params.id;
-    this.isRetrunBtn = this.$route.query.isRetrunBtn;
+  created () {
+    this.query_id = this.$route.params.id
+    this.isRetrunBtn = this.$route.query.isRetrunBtn
     this.is_personal_login =
       this.$store.state.LoginOrNot === true &&
-      this.$store.state.LoginType === 2;
+      this.$store.state.LoginType === 2
     // 请求数据
-    this.fetchData();
+    this.fetchData()
   },
   watch: {
-    $route(to, from) {
-      this.query_id = to.params.id;
+    $route (to, from) {
+      this.query_id = to.params.id
       // 请求数据
-      this.fetchData();
-      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.fetchData()
+      document.body.scrollTop = document.documentElement.scrollTop = 0
     },
-    bindWeixinShow(e) {
+    bindWeixinShow (e) {
       if (e === true) {
-        this.getScanQrcodeImg();
+        this.getScanQrcodeImg()
       }
-    },
+    }
   },
-  mounted() {},
+  mounted () {},
   methods: {
-    ...mapMutations(["setImShowParams", "setimChatid"]),
+    ...mapMutations(['setImShowParams', 'setimChatid']),
     /**
      * 绑定微信二维码
      */
-    getScanQrcodeImg() {
-      http.get(api.get_qrcode, { type: "bind_weixin" }).then((res) => {
-        this.scanQrcodeImg = res.data;
-      });
+    getScanQrcodeImg () {
+      http.get(api.get_qrcode, { type: 'bind_weixin' }).then((res) => {
+        this.scanQrcodeImg = res.data
+      })
     },
 
-    handlerHomePage() {
-      this.$router.push("/index");
+    handlerHomePage () {
+      this.$router.push('/index')
     },
     // 一键复制
-    async handlerCopy() {
-      let that = this;
+    async handlerCopy () {
+      let that = this
       let copy = () => {
         let copyMessage = `${this.com_info.companyname}
 招聘：${this.base_info.jobname}
 要求：工作经验${this.base_info.experience_text}、学历要求${this.base_info.education_text}
 工资：${this.base_info.wage_text}
 查看联系方式：${this.shortUrl}
--招聘求职就上${this.$store.state.config.sitename}-`;
+-招聘求职就上${this.$store.state.config.sitename}-`
         this.$copyText(copyMessage).then(
           function (e) {
-            that.$notify({ type: "success", message: "内容已复制到剪切板！" });
+            that.$notify({ type: 'success', message: '内容已复制到剪切板！' })
           },
           function (e) {
-            that.$notify({ type: "error", message: "抱歉，复制失败！" });
+            that.$notify({ type: 'error', message: '抱歉，复制失败！' })
           }
-        );
-      };
+        )
+      }
       if (!this.shortUrl) {
         const params = {
-          jobId: this.query_id,
-        };
-        let res = await http.get("/home/short_url/genJobShow", params);
+          jobId: this.query_id
+        }
+        let res = await http.get('/home/short_url/genJobShow', params)
         if (res.code == 200) {
-          this.shortUrl = res.data;
-          copy();
+          this.shortUrl = res.data
+          copy()
         }
       } else {
-        copy();
+        copy()
       }
     },
-    toDetail(id) {
-      this.$router.push("/job/" + id);
+    toDetail (id) {
+      this.$router.push('/job/' + id)
     },
-    handlerMap({ BMap, map }) {
-      this.BMap = BMap;
+    handlerMap ({ BMap, map }) {
+      this.BMap = BMap
     },
-    getPosition(map_lat, map_lng) {
+    getPosition (map_lat, map_lng) {
       if (!this.BMap) {
-        return;
+        return
       }
-      let BMap = this.BMap;
-      let that = this;
-      var geolocation = new BMap.Geolocation();
+      let BMap = this.BMap
+      let that = this
+      var geolocation = new BMap.Geolocation()
       geolocation.getCurrentPosition(
         function (r) {
           if (this.getStatus() === BMAP_STATUS_SUCCESS) {
-            that.current_lat = r.point.lat;
-            that.current_lng = r.point.lng;
+            that.current_lat = r.point.lat
+            that.current_lng = r.point.lng
             if (
               that.current_lat > 0 &&
               that.current_lng > 0 &&
@@ -837,36 +838,36 @@ export default {
                 that.current_lng,
                 map_lat,
                 map_lng
-              );
+              )
             }
           }
         },
         { enableHighAccuracy: true }
-      );
+      )
     },
-    getCompetitiveness() {
+    getCompetitiveness () {
       if (this.is_personal_login === true) {
         http
           .get(api.competitiveness, { id: this.query_id })
           .then((res) => {
             if (res.data.length == 0) {
-              this.match_level = 3;
-              this.is_personal_login = false;
+              this.match_level = 3
+              this.is_personal_login = false
             } else {
-              this.match_level = res.data.match_level;
-              this.competitive_data = res.data;
+              this.match_level = res.data.match_level
+              this.competitive_data = res.data
             }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
-        this.match_level = 0;
+        this.match_level = 0
       }
     },
-    async fetchData(next_method = null) {
+    async fetchData (next_method = null) {
       const params = {
-        id: this.query_id,
-      };
-      let res = await http.get(api.jobshow, params);
+        id: this.query_id
+      }
+      let res = await http.get(api.jobshow, params)
       const {
         base_info,
         field_rule,
@@ -882,130 +883,148 @@ export default {
         cur_user_mobile,
         phone_protect_open,
         phone_protect_timeout,
-        phone_protect_type,
-      } = { ...res.data };
-      this.field_rule = field_rule;
-      this.base_info = base_info;
-      this.show_contact = show_contact;
-      this.show_contact_note = show_contact_note;
-      this.contact_info = contact_info;
-      this.com_info = com_info;
-      this.watch_percent = watch_percent;
-      this.last_login_time = last_login_time;
-      this.similar = similar;
-      this.has_fav = has_fav;
-      this.has_apply = has_apply;
-      this.phone_protect_open = phone_protect_open;
-      this.cur_user_mobile = cur_user_mobile;
-      this.phone_protect_timeout = phone_protect_timeout;
-      this.phone_protect_type = phone_protect_type;
+        phone_protect_type
+      } = { ...res.data }
+      this.field_rule = field_rule
+      this.base_info = base_info
+      this.show_contact = show_contact
+      this.show_contact_note = show_contact_note
+      this.contact_info = contact_info
+      this.com_info = com_info
+      this.watch_percent = watch_percent
+      this.last_login_time = last_login_time
+      this.similar = similar
+      this.has_fav = has_fav
+      this.has_apply = has_apply
+      this.phone_protect_open = phone_protect_open
+      this.cur_user_mobile = cur_user_mobile
+      this.phone_protect_timeout = phone_protect_timeout
+      this.phone_protect_type = phone_protect_type
       let wechatShareInfo = {
         jobname: base_info.jobname,
         wage: base_info.wage_text,
         companyname: this.com_info.companyname,
         district: this.base_info.district_text,
-        imgUrl: this.com_info.logo_src,
-      };
-      wxshare(wechatShareInfo, "jobshow", location.href);
-      this.getPosition(this.base_info.map_lat, this.base_info.map_lng);
-      this.getCompetitiveness();
-      this.mainLoading = false;
+        imgUrl: this.com_info.logo_src
+      }
+      wxshare(wechatShareInfo, 'jobshow', location.href)
+      this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
+      this.getCompetitiveness()
+      this.mainLoading = false
       if (next_method !== null) {
-        this[next_method]();
+        this[next_method]()
       }
     },
-    callCodePro() {
-      location.href = `tel:${this.codePro.x}`;
+    callCodePro () {
+      location.href = `tel:${this.codePro.x}`
     },
-    async doTel() {
+    async doTel () {
       if (this.show_contact === 1) {
         if (this.phone_protect_open) {
-          let res = await http.get(api.secret_phone, { job_id: this.query_id });
-          const { code, message, data } = res;
+          let res = await http.get(api.secret_phone, { job_id: this.query_id })
+          const { code, message, data } = res
           if (code == 200) {
-            this.codePro.x = data.x;
-            this.codePro.timeout = data.timeout;
-            this.codePro.a = data.a;
-            this.codePro.show = true;
-            let that = this;
+            this.codePro.x = data.x
+            this.codePro.timeout = data.timeout
+            this.codePro.a = data.a
+            this.codePro.show = true
+            let that = this
             this.$nextTick(() => {
-              let tmh = null;
+              let tmh = null
               let tm = function () {
                 if (that.codePro.show && that.codePro.timeout > 0) {
-                  that.codePro.timeout--;
-                  tmh = setTimeout(tm, 1000);
+                  that.codePro.timeout--
+                  tmh = setTimeout(tm, 1000)
                 } else {
-                  that.codePro.show = false;
-                  clearTimeout(tmh);
+                  that.codePro.show = false
+                  clearTimeout(tmh)
                 }
-              };
-              setTimeout(tm, 1000);
-            });
+              }
+              setTimeout(tm, 1000)
+            })
           } else {
-            this.$message.error(message);
+            this.$message.error(message)
           }
         } else {
+          if (this.contact_info.is_secrecy != 1) {
+            if (this.contact_info.telephone != '') {
+              this.$dialog
+                .confirm({
+                  title: '提示',
+                  message: '即将拨打号码：' + this.contact_info.telephone,
+                  confirmButtonText: '确定拨打'
+                })
+                .then(() => {
+                  window.location.href = `tel:${this.contact_info.telephone}`
+                })
+                .catch(() => {})
+              return
+            } else {
+              this.$notify('企业已关闭手机号显示，请投递简历等待联系')
+              return
+            }
+          }
           this.$dialog
             .confirm({
-              title: "提示",
-              message: "即将拨打号码：" + this.contact_info.mobile,
-              confirmButtonText: "确定拨打",
+              title: '提示',
+              message: '即将拨打号码：' + this.contact_info.mobile,
+              confirmButtonText: '确定拨打'
             })
             .then(() => {
-              window.location.href = `tel:${this.contact_info.mobile}`;
+              window.location.href = `tel:${this.contact_info.mobile}`
             })
-            .catch(() => {});
+            .catch(() => {})
         }
       } else if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
-            title: "提示",
-            message: "当前操作需要登录求职者账号",
-            confirmButtonText: "去登录",
+            title: '提示',
+            message: '当前操作需要登录求职者账号',
+            confirmButtonText: '去登录'
           })
           .then(() => {
-            this.showLogin = true;
+            this.showLogin = true
             this.after_login_data = {
-              method: "doTel",
-            };
+              method: 'doTel'
+            }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
-        if (this.show_contact_note === "need_resume") {
-          this.$notify("您还没有简历，创建简历后可拨打企业电话");
-        } else if (this.show_contact_note === "need_apply") {
-          this.$notify("您还没有投递简历，请投递简历后拨打企业电话");
-        } else if (this.show_contact_note === "company_close") {
+        if (this.show_contact_note === 'need_resume') {
+          this.$notify('您还没有简历，创建简历后可拨打企业电话')
+        } else if (this.show_contact_note === 'need_apply') {
+          this.$notify('您还没有投递简历，请投递简历后拨打企业电话')
+        } else if (this.show_contact_note === 'company_close') {
           if (this.has_apply == 1) {
-            this.$notify("您已投递简历，请等待企业联系");
+            this.$notify('您已投递简历，请等待企业联系')
           } else {
-            this.$notify("企业未公开联系方式，请直接投递简历");
+            this.$notify('企业未公开联系方式，请直接投递简历')
           }
         }
       }
     },
-    handleImCheckBind() {
+    handleImCheckBind () {
       http.get(api.imCheckBind).then((res) => {
         if (res.data != 0) {
-          location.reload(true);
+          location.reload(true)
         }
-      });
+      })
     },
-    doMsg() {
+    doMsg () {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
-            title: "提示",
-            message: "当前操作需要登录求职者账号",
-            confirmButtonText: "去登录",
+            title: '提示',
+            message: '当前操作需要登录求职者账号',
+            confirmButtonText: '去登录'
           })
           .then(() => {
-            this.showLogin = true;
+            this.showLogin = true
             this.after_login_data = {
-              method: "doMsg",
-            };
+              method: 'doMsg'
+            }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
         // if (this.base_info.audit != 1) {
         //   this.$notify('该简历还未审核通过，不能继续此操作')
@@ -1014,7 +1033,7 @@ export default {
         http
           .post(api.imStart, {
             token: this.$store.state.imToken,
-            jobid: this.query_id,
+            jobid: this.query_id
           })
           .then((res) => {
             // disabled 不能使用功能
@@ -1024,204 +1043,204 @@ export default {
             // choose_job 选择职位
             // pay 需要购买增值服务，触屏是快捷支付
             if (parseInt(res.code) == 200) {
-              if (res.data.next == "") {
+              if (res.data.next == '') {
                 this.setImShowParams({
                   jobname: this.com_info.first_jobname,
                   name: this.com_info.companyname,
                   resumeid: 0,
                   jobid: this.base_info.id,
-                  companyId: this.com_info.id,
-                });
-                this.setimChatid(res.data.chatid);
-                this.$router.push({ path: "/im/" + res.data.chatid });
-                return false;
+                  companyId: this.com_info.id
+                })
+                this.setimChatid(res.data.chatid)
+                this.$router.push({ path: '/im/' + res.data.chatid })
+                return false
               }
-              if (res.data.next == "disabled") {
+              if (res.data.next == 'disabled') {
                 // this.$notify({ type: 'danger', message: res.message })
                 this.$dialog({
-                  title: "系统提示",
+                  title: '系统提示',
                   message: res.message,
-                  showConfirmButton: true,
-                }).then(() => {});
-                return false;
+                  showConfirmButton: true
+                }).then(() => {})
+                return false
               }
-              if (res.data.next == "complete_resume") {
+              if (res.data.next == 'complete_resume') {
                 this.$dialog
                   .confirm({
-                    title: "系统提示",
+                    title: '系统提示',
                     message: res.message,
-                    confirmButtonText: "去完善简历",
-                    showCancelButton: true,
+                    confirmButtonText: '去完善简历',
+                    showCancelButton: true
                   })
                   .then(() => {
-                    this.$router.push({ path: "/member/personal/resume" });
+                    this.$router.push({ path: '/member/personal/resume' })
                   })
-                  .catch(() => {});
-                return false;
+                  .catch(() => {})
+                return false
               }
-              if (res.data.next == "bind_weixin") {
-                this.bindWeixinShow = true;
+              if (res.data.next == 'bind_weixin') {
+                this.bindWeixinShow = true
               }
             }
-          });
+          })
       }
       // else {
       //   this.$notify('暂时无法与当前用户直聊')
       //   return false
       // }
     },
-    doApply() {
+    doApply () {
       if (this.$store.state.LoginOrNot === true) {
         if (this.$store.state.LoginType !== 2) {
           this.$dialog
             .confirm({
-              title: "提示",
-              message: "当前操作需要登录求职者账号",
-              confirmButtonText: "去登录",
+              title: '提示',
+              message: '当前操作需要登录求职者账号',
+              confirmButtonText: '去登录'
             })
             .then(() => {
-              this.showLogin = true;
+              this.showLogin = true
               this.after_login_data = {
-                method: "doApply",
-              };
+                method: 'doApply'
+              }
             })
-            .catch(() => {});
+            .catch(() => {})
         } else {
           if (this.has_apply != 1) {
             const params = {
-              jobid: this.query_id,
-            };
+              jobid: this.query_id
+            }
             http
               .post(api.jobapply, params)
               .then((res) => {
-                this.$notify({ type: "success", message: res.message });
-                this.fetchData();
+                this.$notify({ type: 'success', message: res.message })
+                this.fetchData()
               })
-              .catch(() => {});
+              .catch(() => {})
           }
         }
       } else {
         // 快速注册简历
         this.$router.push({
-          path: "/member/regquick",
+          path: '/member/regquick',
           query: {
-            id: this.query_id,
-          },
-        });
+            id: this.query_id
+          }
+        })
       }
     },
-    doFav() {
+    doFav () {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
-            title: "提示",
-            message: "当前操作需要登录求职者账号",
-            confirmButtonText: "去登录",
+            title: '提示',
+            message: '当前操作需要登录求职者账号',
+            confirmButtonText: '去登录'
           })
           .then(() => {
-            this.showLogin = true;
+            this.showLogin = true
             this.after_login_data = {
-              method: "doFav",
-            };
+              method: 'doFav'
+            }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
         const params = {
-          jobid: this.query_id,
-        };
-        let _api_url = this.has_fav === 1 ? api.jobfav_cancel : api.jobfav;
+          jobid: this.query_id
+        }
+        let _api_url = this.has_fav === 1 ? api.jobfav_cancel : api.jobfav
         http
           .post(_api_url, params)
           .then((res) => {
-            this.has_fav = this.has_fav === 1 ? 0 : 1;
-            this.$notify({ type: "success", message: res.message });
+            this.has_fav = this.has_fav === 1 ? 0 : 1
+            this.$notify({ type: 'success', message: res.message })
           })
-          .catch(() => {});
+          .catch(() => {})
       }
     },
-    doShare() {
-      this.showShare = true;
+    doShare () {
+      this.showShare = true
     },
-    cancelShare() {
-      this.showShare = false;
-      this.showWxLayer = false;
-      this.showLayer = false;
+    cancelShare () {
+      this.showShare = false
+      this.showWxLayer = false
+      this.showLayer = false
     },
-    handleForward() {
-      const agent = navigator.userAgent.toLowerCase();
-      if (agent.indexOf("micromessenger") < 0) {
+    handleForward () {
+      const agent = navigator.userAgent.toLowerCase()
+      if (agent.indexOf('micromessenger') < 0) {
         setTimeout(() => {
-          this.showLayer = true;
-        }, 150);
+          this.showLayer = true
+        }, 150)
       } else {
         setTimeout(() => {
-          this.showWxLayer = true;
-        }, 150);
+          this.showWxLayer = true
+        }, 150)
       }
     },
-    handlePoster() {
-      this.shareid = this.query_id;
-      this.showPoster = true;
+    handlePoster () {
+      this.shareid = this.query_id
+      this.showPoster = true
     },
-    closePoster() {
-      this.showPoster = false;
+    closePoster () {
+      this.showPoster = false
     },
-    openCompetitive() {
-      this.showCompetitive = true;
+    openCompetitive () {
+      this.showCompetitive = true
     },
-    closeCompetitive() {
-      this.showCompetitive = false;
+    closeCompetitive () {
+      this.showCompetitive = false
     },
-    afterLogin(data) {
-      this.showLogin = false;
-      this.is_personal_login = true;
-      let method = null;
+    afterLogin (data) {
+      this.showLogin = false
+      this.is_personal_login = true
+      let method = null
       if (data.method !== undefined) {
-        method = data.method;
+        method = data.method
       }
-      this.fetchData(method);
+      this.fetchData(method)
     },
-    closeLogin() {
-      this.showLogin = false;
+    closeLogin () {
+      this.showLogin = false
     },
-    locationToBdmap() {
+    locationToBdmap () {
       if (!this.base_info.map_lat || !this.base_info.map_lng) {
-        return false;
+        return false
       }
       let url =
-        "http://api.map.baidu.com/marker?location=" +
+        'http://api.map.baidu.com/marker?location=' +
         this.base_info.map_lat +
-        "," +
+        ',' +
         this.base_info.map_lng +
-        "&title=" +
+        '&title=' +
         this.com_info.companyname +
-        "&content=" +
+        '&content=' +
         this.base_info.address +
-        "&output=html";
-      window.location.href = url;
+        '&output=html'
+      window.location.href = url
     },
-    handlerReport() {
+    handlerReport () {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
-            title: "提示",
-            message: "当前操作需要登录求职者账号",
-            confirmButtonText: "去登录",
+            title: '提示',
+            message: '当前操作需要登录求职者账号',
+            confirmButtonText: '去登录'
           })
           .then(() => {
-            this.showLogin = true;
+            this.showLogin = true
             this.after_login_data = {
-              method: "handlerReport",
-            };
+              method: 'handlerReport'
+            }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
-        this.$refs.tipoff.initCB();
-        this.showTipoff = true;
+        this.$refs.tipoff.initCB()
+        this.showTipoff = true
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

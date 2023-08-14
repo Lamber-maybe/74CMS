@@ -38,7 +38,11 @@ class Resume extends Backend
         $citycategory = input('post.citycategory/a', []);
         $jobcategory = input('post.jobcategory/a', []);
         $platform = input('post.platform/s', '', 'trim');
-        $enclosure_resume = input('post.enclosure_resume/d', 0, 'intval');
+        $enclosure_resume = input('post.enclosure_resume/d', 0, 'intval'); // 附件简历
+        $img_audit = input('post.img_audit/d', 0, 'intval'); // 简历作品审核状态
+        $sex = input('post.sex/d', 0, 'intval'); // 性别
+        $age = input('post.age/d', 0, 'intval'); // 年龄
+        $is_bind = input('post.is_bind/d', 0, 'intval'); // 是否绑定微信
         if ($platform != '') {
             $where['m.platform'] = ['=', $platform];
         }
@@ -115,6 +119,8 @@ class Resume extends Backend
             r.is_display,
             r.audit,
             r.fullname,
+            r.sex,
+            r.birthday,
             r.high_quality,
             r.education,
             r.enter_job_time,
@@ -386,6 +392,7 @@ class Resume extends Backend
             }
         }
 
+        // 附件简历筛选条件
         if (!empty($enclosure_resume)) {
             switch ($enclosure_resume) {
                 case 1:
@@ -404,6 +411,127 @@ class Resume extends Backend
                     break;
             }
         }
+
+        /**
+         * [新增]:
+         * 是否绑定微信
+         * 参数:0-不限|1-已绑定|2-未绑定
+         * yx - 2023.01.04
+         */
+        if (!empty($is_bind)) {
+            switch ($is_bind) {
+                case 1:
+                    $total_join[] = ['member_bind bind', "bind.uid = r.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT'];
+                    $where['bind.id'] = ['not null', ''];
+                    break;
+
+                case 2:
+                    $total_join[] = ['member_bind bind', "bind.uid = r.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT'];
+                    $where['bind.id'] = ['null', ''];
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // 性别筛选条件
+        if (!empty($sex)) {//审核状态
+            $where['r.sex'] = ['=', $sex];
+        }
+
+        /**
+         * [新增]:
+         * 年龄
+         * 参数:0-不限|1-16~20岁|2-20~30岁|3-30~40岁|4-40~50岁|5-50岁以上
+         * yx - 2023.01.04
+         */
+        if (!empty($age)) {
+            switch ($age) {
+                case 1:
+                    $where['r.birthday'] = [
+                        ['<=', (date('Y') - 16)],
+                        ['>=', (date('Y') - 20)]
+                    ];
+                    break;
+
+                case 2:
+                    $where['r.birthday'] = [
+                        ['<=', (date('Y') - 20)],
+                        ['>=', (date('Y') - 30)]
+                    ];
+                    break;
+
+                case 3:
+                    $where['r.birthday'] = [
+                        ['<=', (date('Y') - 30)],
+                        ['>=', (date('Y') - 40)]
+                    ];
+                    break;
+
+                case 4:
+                    $where['r.birthday'] = [
+                        ['<=', (date('Y') - 40)],
+                        ['>=', (date('Y') - 50)]
+                    ];
+                    break;
+
+                case 5:
+                    $where['r.birthday'] = ['<=', (date('Y') - 50)];
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * [新增]:
+         * 简历作品
+         * 参数:0-全部|1-未上传|2-待审核|3-未通过|4-已通过
+         * 审核状态:0-待审核|1-审核通过|2-审核未通过
+         * yx - 2023.01.04
+         */
+        if (!empty($img_audit)) {
+            switch ($img_audit) {
+                case 1:
+                    $total_join[] = ['ResumeImg ri', 'ri.rid=r.id', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri', 'ri.rid=r.id', 'LEFT'];
+                    $where['ri.id'] = ['null', ''];
+                    break;
+
+                case 2:
+                    $total_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $where['ri0.id'] = ['not null', ''];
+                    break;
+
+                case 3:
+                    $total_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $total_join[] = ['ResumeImg ri2', 'ri2.rid=r.id and ri2.audit=2', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri2', 'ri2.rid=r.id and ri2.audit=2', 'LEFT'];
+                    $where['ri0.id'] = ['null', ''];
+                    $where['ri2.id'] = ['not null', ''];
+                    break;
+
+                case 4:
+                    $total_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri0', 'ri0.rid=r.id and ri0.audit=0', 'LEFT'];
+                    $total_join[] = ['ResumeImg ri1', 'ri1.rid=r.id and ri1.audit=1', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri1', 'ri1.rid=r.id and ri1.audit=1', 'LEFT'];
+                    $total_join[] = ['ResumeImg ri2', 'ri2.rid=r.id and ri2.audit=2', 'LEFT'];
+                    $list_join[] = ['ResumeImg ri2', 'ri2.rid=r.id and ri2.audit=2', 'LEFT'];
+                    $where['ri0.id'] = ['null', ''];
+                    $where['ri1.id'] = ['not null', ''];
+                    $where['ri2.id'] = ['null', ''];
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         $total = model('Resume')->alias('r');
         foreach ($total_join as $k => $v) {
             $total = $total->join($v[0], $v[1], $v[2]);
@@ -420,7 +548,7 @@ class Resume extends Backend
         }
         $list = $list->join('member m', 'r.uid=m.uid', 'LEFT')
             ->join('resume_contact c', 'r.id=c.rid', 'LEFT')
-            ->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin'", 'LEFT')
+            ->join('member_bind bind', "bind.uid = r.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT')
             ->where($where)
             ->field($field)
             ->group('r.id')
@@ -552,6 +680,40 @@ class Resume extends Backend
             // 附件简历
             $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['uid' => $v['uid']]);
             $v['enclosure_resume'] = !empty($enclosure_resume) ? $enclosure_resume['enclosure'] : '';
+
+            /**
+             * [新增]:
+             * 简历作品
+             * 审核状态：0-待审核|1-审核通过|2-审核未通过
+             * yx - 2023.01.04
+             */
+            $img_audit_0_num = model('ResumeImg')->where('rid', $v['id'])->where('audit', 0)->count('id');
+            $img_audit_1_num = model('ResumeImg')->where('rid', $v['id'])->where('audit', 1)->count('id');
+            $img_audit_2_num = model('ResumeImg')->where('rid', $v['id'])->where('audit', 2)->count('id');
+            $img_audit_totai_num = $img_audit_0_num + $img_audit_1_num + $img_audit_2_num;
+            if ($img_audit_totai_num <= 0) {
+                $v['img_audit_id'] = 1;
+                $v['img_audit_cn'] = '未上传';
+            } else {
+                if ($img_audit_0_num > 0) {
+                    $v['img_audit_id'] = 2;
+                    $v['img_audit_cn'] = '待审核（' . $img_audit_0_num . '/' . $img_audit_totai_num . '）';
+                } elseif ($img_audit_2_num > 0) {
+                    $v['img_audit_id'] = 3;
+                    $v['img_audit_cn'] = '未通过（' . $img_audit_2_num . '/' . $img_audit_totai_num . '）';
+                } else {
+                    $v['img_audit_id'] = 4;
+                    $v['img_audit_cn'] = '已通过（' . $img_audit_1_num . '/' . $img_audit_totai_num . '）';
+                }
+            }
+            $v['resume_img_audit_num'] = [
+                'img_audit_0_num' => $img_audit_0_num,
+                'img_audit_1_num' => $img_audit_1_num,
+                'img_audit_2_num' => $img_audit_2_num
+            ];
+
+            // 年龄
+            $v['age'] = intval($v['birthday']) == 0 ? '年龄未知' : date('Y') - intval($v['birthday']) . '岁';
         }
         $return['items'] = $list;
         $return['total'] = $total;

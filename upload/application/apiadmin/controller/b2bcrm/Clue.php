@@ -82,7 +82,7 @@ class Clue extends Backend
             }
         }
 
-        if ($collection > 0) {
+        if (!empty($collection)) {
             //今日时间时间戳
             $timestampToday = strtotime('today');
             //本周时间时间戳

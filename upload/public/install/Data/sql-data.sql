@@ -941,7 +941,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'reopen_setmeal_resource','1','1','重开套餐资源处理 1叠加 0不叠加','0'),
 (NULL,'overtime_setmeal_resource','0','1','套餐到期资源处理 1保留 2清空','0'),
 (NULL,'overtime_setmeal_jobnum','0','1','套餐到期超出职位处理 1保留全部职位 2关闭超出职位','0'),
-(NULL,'im_open','1','1','聊天功能是否开启','0'),
+(NULL,'im_open','1','0','聊天功能是否开启','0'),
 (NULL,'im_notice_open','1','0','聊天公告是否开启','0'),
 (NULL,'im_notice','1','','聊天公告','0'),
 (NULL,'im_unread','1','0','聊天未读通知开关','0'),
@@ -1504,7 +1504,8 @@ INSERT INTO `qs_crm_sys_config` VALUES
 (8,'thread','禁止领取期限(销售)','thread_forbidden_sale',15,1,1,0,'表示销售将客户丢入公客后多长时间不能再领取该客户'),
 (9,'thread','禁止领取期限(系统)','thread_forbidden_sys',15,1,1,0,'表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户'),
 (10,'thread','是否允许线索名称重复','thread_duplicate_name',0,1,1,0,'表示录入线索时，线索名称是否可以重复'),
-(11,'thread','线索分配销售规则','thread_allocation_rule',0,1,1,0,'[1:自动分配;0:不分配;]');
+(11,'thread','线索分配销售规则','thread_allocation_rule',0,1,1,0,'[1:自动分配;0:不分配;]'),
+(12,'customer','不成交掉入公海','customer_unsettled_fall_seas',0,1,1,0,'表示销售自领取之日起，指定天数内未成交的客户自动掉入公共客户中，0为不掉入。');
 
 
 INSERT INTO `qs_crm_customer_service` VALUES

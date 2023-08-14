@@ -226,6 +226,17 @@
         class="reset_after"
         @input="hanlderMobile"
       />
+      <div class="for_btn">
+        <div class="sync_phone">
+          <van-checkbox
+            v-model="secrecyHidden"
+            icon-size="16px"
+            @change="handlerSecrecyHidden"
+          >
+            隐藏不显示
+          </van-checkbox>
+        </div>
+      </div>
       <van-field
         v-if="field_rule.contact.weixin.is_display == 1"
         :required="field_rule.contact.weixin.is_require == 1 ? true : false"
@@ -496,7 +507,8 @@ export default {
         weixin: '',
         telephone: '',
         email: '',
-        qq: ''
+        qq: '',
+        is_secrecy: 1
       },
       logo_src: '',
       nature_text: '',
@@ -505,7 +517,8 @@ export default {
       district_text: '',
       tag_text: '',
       weixin_sync_mobile: false,
-      showPickerDistrict: false
+      showPickerDistrict: false,
+      secrecyHidden: false
     }
   },
   created () {
@@ -588,6 +601,13 @@ export default {
         this.contact.weixin = this.contact.mobile
       }
     },
+    handlerSecrecyHidden () {
+      if (this.secrecyHidden === true) {
+        this.contact.is_secrecy = 0
+      } else {
+        this.contact.is_secrecy = 1
+      }
+    },
     fetchData () {
       http
         .get(api.company_profile, {})
@@ -627,7 +647,8 @@ export default {
             weixin: contact.weixin,
             telephone: contact.telephone,
             email: contact.email,
-            qq: contact.qq
+            qq: contact.qq,
+            is_secrecy: contact.is_secrecy
           }
           if (
             this.contact.mobile !== '' &&
@@ -651,6 +672,7 @@ export default {
           this.scaleDefaultIndex = this.columnsScale.findIndex(
             item => parseInt(item.id) === parseInt(this.basic.scale)
           )
+          this.secrecyHidden = this.contact.is_secrecy != 1
         })
         .catch(() => {})
     },

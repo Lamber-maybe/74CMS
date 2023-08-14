@@ -4,14 +4,6 @@
       <div slot="header" class="clearfix">
         <span>{{ title }}</span>
       </div>
-      <div style="float:right;z-index: 1;position: relative;">
-        <!--        <el-button size="small" type="primary" @click="reset('all')">-->
-        <!--          重置筛选-->
-        <!--        </el-button>-->
-        <el-button size="small" type="primary" @click="goto('/user/company/crm/wholeAdd')">
-          新增线索
-        </el-button>
-      </div>
       <div class="list-search">
         <el-input
           v-model="keyword"
@@ -26,6 +18,14 @@
           </el-select>
           <el-button slot="append" icon="el-icon-search" @click="funSearchKeyword" />
         </el-input>
+        <div style="float:right;z-index: 1;position: relative;">
+          <!--        <el-button size="small" type="primary" @click="reset('all')">-->
+          <!--          重置筛选-->
+          <!--        </el-button>-->
+          <el-button size="small" type="primary" @click="goto('/user/company/crm/wholeAdd')">
+            新增线索
+          </el-button>
+        </div>
       </div>
       <div
         v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter!='' || followCountFilter != ''"
@@ -82,7 +82,8 @@
         </div>
         <div style="clear:both;" />
       </div>
-      <div style="position: relative;">
+      <div style="position: relative;padding-top: 15px">
+        <span class="checkboxName">ID</span>
         <div
           :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'"
         >
@@ -119,7 +120,7 @@
         </div>
         <el-table
           ref="multipleTable"
-          v-loading="loading"
+          :v-loading="loading"
           :data="tableData"
           tooltip-effect="dark"
           :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
@@ -129,8 +130,34 @@
           style="width: 100%;"
           @sort-change="sortTable"
           @selection-change="handleSelectionChange"
+          @cell-mouse-enter="cellEnter"
+          @cell-mouse-leave="cellLeave"
+          @select-all="cellEnter"
         >
-          <el-table-column fixed type="selection" width="55" />
+          <!--          <el-table-column fixed type="selection" width="55" />-->
+          <el-table-column type="selection" width="80" align="left">
+            <template #default="{ row, $index }">
+              <div
+                v-if="columnCheckedId == row.id || checkedList[$index]"
+                @click.stop
+              >
+                <el-checkbox
+                  v-model="checkedList[$index]"
+                  @change="cellCheckbox(row, $index)"
+                />
+              </div>
+              <span v-else>{{ row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column fixed type="text" width="200" label="线索名称">
+            <template slot-scope="scope">
+              <div>
+                <span v-if="scope.row.name == ''"> - </span>
+                <span v-else> {{ scope.row.name }} </span>
+                <span v-if="scope.row.tripartite_id!=''" class="mlLabel">名录</span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="items in fieldData"
             v-if="items.is_locking == true && items.select == true"
@@ -223,15 +250,6 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''"> - </span>
-                <span v-else> {{ scope.row.id }} </span>
-              </div>
-              <div v-if="items.field == 'name'">
-                <span v-if="scope.row.name == ''"> - </span>
-                <span v-else> {{ scope.row.name }} </span>
-                <span v-if="scope.row.tripartite_id!=''" class="mlLabel">名录</span>
-              </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
                 <span v-else> {{ scope.row.admin_username }} </span>
@@ -380,15 +398,6 @@
 
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''"> - </span>
-                <span v-else> {{ scope.row.id }} </span>
-              </div>
-              <div v-if="items.field == 'name'">
-                <span v-if="scope.row.name == ''"> - </span>
-                <span v-else> {{ scope.row.name }} </span>
-                <span v-if="scope.row.tripartite_id!=''" class="mlLabel">名录</span>
-              </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
                 <span v-else> {{ scope.row.admin_username }} </span>
@@ -636,6 +645,9 @@ export default {
       multipleSelection: [],
       exportData: [],
       tableData: [],
+      columnCheckedId: '',
+      multipleSelectionNew: [], // table多选数据
+      checkedList: [], // table多选选中数据
       title: '',
       currentNav: '',
       list_type: 0,
@@ -660,34 +672,34 @@ export default {
       createdByFilter: '',
       collectionScreenData: [{
         'id': 1,
-        'name': '今日新增线索'
+        'name': '今日新增'
       },
       {
         'id': 2,
-        'name': '本周新增线索'
+        'name': '本周新增'
       },
       {
         'id': 3,
-        'name': '本月新增线索'
+        'name': '本月新增'
       }
       ],
       collectionScreen: '',
       collectionFilter: '',
       followCountScreenData: [{
         'id': 1,
-        'name': '跟进0次线索'
+        'name': '跟进0次'
       },
       {
         'id': 2,
-        'name': '跟进1次线索'
+        'name': '跟进1次'
       },
       {
         'id': 3,
-        'name': '跟进2次线索'
+        'name': '跟进2次'
       },
       {
         'id': 4,
-        'name': '跟进3次及以上线索'
+        'name': '跟进3次及以上'
       }
       ],
       followCountScreen: '',
@@ -739,7 +751,7 @@ export default {
   },
   mounted(){
     this.$nextTick(() => {
-      var docHeight = document.documentElement.clientHeight
+      const docHeight = document.documentElement.clientHeight
       this.tabelHeight = docHeight - 316 - 60
     })
   },
@@ -809,7 +821,7 @@ export default {
         const collectionScreenData = localStorage.getItem('collectionScreen')
         this.collectionScreen = parseInt(collectionScreenData)
         this.collectionFilter = {
-          name: collectionScreenData == '1' ? '今日新增线索' : (collectionScreenData == '2' ? '本周新增线索' : '本月新增线索'),
+          name: collectionScreenData == '1' ? '今日新增' : (collectionScreenData == '2' ? '本周新增' : '本月新增'),
           field: 'collection_time'
         }
         localStorage.setItem('collectionScreen', '')
@@ -819,8 +831,8 @@ export default {
         const followCountScreenData = localStorage.getItem('followCountScreen')
         this.followCountScreen = parseInt(followCountScreenData)
         this.followCountFilter = {
-          name: followCountScreenData == '1' ? '跟进0次的线索' : (followCountScreenData == '2' ? '跟进1次的线索' : (
-            followCountScreenData == '3' ? '跟进2次的线索' : '跟进3次及以上的线索')),
+          name: followCountScreenData == '1' ? '跟进0次' : (followCountScreenData == '2' ? '跟进1次的' : (
+            followCountScreenData == '3' ? '跟进2次' : '跟进3次及以上')),
           field: 'follow_count'
         }
         localStorage.setItem('followCountScreen', '')
@@ -1226,6 +1238,34 @@ export default {
       })
       this.exportData = val
       this.multipleSelection = id_arr
+
+      this.multipleSelectionNew = val
+      if (this.multipleSelectionNew.length == this.tableData.length) {
+        this.multipleSelectionNew.forEach((item, index) => {
+          this.checkedList[index] = true
+        })
+      }
+      if (this.multipleSelectionNew.length == 0) {
+        this.checkedList = []
+      }
+      this.$forceUpdate()
+      this.$emit('selectList', this.multipleSelectionNew)
+    },
+    // 鼠标移入表格当前行
+    cellEnter(row, column, cell, event) {
+      this.columnCheckedId = row.id
+    },
+    // 鼠标移出表格当前行
+    cellLeave(row, column, cell, event) {
+      this.columnCheckedId = ''
+    },
+    // 选中与否塞数据
+    cellCheckbox(row, index) {
+      if (this.checkedList[index]) {
+        this.$refs.multipleTable.toggleRowSelection(row, true)
+      } else {
+        this.$refs.multipleTable.toggleRowSelection(row, false)
+      }
     },
     reset(field){
       this.tabelHeight = 'calc(100vh - 372px)'
@@ -1352,7 +1392,7 @@ export default {
 }
 .meet{
   ::v-deep .el-dialog__body{
-    padding: 0px 0px 0px 0px;
+    padding: 0 0 0 0;
     border-radius: 5px;
   }
   ::v-deep .el-dialog{
@@ -1446,6 +1486,12 @@ export default {
   display: inline-block;
   width: 85%;
 }
+::v-deep .caret-wrapper {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
 ::v-deep .el-popover {
   position: fixed;
@@ -1458,6 +1504,7 @@ export default {
 .list-search {
   z-index: 1;
   position: relative;
+  overflow: hidden;
 }
 
 .filterOperation {
@@ -1600,20 +1647,31 @@ export default {
 }
 
 .setFields {
-  margin: 15px 0px;
+  margin: 15px 0;
   font-size: 14px;
 }
 
 .setField {
-  top: 60px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
 }
+.checkboxName{
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  z-index: 9;
+  font-size: 14px;
+  color: #909399;
+  font-weight: bold;
+  height: 48px;
+  line-height: 48px;
+}
 
 .screenStyle {
-  margin: 10px 0px;
+  margin: 10px 0;
 }
 
 .bortton-page {
@@ -1623,14 +1681,12 @@ export default {
 
 .input-with-select {
   float: left;
-  margin-bottom: 20px;
 }
 .filterCriteria{
   border: 1px dashed #EEEEEE;
   font-size: 13px;
   color: #999999;
-  margin-top: 62px;
-  margin-bottom: 16px;
+  margin-top: 15px;
   padding:15px 16px 15px 16px;
   .selected{
     display: inline-block;
@@ -1654,7 +1710,7 @@ export default {
   }
 }
 .setField_s {
-  top: 0px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 1000;

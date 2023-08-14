@@ -97,8 +97,8 @@ export default {
   props: ['id', 'field_rule'],
   data() {
     return {
-      li4_width: '24%',
-      li5_width: '19%',
+      li4_width: '25%',
+      li5_width: '20%',
       list: null,
       itemId: 0,
       dialogTitle: '',
@@ -149,6 +149,10 @@ export default {
       this.dialogFormVisible = true
     },
     funDelete(row) {
+      if (this.list.length <= 1) {
+        this.$message({ message: '求职意向最少应设置一条', type: 'error' })
+        return false
+      }
       var that = this
       that.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -202,8 +206,9 @@ export default {
 	display: inline-block;
 }
 .item-li.lr {
-  float: right;
-	text-align: right;
+  /*float: right;*/
+  text-align: right;
+  padding-right: 20px;
 }
 .empty {
 	width: 100%;

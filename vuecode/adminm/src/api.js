@@ -30,6 +30,7 @@ export default {
     memberCancelApply:'/member_cancel_apply/index',
     memberCancelApplyDelete:'/member_cancel_apply/delete',
     memberCancelApplyHandle:'/member_cancel_apply/handle',
+    memberCancelApplyBackups:'/member_cancel_apply/backups',
     companySetmealList:'/company_setmeal/index',
     companySetmealEdit:'/company_setmeal/edit',
     orderList:'/order/index',

@@ -540,13 +540,16 @@ class NewDataStatistics extends \app\common\controller\Backend
             })
             ->group('t.id')
             ->count('t.id');
-        $return[] = ['title'=>'全部待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'all_company_audit'];
-        $return[] = ['title'=>'我的待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('admin_id',$this->admininfo->id)->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'my_company_audit'];
-        $return[] = ['title'=>'待审核职位','num'=>model('Job')->where('audit',0)->count(),'alias'=>'job_audit'];
-        $return[] = ['title'=>'待审核简历','num'=>model('Resume')->where('audit',0)->count(),'alias'=>'resume_audit'];
-        $return[] = ['title'=>'注销账号申请','num'=>model('MemberCancelApply')->where('status',0)->count(),'alias'=>'cancel_apply'];
-        $return[] = ['title'=>'举报信息','num'=>$tipoff_num,'alias'=>'tipoff'];
-        $return[] = ['title'=>'意见建议','num'=>model('Feedback')->where('status',0)->count(),'alias'=>'feedback'];
+        $return = [
+            ['title' => '全部待审核企业', 'num' => model('Company')->alias('a')->join(config('database.prefix') . 'company_auth b', 'b.uid=a.uid', 'LEFT')->where('a.audit', 0)->where('b.id', 'not null')->count(), 'alias' => 'all_company_audit'],
+            ['title' => '我的待审核企业', 'num' => model('Company')->alias('a')->join(config('database.prefix') . 'company_auth b', 'b.uid=a.uid', 'LEFT')->where('admin_id', $this->admininfo->id)->where('a.audit', 0)->where('b.id', 'not null')->count(), 'alias' => 'my_company_audit'],
+            ['title' => '待审核职位', 'num' => model('Job')->where('audit', 0)->count(), 'alias' => 'job_audit'],
+            ['title' => '待审核简历', 'num' => model('Resume')->where('audit', 0)->count(), 'alias' => 'resume_audit'],
+            ['title' => '企业注销申请', 'num' => model('MemberCancelApply')->where('status', 0)->where('utype', 1)->count(), 'alias' => 'commpany_cancel_apply'],
+            ['title' => '个人注销申请', 'num' => model('MemberCancelApply')->where('status', 0)->where('utype', 2)->count(), 'alias' => 'person_cancel_apply'],
+            ['title' => '举报信息', 'num' => $tipoff_num, 'alias' => 'tipoff'],
+            ['title' => '意见建议', 'num' => model('Feedback')->where('status', 0)->count(), 'alias' => 'feedback']
+        ];
         return $return;
     }
 

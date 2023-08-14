@@ -365,6 +365,10 @@
             placeholder="请输入联系电话"
             @input="hanlderMobile"
           ></el-input>
+          &nbsp;
+          <el-checkbox v-model="secrecyHidden" @change="handlerSecrecyHidden"
+          >不对外显示仅接收通知</el-checkbox
+          >
         </el-form-item>
         <el-form-item
           v-if="field_rule.contact.weixin.is_display == 1"
@@ -461,6 +465,7 @@
             class="preservation_btn"
             type="primary"
             @click="onSubmit('form')"
+            :loading="isSubmit"
             >保存</el-button
           >
         </el-form-item>
@@ -582,12 +587,15 @@ export default {
           weixin: "",
           telephone: "",
           email: "",
-          qq: ""
+          qq: "",
+          is_secrecy: 1
         }
       },
       dialogVisible: false,
       timer: '',
-      scanQrcode: ''
+      scanQrcode: '',
+      secrecyHidden: false,
+      isSubmit: false
     };
   },
   created() {
@@ -683,6 +691,7 @@ export default {
       }
     },
     onSubmit(formName) {
+      this.isSubmit = true
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (
@@ -701,9 +710,11 @@ export default {
             })
             .then(res => {
               this.$message({ type: "success", message: res.message });
+              this.isSubmit = false
             })
-            .catch(() => { });
+            .catch(() => { this.isSubmit = false });
         } else {
+          this.isSubmit = false
           return false;
         }
       });
@@ -719,6 +730,13 @@ export default {
     handlerSync() {
       if (this.weixin_sync_mobile === true) {
         this.form.contact.weixin = this.form.contact.mobile;
+      }
+    },
+    handlerSecrecyHidden () {
+      if (this.secrecyHidden === true) {
+        this.form.contact.is_secrecy = 0
+      } else {
+        this.form.contact.is_secrecy = 1
       }
     },
     fetchData() {
@@ -759,7 +777,8 @@ export default {
             weixin: contact.weixin,
             telephone: contact.telephone,
             email: contact.email,
-            qq: contact.qq
+            qq: contact.qq,
+            is_secrecy: contact.is_secrecy
           };
           if (
             this.form.contact.mobile !== "" &&
@@ -785,6 +804,7 @@ export default {
             this.form.basic.citycategory_arr.push(basic.district3);
           }
           this.location = basic.district_text_full
+          this.secrecyHidden = this.form.contact.is_secrecy != 1
         })
         .catch(() => { });
     },

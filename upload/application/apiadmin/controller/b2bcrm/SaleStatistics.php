@@ -89,14 +89,14 @@ class SaleStatistics extends Backend
             ->count();//认证待审核客户
         $expire_company = model('Company')
             ->alias('c')
-            ->join('member_setmeal s', 's.uid=c.id', 'LEFT')
+            ->join('member_setmeal s', 's.uid=c.uid', 'LEFT')
             ->where('c.admin_id',$user_id)
             ->where('s.deadline','<',time())
             ->where('s.deadline','>',0
             )->count();//到期为续费客户
         $expiring_soon = model('Company')
             ->alias('c')
-            ->join('member_setmeal s', 's.uid=c.id', 'LEFT')
+            ->join('member_setmeal s', 's.uid=c.uid', 'LEFT')
             ->where('c.admin_id',$user_id)
             ->where('s.deadline','>=',time())
             ->where('s.deadline','<',strtotime('+'.config('global_config.meal_min_remind').'day'))

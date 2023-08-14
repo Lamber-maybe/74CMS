@@ -297,12 +297,13 @@
 				<div
 					class="content_wrapper"
 					v-if="
-						resume_module.certificate !== undefined &&
-							resume_module.language !== undefined &&
-							resume_module.certificate.is_display == 1 &&
-							certificate_list.length > 0 &&
-							resume_module.language.is_display == 1 &&
-							language_list.length > 0
+              (resume_module.certificate !== undefined &&
+              resume_module.certificate.is_display == 1 &&
+              certificate_list.length > 0)
+              ||
+              (resume_module.language !== undefined &&
+              resume_module.language.is_display == 1 &&
+              language_list.length > 0)
 					"
 				>
 					<!--获得证书-->
@@ -1636,8 +1637,10 @@ export default {
 
 .box_12 {
 	width: 100%;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #f5f5f5;
 
-	.swiper-pagination {
+  .swiper-pagination {
 		bottom: 0px;
 	}
 

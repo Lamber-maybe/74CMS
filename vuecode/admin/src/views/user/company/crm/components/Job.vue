@@ -139,7 +139,7 @@
       append-to-body
       :visible.sync="innerDrawer"
     >
-      <jobEdit :id="edit_job_id" @handleCloseJob="handleCloseJob" />
+      <jobEdit :props_id="edit_job_id" @handleCloseJob="handleCloseJob" />
       <!-- 关闭按钮 -->
       <div class="close" @click="handleClose">
         <i class="el-icon-close" />

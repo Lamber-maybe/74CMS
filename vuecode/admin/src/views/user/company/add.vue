@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item v-if="live_fields.logo === true" label="Logo" prop="logo">
         <el-upload class="logo-uploader" :action="apiUpload" :headers="headers" :show-file-list="false" :on-success="handleLogoSuccess" :before-upload="beforeLogoUpload">
-          <img v-if="form.logo" :src="logoUrl" class="logo" />
+          <img v-if="form.logo" :src="logoUrl" class="logo">
           <i v-else class="el-icon-plus logo-uploader-icon" />
         </el-upload>
         <span class="smalltip">
@@ -64,7 +64,13 @@
       <el-form-item v-if="live_fields.info.content === true" label="公司介绍" prop="info.content"><el-input v-model="form.info.content" type="textarea" rows="10" /></el-form-item>
       <el-divider content-position="left">联系信息</el-divider>
       <el-form-item label="联系人" prop="contact.contact"><el-input v-model="form.contact.contact" /></el-form-item>
-      <el-form-item label="联系手机" prop="contact.mobile"><el-input v-model="form.contact.mobile" /></el-form-item>
+      <el-form-item label="联系手机" prop="contact.mobile">
+        <el-input v-model="form.contact.mobile" />
+        <el-checkbox
+          v-model="secrecyHidden"
+          style="margin-left:10px;"
+        >不对外显示仅接收通知</el-checkbox>
+      </el-form-item>
       <el-form-item v-if="live_fields.contact.weixin === true" label="联系微信" prop="contact.weixin"><el-input v-model="form.contact.weixin" /></el-form-item>
       <el-form-item v-if="live_fields.contact.telephone === true" label="联系固话" prop="contact.telephone"><el-input v-model="form.contact.telephone" /></el-form-item>
       <el-form-item v-if="live_fields.contact.email === true" label="联系邮箱" prop="contact.email"><el-input v-model="form.contact.email" /></el-form-item>
@@ -88,94 +94,95 @@
 </template>
 
 <script>
-import { getFieldRule } from '@/api/configuration';
-import { memberCheckUnique } from '@/api/member';
+import { getFieldRule } from '@/api/configuration'
+import { memberCheckUnique } from '@/api/member'
 // import { companyAdd } from '@/api/company'
-import { companyCrmAdd } from '@/api/company_crm';
-import { validMobile, validUsername, validEmail, validUrl } from '@/utils/validate';
-import { getToken } from '@/utils/auth';
-import { getClassify } from '@/api/classify';
-import apiArr from '@/api';
-import { clueDetails } from '@/api/company_crm';
+import { companyCrmAdd } from '@/api/company_crm'
+import { validMobile, validUsername, validEmail, validUrl } from '@/utils/validate'
+import { getToken } from '@/utils/auth'
+import { getClassify } from '@/api/classify'
+import apiArr from '@/api'
+import { clueDetails } from '@/api/company_crm'
 
 export default {
   data() {
     var validateUrl = (rule, value, callback) => {
       if (value == '') {
-        callback();
+        callback()
       }
       if (!validUrl(value)) {
-        callback(new Error('请输入正确的网址'));
+        callback(new Error('请输入正确的网址'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateUsername = (rule, value, callback) => {
       if (validUsername(value)) {
-        callback(new Error('用户名不能是纯数字'));
+        callback(new Error('用户名不能是纯数字'))
       } else if (validEmail(value)) {
-        callback(new Error('用户名不能是邮箱'));
+        callback(new Error('用户名不能是邮箱'))
       } else {
         const param = {
           field: 'username',
           value,
           self: this.uid,
           utype: 1
-        };
+        }
         memberCheckUnique(param).then(response => {
           if (response.data == 0) {
-            callback(new Error('用户名已被占用'));
+            callback(new Error('用户名已被占用'))
           } else {
-            callback();
+            callback()
           }
-        });
+        })
       }
-    };
+    }
     var validateMobile = (rule, value, callback) => {
       if (!validMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
         const param = {
           field: 'mobile',
           value,
           self: this.uid,
           utype: 1
-        };
+        }
         memberCheckUnique(param).then(response => {
           if (response.data == 0) {
-            callback(new Error('手机号已被占用'));
+            callback(new Error('手机号已被占用'))
           } else {
-            callback();
+            callback()
           }
-        });
+        })
       }
-    };
+    }
     var validatePassword = (rule, value, callback) => {
       if (this.uid > 0) {
-        callback();
+        callback()
       } else {
         if (value == '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('请输入密码'))
         } else {
-          callback();
+          callback()
         }
       }
-    };
+    }
     var validateContactMobile = (rule, value, callback) => {
       if (!validMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateContactEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
-        callback(new Error('请输入正确的邮箱'));
+        callback(new Error('请输入正确的邮箱'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
+      secrecyHidden: false,
       submitLoading: false,
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -454,229 +461,231 @@ export default {
           ]
         }
       }
-    };
+    }
   },
   computed: {
     config() {
-      return this.$store.state.config;
+      return this.$store.state.config
     }
   },
   created() {
     if (this.$route.query.id) {
       clueDetails({ clue_id: this.$route.query.id })
         .then(res => {
-          this.form.contact.weixin = res.data.weixin;
-          this.form.contact.mobile = res.data.mobile;
-          this.form.contact.contact = res.data.contacts;
-          this.form.companyname = res.data.name;
-          this.form.scale = res.data.scale == null ? '' : res.data.scale;
-          this.form.info.address = res.data.address;
-          this.form.trade = res.data.trade == null ? '' : res.data.trade;
+          this.form.contact.weixin = res.data.weixin
+          this.form.contact.mobile = res.data.mobile
+          this.form.contact.contact = res.data.contacts
+          this.form.companyname = res.data.name
+          this.form.scale = res.data.scale == null ? '' : res.data.scale
+          this.form.info.address = res.data.address
+          this.form.trade = res.data.trade == null ? '' : res.data.trade
           if (res.data.district1 != 0) {
-            this.form.citycategory_arr.push(res.data.district1);
+            this.form.citycategory_arr.push(res.data.district1)
           }
           if (res.data.district2 != 0) {
-            this.form.citycategory_arr.push(res.data.district2);
+            this.form.citycategory_arr.push(res.data.district2)
           }
           if (res.data.district3 != 0) {
-            this.form.citycategory_arr.push(res.data.district3);
+            this.form.citycategory_arr.push(res.data.district3)
           }
+          this.secrecyHidden = this.form.contact.is_secrecy != 1
         })
-        .catch(() => {});
+        .catch(() => {})
     }
-    this.fileupload_size = this.config.fileupload_size;
-    this.fileupload_ext = this.config.fileupload_ext;
-    this.fetchData();
+    this.fileupload_size = this.config.fileupload_size
+    this.fileupload_ext = this.config.fileupload_ext
+    this.fetchData()
   },
   methods: {
     fetchData() {
       getFieldRule({}, 'get')
         .then(response => {
-          const extra_rule = response.data;
+          const extra_rule = response.data
           if (extra_rule.Company.logo.is_display == 0) {
-            this.live_fields.logo = false;
-            this.rules.logo = [];
+            this.live_fields.logo = false
+            this.rules.logo = []
           } else if (extra_rule.Company.logo.is_require == 0) {
-            this.rules.logo = [];
+            this.rules.logo = []
           }
           if (extra_rule.Company.short_name.is_display == 0) {
-            this.live_fields.short_name = false;
-            this.rules.short_name = [];
+            this.live_fields.short_name = false
+            this.rules.short_name = []
           } else if (extra_rule.Company.short_name.is_require == 0) {
-            this.rules.short_name = [];
+            this.rules.short_name = []
           }
           if (extra_rule.Company.registered.is_display == 0) {
-            this.live_fields.registered = false;
-            this.rules.registered = [];
+            this.live_fields.registered = false
+            this.rules.registered = []
           } else if (extra_rule.Company.registered.is_require == 0) {
-            this.rules.registered = [];
+            this.rules.registered = []
           }
           if (extra_rule.Company.tag.is_display == 0) {
-            this.live_fields.tag = false;
-            this.rules.tag = [];
+            this.live_fields.tag = false
+            this.rules.tag = []
           } else if (extra_rule.Company.tag.is_require == 0) {
-            this.rules.tag = [];
+            this.rules.tag = []
           }
           if (extra_rule.CompanyInfo.website.is_display == 0) {
-            this.live_fields.info.website = false;
-            this.rules.info.website = [];
+            this.live_fields.info.website = false
+            this.rules.info.website = []
           } else if (extra_rule.CompanyInfo.website.is_require == 0) {
-            this.rules.info.website = [];
+            this.rules.info.website = []
           }
           if (extra_rule.CompanyInfo.short_desc.is_display == 0) {
-            this.live_fields.info.short_desc = false;
-            this.rules.info.short_desc = [];
+            this.live_fields.info.short_desc = false
+            this.rules.info.short_desc = []
           } else if (extra_rule.CompanyInfo.short_desc.is_require == 0) {
-            this.rules.info.short_desc = [];
+            this.rules.info.short_desc = []
           }
           if (extra_rule.CompanyInfo.content.is_display == 0) {
-            this.live_fields.info.content = false;
-            this.rules.info.content = [];
+            this.live_fields.info.content = false
+            this.rules.info.content = []
           } else if (extra_rule.CompanyInfo.content.is_require == 0) {
-            this.rules.info.content = [];
+            this.rules.info.content = []
           }
           if (extra_rule.CompanyContact.weixin.is_display == 0) {
-            this.live_fields.contact.weixin = false;
-            this.rules.contact.weixin = [];
+            this.live_fields.contact.weixin = false
+            this.rules.contact.weixin = []
           } else if (extra_rule.CompanyContact.weixin.is_require == 0) {
-            this.rules.contact.weixin = [];
+            this.rules.contact.weixin = []
           }
           if (extra_rule.CompanyContact.telephone.is_display == 0) {
-            this.live_fields.contact.telephone = false;
-            this.rules.contact.telephone = [];
+            this.live_fields.contact.telephone = false
+            this.rules.contact.telephone = []
           } else if (extra_rule.CompanyContact.telephone.is_require == 0) {
-            this.rules.contact.telephone = [];
+            this.rules.contact.telephone = []
           }
           if (extra_rule.CompanyContact.qq.is_display == 0) {
-            this.live_fields.contact.qq = false;
-            this.rules.contact.qq = [];
+            this.live_fields.contact.qq = false
+            this.rules.contact.qq = []
           } else if (extra_rule.CompanyContact.qq.is_require == 0) {
-            this.rules.contact.qq = [];
+            this.rules.contact.qq = []
           }
           if (extra_rule.CompanyContact.email.is_display == 0) {
-            this.live_fields.contact.email = false;
-            this.rules.contact.email = [];
+            this.live_fields.contact.email = false
+            this.rules.contact.email = []
           } else if (extra_rule.CompanyContact.email.is_require == 0) {
-            this.rules.contact.email = [];
+            this.rules.contact.email = []
           }
           return getClassify({
             type: 'companyAudit,companyNature,trade,citycategory,companyScale,jobTag,setmealList'
-          });
+          })
         })
         .then(response => {
-          this.options_audit = [...response.data.companyAudit];
-          this.options_nature = [...response.data.companyNature];
-          this.options_trade = [...response.data.trade];
-          this.options_citycategory = [...response.data.citycategory];
+          this.options_audit = [...response.data.companyAudit]
+          this.options_nature = [...response.data.companyNature]
+          this.options_trade = [...response.data.trade]
+          this.options_citycategory = [...response.data.citycategory]
           this.options_citycategory = this.options_citycategory.map(item => {
             if (item.children.length) {
-              let level2Array = item.children;
+              let level2Array = item.children
               level2Array = level2Array.map(level2Item => {
                 if (level2Item.children.length) {
-                  return { label: level2Item.label, value: level2Item.value, children: level2Item.children };
+                  return { label: level2Item.label, value: level2Item.value, children: level2Item.children }
                 } else {
-                  return { label: level2Item.label, value: level2Item.value };
+                  return { label: level2Item.label, value: level2Item.value }
                 }
-              });
-              return { value: item.value, label: item.label, children: level2Array };
+              })
+              return { value: item.value, label: item.label, children: level2Array }
             } else {
-              return { value: item.value, label: item.label };
+              return { value: item.value, label: item.label }
             }
-          });
-          this.options_scale = [...response.data.companyScale];
-          this.options_tag = [...response.data.jobTag];
-          this.options_setmeal = [...response.data.setmealList];
+          })
+          this.options_scale = [...response.data.companyScale]
+          this.options_tag = [...response.data.jobTag]
+          this.options_setmeal = [...response.data.setmealList]
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     onSubmit(formName) {
       if (this.submitLoading === true) {
-        return false;
+        return false
       }
-      this.submitLoading = true;
-      const that = this;
-      const insertData = { ...this.form };
+      this.submitLoading = true
+      const that = this
+      const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const tmp_citycategory_arr = this.form.citycategory_arr;
-          insertData.district1 = tmp_citycategory_arr[0];
-          insertData.district2 = tmp_citycategory_arr[1] !== undefined ? tmp_citycategory_arr[1] : 0;
-          insertData.district3 = tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0;
-          insertData.contact = { ...this.form.contact };
-          insertData.clue_id = this.$route.query.id;
+          const tmp_citycategory_arr = this.form.citycategory_arr
+          insertData.district1 = tmp_citycategory_arr[0]
+          insertData.district2 = tmp_citycategory_arr[1] !== undefined ? tmp_citycategory_arr[1] : 0
+          insertData.district3 = tmp_citycategory_arr[2] !== undefined ? tmp_citycategory_arr[2] : 0
+          insertData.contact = { ...this.form.contact }
+          insertData.contact.is_secrecy = this.secrecyHidden === true ? 0 : 1
+          insertData.clue_id = this.$route.query.id
           // companyAdd(insertData)  之前的
           companyCrmAdd(insertData)
             .then(response => {
-              this.$message.success(response.message);
+              this.$message.success(response.message)
               if (this.form.member.sale == '0') {
                 setTimeout(function() {
-                  that.$router.push('/user/company/crm/pubilceClient');
-                }, 1500);
+                  that.$router.push('/user/company/crm/pubilceClient')
+                }, 1500)
               } else {
                 setTimeout(function() {
-                  that.$router.push('/user/company/crm/myClient');
-                }, 1500);
+                  that.$router.push('/user/company/crm/myClient')
+                }, 1500)
               }
-              return true;
+              return true
             })
             .catch(() => {
-              this.submitLoading = false;
-            });
+              this.submitLoading = false
+            })
         } else {
-          this.submitLoading = false;
+          this.submitLoading = false
           // 校验不通过自动定位到不通过的表单项
-          this.moveToErr();
-          return false;
+          this.moveToErr()
+          return false
         }
-      });
+      })
     },
     // 自动定位到表单报错项
     moveToErr() {
       this.$nextTick(() => {
-        let isError = document.getElementsByClassName('is-error');
+        const isError = document.getElementsByClassName('is-error')
         if (isError.length) {
           isError[0].scrollIntoView({
             block: 'center',
             behavior: 'smooth'
-          });
+          })
           // 这个当滑动到报错项之后自动获取输入框的焦点，方便用户直接进行输入，延迟 800ms 是因为需要都能到定位成功后在进行获取焦点体验更好一些
           setTimeout(() => {
             if (isError[0].previousElementSibling.querySelector('input')) {
-              isError[0].previousElementSibling.querySelector('input').focus();
+              isError[0].previousElementSibling.querySelector('input').focus()
             }
-          }, 800);
+          }, 800)
         }
-      });
+      })
     },
     handleLogoSuccess(res, file) {
       if (res.code == 200) {
-        this.logoUrl = URL.createObjectURL(file.raw);
-        this.form.logo = res.data.file_id;
+        this.logoUrl = URL.createObjectURL(file.raw)
+        this.form.logo = res.data.file_id
       } else {
-        this.$message.error(res.message);
-        return false;
+        this.$message.error(res.message)
+        return false
       }
     },
     beforeLogoUpload(file) {
-      const filetypeArr = file.type.split('/');
-      const filetype = filetypeArr[1];
-      const configFileExtArr = this.fileupload_ext.split(',');
+      const filetypeArr = file.type.split('/')
+      const filetype = filetypeArr[1]
+      const configFileExtArr = this.fileupload_ext.split(',')
 
       if (!configFileExtArr.includes(filetype)) {
-        this.$message.error('上传文件格式不允许');
-        return false;
+        this.$message.error('上传文件格式不允许')
+        return false
       }
       if (file.size / 1024 > this.fileupload_size) {
-        this.$message.error(`上传文件最大为${this.fileupload_size}kb`);
-        return false;
+        this.$message.error(`上传文件最大为${this.fileupload_size}kb`)
+        return false
       }
-      return true;
+      return true
     },
     goto(target) {
-      this.$router.push(target);
+      this.$router.push(target)
     }
   }
-};
+}
 </script>
 
 <style scoped>

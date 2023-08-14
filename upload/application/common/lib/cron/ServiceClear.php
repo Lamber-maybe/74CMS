@@ -1,105 +1,199 @@
 <?php
+
 namespace app\common\lib\cron;
 
+use app\common\model\CityinfoArticle;
+use app\common\model\FreelanceSubject;
+use app\common\model\Job;
+use app\common\model\JobSearchKey;
+use app\common\model\JobSearchRtime;
+use app\common\model\Resume;
+use app\common\model\ResumeSearchKey;
+use app\common\model\ResumeSearchRtime;
+use app\common\model\ServiceQueue;
+use think\Db;
 
 class ServiceClear
 {
+    protected $error = null;
+
     public function execute()
     {
-        $model = new \app\common\model\ServiceQueue();
+        $serviceQueueModel = new ServiceQueue();
         $where['deadline'] = ['lt', time()];
-        $list = $model
+        $queue_list = $serviceQueueModel
             ->where($where)
-            ->limit(10)
+//            ->limit(10)
             ->select();
-        if (empty($list)) {
-            // 处理错误数据
-            $this->_handleErrorData($model);
-            return true;
-        }
 
-        foreach ($list as $key => $value) {
-            if ($value['utype'] == 2) {
-                //取消简历置顶
-                if ($value['type'] == 'stick') {
-                    \app\common\model\Resume::where('id',$value['pid'])->setField('stick', 0);
-                    \app\common\model\ResumeSearchKey::where('id',$value['pid'])->setField('stick', 0);
-                    \app\common\model\ResumeSearchRtime::where('id',$value['pid'])->setField('stick', 0);
+        try {
+            Db::startTrans();
+
+            if (!empty($queue_list)) {
+                foreach ($queue_list as $queue) {
+                    if ($queue['utype'] == 2) {
+                        //取消简历置顶
+                        if ($queue['type'] == 'stick') {
+                            Resume::where('id', $queue['pid'])->setField('stick', 0);
+                            ResumeSearchKey::where('id', $queue['pid'])->setField('stick', 0);
+                            ResumeSearchRtime::where('id', $queue['pid'])->setField('stick', 0);
+                        }
+                        //取消简历醒目标签
+                        if ($queue['type'] == 'tag') {
+                            Resume::where('id', $queue['pid'])->setField('service_tag', '');
+                        }
+                    }
+                    if ($queue['utype'] == 1) {
+                        //取消职位置顶
+                        if ($queue['type'] == 'jobstick') {
+                            Job::where('id', $queue['pid'])->setField('stick', 0);
+                            JobSearchKey::where('id', $queue['pid'])->setField('stick', 0);
+                            JobSearchRtime::where('id', $queue['pid'])->setField('stick', 0);
+                        }
+                        //取消职位紧急
+                        if ($queue['type'] == 'emergency') {
+                            Job::where('id', $queue['pid'])->setField('emergency', 0);
+                            JobSearchKey::where('id', $queue['pid'])->setField('emergency', 0);
+                            JobSearchRtime::where('id', $queue['pid'])->setField('emergency', 0);
+                        }
+                        if ($queue['type'] == 'pt-stick-subject') {
+                            (new FreelanceSubject())->save(['is_top' => 0], ['id' => $queue['pid']]);
+                        }
+                    }
+                    if ($queue['type'] == 'cityinfo-stick') {
+                        (new CityinfoArticle())->save(['is_top' => 0], ['id' => $queue['pid']]);
+                    }
                 }
-                //取消简历醒目标签
-                if ($value['type'] == 'tag') {
-                    \app\common\model\Resume::where('id',$value['pid'])->setField('service_tag', '');
-                }
+                $serviceQueueModel->where($where)->delete();
             }
-            if ($value['utype'] == 1) {
-                //取消职位置顶
-                if ($value['type'] == 'jobstick') {
-                    \app\common\model\Job::where('id', $value['pid'])->setField('stick',0);
-                    \app\common\model\JobSearchKey::where('id',$value['pid'])->setField('stick', 0);
-                    \app\common\model\JobSearchRtime::where('id',$value['pid'])->setField('stick', 0);
-                }
-                //取消职位紧急
-                if ($value['type'] == 'emergency') {
-                    \app\common\model\Job::where('id', $value['pid'])->setField('emergency',0);
-                    \app\common\model\JobSearchKey::where('id',$value['pid'])->setField('emergency', 0);
-                    \app\common\model\JobSearchRtime::where('id',$value['pid'])->setField('emergency', 0);
-                }
-            }
+
+            // 处理错误数据
+            $this->_handleErrorData($serviceQueueModel);
+
+            Db::commit();
+            return true;
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error = $e->getMessage();
+            return false;
         }
-        $model->where($where)->delete();
     }
 
     /**
-     * 处理错误数据 当service_queue表中没有数据
-     * 但是职位或简历中还有置顶相关的数据未清理的情况
-     * @access private
-     * @author chenyang
-     * @param  object $model
-     * @return bool
-     * Date Time：2022年4月8日12:07:22
+     * 处理错误数据
+     * @param $model
+     * @return true
      */
-    private function _handleErrorData($model){
-        // 当服务队列表中未查询到数据时，去掉查询条件查询是否表内有数据
-        $typeWhere = [
-            'type' => ['in', ['stick','tag','jobstick','emergency']]
-        ];
-        $info = $model->field('id')->where($typeWhere)->find();
-        if (!empty($info)) {
-            return true;
-        }
-        // 查询职位中是否有 紧急 或 置顶 的简历
-        $jobModel = new \app\common\model\Job();
-        $jobIdArr = $jobModel->where(['emergency' => 1])->whereOr(['stick' => 1])->column('id');
-        if (!empty($jobIdArr)) {
-            $updateWhere = [
-                'id' => ['in', $jobIdArr]
+    private function _handleErrorData($model)
+    {
+        $resumeModel = new Resume();
+        $jobModel = new Job();
+
+        /**
+         * 1.简历置顶业务
+         * 错误数据处理，
+         * [逻辑]:
+         * 先查询`ServiceQueue`中 置顶 服务
+         * 再查询简历中是否有 置顶 的简历
+         * 取差集即为错误数据
+         */
+        $stick_pids = $model
+            ->where('type', 'stick')
+            ->column('pid');
+        $resume_stick_ids = $resumeModel->where(['stick' => 1])->column('id');
+        $error_stick_ids = array_diff($resume_stick_ids, $stick_pids);
+        if (!empty($error_stick_ids)) {
+            $stickWhere = [
+                'id' => ['in', $error_stick_ids]
             ];
-            $updateData = [
-                'emergency' => 0,
-                'stick'     => 0,
+            $stickData = [
+                'stick' => 0
             ];
-            $jobModel->where($updateWhere)->update($updateData);
-            \app\common\model\JobSearchKey::where($updateWhere)->update($updateData);
-            \app\common\model\JobSearchRtime::where($updateWhere)->update($updateData);
+            $resumeModel->where($stickWhere)->update($stickData);
+            ResumeSearchKey::where($stickWhere)->update($stickData);
+            ResumeSearchRtime::where($stickWhere)->update($stickData);
         }
 
-        // 查询简历中是否有 置顶 或 醒目标签 的简历
-        $resumeModel = new \app\common\model\Resume();
-        $resumeIdArr = $resumeModel->where(['stick' => 1])->whereOr(['service_tag' => ['neq', '']])->column('id');
-        if (!empty($resumeIdArr)) {
-            $updateWhere = [
-                'id' => ['in', $resumeIdArr]
+        /**
+         * 2.简历醒目标签业务
+         * 错误数据处理，
+         * [逻辑]:
+         * 先查询`ServiceQueue`中 醒目标签 服务
+         * 再查询简历中是否有 醒目标签 的简历
+         * 取差集即为错误数据
+         */
+        $tag_pids = $model
+            ->where('type', 'service_tag')
+            ->column('pid');
+        $tag_ids = $resumeModel->where(['service_tag' => ['neq', '']])->column('id');
+        $error_tag_ids = array_diff($tag_ids, $tag_pids);
+        if (!empty($error_tag_ids)) {
+            $tagWhere = [
+                'id' => ['in', $error_tag_ids]
             ];
-            $updateData = [
-                'stick'       => 0,
+            $tagData = [
                 'service_tag' => '',
             ];
-            $resumeModel->where($updateWhere)->update($updateData);
-            unset($updateData['service_tag']);
-            \app\common\model\ResumeSearchKey::where($updateWhere)->update($updateData);
-            \app\common\model\ResumeSearchRtime::where($updateWhere)->update($updateData);
+            $resumeModel->where($tagWhere)->update($tagData);
         }
+
+        /**
+         * 3.职位置顶业务
+         * 错误数据处理，
+         * [逻辑]:
+         * 先查询`ServiceQueue`中职位 置顶 服务
+         * 再查询职位中是否有 置顶 的职位
+         * 取差集即为错误数据
+         */
+        $jobstick_pids = $model
+            ->where('type', 'jobstick')
+            ->column('pid');
+        $jobstick_ids = $jobModel->where(['stick' => 1])->column('id');
+        $error_jobstick_ids = array_diff($jobstick_ids, $jobstick_pids);
+        if (!empty($error_jobstick_ids)) {
+            $jobstickWhere = [
+                'id' => ['in', $error_jobstick_ids]
+            ];
+            $jobstickData = [
+                'stick' => 0
+            ];
+            $jobModel->where($jobstickWhere)->update($jobstickData);
+            JobSearchKey::where($jobstickWhere)->update($jobstickData);
+            JobSearchRtime::where($jobstickWhere)->update($jobstickData);
+        }
+
+        /**
+         * 4.职位紧急业务
+         * 错误数据处理，
+         * [逻辑]:
+         * 先查询`ServiceQueue`中职位 紧急 服务
+         * 再查询职位中是否有 紧急 的职位
+         * 取差集即为错误数据
+         */
+        $emergency_pids = $model
+            ->where('type', 'emergency')
+            ->column('pid');
+        $emergency_ids = $jobModel->where(['emergency' => 1])->column('id');
+        $error_emergency_ids = array_diff($emergency_ids, $emergency_pids);
+        if (!empty($error_emergency_ids)) {
+            $emergencyWhere = [
+                'id' => ['in', $error_emergency_ids]
+            ];
+            $emergencyData = [
+                'emergency' => 0
+            ];
+            $jobModel->where($emergencyWhere)->update($emergencyData);
+            JobSearchKey::where($emergencyWhere)->update($emergencyData);
+            JobSearchRtime::where($emergencyWhere)->update($emergencyData);
+        }
+
         return true;
+    }
+
+    public function getError()
+    {
+        return $this->error;
     }
 
 }

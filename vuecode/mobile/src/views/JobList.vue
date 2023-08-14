@@ -145,10 +145,10 @@ export default {
     JobCategoryFilter,
     NoResume
   },
-  data() {
+  data () {
     return {
       dataset: [],
-      selectArrOnload: [], //用户点击过的数据（记录是否变色）
+      selectArrOnload: [], // 用户点击过的数据（记录是否变色）
       loading: false,
       finished: false,
       finished_text: '',
@@ -185,54 +185,54 @@ export default {
         min: '',
         max: ''
       },
-        {
-          text: '1000元以下',
-          value: 1,
-          min: 0,
-          max: 1000
-        },
-        {
-          text: '1000-2000元',
-          value: 2,
-          min: 1000,
-          max: 2000
-        },
-        {
-          text: '2000-3000元',
-          value: 3,
-          min: 2000,
-          max: 3000
-        },
-        {
-          text: '3000-5000元',
-          value: 4,
-          min: 3000,
-          max: 5000
-        },
-        {
-          text: '5000-8000元',
-          value: 5,
-          min: 5000,
-          max: 8000
-        },
-        {
-          text: '8000-12000元',
-          value: 6,
-          min: 8000,
-          max: 12000
-        },
-        {
-          text: '12000-15000元',
-          value: 7,
-          min: 12000,
-          max: 15000
-        },
-        {
-          text: '15000元以上',
-          value: 8,
-          min: 15000,
-          max: ''
-        }
+      {
+        text: '1000元以下',
+        value: 1,
+        min: 0,
+        max: 1000
+      },
+      {
+        text: '1000-2000元',
+        value: 2,
+        min: 1000,
+        max: 2000
+      },
+      {
+        text: '2000-3000元',
+        value: 3,
+        min: 2000,
+        max: 3000
+      },
+      {
+        text: '3000-5000元',
+        value: 4,
+        min: 3000,
+        max: 5000
+      },
+      {
+        text: '5000-8000元',
+        value: 5,
+        min: 5000,
+        max: 8000
+      },
+      {
+        text: '8000-12000元',
+        value: 6,
+        min: 8000,
+        max: 12000
+      },
+      {
+        text: '12000-15000元',
+        value: 7,
+        min: 12000,
+        max: 15000
+      },
+      {
+        text: '15000元以上',
+        value: 8,
+        min: 15000,
+        max: ''
+      }
       ],
       optionSettr: [{
         text: '3天内',
@@ -285,7 +285,7 @@ export default {
   activated () {
     // this.initData()
   },
-  created() {
+  created () {
     this.initData()
     this.getLocalData()
   },
@@ -324,7 +324,7 @@ export default {
         let storeJobTag = JSON.parse(
           JSON.stringify(this.$store.state.classifyJobTag)
         )
-        storeJobTag = storeJobTag.map(function(item) {
+        storeJobTag = storeJobTag.map(function (item) {
           return {
             id: item.id,
             text: item.text,
@@ -350,14 +350,14 @@ export default {
       this.handleSelectMore()
       this.optionEducation = this.restructureData(this.$store.state.classifyEdu, '', 'education')
       this.optionExperience = this.restructureData(this.$store.state.classifyExperience, '', 'experience')
-      this.optionJobTag = this.optionJobTag.map(function(item, index) {
+      this.optionJobTag = this.optionJobTag.map(function (item, index) {
         return {
           id: item.id,
           text: item.text,
           select: index === 0
         }
       })
-      this.optionSettr = this.optionSettr.map(function(item, index) {
+      this.optionSettr = this.optionSettr.map(function (item, index) {
         return {
           id: item.id,
           text: item.text,
@@ -382,7 +382,7 @@ export default {
           }
         })
       } else {
-        this.optionJobTag = this.optionJobTag.map(function(item, index) {
+        this.optionJobTag = this.optionJobTag.map(function (item, index) {
           return {
             id: item.id,
             text: item.text,
@@ -414,7 +414,7 @@ export default {
       } else {
         // 全部
         this.selectJobTag = []
-        this.optionJobTag = this.optionJobTag.map(function(item, index) {
+        this.optionJobTag = this.optionJobTag.map(function (item, index) {
           return {
             id: item.id,
             text: item.text,
@@ -688,13 +688,13 @@ export default {
           } else {
             this.dataset = this.dataset.concat(res.data.items)
           }
-          //判断用户是否点击查看过某些数据
+          // 判断用户是否点击查看过某些数据
           if (this.selectArrOnload.length > 0) {
             for (let j in this.selectArrOnload) {
               for (let i in this.dataset) {
                 if (this.dataset[i].id == this.selectArrOnload[j]) {
                   this.dataset[i].clicked = true
-                }else{
+                } else {
                   this.dataset[i].clicked = false
                 }
               }
@@ -712,9 +712,9 @@ export default {
             this.show_empty = true
           } else if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
             this.finished = true
-            // if (init === false) {
-            this.finished_text = '暂无更多'
-            // }
+            if (this.showLayer === false) {
+              this.finished_text = '暂无更多'
+            }
           }
         })
         .catch(() => {})
@@ -725,9 +725,9 @@ export default {
         this.fetchData(false)
       }
     },
-    toDetail(id) {
-      let selectArr = localStorage.getItem('selectArr') == 'null' || localStorage.getItem('selectArr') == null ?
-        [] : JSON.parse(localStorage.getItem(
+    toDetail (id) {
+      let selectArr = localStorage.getItem('selectArr') == 'null' || localStorage.getItem('selectArr') == null
+        ? [] : JSON.parse(localStorage.getItem(
           'selectArr'))
       if (selectArr.indexOf(id) == -1 || selectArr.length == 0) {
         selectArr.push(id)
@@ -772,14 +772,14 @@ export default {
     showChange (e) {
       this.showWarn = e
     },
-    getLocalData() {
-      let LoginOrNotStorage = localStorage.getItem('LoginOrNot') == 'true' ? true : false
+    getLocalData () {
+      let LoginOrNotStorage = localStorage.getItem('LoginOrNot') == 'true'
       let LoginOrNot = this.$store.state.LoginOrNot
       localStorage.setItem('LoginOrNot', LoginOrNot)
       if (!LoginOrNotStorage == LoginOrNot) {
-        localStorage.setItem('selectArr', null); //清空职位
-        localStorage.setItem('selectResumeArr', null); //清空简历
-        localStorage.setItem('selectComArr', null); //清空企业
+        localStorage.setItem('selectArr', null) // 清空职位
+        localStorage.setItem('selectResumeArr', null) // 清空简历
+        localStorage.setItem('selectComArr', null) // 清空企业
       }
       this.selectArrOnload = localStorage.getItem('selectArr') == null || localStorage.getItem('selectArr') ==
       'null' ? [] : JSON.parse(localStorage.getItem('selectArr'))

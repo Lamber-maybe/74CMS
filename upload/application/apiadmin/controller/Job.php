@@ -217,7 +217,8 @@ class Job extends \app\common\controller\Backend
                     'qq' => input('post.contact.qq/s', '', 'trim'),
                     'email' => input('post.contact.email/s', '', 'trim'),
                     'is_display' => input('post.contact.is_display/d', 0, 'intval'),
-                    'use_company_contact' => input('post.contact.use_company_contact/d', 0, 'intval')
+                    'use_company_contact' => input('post.contact.use_company_contact/d', 0, 'intval'),
+                    'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
                 ]
             ];
 

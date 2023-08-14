@@ -528,14 +528,29 @@ class Resume extends \app\common\controller\Backend
         $id = input('post.id/d', 0, 'intval');
         $rid = input('post.rid/d', 0, 'intval');
 
-        if (!$id || !$rid) {
+        if (empty($id) || empty($rid)) {
             $this->ajaxReturn(500, '参数错误');
         }
-        model('ResumeIntention')->destroy([$id]);
         $intention_total = model('ResumeIntention')
             ->where(['rid' => $rid])
             ->count();
-        if ($intention_total == 0) {
+
+        /**
+         * 【ID1000494】
+         * 【优化】后台简历详情页优化-求职意向、经验展示
+         * yx - 2023.01.03
+         * [新增]:
+         * 当求职意向只有最后一条时不能删除
+         */
+        if ($intention_total <= 1) {
+            $this->ajaxReturn(500, '简历求职意向最少应设置一条');
+        }
+
+        model('ResumeIntention')->destroy([$id]);
+        $intention_count = model('ResumeIntention')
+            ->where(['rid' => $rid])
+            ->count();
+        if ($intention_count === 0) {
             $basic = model('Resume')
                 ->where('id', $rid)
                 ->find();

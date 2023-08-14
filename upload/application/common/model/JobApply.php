@@ -163,7 +163,11 @@ class JobApply extends \app\common\model\BaseModel
                     'jobname' => $job_info['jobname'],
 		    'resumeurl' => url('index/resume/show', ['id' => $resume_info['id']], '', config('global_config.sitedomain'))
                 ],
-                $resume_info['id']
+                $resume_info['id'],
+                '',
+                [
+                    'job_id' => $jobid
+                ]
             );
             //微信通知
             model('WechatNotifyRule')->notify(

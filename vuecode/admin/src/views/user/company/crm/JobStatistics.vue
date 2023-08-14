@@ -2,48 +2,48 @@
   <div class="app-container">
     <el-card class="box-card box-card-top">
       <div style="position: relative;">
-        <div class="statictistics-box" v-loading="topLoading">
+        <div v-loading="topLoading" class="statictistics-box">
           <div class="statictistics-box1">
             <div class="line1">
-              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '', '')">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_1.png" alt="" />
+              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', '')">
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_1.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">累计总客户</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.total_company }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_11.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_11.png" alt="">
                   </p>
                 </div>
               </div>
-              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '', 'today_company')">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_2.png" alt="" />
+              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', 'today_company')">
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_2.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">今日新增客户</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.today_company }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_22.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_22.png" alt="">
                   </p>
                 </div>
               </div>
             </div>
             <div class="line1 line2">
-              <div class="line_lf" @click="jumpPath('/user/company/crm/pubilceClient', '', '')">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_3.png" alt="" />
+              <div class="line_lf" @click="jumpPath('/user/company/crm/pubilceClient', '暂无权限查看，请联系超级管理员', '')">
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_3.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">客户公海</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.international_company }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_33.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_33.png" alt="">
                   </p>
                 </div>
               </div>
-              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '', 'today_follow')">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_4.png" alt="" />
+              <div class="line_lf" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', 'today_follow')">
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_4.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">今日跟进的客户</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.follow_up_company }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_44.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_44.png" alt="">
                   </p>
                 </div>
               </div>
@@ -52,44 +52,44 @@
           <div class="statictistics-box1 statictistics-box2">
             <div class="line1">
               <div class="line_lf">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_1.png" alt="" />
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_1.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">累计总线索</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.total_clue }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_11.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_11.png" alt="">
                   </p>
                 </div>
               </div>
               <div class="line_lf">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_2.png" alt="" />
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_2.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">今日新增线索</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.today_clue }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_22.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_22.png" alt="">
                   </p>
                 </div>
               </div>
             </div>
             <div class="line1 line2">
               <div class="line_lf">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_3.png" alt="" />
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_3.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">线索公海</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.international_clue }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_33.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_33.png" alt="">
                   </p>
                 </div>
               </div>
               <div class="line_lf">
-                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_4.png" alt="" />
+                <img class="lineLfIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_4.png" alt="">
                 <div class="lineLfTxt">
                   <p class="txt1">累计线索转客户</p>
                   <p class="txt2">
                     <span class="txt3">{{ statisticsData.total_turn_clue }}</span>
-                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_44.png" alt="" />
+                    <img class="txtIcon" src="../../../../assets/images/company/crm/JobStatistics/lf_44.png" alt="">
                   </p>
                 </div>
               </div>
@@ -97,26 +97,26 @@
           </div>
           <div class="statictistics-box3">
             <p class="title">
-              <span class="line"></span>
+              <span class="line" />
               <span class="txt">信息提醒</span>
             </p>
             <div class="content">
               <div class="content-line1">
-                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '', 'expiring_soon')">
+                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', 'expiring_soon')">
                   <p class="p1">{{ informationReminderData.expire_company }}</p>
                   <p class="p2">到期未续费客户</p>
                 </div>
-                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '', 'expire_company')">
+                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', 'expire_company')">
                   <p class="p1">{{ informationReminderData.expiring_soon }}</p>
                   <p class="p2">即将到期客户</p>
                 </div>
               </div>
               <div class="content-line1">
-                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '', 'never_follow_up_company')">
+                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/allClient', '暂无权限查看，请联系超级管理员', 'never_follow_up_company')">
                   <p class="p1">{{ informationReminderData.never_follow_up_company }}</p>
                   <p class="p2">从未跟进客户</p>
                 </div>
-                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/whole', '', 'never_follow_up_clue')">
+                <div class="content-line-minibox" @click="jumpPath('/user/company/crm/whole', '暂无权限查看，请联系超级管理员', 'never_follow_up_clue')">
                   <p class="p1">{{ informationReminderData.never_follow_up_clue }}</p>
                   <p class="p2">从未跟进线索</p>
                 </div>
@@ -129,7 +129,7 @@
     <el-card class="box-card">
       <div style="position: relative;" class="table-box">
         <p class="title">
-          <span class="line"></span>
+          <span class="line" />
           <span class="txt">销售统计</span>
         </p>
         <div style="position:relative;">
@@ -137,14 +137,14 @@
             <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
               <div class="setField_h">
                 <div v-for="item in fieldData" class="setFields">
-                  <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)" />
-                  <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)" />
+                  <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)">
+                  <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)">
                   <span style="margin-left: 10px;">{{ item.name }}</span>
                 </div>
               </div>
               <el-button slot="reference" :class="menu_icon == 'menu' ? 'field_s' : 'field_s_select'" @click="menu">
-                <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="" />
-                <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="" />
+                <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="">
+                <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="">
               </el-button>
               <div style="margin-top:10px;margin-right: 10px;">
                 <el-button class="filterOperation" type="text" size="small" @click="setFieldClose()">关闭</el-button>
@@ -180,7 +180,7 @@
                 </div>
               </template>
               <template slot-scope="scope">
-                <div class="username" v-if="items.field == 'user_name'">{{ scope.row.username }}</div>
+                <div v-if="items.field == 'user_name'" class="username">{{ scope.row.username }}</div>
                 <div v-if="items.field == 'company_total'">{{ scope.row.company_total }}</div>
                 <div v-if="items.field == 'today_num'">{{ scope.row.today_num }}</div>
                 <div v-if="items.field == 'expiring_soon'">{{ scope.row.expiring_soon }}</div>
@@ -194,7 +194,7 @@
                 <div v-if="items.field == 'follow_up_today'">{{ scope.row.follow_up_today }}</div>
                 <div v-if="items.field == 'seven_days_no_follow_up'">{{ scope.row.seven_days_no_follow_up }}</div>
                 <div v-if="items.field == 'fifteen_days_no_follow_up'">{{ scope.row.fifteen_days_no_follow_up }}</div>
-                <div class="no_follow_up" v-if="items.field == 'no_follow_up'">{{ scope.row.no_follow_up }}</div>
+                <div v-if="items.field == 'no_follow_up'" class="no_follow_up">{{ scope.row.no_follow_up }}</div>
               </template>
             </el-table-column>
             <el-table-column
@@ -212,7 +212,7 @@
                 </div>
               </template>
               <template slot-scope="scope">
-                <div class="username" v-if="items.field == 'user_name'">{{ scope.row.username }}</div>
+                <div v-if="items.field == 'user_name'" class="username">{{ scope.row.username }}</div>
                 <div v-if="items.field == 'company_total'">{{ scope.row.company_total }}</div>
                 <div v-if="items.field == 'today_num'">{{ scope.row.today_num }}</div>
                 <div v-if="items.field == 'expiring_soon'">{{ scope.row.expiring_soon }}</div>
@@ -226,7 +226,7 @@
                 <div v-if="items.field == 'follow_up_today'">{{ scope.row.follow_up_today }}</div>
                 <div v-if="items.field == 'seven_days_no_follow_up'">{{ scope.row.seven_days_no_follow_up }}</div>
                 <div v-if="items.field == 'fifteen_days_no_follow_up'">{{ scope.row.fifteen_days_no_follow_up }}</div>
-                <div class="no_follow_up" v-if="items.field == 'no_follow_up'">{{ scope.row.no_follow_up }}</div>
+                <div v-if="items.field == 'no_follow_up'" class="no_follow_up">{{ scope.row.no_follow_up }}</div>
               </template>
             </el-table-column>
           </el-table>
@@ -248,12 +248,12 @@
     <el-row style="margin-top:20px;" class="chartTableBox">
       <el-card>
         <el-col :span="18">
-          <el-tabs class="statisticsTab" v-model="chartTabSelected">
+          <el-tabs v-model="chartTabSelected" class="statisticsTab">
             <el-tab-pane label="新增客户统计" name="0" />
             <el-tab-pane label="客户跟进统计" name="1" />
           </el-tabs>
         </el-col>
-        <el-col :span="6"></el-col>
+        <el-col :span="6" />
         <life_customer_statistics v-if="chartTabSelected == '0'" height="400px" :daterange="daterange" :platform-options="saleScreenData" />
         <new_company_followStatistics v-if="chartTabSelected == '1'" height="400px" :daterange="daterange" :platform-options="saleScreenData" />
       </el-card>
@@ -261,14 +261,14 @@
     <el-row style="margin-top:20px;" class="chartTableBox">
       <el-card>
         <el-col :span="18">
-          <el-tabs class="statisticsTab" v-model="chartTabSelectedNewclue">
+          <el-tabs v-model="chartTabSelectedNewclue" class="statisticsTab">
             <el-tab-pane label="新增线索统计" name="0" />
             <el-tab-pane label="线索跟进统计" name="1" />
           </el-tabs>
         </el-col>
-        <el-col :span="6"></el-col>
+        <el-col :span="6" />
         <newclue_statistics v-if="chartTabSelectedNewclue == '0'" height="400px" :daterange="daterange" :platform-options="saleScreenData" />
-        <newclue_follow_statistics v-if="chartTabSelectedNewclue == '1'" height="400px" :daterange="daterange" :platform-options="saleScreenData"></newclue_follow_statistics>
+        <newclue_follow_statistics v-if="chartTabSelectedNewclue == '1'" height="400px" :daterange="daterange" :platform-options="saleScreenData" />
       </el-card>
     </el-row>
     <el-row style="margin-top:20px;"><work_life_cycle height="300px" :daterange="daterange" :platform-options="saleScreenData" /></el-row>
@@ -280,13 +280,13 @@
   </div>
 </template>
 <script>
-import { getClassify } from '@/api/classify';
-import clientShow from '@/views/user/company/crm/components/ClientShow';
-import life_customer_statistics from './components/life_customer_statistics.vue';
-import new_company_followStatistics from './components/new_company_followStatistics.vue';
-import work_life_cycle from './components/work_life_cycle.vue';
-import newclue_statistics from './components/newclue_statistics.vue';
-import newclue_follow_statistics from './components/newclue_follow_statistics.vue';
+import { getClassify } from '@/api/classify'
+import clientShow from '@/views/user/company/crm/components/ClientShow'
+import life_customer_statistics from './components/life_customer_statistics.vue'
+import new_company_followStatistics from './components/new_company_followStatistics.vue'
+import work_life_cycle from './components/work_life_cycle.vue'
+import newclue_statistics from './components/newclue_statistics.vue'
+import newclue_follow_statistics from './components/newclue_follow_statistics.vue'
 import {
   classify,
   clueAdminLists,
@@ -301,24 +301,24 @@ import {
   companyRelease,
   companySetDisplay,
   putRecycleBin,
-  //工作看板
+  // 工作看板
   workData,
   salesStatistics,
   newClueStatistics,
   newClueFollowStatistics,
   workLifeCycle
-} from '@/api/company_crm';
-import { export_json_to_excel } from '@/excel/Export2Excel';
-import { parseTime, setMemberLogin } from '@/utils';
-import { outboundCall, customLndex, customLndexAdd } from '@/api/outbound';
-import { management } from '@/api/member';
-import { checkRoleAuth } from '@/utils/role';
+} from '@/api/company_crm'
+import { export_json_to_excel } from '@/excel/Export2Excel'
+import { parseTime, setMemberLogin } from '@/utils'
+import { outboundCall, customLndex, customLndexAdd } from '@/api/outbound'
+import { management } from '@/api/member'
+import { checkRoleAuth } from '@/utils/role'
 
 export default {
   name: 'JobStatistics',
   filters: {
     timeFilter(timestamp) {
-      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}');
+      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
     }
   },
   components: {
@@ -404,179 +404,177 @@ export default {
         { name: '15天内未跟进', field: 'fifteen_days_no_follow_up', select: true, is_locking: false, is_lock_display: false, width: 150, is_sortable: 'custom' },
         { name: '从未跟进', field: 'no_follow_up', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: 'custom' }
       ]
-    };
+    }
   },
   computed: {
     clueTime() {
-      var clueTime = this.$route.query.time;
-      return clueTime;
+      var clueTime = this.$route.query.time
+      return clueTime
     },
     // 默认时间
     timeDefault() {
-      let date = new Date();
+      const date = new Date()
       // 通过时间戳计算
-      let defalutStartTime = date.getTime() - 7 * 24 * 3600 * 1000; // 转化为时间戳
-      let defalutEndTime = date.getTime();
-      let startDateNs = new Date(defalutStartTime);
-      let endDateNs = new Date(defalutEndTime);
+      let defalutStartTime = date.getTime() - 7 * 24 * 3600 * 1000 // 转化为时间戳
+      let defalutEndTime = date.getTime()
+      const startDateNs = new Date(defalutStartTime)
+      const endDateNs = new Date(defalutEndTime)
       // 月，日 不够10补0
       defalutStartTime =
         startDateNs.getFullYear() +
         '-' +
         (startDateNs.getMonth() + 1 >= 10 ? startDateNs.getMonth() + 1 : '0' + (startDateNs.getMonth() + 1)) +
         '-' +
-        (startDateNs.getDate() >= 10 ? startDateNs.getDate() : '0' + startDateNs.getDate());
+        (startDateNs.getDate() >= 10 ? startDateNs.getDate() : '0' + startDateNs.getDate())
       defalutEndTime =
         endDateNs.getFullYear() +
         '-' +
         (endDateNs.getMonth() + 1 >= 10 ? endDateNs.getMonth() + 1 : '0' + (endDateNs.getMonth() + 1)) +
         '-' +
-        (endDateNs.getDate() >= 10 ? endDateNs.getDate() : '0' + endDateNs.getDate());
-      return [defalutStartTime, defalutEndTime];
+        (endDateNs.getDate() >= 10 ? endDateNs.getDate() : '0' + endDateNs.getDate())
+      return [defalutStartTime, defalutEndTime]
     }
   },
   watch: {
     clueTime() {
-      var clue_type = localStorage.getItem('clue_type');
-      var clue_company_id = localStorage.getItem('clue_company_id');
+      var clue_type = localStorage.getItem('clue_type')
+      var clue_company_id = localStorage.getItem('clue_company_id')
       if (clue_type != '' && clue_type == 'follow') {
-        this.drawer = true;
-        this.rowId = clue_company_id;
-        localStorage.setItem('clue_company_id', '');
-        localStorage.setItem('clue_type', '');
+        this.drawer = true
+        this.rowId = clue_company_id
+        localStorage.setItem('clue_company_id', '')
+        localStorage.setItem('clue_type', '')
       }
     }
   },
   created() {
-    this.daterange = this.timeDefault;
-    this.getFieldData();
-    this.initData();
-    this.getSalesStatistics();
-    this.getClueAdminLists();
+    this.daterange = this.timeDefault
+    this.getFieldData()
+    this.initData()
+    this.getSalesStatistics()
+    this.getClueAdminLists()
   },
   methods: {
-    //顶部数据统计和信息提醒统计
+    // 顶部数据统计和信息提醒统计
     initData() {
       workData().then(res => {
         if (res.code == 200) {
-          this.topLoading = false;
-          let { statistics, information_reminder } = res.data;
-          this.statisticsData = statistics;
-          this.informationReminderData = information_reminder;
+          this.topLoading = false
+          const { statistics, information_reminder } = res.data
+          this.statisticsData = statistics
+          this.informationReminderData = information_reminder
         } else {
-          this.$message.error(res.message);
+          this.$message.error(res.message)
         }
-      });
+      })
     },
-    //销售统计
+    // 销售统计
     getSalesStatistics() {
-      let params = this.params;
+      const params = this.params
       salesStatistics(params).then(res => {
         if (res.code == 200) {
-          let { items, total_page, current_page } = res.data;
+          const { items, total_page, current_page } = res.data
           if (items.length >= 0) {
-            this.tableData = items;
-            this.total = total_page;
-            this.currentPage = current_page;
+            this.tableData = items
+            this.total = total_page
+            this.currentPage = current_page
           } else {
-            this.tableData = [];
-            this.total = 0;
-            this.currentPage = 1;
+            this.tableData = []
+            this.total = 0
+            this.currentPage = 1
           }
-          this.loading = false;
+          this.loading = false
         } else {
-          this.$message.error(res.message);
+          this.$message.error(res.message)
         }
-      });
+      })
     },
-    //获取销售人员列表
+    // 获取销售人员列表
     getClueAdminLists() {
       clueAdminLists().then(res => {
         if (res.code == 200) {
-          this.saleScreenData = res.data;
+          this.saleScreenData = res.data
         } else {
-          this.$message.error(res.message);
+          this.$message.error(res.message)
         }
-      });
+      })
     },
     jumpPath(routePath, message, type) {
       if (type == 'today_follow') {
-        //今日跟进客户
-        localStorage.setItem('followupScreen', '1');
+        // 今日跟进客户
+        checkRoleAuth(routePath, message, { 'followupScreen': '1' })
       } else if (type == 'today_company') {
-        //新增客户
-        localStorage.setItem('gradeScreen', '1');
+        // 新增客户
+        checkRoleAuth(routePath, message, { 'add_date': '1' })
       } else if (type == 'expiring_soon') {
-        //到期未续费客户
-        localStorage.setItem('setmealDeadline', '2');
+        // 到期未续费客户
+        checkRoleAuth(routePath, message, { 'setmealDeadline': '2' })
       } else if (type == 'expire_company') {
-        //即将到期客户
-        localStorage.setItem('setmealDeadline', '1');
+        // 即将到期客户
+        checkRoleAuth(routePath, message, { 'setmealDeadline': '1' })
       } else if (type == 'never_follow_up_company') {
-        //从未跟进客户
-        localStorage.setItem('followupScreen', '6');
+        // 从未跟进客户
+        checkRoleAuth(routePath, message, { 'followupScreen': '6' })
       } else if (type == 'never_follow_up_clue') {
-        //从未跟进线索
-        localStorage.setItem('followCountScreen', '1');
-        checkRoleAuth(routePath, message);
+        // 从未跟进线索
+        checkRoleAuth(routePath, message, { 'followCountScreen': '1' })
       } else {
-        checkRoleAuth(routePath, message);
+        checkRoleAuth(routePath, message)
       }
-      checkRoleAuth(routePath, message);
     },
     sortTable({ column, order }) {
       if (order == 'ascending') {
-        this.params.order = 'asc';
+        this.params.order = 'asc'
       } else if (order == 'descending') {
-        this.params.order = 'desc';
+        this.params.order = 'desc'
       } else {
-        this.params.order = '';
+        this.params.order = ''
       }
-      this.params.order_type = column.property;
-      this.getSalesStatistics();
+      this.params.order_type = column.property
+      this.getSalesStatistics()
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map(v => filterVal.map(j => v[j]))
     },
     closeDialog() {
-      this.dialogFormVisible = false;
+      this.dialogFormVisible = false
     },
     setFieldClose() {
-      this.menu_icon = 'menu';
-      this.visiblepop = false;
+      this.menu_icon = 'menu'
+      this.visiblepop = false
     },
     classify() {
       classify({
         type: 'setmealList,companyAudit'
       })
         .then(res => {
-          this.mealScreenData = res.data.setmealList;
-          const options_audit_arr = [...res.data.companyAudit];
+          this.mealScreenData = res.data.setmealList
+          const options_audit_arr = [...res.data.companyAudit]
           options_audit_arr.forEach(el => {
-            this.authenticationScreenData[el.id] = el.name;
-          });
-          this.form_options_audit = [...this.authenticationScreenData];
+            this.authenticationScreenData[el.id] = el.name
+          })
+          this.form_options_audit = [...this.authenticationScreenData]
 
-          this.authenticationScreenData = res.data.companyAudit;
+          this.authenticationScreenData = res.data.companyAudit
           this.authenticationScreenData.push({
             name: '未认证',
             id: 3
-          });
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     lifeCycle() {
       lifeCycle()
         .then(res => {
-          this.gradeScreenData = res.data;
+          this.gradeScreenData = res.data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     clueList() {
-      this.loading = true;
+      this.loading = true
       if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == '1') {
-        this.authenticationScreen = 0;
-        localStorage.setItem('clue_audit', '');
+        this.authenticationScreen = 0
+        localStorage.setItem('clue_audit', '')
       }
       crmCompanyList({
         page: this.currentPage,
@@ -606,26 +604,26 @@ export default {
           //   this.total = 0
           //   this.currentPage = 1
           // }
-          this.loading = false;
+          this.loading = false
         })
         .catch(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
     clueAdminLists() {
       clueAdminLists()
         .then(res => {
-          this.saleScreenData = res.data;
+          this.saleScreenData = res.data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     handleSizeChange(val) {
-      this.pagesize = val;
-      this.getSalesStatistics();
+      this.pagesize = val
+      this.getSalesStatistics()
     },
     handleCurrentChange(val) {
-      this.currentPage = val;
-      this.getSalesStatistics();
+      this.currentPage = val
+      this.getSalesStatistics()
     },
     getFieldData() {
       customLndex({
@@ -633,10 +631,10 @@ export default {
       })
         .then(res => {
           if (res.data != '') {
-            this.fieldData = JSON.parse(res.data);
+            this.fieldData = JSON.parse(res.data)
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     setFieldConfirm() {
       customLndexAdd({
@@ -645,33 +643,33 @@ export default {
       })
         .then(res => {
           if (res.code == 200) {
-            this.$message.success(res.message);
+            this.$message.success(res.message)
           } else {
-            this.$message.error(res.message);
+            this.$message.error(res.message)
           }
-          this.visiblepop = false;
-          this.menu_icon = 'menu';
+          this.visiblepop = false
+          this.menu_icon = 'menu'
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     crmCustomList() {
-      var list_type = this.list_type;
-      var list_type_z = 0;
+      var list_type = this.list_type
+      var list_type_z = 0
       if (list_type == 0) {
-        list_type_z = 1;
+        list_type_z = 1
       }
       if (list_type == 1) {
-        list_type_z = 2;
+        list_type_z = 2
       }
       if (list_type == 2) {
-        list_type_z = 3;
+        list_type_z = 3
       }
       crmCustomList({
         menu: list_type_z,
         type: 2
       })
         .then(res => {
-          this.fieldData = JSON.parse(res.data);
+          this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++) {
             if (
               this.fieldData[i].field == 'addtime' ||
@@ -679,68 +677,68 @@ export default {
               this.fieldData[i].field == 'last_visit_time' ||
               this.fieldData[i].field == 'collection_time'
             ) {
-              this.fieldData[i].is_sortable = 'custom';
+              this.fieldData[i].is_sortable = 'custom'
             } else {
-              this.fieldData[i].is_sortable = false;
+              this.fieldData[i].is_sortable = false
             }
-            this.fieldData[i].is_popover = false;
-            this.export_name.push(this.fieldData[i].name);
-            this.export_field.push(this.fieldData[i].field);
+            this.fieldData[i].is_popover = false
+            this.export_name.push(this.fieldData[i].name)
+            this.export_field.push(this.fieldData[i].field)
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     locking(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_locking == true) {
-            this.fieldData[i].is_locking = false;
-            this.fieldData[i].is_lock_display = false;
-            this.fieldData[i].icon = 'el-icon-lock';
+            this.fieldData[i].is_locking = false
+            this.fieldData[i].is_lock_display = false
+            this.fieldData[i].icon = 'el-icon-lock'
           } else {
-            this.fieldData[i].icon = 'el-icon-unlock';
-            this.fieldData[i].is_lock_display = false;
-            this.fieldData[i].is_locking = true;
+            this.fieldData[i].icon = 'el-icon-unlock'
+            this.fieldData[i].is_lock_display = false
+            this.fieldData[i].is_locking = true
           }
         }
       }
-      this.setFieldConfirm();
+      this.setFieldConfirm()
     },
     select(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].select == true) {
-            this.fieldData[i].select = false;
+            this.fieldData[i].select = false
           } else {
-            this.fieldData[i].select = true;
+            this.fieldData[i].select = true
           }
         }
       }
     },
     menu() {
       if (this.menu_icon == 'menu') {
-        this.visiblepop = true;
-        this.menu_icon = 'menu_select';
+        this.visiblepop = true
+        this.menu_icon = 'menu_select'
       } else {
-        this.visiblepop = false;
-        this.menu_icon = 'menu';
+        this.visiblepop = false
+        this.menu_icon = 'menu'
       }
     },
     see(value) {
-      this.drawer = true;
-      this.rowId = value.row.id;
+      this.drawer = true
+      this.rowId = value.row.id
     },
     handleClose() {
-      this.drawer = false;
-      this.clueList();
+      this.drawer = false
+      this.clueList()
     },
     funPopover(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_popover == true) {
-            this.fieldData[i].is_popover = false;
+            this.fieldData[i].is_popover = false
           } else {
-            this.fieldData[i].is_popover = true;
+            this.fieldData[i].is_popover = true
           }
         }
       }
@@ -749,15 +747,15 @@ export default {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_lock_display == true) {
-            this.fieldData[i].is_lock_display = false;
+            this.fieldData[i].is_lock_display = false
           } else {
-            this.fieldData[i].is_lock_display = true;
+            this.fieldData[i].is_lock_display = true
           }
         }
       }
     },
     add() {
-      this.$router.push('/user/company/add');
+      this.$router.push('/user/company/add')
     },
     clickDial(phone, name) {
       this.$confirm('是否对【' + name + '】' + phone + ' 发起呼叫？', '提示', {
@@ -771,41 +769,41 @@ export default {
           })
             .then(res => {
               if (res.code == 200) {
-                this.meetDialogVisible = true;
-                this.dialPhone = phone;
-                this.dialName = name;
+                this.meetDialogVisible = true
+                this.dialPhone = phone
+                this.dialName = name
               }
               if (res.code == 4040) {
-                this.callDialogVisible = true;
+                this.callDialogVisible = true
               }
             })
-            .catch(res => {});
+            .catch(res => {})
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     callHandleClose() {
-      this.callDialogVisible = false;
+      this.callDialogVisible = false
     },
     meetHandleClose() {
-      this.meetDialogVisible = false;
+      this.meetDialogVisible = false
     },
     funManagement(row) {
       const params = {
         uid: row.uid
-      };
+      }
       management(params).then(response => {
         if (response.code == 200) {
-          setMemberLogin(response.data);
-          window.open(this.$store.state.config.sitedomain + this.$store.state.config.sitedir + this.$store.state.config.member_dirname);
-          return true;
+          setMemberLogin(response.data)
+          window.open(this.$store.state.config.sitedomain + this.$store.state.config.sitedir + this.$store.state.config.member_dirname)
+          return true
         } else {
-          this.$message.error(response.message);
-          return false;
+          this.$message.error(response.message)
+          return false
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

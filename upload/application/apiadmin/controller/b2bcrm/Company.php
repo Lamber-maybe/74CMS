@@ -33,6 +33,8 @@ class Company extends Backend
         $weixin = input('get.weixin/d', 0, 'intval');// 微信绑定 1-已绑定 2-未绑定
         $trade = input('get.trade/d', 0, 'intval'); // 所属行业
         $district = input('get.district/a', []); //所在地区
+        $collection = input('get.collection/d', 0); //领取时间
+        $addtime = input('get.addtime/d', 0); //注册时间
 
         // 排序规则【ASC|DESC】
         if (!in_array($sort, ['ASC', 'DESC'])) {
@@ -113,6 +115,36 @@ class Company extends Backend
                     } else {
                         $where['c.last_visit_time'] = ['lt', 0];
                     }
+                    break;
+            }
+        }
+
+        /**
+         *【新增】注册时间筛选
+         * yx - 2023.01.09
+         * 0-全部|1-今天|2-3天内|3-7天内|4-30天内
+         */
+        if (!empty($addtime)) {
+            switch ($addtime) {
+                case 1: // 今日注册
+                    $reg_today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+                    $where['c.addtime'] = ['gt', $reg_today];
+                    break;
+                case 2: // 3天内注册
+                    $reg_time = strtotime(date("Y-m-d", strtotime("-3 day")));
+                    $where['c.addtime'] = ['gt', $reg_time];
+                    break;
+                case 3: // 7天内注册
+                    $reg_time = strtotime(date("Y-m-d", strtotime("-7 day")));
+                    $where['c.addtime'] = ['gt', $reg_time];
+                    break;
+                case 4: // 30天内注册
+                    $reg_time = strtotime(date("Y-m-d", strtotime("-30 day")));
+                    $where['c.addtime'] = ['gt', $reg_time];
+                    break;
+
+                case 0:
+                default:
                     break;
             }
         }
@@ -198,6 +230,36 @@ class Company extends Backend
                 break;
         }
 
+        /**
+         *【新增】领取时间筛选
+         * yx - 2023.01.03
+         * 0-全部|1-今天|2-3天内|3-7天内|4-30天内
+         */
+        if (!empty($collection)) {
+            switch ($collection) {
+                case 1: // 今天
+                    $beginToday = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+                    $where['c.collection_time'] = ['gt', $beginToday];
+                    break;
+                case 2: // 3天内
+                    $day_3_time = strtotime(date("Y-m-d", strtotime("-3 day")));
+                    $where['c.collection_time'] = ['gt', $day_3_time];
+                    break;
+                case 3: // 7天内
+                    $day_7_time = strtotime(date("Y-m-d", strtotime("-7 day")));
+                    $where['c.collection_time'] = ['gt', $day_7_time];
+                    break;
+                case 4: // 30天内
+                    $day_30_time = strtotime(date("Y-m-d", strtotime("-30 day")));
+                    $where['c.collection_time'] = ['gt', $day_30_time];
+                    break;
+
+                case 0:
+                default:
+                    break;
+            }
+        }
+
         // 数据总条数
         $total = model('Company')
             ->alias('c')
@@ -229,12 +291,12 @@ class Company extends Backend
         if ($weixin > 0) {
             if ($weixin == 1) // 已绑定
             {
-                $total = $total->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin'", 'LEFT')
+                $total = $total->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT')
                     ->where('bind.id', 'not null');
                 $where['bind.id'] = ['not null', ''];
             } else // 未绑定
             {
-                $total = $total->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin'", 'LEFT')
+                $total = $total->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT')
                     ->where('bind.id', 'null');
                 $where['bind.id'] = ['null', ''];
             }
@@ -306,7 +368,7 @@ class Company extends Backend
             ->join('company_auth a', 'a.uid=c.uid', 'LEFT')
             ->join('job_search_rtime j', 'j.uid=c.uid', 'LEFT')
             ->join('company_contact contact', 'c.id=contact.comid', 'LEFT')
-            ->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin'", 'LEFT')
+            ->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin' and bind.is_subscribe=1", 'LEFT')
             ->field('c.id,
             c.uid,
             c.companyname,
@@ -537,6 +599,24 @@ class Company extends Backend
                 : '';
             $list[$comId]['district'] = $district1 . $district2 . $district3;
             $list[$comId]['link'] = url('index/company/show', ['id' => $comInfo['id']]);
+
+            $company_auth = model('CompanyAuth')->where(['comid' => $comInfo['id']])->find();
+            if (empty($company_auth)) {
+                $list[$comId]['company_auth'] = [
+                    'legal_person_idcard_front' => '',
+                    'legal_person_idcard_back' => '',
+                    'license' => '',
+                    'proxy' => ''
+                ];
+            } else {
+                $list[$comId]['company_auth'] = [
+                    'legal_person_idcard_front' => !empty($company_auth['legal_person_idcard_front']) ? model('Uploadfile')->getFileUrl($company_auth['legal_person_idcard_front']) : '',
+                    'legal_person_idcard_back' => !empty($company_auth['legal_person_idcard_back']) ? model('Uploadfile')->getFileUrl($company_auth['legal_person_idcard_back']) : '',
+                    'license' => !empty($company_auth['license']) ? model('Uploadfile')->getFileUrl($company_auth['license']) : '',
+                    'proxy' => !empty($company_auth['proxy']) ? model('Uploadfile')->getFileUrl($company_auth['proxy']) : ''
+                ];
+            }
+            unset($company_auth);
         }
 
         $list_return = [
@@ -961,7 +1041,8 @@ class Company extends Backend
                 'weixin' => input('post.contact.weixin/s', '', 'trim'),
                 'telephone' => input('post.contact.telephone/s', '', 'trim'),
                 'qq' => input('post.contact.qq/s', '', 'trim'),
-                'email' => input('post.contact.email/s', '', 'trim')
+                'email' => input('post.contact.email/s', '', 'trim'),
+                'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
             ],
             'info' => [
                 'website' => input('post.info.website/s', '', 'trim'),
@@ -1006,7 +1087,7 @@ class Company extends Backend
                     ->save(['uid' => $uid], ['clue_id' => $input_data['clue_id'], 'type' => 1]);
 
                 $companyInfo = [
-                    'id'  => model('Company')->id,
+                    'id' => model('Company')->id,
                     'uid' => model('Member')->uid
                 ];
                 // 查询线索的所有联系人
@@ -1485,9 +1566,15 @@ class Company extends Backend
     {
         $uid = input('get.uid/d', 0, 'intval');
         if ($uid === 0) {
-            $this->ajaxReturn(500, '请选择企业');
+            $this->ajaxReturn(500, '请选择企业/个人会员');
         }
-        $weixin = model('MemberBind')->where(['uid' => $uid, 'type' => 'weixin'])->find();
+        $weixin = model('MemberBind')
+            ->where([
+                'uid' => $uid,
+                'type' => 'weixin',
+                'is_subscribe' => 1
+            ])
+            ->find();
         if (empty($weixin)) {
             $this->ajaxReturn(500, '暂未绑定');
         }

@@ -159,7 +159,7 @@ export default {
 	border-bottom: 0;
 }
 .item-li {
-	max-width: 48%;
+	max-width: 80%;
   min-width: 24%;
   margin-right: 20px;
 	height: 30px;
@@ -167,7 +167,7 @@ export default {
 	display: inline-block;
 }
 .item-li.wide {
-	width: 70%;
+	width: 100%;
 }
 .item-li.lr {
   float: right;

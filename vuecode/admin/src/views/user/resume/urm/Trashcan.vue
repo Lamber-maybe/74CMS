@@ -29,54 +29,43 @@
           :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
           :cell-style="{'border-right': '1px solid #e4e6eb'}"
           style="width: 100%"
-          @selection-change="handleSelectionChange"
         >
-          <!--          <el-table-column-->
-          <!--            type="selection"-->
-          <!--            width="42"-->
-          <!--          />-->
-          <el-table-column prop="title" label="id" min-width="150">
+          <el-table-column prop="title" label="id" min-width="80">
             <template slot-scope="scoped">
               <div>
                 {{ scoped.row.rid ? scoped.row.rid : '-' }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="照片" min-width="150">
-            <template slot-scope="scoped">
-              <div>
-                <img style="width: 50px;height:50px;border-radius: 30px;" :src="scoped.row.photo_img_src" alt="">
+          <el-table-column prop="title" label="姓名" min-width="150">
+            <template slot-scope="scope">
+              <div class="list_name_box_self">
+                <span class="list_name_item">
+                  <img class="head_portrait" :src="scope.row.photo_img_src" alt="">
+                </span>
+                &nbsp;&nbsp;
+                <span class="list_name_item">
+                  {{ scope.row.fullname ? scope.row.fullname : '-' }}
+                  <img v-if="scope.row.is_bind != 0" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="">
+                </span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="姓名" min-width="120">
-            <template slot-scope="scoped">
-              <div>
-                {{ scoped.row.fullname ? scoped.row.fullname : '-' }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="title" label="绑定微信" min-width="120">
-            <template slot-scope="scoped">
-              <span v-if="scoped.row.is_bind == 1">已绑定</span>
-              <span v-if="scoped.row.is_bind == 0">未绑定</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="title" label="简历联系方式" min-width="150">
+          <el-table-column prop="title" label="简历联系方式" min-width="130">
             <template slot-scope="scoped">
               <div>
                 {{ scoped.row.contact_mobile ?scoped.row.contact_mobile : '-' }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="学历" min-width="150">
+          <el-table-column prop="title" label="学历" min-width="90">
             <template slot-scope="scoped">
               <div>
                 {{ scoped.row.education_cn ?scoped.row.education_cn : '-' }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="经验" min-width="150">
+          <el-table-column prop="title" label="经验" min-width="90">
             <template slot-scope="scoped">
               <div>
                 {{ scoped.row.experience_cn ?scoped.row.experience_cn : '-' }}
@@ -103,33 +92,33 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="等级" min-width="150">
+          <el-table-column prop="title" label="等级" min-width="90">
             <template slot-scope="scoped">
               <span v-if="scoped.row.high_quality == 1">优质简历</span>
               <span v-if="scoped.row.high_quality == 0">普通简历</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="投递数" min-width="150">
+          <el-table-column prop="title" label="投递数" min-width="90">
             <template slot-scope="scoped">
               <span>{{ scoped.row.delivery_num ?scoped.row.delivery_num : '0' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="被下载数" min-width="150">
+          <el-table-column prop="title" label="被下载数" min-width="90">
             <template slot-scope="scoped">
               <span>{{ scoped.row.downloaded ?scoped.row.downloaded : '0' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="被查看" min-width="150">
+          <el-table-column prop="title" label="被查看" min-width="90">
             <template slot-scope="scoped">
               <span>{{ scoped.row.viewed ?scoped.row.viewed : '0' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="被面邀" min-width="150">
+          <el-table-column prop="title" label="被面邀" min-width="90">
             <template slot-scope="scoped">
               <span>{{ scoped.row.invitation ?scoped.row.invitation : '0' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="审核状态" min-width="150">
+          <el-table-column prop="title" label="审核状态" min-width="120">
             <template slot-scope="scoped">
               <span v-if="scoped.row.audit == 0">待审核</span>
               <span v-if="scoped.row.audit == 1">已审核</span>
@@ -154,7 +143,7 @@
               <span v-else>{{ scoped.row.reg_time | timeFilter }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="联系状态" min-width="150">
+          <el-table-column prop="title" label="联系状态" min-width="120">
             <template slot-scope="scoped">
               <div v-if="scoped.row.is_status_phone == 1" class="contact_status" title="未电话联系，点击切换状态">
                 <img style="width: 100%;height: 100%;" src="../../../../assets/images/urm/1.png" alt="">
@@ -170,23 +159,23 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="会员联系方式" min-width="150">
+          <el-table-column prop="title" label="会员联系方式" min-width="120">
             <template slot-scope="scoped">
               <span>{{ scoped.row.member_mobile ?scoped.row.member_mobile : '-' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="跟进次数" min-width="150">
+          <el-table-column prop="title" label="跟进次数" min-width="120">
             <template slot-scope="scoped">
               <span>{{ scoped.row.follow_num ?scoped.row.follow_num : '0' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="最后跟进时间" min-width="150">
+          <el-table-column prop="title" label="最后跟进时间" min-width="120">
             <template slot-scope="scoped">
               <span v-if="scoped.row.final_follow == null || scoped.row.final_follow == ''">-</span>
               <span v-else>{{ scoped.row.final_follow | timeFilter }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="deletetime" label="简历备注" min-width="150">
+          <el-table-column prop="deletetime" label="简历备注" min-width="120">
             <template slot-scope="scoped">
               <span>{{ scoped.row.remark ?scoped.row.remark : '-' }}</span>
             </template>
@@ -196,7 +185,7 @@
               <span>{{ scoped.row.operate_time | timeFilter }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="deletetime" label="操作账号" min-width="150">
+          <el-table-column prop="deletetime" label="操作账号" min-width="120">
             <template slot-scope="scoped">
               <span>{{ scoped.row.operate_admin ?scoped.row.operate_admin : '-' }}</span>
             </template>
@@ -732,6 +721,29 @@ export default {
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
+}
+.list_name_box_self {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  .list_name_item {
+    display: flex;
+    align-items: center;
+
+    .chat_icon {
+      display: block;
+      width: 15px;
+      height: 15px;
+      margin-left: 6px;
+    }
+
+    .head_portrait {
+      width: 20px;
+      height: 20px;
+      border-radius: 30px;
+    }
+  }
 }
 #animation {
   animation:pulse 1s .2s ease both infinite;

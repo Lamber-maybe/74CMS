@@ -274,7 +274,8 @@ class Company extends \app\common\controller\Backend
                 'weixin' => input('post.contact.weixin/s', '', 'trim'),
                 'telephone' => input('post.contact.telephone/s', '', 'trim'),
                 'qq' => input('post.contact.qq/s', '', 'trim'),
-                'email' => input('post.contact.email/s', '', 'trim')
+                'email' => input('post.contact.email/s', '', 'trim'),
+                'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
             ],
             'info' => [
                 'website' => input('post.info.website/s', '', 'trim'),
@@ -371,7 +372,8 @@ class Company extends \app\common\controller\Backend
                         'trim'
                     ),
                     'qq' => input('post.contact.qq/s', '', 'trim'),
-                    'email' => input('post.contact.email/s', '', 'trim')
+                    'email' => input('post.contact.email/s', '', 'trim'),
+                    'is_secrecy' => input('post.contact.is_secrecy/d', 1, 'intval')
                 ],
                 'info' => [
                     'website' => input('post.info.website/s', '', 'trim'),

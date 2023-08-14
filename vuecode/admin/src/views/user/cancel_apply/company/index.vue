@@ -59,7 +59,7 @@
         <div
           :class="
             processingStatus != '' ||
-            citycategoryFilter != ''
+              citycategoryFilter != ''
               ? 'setField_s'
               : 'setField'
           "
@@ -121,8 +121,8 @@
                   </div>
                   <div
                     v-if="
-                    items.field == 'status'
-                  "
+                      items.field == 'status'
+                    "
                     slot="reference"
                     class="drop_down"
                   />
@@ -153,24 +153,24 @@
                 <span v-else>{{ scope.row.mobile }}</span>
               </div>
               <div v-if="items.field == 'status'">
-              <span v-if="scope.row.status == 0">
-                <el-tag v-if="scope.row.status==0" type="danger">待处理</el-tag>
-              </span>
+                <span v-if="scope.row.status == 0">
+                  <el-tag v-if="scope.row.status==0" type="danger">待处理</el-tag>
+                </span>
                 <span v-else>
-                <el-tag v-if="scope.row.status==1" type="success">已处理</el-tag>
-              </span>
+                  <el-tag v-if="scope.row.status==1" type="success">已处理</el-tag>
+                </span>
               </div>
               <div v-if="items.field == 'addtime'">
                 <span v-if="scope.row.addtime == ''">-</span>
                 <span v-else>
-                <i class="el-icon-time" />
-                    <span>{{ scope.row.addtime | timeFilter }}</span>
-              </span>
+                  <i class="el-icon-time" />
+                  <span>{{ scope.row.addtime | timeFilter }}</span>
+                </span>
               </div>
               <div v-if="items.field == 'handlertime'">
                 <span v-if="scope.row.handlertime == ''">-</span>
                 <span v-else><i class="el-icon-time" />
-                    <span>{{ scope.row.handlertime | timeFilter }}</span></span>
+                  <span>{{ scope.row.handlertime | timeFilter }}</span></span>
               </div>
             </template>
           </el-table-column>
@@ -199,8 +199,8 @@
                   </div>
                   <div
                     v-if="
-                    items.field == 'status'
-                  "
+                      items.field == 'status'
+                    "
                     slot="reference"
                     class="drop_down"
                   />
@@ -231,24 +231,24 @@
                 <span v-else>{{ scope.row.mobile }}</span>
               </div>
               <div v-if="items.field == 'status'">
-              <span v-if="scope.row.status == 0">
-                <el-tag v-if="scope.row.status==0" type="danger">待处理</el-tag>
-              </span>
+                <span v-if="scope.row.status == 0">
+                  <el-tag v-if="scope.row.status==0" type="danger">待处理</el-tag>
+                </span>
                 <span v-else>
-                <el-tag v-if="scope.row.status==1" type="success">已处理</el-tag>
-              </span>
+                  <el-tag v-if="scope.row.status==1" type="success">已处理</el-tag>
+                </span>
               </div>
               <div v-if="items.field == 'addtime'">
                 <span v-if="scope.row.addtime == ''">-</span>
                 <span v-else>
-                <i class="el-icon-time" />
-                    <span>{{ scope.row.addtime | timeFilter }}</span>
-              </span>
+                  <i class="el-icon-time" />
+                  <span>{{ scope.row.addtime | timeFilter }}</span>
+                </span>
               </div>
               <div v-if="items.field == 'handlertime'">
                 <span v-if="scope.row.handlertime == ''">-</span>
                 <span v-else><i class="el-icon-time" />
-                    <span>{{ scope.row.handlertime | timeFilter }}</span></span>
+                  <span>{{ scope.row.handlertime | timeFilter }}</span></span>
               </div>
             </template>
           </el-table-column>
@@ -466,11 +466,6 @@ export default {
     },
     memberCancelApplyList() {
       this.loading = true
-      if (localStorage.getItem('resume_audit') && localStorage.getItem('resume_audit') == '1') {
-        this.auditScreen = '0'
-        this.auditFilter = { name: '待审核', field: 'audit' }
-        localStorage.setItem('resume_audit', '')
-      }
       memberCancelApplyList({
         key_type: this.key_type,
         keyword: this.keyword,
@@ -547,6 +542,11 @@ export default {
     },
     fetchData() {
       this.listLoading = true
+      if (localStorage.getItem('apply_status') && localStorage.getItem('apply_status') == '1') {
+        this.auditScreen = 1
+        this.processingStatus = { name: '待处理', field: 'status' }
+        localStorage.setItem('apply_status', '')
+      }
       const param = {
         key_type: this.key_type,
         keyword: this.keyword,
@@ -554,7 +554,8 @@ export default {
         pagesize: this.pagesize,
         utype: 1,
         sortType: this.sortType,
-        sort: this.sort
+        sort: this.sort,
+        status: this.auditScreen
       }
       memberCancelApplyList(param).then(response => {
         this.tableData = response.data.items

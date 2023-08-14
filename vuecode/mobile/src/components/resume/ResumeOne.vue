@@ -206,23 +206,25 @@
 				<div
 					class="form_split_10"
 					v-if="
-						resume_module.certificate !== undefined &&
-							resume_module.language !== undefined &&
-							resume_module.certificate.is_display == 1 &&
-							certificate_list.length > 0 &&
-							resume_module.language.is_display == 1 &&
-							language_list.length > 0
+              (resume_module.certificate !== undefined &&
+              resume_module.certificate.is_display == 1 &&
+              certificate_list.length > 0)
+              ||
+              (resume_module.language !== undefined &&
+              resume_module.language.is_display == 1 &&
+              language_list.length > 0)
 					"
 				></div>
 				<div
 					class="content_wrapper"
-					v-if="
-						resume_module.certificate !== undefined &&
-							resume_module.language !== undefined &&
-							resume_module.certificate.is_display == 1 &&
-							certificate_list.length > 0 &&
-							resume_module.language.is_display == 1 &&
-							language_list.length > 0
+          v-if="
+              (resume_module.certificate !== undefined &&
+              resume_module.certificate.is_display == 1 &&
+              certificate_list.length > 0)
+              ||
+              (resume_module.language !== undefined &&
+              resume_module.language.is_display == 1 &&
+              language_list.length > 0)
 					"
 				>
 					<!--获得证书-->
@@ -258,7 +260,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="content_wrapper" v-if="enclosure_resume.enclosure">
+        <div class="form_split_10" v-if="enclosure_resume.enclosure"></div>
+        <div class="content_wrapper" v-if="enclosure_resume.enclosure">
 					<div class="box_14">
 						<div class="box_head"><div class="txt">附件简历</div></div>
 						<div class="box_content">

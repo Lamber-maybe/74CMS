@@ -519,7 +519,7 @@ class CollectionLogic
      * Date Time：2022年3月29日11:39:58
      */
     private function _generateJobData($params){
-        // 转换工作性质
+        // 转换职位性质
         $nature = $this->_convertJobNature($params['nature']);
         // 转换薪资
         $salary = $this->_convertSalary($params['salary']);
@@ -606,11 +606,11 @@ class CollectionLogic
     }
 
     /**
-     * 转换工作性质
+     * 转换职位性质
      * @access private
      * @author chenyang
-     * @param  string $nature [工作性质]
-     * @return array
+     * @param  string $nature [职位性质]
+     * @return integer
      * Date Time：2022年3月28日14:28:37
      */
     private function _convertJobNature($nature){
@@ -623,6 +623,7 @@ class CollectionLogic
 
         if (empty($nature)) return $default;
 
+        $natureId = $default;
         if (false !== stripos($nature, '全职')) {
             $natureId = 1;
         }elseif (false !== stripos($nature, '实习')) {
@@ -676,10 +677,16 @@ class CollectionLogic
      * Date Time：2022年3月28日15:45:15
      */
     private function _convertRecruit($recruitNum){
-        if (empty($recruitNum) || mb_substr($recruitNum, -1) != '人') {
+        $recruitNum = str_replace(['个', '人'], '', $recruitNum);
+        if (empty($recruitNum)) {
             return isset($this->_jobSeting['recruit_num']) ? $this->_jobSeting['recruit_num'] : 0;
         }
-        return mb_substr($recruitNum, 0, -1);
+        // 兼容不同网站包含[-]的数据
+        // 例如：1-2人
+        if (false !== stripos($recruitNum, '-')) {
+            $recruitNum = substr($recruitNum, strripos($recruitNum, '-') + 1);
+        }
+        return intval($recruitNum);
     }
 
     /**

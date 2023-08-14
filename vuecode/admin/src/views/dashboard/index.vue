@@ -29,7 +29,7 @@
               <div class="topBox2">
                 <span>{{ revenue.total }}</span>
                 /
-                <span>{{ revenue.month}}</span>
+                <span>{{ revenue.month }}</span>
               </div>
               <div id="top_line1" style="height:100px;" />
               <div class="topBox3">
@@ -59,7 +59,7 @@
               <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
               <div class="topBox1">企业会员数</div>
               <div class="topBox2">
-                <span>{{ company.total}}</span>
+                <span>{{ company.total }}</span>
                 <span class="label_small">{{ company.total_job }}职位</span>
               </div>
               <div id="top_line3" style="height:100px;" />
@@ -74,8 +74,8 @@
               <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
               <div class="topBox1">个人会员数</div>
               <div class="topBox2">
-                <span>{{ personal.total}}</span>
-                <span class="label_small">{{ personal.total_resume}}简历</span>
+                <span>{{ personal.total }}</span>
+                <span class="label_small">{{ personal.total_resume }}简历</span>
               </div>
               <div id="top_line4" style="height:100px;" />
               <div class="topBox3">
@@ -813,23 +813,22 @@ export default {
     handlerClickPending(e) {
       switch (e.alias) {
         case 'all_company_audit':
-          checkRoleAuth('/user/company/crm/allClient')
-          localStorage.setItem('clue_audit', '1')
+          checkRoleAuth('/user/company/crm/allClient', '您的权限不足，请联系超级管理员。', { 'clue_audit': '1' })
           return
         case 'my_company_audit':
-          checkRoleAuth('/user/company/crm/myClient')
-          localStorage.setItem('clue_audit', '1')
+          checkRoleAuth('/user/company/crm/myClient', '您的权限不足，请联系超级管理员。', { 'clue_audit': '1' })
           return
         case 'job_audit':
-          checkRoleAuth('/user/job/list')
-          localStorage.setItem('job_audit', '0')
+          checkRoleAuth('/user/job/list', '您的权限不足，请联系超级管理员。', { 'job_audit': '0' })
           return
         case 'resume_audit':
-          checkRoleAuth('/user/urmList')
-          localStorage.setItem('resume_audit', '1')
+          checkRoleAuth('/user/urmList', '您的权限不足，请联系超级管理员。', { 'resume_audit': '1' })
           return
-        case 'cancel_apply':
-          checkRoleAuth('/user/cancel_apply')
+        case 'commpany_cancel_apply':
+          checkRoleAuth('/user/commpany_cancel_apply', '您的权限不足，请联系超级管理员。', { 'apply_status': '1' })
+          return
+        case 'person_cancel_apply':
+          checkRoleAuth('/user/person_cancel_apply', '您的权限不足，请联系超级管理员。', { 'apply_status': '1' })
           return
         case 'tipoff':
           checkRoleAuth('/content/feedback/tipoff')

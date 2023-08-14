@@ -90,10 +90,10 @@ export default {
           contactInfo.telephone_show =
             contactInfo.telephone_show == 1 ? true : false
 
-
           this.$refs.child.form.basic = basicInfo
           this.$refs.child.form.contact = contactInfo
           this.$refs.child.contactHidden = contactInfo.is_display == 1 ? false : true
+          this.$refs.child.secrecyHidden = contactInfo.is_secrecy == 1 ? false : true
           this.$refs.child.weixin_sync_mobile = contactInfo.weixin === contactInfo.mobile
 
           this.$refs.child.location = basicInfo.district_text_full

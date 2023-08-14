@@ -62,15 +62,10 @@ class Recommend extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $list = model('Job')
-            ->alias('a')
-            ->join('job_recommend_sort b','b.jobid=a.id and b.uid='.$this->userinfo->uid,'left')
-            ->field(
-                'a.id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,negotiable'
-            )
+            ->field('id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,negotiable')
             ->where('audit', 1)
             ->where('is_display', 1)
-            ->where('a.uid', 'eq', $this->userinfo->uid)
-            ->order('b.sort asc')
+            ->where('uid', 'eq', $this->userinfo->uid)
             ->select();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {

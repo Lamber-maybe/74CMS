@@ -4,7 +4,6 @@
       <div slot="header" class="clearfix">
         <span>{{ title }}</span>
       </div>
-      <div style="float:right;z-index: 1;position: relative;"><el-button size="small" type="primary" @click="goto('/user/company/add')">新增企业</el-button></div>
       <div class="list-search">
         <el-input v-model="keyword" placeholder="请输入搜索内容" class="input-with-select" @keyup.enter.native="funSearchKeyword">
           <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
@@ -14,6 +13,7 @@
           </el-select>
           <el-button slot="append" icon="el-icon-search" @click="funSearchKeyword" />
         </el-input>
+        <div style="float:right;z-index: 1;position: relative;"><el-button size="small" type="primary" @click="goto('/user/company/add')">新增企业</el-button></div>
       </div>
       <div
         v-if="
@@ -27,7 +27,9 @@
             saleFilter != '' ||
             deadlineFilter != '' ||
             districtFilter != '' ||
-            tradeFilter != ''
+            collectionFilter != '' ||
+            tradeFilter != '' ||
+            regScreenFilter != ''
         "
         class="filterCriteria"
       >
@@ -77,6 +79,14 @@
             <div class="name">所在地区：{{ districtFilter.name }}</div>
             <div class="closes" @click="reset(districtFilter.field)"><i class="el-icon-close" /></div>
           </div>
+          <div v-if="collectionFilter != ''" class="selected">
+            <div class="name">领取时间：{{ collectionFilter.name }}</div>
+            <div class="closes" @click="reset(collectionFilter.field)"><i class="el-icon-close" /></div>
+          </div>
+          <div v-if="regScreenFilter != ''" class="selected">
+            <div class="name">注册时间：{{ regScreenFilter.name }}</div>
+            <div class="closes" @click="reset(regScreenFilter.field)"><i class="el-icon-close" /></div>
+          </div>
         </div>
         <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
           <i class="el-icon-delete" />
@@ -84,7 +94,8 @@
         </div>
         <div style="clear:both;" />
       </div>
-      <div style="position: relative;">
+      <div style="position: relative; padding-top: 15px">
+        <span class="checkboxName">ID</span>
         <div
           :class="
             weixinFilter != '' ||
@@ -97,7 +108,9 @@
               saleFilter != '' ||
               deadlineFilter != '' ||
               districtFilter != '' ||
-              tradeFilter != ''
+              tradeFilter != '' ||
+              collectionFilter != '' ||
+              regScreenFilter != ''
               ? 'setField_s'
               : 'setField'
           "
@@ -133,8 +146,58 @@
           style="width: 100%;"
           @sort-change="sortTable"
           @selection-change="handleSelectionChange"
+          @cell-mouse-enter="cellEnter"
+          @cell-mouse-leave="cellLeave"
+          @select-all="cellEnter"
         >
-          <el-table-column fixed type="selection" width="55" />
+          <el-table-column type="selection" width="80" align="left">
+            <template #default="{ row, $index }">
+              <div
+                v-if="columnCheckedId == row.id || checkedList[$index]"
+                @click.stop
+              >
+                <el-checkbox
+                  v-model="checkedList[$index]"
+                  @change="cellCheckbox(row, $index)"
+                />
+              </div>
+              <span v-else>{{ row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column fixed type="text" width="200" label="企业名称">
+            <template slot="header" slot-scope="scope">
+              <div>
+                <span>企业名称</span>
+                <el-popover placement="bottom" trigger="hover">
+                  <!-- 绑定微信-->
+                  <div class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in weixinData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 绑定微信-->
+                  <div style="margin-top: 10px;">
+                    <el-button class="filterOperation" type="text" size="small" @click="reset('is_bind')">重置
+                    </el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
+                  </div>
+                  <div slot="reference" class="drop_down" />
+                </el-popover>
+              </div>
+            </template>
+            <template slot-scope="scope">
+              <div class="list_name_box_self">
+                &nbsp;&nbsp;
+                <span class="list_name_item">
+                  <span v-if="scope.row.companyname == ''">未完善企业资料</span>
+                  <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)">{{ scope.row.companyname }}</span>
+                  <img v-if="scope.row.is_bind == '已绑定'" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="" title="已绑定微信">
+                </span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="items in fieldData"
             v-if="items.is_locking == true && items.select == true"
@@ -160,15 +223,6 @@
                   <!-- 所在地区-->
                   <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
                   <!-- 所在地区-->
-                  <!-- 微信绑定-->
-                  <div v-if="items.field == 'is_bind'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in weixinData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 微信绑定-->
                   <!-- 等级-->
                   <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
                     <el-checkbox-group>
@@ -242,6 +296,24 @@
                     </el-checkbox-group>
                   </div>
                   <!-- 套餐剩余时间-->
+                  <!-- 领取时间-->
+                  <div v-if="items.field == 'collection_time'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in collectionData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 领取时间-->
+                  <!-- 注册时间-->
+                  <div v-if="items.field == 'addtime'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in regScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 注册时间-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm(items.field)">确认</el-button>
@@ -258,7 +330,9 @@
                         items.field == 'deadline' ||
                         items.field == 'is_bind' ||
                         items.field == 'trade' ||
-                        items.field == 'district'
+                        items.field == 'district' ||
+                        items.field == 'collection_time' ||
+                        items.field == 'addtime'
                     "
                     slot="reference"
                     class="drop_down"
@@ -270,14 +344,6 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''">-</span>
-                <span v-else>{{ scope.row.id }}</span>
-              </div>
-              <div v-if="items.field == 'companyname'">
-                <span v-if="scope.row.companyname == ''">未完善企业资料</span>
-                <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)">{{ scope.row.companyname }}</span>
-              </div>
               <div v-if="items.field == 'trade'">
                 <span v-if="scope.row.trade == ''">-</span>
                 <span v-else>{{ scope.row.trade }}</span>
@@ -285,10 +351,6 @@
               <div v-if="items.field == 'district'">
                 <span v-if="scope.row.district == ''">-</span>
                 <span v-else>{{ scope.row.district }}</span>
-              </div>
-              <div v-if="items.field == 'is_bind'">
-                <span v-if="scope.row.is_bind == ''">-</span>
-                <span v-else>{{ scope.row.is_bind }}</span>
               </div>
               <div v-if="items.field == 'life_cycle_txt'">
                 <span v-if="scope.row.life_cycle_txt == ''">-</span>
@@ -355,6 +417,7 @@
                   <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
                   <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
                 </span>
+                <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
               </div>
               <div v-if="items.field == 'is_display'">
                 <span v-if="scope.row.is_display == ''">-</span>
@@ -463,15 +526,6 @@
                     </el-checkbox-group>
                   </div>
                   <!-- 套餐剩余时间-->
-                  <!-- 微信绑定-->
-                  <div v-if="items.field == 'is_bind'" class="screen_s">
-                    <el-checkbox-group>
-                      <div v-for="item in weixinData" class="screenStyle">
-                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
-                      </div>
-                    </el-checkbox-group>
-                  </div>
-                  <!-- 微信绑定-->
                   <!-- 所属行业-->
                   <div v-if="items.field == 'trade'" class="screen_s">
                     <el-checkbox-group>
@@ -484,6 +538,24 @@
                   <!-- 所在地区-->
                   <div v-if="items.field == 'district'"><el-cascader-panel v-model="district" :props="props" clearable :options="districtData" /></div>
                   <!-- 所在地区-->
+                  <!-- 领取时间-->
+                  <div v-if="items.field == 'collection_time'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in collectionData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="collection" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 领取时间-->
+                  <!-- 注册时间-->
+                  <div v-if="items.field == 'addtime'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in regScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="regScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 注册时间-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
@@ -500,7 +572,9 @@
                         items.field == 'deadline' ||
                         items.field == 'is_bind' ||
                         items.field == 'trade' ||
-                        items.field == 'district'
+                        items.field == 'district' ||
+                        items.field == 'collection_time' ||
+                        items.field == 'addtime'
                     "
                     slot="reference"
                     class="drop_down"
@@ -512,14 +586,6 @@
               </div>
             </template>
             <template slot-scope="scope">
-              <div v-if="items.field == 'id'">
-                <span v-if="scope.row.id == ''">-</span>
-                <span v-else>{{ scope.row.id }}</span>
-              </div>
-              <div v-if="items.field == 'companyname'">
-                <span v-if="scope.row.companyname == ''">未完善企业资料</span>
-                <span v-else style="color: #409EFF;cursor:pointer;" @click="jumpDetails(scope.row.link)">{{ scope.row.companyname }}</span>
-              </div>
               <div v-if="items.field == 'trade'">
                 <span v-if="scope.row.trade == ''">-</span>
                 <span v-else>{{ scope.row.trade }}</span>
@@ -527,10 +593,6 @@
               <div v-if="items.field == 'district'">
                 <span v-if="scope.row.district == ''">-</span>
                 <span v-else>{{ scope.row.district }}</span>
-              </div>
-              <div v-if="items.field == 'is_bind'">
-                <span v-if="scope.row.is_bind == ''">-</span>
-                <span v-else>{{ scope.row.is_bind }}</span>
               </div>
               <div v-if="items.field == 'life_cycle_txt'">
                 <span v-if="scope.row.life_cycle_txt == ''">-</span>
@@ -597,6 +659,7 @@
                   <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }}</span>
                   <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }}</span>
                 </span>
+                <span style="color: #409EFF; cursor:pointer; margin-left: 5px;" @click="handleCompanyAuthAduit(scope.row, scope.row.company_auth)">[查看]</span>
               </div>
               <div v-if="items.field == 'is_display'">
                 <span v-if="scope.row.is_display == ''">-</span>
@@ -736,6 +799,86 @@
         </div>
       </el-dialog>
     </div>
+    <!--    企业营业执照-->
+    <div class="comDialog">
+      <el-dialog title="企业营业执照" :visible.sync="dialogAudit" width="600px">
+        <div class="comInfo ">
+          <div class="comInfoName">
+            <span>企业名称：</span><span>{{ comInfoData.companyname }}</span>
+          </div>
+          <div class="comInfoName">
+            <span>当前状态：</span>
+            <span v-if="comInfoData.aduit_id == 1">{{ comInfoData.audit }}</span>
+            <span v-if="comInfoData.aduit_id == 2" style="color:#e6a23c;">{{ comInfoData.audit }}</span>
+            <span v-if="comInfoData.aduit_id == 3" style="color:#67c23a;">{{ comInfoData.audit }}</span>
+            <span v-if="comInfoData.aduit_id == 4" style="color:#f56c6c;">{{ comInfoData.audit }}</span>
+          </div>
+          <div class="comInfoImg">
+            <div class="comInfoImgItem">
+              <div>营业执照：</div>
+              <div>
+                <el-image
+                  v-if="license_src!=''"
+                  class="img"
+                  :src="license_src"
+                  :preview-src-list="previewList"
+                />
+                <div v-else class="img noData">暂无图片</div>
+              </div>
+            </div>
+            <div class="comInfoImgItem comInfoImgItemCenter">
+              <div>身份证：</div>
+              <div style="overflow: hidden">
+                <el-image
+                  v-if="legal_person_idcard_front_src!=''"
+                  class="img"
+                  :src="legal_person_idcard_front_src"
+                  :preview-src-list="previewList"
+                />
+                <div v-else class="img noData">暂无图片</div>
+                <el-image
+                  v-if="legal_person_idcard_back_src!=''"
+                  class="img"
+                  :src="legal_person_idcard_back_src"
+                  :preview-src-list="previewList"
+                />
+                <div v-else class="img noData">暂无图片</div>
+              </div>
+            </div>
+            <div class="comInfoImgItem">
+              <div>委托函：</div>
+              <div>
+                <el-image
+                  v-if="proxy_src!=''"
+                  class="img"
+                  :src="proxy_src"
+                  :preview-src-list="previewList"
+                />
+                <div v-else class="img noData">暂无图片</div>
+              </div>
+            </div>
+          </div>
+          <div class="com_opration">
+            <!--          <span class="title"></span>-->
+            <el-form class="common-form">
+              <el-form-item label="审核操作：">
+                <el-radio-group v-model="setAuditVal" @change="auditChange">
+                  <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item v-if="setAuditVal == 2" label="原因：">
+                <el-input v-model="setAuditReason" type="textarea" rows="3" />
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" :disabled="setAuditVal === ''" :loading="auditSubmitLoading" @click="auditSure">确 定</el-button>
+          <el-button class="cancelBtn" @click="dialogAudit = false">取 消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <!--    企业营业执照-->
   </div>
 </template>
 <script>
@@ -807,13 +950,16 @@ export default {
       gradeScreen: '',
       gradeScreenData: [], // 等级
       weixin: '',
-      weixinData: [{ id: 1, name: '已绑定' }, { id: 2, name: '未绑定' }], // 微信绑定
+      weixinData: [{ id: 0, name: '不限' }, { id: 1, name: '已绑定微信' }, { id: 2, name: '未绑定微信' }], // 微信绑定
       saleScreen: '',
       saleScreenData: [], // 销售
       pagesize: 10,
       total: 0,
       currentPage: 1,
       tableData: [],
+      columnCheckedId: '',
+      multipleSelectionNew: [], // table多选数据
+      checkedList: [], // table多选选中数据
       currentNav: '',
       multipleSelection: [],
       uid_arr: [],
@@ -849,7 +995,32 @@ export default {
       tradeFilter: '',
       districtFilter: '',
       props: { multiple: false, checkStrictly: true },
-      tabelHeight: 0
+      tabelHeight: 0,
+      collectionData: [
+        { id: 0, name: '全部' },
+        { id: 1, name: '今天领取' },
+        { id: 2, name: '3天内领取' },
+        { id: 3, name: '7天内领取' },
+        { id: 4, name: '30天内领取' }
+      ],
+      collection: '',
+      collectionFilter: '',
+      dialogAudit: false,
+      comInfoData: {},
+      license_src: '',
+      legal_person_idcard_back_src: '',
+      legal_person_idcard_front_src: '',
+      proxy_src: '',
+      previewList: [], // 放大查看企业认证图片
+      regScreenData: [
+        { id: 0, name: '全部' },
+        { id: 1, name: '今日' },
+        { id: 2, name: '3天内' },
+        { id: 3, name: '7天内' },
+        { id: 4, name: '30天内' }
+      ],
+      regScreen: '',
+      regScreenFilter: ''
     }
   },
   computed: {
@@ -964,6 +1135,39 @@ export default {
         }
       })
     },
+    auditChange(val){
+      if (val == 0 || val == 1){
+        this.setAuditReason = ''
+      }
+    },
+    auditSure(){
+      if (this.auditSubmitLoading == true) {
+        return false
+      }
+      this.auditSubmitLoading = true
+      const params = {
+        id: this.comInfoData.id,
+        audit: this.setAuditVal,
+        reason: this.setAuditReason
+      }
+      companyCrmAudit(params, 'post').then(response => {
+        if (response.code == 200) {
+          this.$message.success(response.message)
+          this.dialogAudit = false
+          this.auditSubmitLoading = false
+          this.clueList()
+          this.closeDialog()
+          return true
+        } else {
+          this.auditSubmitLoading = false
+          this.$message.error(response.message)
+          return false
+        }
+      })
+        .catch(() => {
+          this.auditSubmitLoading = false
+        })
+    },
     funReceive() {
       var that = this
       if (that.multipleSelection.length == 0) {
@@ -1012,9 +1216,8 @@ export default {
             } else {
               this.$message.error(response.message)
             }
-          })
-        })
-        .catch(() => {})
+          }).catch(() => {})
+        }).catch(() => {})
     },
     goto(target) {
       this.$router.push(target)
@@ -1137,6 +1340,9 @@ export default {
           return false
         }
       })
+        .catch(() => {
+          this.auditSubmitLoading = false
+        })
     },
     choose() {
       this.tableData.forEach(row => {
@@ -1153,6 +1359,34 @@ export default {
       this.uid_arr = uid_arr
       this.multipleSelection = id_arr
       this.exportData = val
+
+      this.multipleSelectionNew = val
+      if (this.multipleSelectionNew.length == this.tableData.length) {
+        this.multipleSelectionNew.forEach((item, index) => {
+          this.checkedList[index] = true
+        })
+      }
+      if (this.multipleSelectionNew.length == 0) {
+        this.checkedList = []
+      }
+      this.$forceUpdate()
+      this.$emit('selectList', this.multipleSelectionNew)
+    },
+    // 鼠标移入表格当前行
+    cellEnter(row, column, cell, event) {
+      this.columnCheckedId = row.id
+    },
+    // 鼠标移出表格当前行
+    cellLeave(row, column, cell, event) {
+      this.columnCheckedId = ''
+    },
+    // 选中与否塞数据
+    cellCheckbox(row, index) {
+      if (this.checkedList[index]) {
+        this.$refs.multipleTable.toggleRowSelection(row, true)
+      } else {
+        this.$refs.multipleTable.toggleRowSelection(row, false)
+      }
     },
     funAuditBatch() {
       if (this.multipleSelection.length == 0) {
@@ -1183,6 +1417,8 @@ export default {
         this.trade_name = ''
         this.trade = ''
         this.district = ''
+        this.collection = ''
+        this.regScreen = ''
       }
       if (field == 'audit') {
         this.authenticationScreen = ''
@@ -1216,6 +1452,12 @@ export default {
       }
       if (field == 'district') {
         this.district = ''
+      }
+      if (field == 'collection_time') {
+        this.collection = ''
+      }
+      if (field == 'addtime'){
+        this.regScreen = ''
       }
       this.confirm('reset')
     },
@@ -1386,6 +1628,30 @@ export default {
       } else {
         this.districtFilter = ''
       }
+      if (this.collection != '') {
+        for (var i = 0; i <= this.collectionData.length - 1; i++) {
+          if (this.collection == this.collectionData[i].id) {
+            this.collectionFilter = {
+              field: 'collection_time',
+              name: this.collectionData[i].name
+            }
+          }
+        }
+      } else {
+        this.collectionFilter = ''
+      }
+      if (this.regScreen != '') {
+        for (var i = 0; i <= this.regScreenData.length - 1; i++) {
+          if (this.regScreen == this.regScreenData[i].id) {
+            this.regScreenFilter = {
+              field: 'addtime',
+              name: this.regScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.regScreenFilter = ''
+      }
       this.currentPage = 1
       this.clueList()
       this.crmCustomList()
@@ -1479,6 +1745,18 @@ export default {
         this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' }
         localStorage.setItem('followupScreen', '')
       }
+      // 今日领取
+      if (localStorage.getItem('collection_date') && localStorage.getItem('collection_date') == '1') {
+        this.collection = 1
+        this.collectionFilter = { name: '今天领取', field: 'collection_time' }
+        localStorage.setItem('collection_date', '')
+      }
+      // 今日注册（今日新增客户）
+      if (localStorage.getItem('add_date') && localStorage.getItem('add_date') == '1') {
+        this.regScreen = 1
+        this.regScreenFilter = { name: '今日', field: 'addtime' }
+        localStorage.setItem('add_date', '')
+      }
       crmCompanyList({
         page: this.currentPage,
         pagesize: this.pagesize,
@@ -1497,7 +1775,9 @@ export default {
         setmeal_deadline: this.setmealDeadline,
         weixin: this.weixin,
         trade: this.trade,
-        district: this.district
+        district: this.district,
+        collection: this.collection,
+        addtime: this.regScreen
       })
         .then(res => {
           if (res.data.items.length >= 0) {
@@ -1696,6 +1976,52 @@ export default {
     },
     jumpDetails(url) {
       window.open(url)
+    },
+    handleCompanyAuthAduit (row, companyAuth) {
+      this.dialogAudit = true
+      this.setAuditVal = ''
+      this.setAuditReason = ''
+      this.comInfoData = row
+      this.license_src = row.company_auth.license
+      this.legal_person_idcard_back_src = row.company_auth.legal_person_idcard_back
+      this.legal_person_idcard_front_src = row.company_auth.legal_person_idcard_front
+      this.proxy_src = row.company_auth.proxy
+      if (this.license_src){
+        this.previewList.push(this.license_src)
+      }
+      if (this.legal_person_idcard_back_src){
+        this.previewList.push(this.legal_person_idcard_back_src)
+      }
+      if (this.legal_person_idcard_front_src){
+        this.previewList.push(this.legal_person_idcard_front_src)
+      }
+      if (this.proxy_src){
+        this.previewList.push(this.proxy_src)
+      }
+    },
+    companyAuthAduit (comId, companyAuth) {
+      if (this.auditSubmitLoading == true) {
+        return false
+      }
+      this.dialogAudit = true
+      const params = {
+        id: comId,
+        audit: this.setAuditVal,
+        reason: this.setAuditReason
+      }
+      companyCrmAudit(params, 'post').then(response => {
+        if (response.code == 200) {
+          this.$message.success(response.message)
+          this.auditSubmitLoading = false
+          this.clueList()
+          this.closeDialog()
+          return true
+        } else {
+          this.auditSubmitLoading = false
+          this.$message.error(response.message)
+          return false
+        }
+      }).catch(() => { this.auditSubmitLoading = false })
     }
   }
 }
@@ -1760,9 +2086,17 @@ export default {
     }
   }
 }
+.comDialog{
+  ::v-deep .el-dialog__body {
+    padding: 30px 20px 0;
+  }
+  ::v-deep .el-dialog__footer{
+    padding: 0 20px 30px
+  }
+}
 .meet {
   ::v-deep .el-dialog__body {
-    padding: 0px 0px 0px 0px;
+    padding: 0 0 0 0;
     border-radius: 5px;
   }
   ::v-deep .el-dialog {
@@ -1802,7 +2136,7 @@ export default {
       width: 117px;
       height: 117px;
       background: #ffffff;
-      box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.14);
       border-radius: 8px;
       padding: 10px 10px;
       img {
@@ -1844,7 +2178,7 @@ export default {
 }
 .call {
   ::v-deep .el-dialog__body {
-    padding: 0px 0px 0px 0px;
+    padding: 0 0 0 0;
     border-radius: 5px;
   }
   ::v-deep .el-dialog {
@@ -1881,6 +2215,7 @@ export default {
 .list-search {
   z-index: 1;
   position: relative;
+  overflow: hidden;
 }
 .filterOperation {
   float: right;
@@ -2005,14 +2340,25 @@ export default {
   font-size: 14px;
 }
 .setField {
-  top: 60px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
 }
+.checkboxName{
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  z-index: 9;
+  font-size: 14px;
+  color: #909399;
+  font-weight: bold;
+  height: 48px;
+  line-height: 48px;
+}
 .screenStyle {
-  margin: 10px 0px;
+  margin: 10px 0;
 }
 .bortton-page {
   margin-top: 20px;
@@ -2020,14 +2366,12 @@ export default {
 }
 .input-with-select {
   float: left;
-  margin-bottom: 20px;
 }
 .filterCriteria {
   border: 1px dashed #eeeeee;
   font-size: 13px;
   color: #999999;
-  margin-top: 62px;
-  margin-bottom: 16px;
+  margin-top: 15px;
   padding: 15px 16px 15px 16px;
   .selected {
     display: inline-block;
@@ -2051,12 +2395,90 @@ export default {
   }
 }
 .setField_s {
-  top: 0px;
+  top: 15px;
   right: 0;
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
 }
+
+.comInfo{
+  width: 100%;
+  .comInfoName{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    font-size: 14px;
+    color: #333;
+    margin: 15px 0 25px 0;
+  }
+  .comInfoImg{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    .comInfoImgItem{
+      width: 25%;
+      &.comInfoImgItemCenter{
+        width: 50%;
+        .img{
+          float: left;
+          margin-right: 20px;
+          &:last-child{
+            margin-right: 0;
+          }
+        }
+      }
+      .img{
+        display: block;
+        width: 120px;
+        height: 120px;
+        margin: 10px 0;
+        cursor: pointer;
+        &.noData{
+          color: #C0C4CC;
+          background: #F5F7FA;
+          text-align: center;
+          line-height: 120px;
+        }
+      }
+    }
+  }
+  .com_opration{
+    .el-textarea{
+      width: 80%;
+    }
+  }
+}
+.dialog-footer{
+  text-align: center;
+  .cancelBtn{
+    margin-left: 30px;
+  }
+}
+
+.list_name_box_self {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  .list_name_item {
+    .chat_icon {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      position: relative;
+      top: 2px;
+      margin-left: 4px;
+    }
+
+    .head_portrait {
+      width: 20px;
+      height: 20px;
+      border-radius: 30px;
+    }
+  }
+}
+
 #animation {
   animation:pulse 1s .2s ease both infinite;
 }

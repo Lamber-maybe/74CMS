@@ -197,9 +197,13 @@
                                                 <span class="contact_width">联系人：</span>
                                                 {{contactData.contact_info.contact}}
                                             </p>
-                                            <p>
+                                            <p v-if="contactData.is_secrecy === 1">
                                                 <span class="contact_width">联系手机：</span>
                                                 {{contactData.contact_info.mobile}}
+                                            </p>
+                                            <p v-if="contactData.is_secrecy === 0">
+                                                <span class="contact_width">联系手机：</span>
+                                                <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                             </p>
                                             <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                                 <span class="contact_width">联系座机：</span>
@@ -237,13 +241,17 @@
                                                 <span class="contact_width">联系人：</span>
                                                 {{contactData.contact_info.contact}}
                                             </p>
-                                            <p>
+                                            <p v-if="contactData.is_secrecy === 1">
                                                 <span class="contact_width">联系手机：</span>
                                                 {{contactData.contact_info.mobile}}
                                             </p>
+                                            <p v-if="contactData.is_secrecy === 0">
+                                                <span class="contact_width">联系手机：</span>
+                                                <span style="color: #1787FB">企业已隐藏当前手机号</span>
+                                            </p>
                                             <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                                 <span class="contact_width">联系座机：</span>
-                                            {{contactData.contact_info.telephone}}
+                                                {{contactData.contact_info.telephone}}
                                             </p>
                                             <p v-if="contactData.contact_info.weixin!='' && contactData.field_rule.weixin.is_display==1">
                                                 <span class="contact_width">联系微信：</span>
@@ -276,9 +284,13 @@
                                                 <span class="contact_width">联系人：</span>
                                                 {{contactData.contact_info.contact}}
                                             </p>
-                                            <p>
+                                            <p v-if="contactData.is_secrecy === 1">
                                                 <span class="contact_width">联系手机：</span>
                                                 {{contactData.contact_info.mobile}}
+                                            </p>
+                                            <p v-if="contactData.is_secrecy === 0">
+                                                <span class="contact_width">联系手机：</span>
+                                                <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                             </p>
                                             <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                                 <span class="contact_width">联系座机：</span>
@@ -316,9 +328,13 @@
                                                 <span class="contact_width">联系人：</span>
                                                 {{contactData.contact_info.contact}}
                                             </p>
-                                            <p>
+                                            <p v-if="contactData.is_secrecy === 1">
                                                 <span class="contact_width">联系手机：</span>
                                                 {{contactData.contact_info.mobile}}
+                                            </p>
+                                            <p v-if="contactData.is_secrecy === 0">
+                                                <span class="contact_width">联系手机：</span>
+                                                <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                             </p>
                                             <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                                 <span class="contact_width">联系座机：</span>
@@ -356,9 +372,13 @@
                                                 <span class="contact_width">联系人：</span>
                                                 {{contactData.contact_info.contact}}
                                             </p>
-                                            <p>
+                                            <p v-if="contactData.is_secrecy === 1">
                                                 <span class="contact_width">联系手机：</span>
                                                 {{contactData.contact_info.mobile}}
+                                            </p>
+                                            <p v-if="contactData.is_secrecy === 0">
+                                                <span class="contact_width">联系手机：</span>
+                                                <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                             </p>
                                             <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                                 <span class="contact_width">联系座机：</span>
@@ -400,9 +420,13 @@
                                             <span class="contact_width">联系人：</span>
                                             {{contactData.contact_info.contact}}
                                         </p>
-                                        <p>
+                                        <p v-if="contactData.is_secrecy === 1">
                                             <span class="contact_width">联系手机：</span>
                                             {{contactData.contact_info.mobile}}
+                                        </p>
+                                        <p v-if="contactData.is_secrecy === 0">
+                                            <span class="contact_width">联系手机：</span>
+                                            <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                         </p>
                                         <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                             <span class="contact_width">联系座机：</span>
@@ -428,9 +452,13 @@
                                             <span class="contact_width">联系人：</span>
                                             {{contactData.contact_info.contact}}
                                         </p>
-                                        <p>
+                                        <p v-if="contactData.is_secrecy === 1">
                                             <span class="contact_width">联系手机：</span>
                                             {{contactData.contact_info.mobile}}
+                                        </p>
+                                        <p v-if="contactData.is_secrecy === 0">
+                                            <span class="contact_width">联系手机：</span>
+                                            <span style="color: #1787FB">企业已隐藏当前手机号</span>
                                         </p>
                                         <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                             <span class="contact_width">联系座机：</span>

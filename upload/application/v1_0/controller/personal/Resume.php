@@ -916,6 +916,21 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($id <= 0) {
             $this->ajaxReturn(500, '参数错误');
         }
+
+        /**
+         * 【ID1000494】
+         * 【优化】后台简历详情页优化-求职意向、经验展示
+         * yx - 2023.01.03
+         * [新增]:
+         * 当求职意向只有最后一条时不能删除
+         */
+        $intention_total = model('ResumeIntention')
+            ->where(['uid' => $this->userinfo->uid])
+            ->count();
+        if ($intention_total <= 1) {
+            $this->ajaxReturn(500, '简历求职意向最少应设置一条');
+        }
+
         model('ResumeIntention')
             ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
 
@@ -924,9 +939,6 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
         }
-        $intention_total = model('ResumeIntention')
-            ->where(['uid' => ['eq', $this->userinfo->uid]])
-            ->count();
         if ($intention_total == 0) {
             model('Resume')->updateComplete(
                 ['intention' => 0],

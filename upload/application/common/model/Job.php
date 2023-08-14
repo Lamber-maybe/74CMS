@@ -445,6 +445,11 @@ class Job extends \app\common\model\BaseModel
                     'job_audit_success',
                     [
                         'jobname' => $value['jobname'],
+                    ],
+                    0,
+                    '',
+                    [
+                        'job_id' => $value['id']
                     ]
                 );
                 //微信通知
@@ -472,6 +477,11 @@ class Job extends \app\common\model\BaseModel
                     [
                         'jobname' => $value['jobname'],
                         'reason' => $reason,
+                    ],
+                    0,
+                    '',
+                    [
+                        'job_id' => $value['id']
                     ]
                 );
                 //微信通知
@@ -778,6 +788,15 @@ class Job extends \app\common\model\BaseModel
         }
 
         /**
+         * 【ID1000443】
+         * 【新增】职位相关通知通知职位联系人及职位联系方式自主关闭显示联系手机号
+         * yx - 2022.12.30
+         * 1.当使用其他联系方式时，取其他联系方式下的隐私状态`is_secrecy`
+         * 隐私状态[0-不对外显示仅接收通知|1-对外显示并接收通知]
+         */
+        $return['is_secrecy'] = $contact_info['is_secrecy'];
+
+        /**
          * 隐藏联系方式，使用*号代替
          * 【旧】：
          *  if ($return['show_contact'] == 1)写在条件中
@@ -787,6 +806,14 @@ class Job extends \app\common\model\BaseModel
                 ->field('id,comid,uid', true)
                 ->where('comid', $jobinfo['company_id'])
                 ->find();
+            /**
+             * 【ID1000443】
+             * 【新增】职位相关通知通知职位联系人及职位联系方式自主关闭显示联系手机号
+             * yx - 2022.12.30
+             * 2.当使用企业资料联系方式时，取企业资料`is_secrecy`
+             * 隐私状态[0-不对外显示仅接收通知|1-对外显示并接收通知]
+             */
+            $return['is_secrecy'] = $return['contact_info']['is_secrecy'];
         } else {
             $return['contact_info'] = $contact_info;
             unset(
