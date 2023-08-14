@@ -101,7 +101,7 @@ class TweetsTemplate extends \app\common\controller\Backend
             $jobdata = [];
             $jobid_arr = [];
             if(!empty($comid_arr)){
-                $joblistdata = model('Job')->where('company_id','in',$comid_arr)->select();
+                $joblistdata = model('Job')->where('audit',1)->where('is_display',1)->where('company_id','in',$comid_arr)->select();
                 foreach ($joblistdata as $key => $value) {
                     $jobid_arr[] = $value['id'];
                     $jobdata[$value['company_id']][] = $value;
@@ -303,7 +303,7 @@ class TweetsTemplate extends \app\common\controller\Backend
         $jobid_arr = [];
         if($type==='joblist'){
             $model = $this->_parseConditionOfJob($condition);
-            $jobid_arr = $model->column('a.id');
+            $jobid_arr = $model->where('a.audit',1)->where('a.is_display',1)->column('a.id');
         }else if($type==='tocompany'){
             foreach($condition as $key=>$val){
                 foreach($val['joblist'] as $keys=>$vals) {

@@ -29,8 +29,19 @@ class Poster extends \app\common\controller\Backend
         $id = input('get.id/d',0,'intval');
         $index = input('get.index/d',0,'intval');
         $result = false;
-        $filename = $id.'_'.$index.'.jpg';
-        $show_path = SYS_UPLOAD_PATH.'/poster/'.$type.'/'.($id%10).'/'.$filename;
+        switch($type){
+            case 'job':
+                $info = model('Job')->where('id',$id)->find();
+                break;
+            case 'company':
+                $info = model('Company')->where('id',$id)->find();
+                break;
+            case 'resume':
+                $info = model('Resume')->where('id',$id)->find();
+                break;
+        }
+        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
+        $show_path = SYS_UPLOAD_PATH.'poster/'.$type.'/'.($id%10).'/'.$filename;
         $save_name = '';
         switch($type){
             case 'job':

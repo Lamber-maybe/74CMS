@@ -42,7 +42,8 @@ export default {
           nearby: '/jobnearby',
           high_wage: '/joblist?minwage=5000',
           article: '/newslist',
-          online_jobfair: '/jobfairol'
+          online_jobfair: '/jobfairol',
+          shortvideo: '/shortvideo/companylist'
         }
         this.$router.push(menuRoute[params.alias])
       } else {

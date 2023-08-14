@@ -94,7 +94,7 @@
             >
           </div>
           <div class="tx2" v-if="setmealDetail.note" style="padding-top:0">
-            <span>说明：{{ setmealDetail.note }}</span>
+            <span class="dec">说明：{{ setmealDetail.note }}</span>
           </div>
         </div>
       </div>
@@ -403,6 +403,9 @@ export default {
           width: 153px;
           display: inline-block;
           vertical-align: top;
+        }
+        &.dec {
+          width: 100%;line-height: 1.7;
         }
       }
       .tq {

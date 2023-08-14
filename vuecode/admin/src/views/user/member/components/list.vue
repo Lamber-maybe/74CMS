@@ -1,12 +1,17 @@
 <template>
   <div class="app-container">
+    <div class="tip" v-if="listtype == 'invalid'">
+      <p>
+        无效会员指个人会员注册后未创建简历、企业会员未完善企业资料的会员信息
+      </p>
+    </div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>会员列表</span>
       </div>
       <div class="list-search">
         <el-select
-          v-if="showOptionsUtype===true"
+          v-if="showOptionsUtype === true"
           v-model="utype"
           class="list-options"
           placeholder="不限身份"
@@ -17,7 +22,6 @@
           <el-option label="个人会员" value="2" />
         </el-select>
         <el-select
-          v-if="showOptionsStatus===true"
           v-model="status"
           class="list-options"
           placeholder="不限会员状态"
@@ -65,6 +69,7 @@
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -75,6 +80,12 @@
             <el-option label="UID" value="1" />
             <el-option label="用户名" value="2" />
             <el-option label="手机号" value="3" />
+            <el-option
+              label="企业名称"
+              value="4"
+              v-if="listtype == 'company'"
+            />
+            <el-option label="姓名" value="4" v-if="listtype == 'personal'" />
           </el-select>
           <el-button
             slot="append"
@@ -93,14 +104,23 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
+        <el-table-column align="center" label="UID" prop="uid" width="80" />
+        <el-table-column
+          v-if="listtype == 'company'"
+          label="企业名称"
+          prop="companyname"
+        />
+        <el-table-column label="用户名" prop="username" />
         <el-table-column
           align="center"
-          label="UID"
-          prop="uid"
-          width="80"
-        />
-        <el-table-column v-if="listtype=='company'" label="企业名称" prop="companyname" />
-        <el-table-column label="用户名" prop="username" />
+          label="身份类型"
+          v-if="listtype == 'invalid'"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.utype == 1">企业会员</span>
+            <span v-if="scope.row.utype == 2">个人会员</span>
+          </template>
+        </el-table-column>
         <el-table-column label="手机号" prop="mobile" />
         <el-table-column align="center" label="注册时间">
           <template slot-scope="scope">
@@ -121,12 +141,23 @@
             <el-tag v-else type="danger">已锁定</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" width="270">
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click="funDetail(scope.$index, scope.row)">
+            <el-button size="small" @click="funManagement(scope.row)">
+              管理
+            </el-button>
+            <el-button
+              size="small"
+              type="primary"
+              @click="funDetail(scope.$index, scope.row)"
+            >
               查看
             </el-button>
-            <el-button size="small" type="primary" @click="funEdit(scope.$index, scope.row)">
+            <el-button
+              size="small"
+              type="primary"
+              @click="funEdit(scope.$index, scope.row)"
+            >
               修改
             </el-button>
             <el-dropdown trigger="click" style="margin-left: 10px">
@@ -140,11 +171,9 @@
                 <el-dropdown-item
                   @click.native="funLock(scope.$index, scope.row)"
                 >
-                  {{ scope.row.status == 1 ? '锁定' : '解锁' }}
+                  {{ scope.row.status == 1 ? "锁定" : "解锁" }}
                 </el-dropdown-item>
-                <el-dropdown-item
-                  @click.native="funDelete(scope.row)"
-                >
+                <el-dropdown-item @click.native="funDelete(scope.row)">
                   删除
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -162,11 +191,11 @@
             删除所选
           </el-button>
         </el-col>
-        <el-col :span="16" style="text-align: right;">
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -187,7 +216,10 @@
       <diaform
         v-if="dialogContent == 'form'"
         :uid="childId"
+        :listtype="listtype"
         @setDialogFormVisible="closeDialog"
+        @setDialogFormVisibleCompany="closeDialogCompany"
+        @setDialogFormVisiblePersonal="closeDialogPersonal"
         @pageReload="fetchData"
       />
       <detail
@@ -215,8 +247,8 @@ import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import diaform from './form.vue'
 import detail from './detail.vue'
-import { memberList, memberLock, memberDelete } from '@/api/member'
-import { parseTime } from '@/utils/index'
+import { memberList, memberLock, memberDelete, management } from '@/api/member'
+import { parseTime, setMemberLogin } from '@/utils/index'
 
 export default {
   components: {
@@ -229,7 +261,7 @@ export default {
       return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
     }
   },
-  props: ['listtype', 'showOptionsStatus', 'showOptionsUtype'],
+  props: ['listtype', 'showOptionsUtype'],
   data() {
     return {
       platformOptions: [],
@@ -258,10 +290,26 @@ export default {
     }
   },
   created() {
+    console.log(this.listtype)
     this.fetchData()
     this.fetchPlatformOptions()
   },
   methods: {
+    funManagement(row) {
+      const params = {
+        uid: row.uid
+      }
+      management(params).then(response => {
+        if (response.code == 200) {
+          setMemberLogin(response.data)
+          window.open(this.$store.state.config.sitedomain + this.$store.state.config.sitedir + this.$store.state.config.member_dirname)
+          return true
+        } else {
+          this.$message.error(response.message)
+          return false
+        }
+      })
+    },
     fetchData() {
       this.listLoading = true
       const list_type = this.listtype
@@ -285,7 +333,7 @@ export default {
         this.pagesize = response.data.pagesize
       })
     },
-    fetchPlatformOptions(){
+    fetchPlatformOptions() {
       const params = {
         type: 'platform'
       }
@@ -313,6 +361,28 @@ export default {
       this.dialogContent = 'form'
       this.dialogFormVisible = false
     },
+    closeDialogCompany() {
+      this.dialogFormVisible = false
+      this.$confirm('该会员还没有完善企业资料，您可在无效会员列表查看', '提示', {
+        confirmButtonText: '进入无效会员列表',
+        cancelButtonText: '留在当前页',
+        type: 'warning'
+      }).then(() => {
+        this.$router.push('/user/member/invalid')
+      }).catch(() => {
+      });
+    },
+    closeDialogPersonal() {
+      this.dialogFormVisible = false
+      this.$confirm('该会员还没有填写简历信息，您可在无效会员列表查看', '提示', {
+        confirmButtonText: '进入无效会员列表',
+        cancelButtonText: '留在当前页',
+        type: 'warning'
+      }).then(() => {
+        this.$router.push('/user/member/invalid')
+      }).catch(() => {
+      });
+    },
     funAdd(index, row) {
       this.childId = 0
       this.dialogWidth = '35%'
@@ -327,7 +397,7 @@ export default {
       this.dialogTitle = '查看会员'
       this.dialogFormVisible = true
     },
-    funLog(index, row){
+    funLog(index, row) {
       this.listUid = row.uid
       this.dialogListVisible = true
     },
@@ -372,9 +442,9 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funDelete(row){
+    funDelete(row) {
       var that = this
       const msg = row.utype == 1 ? '删除企业会员将删除此会员的一切信息，包括企业资料、在招职位、下载的简历等，删除后不可恢复。是否继续？' : '删除个人会员将删除此会员的一切信息，包括简历、投递记录等信息，删除后不可恢复。是否继续？'
       that
@@ -393,18 +463,18 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funDeleteBatch(){
+    funDeleteBatch() {
       if (this.tableIdarr.length == 0) {
         this.$message.error('请选择要删除的会员')
         return false
       }
       var that = this
       let msg = '删除企业会员将删除选中会员的一切信息，删除后不可恢复。是否继续？'
-      if (that.listtype == 'company'){
+      if (that.listtype == 'company') {
         msg = '删除企业会员将删除选中会员的一切信息，包括企业资料、在招职位、下载的简历等，删除后不可恢复。是否继续？'
-      } else if (that.listtype == 'personal'){
+      } else if (that.listtype == 'personal') {
         msg = '删除个人会员将删除选中会员的一切信息，包括简历、投递记录等信息，删除后不可恢复。是否继续？'
       }
       that
@@ -423,7 +493,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     handleSelectionChange(idlist) {
       this.tableIdarr = []

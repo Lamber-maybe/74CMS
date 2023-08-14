@@ -40,7 +40,8 @@ class Admin extends \app\common\controller\Backend
         $input_data = [
             'username' => input('post.username/s', '', 'trim'),
             'password' => input('post.password/s', '', 'trim'),
-            'role_id' => input('post.role_id/d', 0, 'intval')
+            'role_id' => input('post.role_id/d', 0, 'intval'),
+            'is_sc' => input('post.is_sc/d', 0, 'intval')
         ];
         $input_data['pwd_hash'] = randstr();
         $input_data['password'] = model('Admin')->makePassword(
@@ -69,7 +70,7 @@ class Admin extends \app\common\controller\Backend
         $id = input('get.id/d', 0, 'intval');
         if ($id) {
             $info = model('Admin')
-                ->field('id,username,role_id')
+                ->field('id,username,role_id,is_sc')
                 ->find($id);
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
@@ -81,7 +82,8 @@ class Admin extends \app\common\controller\Backend
                 'id' => input('post.id/d', 0, 'intval'),
                 'username' => input('post.username/s', '', 'trim'),
                 'password' => input('post.password/s', '', 'trim'),
-                'role_id' => input('post.role_id/d', 0, 'intval')
+                'role_id' => input('post.role_id/d', 0, 'intval'),
+                'is_sc' => input('post.is_sc/d', 0, 'intval')
             ];
             $id = intval($input_data['id']);
             if (!$id) {

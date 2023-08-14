@@ -209,6 +209,16 @@ const systemRouter = {
         access: 'sysBasicServiceOl'
       },
       hidden: true
+    },
+    {
+      path: '/sys/basic/tpl',
+      name: 'sysBasicTpl',
+      component: () =>
+        import('@/views/sys/basic/tpl'),
+      meta: {
+        title: '模板管理',
+        access: 'sysBasicTpl'
+      }
     }
     ]
   },
@@ -556,13 +566,22 @@ const systemRouter = {
       access: 'log'
     },
     children: [{
-      path: '/sys/log/member',
-      name: 'logMember',
+      path: '/sys/log/company',
+      name: 'logCompany',
       component: () =>
-        import('@/views/sys/log/member'),
+        import('@/views/sys/log/member/company'),
       meta: {
-        title: '会员日志',
-        access: 'logMember'
+        title: '企业会员日志',
+        access: 'logCompany'
+      }
+    }, {
+      path: '/sys/log/personal',
+      name: 'logPersonal',
+      component: () =>
+        import('@/views/sys/log/member/personal'),
+      meta: {
+        title: '个人会员日志',
+        access: 'logPersonal'
       }
     }, {
       path: '/sys/log/admin',

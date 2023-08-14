@@ -125,6 +125,31 @@ class Profile extends \app\v1_0\controller\common\Base
         )
         ? $category_district_data[$basic['district']]
         : '';
+        $basic['district_text_full'] = '';
+        if($basic['district1']){
+            $basic['district_text_full'] = isset(
+                $category_district_data[$basic['district1']]
+            )
+                ? $category_district_data[$basic['district1']]
+                : '';
+        }else{
+            $basic['district_text_full'] = '';
+        }
+        
+        if($basic['district_text_full']!='' && $basic['district2']>0){
+            $basic['district_text_full'] .= isset(
+                $category_district_data[$basic['district2']]
+            )
+                ? $category_district_data[$basic['district2']]
+                : '';
+        }
+        if($basic['district_text_full']!='' && $basic['district3']>0){
+            $basic['district_text_full'] .= isset(
+                $category_district_data[$basic['district3']]
+            )
+                ? $category_district_data[$basic['district3']]
+                : '';
+        }
         $basic['scale_text'] = isset(
             $category_data['QS_scale'][$basic['scale']]
         )
@@ -339,7 +364,8 @@ class Profile extends \app\v1_0\controller\common\Base
             } elseif ($company_info === null) {
                 $input_data['info']['content'] = '';
             }
-            if (input('?post.contact.weixin')) {
+
+             if (input('?post.contact.weixin')) {
                 $input_data['contact']['weixin'] = input(
                     'post.contact.weixin/s',
                     '',

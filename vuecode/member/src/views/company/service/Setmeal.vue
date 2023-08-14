@@ -7,11 +7,11 @@
 						<img :src="companyInfo.logo_src" alt="logo" class="logo" />
 					</div>
 					<div class="header_title">
-						<div>{{companyInfo.companyname}}</div>
-						<p>我的套餐：<span>{{ mySetmeal.name }}</span>
+						<div class="text_1">{{companyInfo.companyname}}</div>
+						<p class="text_2">我的套餐：<span>{{ mySetmeal.name }}</span>
 						<router-link to="/company/service/setmeal/detail">我的特权></router-link>
 						</p>
-						<p>服务期限：<span v-if="mySetmeal.deadline == 0">无限期</span><span v-else>有效期至 {{ mySetmeal.deadline | timeFilter }}</span></p>
+						<p class="text_3">服务期限：<span v-if="mySetmeal.deadline == 0">无限期</span><span v-else>有效期至 {{ mySetmeal.deadline | timeFilter }}</span></p>
 					</div>
 				</div>
 				<div class="header_right">
@@ -61,22 +61,27 @@
         <div class="item_wrapper">
           <div class="item_con">
             <div ref="item_conRef" class="item_com_cti">
-              <div class="item" v-for="(item,index) in setmealList" :key="index">
+              <div class="item" v-for="(item,index) in setmealList" :key="index" :ref="'itemDom' + index">
                 <div class="item_title">
-                <img v-if="item.recommend==1" class="recommend" :src="require('@/assets/images/tuijian1.png')" />
-                <p :style="item.preferential_open==1?'padding:13px 0;':''">
+                  <img v-if="item.recommend==1" class="recommend" :src="require('@/assets/images/tuijian1.png')" />
+                <!--<p :style="item.preferential_open==1?'padding:13px 0;':''">
                   {{item.name}}<br />
                   <span v-if="item.preferential_open==1">限时特惠</span>
-                </p>
-                <div class="ellipse"></div>
+                </p>-->
+                  <p class="st_name">{{item.name}}</p><p class="st_day">{{ parseInt(item.days) > 0 ? item.days + '天' : '无限期' }}</p>
+                  <div class="ellipse"></div>
                 </div>
                 <div class="item_box">
-                <div class="Price">
-                  <p>￥<span>{{item.expense}}</span><span> {{item.days}}天</span></p>
-                </div>
-                <div class="btn">
-                  <el-button class="el_button" @click="$router.push('/company/service/setmeal/add?setmeal_id='+item.id)">立即购买</el-button>
-                </div>
+                  <div class="Price">
+                    <p>￥<span>{{item.expense}}</span></p>
+                  </div>
+                  <p class="or_price" v-if="parseInt(item.preferential_open) === 1">原价: ￥{{ item.original_expense }}</p>
+                  <div class="btn">
+                    <el-button class="el_button" @click="$router.push('/company/service/setmeal/add?setmeal_id='+item.id)">立即购买</el-button>
+                  </div>
+                  <p class="or_pre_date" v-if="parseInt(item.preferential_open) === 1">
+                    限时特惠 : {{ item.preferential_expense_start | timeFilterTwo }} 至 {{ item.preferential_expense_end | timeFilterTwo }}
+                  </p>
                 </div>
                 <div class="details">
                 <div class="border"></div>
@@ -105,8 +110,10 @@
                           <li v-if="item.enable_poster==1">允许使用微海报</li>
                           <li v-if="item.enable_video_interview==1">允许使用视频面试</li>
                           <li v-if="item.show_apply_contact==1">收到简历免费查看</li>
-                          <li v-if="item.note!=''">其他说明：<span>{{item.note}}</span></li>
                         </ul>
+                        <div class="hover_otd" v-if="item.note!=''">
+                          <span>其他说明：</span><span class="dec">{{item.note}}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -115,7 +122,7 @@
               <div class="clear"></div>
             </div>
           </div>
-          <span class="el-icon-arrow-right" v-if="setmealList.length > 5" @click="next()"></span>
+          <span class="el-icon-arrow-right" v-if="false" @click="next()"></span>
         </div>
 			</el-card>
 		</div>
@@ -133,7 +140,10 @@ import api from '@/api'
 				return ''
 			}
 			return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}:{s}')
-		}
+		},
+    timeFilterTwo (timestamp) {
+      return parseTime(timestamp, '{m}-{d}')
+    }
 	},
     data(){
       return{
@@ -149,7 +159,10 @@ import api from '@/api'
 	created () {
 		this.fetchSetmeal()
 	},
-	methods: {
+    mounted() {
+      console.log(this.$refs)
+    },
+    methods: {
 		fetchSetmealList () {
 			this.setmealList = []
 		http
@@ -176,7 +189,11 @@ import api from '@/api'
 		},
 		hover(item,index) {
 			item.show_box = true
-      this.hoverIndex = index == this.setmealList.length - 1;
+      // 根据当前 item 距右侧距离是否大于 hover_box 的宽度，改变 hover_box 显示位置
+      let itemDom = eval("this.$refs.itemDom" + index)[0]
+      let docWidth = document.documentElement.clientWidth
+      let itemDomOff = itemDom.getBoundingClientRect()
+      this.hoverIndex = (docWidth - itemDomOff.right) < 450
 		},
 		removehove(item) {
 			item.show_box = false
@@ -210,7 +227,7 @@ import api from '@/api'
 	.header_img{
 		// flex: 1;
 		width:100px;
-		margin-top:30px;
+		margin-top:24px;
 		.logo{
 			width:80px;
 			height:80px;
@@ -225,7 +242,6 @@ import api from '@/api'
 		margin: 20px 0;
 	}
 	.header_title>p{
-		margin-bottom: 20px;
 		font-size:15px ;
 		color: #666;
 	}
@@ -234,6 +250,16 @@ import api from '@/api'
 		font-size: 14px;
 		margin-left: 44px;
 	}
+  .header_title .text_1{
+    margin: 20px 0 15px;
+    font-weight: bold;
+  }
+  .header_title .text_2{
+    margin-bottom:12px ;
+  }
+  .header_title .text_3{
+    margin-bottom: 12px;
+  }
 	.header_right{
 		flex: 1;
 		display: flex;
@@ -253,7 +279,7 @@ import api from '@/api'
 	.right_item >p{
 		font-size: 16px;
 		color: #666666;
-		margin: 30px 0 23px 0;
+		margin: 30px 0 18px 0;
 	}
 	.right_item >div{
 		color: #ff704f;
@@ -264,7 +290,6 @@ import api from '@/api'
 		font-size: 24px;
 	}
   .upgradesetmeal_con {
-    height: 652px;
     .el-card {
       height: 100%;
     }
@@ -279,24 +304,14 @@ import api from '@/api'
       vertical-align: middle;
     }
     .item_wrapper {
-      width: 1530px;
       margin-top: 15px;
       position: relative;
-      height: 447px;
-      overflow: hidden;
       margin-left: 40px;
     }
     .item_con {
-      width: 1480px;
-      height: 460px;
-      position: absolute;
-      left: 0;
-      top: 0;
       padding-top: 10px;
-      overflow: hidden;
     }
     .item_com_cti {
-      white-space: nowrap;
     }
     .item_wrapper>span {
       width: 40px;
@@ -312,14 +327,14 @@ import api from '@/api'
       line-height: 392px;
     }
     .item {
-      display: inline-block;
+      float: left;
       width: 227px;
-      height: 392px;
+      height: 409px;
       background: #e9bc79;
       border-radius: 10px;
       box-shadow: 0 0 5px 5px #f1f1f1;
       position: relative;
-      margin:0 22px;
+      margin: 0 22px 44px 22px;
       transition: linear all .2s;
       &:hover {
       -webkit-transform:translateY(-3px);transform:translateY(-3px);z-index:1;
@@ -334,10 +349,15 @@ import api from '@/api'
       top:0;
       right:0;
     }
-    .item_title>p {
-      padding: 26px 0;
-      font-size: 20px;
-      color: #fff;
+    .item_title  {
+      .st_name { padding: 18px 0 5px;font-size: 18px;color: #fff;font-weight: bold; }
+      .st_day { font-size: 14px;color: #92672c;padding-bottom: 14px; }
+    }
+    .or_price {
+      position: absolute;left: 0;top: 138px;width: 100%;font-size: 12px;color: #999999;text-decoration: line-through;
+    }
+    .or_pre_date {
+      position: absolute;left: 0;top: 209px;width: 100%;font-size: 12px;color: #92672c;
     }
     .item_title>p span {
       font-size: 12px;
@@ -364,7 +384,7 @@ import api from '@/api'
       font-size: 14px;
     }
     .btn {
-      padding-bottom: 8px;
+      padding-bottom: 25px;
     }
     .el_button {
       width: 130px;
@@ -414,18 +434,23 @@ import api from '@/api'
       width: 400px;
       background: #fff;
       z-index: 10;
-      box-shadow: 0px 0px 5px 3px #ccc;
+      box-shadow: 0 0 5px 3px #ccc;
       padding: 0 20px 40px;
+      border-radius: 5px;
+    }
+    .hover_otd {
+      font-size: 14px;color: #666;word-break: break-all;line-height: 1.8;
+      .dec {color: #333;}
     }
     .padding{
       position: absolute;
       right: -400px;
-      bottom: -40px;
+      bottom: -1px;
     }
     .padding2{
       position: absolute;
       right: 42px;
-      bottom: -40px;
+      bottom: -1px;
     }
     .hover_box .arrow {
       display: block;
@@ -448,7 +473,7 @@ import api from '@/api'
       border-left:10px solid #fff ;
     }
     .hover_title {
-      padding: 30px 0;
+      padding: 30px 0 15px;
       font-size: 18px;
       color: #333333;
       font-weight: bold;
@@ -456,6 +481,9 @@ import api from '@/api'
     .hover_box ul {
       display: flex;
       flex-wrap: wrap;
+    }
+    .hover_box ul .order_explain{
+      width: 100%;
     }
     .hover_box ul li {
       width: 180px;

@@ -444,6 +444,10 @@
 }
 .information_list li {
 	margin-bottom: 9px;
+	width: 230px;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis; 
 }
 
 .information_list img {

@@ -87,7 +87,9 @@ class Auth extends \app\v1_0\controller\common\Base
             }
         } elseif ($this->company_profile['audit'] == 1) {
             $return['audit'] = 1;
-            if($this->company_profile['audit_complete']==0){
+            if(config('global_config.audit_com_project')==1 && ($auth['legal_person_idcard_front']==0 || $auth['legal_person_idcard_back']==0 || $auth['license']==0 || $auth['proxy']==0)){
+                $return['audit'] = 0;
+            }else if(config('global_config.audit_com_project')==0 && $auth['license']==0){
                 $return['audit'] = 0;
             }
         } else {
@@ -116,12 +118,19 @@ class Auth extends \app\v1_0\controller\common\Base
             'license' => input('post.license/d', 0, 'intval'),
             'proxy' => input('post.proxy/d', 0, 'intval')
         ];
-        $validate = new \think\Validate([
-            'legal_person_idcard_front' => 'require|number|gt:0',
-            'legal_person_idcard_back' => 'require|number|gt:0',
-            'license' => 'require|number|gt:0',
-            'proxy' => 'require|number|gt:0'
-        ]);
+        if(config('global_config.audit_com_project')==1){
+            $validate = new \think\Validate([
+                'legal_person_idcard_front' => 'require|number|gt:0',
+                'legal_person_idcard_back' => 'require|number|gt:0',
+                'license' => 'require|number|gt:0',
+                'proxy' => 'require|number|gt:0'
+            ]);
+        }else{
+            $validate = new \think\Validate([
+                'license' => 'require|number|gt:0'
+            ]);
+        }
+        
         if (!$validate->check($input_data)) {
             $this->ajaxReturn(500, $validate->getError());
         }

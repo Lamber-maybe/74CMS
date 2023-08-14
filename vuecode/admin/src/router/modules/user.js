@@ -15,7 +15,7 @@ const userRouter = {
     path: '/user/member',
     name: 'member',
     component: () =>
-      import ('@/views/user/member'),
+      import('@/views/user/member'),
     redirect: 'noRedirect',
     alwaysShow: true,
     meta: {
@@ -26,7 +26,7 @@ const userRouter = {
       path: '/user/member/company',
       name: 'memberCompany',
       component: () =>
-        import ('@/views/user/member/company'),
+        import('@/views/user/member/company'),
       meta: {
         title: '企业会员',
         access: 'memberCompany'
@@ -36,7 +36,7 @@ const userRouter = {
       path: '/user/member/personal',
       name: 'memberPersonal',
       component: () =>
-        import ('@/views/user/member/personal'),
+        import('@/views/user/member/personal'),
       meta: {
         title: '个人会员',
         access: 'memberPersonal'
@@ -46,7 +46,7 @@ const userRouter = {
       path: '/user/member/invalid',
       name: 'memberInvalid',
       component: () =>
-        import ('@/views/user/member/invalid'),
+        import('@/views/user/member/invalid'),
       meta: {
         title: '无效会员',
         access: 'memberInvalid'
@@ -58,7 +58,7 @@ const userRouter = {
     path: '/user/resume',
     name: 'resume',
     component: () =>
-      import ('@/views/user/resume'),
+      import('@/views/user/resume'),
     redirect: 'noRedirect',
     alwaysShow: true,
     meta: {
@@ -69,7 +69,7 @@ const userRouter = {
       path: '/user/resume/noaudit',
       name: 'resumeNoaudit',
       component: () =>
-        import ('@/views/user/resume/noaudit'),
+        import('@/views/user/resume/noaudit'),
       meta: {
         title: '未审核简历',
         access: 'resumeNoaudit'
@@ -79,7 +79,7 @@ const userRouter = {
       path: '/user/resume/list',
       name: 'resumeList',
       component: () =>
-        import ('@/views/user/resume/list'),
+        import('@/views/user/resume/list'),
       meta: {
         title: '简历管理',
         access: 'resumeList'
@@ -89,7 +89,7 @@ const userRouter = {
       path: '/user/resume/edit',
       name: 'resumeEdit',
       component: () =>
-        import ('@/views/user/resume/edit'),
+        import('@/views/user/resume/edit'),
       meta: {
         title: '编辑简历',
         access: 'resumeList',
@@ -101,7 +101,7 @@ const userRouter = {
       path: '/user/resume/add',
       name: 'resumeAdd',
       component: () =>
-        import ('@/views/user/resume/add'),
+        import('@/views/user/resume/add'),
       meta: {
         title: '添加简历',
         access: 'resumeList',
@@ -113,7 +113,7 @@ const userRouter = {
       path: '/user/resume_img',
       name: 'resume_img',
       component: () =>
-        import ('@/views/user/resume_img/index'),
+        import('@/views/user/resume_img/index'),
       meta: {
         title: '照片/作品',
         access: 'resume_img'
@@ -123,7 +123,7 @@ const userRouter = {
       path: '/user/job_apply',
       name: 'job_apply',
       component: () =>
-        import ('@/views/user/job_apply/index'),
+        import('@/views/user/job_apply/index'),
       meta: {
         title: '投递简历记录',
         access: 'job_apply'
@@ -135,7 +135,7 @@ const userRouter = {
     path: '/user/company',
     name: 'company',
     component: () =>
-      import ('@/views/user/company'),
+      import('@/views/user/company'),
     redirect: 'noRedirect',
     alwaysShow: true,
     meta: {
@@ -146,7 +146,7 @@ const userRouter = {
       path: '/user/company/noaudit',
       name: 'companyNoaudit',
       component: () =>
-        import ('@/views/user/company/noaudit'),
+        import('@/views/user/company/noaudit'),
       meta: {
         title: '待审核企业',
         access: 'companyNoaudit'
@@ -156,7 +156,7 @@ const userRouter = {
       path: '/user/company/list',
       name: 'companyList',
       component: () =>
-        import ('@/views/user/company/list'),
+        import('@/views/user/company/list'),
       meta: {
         title: '企业管理',
         access: 'companyList'
@@ -166,7 +166,7 @@ const userRouter = {
       path: '/user/company/add',
       name: 'companyAdd',
       component: () =>
-        import ('@/views/user/company/add'),
+        import('@/views/user/company/add'),
       meta: {
         title: '添加企业',
         access: 'companyList'
@@ -177,7 +177,7 @@ const userRouter = {
       path: '/user/company/edit',
       name: 'companyEdit',
       component: () =>
-        import ('@/views/user/company/edit'),
+        import('@/views/user/company/edit'),
       meta: {
         title: '修改企业',
         access: 'companyList'
@@ -188,7 +188,7 @@ const userRouter = {
       path: '/user/job/noaudit',
       name: 'jobNoaudit',
       component: () =>
-        import ('@/views/user/job/noaudit'),
+        import('@/views/user/job/noaudit'),
       meta: {
         title: '待审核职位',
         access: 'jobNoaudit'
@@ -198,7 +198,7 @@ const userRouter = {
       path: '/user/job/list',
       name: 'jobList',
       component: () =>
-        import ('@/views/user/job/list'),
+        import('@/views/user/job/list'),
       meta: {
         title: '职位管理',
         access: 'jobList'
@@ -208,7 +208,7 @@ const userRouter = {
       path: '/user/job/edit',
       name: 'jobEdit',
       component: () =>
-        import ('@/views/user/job/edit'),
+        import('@/views/user/job/edit'),
       meta: {
         title: '修改职位',
         access: 'jobList'
@@ -219,7 +219,7 @@ const userRouter = {
       path: '/user/company_img',
       name: 'company_img',
       component: () =>
-        import ('@/views/user/company_img/index'),
+        import('@/views/user/company_img/index'),
       meta: {
         title: '企业风采',
         access: 'company_img'
@@ -229,7 +229,7 @@ const userRouter = {
       path: '/user/company_interview',
       name: 'company_interview',
       component: () =>
-        import ('@/views/user/company_interview/index'),
+        import('@/views/user/company_interview/index'),
       meta: {
         title: '面试邀请',
         access: 'company_interview'
@@ -239,7 +239,7 @@ const userRouter = {
       path: '/user/company_interview_video',
       name: 'company_interview_video',
       component: () =>
-        import ('@/views/user/company_interview_video/index'),
+        import('@/views/user/company_interview_video/index'),
       meta: {
         title: '视频面试',
         access: 'company_interview_video'
@@ -249,7 +249,7 @@ const userRouter = {
       path: '/user/company_down',
       name: 'company_down',
       component: () =>
-        import ('@/views/user/company_down/index'),
+        import('@/views/user/company_down/index'),
       meta: {
         title: '简历下载',
         access: 'company_down'
@@ -259,7 +259,7 @@ const userRouter = {
       path: '/user/cancel_apply',
       name: 'cancel_apply',
       component: () =>
-        import ('@/views/user/cancel_apply/index'),
+        import('@/views/user/cancel_apply/index'),
       meta: {
         title: '账号注销申请',
         access: 'cancel_apply'

@@ -392,5 +392,51 @@ export default {
   // 海报
   create_poster: '/home/poster/index',
   // 页面管理详情
-  pageinfo: '/home/config/pageinfo'
+  pageinfo: '/home/config/pageinfo',
+
+  // 职位分类模板
+  categoryjob_template_list: '/company/job/getCategoryJobTemplate',
+  // 面试邀请数据预加载
+  interview_add_pre: '/member/index/interviewAddPre',
+  // 快速注册简历
+  reg_resume_quick: '/member/reg/personalQuick',
+  // 快速注册简历-发送验证码
+  get_reg_resume_quick_code: '/member/sendsms/regResumeQuick',
+
+  // 视频详情
+  shortvideo_videodetail: '/home/short_video/info',
+  // 上传视频
+  shortvideo_video: '/member/upload/video',
+  // 上传抖音视频
+  shortvideo_douyin: '/home/short_video/douyin',
+  // 判断企业上传权限
+  shortvideo_upload: '/home/short_video/can_publish',
+  // 发布视频
+  shortvideo_save: '/home/short_video/save',
+  // 我的视频
+  shortvideo_myvideo: '/home/short_video/mine',
+  // 我的视频-开启/关闭
+  shortvideo_isopen: '/home/short_video/set_public',
+  // 我的视频-删除
+  shortvideo_del: '/home/short_video/del',
+  // 我的收藏
+  shortvideo_myfavorites: '/home/short_video/collects',
+  // 视频列表
+  shortvideo_videolist: '/home/short_video/lists',
+  // 视频收藏
+  shortvideo_favorites: '/home/short_video/collect',
+  // 浏览记录
+  shortvideo_record: '/home/short_video/play',
+  // 广告列表
+  shortvideo_adlist: '/home/short_video/adlist',
+  // 分享
+  shortvideo_share: '/home/poster',
+  // 获取七牛的地址
+  shortvideo_qiniu: '/member/upload/qiniu_token',
+  // 保存七牛文件地址
+  shortvideo_address: '/member/upload/save_qiniu_file',
+  // 获取视频详情
+  shortvideo_detail: '/home/short_video/detail',
+  // 获取企业简历视频数
+  shortvideo_total: '/home/short_video/total'
 }

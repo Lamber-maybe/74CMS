@@ -9,7 +9,7 @@ class Backend extends \app\common\controller\Base
     {
         parent::_initialize();
         $header_info = \think\Request::instance()->header();
-        $white_list = ['login-index', 'login-config', 'login-captcha','login-weixin'];
+        $white_list = ['login-index', 'login-config', 'login-captcha','login-weixin','login-scan'];
         if (
             !in_array(
                 $this->controller_name . '-' . $this->action_name,
@@ -41,6 +41,11 @@ class Backend extends \app\common\controller\Base
     protected function checkExportAccess(){
         if($this->admininfo->access_export==0){
             $this->ajaxReturn(500, '当前管理员没有导出数据权限');
+        }
+    }
+    protected function checkSetServiceAccess(){
+        if($this->admininfo->access_set_service==0){
+            $this->ajaxReturn(500, '当前管理员没有分配客服权限');
         }
     }
 }

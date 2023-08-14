@@ -14,7 +14,7 @@ class Resume extends \app\common\model\BaseModel
     public $map_nature = [1 => '全职', 2 => '兼职', 3 => '实习'];
     protected $readonly = ['id', 'uid', 'addtime'];
     protected $insert = [
-        'audit' => 0,
+        'audit',
         'is_display' => 1,
         'high_quality' => 0,
         'display_name',
@@ -27,8 +27,14 @@ class Resume extends \app\common\model\BaseModel
         'photo_img' => 0,
         'addtime',
         'refreshtime',
+        'updatetime',
         'tpl' => ''
     ];
+    protected $update = ['updatetime'];
+    protected function setAuditAttr($value = null)
+    {
+        return $value === null ? config('global_config.audit_add_resume') : $value;
+    }
     protected function setAddtimeAttr($value = null)
     {
         return $value === null ? time() : $value;
@@ -36,6 +42,10 @@ class Resume extends \app\common\model\BaseModel
     protected function setRefreshtimeAttr($value = null)
     {
         return $value === null ? $this->addtime : $value;
+    }
+    protected function setUpdatetimeAttr($value = null)
+    {
+        return $value === null ? time() : $value;
     }
     protected function setDisplayNameAttr($value = null)
     {
@@ -694,7 +704,7 @@ class Resume extends \app\common\model\BaseModel
         }
         return;
     }
-    
+
     /**
      * 简历等级
      */
@@ -802,7 +812,14 @@ class Resume extends \app\common\model\BaseModel
      */
     public function addViewLog($resume_id, $company_uid = 0, $personal_uid = 0)
     {
-        $this->where('id', 'eq', $resume_id)->setInc('click');
+        $rand_click = config('global_config.rand_click_resume');
+        $rand_click = intval($rand_click);
+        if($rand_click<=1){
+            $rand_click = 1;
+        }else{
+            $rand_click = rand(1,$rand_click);
+        }
+        $this->where('id', 'eq', $resume_id)->setInc('click',$rand_click);
         if ($company_uid > 0 && $personal_uid > 0) {
             $company_info = model('Company')
                 ->field('id,companyname')
@@ -956,6 +973,112 @@ class Resume extends \app\common\model\BaseModel
             $return['contact_info'] = $contact_info;
         } else {
             $return['contact_info'] = [];
+        }
+        return $return;
+    }
+    /**
+     * 处理简历姓名显示方式
+     */
+    public function formatFullname($rids,$userinfo,$single=false){
+        $list = $this->whereIn('id',$rids)->field(true)->select();
+        $return = [];
+        $userinfo = (array)$userinfo;
+        if(empty($userinfo) || !$userinfo || $userinfo['utype']!=1){
+            foreach ($list as $key => $value) {
+                $return[$value['id']] = $value['fullname'];
+                if ($value['display_name'] == 0) {
+                    if ($value['sex'] == 1) {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '先生'
+                        );
+                    } elseif ($value['sex'] == 2) {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '女士'
+                        );
+                    } else {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '**'
+                        );
+                    }
+                }
+            }
+            if($single===true){
+                $array_values = array_values($return);
+                return $array_values[0];
+            }
+            return $return;
+        }
+        $resumeidarr = [];
+        foreach ($list as $key => $value) {
+            $resumeidarr[] = $value['id'];
+        }
+        if(empty($resumeidarr)){
+            return [];
+        }
+        //下载记录
+        $down_resumeidarr = [];
+        $downlist = model('CompanyDownResume')->whereIn('resume_id',$resumeidarr)->where('uid',$userinfo['uid'])->select();
+        foreach ($downlist as $key => $value) {
+            $down_resumeidarr[] = $value['resume_id'];
+        }
+        //收到的简历记录
+        $apply_resumeidarr = [];
+        $applylist = model('JobApply')->whereIn('resume_id',$resumeidarr)->where('company_uid',$userinfo['uid'])->select();
+        foreach ($applylist as $key => $value) {
+            $apply_resumeidarr[] = $value['resume_id'];
+        }
+        //套餐信息
+        $setmeal = model('Member')->getMemberSetmeal($userinfo['uid']);
+        //收到的简历是否能直接查看
+        foreach ($list as $key => $value) {
+            do{
+                $return[$value['id']] = $value['fullname'];
+                //是否下载过,下载过的话直接显示姓名
+                if(in_array($value['id'],$down_resumeidarr)){
+                    break;
+                }
+                //是否是收到的简历，并且和套餐权限对比
+                if(in_array($value['id'],$apply_resumeidarr) && $setmeal['show_apply_contact']==1){
+                    break;
+                }
+                if ($value['display_name'] == 0) {
+                    if ($value['sex'] == 1) {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '先生'
+                        );
+                    } elseif ($value['sex'] == 2) {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '女士'
+                        );
+                    } else {
+                        $return[$value['id']] = cut_str(
+                            $value['fullname'],
+                            1,
+                            0,
+                            '**'
+                        );
+                    }
+                }
+            }while(0);
+        }
+        if($single===true){
+            $array_values = array_values($return);
+            return $array_values[0];
         }
         return $return;
     }

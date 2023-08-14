@@ -47,11 +47,11 @@ class Pay
                     $order_prefix = self::PAY_TYPE_WXPAY_NATIVE;
                     break;
                 case 'wechat':
-                    $order_prefix = self::PAY_TYPE_WXPAY_JSAPI;
-                    break;
                 case 'mobile':
                     $order_prefix = self::PAY_TYPE_WXPAY_H5;
                     break;
+                case 'app':
+                    $order_prefix = self::PAY_TYPE_WXPAY_APP;
                     break;
                 default:
                     $order_prefix = self::PAY_TYPE_WXPAY_NATIVE;

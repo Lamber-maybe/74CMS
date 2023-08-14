@@ -6,12 +6,14 @@ import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
+
+
 NProgress.configure({
   showSpinner: false
 }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // start progress bar
   NProgress.start()
   const hasGetConfig = store.getters.sitename
@@ -21,7 +23,6 @@ router.beforeEach(async(to, from, next) => {
     try {
       // get user info
       await store.dispatch('config/getConfigInfo')
-
       next()
     } catch (error) {
       console.log(error)
@@ -53,7 +54,6 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           await store.dispatch('user/getInfo')
-
           store
             .dispatch('permission/GenerateRoutes', {
               roles: store.state.user.access

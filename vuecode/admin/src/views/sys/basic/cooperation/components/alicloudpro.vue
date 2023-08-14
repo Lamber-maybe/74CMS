@@ -9,11 +9,11 @@
       <p>号码隐私保护开启后，全站个人简历联系将以虚拟号码呈现，同时您可以选择是否启用企业的虚拟保护。</p>
     </div>
     <el-form
-            ref="form"
-            v-loading="infoLoading"
-            class="common-form"
-            :model="form"
-            label-width="120px"
+      ref="form"
+      v-loading="infoLoading"
+      class="common-form"
+      :model="form"
+      label-width="120px"
     >
       <el-form-item label="开启保护">
         <el-switch v-model="form.alicloud_phone_protect_open" />
@@ -31,8 +31,8 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="号池key">
-        <el-input v-model="form.alicloud_pool_key" class="middle" :disabled="!form.alicloud_phone_protect_open" v-if="form.alicloud_phone_protect_type==1"/>
-        <el-input v-model="form.alicloud_pool_key_axn" class="middle" :disabled="!form.alicloud_phone_protect_open" v-if="form.alicloud_phone_protect_type==2"/>
+        <el-input v-if="form.alicloud_phone_protect_type==1" v-model="form.alicloud_pool_key" class="middle" :disabled="!form.alicloud_phone_protect_open" />
+        <el-input v-if="form.alicloud_phone_protect_type==2" v-model="form.alicloud_pool_key_axn" class="middle" :disabled="!form.alicloud_phone_protect_open" />
       </el-form-item>
       <el-form-item label="AccessKeyId">
         <el-input v-model="form.alicloud_app_key" class="middle" :disabled="!form.alicloud_phone_protect_open" />
@@ -48,62 +48,62 @@
 </template>
 
 <script>
-    import { setConfig } from '@/api/configuration'
+import { setConfig } from '@/api/configuration'
 
-    export default {
-        name: "alicloudpro",
-        data(){
-            return {
-                infoLoading: true,
-                form: {
-                    alicloud_phone_protect_open: 0,
-                    alicloud_phone_protect_type: '',
-                    alicloud_app_key:'',
-                    alicloud_appsecret:'',
-                    alicloud_pool_key:'',
-                    alicloud_pool_key_axn: '',
-                    alicloud_phone_protect_target:[2]
-                }
-            }
-        },
-        mounted() {},
-        created() {
-            this.fetchInfo()
-        },
-        methods: {
-            fetchInfo() {
-                this.infoLoading = true
-                const param = {}
-                setConfig(param, 'get')
-                    .then(response => {
-                        const  { alicloud_phone_protect_open, alicloud_phone_protect_type,alicloud_app_key,alicloud_pool_key_axn, alicloud_appsecret,alicloud_pool_key,alicloud_phone_protect_target  } = { ...response.data }
-                        let obj = { alicloud_phone_protect_open, alicloud_phone_protect_type,alicloud_app_key,alicloud_pool_key_axn, alicloud_appsecret,alicloud_pool_key,alicloud_phone_protect_target  }
-                        obj.alicloud_phone_protect_target = obj.alicloud_phone_protect_target && obj.alicloud_phone_protect_target.split(',') || [2]
-                        obj.alicloud_phone_protect_open = !!parseInt(obj.alicloud_phone_protect_open)
-                        this.form = obj
-                        this.infoLoading = false
-                    })
-                    .catch(() => {})
-            },
-            onSubmit(formName) {
-                let insertData = { ...this.form }
-                insertData.alicloud_phone_protect_open = insertData.alicloud_phone_protect_open?1:0;
-                insertData.alicloud_phone_protect_target = insertData.alicloud_phone_protect_target.join(',')
-                this.$refs[formName].validate(valid => {
-                    if (valid) {
-                        setConfig(insertData)
-                            .then(response => {
-                                this.$message.success(response.message)
-                                return true
-                            })
-                            .catch(() => {})
-                    } else {
-                        return false
-                    }
-                })
-            }
-        }
+export default {
+  name: 'Alicloudpro',
+  data(){
+    return {
+      infoLoading: true,
+      form: {
+        alicloud_phone_protect_open: 0,
+        alicloud_phone_protect_type: '',
+        alicloud_app_key: '',
+        alicloud_appsecret: '',
+        alicloud_pool_key: '',
+        alicloud_pool_key_axn: '',
+        alicloud_phone_protect_target: [2]
+      }
     }
+  },
+  mounted() {},
+  created() {
+    this.fetchInfo()
+  },
+  methods: {
+    fetchInfo() {
+      this.infoLoading = true
+      const param = {}
+      setConfig(param, 'get')
+        .then(response => {
+          const { alicloud_phone_protect_open, alicloud_phone_protect_type, alicloud_app_key, alicloud_pool_key_axn, alicloud_appsecret, alicloud_pool_key, alicloud_phone_protect_target } = { ...response.data }
+          const obj = { alicloud_phone_protect_open, alicloud_phone_protect_type, alicloud_app_key, alicloud_pool_key_axn, alicloud_appsecret, alicloud_pool_key, alicloud_phone_protect_target }
+          obj.alicloud_phone_protect_target = obj.alicloud_phone_protect_target && obj.alicloud_phone_protect_target.split(',') || [2]
+          obj.alicloud_phone_protect_open = !!parseInt(obj.alicloud_phone_protect_open)
+          this.form = obj
+          this.infoLoading = false
+        })
+        .catch(() => {})
+    },
+    onSubmit(formName) {
+      const insertData = { ...this.form }
+      insertData.alicloud_phone_protect_open = insertData.alicloud_phone_protect_open ? 1 : 0
+      insertData.alicloud_phone_protect_target = insertData.alicloud_phone_protect_target.join(',')
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          setConfig(insertData)
+            .then(response => {
+              this.$message.success(response.message)
+              return true
+            })
+            .catch(() => {})
+        } else {
+          return false
+        }
+      })
+    }
+  }
+}
 </script>
 
 <style scoped>

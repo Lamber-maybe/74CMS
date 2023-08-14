@@ -83,9 +83,9 @@
 
 .duty_title div { margin-bottom: 10px; }
 
-.require_text { width: 130px; font-size: 12px; color: #999; font-weight: normal; float: left; margin-right: 90px; }
+.require_text { width: 210px; font-size: 12px; color: #999; font-weight: normal; float: left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;  }
 
-.require_text span { margin-left: 10px; color: #666666; }
+.require_text span { margin-left: 10px; color: #666666;}
 
 .box2_nav .tel { float: right; color: #ff6600; font-size: 12px; padding: 0; margin-right: 16px; }
 
@@ -98,7 +98,7 @@
 
 .jobslist-login-layer .tip-block { height: 160px; text-align: center; font-size: 22px; margin: 0 auto; padding-top: 140px; }
 
-.jobslist-login-layer .tip-block .tip-block-title p { padding-bottom: 20px; }
+.jobslist-login-layer .tip-block .tip-block-title p { padding-bottom: 15px; }
 
 .jobslist-login-layer .tip-block .tip-block-title .small { font-size: 16px; color: #666; }
 
@@ -107,6 +107,9 @@
 .jobslist-login-layer .tip-block .tip-block-title .large { font-size: 40px; }
 
 .jobslist-login-layer .tip-block .btn_inline { font-size: 14px; padding: 10px 24px; }
+.jobslist-login-layer .tip-block .tip_block_qr { width: 130px;height: 130px;margin: 0 auto 5px; }
+.jobslist-login-layer .tip-block .tip_block_qr .tip_qr { width: 130px;height: 130px; }
+.jobslist-login-layer .tip-block .tip_qr_txt { text-align:center;font-size: 14px;color: #666;padding-bottom: 20px; }
 
 /*# sourceMappingURL=joblist.css.map */
 .topping_img {

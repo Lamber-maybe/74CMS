@@ -1,0 +1,200 @@
+.w1150 {
+  width: 1150px;
+  margin: 0 auto;
+}
+
+.s_content {
+  padding: 26px 0 0;
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center/100%;
+}
+.s_content .con_min{
+  background: url(../../images/campus/info_list_tit.png) no-repeat right top #fff;
+}
+.info_list_title{
+  color: #444444;
+  font-size: 20px;
+  padding: 30px  0 20px 70px;
+  background: url(../../images/campus/info_list.png) no-repeat 30px 33px;
+}
+
+.s_content .search_min {
+  padding: 0 0 30px 215px;
+}
+
+.search_min .search {
+  width: 720px;
+  height: 45px;
+  background-color: #fff;
+  border: 1px solid #01ccb0;
+  box-sizing: border-box;
+}
+
+.search_min .search .ipt {
+  width: 620px;
+  height: 45px;
+  padding: 0 39px;
+  background: url(../../images/campus/search_icon.png) no-repeat 12px center;
+  position: relative;
+}
+.search_min .search .ipt input {
+  width: 575px;
+  height: 95%;
+  border: none;
+}
+
+.search_min .search .btn {
+  width: 89px;
+  height: 41px;
+  border: 1px solid #01c67e;
+  background-color: #01cbb3;
+  margin: 1px;
+}
+.search_min .search .btn:hover {
+  background-color: #02dac0;
+}
+.search_min .search .btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #feffff;
+  font-size: 16px;
+}
+.list_header{
+  color: #999999;
+  font-size: 14px;
+  margin: 0 19px 0 16px;
+  background-color: #fbfbfb;
+  padding: 9px 0 ;
+}
+
+.list_header .hd_text_1{
+  width:660px;
+  padding-left: 16px;
+}
+.list_header .hd_text_2{
+  width: 230px;
+  text-align: center;
+}
+.list_header .hd_text_3{
+  width: 110px;
+  margin-left: 130px;
+  text-align: center;
+}
+
+.con_min .info_list {
+  margin: 20px 19px 0 16px;
+}
+.info_list .list_it{
+  line-height: 21px;
+  padding: 10px 0;
+}
+.info_list .list_it .it_text_1{
+  width: 660px;
+  padding-left: 23px;
+}
+.info_list .list_it .it_text_1 .it_link{
+  display: block;
+  max-width: 600px;
+  cursor: pointer;
+  position: relative;
+  padding-left: 19px;
+  color: #555555;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.info_list .list_it .it_text_1 .it_link:hover{
+  color: #00bb76;
+}
+
+.info_list .list_it .it_text_1 .it_link::before{
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: #555555;
+  position: absolute;
+  border-radius: 50%;
+  left: 0;
+  top: 50%;
+  margin-top: -2px;
+}
+.info_list .list_it .it_text_1 .it_link:hover::before{
+  background: #00bb76;
+}
+
+.info_list .list_it .it_text_2{
+  width: 230px;
+  text-align: center;
+  color: #33c991;
+  font-size: 14px;
+}
+.info_list .list_it .it_text_3{
+  width: 110px;
+  margin-left: 130px;
+  text-align: center;
+  color: #999999;
+  font-size: 14px;
+}
+
+
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging {
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more {
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: #20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color: #20c588;
+}
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active {
+  color: #ffffff;
+  background-color: #20c588;
+}

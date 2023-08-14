@@ -20,31 +20,40 @@ class Company extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if ($keyword != '') {
-            $where['companyname'] = ['like', '%' . $keyword . '%'];
+            $where['a.companyname'] = ['like', '%' . $keyword . '%'];
         }
         if ($district3 > 0) {
-            $where['district3'] = ['eq', $district3];
+            $where['a.district3'] = ['eq', $district3];
         } elseif ($district2 > 0) {
-            $where['district2'] = ['eq', $district2];
+            $where['a.district2'] = ['eq', $district2];
         } elseif ($district1 > 0) {
-            $where['district1'] = ['eq', $district1];
+            $where['a.district1'] = ['eq', $district1];
         }
         if ($trade > 0) {
-            $where['trade'] = ['eq', $trade];
+            $where['a.trade'] = ['eq', $trade];
         }
         if ($scale > 0) {
-            $where['scale'] = ['eq', $scale];
+            $where['a.scale'] = ['eq', $scale];
         }
         if ($nature > 0) {
-            $where['nature'] = ['eq', $nature];
+            $where['a.nature'] = ['eq', $nature];
+        }
+        if (config('global_config.must_com_audit_certificate') == 1) {
+            $where['a.audit'] = 1;
         }
 
         $list = model('Company')
+            ->alias('a')
             ->field(
-                'id,companyname,logo,district,scale,nature,trade,audit,setmeal_id'
+                'a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
+            )
+            ->join(
+                config('database.prefix') . 'member_setmeal b',
+                'a.uid=b.uid',
+                'LEFT'
             )
             ->where($where)
-            ->order('id desc')
+            ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];
@@ -58,8 +67,8 @@ class Company extends \app\v1_0\controller\common\Base
         }
         if (!empty($setmeal_id_arr)) {
             $setmeal_list = model('Setmeal')
-                ->where('id', 'in', $setmeal_id_arr)
-                ->column('id,icon,name', 'id');
+                        ->where('id', 'in', $setmeal_id_arr)
+                        ->column('id,icon,name', 'id');
         }
         if (!empty($comid_arr)) {
             $job_data = model('Job')
@@ -109,7 +118,7 @@ class Company extends \app\v1_0\controller\common\Base
             $tmp_arr['logo_src'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$value['logo']]
                 : default_empty('logo');
-            if (isset($setmeal_list[$value['setmeal_id']])) {
+            if (isset($setmeal_list[$value['setmeal_id']]) && ($value['setmeal_deadline']>time() || $value['setmeal_deadline']==0)) {
                 $tmp_arr['setmeal_icon'] =
                     $setmeal_list[$value['setmeal_id']]['icon'] > 0
                         ? model('Uploadfile')->getFileUrl(
@@ -191,10 +200,18 @@ class Company extends \app\v1_0\controller\common\Base
         $base_info['content'] = $detail_info['content'];
 
         //套餐
-        $setmeal = model('Setmeal')
-            ->where('id', $cominfo['setmeal_id'])
+        
+        $setmeal = model('MemberSetmeal')
+            ->alias('a')
+            ->field('b.*,a.deadline as setmeal_deadline')
+            ->join(
+                config('database.prefix') . 'setmeal b',
+                'a.setmeal_id=b.id',
+                'LEFT'
+            )
+            ->where('a.uid', $cominfo['uid'])
             ->find();
-        if ($setmeal !== null) {
+        if ($setmeal !== null && ($setmeal['setmeal_deadline']>time() || $setmeal['setmeal_deadline']==0)) {
             $base_info['setmeal_icon'] =
                 $setmeal['icon'] > 0
                     ? model('Uploadfile')->getFileUrl($setmeal['icon'])
@@ -401,5 +418,46 @@ class Company extends \app\v1_0\controller\common\Base
             $click = 0;
         }
         $this->ajaxReturn(200, '数据添加成功',$click);
+    }
+    /**
+     * 根据行业获取企业列表
+     */
+    public function listByTrade(){
+        $limit = input('get.limit/d',10,'intval');
+        $trade = input('get.trade/d',0,'intval');
+        $list = model('Company');
+        if($trade==0){
+            $trade_arr = model('Category')->getCache('QS_trade');
+            $trade = key($trade_arr);
+            $list = $list->where('trade',$trade);
+        }else if($trade==-1){
+            $trade_arr = model('Category')->getCache('QS_trade');
+            $trade_id_arr = [];
+            $counter = 0;
+            foreach ($trade_arr as $key => $value) {
+                $counter++;
+                if($counter<16){
+                    continue;
+                }
+                $trade_id_arr[] = $key;
+            }
+            if(!empty($trade_id_arr)){
+                $list = $list->whereIn('trade',$trade_id_arr);
+            }else{
+                $list = $list->where('id',0);
+            }
+        }else{
+            $list = $list->where('trade',$trade);
+        }
+        $list = $list->order('refreshtime desc')->limit($limit)->column('id,companyname');
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr['id'] = $key;
+            $arr['companyname'] = $value;
+            $arr['web_link'] = config('global_config.sitedomain').url('index/company/show',['id'=>$key]);
+            $arr['mobile_link'] = config('global_config.mobile_domain').'company/'.$key;
+            $return[] = $arr;
+        }
+        $this->ajaxReturn(200, '获取数据成功',['items'=>$return,'trade'=>$trade]);
     }
 }

@@ -6,7 +6,7 @@
           <section style="width:80%;margin:10px auto;">
             <section style="text-align:center;">
               <section style="text-align:center;margin-top:-10px;font-size:16px;letter-spacing:2px;color:#3f3f3f;display: inline-block;border-bottom:1px dashed #87949d;padding:0px 0px 4px 5px;">{{ item.intention_jobs }}</section>
-              <section style="width:5em;margin:0px auto;"><img class="assistant" style="width:5em;display: block;" src="https://ae01.alicdn.com/kf/H5fdcc0691cea4000a51bda9dca19cef96.png" data-ratio="0.3208955223880597" data-w="134"></section>
+              <!-- <section style="width:5em;margin:0px auto;"><img class="assistant" style="width:5em;display: block;" src="https://ae01.alicdn.com/kf/H5fdcc0691cea4000a51bda9dca19cef96.png" data-ratio="0.3208955223880597" data-w="134"></section> -->
             </section>
           </section>
           <p style="text-align:left;font-size: 14px;  color: #3e7f33;letter-spacing: 2px;" align="left"><span style="caret-color: red;">基本信息：{{ item.sex_text }}，{{ item.age_text }}岁，{{ item.education_text }}，{{ item.experience_text }}</span></p>

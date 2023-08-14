@@ -220,7 +220,9 @@ export default {
     // 地区筛选打开之后给筛选组件赋值
     openedDistrict () {
       this.$refs.dropDistrict.$children[0].$children[0].initData()
-      this.dynamicAssignFun(this.$refs.dropDistrict)
+      setTimeout(() => {
+        this.dynamicAssignFun(this.$refs.dropDistrict)
+      }, 300)
     },
     closedDistrict () {
       this.$refs.dropDistrict.$children[0].$children[0].handleCityOverlay()

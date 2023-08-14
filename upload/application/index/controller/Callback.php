@@ -8,6 +8,8 @@ class Callback extends \app\index\controller\Base
      */
     public function alipayNotify()
     {
+//file_put_contents(RUNTIME_PATH.'____1.txt', file_get_contents('php://input'));     file_put_contents(RUNTIME_PATH.'____2.txt', json_encode($_GET));         file_put_contents(RUNTIME_PATH.'____3.txt', json_encode($_POST));
+
         $pay = new \app\common\lib\Pay('', 'alipay');
         $verify_result = $pay->alipayNotify($_POST);
         if ($verify_result) {

@@ -211,6 +211,7 @@ export default {
       finished_text: '',
       show_empty: false,
       params: {
+        search_type: 'list',
         keyword: '',
         experience: '',
         minwage: '',
@@ -429,7 +430,9 @@ export default {
     // 职位分类筛选打开之后给筛选组件赋值
     openedCategory () {
       this.$refs.dropCategory.$children[0].$children[0].initData()
-      this.setComponentAttribute(this.$refs.dropCategory)
+      setTimeout(() => {
+        this.setComponentAttribute(this.$refs.dropCategory)
+      }, 300)
     },
     closedCategory () {
       this.$refs.dropCategory.$children[0].$children[0].handleSecondOverlay()

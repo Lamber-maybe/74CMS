@@ -221,7 +221,7 @@ class CompanySetmeal extends \app\common\controller\Backend
         $uid = input('post.uid/d', 0, 'intval');
         $setmeal_id = input('post.setmeal_id/d', 0, 'intval');
         
-        model('Member')->setMemberSetmeal(['uid'=>$uid,'setmeal_id'=>$setmeal_id,'note'=>'管理员更换套餐']);
+        model('Member')->setMemberSetmeal(['uid'=>$uid,'setmeal_id'=>$setmeal_id,'note'=>'管理员更换套餐'],0,$this->admininfo->id);
         
         model('AdminLog')->record(
             '更换企业套餐。企业UID【' .
@@ -229,6 +229,95 @@ class CompanySetmeal extends \app\common\controller\Backend
                 '】；套餐ID【'.$setmeal_id.'】',
             $this->admininfo
         );
-    $this->ajaxReturn(200, '更换套餐成功');
+        $this->ajaxReturn(200, '更换套餐成功');
+    }
+    /**
+     * 套餐开通记录
+     */
+    public function openlog()
+    {
+        $where = [];
+        $setmeal_id = input('get.setmeal_id/d', 0, 'intval');
+        $type = input('get.type/d', 0, 'intval');
+        $admin_id = input('get.admin_id/d', 0, 'intval');
+        $key_type = input('get.key_type/d', 0, 'intval');
+        $keyword = input('get.keyword/s', '', 'trim');
+        $current_page = input('get.page/d', 1, 'intval');
+        $pagesize = input('get.pagesize/d', 10, 'intval');
+        if ($keyword && $key_type) {
+            switch ($key_type) {
+                case 1:
+                    $where['b.companyname'] = ['like', '%' . $keyword . '%'];
+                    break;
+                case 2:
+                    $where['b.id'] = ['eq', intval($keyword)];
+                    break;
+                case 3:
+                    $map_userinfo = model('Member')
+                        ->where(['mobile' => ['eq', $keyword]])
+                        ->where(['utype' => ['eq', 1]])
+                        ->find();
+                    if ($map_userinfo === null) {
+                        $where['a.id'] = 0;
+                    } else {
+                        $where['a.uid'] = ['eq', $map_userinfo['uid']];
+                    }
+                    break;
+                case 4:
+                    $where['a.uid'] = ['eq', intval($keyword)];
+                    break;
+                default:
+                    break;
+            }
+        }
+        if ($setmeal_id > 0) {
+            $where['a.setmeal_id'] = $setmeal_id;
+        }
+        if ($type > 0) {
+            $where['a.type'] = $type;
+        }
+        if ($admin_id > 0) {
+            $where['a.admin_id'] = $admin_id;
+        }
+        $total = model('MemberSetmealOpenLog')
+            ->alias('a')
+            ->field('a.*,b.companyname')
+            ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+            ->where($where)
+            ->count();
+        $list = model('MemberSetmealOpenLog')
+            ->alias('a')
+            ->field('a.*,b.companyname,c.oid,c.service_type,c.service_name,c.amount,c.service_amount,c.service_amount_after_discount,c.deduct_amount,c.deduct_points,c.payment,c.addtime as order_addtime,c.paytime,c.status,c.extra,c.note,c.add_platform,c.pay_platform,c.service_id')
+            ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+            ->join(config('database.prefix').'order c','a.order_id=c.id','LEFT')
+            ->where($where)
+            ->order('a.id desc')
+            ->page($current_page . ',' . $pagesize)
+            ->select();
+        foreach ($list as $key => $value) {
+            $value['amount_detail'] = '';
+            if (
+                $value['service_amount_after_discount'] !=
+                $value['service_amount']
+            ) {
+                $value['amount_detail'] .=
+                    '折扣价' . $value['service_amount_after_discount'] . '元';
+            }
+            if ($value['deduct_amount'] > 0 && $value['deduct_points'] == 0) {
+                $value['amount_detail'] =
+                    ($value['amount_detail'] == ''
+                        ? '原价' . $value['service_amount']
+                        : $value['amount_detail']) .
+                    ' - 优惠券抵扣' .
+                    $value['deduct_amount'] .
+                    '元';
+            }
+        }
+        $return['items'] = $list;
+        $return['total'] = $total;
+        $return['current_page'] = $current_page;
+        $return['pagesize'] = $pagesize;
+        $return['total_page'] = ceil($total / $pagesize);
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
 }

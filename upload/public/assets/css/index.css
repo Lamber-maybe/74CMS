@@ -142,7 +142,7 @@
 .source_5 .sou_cell .a2_jobs .jn .hot { color: #f90; font-size: 12px; -webkit-animation: infinite .6s changeP; animation: infinite .6s changeP; display: block; float: right; font-style: normal; height: 20px; line-height: 20px; }
 
 /*1/6广告位*/
-.source_6 { width: 1200px; max-height: 261px; background: #fff; margin-top: 10px; overflow: hidden; }
+.source_6 { width: 1200px;  background: #fff; margin-top: 10px; overflow: hidden; }
 
 .source_6 .sou_cell { float: left; display: block; width: 200px; height: 130px; border-right: 1px solid #f4f4f4; border-bottom: 1px solid #f4f4f4; text-decoration: none; color: #333; position: relative; }
 
@@ -223,6 +223,8 @@
 .source_3 .sou_cell .pcd, .source_5 .sou_cell .pcd { display: block; position: absolute; left: 1px; bottom: 1px; width: 24px; z-index: 16; height: 14px; overflow: hidden; background: url("../images/identification.png") no-repeat 0 0; }
 
 .source_5 .sou_cell .pcd { left: 0; bottom: 2px; }
+
+.swiper-slide .pcd { display: block; width: 24px; height: 14px; overflow: hidden; position: absolute; left: 0; bottom: 3px; background: url("../images/identification.png") no-repeat 0 0; }
 
 button { border: none; background: none; }
 
@@ -408,13 +410,13 @@ button { border: none; background: none; }
 
 .data_text_color { color: #1787fb; padding-left: 20px; font-size: 14px; }
 
-.hotJobs_wrapper { height: 86px; background: #fff; margin-top: 12px; padding: 3px 13px 13px; }
+.hotJobs_wrapper { height: 84px; background: #fff; margin-top: 12px; padding: 3px 13px 13px; overflow: hidden;}
 
 .hotJobs_title { width: 60px; height: 60px; background: #ff6f3d; color: #ffffff; font-size: 16px; padding: 12px 14px; line-height: 20px; border-radius: 5px; margin-right: 15px; margin-top: 10px; }
 
 .hotJobs_list { width: 740px; cursor: pointer; }
 
-.hotJobs_list span { display: inline-block; border: 1px solid #f6f6f6; color: #666666; font-size: 14px; padding: 4px 10px 2px; border-radius: 30px; margin-right: 5px; margin-top: 10px; }
+.hotJobs_list span { display: inline-block; border: 1px solid #f6f6f6; color: #666666; font-size: 14px; padding: 4px 10px 2px; border-radius: 30px; margin-right: 5px; margin-top: 11px; }
 .hotJobs_list span:hover { border-color: #a2d0ff; }
 .hotJobs_list span:hover a { color: #1787fb; }
 
@@ -700,4 +702,107 @@ button { border: none; background: none; }
 .bottom_guide .btg_container .btg_close:hover { background: #bcbbbb url("../images/index_bt_guide_ico_2.png") center no-repeat; }
 .bottom_guide .btg_container .btg_t3 { position: absolute;right: 51px;bottom: 10px;line-height: 1;font-size: 12px;color: #ffffff; }
 
+
+/* 头部下拉广告位 */
+.w1200{
+  width: 1200px;
+  margin: 0 auto;
+}
+.down_source {
+  position: relative;
+  /* overflow: hidden; */
+  text-align: right;
+}
+.down_source .source_box {
+  overflow: hidden;
+  height: 0;
+}
+.down_source .source_box .img_link {
+  display: block;
+  width: 100%;
+  background-color: #ccc;
+  position: relative;
+}
+.down_source .source_box .img_link .close{
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 19px;
+  height: 19px;
+  background: #fff;
+  text-align: center;
+  line-height: 19px;
+}
+.down_source .source_box .img_link img {
+  width: 1200px;
+  height: 500px;
+}
+.down_source .source_btn {
+  width: 42px;
+  height: 19px;
+  font-size: 12px;
+  line-height: 19px;
+  cursor: pointer;
+  text-decoration: none;
+  position: absolute;
+  padding-left: 10px;
+  right: -58px;
+  top: 0;
+  z-index: 3;
+  background: url(../images/bn_play.gif) no-repeat center center /100% 100%;
+  color: #999;
+  border: none;
+}
+.down_source .source_btn:disabled {
+  color: #999;
+}
+.down_source .source_btn:hover {
+  color: #1787fb;
+}
+
+/* 弹窗广告位 */
+.mantle_box{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background:rgba(0, 0, 0, 0.5);
+  z-index:10;
+}
+.popup_source {
+  width: 660px;
+  height: 280px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  background-color: #fff;
+  display: none;
+}
+.popup_source .popup_close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+  z-index: 11;
+  padding: 0 8px;
+  background-color: rgba(0,0,0,.6);
+  color:#fff;
+  line-height:20px;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 5px;
+}
+.popup_source .popup_source_link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.popup_source .popup_source_link img {
+  width: 660px;
+  height: 280px;
+}
 

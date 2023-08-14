@@ -3,14 +3,16 @@
     <section v-for="(item,index) in datalist.items" :key="index" style="max-width:100%;margin-bottom:25px;">
       <section style="margin:10px auto;text-align: center;">
         <section style="display:inline-block;">
-          <section style="background:url(https://ae01.alicdn.com/kf/H1dedb4ad353b4f048d39e48306e50802J.png);background-repeat:no-repeat ;background-size:4px;background-position:left;padding-left:4px;">
+          <!-- https://ae01.alicdn.com/kf/H1dedb4ad353b4f048d39e48306e50802J.png -->
+          <section :style="`background-repeat:no-repeat;background-size:4px;background-position:left;padding-left:4px;`">
             <section data-brushtype="text" style="background-color:#f4f6ff;color:#333;letter-spacing:1.5px;font-size: 16px;text-align: center;padding:5px 1em;font-weight: bold;"><section style="font-size: 18px;">{{ item.companyname }}</section></section>
           </section>
         </section>
       </section>
       <section style="margin:10px auto;">
         <section class="assistant" style="width:120px;margin:0px auto;transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-o-transform: rotate(0deg);">
-          <section><img class="assistant" style="width:100%;display:block;" src="https://ae01.alicdn.com/kf/H0b80cd6f66ab4d7e9577f923c6f60023m.png" data-w="236" data-width="100%"></section>
+          <!-- https://ae01.alicdn.com/kf/H0b80cd6f66ab4d7e9577f923c6f60023m.png -->
+          <section><img class="assistant" style="width:100%;display:block;" :src="url" data-w="236" data-width="100%"></section>
         </section>
         <section style="margin-top:-17px;box-shadow:2px 2px 0px #e4e4e4;background-color:#fcfdff;overflow:hidden;color:#333;padding:5px;">
           <section style="padding:1em;border:2px dashed #3859fe;">
@@ -54,6 +56,7 @@ export default {
   props: ['datalist', 'link'],
   data() {
     return {
+      url: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/companylist4-1.png'
     }
   },
   created() {

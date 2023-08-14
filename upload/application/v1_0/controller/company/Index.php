@@ -13,21 +13,19 @@ class Index extends \app\v1_0\controller\common\Base
     }
     public function index()
     {
-        
         $companyinfo = model('Company')
-            ->field('logo,companyname,scale,nature,trade,audit,audit_complete,district1')
+            ->field('id,logo,companyname,scale,nature,trade,audit,district1')
             ->where('uid', $this->userinfo->uid)
             ->find();
+        $auth = model('CompanyAuth')->where('uid', $this->userinfo->uid)->find();
         $return_companyinfo = [];
         if ($companyinfo !== null) {
+            $return_companyinfo['id'] = $companyinfo['id'];
             $return_companyinfo['companyname'] = $companyinfo['companyname'];
             $return_companyinfo['district1'] = $companyinfo['district1'];
             $return_companyinfo['company_audit'] = $companyinfo['audit'];
             if ($companyinfo['audit'] == 0) {
                 //待审核
-                $auth = model('CompanyAuth')
-                    ->where('uid', $this->userinfo->uid)
-                    ->find();
                 if ($auth === null) {
                     //未提交审核
                     $return_companyinfo['company_audit'] = 0;
@@ -150,9 +148,10 @@ class Index extends \app\v1_0\controller\common\Base
                 ->where('b.id','not null')
                 ->count(),
         ];
-        
+
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        
+        $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
+
         $message_list = model('Message')
             ->field('content,is_readed')
             ->where('uid', $this->userinfo->uid)
@@ -161,14 +160,29 @@ class Index extends \app\v1_0\controller\common\Base
             ->select();
 
         //是否提醒完善认证资料
-        if($return_companyinfo['company_audit']==1 && $companyinfo['audit_complete']==0){
+        if(!isset($return_companyinfo['company_audit'])){
             $return_companyinfo['notice_auth_complete'] = 1;
         }else{
-            $return_companyinfo['notice_auth_complete'] = 0;
+            if($return_companyinfo['company_audit']==1){
+                if(config('global_config.audit_com_project')==1 && ($auth['legal_person_idcard_front']==0 || $auth['legal_person_idcard_back']==0 || $auth['license']==0 || $auth['proxy']==0)){
+                    $return_companyinfo['notice_auth_complete'] = 1;
+                }else if(config('global_config.audit_com_project')==0 && $auth['license']==0){
+                    $return_companyinfo['notice_auth_complete'] = 1;
+                }else{
+                    $return_companyinfo['notice_auth_complete'] = 0;
+                }
+            }else{
+                $return_companyinfo['notice_auth_complete'] = 0;
+            }
         }
+        // 可发布职位数
+        $enable_num = model('Job')->getEnableJobaddNum($this->userinfo->uid);
+
         $return['companyinfo'] = $return_companyinfo;
         $return['manage'] = $return_manage;
         $return['setmeal'] = $member_setmeal;
+        $return['refresh_count'] = $check_refreshlog;
+        $return['enable_num'] = $enable_num;
         $return['message_list'] = $message_list;
         $return['mypoints'] = model('Member')->getMemberPoints($this->userinfo->uid);
         $return['resumelist_url_web'] = config('global_config.sitedomain').url('index/resume/index');
@@ -218,7 +232,7 @@ class Index extends \app\v1_0\controller\common\Base
         $viewDataAll = model('StatViewJob')->where($map)->select();
         $applyDataAll = model('JobApply')->where($map)->select();
         $allData = $dateArr = $viewData = $applyData = [];
-        for ($i=$starttime; $i <= $today; $i+=3600*24) { 
+        for ($i=$starttime; $i <= $today; $i+=3600*24) {
             $allData[0][$i] = 0;
             $allData[1][$i] = 0;
             $dateArr[] = date('m-d',$i);

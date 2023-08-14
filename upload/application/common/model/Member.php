@@ -87,7 +87,7 @@ class Member extends \app\common\model\BaseModel
      * 开通企业套餐
      * $data = ['uid','setmeal_id','note']
      */
-    public function setMemberSetmeal($data)
+    public function setMemberSetmeal($data,$order_id=0,$admin_id=0)
     {
         $setmeal_info = model('Setmeal')
             ->where(['id' => ['eq', intval($data['setmeal_id'])]])
@@ -148,6 +148,15 @@ class Member extends \app\common\model\BaseModel
         model('MemberSetmealLog')
             ->allowField(true)
             ->save($log);
+        //开通日志
+        $openLogData = [
+            'uid'=>$data['uid'],
+            'setmeal_id'=>$setmeal_info['id'],
+            'setmeal_name'=>$setmeal_info['name'],
+            'order_id'=>$order_id,
+            'admin_id'=>$admin_id
+        ];
+        model('MemberSetmealOpenLog')->record($openLogData);
 
         $lognote = '';
         //如果后台开通套餐时赠送了积分，备注为注册赠送

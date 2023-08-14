@@ -25,6 +25,7 @@ class Base extends \think\Controller
     public function filterIp(){
         if(!in_array($this->module_name,['apiadmin','apiadminmobile'])){
             $config = config('global_config');
+			//dump($config);die;
             if(isset($config['filter_ip']) && $config['filter_ip']!=''){
                 $iparr = explode('|',$config['filter_ip']);
                 $ip = get_client_ip();

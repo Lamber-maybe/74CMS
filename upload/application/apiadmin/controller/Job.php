@@ -44,15 +44,8 @@ class Job extends \app\common\controller\Backend
                     $where['j.uid'] = ['eq', intval($keyword)];
                     break;
                 case 6:
-                    $map_userinfo = model('Member')
-                        ->where(['mobile' => ['eq', $keyword]])
-                        ->where(['utype' => ['eq', 1]])
-                        ->find();
-                    if ($map_userinfo === null) {
-                        $where['j.id'] = 0;
-                    } else {
-                        $where['j.uid'] = ['eq', $map_userinfo['uid']];
-                    }
+                    $where['m.mobile'] = ['eq', $keyword];
+                    $where['m.utype'] = ['eq', 1];
                     break;
                 default:
                     break;
@@ -73,6 +66,7 @@ class Job extends \app\common\controller\Backend
                 'c.id=j.company_id',
                 'LEFT'
             )
+            ->join(config('database.prefix').'member m','j.uid=m.uid','LEFT')
             ->where($where)
             ->count();
         $list = model('Job')
@@ -82,7 +76,8 @@ class Job extends \app\common\controller\Backend
                 'c.id=j.company_id',
                 'LEFT'
             )
-            ->field('j.*,c.companyname')
+            ->join(config('database.prefix').'member m','j.uid=m.uid','LEFT')
+            ->field('j.*,c.companyname,m.mobile as member_mobile')
             ->where($where)
             ->order($order)
             ->page($current_page . ',' . $pagesize)

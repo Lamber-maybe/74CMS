@@ -78,17 +78,17 @@ class Baiduxml
         }else{
             $xml .= '<district>不限</district>';
         }
-        $xml .= '<location>'.$value['address']?$value['address']:'未知地址'.'</location>';
-        $xml .= '<type>'.isset(model('Job')->map_nature[$value['nature']]) ? model('Job')->map_nature[$value['nature']] : '全职'.'</type>';
+        $xml .= '<location>'.($value['address']?$value['address']:'未知地址').'</location>';
+        $xml .= '<type>'.(isset(model('Job')->map_nature[$value['nature']]) ? model('Job')->map_nature[$value['nature']] : '全职').'</type>';
         $xml .= '<officialname>'.$value['companyname'].'</officialname>';
         $xml .= '<commonname>'.$value['short_name'].'</commonname>';
         $xml .= '<logo>'.make_file_url($value['logo_save_path'], $value['logo_platform']).'</logo>';
-        $xml .= '<companyaddress>'.$value['company_address']?$value['company_address']:'未知地址'.'</companyaddress>';
+        $xml .= '<companyaddress>'.($value['company_address']?$value['company_address']:'未知地址').'</companyaddress>';
         $xml .= '<employertype>'.$this->formatCompanyNature(isset($category_data['QS_company_type'][$value['company_nature']]) ? $category_data['QS_company_type'][$value['company_nature']] : '').'</employertype>';
         $xml .= '<size></size>';
         $xml .= '<companydescription></companydescription>';
-        $xml .= '<industry>'.isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : ''.'</industry>';
-        $xml .= '<secondindustry>'.isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : ''.'</secondindustry>';
+        $xml .= '<industry>'.(isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : '').'</industry>';
+        $xml .= '<secondindustry>'.(isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : '').'</secondindustry>';
         $xml .= '<companyID>'.$value['company_id'].'</companyID>';
         $xml .= '<source>'.$this->global['sitename'].'</source>';
         $xml .= '<sourcelink>'.$this->global['sitedomain'].$this->global['sitedir'].'</sourcelink>';
@@ -205,20 +205,20 @@ class Baiduxml
             }else{
                 $xml .= '<district>不限</district>';
             }
-            $xml .= '<location>'.$value['address']?$value['address']:'未知地址'.'</location>';
-            $xml .= '<type>'.isset(model('Job')->map_nature[$value['nature']]) ? model('Job')->map_nature[$value['nature']] : '全职'.'</type>';
+            $xml .= '<location>'.($value['address']?$value['address']:'未知地址').'</location>';
+            $xml .= '<type>'.(isset(model('Job')->map_nature[$value['nature']]) ? model('Job')->map_nature[$value['nature']] : '全职').'</type>';
             if(isset($category_job_data[$value['category3']])){
                 $xml .= '<jobthirdclass>'.$category_job_data[$value['category3']].'</jobthirdclass>';
             }
             $xml .= '<officialname>'.$value['companyname'].'</officialname>';
             $xml .= '<commonname>'.$value['short_name'].'</commonname>';
             $xml .= '<logo>'.make_file_url($value['logo_save_path'], $value['logo_platform']).'</logo>';
-            $xml .= '<companyaddress>'.$value['company_address']?$value['company_address']:'未知地址'.'</companyaddress>';
+            $xml .= '<companyaddress>'.($value['company_address']?$value['company_address']:'未知地址').'</companyaddress>';
             $xml .= '<employertype>'.$this->formatCompanyNature(isset($category_data['QS_company_type'][$value['company_nature']]) ? $category_data['QS_company_type'][$value['company_nature']] : '').'</employertype>';
             $xml .= '<size></size>';
             $xml .= '<companydescription></companydescription>';
-            $xml .= '<industry>'.isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : ''.'</industry>';
-            $xml .= '<secondindustry>'.isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : ''.'</secondindustry>';
+            $xml .= '<industry>'.(isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : '').'</industry>';
+            $xml .= '<secondindustry>'.(isset($category_data['QS_trade'][$value['trade']]) ? $category_data['QS_trade'][$value['trade']] : '').'</secondindustry>';
             $xml .= '<companyID>'.$value['company_id'].'</companyID>';
             $xml .= '<source>'.$this->global['sitename'].'</source>';
             $xml .= '<sourcelink>'.$this->global['sitedomain'].$this->global['sitedir'].'</sourcelink>';

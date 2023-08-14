@@ -15,7 +15,8 @@
       <div class="re_tx5">人力资源师评价</div>
       <div class="re_tx6">{{reportInfo.evaluation}}</div>
       <div class="re_tx7">认证时间:{{reportInfo.addtime}}</div>
-      <div class="re_tx7">{{$store.state.config.sitename}}认证师：{{reportInfo.certifier}}</div>
+      <div class="re_tx7 last">{{$store.state.config.sitename}}认证师：{{reportInfo.certifier}}</div>
+      <div class="re_stamp"></div>
     </div>
   </div>
 </template>
@@ -34,6 +35,7 @@ export default {
     background: url("../assets/images/report_bg.png") center center no-repeat;
     background-size: 375px auto;
     padding-top: 15px;
+    position: relative;
     .re_ico {
       width: 58px;height: 48px;margin: 0 auto 5px;
       background: url("../assets/images/report_sd_ico.png") 0 0 no-repeat;
@@ -66,11 +68,17 @@ export default {
     }
     .re_tx6 {
       font-size: 15px;color: #666;padding-bottom: 30px;line-height: 1.7;margin: 0 auto 20px;width: 340px;
-      background: url("../assets/images/report_seal.png") right bottom no-repeat;
-      background-size: 75px 75px;
     }
     .re_tx7 {
       font-size: 13px;color: #999;padding: 0 17px;margin-bottom: 5px;text-align: right;
+      &.last {
+        padding-bottom: 5px;
+      }
+    }
+    .re_stamp {
+      position: absolute;right: 15px;bottom: 60px;width: 75px;height: 75px;
+      background: url("../assets/images/report_seal.png") 0 no-repeat;
+      background-size: 75px 75px;
     }
   }
 </style>

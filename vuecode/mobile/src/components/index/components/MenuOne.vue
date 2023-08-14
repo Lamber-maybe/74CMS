@@ -21,7 +21,7 @@
     </div>
 
     <div class="b1" v-else>
-      <swiper :options="swiperOption" @click-slide="beforeJump">
+      <swiper :options="swiperOption" @click-slide="beforeJump" v-if="$store.state.swiperLoaded">
         <swiper-slide
           v-for="(item,index) in dataset"
           :key="index"
@@ -68,7 +68,8 @@ export default {
       }
     }
   },
-  created () {},
+  created () {
+  },
   methods: {
     beforeJump (index) {
       this.jumpTo(this.dataset[index])

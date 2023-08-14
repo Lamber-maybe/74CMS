@@ -15,6 +15,23 @@ import { isWeiXin } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 export default {
+  watch: {
+    '$route' () {
+      if (window._czc) {
+        let location = window.location
+        let contentUrl = location.pathname + location.hash
+        let refererUrl = '/'
+        window._czc.push(['_trackPageview', contentUrl, refererUrl])
+      }
+      if (window._hmt) {
+        window._hmt.push(['_requirePlugin', 'UrlChangeTracker', {
+          shouldTrackUrlChange: function (newPath, oldPath) {
+            return newPath && oldPath
+          }}
+        ])
+      }
+    }
+  },
   created () {
     // 刷新页面时把config置空，保证系统配置信息的时效性
     window.addEventListener('beforeunload', () => {

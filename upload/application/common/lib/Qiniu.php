@@ -7,6 +7,7 @@
 namespace app\common\lib;
 require EXTEND_PATH . 'qiniu/php-sdk/autoload.php';
 use Qiniu\Auth;
+use Qiniu\Processing\PersistentFop;
 use Qiniu\Storage\UploadManager;
 use Qiniu\Storage\BucketManager;
 use Qiniu\Processing\ImageUrlBuilder;
@@ -26,6 +27,7 @@ class Qiniu
     );
     private $_apiOpen;
     private $_error = 0;
+    protected $_auth;
     public function __construct($params = array())
     {
         $this->_apiOpen = true;
@@ -51,6 +53,43 @@ class Qiniu
         );
         $this->_config = array_merge($this->_config, $params);
         $this->_config['maxSize'] = $this->_config['maxSize'] * 1024;
+    }
+
+    public function transVideo($filePath){
+        $bucket = $this->_config['bucket'];
+        $pfop = new PersistentFop($this->_auth);
+        $saveasKey = $filePath. '?v=1';
+        $fops = "avthumb/mp4/vcodec/libx264/acodec/libfaac/h264Profile/main/h264Level/3.1|saveas/" .
+            \Qiniu\base64_urlSafeEncode("$bucket:$saveasKey");
+        list($id, $err) = $pfop->execute($bucket, $filePath, $fops);
+        if($err){
+            exception($err);
+        }
+        return $id;
+    }
+
+    public function fetchOther($url){
+        $bucket = new BucketManager($this->_auth);
+        list($ret, $err) = $bucket->fetch($url, $this->_config['bucket'], uuid().'.mp4');
+        if($err){
+            exception($err);
+        }
+        return $ret;
+    }
+
+    public function getToken($isVideo=true){
+        $bucket = $this->_config['bucket'];
+        $saveasKey = uuid().'.mp4';
+        $fops = "avthumb/mp4/vcodec/libx264/acodec/libfaac/h264Profile/main/h264Level/3.1/r/24|saveas/" .
+            \Qiniu\base64_urlSafeEncode("$bucket:$saveasKey");
+        $policy = null;
+        if($isVideo){
+            $policy = [
+                'persistentOps'=> $fops
+            ];
+        }
+        $token = $this->_auth->uploadToken($this->_config['bucket'], null, 3600, $policy);
+        return ['token'=>$token, 'accessKey'=>$this->_config['accessKey'], 'key'=>$saveasKey, 'domain'=>$this->_config['domain']];
     }
     /**
      * 缩略图
@@ -107,6 +146,11 @@ class Qiniu
         } else {
             echo 'Success!';
         }
+    }
+
+    public function getDomains(){
+        $bucketMgr = new BucketManager($this->_auth);
+        return $bucketMgr->domains($this->_config['bucket']);
     }
     /**
      * 上传文件

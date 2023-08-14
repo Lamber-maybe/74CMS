@@ -1,5 +1,35 @@
 <template>
-  <div class="dashboard-container">
+  <div class="app-container">
+    <div class="tip danger" v-if="baseinfo.warning.rewrite == 1">
+      <p>
+        系统检测到您的伪静态还没配置完成，将影响系统的正常运行，请先配置 >>
+        <a
+          style="color: #1e88e5"
+          href="http://doc.74cms.com/#/se/quickstart?id=%e9%85%8d%e7%bd%aeurl%e9%87%8d%e5%86%99%e8%a7%84%e5%88%99"
+          target="_blank"
+        >
+          配置教程
+        </a>
+      </p>
+    </div>
+    <div class="tip danger" v-if="baseinfo.warning.install == 1">
+      <p>
+        您还没有删除 install 文件夹，出于安全的考虑，我们建议您删除 install
+        文件夹。install文件夹位于 /public/ 目录下
+      </p>
+    </div>
+    <div class="tip" v-if="new_version_notice == 1">
+      <p>
+        系统检测到新版本，为了更好的使用体验，建议您立即升级程序
+        <a
+          style="color: #1e88e5"
+          href="https://74cms.com/downloadse/index.html"
+          target="_blank"
+        >
+          立即升级
+        </a>
+      </p>
+    </div>
     <el-row :gutter="20">
       <el-col :span="18">
         <el-row>
@@ -8,102 +38,174 @@
               <span>今日信息统计</span>
             </div>
             <el-row :gutter="20">
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/member/personal')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/member/personal')"
+                  >
                     <div class="tit1">新增个人会员</div>
-                    <div class="num">{{ baseinfo.today_data.reg_personal_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.reg_personal_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.reg_personal_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.reg_personal_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/resume/list')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/resume/list')"
+                  >
                     <div class="tit1">新增简历</div>
-                    <div class="num">{{ baseinfo.today_data.resume_add_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.resume_add_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.resume_add_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.resume_add_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/resume/list')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/resume/list')"
+                  >
                     <div class="tit1">简历刷新数</div>
-                    <div class="num">{{ baseinfo.today_data.resume_refresh_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.resume_refresh_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.resume_refresh_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.resume_refresh_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/job_apply')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/job_apply')"
+                  >
                     <div class="tit1">投递数</div>
-                    <div class="num">{{ baseinfo.today_data.job_apply_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.job_apply_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.job_apply_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.job_apply_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/business/personal/order')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/business/personal/order')"
+                  >
                     <div class="tit1">个人完成订单</div>
-                    <div class="num">{{ baseinfo.today_data.orderpay_personal_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_personal_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.orderpay_personal_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{
+                        baseinfo.today_data.orderpay_personal_yesterday
+                      }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
             </el-row>
-            <el-row :gutter="20" style="margin-top:20px;">
-              <el-col :span="4-8">
+            <el-row :gutter="20" style="margin-top: 20px">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/member/company')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/member/company')"
+                  >
                     <div class="tit1">新增企业会员</div>
-                    <div class="num">{{ baseinfo.today_data.reg_company_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.reg_company_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.reg_company_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.reg_company_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/job/list')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/job/list')"
+                  >
                     <div class="tit1">新增职位</div>
-                    <div class="num">{{ baseinfo.today_data.job_add_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.job_add_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.job_add_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.job_add_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/job/list')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/job/list')"
+                  >
                     <div class="tit1">职位刷新数</div>
-                    <div class="num">{{ baseinfo.today_data.job_refresh_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.job_refresh_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.job_refresh_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.job_refresh_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/company_down')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/user/company_down')"
+                  >
                     <div class="tit1">下载数</div>
-                    <div class="num">{{ baseinfo.today_data.down_resume_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.down_resume_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.down_resume_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.down_resume_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
-              <el-col :span="4-8">
+              <el-col :span="4 - 8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/business/company/order')">
+                  <div
+                    class="today-info"
+                    @click="$router.push('/business/company/order')"
+                  >
                     <div class="tit1">企业完成订单</div>
-                    <div class="num">{{ baseinfo.today_data.orderpay_company_today }}</div>
-                    <div class="tit2">昨日：{{ baseinfo.today_data.orderpay_company_yesterday }}</div>
+                    <div class="num">
+                      {{ baseinfo.today_data.orderpay_company_today }}
+                    </div>
+                    <div class="tit2">
+                      昨日：{{ baseinfo.today_data.orderpay_company_yesterday }}
+                    </div>
                   </div>
                 </el-card>
               </el-col>
             </el-row>
           </el-card>
         </el-row>
-        <el-row style="margin-top:20px;">
+        <el-row style="margin-top: 20px">
           <el-card>
             <el-tabs v-model="chartTabSelected">
               <el-tab-pane label="个人/企业注册" name="0" />
@@ -111,10 +213,10 @@
               <el-tab-pane label="投递职位" name="2" />
               <el-tab-pane label="收入金额" name="3" />
             </el-tabs>
-            <reg_line v-if="chartTabSelected=='0'" />
-            <down_resume_line v-if="chartTabSelected=='1'" />
-            <jobapply_line v-if="chartTabSelected=='2'" />
-            <income_line v-if="chartTabSelected=='3'" />
+            <reg_line v-if="chartTabSelected == '0'" />
+            <down_resume_line v-if="chartTabSelected == '1'" />
+            <jobapply_line v-if="chartTabSelected == '2'" />
+            <income_line v-if="chartTabSelected == '3'" />
           </el-card>
         </el-row>
       </el-col>
@@ -127,19 +229,11 @@
             <el-table
               :show-header="false"
               :data="baseinfo.pending_data"
-              style="width: 100%;cursor:pointer;"
+              style="width: 100%; cursor: pointer"
               @row-click="handlerClickPending"
             >
-              <el-table-column
-                prop="title"
-                label="待办事项"
-                width="180"
-              />
-              <el-table-column
-                prop="num"
-                label="数量"
-                align="right"
-              >
+              <el-table-column prop="title" label="待办事项" width="180" />
+              <el-table-column prop="num" label="数量" align="right">
                 <template slot-scope="scope">
                   <span class="num-circle">{{ scope.row.num }}</span>
                   <i class="el-icon-arrow-right" />
@@ -148,7 +242,7 @@
             </el-table>
           </el-card>
         </el-row>
-        <el-row style="margin-top:20px;">
+        <el-row style="margin-top: 20px">
           <el-card>
             <div slot="header" class="clearfix">
               <span>更新日志</span>
@@ -159,22 +253,22 @@
                 :key="index"
                 :timestamp="item.time"
               >
-                <el-link target="_blank" :href="item.url">{{ item.title }}</el-link>
+                <el-link target="_blank" :href="item.url">{{
+                  item.title
+                }}</el-link>
               </el-timeline-item>
             </el-timeline>
           </el-card>
         </el-row>
       </el-col>
     </el-row>
-    <el-row style="margin-top:20px;">
+    <el-row style="margin-top: 20px">
       <el-card>
         <div slot="header" class="clearfix">
           <span>服务器信息</span>
         </div>
-        <el-row :gutter="20" style="font-size:13px;">
-          <el-col :span="6">
-            操作系统：{{ baseinfo.server_info.os }}
-          </el-col>
+        <el-row :gutter="20" style="font-size: 13px">
+          <el-col :span="6"> 操作系统：{{ baseinfo.server_info.os }} </el-col>
           <el-col :span="6">
             PHP版本：{{ baseinfo.server_info.php_version }}
           </el-col>
@@ -185,7 +279,7 @@
             web服务器：{{ baseinfo.server_info.web_server }}
           </el-col>
         </el-row>
-        <el-row :gutter="20" style="font-size:13px;margin-top:20px;">
+        <el-row :gutter="20" style="font-size: 13px; margin-top: 20px">
           <el-col :span="6">
             允许最大上传文件：{{ baseinfo.server_info.upload_max }}
           </el-col>
@@ -201,45 +295,62 @@
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="margin-top:20px;">
+    <el-row style="margin-top: 20px">
       <el-card>
         <div slot="header" class="clearfix">
           <span>系统信息</span>
         </div>
-        <el-row :gutter="20" style="font-size:13px;">
+        <el-row :gutter="20" style="font-size: 13px">
           <el-col :span="6">
             当前版本：<span class="color-link">v{{ baseinfo.version }}</span>
           </el-col>
           <el-col :span="6">
-            授权类型：<a class="a-link color-link" href="https://www.74cms.com" target="_blank">{{ authorize.authorize }}</a>
+            授权类型：<a
+              class="a-link color-link"
+              href="https://www.74cms.com"
+              target="_blank"
+              >{{ authorize.authorize }}</a
+            >
           </el-col>
           <el-col :span="6">
-            骑士人才系统官网：<a class="a-link" href="https://www.74cms.com" target="_blank">www.74cms.com</a>
+            骑士人才系统官网：<a
+              class="a-link"
+              href="https://www.74cms.com"
+              target="_blank"
+              >www.74cms.com</a
+            >
           </el-col>
-          <el-col :span="6">
-            程序开发：74CMS程序开发组
-          </el-col>
+          <el-col :span="6"> 程序开发：74CMS程序开发组 </el-col>
         </el-row>
-        <el-row :gutter="20" style="font-size:13px;margin-top:10px;">
+        <el-row :gutter="20" style="font-size: 13px; margin-top: 10px">
           <el-col>
             <div v-html="authorize.copyright" />
           </el-col>
         </el-row>
       </el-card>
     </el-row>
-    <el-row style="margin-top:20px;">
+    <el-row style="margin-top: 20px">
       <el-card>
         <div slot="header" class="clearfix">
           <span>官方动态</span>
         </div>
         <el-col :span="14">
           <div class="official-news-list">
-            <div v-for="(item,index) in officialNews" :key="index" class="item"><a class="a-link" :href="item.link" target="_blank">{{ item.title }}</a><span class="time">{{ item.addtime }}</span></div>
+            <div
+              v-for="(item, index) in officialNews"
+              :key="index"
+              class="item"
+            >
+              <a class="a-link" :href="item.link" target="_blank">{{
+                item.title
+              }}</a
+              ><span class="time">{{ item.addtime }}</span>
+            </div>
           </div>
           <div class="clearfix" />
         </el-col>
-        <el-col :span="10" style="text-align:center;">
-          <img class="qrcode" src="static/wechat.jpg">
+        <el-col :span="10" style="text-align: center">
+          <img class="qrcode" src="static/wechat.jpg" />
         </el-col>
       </el-card>
     </el-row>
@@ -247,7 +358,7 @@
 </template>
 
 <script>
-import { dashboardBaseinfo, dashboardUpgradeLog, dashboardAuthorize, dashboardOfficialNews } from '@/api/dashboard'
+import { dashboardBaseinfo, officialData } from '@/api/dashboard'
 import reg_line from './components/reg_line.vue'
 import down_resume_line from './components/down_resume_line.vue'
 import jobapply_line from './components/jobapply_line.vue'
@@ -267,12 +378,17 @@ export default {
         today_data: {},
         pending_data: [],
         server_info: {},
-        version: ''
+        version: '',
+        warning: {
+          rewrite: 0,
+          install: 0
+        }
       },
       upgradeLog: [],
       authorize: {},
       officialNews: [],
-      chartTabSelected: '0'
+      chartTabSelected: '0',
+      new_version_notice: 0
     }
   },
   computed: {
@@ -285,18 +401,15 @@ export default {
       dashboardBaseinfo({}).then(response => {
         this.baseinfo = response.data
       })
-      dashboardUpgradeLog({}).then(response => {
-        this.upgradeLog = response.data
-      })
-      dashboardAuthorize({}).then(response => {
-        this.authorize = response.data
-      })
-      dashboardOfficialNews({}).then(response => {
-        this.officialNews = response.data
+      officialData({}).then(response => {
+        this.upgradeLog = response.data.upgrade_log
+        this.authorize = response.data.authorize_info
+        this.officialNews = response.data.official_news
+        this.new_version_notice = response.data.new_version_notice
       })
     },
-    handlerClickPending(e){
-      switch (e.alias){
+    handlerClickPending(e) {
+      switch (e.alias) {
         case 'company_audit':
           this.$router.push('/user/company/noaudit')
           return
@@ -323,93 +436,95 @@ export default {
 
 <style lang="scss" scoped>
 .dashboard {
-	&-container {
-		margin: 20px;
-	}
-	&-text {
-		font-size: 30px;
-		line-height: 46px;
-	}
+  &-container {
+    margin: 20px;
+  }
+  &-text {
+    font-size: 30px;
+    line-height: 46px;
+  }
 }
-.el-col--4{
-  width:20%;
+.el-col--4 {
+  width: 20%;
 }
-.a-link{
-  color:#409eff;
+.a-link {
+  color: #409eff;
 }
-.a-link:hover{
-  color:#66b1ff;
+.a-link:hover {
+  color: #66b1ff;
   text-decoration: underline;
 }
-.el-timeline{
-padding-top:10px;height:227px;overflow-y:scroll;
-margin-left:-25px;
+.el-timeline {
+  padding-top: 10px;
+  height: 227px;
+  overflow-y: scroll;
+  margin-left: -25px;
 }
-.official-news-list{
-  font-size:14px;
-  margin-bottom:20px;
+.official-news-list {
+  font-size: 14px;
+  margin-bottom: 20px;
   // width:500px;
- .item{
-   height:30px;
-   line-height:30px;
-   border-bottom:1px dotted #e3e3e3;
-   a{
-     width:80%;
-     display:inline-block;
-     overflow: hidden;
-     white-space: nowrap;
-     text-overflow: ellipsis;
-   }
-   .time{
-     font-size:13px;
-     color:#999;
-     float:right;
-   }
- }
+  .item {
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px dotted #e3e3e3;
+    a {
+      width: 80%;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .time {
+      font-size: 13px;
+      color: #999;
+      float: right;
+    }
+  }
 }
-.qrcode{
+.qrcode {
   // width:600px;
 }
-.today-info{
-  cursor:pointer;
-  .tit1{
-    font-size:14px;
-    color:#999;
+.today-info {
+  cursor: pointer;
+  .tit1 {
+    font-size: 14px;
+    color: #999;
   }
-  .num{
-    font-size:18px;
-    color:#666;
-    margin-top:6px;
+  .num {
+    font-size: 18px;
+    color: #666;
+    margin-top: 6px;
   }
-  .tit2{
-    font-size:12px;
-    color:#999;
-    margin-top:6px;
+  .tit2 {
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
   }
 }
-.clearfix{
-  clear:both;
+.clearfix {
+  clear: both;
 }
-.num-circle{
-  color:#fff;
+.num-circle {
+  color: #fff;
   margin-right: 10px;
-  background-color:#ff5722;
-  border-radius:10px;
-  padding:2px 6px;
-  font-size:12px;
+  background-color: #ff5722;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
 }
-.color-link{
+.color-link {
   font-size: 12px;
   padding: 3px 6px;
-  background-color:#ff5722;
-  color:#fff;
-  border-radius:4px;
+  background-color: #ff5722;
+  color: #fff;
+  border-radius: 4px;
 }
-.color-link:hover{
-  color:#fff;
-  text-decoration:none;
+.color-link:hover {
+  color: #fff;
+  text-decoration: none;
 }
-.no-border{
-  border:0;
+.no-border {
+  border: 0;
 }
 </style>

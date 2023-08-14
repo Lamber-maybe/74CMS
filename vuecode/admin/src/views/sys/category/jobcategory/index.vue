@@ -4,9 +4,7 @@
       <p>
         正式使用后删除分类会导致与此分类关联的信息类别丢失，修改不会受影响。
       </p>
-      <p>
-        删除顶级分类将会自动删除此分类下的子分类。
-      </p>
+      <p>删除顶级分类将会自动删除此分类下的子分类。</p>
     </div>
     <el-button size="small" type="primary" @click="funAdd">添加</el-button>
     <el-button size="small" type="primary" @click="onSubmit()">保存</el-button>
@@ -17,7 +15,7 @@
       element-loading-text="Loading"
       size="mini"
       :data="list"
-      style="width: 100%;margin-bottom: 20px;"
+      style="width: 100% margin-bottom: 20px"
       row-key="id"
       border
       :default-expand-all="false"
@@ -45,6 +43,13 @@
             @click="funAdd(scope.$index, scope.row)"
           >
             此类下添加子类
+          </el-button>
+          <el-button
+            size="small"
+            @click="funTemplate(scope.row)"
+            type="primary"
+          >
+            模板设置
           </el-button>
           <el-button
             size="small"
@@ -77,23 +82,36 @@
         @pageReload="pageReload"
       />
     </el-dialog>
+    <el-dialog
+      v-if="showTemplate"
+      title="模板设置"
+      :visible.sync="showTemplate"
+      width="35%"
+      :close-on-click-modal="false"
+    >
+      <templateList :pid="pid" @closeDialog="showTemplate = false" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import diaform from './components/form.vue'
-import { apiList, apiDelete, apiTableSave } from '@/api/config_jobcategory'
+import diaform from "./components/form.vue"
+import templateList from "./components/template.vue"
+import { apiList, apiDelete, apiTableSave } from "@/api/config_jobcategory"
 
 export default {
   components: {
-    diaform
+    diaform,
+    templateList
   },
   data() {
     return {
+      pid: 0,
+      showTemplate: false,
       tablekey: 1,
       formParentid: [],
       formId: 0,
-      dialogTitle: '',
+      dialogTitle: "",
       infoLoading: false,
       dialogFormVisible: false,
       saveData: [],
@@ -105,22 +123,26 @@ export default {
     this.fetchData()
   },
   methods: {
+    funTemplate(row) {
+      this.pid = row.id
+      this.showTemplate = true
+    },
     fetchData() {
       var that = this
       that.listLoading = true
       const param = {}
       apiList(param)
-        .then(response => {
+        .then((response) => {
           that.list = [...response.data]
           that.saveData = [...that.list]
           that.listLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funAdd(index, row) {
       this.formId = 0
       if (row) {
-        if (row.pid == 0){
+        if (row.pid == 0) {
           this.formParentid = [row.id]
         } else {
           this.formParentid = [row.pid, row.id]
@@ -128,82 +150,82 @@ export default {
       } else {
         this.formParentid = []
       }
-      this.dialogTitle = '添加分类'
+      this.dialogTitle = "添加分类"
       this.dialogFormVisible = true
     },
     funEdit(index, row) {
       this.formId = row.id
-      this.dialogTitle = '编辑分类'
+      this.dialogTitle = "编辑分类"
       this.dialogFormVisible = true
     },
     funDelete(index, row) {
       var that = this
       that
-        .$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+        .$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         })
         .then(() => {
           const param = {
-            id: row.id
+            id: row.id,
           }
           apiDelete(param)
-            .then(response => {
+            .then((response) => {
               that.$message.success(response.message)
               that.fetchData()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funDeleteBatch() {
       var that = this
       if (that.tableIdarr.length == 0) {
-        that.$message.error('请选择要删除的数据')
+        that.$message.error("请选择要删除的数据")
         return false
       }
       that
-        .$confirm('此操作将永久删除选中的数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+        .$confirm("此操作将永久删除选中的数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         })
         .then(() => {
           const param = {
-            id: that.tableIdarr
+            id: that.tableIdarr,
           }
           apiDelete(param)
-            .then(response => {
+            .then((response) => {
               that.$message.success(response.message)
               that.fetchData()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     loadData(row, treeNode, resolve) {
       const param = {
-        pid: row.id
+        pid: row.id,
       }
       apiList(param)
-        .then(response => {
+        .then((response) => {
           resolve(response.data)
           this.saveData = this.saveData.concat(response.data)
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     onSubmit() {
       var that = this
       const insertData = [...that.saveData]
       apiTableSave(insertData)
-        .then(response => {
+        .then((response) => {
           that.$message.success(response.message)
           return true
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     closeDialog() {
       this.dialogFormVisible = false
@@ -211,7 +233,7 @@ export default {
     pageReload() {
       this.fetchData()
       this.tablekey = !this.tablekey
-    }
-  }
+    },
+  },
 }
 </script>

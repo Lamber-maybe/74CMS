@@ -47,3 +47,84 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+// 全部客户
+.crm_client_box {
+  .el-card__body{
+    padding: 0;
+  }
+  .client_item_table{
+    .cell{
+      overflow: visible;
+    }
+  }
+}
+
+// 全部客户弹窗
+.table_popup{
+  .popup_box{
+    .el-tabs__header{
+      margin-bottom: 0;
+    }
+    .el-tabs__nav-wrap{
+      background: #fcfcfc;
+      border-top: 1px solid #ebeef5;
+      border-bottom: 1px solid #ebeef5;
+      &::after{
+        display: none;
+      }
+    }
+    .el-tabs__nav-scroll{
+      padding: 0 20px;
+      .el-tabs__item{
+        height: 50px;
+        line-height: 50px;
+        &:focus.is-active.is-focus:not(:active){
+          box-shadow: none;
+        }
+      }
+    }
+  }
+  .el-drawer{
+    overflow: initial;
+    .el-drawer__body{
+      overflow-y: scroll;
+      &::-webkit-scrollbar{
+        width: 8px;
+        background: #fff;
+      }
+      &::-webkit-scrollbar-thumb{
+        width: 8px;
+        height: 30px;
+        border-radius: 10px;
+        background: #DEDEE4;
+      }
+    }
+  }
+  .el-tabs__content{
+    overflow: visible;
+  }
+  .el-table__empty-block{
+    min-height: 400px;
+  }
+  .el-table__body-wrapper{
+    min-height: 400px;
+  }
+}
+.clientInfo_wrapper{
+  .ipt{
+    .el-input__inner{
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: text;
+    }
+  }
+  .textarea{
+    .el-textarea__inner{
+      border: none;
+      background: none;
+      cursor: text;
+    }
+  }
+}
+

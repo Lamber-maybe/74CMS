@@ -89,8 +89,8 @@
       <div class="edit_phone" @click="displayMobilePop">修改手机号</div>
     </div>
     <van-field
-      :required="fieldStore.contact.weixin.is_require === 1"
-      v-if="fieldStore.contact.weixin.is_display"
+      :required="fieldStore.contact.weixin.is_require == 1"
+      v-if="fieldStore.contact.weixin.is_display == 1"
       v-model="contact.weixin"
       :label="fieldStore.contact.weixin.field_cn"
       placeholder="请填写联系微信"
@@ -103,16 +103,16 @@
     </div>
     <div class="form_split_10"></div>
     <van-field
-      :required="fieldStore.basic.residence.is_require === 1"
-      v-if="fieldStore.basic.residence.is_display"
+      :required="fieldStore.basic.residence.is_require == 1"
+      v-if="fieldStore.basic.residence.is_display == 1"
       v-model="basic.residence"
       :label="fieldStore.basic.residence.field_cn"
       placeholder="请填写"
       class="reset_after"
     />
     <van-field
-      :required="fieldStore.basic.marriage.is_require === 1"
-      v-if="fieldStore.basic.marriage.is_display"
+      :required="fieldStore.basic.marriage.is_require == 1"
+      v-if="fieldStore.basic.marriage.is_display == 1"
       readonly
       clickable
       :value="basic.marriageName"
@@ -139,8 +139,8 @@
     <div v-if="showMoreBtn" class="form_split_10"></div>
     <div v-if="showMoreInfo">
       <van-field
-        :required="fieldStore.basic.major.is_require === 1"
-        v-if="fieldStore.basic.major.is_display"
+        :required="fieldStore.basic.major.is_require == 1"
+        v-if="fieldStore.basic.major.is_display == 1"
         readonly
         clickable
         :value="basic.majorName"
@@ -159,56 +159,56 @@
         />
       </van-popup>
       <van-field
-        :required="fieldStore.basic.height.is_require === 1"
-        v-if="fieldStore.basic.height.is_display"
+        :required="fieldStore.basic.height.is_require == 1"
+        v-if="fieldStore.basic.height.is_display == 1"
         v-model="basic.height"
         :label="fieldStore.basic.height.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.basic.householdaddress.is_require === 1"
-        v-if="fieldStore.basic.householdaddress.is_display"
+        :required="fieldStore.basic.householdaddress.is_require == 1"
+        v-if="fieldStore.basic.householdaddress.is_display == 1"
         v-model="basic.householdaddress"
         :label="fieldStore.basic.householdaddress.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.contact.email.is_require === 1"
-        v-if="fieldStore.contact.email.is_display"
+        :required="fieldStore.contact.email.is_require == 1"
+        v-if="fieldStore.contact.email.is_display == 1"
         v-model="contact.email"
         :label="fieldStore.contact.email.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.contact.qq.is_require === 1"
-        v-if="fieldStore.contact.qq.is_display"
+        :required="fieldStore.contact.qq.is_require == 1"
+        v-if="fieldStore.contact.qq.is_display == 1"
         v-model="contact.qq"
         :label="fieldStore.contact.qq.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.basic.custom_field_1.is_require === 1"
-        v-if="fieldStore.basic.custom_field_1.is_display"
+        :required="fieldStore.basic.custom_field_1.is_require == 1"
+        v-if="fieldStore.basic.custom_field_1.is_display == 1"
         v-model="basic.custom_field_1"
         :label="fieldStore.basic.custom_field_1.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.basic.custom_field_2.is_require === 1"
-        v-if="fieldStore.basic.custom_field_2.is_display"
+        :required="fieldStore.basic.custom_field_2.is_require == 1"
+        v-if="fieldStore.basic.custom_field_2.is_display == 1"
         v-model="basic.custom_field_2"
         :label="fieldStore.basic.custom_field_2.field_cn"
         placeholder="请填写"
         class="reset_after"
       />
       <van-field
-        :required="fieldStore.basic.custom_field_3.is_require === 1"
-        v-if="fieldStore.basic.custom_field_3.is_display"
+        :required="fieldStore.basic.custom_field_3.is_require == 1"
+        v-if="fieldStore.basic.custom_field_3.is_display == 1"
         v-model="basic.custom_field_3"
         :label="fieldStore.basic.custom_field_3.field_cn"
         placeholder="请填写"
@@ -216,8 +216,8 @@
       />
       <div class="box_4" v-if="fieldStore.basic.idcard.is_display">身份证号仅用于系统身份认证，未经允许不会对外公开</div>
       <van-field
-        :required="fieldStore.basic.idcard.is_require === 1"
-        v-if="fieldStore.basic.idcard.is_display"
+        :required="fieldStore.basic.idcard.is_require == 1"
+        v-if="fieldStore.basic.idcard.is_display == 1"
         v-model="basic.idcard"
         :label="fieldStore.basic.idcard.field_cn"
         placeholder="请填写"
@@ -527,7 +527,7 @@ export default {
     },
     // 保存
     handleSubmit () {
-      if (this.fieldStore.basic.photo_img.is_require) {
+      if (this.fieldStore.basic.photo_img.is_display == 1 && this.fieldStore.basic.photo_img.is_require == 1) {
         if (!this.basic.photo_img) {
           this.$notify('请上传头像')
           return false
@@ -559,73 +559,73 @@ export default {
         this.$notify('请填写联系电话')
         return false
       }
-      if (this.fieldStore.contact.weixin.is_require) {
+      if (this.fieldStore.contact.weixin.is_display == 1 && this.fieldStore.contact.weixin.is_require == 1) {
         if (!this.contact.weixin) {
           this.$notify(`请填写${this.fieldStore.contact.weixin.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.residence.is_require) {
+      if (this.fieldStore.basic.residence.is_display == 1 && this.fieldStore.basic.residence.is_require == 1) {
         if (!this.basic.residence) {
           this.$notify(`请填写${this.fieldStore.basic.residence.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.marriage.is_require) {
+      if (this.fieldStore.basic.marriage.is_display == 1 && this.fieldStore.basic.marriage.is_require == 1) {
         if (this.basic.marriage === '') {
           this.$notify(`请选择${this.fieldStore.basic.marriage.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.major.is_require) {
+      if (this.fieldStore.basic.major.is_display == 1 && this.fieldStore.basic.major.is_require == 1) {
         if (!this.basic.major1) {
           this.$notify(`请在下方完善信息中选择${this.fieldStore.basic.major.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.height.is_require) {
+      if (this.fieldStore.basic.height.is_display == 1 && this.fieldStore.basic.height.is_require == 1) {
         if (!this.basic.height) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.height.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.householdaddress.is_require) {
+      if (this.fieldStore.basic.householdaddress.is_display == 1 && this.fieldStore.basic.householdaddress.is_require == 1) {
         if (!this.basic.householdaddress) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.householdaddress.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.contact.email.is_require) {
+      if (this.fieldStore.contact.email.is_display == 1 && this.fieldStore.contact.email.is_require == 1) {
         if (!this.contact.email) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.contact.email.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.contact.qq.is_require) {
+      if (this.fieldStore.contact.qq.is_display == 1 && this.fieldStore.contact.qq.is_require == 1) {
         if (!this.contact.qq) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.contact.qq.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.custom_field_1.is_require) {
+      if (this.fieldStore.basic.custom_field_1.is_display == 1 && this.fieldStore.basic.custom_field_1.is_require == 1) {
         if (!this.basic.custom_field_1) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_1.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.custom_field_2.is_require) {
+      if (this.fieldStore.basic.custom_field_2.is_display == 1 && this.fieldStore.basic.custom_field_2.is_require == 1) {
         if (!this.basic.custom_field_2) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_2.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.custom_field_3.is_require) {
+      if (this.fieldStore.basic.custom_field_3.is_display == 1 && this.fieldStore.basic.custom_field_3.is_require == 1) {
         if (!this.basic.custom_field_3) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.custom_field_3.field_cn}`)
           return false
         }
       }
-      if (this.fieldStore.basic.idcard.is_require) {
+      if (this.fieldStore.basic.idcard.is_display == 1 && this.fieldStore.basic.idcard.is_require == 1) {
         if (!this.basic.idcard) {
           this.$notify(`请在下方完善信息中填写${this.fieldStore.basic.idcard.field_cn}`)
           return false

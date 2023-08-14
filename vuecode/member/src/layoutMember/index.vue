@@ -28,6 +28,15 @@
         show: false,
         isAuto: false
       }
+    },
+    watch: {
+      $route (to,from) {
+        if (from.path == '/wxpay') {
+            this.isAuto = true
+        }
+      }
+    },
+    mounted () {
     }
   }
 </script>

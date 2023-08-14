@@ -61,6 +61,9 @@
           <el-radio label="3">不限</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="登录自动刷新简历" required>
+        <el-switch v-model="form.resume_auto_refresh" />
+      </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
       </el-form-item>
@@ -82,7 +85,8 @@ export default {
         refresh_resume_space: 0,
         refresh_resume_max_perday: 0,
         resume_display_name: 1,
-        down_resume_limit: 1
+        down_resume_limit: 1,
+        resume_auto_refresh: false
       },
       rules: {
         apply_jobs_max_perday: [
@@ -139,7 +143,8 @@ export default {
             refresh_resume_space,
             refresh_resume_max_perday,
             resume_display_name,
-            down_resume_limit
+            down_resume_limit,
+            resume_auto_refresh
           } = { ...response.data }
           this.form = {
             apply_jobs_max_perday,
@@ -148,23 +153,25 @@ export default {
             refresh_resume_space,
             refresh_resume_max_perday,
             resume_display_name,
-            down_resume_limit
+            down_resume_limit,
+            resume_auto_refresh: resume_auto_refresh == 1
           }
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     onSubmit(formName) {
       const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {
+          insertData.resume_auto_refresh = insertData.resume_auto_refresh === true ? 1 : 0
           setConfig(insertData)
             .then(response => {
               this.$store.dispatch('config/getConfigInfo')
               this.$message.success(response.message)
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }

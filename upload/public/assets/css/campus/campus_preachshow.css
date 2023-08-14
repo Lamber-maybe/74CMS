@@ -1,0 +1,112 @@
+.s_content {
+  padding: 26px 0 0;
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center/100%;
+}
+
+.publicize_box {
+  background: #fff;
+  padding: 40px 17px 30px 48px;
+  position: relative;
+  box-shadow: 0px 0px 5px 2px #f6f6f6;
+}
+
+.publicize_box .com_img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 20px 37px 0 0;
+  position: relative;
+}
+.publicize_box .com_img img {
+  max-width: 78px;
+  max-height: 78px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.publicize_box .publicize_info {
+  width: 840px;
+}
+
+.publicize_box .publicize_info .com_name {
+  color: #033333;
+  font-size: 24px;
+  margin-bottom: 32px;
+}
+.publicize_box .publicize_info .oth_info {
+  color: #555555;
+  font-size: 14px;
+}
+.publicize_box .publicize_info .oth_info .oth_text {
+  width: 380px;
+  margin: 0 40px 16px 0;
+}
+
+.publicize_box .publicize_code_img {
+  width: 178px;
+  height: 126px;
+  background: url(../../images/campus/school_code_bg.png) no-repeat bottom center;
+  text-align: center;
+  color: #919191;
+  font-size: 14px;
+}
+
+.publicize_box .publicize_code_img .code {
+  width: 98px;
+  height: 98px;
+  background-color: #fff;
+  position: relative;
+  box-shadow: 5px -5px 3px 1px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.publicize_box .publicize_code_img .code img{
+  position: absolute;
+  display: block;
+  max-width: 90px;
+  max-height: 90px;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.publicize_box .publicize_code_img .code_text {
+  margin: 5px 0;
+}
+
+.article_con .job_describe {
+  color: #555;
+  font-size: 24px;
+  background: url(../../images/campus/describe_ico.png) no-repeat left 95px;
+  padding: 90px 0 26px 40px;
+  position: relative;
+  margin-top: 3px;
+}
+.article_con .job_describe::before {
+  content: "";
+  width: 100%;
+  height: 6px;
+  background: url(../../images/campus/line.png) center center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.article_con .article_text {
+  min-height: 300px;
+  background-color: #fff;
+  color: #666666;
+  font-size: 16px;
+  line-height: 36px;
+  padding: 30px 20px 80px;
+  word-break: break-all;
+}
+.article_con .article_text img {
+  max-width: 1160px;
+}

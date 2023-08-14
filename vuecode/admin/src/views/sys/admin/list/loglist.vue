@@ -7,6 +7,7 @@
         class="input-with-select"
         size="small"
         style="width:300px"
+        @keyup.enter.native="funSearchKeyword"
       >
         <el-button
           slot="append"

@@ -37,6 +37,12 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="是否是销售" prop="is_sc">
+          <el-radio-group v-model="form.is_sc">
+            <el-radio :label="1" >是</el-radio>
+            <el-radio :label="0" >否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="登录名" prop="username">
           <el-input v-model="form.username" class="middle" />
         </el-form-item>
@@ -68,7 +74,8 @@ export default {
       form: {
         username: '',
         password: '',
-        role_id: ''
+        role_id: '',
+        is_sc: 0
       },
       rules: {
         role_id: [{ required: true, message: '请选择角色', trigger: 'change' }],

@@ -544,7 +544,7 @@ function uuid()
 function is_json($data = '', $assoc = false)
 {
     $data = json_decode($data, $assoc);
-    if (($data && is_object($data)) || (is_array($data) && !empty($data))) {
+    if (($data && is_object($data)) || (is_array($data))) {
         return true;
     }
     return false;
@@ -877,4 +877,14 @@ function format_last_login_time($login_time)
 
 function badword_filter($content){
     return \app\common\lib\Badword::filter($content);
+}
+function filter_empty_array($arr){
+    if(count($arr)==1 && empty($arr[0]))return [];
+    return $arr;
+}
+function url($url = '', $vars = '', $suffix = true, $domain = false)
+{
+    $url = \think\Url::build($url, $vars, $suffix, $domain);
+    $url = str_replace("/index.php/","/",$url);
+    return $url;
 }

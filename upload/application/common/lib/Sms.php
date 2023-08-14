@@ -41,6 +41,11 @@ class Sms
             $this->_error = '参数错误，请检查短信类型是否正确';
             return false;
         }
+        $isExist = model('SmsBlacklist')->isExist($mobile);
+        if($isExist===true){
+            $this->_error = '当前号码已被加入黑名单';
+            return false;
+        }
         try {
             $class = new $this->class_name();
             $class->send($mobile, $templateCode, $params);

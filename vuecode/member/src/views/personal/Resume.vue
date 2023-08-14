@@ -50,7 +50,7 @@
           <div class="ct">
             <div class="ct_item phone">{{contact.mobile}}</div>
             <div class="ct_item wx"
-                 v-if="fieldStore.contact.weixin!==undefined && fieldStore.contact.weixin.is_display === 1">
+                 v-if="fieldStore.contact.weixin!==undefined && fieldStore.contact.weixin.is_display == 1">
               {{contact.weixin || '微信未填写'}}
             </div>
             <div class="clear"></div>
@@ -127,9 +127,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.contact.weixin.is_display">
+              <div class="f_item" v-if="fieldStore.contact.weixin.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.contact.weixin.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.contact.weixin.is_require == 1">* </span>
                   {{fieldStore.contact.weixin.field_cn}}
                 </div>
                 <div class="i_input">
@@ -147,9 +147,9 @@
           <div class="fill_bgr">
             <div class="bgr_title">完善信息，获得更多求职机会</div>
             <div class="fill_line">
-              <div class="f_item" v-if="fieldStore.basic.residence.is_display">
+              <div class="f_item" v-if="fieldStore.basic.residence.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.residence.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.residence.is_require == 1">* </span>
                   {{fieldStore.basic.residence.field_cn}}
                 </div>
                 <div class="i_input">
@@ -158,9 +158,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.marriage.is_display">
+              <div class="f_item" v-if="fieldStore.basic.marriage.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.marriage.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.marriage.is_require == 1">* </span>
                   {{fieldStore.basic.marriage.field_cn}}
                 </div>
                 <div class="i_input">
@@ -174,9 +174,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.major.is_display">
+              <div class="f_item" v-if="fieldStore.basic.major.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.major.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.major.is_require == 1">* </span>
                   {{fieldStore.basic.major.field_cn}}
                 </div>
                 <div class="i_input">
@@ -191,9 +191,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.height.is_display">
+              <div class="f_item" v-if="fieldStore.basic.height.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.height.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.height.is_require == 1">* </span>
                   {{fieldStore.basic.height.field_cn}}
                 </div>
                 <div class="i_input">
@@ -202,9 +202,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.householdaddress.is_display">
+              <div class="f_item" v-if="fieldStore.basic.householdaddress.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.householdaddress.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.householdaddress.is_require == 1">* </span>
                   {{fieldStore.basic.householdaddress.field_cn}}
                 </div>
                 <div class="i_input">
@@ -213,9 +213,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.contact.email.is_display">
+              <div class="f_item" v-if="fieldStore.contact.email.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.contact.email.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.contact.email.is_require == 1">* </span>
                   {{fieldStore.contact.email.field_cn}}
                 </div>
                 <div class="i_input">
@@ -224,9 +224,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.contact.qq.is_display">
+              <div class="f_item" v-if="fieldStore.contact.qq.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.contact.qq.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.contact.qq.is_require == 1">* </span>
                   {{fieldStore.contact.qq.field_cn}}
                 </div>
                 <div class="i_input">
@@ -235,9 +235,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.custom_field_1.is_display">
+              <div class="f_item" v-if="fieldStore.basic.custom_field_1.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.custom_field_1.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.custom_field_1.is_require == 1">* </span>
                   {{fieldStore.basic.custom_field_1.field_cn}}
                 </div>
                 <div class="i_input">
@@ -246,9 +246,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.custom_field_2.is_display">
+              <div class="f_item" v-if="fieldStore.basic.custom_field_2.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.custom_field_2.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.custom_field_2.is_require == 1">* </span>
                   {{fieldStore.basic.custom_field_2.field_cn}}
                 </div>
                 <div class="i_input">
@@ -257,9 +257,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.custom_field_3.is_display">
+              <div class="f_item" v-if="fieldStore.basic.custom_field_3.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.custom_field_3.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.custom_field_3.is_require == 1">* </span>
                   {{fieldStore.basic.custom_field_3.field_cn}}
                 </div>
                 <div class="i_input">
@@ -268,9 +268,9 @@
                 </div>
                 <div class="clear"></div>
               </div>
-              <div class="f_item" v-if="fieldStore.basic.idcard.is_display">
+              <div class="f_item" v-if="fieldStore.basic.idcard.is_display == 1">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.basic.idcard.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.basic.idcard.is_require == 1">* </span>
                   {{fieldStore.basic.idcard.field_cn}}
                 </div>
                 <div class="i_input">
@@ -288,7 +288,7 @@
         </div>
       </div>
       <!--求职意向-->
-      <div class="b2" ref="intention" v-if="this.moduleStore.intention.is_display === 1" id="intentionGroup">
+      <div class="b2" ref="intention" v-if="this.moduleStore.intention.is_display == 1" id="intentionGroup">
         <div class="l_title">
           <div class="t_name">求职意向</div>
           <div class="req">必填</div>
@@ -407,10 +407,10 @@
                 <div class="clear"></div>
               </div>
             </div>
-            <div class="fill_line" v-if="fieldStore.intention.trade.is_display">
+            <div class="fill_line" v-if="fieldStore.intention.trade.is_display == 1">
               <div class="f_item">
                 <div class="i_label">
-                  <span class="req" v-if="fieldStore.intention.trade.is_require === 1">* </span>
+                  <span class="req" v-if="fieldStore.intention.trade.is_require == 1">* </span>
                   {{fieldStore.intention.trade.field_cn}}
                 </div>
                 <div class="i_input">
@@ -1638,73 +1638,73 @@
           this.$message({ message: '请填写联系电话', type: 'warning' })
           return false
         }
-        if (this.fieldStore.contact.weixin.is_require) {
+        if (this.fieldStore.contact.weixin.is_display==1 && this.fieldStore.contact.weixin.is_require==1) {
           if (!this.contact.weixin) {
             this.$message({ message: `请填写${this.fieldStore.contact.weixin.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.residence.is_require) {
+        if (this.fieldStore.basic.residence.is_display==1 && this.fieldStore.basic.residence.is_require==1) {
           if (!this.basic.residence) {
             this.$message({ message: `请填写${this.fieldStore.basic.residence.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.marriage.is_require) {
+        if (this.fieldStore.basic.marriage.is_display==1 && this.fieldStore.basic.marriage.is_require==1) {
           if (this.basic.marriage === '') {
             this.$message({ message: `请填写${this.fieldStore.basic.marriage.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.major.is_require) {
+        if (this.fieldStore.basic.major.is_display==1 && this.fieldStore.basic.major.is_require==1) {
           if (!this.basic.major1) {
             this.$message({ message: `请填写${this.fieldStore.basic.major.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.height.is_require) {
+        if (this.fieldStore.basic.height.is_display==1 && this.fieldStore.basic.height.is_require==1) {
           if (!this.basic.height) {
             this.$message({ message: `请填写${this.fieldStore.basic.height.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.householdaddress.is_require) {
+        if (this.fieldStore.basic.householdaddress.is_display==1 && this.fieldStore.basic.householdaddress.is_require==1) {
           if (!this.basic.householdaddress) {
             this.$message({ message: `请填写${this.fieldStore.basic.householdaddress.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.contact.email.is_require) {
+        if (this.fieldStore.contact.email.is_display==1 && this.fieldStore.contact.email.is_require==1) {
           if (!this.contact.email) {
             this.$message({ message: `请填写${this.fieldStore.contact.email.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.contact.qq.is_require) {
+        if (this.fieldStore.contact.qq.is_display==1 && this.fieldStore.contact.qq.is_require==1) {
           if (!this.contact.qq) {
             this.$message({ message: `请填写${this.fieldStore.contact.qq.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_1.is_require) {
+        if (this.fieldStore.basic.custom_field_1.is_display==1 && this.fieldStore.basic.custom_field_1.is_require==1) {
           if (!this.basic.custom_field_1) {
             this.$message({ message: `请填写${this.fieldStore.basic.custom_field_1.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_2.is_require) {
+        if (this.fieldStore.basic.custom_field_2.is_display==1 && this.fieldStore.basic.custom_field_2.is_require==1) {
           if (!this.basic.custom_field_2) {
             this.$message({ message: `请填写${this.fieldStore.basic.custom_field_2.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_3.is_require) {
+        if (this.fieldStore.basic.custom_field_3.is_display==1 && this.fieldStore.basic.custom_field_3.is_require==1) {
           if (!this.basic.custom_field_3) {
             this.$message({ message: `请填写${this.fieldStore.basic.custom_field_3.field_cn}`, type: 'warning' })
             return false
           }
         }
-        if (this.fieldStore.basic.idcard.is_require) {
+        if (this.fieldStore.basic.idcard.is_display==1 && this.fieldStore.basic.idcard.is_require==1) {
           if (!this.basic.idcard) {
             this.$message({ message: `请填写${this.fieldStore.basic.idcard.field_cn}`, type: 'warning' })
             return false

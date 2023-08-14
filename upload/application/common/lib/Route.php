@@ -54,7 +54,7 @@ class Route
                 'index/jobfairol/show',
                 ['ext' => 'html'],
                 ['id' => '\d+']
-            ], //网络招聘会详情
+            ] //网络招聘会详情
         ],
         'ext' => ''
     ];
@@ -108,7 +108,7 @@ class Route
                 ['ext' => 'html'],
                 ['id' => '\d+']
             ], //招聘会详情
-            'jobfairol' => 'index/jobfairol/index', //网络招聘会列表页
+            'jobfairol' => 'index/jobfairol/index' //网络招聘会列表页
         ],
         'ext' => 'html'
     ];
@@ -148,7 +148,7 @@ class Route
                 'index/jobfairol/show',
                 ['ext' => 'html'],
                 ['id' => '\d+']
-            ], //网络招聘会详情
+            ] //网络招聘会详情
         ],
         'ext' => 'htm'
     ];
@@ -192,7 +192,7 @@ class Route
             'jobfairol/show/id/:id' => [
                 'index/jobfairol/show',
                 ['id' => '\d+']
-            ], //网络招聘会详情
+            ] //网络招聘会详情
         ],
         'ext' => ''
     ];

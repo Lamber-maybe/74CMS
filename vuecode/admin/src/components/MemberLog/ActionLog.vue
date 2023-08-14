@@ -6,6 +6,7 @@
         placeholder="请输入关键词"
         class="input-with-select"
         size="small"
+        @keyup.enter.native="funSearchKeyword"
       >
         <el-button
           slot="append"

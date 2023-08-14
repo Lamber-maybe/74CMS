@@ -34,6 +34,7 @@
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"

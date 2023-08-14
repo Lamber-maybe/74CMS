@@ -10,12 +10,7 @@ class Hotword extends \app\v1_0\controller\common\Base
     public function index()
     {
         $limit = input('get.limit/d', 20, 'intval');
-        $list = model('Hotword')
-            ->field('word,hot')
-            ->order('hot desc')
-            ->limit($limit)
-            ->select();
-        $return['items'] = $list;
+        $return['items'] = model('Hotword')->getList($limit);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
 }

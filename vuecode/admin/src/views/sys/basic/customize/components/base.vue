@@ -43,8 +43,30 @@
       <el-form-item label="二维码展示方式">
         <el-radio-group v-model="form.qrcode_type">
           <el-radio label="normal">普通</el-radio>
+          <el-radio label="miniprogram">小程序码</el-radio>
           <el-radio label="wechat">微信带参数二维码</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="职位浏览量随机值" prop="rand_click_job">
+        <el-input v-model="form.rand_click_job" class="small" @keyup.native="keyup()" />
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          浏览量在“1~设置值”之间随机增加，0为不干预
+        </span>
+      </el-form-item>
+      <el-form-item label="企业浏览量随机值" prop="rand_click_company">
+        <el-input v-model="form.rand_click_company" class="small" @keyup.native="keyup()" />
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          浏览量在“1~设置值”之间随机增加，0为不干预
+        </span>
+      </el-form-item>
+      <el-form-item label="简历浏览量随机值" prop="rand_click_resume">
+        <el-input v-model="form.rand_click_resume" class="small" @keyup.native="keyup()" />
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          浏览量在“1~设置值”之间随机增加，0为不干预
+        </span>
       </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -65,7 +87,10 @@ export default {
         points_quantifier: '',
         payment_rate: 1,
         wage_unit: 0,
-        qrcode_type: 'normal'
+        qrcode_type: 'normal',
+        rand_click_job: 0,
+        rand_click_company: 0,
+        rand_click_resume: 0
       },
       rules: {
         points_byname: [
@@ -107,14 +132,20 @@ export default {
             points_quantifier,
             payment_rate,
             wage_unit,
-            qrcode_type
+            qrcode_type,
+            rand_click_job,
+            rand_click_company,
+            rand_click_resume
           } = { ...response.data }
           this.form = {
             points_byname,
             points_quantifier,
             payment_rate,
             wage_unit,
-            qrcode_type
+            qrcode_type,
+            rand_click_job,
+            rand_click_company,
+            rand_click_resume
           }
           this.infoLoading = false
         })
@@ -135,6 +166,17 @@ export default {
           return false
         }
       })
+    },
+    keyup(){
+      if (this.form.rand_click_job == ''){
+        this.form.rand_click_job = 0
+      }
+      if (this.form.rand_click_company == ''){
+        this.form.rand_click_company = 0
+      }
+      if (this.form.rand_click_resume == ''){
+        this.form.rand_click_resume = 0
+      }
     }
   }
 }

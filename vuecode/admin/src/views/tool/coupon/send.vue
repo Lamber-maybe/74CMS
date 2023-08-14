@@ -18,6 +18,7 @@
         <el-form-item
           label="优惠券"
           prop="coupon_id"
+          class="from_item"
         >
           <el-checkbox-group v-model="form.coupon_id">
             <el-checkbox
@@ -173,5 +174,17 @@ export default {
 <style scoped>
 .el-form-item {
   margin-bottom: 0;
+}
+.from_item{
+  margin-bottom: 18px;
+}
+::v-deep .el-radio-button__inner, .el-radio-group {
+  line-height: 26px;
+}
+::v-deep .el-form-item__content{
+  line-height: 24px;
+}
+::v-deep .el-form-item__label{
+  line-height: initial;
 }
 </style>

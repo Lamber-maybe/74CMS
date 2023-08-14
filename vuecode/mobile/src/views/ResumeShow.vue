@@ -51,322 +51,343 @@
           <div class="share" @click="doShare">分享</div>
         </div>
       </div>
-      <div
-        class="box_2"
-        v-if="
-          base_info.tag_text_arr != undefined &&
-            base_info.tag_text_arr.length > 0
-        "
-      >
-        <div class="box_head"><div class="txt">个性标签</div></div>
-        <div class="content">
-          <div
-            class="item"
-            v-for="(tag, index) in base_info.tag_text_arr"
-            :key="index"
-          >
-            {{ tag }}
-          </div>
-          <div class="clear"></div>
+      <div class="box_nav" v-if="$store.state.config.shortvideo_enable === '1'">
+        <div
+          class="item "
+          :class="resumeShow === 'resume' ? 'active' : ''"
+          @click="resumeShow = 'resume'"
+        >
+          简历信息
+        </div>
+        <div
+          class="item "
+          :class="resumeShow === 'video' ? 'active' : ''"
+          @click="resumeShow = 'video'"
+        >
+          求职视频({{videonum}})
         </div>
       </div>
-      <div class="content_wrapper">
-        <div class="box_3">
-          <div class="box_head">
-            <div class="txt">求职意向</div>
-            <div class="right_text">{{base_info.current_text}}</div>
-          </div>
-          <div class="box_content">
+      <div class="box_resume_some" v-if="resumeShow === 'resume'">
+        <div
+          class="box_2"
+          v-if="
+            base_info.tag_text_arr != undefined &&
+              base_info.tag_text_arr.length > 0
+          "
+        >
+          <div class="box_head"><div class="txt">个性标签</div></div>
+          <div class="content">
             <div
-              class="tx2"
-              v-for="(item, index) in intention_list"
+              class="item"
+              v-for="(tag, index) in base_info.tag_text_arr"
               :key="index"
             >
-              <div class="name">
-                [{{ item.district_text }}] {{ item.category_text }}
+              {{ tag }}
+            </div>
+            <div class="clear"></div>
+          </div>
+        </div>
+        <div class="content_wrapper">
+          <div class="box_3">
+            <div class="box_head">
+              <div class="txt">求职意向</div>
+              <div class="right_text">{{base_info.current_text}}</div>
+            </div>
+            <div class="box_content">
+              <div
+                class="tx2"
+                v-for="(item, index) in intention_list"
+                :key="index"
+              >
+                <div class="name">
+                  [{{ item.district_text }}] {{ item.category_text }}
+                </div>
+                <div class="intent">
+                  {{ item.wage_text }}，{{ item.nature_text }}
+                  {{ field_rule.intention.trade!==undefined && field_rule.intention.trade.is_display === 1 && item.trade_text ? `，${item.trade_text}` : '' }}
+                </div>
               </div>
-              <div class="intent">
-                {{ item.wage_text }}，{{ item.nature_text }}
-                {{ field_rule.intention.trade!==undefined && field_rule.intention.trade.is_display === 1 && item.trade_text ? `，${item.trade_text}` : '' }}
+            </div>
+          </div>
+          <!--联系方式-->
+          <div class="box_cac">
+            <div class="box_head"><div class="txt">联系方式</div><span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span class="phone" v-text="cur_com_mobile">}</span> 的手机号拔号</span></div>
+
+            <div class="box_content" v-if="show_contact == 1 && !phone_protect_open">
+              <div class="item phone">手机：{{ contact_info.mobile }}</div>
+              <div
+                class="item wx"
+                v-if="
+                  field_rule.contact.weixin != undefined &&
+                    field_rule.contact.weixin.is_display == 1 &&
+                    contact_info.weixin != ''
+                "
+              >
+                微信：{{ contact_info.weixin }}
+              </div>
+              <div
+                class="item email"
+                v-if="
+                  field_rule.contact.email != undefined &&
+                    field_rule.contact.email.is_display == 1 &&
+                    contact_info.email != ''
+                "
+              >
+                邮箱：{{ contact_info.email }}
+              </div>
+              <div
+                class="item qq"
+                v-if="
+                  field_rule.contact.qq != undefined &&
+                    field_rule.contact.qq.is_display == 1 &&
+                    contact_info.qq != ''
+                "
+              >
+                QQ：{{ contact_info.qq }}
+              </div>
+            </div>
+            <div class="code_pro_wrap" v-if="show_contact == 1 && phone_protect_open">
+              <img class="secret" src="../assets/images/318.jpg"/>
+              <div v-if="phone_protect_type==1" class="pro_tip">1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号</div>
+            </div>
+
+            <div
+              class="contact_tip"
+              v-if="show_contact == 0 && show_contact_note == 'need_login'"
+              @click="showLogin = true"
+            >
+              <div class="tx1">您尚未登录</div>
+              <div class="tx2">
+                <span class="link">点击登录</span>后可获取简历联系方式
+              </div>
+            </div>
+            <div
+              class="contact_tip"
+              v-if="
+                show_contact == 0 && show_contact_note == 'need_company_login'
+              "
+            >
+              <div class="tx1">简历联系方式</div>
+              <div class="tx2">
+                仅对企业会员开放
+              </div>
+            </div>
+            <div
+              class="contact_tip"
+              v-if="show_contact == 0 && show_contact_note == 'need_download'"
+              @click="doDownload"
+            >
+              <div class="tx1"><span class="link">下载简历</span></div>
+              <div class="tx2">获取简历联系方式</div>
+            </div>
+          </div>
+        </div>
+        <div class="form_split_10"></div>
+        <div class="content_wrapper">
+          <!--自我描述-->
+          <div class="box_5" v-if="base_info.specialty != ''">
+            <div class="box_head"><div class="txt">自我描述</div></div>
+            <div class="box_content">
+              <div class="dec">
+                {{ base_info.specialty }}
               </div>
             </div>
           </div>
         </div>
-        <!--联系方式-->
-        <div class="box_cac">
-          <div class="box_head"><div class="txt">联系方式</div><span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type==1">请使用 <span class="phone" v-text="cur_com_mobile">}</span> 的手机号拔号</span></div>
-
-          <div class="box_content" v-if="show_contact == 1 && !phone_protect_open">
-            <div class="item phone">手机：{{ contact_info.mobile }}</div>
-            <div
-              class="item wx"
-              v-if="
-                field_rule.contact.weixin != undefined &&
-                  field_rule.contact.weixin.is_display == 1 &&
-                  contact_info.weixin != ''
-              "
-            >
-              微信：{{ contact_info.weixin }}
-            </div>
-            <div
-              class="item email"
-              v-if="
-                field_rule.contact.email != undefined &&
-                  field_rule.contact.email.is_display == 1 &&
-                  contact_info.email != ''
-              "
-            >
-              邮箱：{{ contact_info.email }}
-            </div>
-            <div
-              class="item qq"
-              v-if="
-                field_rule.contact.qq != undefined &&
-                  field_rule.contact.qq.is_display == 1 &&
-                  contact_info.qq != ''
-              "
-            >
-              QQ：{{ contact_info.qq }}
+        <div class="form_split_10"></div>
+        <div class="content_wrapper">
+          <!--教育经历-->
+          <div class="box_6" v-if="education_list.length > 0">
+            <div class="box_head"><div class="txt">教育经历</div></div>
+            <div class="box_content">
+              <div
+                class="tx1"
+                v-for="(item, index) in education_list"
+                :key="index"
+              >
+                <div class="t1">{{ item.school }}</div>
+                <div class="t2">
+                  {{ item.starttime | monthTimeFilter }}
+                  <span v-if="item.todate == 1">至今</span>
+                  <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
+                </div>
+                <div class="t3">{{ item.education_text }}{{ field_rule.education.major!==undefined && field_rule.education.major.is_display === 1 && item.major ? `，${item.major}` : '' }}</div>
+              </div>
             </div>
           </div>
-          <div class="code_pro_wrap" v-if="show_contact == 1 && phone_protect_open">
-            <img class="secret" src="../assets/images/318.jpg"/>
-            <div v-if="phone_protect_type==1" class="pro_tip">1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号</div>
+          <!--工作经历-->
+          <div class="box_7" v-if="work_list.length > 0">
+            <div class="box_head"><div class="txt">工作经历</div></div>
+            <div class="box_content">
+              <div class="tx1" v-for="(item, index) in work_list" :key="index">
+                <div class="t1">{{ item.companyname }}</div>
+                <div class="t2">
+                  {{ item.starttime | monthTimeFilter }}
+                  <span v-if="item.todate == 1">至今</span>
+                  <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
+                </div>
+                <div class="t3">{{ item.jobname }}</div>
+                <div class="t4">
+                  {{ item.duty }}
+                </div>
+              </div>
+            </div>
           </div>
-
+          <!--培训经历-->
           <div
-            class="contact_tip"
-            v-if="show_contact == 0 && show_contact_note == 'need_login'"
-            @click="showLogin = true"
-          >
-            <div class="tx1">您尚未登录</div>
-            <div class="tx2">
-              <span class="link">点击登录</span>后可获取简历联系方式
-            </div>
-          </div>
-          <div
-            class="contact_tip"
+            class="box_8"
             v-if="
-              show_contact == 0 && show_contact_note == 'need_company_login'
+              resume_module.training!==undefined && resume_module.training.is_display == 1 && training_list.length > 0
             "
           >
-            <div class="tx1">简历联系方式</div>
-            <div class="tx2">
-              仅对企业会员开放
+            <div class="box_head"><div class="txt">培训经历</div></div>
+            <div class="box_content">
+              <div
+                class="tx1"
+                v-for="(item, index) in training_list"
+                :key="index"
+              >
+                <div class="t1">{{ item.agency }}</div>
+                <div class="t2">
+                  {{ item.starttime | monthTimeFilter }}
+                  <span v-if="item.todate == 1">至今</span>
+                  <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
+                </div>
+                <div class="t3">{{ item.course }}</div>
+                <div class="t4">
+                  {{ item.description }}
+                </div>
+              </div>
             </div>
           </div>
+          <!--项目经历-->
           <div
-            class="contact_tip"
-            v-if="show_contact == 0 && show_contact_note == 'need_download'"
-            @click="doDownload"
+            class="box_9"
+            v-if="
+              resume_module.project !== undefined && resume_module.project.is_display == 1 && project_list.length > 0
+            "
           >
-            <div class="tx1"><span class="link">下载简历</span></div>
-            <div class="tx2">获取简历联系方式</div>
-          </div>
-        </div>
-      </div>
-      <div class="form_split_10"></div>
-      <div class="content_wrapper">
-        <!--自我描述-->
-        <div class="box_5" v-if="base_info.specialty != ''">
-          <div class="box_head"><div class="txt">自我描述</div></div>
-          <div class="box_content">
-            <div class="dec">
-              {{ base_info.specialty }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form_split_10"></div>
-      <div class="content_wrapper">
-        <!--教育经历-->
-        <div class="box_6" v-if="education_list.length > 0">
-          <div class="box_head"><div class="txt">教育经历</div></div>
-          <div class="box_content">
-            <div
-              class="tx1"
-              v-for="(item, index) in education_list"
-              :key="index"
-            >
-              <div class="t1">{{ item.school }}</div>
-              <div class="t2">
-                {{ item.starttime | monthTimeFilter }}
-                <span v-if="item.todate == 1">至今</span>
-                <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
-              </div>
-              <div class="t3">{{ item.education_text }}{{ field_rule.education.major!==undefined && field_rule.education.major.is_display === 1 && item.major ? `，${item.major}` : '' }}</div>
-            </div>
-          </div>
-        </div>
-        <!--工作经历-->
-        <div class="box_7" v-if="work_list.length > 0">
-          <div class="box_head"><div class="txt">工作经历</div></div>
-          <div class="box_content">
-            <div class="tx1" v-for="(item, index) in work_list" :key="index">
-              <div class="t1">{{ item.companyname }}</div>
-              <div class="t2">
-                {{ item.starttime | monthTimeFilter }}
-                <span v-if="item.todate == 1">至今</span>
-                <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
-              </div>
-              <div class="t3">{{ item.jobname }}</div>
-              <div class="t4">
-                {{ item.duty }}
+            <div class="box_head"><div class="txt">项目经历</div></div>
+            <div class="box_content">
+              <div class="tx1" v-for="(item, index) in project_list" :key="index">
+                <div class="t1">{{ item.projectname }}</div>
+                <div class="t2">
+                  {{ item.starttime | monthTimeFilter }}
+                  <span v-if="item.todate == 1">至今</span>
+                  <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
+                </div>
+                <div class="t3">{{ item.role }}</div>
+                <div class="t4">
+                  {{ item.description }}
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <!--培训经历-->
         <div
-          class="box_8"
+          class="form_split_10"
           v-if="
-            resume_module.training!==undefined && resume_module.training.is_display == 1 && training_list.length > 0
-          "
-        >
-          <div class="box_head"><div class="txt">培训经历</div></div>
-          <div class="box_content">
-            <div
-              class="tx1"
-              v-for="(item, index) in training_list"
-              :key="index"
-            >
-              <div class="t1">{{ item.agency }}</div>
-              <div class="t2">
-                {{ item.starttime | monthTimeFilter }}
-                <span v-if="item.todate == 1">至今</span>
-                <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
-              </div>
-              <div class="t3">{{ item.course }}</div>
-              <div class="t4">
-                {{ item.description }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--项目经历-->
-        <div
-          class="box_9"
-          v-if="
-            resume_module.project !== undefined && resume_module.project.is_display == 1 && project_list.length > 0
-          "
-        >
-          <div class="box_head"><div class="txt">项目经历</div></div>
-          <div class="box_content">
-            <div class="tx1" v-for="(item, index) in project_list" :key="index">
-              <div class="t1">{{ item.projectname }}</div>
-              <div class="t2">
-                {{ item.starttime | monthTimeFilter }}
-                <span v-if="item.todate == 1">至今</span>
-                <span v-else>至 {{ item.endtime | monthTimeFilter }}</span>
-              </div>
-              <div class="t3">{{ item.role }}</div>
-              <div class="t4">
-                {{ item.description }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="form_split_10"
-        v-if="
-        resume_module.certificate!==undefined && resume_module.language!==undefined &&
-          resume_module.certificate.is_display == 1 &&
-            certificate_list.length > 0 &&
-            resume_module.language.is_display == 1 &&
-            language_list.length > 0
-        "
-      ></div>
-      <div
-        class="content_wrapper"
-        v-if="
           resume_module.certificate!==undefined && resume_module.language!==undefined &&
-          resume_module.certificate.is_display == 1 &&
-            certificate_list.length > 0 &&
-            resume_module.language.is_display == 1 &&
-            language_list.length > 0
-        "
-      >
-        <!--获得证书-->
-        <div
-          class="box_10"
-          v-if="
-          resume_module.certificate!==undefined &&
             resume_module.certificate.is_display == 1 &&
-              certificate_list.length > 0
+              certificate_list.length > 0 &&
+              resume_module.language.is_display == 1 &&
+              language_list.length > 0
+          "
+        ></div>
+        <div
+          class="content_wrapper"
+          v-if="
+            resume_module.certificate!==undefined && resume_module.language!==undefined &&
+            resume_module.certificate.is_display == 1 &&
+              certificate_list.length > 0 &&
+              resume_module.language.is_display == 1 &&
+              language_list.length > 0
           "
         >
-          <div class="box_head"><div class="txt">获得证书</div></div>
-          <div class="box_content">
-            <div
-              class="tx1"
-              v-for="(item, index) in certificate_list"
-              :key="index"
-            >
-              {{ item.name }}
-              <div class="right_txt">
-                {{ item.obtaintime | monthTimeFilter }}
+          <!--获得证书-->
+          <div
+            class="box_10"
+            v-if="
+            resume_module.certificate!==undefined &&
+              resume_module.certificate.is_display == 1 &&
+                certificate_list.length > 0
+            "
+          >
+            <div class="box_head"><div class="txt">获得证书</div></div>
+            <div class="box_content">
+              <div
+                class="tx1"
+                v-for="(item, index) in certificate_list"
+                :key="index"
+              >
+                {{ item.name }}
+                <div class="right_txt">
+                  {{ item.obtaintime | monthTimeFilter }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--语言能力-->
+          <div
+            class="box_11"
+            v-if="
+            resume_module.language!==undefined &&resume_module.language.is_display == 1 && language_list.length > 0
+            "
+          >
+            <div class="box_head"><div class="txt">语言能力</div></div>
+            <div class="box_content">
+              <div
+                class="tx1"
+                v-for="(item, index) in language_list"
+                :key="index"
+              >
+                {{ item.language_text }}，{{ item.level_text }}
               </div>
             </div>
           </div>
         </div>
-        <!--语言能力-->
         <div
-          class="box_11"
-          v-if="
-          resume_module.language!==undefined &&resume_module.language.is_display == 1 && language_list.length > 0
-          "
+          class="form_split_10"
+          v-if="resume_module.img!==undefined &&resume_module.img.is_display == 1 && img_list.length > 0"
+        ></div>
+        <div
+          class="content_wrapper"
+          v-if="resume_module.img!==undefined &&resume_module.img.is_display == 1 && img_list.length > 0"
         >
-          <div class="box_head"><div class="txt">语言能力</div></div>
-          <div class="box_content">
-            <div
-              class="tx1"
-              v-for="(item, index) in language_list"
-              :key="index"
-            >
-              {{ item.language_text }}，{{ item.level_text }}
+          <!--我的作品-->
+          <div class="box_12">
+            <div class="box_head"><div class="txt">我的作品</div></div>
+            <div class="box_content">
+              <swiper :options="swiperOption" v-if="$store.state.swiperLoaded">
+                <swiper-slide v-for="(item, index) in img_list" :key="index">
+                  <img :src="item.img_src" alt="简历照片作品" @click="previewImg(index)" />
+                </swiper-slide>
+                <div class="swiper-pagination" slot="pagination"></div>
+              </swiper>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="form_split_10"
-        v-if="resume_module.img!==undefined &&resume_module.img.is_display == 1 && img_list.length > 0"
-      ></div>
-      <div
-        class="content_wrapper"
-        v-if="resume_module.img!==undefined &&resume_module.img.is_display == 1 && img_list.length > 0"
-      >
-        <!--我的作品-->
-        <div class="box_12">
-          <div class="box_head"><div class="txt">我的作品</div></div>
-          <div class="box_content">
-            <swiper :options="swiperOption">
-              <swiper-slide v-for="(item, index) in img_list" :key="index">
-                <img :src="item.img_src" alt="简历照片作品" @click="previewImg(index)" />
-              </swiper-slide>
-              <div class="swiper-pagination" slot="pagination"></div>
-            </swiper>
+        <div class="form_split_10"></div>
+        <div class="content_wrapper">
+          <div class="box_report">
+            <div class="tx1">如遇无效虚假简历信息，请立即举报！</div>
+            <div class="tx2">招聘过程中，若联系方式、求职状态不实请反馈。</div>
+            <div class="tx3" @click="handlerReport">举报</div>
+          </div>
+        </div>
+        <div class="form_split_10"></div>
+        <div class="box_13">
+          <div class="bottom_bar">
+            <div class="item_call" @click="doTel">电话</div>
+            <div class="item_chat" @click="doMsg">聊天</div>
+            <div class="item_apply" v-if="show_contact===0" @click="doDownload">下载简历</div>
+            <div class="item_apply" v-else @click="doInterview">面试邀请</div>
+            <div class="clear"></div>
           </div>
         </div>
       </div>
-      <div class="form_split_10"></div>
-      <div class="content_wrapper">
-        <div class="box_report">
-          <div class="tx1">如遇无效虚假简历信息，请立即举报！</div>
-          <div class="tx2">招聘过程中，若联系方式、求职状态不实请反馈。</div>
-          <div class="tx3" @click="handlerReport">举报</div>
-        </div>
-      </div>
-      <div class="form_split_10"></div>
-      <div class="box_13">
-        <div class="bottom_bar">
-          <div class="item_call" @click="doTel">电话</div>
-          <div class="item_chat" @click="doMsg">聊天</div>
-          <div class="item_apply" v-if="show_contact===0" @click="doDownload">下载简历</div>
-          <div class="item_apply" v-else @click="doInterview">面试邀请</div>
-          <div class="clear"></div>
-        </div>
+      <div class="box_video_some" v-if="resumeShow === 'video'">
+        <VideoList :videotype="2" :id="query_id" :gointype="'unitplay'"></VideoList>
       </div>
     </van-skeleton>
     <van-popup
@@ -587,6 +608,7 @@
 </template>
 
 <script>
+import VideoList from './shortvideo/components/VideoListtwo'
 import wxshare from '@/assets/js/share.js'
 import Tipoff from '@/components/Tipoff'
 import AddInvitation from '@/components/AddInvitation'
@@ -603,6 +625,7 @@ Vue.use(ImagePreview)
 export default {
   name: 'ResumeShow',
   components: {
+    VideoList,
     Login,
     PopupPayment,
     AddInvitation,
@@ -617,6 +640,7 @@ export default {
   },
   data () {
     return {
+      resumeShow: 'resume',
       codePro: {
         show: false,
         x: '',
@@ -680,7 +704,12 @@ export default {
       showWxLayer: false,
       showLayer: false,
       showPoster: false,
-      previewImgList: []
+      previewImgList: [],
+      page: 1,
+      finished: false,
+      loading: false,
+      finished_text: '',
+      videonum: 0
     }
   },
   created () {
@@ -689,6 +718,9 @@ export default {
       !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
     // 请求数据
     this.fetchData()
+    if (this.$store.state.config.shortvideo_enable === '1') {
+      this.fetchVideonum()
+    }
   },
   methods: {
     callCodePro () {
@@ -1088,6 +1120,14 @@ export default {
         closeOnPopstate: true,
         closeable: true
       })
+    },
+    fetchVideonum () {
+      http
+        .get(api.shortvideo_total, {rid: this.query_id})
+        .then((res) => {
+          this.videonum = res.data
+        })
+        .catch(() => {})
     }
   }
 }
@@ -1664,6 +1704,38 @@ export default {
   width: 100%;
   background-color: #ffffff;
   padding: 0 17px;
+}
+.box_nav {
+  .item {
+    &.active {
+      &::after {
+        content: " ";
+        position: absolute;
+        bottom: 7px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 17px;
+        height: 3px;
+        background-color: #1787fb;
+        border-radius: 3px;
+      }
+      color: #1787fb;
+    }
+    flex: 1;
+    position: relative;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+    color: #333333;
+  }
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  box-shadow: 0 1px 5px #f1eded;
+  z-index: 1;
+  position: relative;
+  margin-top: 10px;
 }
 .box_2 {
   .content {

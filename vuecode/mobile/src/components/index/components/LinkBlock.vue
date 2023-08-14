@@ -18,7 +18,7 @@
       ></div>
       <div
         class="link_block l4"
-        v-if="jobfair == 1"
+        v-if="online_jobfair == 1"
         @click="$router.push('/jobfairol')"
       ></div>
     </div>
@@ -31,7 +31,7 @@ export default {
   props: ['plan_id'],
   data () {
     return {
-      jobfair: 0,
+      online_jobfair: 0,
       company: 0,
       nearby: 0,
       high_wage: 0
@@ -40,7 +40,7 @@ export default {
   created () {
     let arr = this.plan_id.split(',')
     if (arr.includes('online_jobfair') === true) {
-      this.jobfair = 1
+      this.online_jobfair = 1
     }
     if (arr.includes('company') === true) {
       this.company = 1
@@ -73,6 +73,30 @@ export default {
     }
     &.l4 {
       background: url("../../../assets/images/index/link_4.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l5 {
+      background: url("../../../assets/images/index/link_5.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l6 {
+      background: url("../../../assets/images/index/link_6.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l7 {
+      background: url("../../../assets/images/index/link_7.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l8 {
+      background: url("../../../assets/images/index/link_8.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l9 {
+      background: url("../../../assets/images/index/link_9.jpg") 0 no-repeat;
+      background-size: 165px 75px;
+    }
+    &.l10 {
+      background: url("../../../assets/images/index/link_10.jpg") 0 no-repeat;
       background-size: 165px 75px;
     }
     flex: 1;

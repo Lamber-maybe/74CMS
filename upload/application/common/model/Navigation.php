@@ -12,7 +12,8 @@ class Navigation extends \app\common\model\BaseModel
         'hrtool'=>'Hr工具箱',
         'map'=>'地图找工作',
         'help'=>'帮助页',
-        'jobfairol'=>'网络招聘会列表页'
+        'jobfairol'=>'网络招聘会列表页',
+        'shortvideo' => '视频招聘'
     ];
     protected static function init()
     {

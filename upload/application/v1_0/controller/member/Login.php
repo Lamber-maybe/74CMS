@@ -9,17 +9,17 @@ class Login extends \app\v1_0\controller\common\Base
     }
     protected function _verify($post_data)
     {
-            if (config('global_config.captcha_open') == 1) {
-                $captcha = new \app\common\lib\Captcha();
-                try {
-                    $result = $captcha->verify($post_data);
-                } catch (\Exception $e) {
-                    $this->ajaxReturn(500, $e->getMessage());
-                }
-                if (false === $result) {
-                    $this->ajaxReturn(500, $captcha->getError());
-                }
+        if (config('global_config.captcha_open') == 1) {
+            $captcha = new \app\common\lib\Captcha();
+            try {
+                $result = $captcha->verify($post_data);
+            } catch (\Exception $e) {
+                $this->ajaxReturn(500, $e->getMessage());
             }
+            if (false === $result) {
+                $this->ajaxReturn(500, $captcha->getError());
+            }
+        }
     }
     public function password()
     {
@@ -90,6 +90,17 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($input_data['utype'] == 2) {
+            //自动刷新
+            if(config('global_config.resume_auto_refresh')==1){
+                $condition = ['uid'=>$member['uid']];
+                $timestamp = time();
+                $resumeinfo = model('Resume')->where($condition)->find();
+                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
+                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
+                }
+            }
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -202,6 +213,17 @@ class Login extends \app\v1_0\controller\common\Base
 
         //通知完整度
         if ($input_data['utype'] == 2) {
+            //自动刷新
+            if(config('global_config.resume_auto_refresh')==1){
+                $condition = ['uid'=>$member['uid']];
+                $timestamp = time();
+                $resumeinfo = model('Resume')->where($condition)->find();
+                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
+                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
+                }
+            }
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -274,6 +296,17 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($member['utype'] == 2) {
+            //自动刷新
+            if(config('global_config.resume_auto_refresh')==1){
+                $condition = ['uid'=>$member['uid']];
+                $timestamp = time();
+                $resumeinfo = model('Resume')->where($condition)->find();
+                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
+                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
+                }
+            }
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -326,6 +359,17 @@ class Login extends \app\v1_0\controller\common\Base
         }
         //通知完整度
         if ($member['utype'] == 2) {
+            //自动刷新
+            if(config('global_config.resume_auto_refresh')==1){
+                $condition = ['uid'=>$member['uid']];
+                $timestamp = time();
+                $resumeinfo = model('Resume')->where($condition)->find();
+                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
+                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
+                }
+            }
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,
@@ -386,6 +430,17 @@ class Login extends \app\v1_0\controller\common\Base
         
         //通知完整度
         if ($member['utype'] == 2) {
+            //自动刷新
+            if(config('global_config.resume_auto_refresh')==1){
+                $condition = ['uid'=>$member['uid']];
+                $timestamp = time();
+                $resumeinfo = model('Resume')->where($condition)->find();
+                if($resumeinfo!==null && $resumeinfo->refreshtime < strtotime('today')){
+                    model('Resume')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchRtime')->where($condition)->setField('refreshtime', $timestamp);
+                    model('ResumeSearchKey')->where($condition)->setField('refreshtime', $timestamp);
+                }
+            }
             $notify_alias = '';
             $compelte_percent = model('Resume')->countCompletePercent(
                 0,

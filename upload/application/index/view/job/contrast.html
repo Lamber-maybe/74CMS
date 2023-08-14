@@ -16,7 +16,7 @@
                 <el-button size="small" type="primary" @click="removeItem(index)" plain>取消对比</el-button>
             </div>
         </div>
-        
+
         <div class="content_box2">
             <div>
                 <div class="box2_title">
@@ -43,7 +43,7 @@
                     <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.district?item.district:'-'}}</div>
                 </div>
             </div>
-            
+
             <div>
                 <div class="box2_title">
                     企业信息
@@ -52,10 +52,10 @@
                     <div class="item_text">营业执照</div>
                     <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_audit==1?'已认证':'未认证'}}</div>
                 </div>
-                <div class="item clearfix">
+                <!--<div class="item clearfix">
                     <div class="item_text">套餐服务</div>
                     <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_setmeal}}</div>
-                </div>
+                </div>-->
                 <div class="item clearfix">
                     <div class="item_text">实地认证</div>
                     <div class="ite_details" :class="index==4?'last':''" v-for="(item,index) in list" :key="index">{{item.company_report==1?'已认证':'未认证'}}</div>

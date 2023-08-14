@@ -88,6 +88,7 @@ class Service extends \app\v1_0\controller\common\Base
             $value['couponList'] = isset($coupon_data[$value['id']])
             ? $coupon_data[$value['id']]
             : [];
+            $value['original_expense'] = $value['expense'];
             if (
                 $value['preferential_open'] == 1 &&
                 $value['preferential_expense_start'] < $timestamp &&
@@ -390,7 +391,7 @@ class Service extends \app\v1_0\controller\common\Base
         if ($result === false) {
             $this->ajaxReturn(500, model('Order')->getError());
         }
-        
+
         $return['order_id'] = $order['id'];
         $return['order_oid'] = $order['oid'];
         $return['order_amount'] = $order['amount'];
@@ -437,13 +438,13 @@ class Service extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    
+
     public function orderListTotal()
     {
         $where['uid'] = $this->userinfo->uid;
         $service_type = input('get.service_type/s', '', 'trim');
         $status = input('get.status/s', '', 'trim');
-        
+
         if ($service_type != '') {
             $where['service_type'] = $service_type;
         }
@@ -453,7 +454,7 @@ class Service extends \app\v1_0\controller\common\Base
         $total = model('Order')
             ->where($where)
             ->count();
-        
+
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
     public function orderDetail()

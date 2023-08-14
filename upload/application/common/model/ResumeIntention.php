@@ -21,4 +21,37 @@ class ResumeIntention extends \app\common\model\BaseModel
         'maxwage' => 'integer',
         'trade' => 'integer'
     ];
+    protected static function init()
+    {
+        ResumeIntention::afterInsert(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        ResumeIntention::afterUpdate(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        ResumeIntention::afterDelete(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+    }
 }

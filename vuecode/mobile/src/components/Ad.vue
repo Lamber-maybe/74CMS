@@ -6,7 +6,7 @@
       :src="dataset.items[0].image_src"
       @click="handlerClick(dataset.items[0])"
     />
-    <swiper v-else :options="swiperOption" @click-slide="handleClickSlide">
+    <swiper v-else-if="$store.state.swiperLoaded" :options="swiperOption" @click-slide="handleClickSlide">
       <swiper-slide v-for="(item, index) in dataset.items" :key="index">
         <img :src="item.image_src" />
       </swiper-slide>

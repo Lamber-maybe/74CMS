@@ -33,6 +33,7 @@ class Login extends \app\apiadmin\controller\Login
             $admininfo['access_mobile'] = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
             $admininfo['access_export'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
             $admininfo['access_delete'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
+            $admininfo['access_set_service'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_set_service'];
             $admininfo['rolename'] = $roleinfo['name'];
             $JwtAuth = \app\common\lib\JwtAuth::mkToken(
                 config('sys.safecode'),
@@ -45,7 +46,8 @@ class Login extends \app\apiadmin\controller\Login
                 'token' => $admin_token,
                 'access' => $admininfo['access_mobile'],
                 'access_export' => $admininfo['access_export'],
-                'access_delete' => $admininfo['access_delete']
+                'access_delete' => $admininfo['access_delete'],
+                'access_set_service' => $admininfo['access_set_service']
             ]);
         }else{
             $this->ajaxReturn(200, '获取openid失败');

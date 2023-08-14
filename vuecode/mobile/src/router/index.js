@@ -95,6 +95,12 @@ import JobfairolIndex from '../views/jobfairol/Index'
 import JobfairolShow from '../views/jobfairol/Show'
 import JobfairolReserve from '../views/jobfairol/Seserve'
 import JsapiPay from '../views/service/JsapiPay'
+import RegQuick from '../views/member/RegQuick'
+import videocompanylist from '../views/shortvideo/companyList'
+import videopersonallist from '../views/shortvideo/personalList'
+import videoManage from '../views/shortvideo/videoManage'
+import videoRelease from '../views/shortvideo/releaseVideo'
+import videoplay from '../views/shortvideo/VideoPlay'
 
 Vue.use(VueRouter)
 
@@ -102,7 +108,7 @@ Vue.use(VueRouter)
  * 重写路由的push方法
  */
 const routerPush = VueRouter.prototype.push
-VueRouter.prototype.push = function push (location) {
+VueRouter.prototype.push = function push(location) {
   return routerPush.call(this, location).catch((error) => error)
 }
 
@@ -1136,6 +1142,66 @@ const routes = [
       keepAlive: false,
       loginCheck: true,
       utype: 0
+    }
+  },
+  {
+    path: '/member/regquick',
+    name: 'RegQuick',
+    component: RegQuick,
+    meta: {
+      title: '快速注册',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/shortvideo/companylist',
+    name: 'videocompanylist',
+    component: videocompanylist,
+    meta: {
+      title: '视频招聘',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/shortvideo/personalList',
+    name: 'videopersonallist',
+    component: videopersonallist,
+    meta: {
+      title: '视频求职',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/shortvideo/videoManage',
+    name: 'videoManage',
+    component: videoManage,
+    meta: {
+      title: '视频管理',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/shortvideo/release',
+    name: 'videoRelease',
+    component: videoRelease,
+    meta: {
+      title: '视频发布',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/shortvideo/videoplay',
+    name: 'videoplay',
+    component: videoplay,
+    meta: {
+      title: '视频播放',
+      keepAlive: false,
+      loginCheck: false
     }
   },
   {

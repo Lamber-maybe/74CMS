@@ -6,6 +6,8 @@
  */
 namespace app\common\lib;
 use app\common\lib\Qiniu;
+use think\File;
+
 class FileManager
 {
     protected $_error;
@@ -21,6 +23,7 @@ class FileManager
         $this->fileupload_type = $global_config['fileupload_type']
             ? $global_config['fileupload_type']
             : 'default';
+
         $this->fileupload_size = $global_config['fileupload_size']
             ? $global_config['fileupload_size'] * 1024
             : '';
@@ -73,6 +76,42 @@ class FileManager
                 'file_url' => make_file_url(
                     $upload_result['save_path'],
                     $this->fileupload_type
+                ),
+                'file_id' => $file_id,
+                'file_size' => $file->getSize()
+            ];
+        } else {
+            return false;
+        }
+    }
+
+    public function save_path($file_path, $fileupload_type){
+        $file_id = $this->recordToDb($file_path, $fileupload_type);
+        return [
+            'file_url' => make_file_url(
+                $file_path,
+                $fileupload_type
+            ),
+            'file_id' => $file_id
+        ];
+    }
+
+    /**
+     * 上传视频
+     */
+    public function uploadVideo($file)
+    {
+        if (!$file) {
+            $this->_error = '请选择文件';
+            return false;
+        }
+        $file_url = (new Qiniu())->uploadStream($file, uuid().'.mp4');
+
+        if ($file_url) {
+            $file_id = $this->recordToDb($file_url, 'qiniu');
+            return [
+                'file_url' => make_file_url(
+                    $file_url, 'qiniu'
                 ),
                 'file_id' => $file_id
             ];
@@ -167,11 +206,11 @@ class FileManager
     /**
      * 记录到数据表
      */
-    protected function recordToDb($save_path)
+    public function recordToDb($save_path, $fileupload_type='')
     {
         $model = new \app\common\model\Uploadfile();
         $model->save_path = $save_path;
-        $model->platform = $this->fileupload_type;
+        $model->platform = $fileupload_type ?:$this->fileupload_type;
         $model->addtime = time();
         $model->save();
         return $model->id;

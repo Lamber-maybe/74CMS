@@ -65,6 +65,7 @@ class Config extends \app\common\controller\Backend
     {
         rmdirs(RUNTIME_PATH . '/cache/');
         rmdirs(RUNTIME_PATH . '/log/');
+        rmdirs(SYS_UPLOAD_PATH . '/poster/');
         model('AdminLog')->record('清除缓存', $this->admininfo);
         $this->ajaxReturn(200, '更新缓存成功');
     }

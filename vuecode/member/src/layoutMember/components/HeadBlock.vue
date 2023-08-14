@@ -16,7 +16,7 @@
                 <el-dropdown-item command="2">企业信息</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-              <label><input v-model="keyword" type="text" placeholder="请输入搜索关键字"></label>
+              <label><input v-model="keyword" type="text" @keyup.enter="handlerSearch" placeholder="请输入搜索关键字"></label>
             <div class="btn" @click="handlerSearch"></div>
           </div>
           <div class="add_step_box" v-if="pageType === 3">
@@ -137,7 +137,7 @@ import api from '@/api'
           float: left;
           width: 170px;
           height: 90px;
-
+          overflow: hidden;
           img {
             max-height: 70px;
             position: absolute;
@@ -145,6 +145,18 @@ import api from '@/api'
             top: 50%;
             transform: translate(0, -50%);
             border: 0;
+          }
+          &::before{
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: -460px;
+            width: 200px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: rotate(-45deg);
+            animation: searchLights 1.5s ease-in 1s infinite;
+            z-index: 333;
           }
         }
 
@@ -276,6 +288,43 @@ import api from '@/api'
           top: 18px;
           width: 550px;
         }
+
+        .freelance_text{
+          color:#444444;
+          font-size: 20px;
+          float: left;
+          height: 90px;
+          line-height: 90px;
+        }
+        .freelance_nav{
+          float: right;
+          display: flex;
+          align-items: center;
+          height:90px;
+          .item{
+            padding: 0 16px;
+            color: #444444;
+            font-size: 16px;
+            &:hover{
+              text-decoration: none;
+            }
+          }
+          .supervise{
+            color: #fff;
+            font-size: 14px;
+            border-radius: 30px;
+            padding: 8px 14px;
+            margin-left: 114px;
+            background: linear-gradient(90deg, #ffc107, #ff7365, #ffc107);
+            background-size: 1400% 300%;
+            animation: supervise_animation 10s ease infinite;
+            -webkit-animation: supervise_animation 10s ease infinite;
+            &:hover{
+              text-decoration: none;
+              color: #fff;
+            }
+          }
+        }
       }
     }
   }
@@ -284,4 +333,44 @@ import api from '@/api'
   50%{background-position:50% 100%;}
   100%{background-position:100% 0%;}
   }
+  @-webkit-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@-o-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@-moz-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
 </style>

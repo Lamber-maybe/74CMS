@@ -60,35 +60,19 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="300">
+        <el-table-column fixed="right" label="操作" width="400">
           <template slot-scope="scope">
             <el-button size="small" @click="funRun(scope.row, scope.$index)">
               执行
             </el-button>
-            <el-button v-if="scope.row.disable_edit==1" size="small" type="primary" disabled>
+            <el-button size="small" @click="funCopy(scope.row)">
+              复制链接
+            </el-button>
+            <el-button size="small" type="primary" @click="funEdit(scope.row)">
               修改
             </el-button>
             <el-button
-              v-if="scope.row.disable_edit==1"
-              size="small"
-              type="info"
-              disabled
-            >
-              停用
-            </el-button>
-            <el-button
-              v-if="scope.row.disable_edit==1"
-              size="small"
-              type="danger"
-              disabled
-            >
-              删除
-            </el-button>
-            <el-button v-if="scope.row.disable_edit==0" size="small" type="primary" @click="funEdit(scope.row)">
-              修改
-            </el-button>
-            <el-button
-              v-if="scope.row.status == 1 && scope.row.disable_edit==0"
+              v-if="scope.row.status == 1"
               size="small"
               type="info"
               @click="funStatus(scope.row, 0, scope.$index)"
@@ -96,14 +80,14 @@
               停用
             </el-button>
             <el-button
-              v-if="scope.row.status == 0 && scope.row.disable_edit==0"
+              v-if="scope.row.status == 0"
               size="small"
               type="success"
               @click="funStatus(scope.row, 1, scope.$index)"
             >
               启用
             </el-button>
-            <el-button v-if="scope.row.disable_edit==0" size="small" type="danger" @click="funDelete(scope.row)">
+            <el-button size="small" type="danger" @click="funDelete(scope.row)">
               删除
             </el-button>
 
@@ -301,6 +285,15 @@ export default {
         that.$message.success(response.message)
         that.list[index].status = status
         return true
+      })
+    },
+    funCopy(row){
+      const that = this
+      const copyMessage = row.runUrl
+      this.$copyText(copyMessage).then(function (e) {
+        that.$message.success('链接已复制到剪切板！')
+      }, function (e) {
+        that.$message.error('抱歉，复制失败！')
       })
     }
   }

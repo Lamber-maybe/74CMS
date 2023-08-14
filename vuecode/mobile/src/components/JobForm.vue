@@ -24,6 +24,21 @@
         readonly
         clickable
         required
+        :value="nature_text"
+        label="职位性质"
+        placeholder="请选择"
+        @click="showPickerNature = true"
+        class="form_choose reset_after"
+      />
+      <van-action-sheet
+        v-model="showPickerNature"
+        :actions="columnsNature"
+        @select="onConfirmNature"
+      />
+      <van-field
+        readonly
+        clickable
+        required
         :value="basic.categoryName"
         label="职位类别"
         placeholder="请选择"
@@ -102,16 +117,6 @@
         name="amount"
         :label="field_rule.basic.amount.field_cn"
         placeholder="请填写"
-        :rules="
-          field_rule.basic.amount.is_require == 1
-            ? [
-                {
-                  required: true,
-                  message: '请填写' + field_rule.basic.amount.field_cn
-                }
-              ]
-            : []
-        "
         class="reset_after"
       />
       <van-field
@@ -167,6 +172,7 @@
           type="textarea"
           placeholder="请输入详细的职位描述"
         />
+        <van-tag type="primary" class="tpl_tag" size="medium" v-for="(item, index) in tpllist" :key="index" @click="basic.content = item.content">{{ item.title }}</van-tag>
       </div>
       <div
         class="form_split_title"
@@ -504,6 +510,8 @@ import Mapset from '@/components/Mapset'
 import JobCategoryFilter from '@/components/JobCategoryFilter'
 import DistrictFilter from '@/components/DistrictFilter'
 import JobTag from '@/components/CompanyTag'
+import http from '@/utils/http'
+import api from '@/api'
 export default {
   name: 'JobForm',
   props: ['enable_addjob_num', 'type'],
@@ -515,6 +523,7 @@ export default {
   },
   data () {
     return {
+      showPickerNature: false,
       showMap: false,
       btnText: '发布职位',
       field_rule: {
@@ -538,6 +547,7 @@ export default {
       basic: {
         id: 0,
         jobname: '',
+        nature: 1,
         category1: 0,
         category2: 0,
         category3: 0,
@@ -604,7 +614,9 @@ export default {
       ageDefaultIndex1: 0,
       ageDefaultIndex2: 0,
       experienceDefaultIndex: 0,
-      educationDefaultIndex: 0
+      educationDefaultIndex: 0,
+      tpllist: [],
+      nature_text: '全职'
     }
   },
   created () {
@@ -612,6 +624,7 @@ export default {
     this.$store.dispatch('getClassify', 'education')
     this.$store.dispatch('getClassify', 'citycategory')
     this.$store.dispatch('getClassify', 'experience')
+    this.$store.dispatch('getClassify', 'jobNature')
     this.$store.dispatch('getClassifyWage')
     this.$store.dispatch('getClassifyAge')
   },
@@ -627,6 +640,13 @@ export default {
     columnsExperience () {
       let arr = [{id: '0', text: '经验不限'}]
       arr = arr.concat(this.$store.state.classifyExperience)
+      return arr
+    },
+    columnsNature () {
+      let arr = []
+      this.$store.state.classifyJobNature.forEach(element => {
+        arr.push({id: element.id, name: element.text})
+      })
       return arr
     },
     columnsWage () {
@@ -665,6 +685,8 @@ export default {
         item => parseInt(item.id) === parseInt(this.basic.experience)
       )
       this.experience_text = restoreBasic.experience_text == '' ? '经验不限' : restoreBasic.experience_text
+      // 恢复性质
+      this.nature_text = restoreBasic.nature_text == '' ? '全职' : restoreBasic.nature_text
       // 恢复学历
       this.educationDefaultIndex = this.columnsEducation.findIndex(
         item => parseInt(item.id) === parseInt(this.basic.education)
@@ -747,7 +769,15 @@ export default {
       this.basic.category2 = data[1]
       this.basic.category3 = data[2]
       this.basic.categoryName = data[3]
+      console.log(this.basic.category1, this.basic.category2, this.basic.category3)
       this.showPickerJobCategory = !this.showPickerJobCategory
+      let pid = this.basic.category3 != 0 ? this.basic.category3 : (this.basic.category2 != 0 ? this.basic.category2 : (this.basic.category1 != 0 ? this.basic.category1 : 0))
+      http
+        .get(api.categoryjob_template_list, { pid })
+        .then(res => {
+          this.tpllist = res.data
+        })
+        .catch(() => { })
     },
     doSelectDistrict (data) {
       this.basic.district1 = data[0]
@@ -830,6 +860,11 @@ export default {
       this.contact.use_company_contact = value.id
       this.contact_source_text = value.name
       this.showPickerContactSource = !this.showPickerContactSource
+    },
+    onConfirmNature (value) {
+      this.basic.nature = value.id
+      this.nature_text = value.name
+      this.showPickerNature = !this.showPickerNature
     },
     handlerShowTag () {
       this.showTag = true
@@ -1022,5 +1057,8 @@ export default {
     color: #1787fb;
     padding: 10.5px 17px;
   }
+}
+.tpl_tag{
+  margin-right:10px;
 }
 </style>

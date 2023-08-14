@@ -1,0 +1,206 @@
+/* 搜索 */
+.s_content {
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center;
+  background-size: 100%;
+}
+
+.s_content .search_min {
+  padding: 49px 0 0px 239px;
+}
+
+.search_min .search {
+  width: 720px;
+  height: 45px;
+  background-color: #fff;
+  border: 1px solid #01ccb0;
+  box-sizing: border-box;
+}
+
+.search_min .search .ipt {
+  width: 620px;
+  height: 45px;
+  padding: 0 39px;
+  background: url(../../images/campus/search_icon.png) no-repeat 12px center;
+  position: relative;
+}
+.search_min .search .ipt input {
+  width: 575px;
+  height: 94%;
+  border: none;
+}
+
+.search_min .search .btn {
+  width: 89px;
+  height: 43px;
+  background-color: #01cbb3;
+  background-image: linear-gradient(to right, #01cbb3,#01c67e);
+}
+.search_min .search .btn:hover {
+  background-color: #02dac0;
+}
+.search_min .search .btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #feffff;
+  font-size: 16px;
+}
+
+/* 列表 */
+.college{
+  padding: 30px 0 0;
+}
+.college_list .college_item {
+  width: 390px;
+  height: 155px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
+  margin: 0 14px 16px 0;
+  transition: all 0.5s;
+  cursor: pointer;
+  border-top: 2px solid #fff;
+}
+.college_list .college_item.no_mr {
+  margin-right: 0;
+}
+
+.college_list .college_item:hover {
+  border-top: 2px solid #33cc99;
+  transform: translateY(-10px);
+  box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.1);
+}
+
+.college_list .college_item .college_info {
+  padding: 18px 22px 18px 20px;
+  position: relative;
+}
+.college_list .college_item .college_info .college_name {
+  max-width: 250px;
+  display: block;
+  color: #333333;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.college_list .college_item .college_info .college_oth {
+  color: #999999;
+  max-width: 250px;
+
+  font-size: 14px;
+  margin: 8px 0;
+}
+.college_list .college_item .college_info .college_oth span {
+  position: relative;
+  margin-right: 13px;
+}
+
+.college_list .college_item .college_info .college_oth span::before {
+  content: "";
+  width: 1px;
+  height: 11px;
+  background-color: #ebebeb;
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  margin-top: -5.5px;
+}
+
+.college_list .college_item .college_info .college_oth span:last-child:before {
+  display: none;
+}
+
+.college_list .college_item .college_info .college_address {
+  color: #999999;
+  max-width: 250px;
+
+  font-size: 14px;
+}
+
+.college_list .college_item .college_info .img {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  position: absolute;
+  right: 22px;
+  top: 19px;
+}
+
+.college_list .college_item .college_info .img img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.college_list .college_item .meet {
+  border-top: 1px dashed #e8e8e8;
+  margin: 0 8px;
+  color: #999999;
+  font-size: 14px;
+  padding: 13px 0;
+}
+.college_list .college_item .meet .color {
+  color: #00cc99;
+}
+
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging {
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more{
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color:#20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color: #20c588;
+}
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active {
+  color: #ffffff;
+  background-color: #20c588;
+}

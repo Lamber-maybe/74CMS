@@ -1,0 +1,49 @@
+@charset "UTF-8";
+
+.list_container { width: 1200px; margin: 0 auto; padding-top: 35px; }
+.list_container .lc_left { float: left; width: 876px; /*搜索*/ }
+.list_container .lc_left .is_box { position: relative; width: 876px; height: 50px; border: 1px solid #ffa93a; border-radius: 4px; background-color: #ffffff; }
+.list_container .lc_left .is_box .is_input { position: absolute; left: 0; top: 4px; width: 760px; height: 40px; line-height: 40px; background-color: #ffffff; font-size: 16px; color: #7a7a7a; padding: 0 0 0 20px; margin: 0; border: 0; }
+.list_container .lc_left .is_box .is_input::placeholder { color: #e7ceb6; }
+.list_container .lc_left .is_box .is_btn { position: absolute; right: 0; top: 0; z-index: 1; font-size: 18px; color: #ffffff; width: 93px; height: 48px; background-image: linear-gradient(to right, #ff8e50, #ffa93a); text-align: center; cursor: pointer; border-radius: 0 4px 4px 0; line-height: 48px; }
+.list_container .lc_left .is_box .is_btn:hover { background-image: linear-gradient(to right, #ffa93a, #ff8e50); }
+.list_container .lc_left .vo_group .vo_list { position: relative; height: 113px; border-bottom: 1px solid #ecedf2; background-color: #ffffff; transition: all .3s; -webkit-transition: all .3s; }
+.list_container .lc_left .vo_group .vo_list .vo_name { position: absolute; left: 20px; top: 28px; }
+.list_container .lc_left .vo_group .vo_list .vo_name a { float: left; font-size: 16px; height: 20px; line-height: 20px; color: #333333; display: block; max-width: 470px; word-break: break-all; }
+.list_container .lc_left .vo_group .vo_list .vo_name .is_top { display: block; float: left; margin-left: 8px; width: 20px; height: 20px; background: url("../../images/freelance/14.png") 0 0 no-repeat; }
+.list_container .lc_left .vo_group .vo_list .vo_wage { font-size: 16px; color: #ff2626; background: url("../../images/freelance/3.png") 0 1px no-repeat; line-height: 1; padding-left: 23px; position: absolute; left: 20px; top: 68px; }
+.list_container .lc_left .vo_group .vo_list .vo_time { position: absolute; left: 292px; top: 69px; font-size: 14px; color: #999999; }
+.list_container .lc_left .vo_group .vo_list .vo_time span { color: #555555; }
+.list_container .lc_left .vo_group .vo_list .vo_date_txt { position: absolute; left: 531px; top: 31px; font-size: 14px; color: #999999; }
+.list_container .lc_left .vo_group .vo_list .vo_date { position: absolute; left: 531px; top: 69px; font-size: 14px; color: #555555; }
+.list_container .lc_left .vo_group .vo_list .vo_date .ed { color: #6c6c6c; text-decoration: line-through; }
+.list_container .lc_left .vo_group .vo_list .vo_date .status { color: #999999; }
+.list_container .lc_left .vo_group .vo_list .vo_btn { position: absolute; right: 25px; top: 50%; transform: translate(0, -50%); -webkit-transform: translate(0, -50%); width: 91px; height: 34px; line-height: 34px; text-align: center; background-color: #ffffff; font-size: 16px; transition: all .3s; -webkit-transition: all .3s; color: #ff8e50; border: 1px solid #feab5b; border-radius: 4px; box-shadow: 2px 2px 5px 2px #ffe9d4; display: block; text-decoration: none; }
+.list_container .lc_left .vo_group .vo_list:hover { background-color: #fdfdfc; }
+.list_container .lc_left .vo_group .vo_list:hover .vo_name a { color: #ff5a00; text-decoration: underline; }
+.list_container .lc_left .vo_group .vo_list:hover .vo_btn { background-color: #fea358; color: #ffffff; }
+.list_container .lc_right { float: right; width: 291px; }
+.list_container .lc_right .r1 { width: 291px; height: 318px; background: url("../../images/freelance/4.png") 0 0 no-repeat; padding-top: 150px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.02); margin-bottom: 20px; }
+.list_container .lc_right .r1 .link_btn { display: block; font-size: 20px; color: #ffffff; width: 238px; height: 55px; line-height: 55px; text-align: center; transition: all .3s; -webkit-transition: all .3s; margin: 0 auto 16px; background-color: #397bff; cursor: pointer; }
+.list_container .lc_right .r1 .link_btn:hover { background-color: #326ad9; }
+.list_container .lc_right .r1 .link_btn.d { background-color: #00c280; }
+.list_container .lc_right .r1 .link_btn.d:hover { background-color: #04a46e; }
+.list_container .lc_right .r2 { position: relative; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.02); margin-bottom: 20px; width: 291px; height: 122px; font-size: 14px; color: #9a9a9a; background: url("../../images/freelance/19.png") right bottom no-repeat; }
+.list_container .lc_right .r2 .t1 { position: absolute; left: 23px; top: 42px; line-height: 1; }
+.list_container .lc_right .r2 .t2 { position: absolute; left: 23px; top: 66px; line-height: 1; }
+.list_container .lc_right .r2 .qr_img { position: absolute; right: 20px; top: 20px; width: 82px; height: 82px; border: 0; }
+.list_container .lc_right .r3 { position: relative; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.02); width: 291px; padding: 0 20px; background: #ffffff url("../../images/freelance/20.png") left top no-repeat; }
+.list_container .lc_right .r3 .p_title { position: relative; }
+.list_container .lc_right .r3 .p_title .t_cn { position: relative; line-height: 1px; padding: 30px 0; font-size: 20px; color: #333; display: inline-block; }
+.list_container .lc_right .r3 .p_title .t_cn:before { content: ''; position: absolute; left: 0; bottom: 19px; width: 100%; height: 6px; border-radius: 4px; background-image: linear-gradient(to right, #ff9d67, #ffdfc1); opacity: .7; }
+.list_container .lc_right .r3 .r3_group .r3_item { width: 251px; height: 116px; position: relative; display: block; text-decoration: none; padding: 18px 7px 0; transition: all .3s; -webkit-transition: all .3s; border-bottom: 1px solid #f1f1f1; }
+.list_container .lc_right .r3 .r3_group .r3_item.last { border-bottom: 0; }
+.list_container .lc_right .r3 .r3_group .r3_item .p_name { height: 16px; }
+.list_container .lc_right .r3 .r3_group .r3_item .p_name .name_cn { font-size: 16px; color: #444444; max-width: 230px; line-height: 1; float: left; word-break: break-all; }
+.list_container .lc_right .r3 .r3_group .r3_item .i_wage { font-size: 16px; color: #ff2626; background: url("../../images/freelance/3.png") 0 1px no-repeat; line-height: 1; margin: 17px 0 15px; padding-left: 23px; }
+.list_container .lc_right .r3 .r3_group .r3_item .i_time { color: #d6d6d6; font-size: 13px; }
+.list_container .lc_right .r3 .r3_group .r3_item .i_time .t { color: #555555; margin-left: 5px; }
+.list_container .lc_right .r3 .r3_group .r3_item .i_time .t.t1 { margin-right: 15px; }
+.list_container .lc_right .r3 .r3_group .r3_item:hover .p_name .name_cn { color: #ff5a00; }
+
+/*# sourceMappingURL=r_list.css.map */

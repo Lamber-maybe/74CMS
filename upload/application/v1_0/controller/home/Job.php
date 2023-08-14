@@ -9,6 +9,7 @@ class Job extends \app\v1_0\controller\common\Base
     }
     public function index()
     {
+        $search_type = input('get.search_type/s', '', 'trim');
         $keyword = input('get.keyword/s', '', 'trim');
         $emergency = input('get.emergency/d', 0, 'intval');
         $famous = input('get.famous/d', 0, 'intval');
@@ -39,9 +40,6 @@ class Job extends \app\v1_0\controller\common\Base
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $count_total = input('get.count_total/d', 0, 'intval');
 
-        $params['count_total'] = $count_total;
-        $params['current_page'] = $current_page;
-        $params['pagesize'] = $pagesize;
 
         if ($keyword != '') {
             $params['keyword'] = $keyword;
@@ -132,12 +130,35 @@ class Job extends \app\v1_0\controller\common\Base
             $params['north_east_lng'] = $north_east_lng;
         }
 
+        if(config('global_config.job_search_login')==1 && $search_type=='list'){
+            if($this->userinfo===null){
+                $show_mask = 1;
+                if(!empty($params)){
+                    $params['district1'] = -1;
+                }
+                $params['count_total'] = 0;
+                $params['current_page'] = 1;
+                $params['pagesize'] = config('global_config.job_search_login_num')==0?1:config('global_config.job_search_login_num');
+            }else{
+                $show_mask = 0;
+                $params['count_total'] = $count_total;
+                $params['current_page'] = $current_page;
+                $params['pagesize'] = $pagesize;
+            }
+        }else{
+            $show_mask = 0;
+            $params['count_total'] = $count_total;
+            $params['current_page'] = $current_page;
+            $params['pagesize'] = $pagesize;
+        }
+
         $instance = new \app\common\lib\JobSearchEngine($params);
 
         $searchResult = $instance->run();
         $return['items'] = $this->get_datalist($searchResult['items'],$distanceData);
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
+        $return['show_mask'] = $show_mask;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     /**
@@ -252,9 +273,14 @@ class Job extends \app\v1_0\controller\common\Base
                         'a.setmeal_id=b.id',
                         'LEFT'
                     )
+                    ->join(
+                        config('database.prefix') . 'member_setmeal c',
+                        'a.uid=c.uid',
+                        'LEFT'
+                    )
                     ->where('a.id', 'in', $comid_arr)
                     ->column(
-                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon',
+                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon,c.deadline as setmeal_deadline',
                         'a.id'
                     );
                 foreach ($cominfo_arr as $key => $value) {
@@ -331,11 +357,16 @@ class Job extends \app\v1_0\controller\common\Base
                         $cominfo_arr[$val['company_id']]['nature']
                     ]
                     : '';
-                    $tmp_arr['setmeal_icon'] = isset(
-                        $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                    )
-                    ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                    : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    if($cominfo_arr[$val['company_id']]['setmeal_deadline']>time() || $cominfo_arr[$val['company_id']]['setmeal_deadline']==0){
+                        $tmp_arr['setmeal_icon'] = isset(
+                            $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                        )
+                        ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                        : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    }else{
+                        $tmp_arr['setmeal_icon'] = '';
+                    }
+                    
                 } else {
                     $tmp_arr['companyname'] = '';
                     $tmp_arr['company_audit'] = 0;
@@ -487,8 +518,8 @@ class Job extends \app\v1_0\controller\common\Base
             $jobinfo['refreshtime']
         );
         $return['base_info'] = $base_info;
-        
-        
+
+
         $getJobContact = model('Job')->getContact($jobinfo,$this->userinfo);
         $return['show_contact'] = $getJobContact['show_contact'];
         $return['show_contact_note'] = $getJobContact['show_contact_note'];
@@ -503,8 +534,8 @@ class Job extends \app\v1_0\controller\common\Base
                 $return['has_apply'] = 1;
             }
         }
-        
-        
+
+
         $apply_map['company_uid'] = $jobinfo['uid'];
         $endtime = time();
         $starttime = $endtime - 3600 * 24 * 14;
@@ -545,8 +576,13 @@ class Job extends \app\v1_0\controller\common\Base
                 'a.setmeal_id=c.id',
                 'LEFT'
             )
+            ->join(
+                config('database.prefix') . 'member_setmeal d',
+                'a.uid=d.uid',
+                'LEFT'
+            )
             ->field(
-                'a.id,a.companyname,a.logo,a.district,a.nature,a.scale,a.trade,a.audit,b.address,a.setmeal_id,c.icon'
+                'a.id,a.companyname,a.logo,a.district,a.nature,a.scale,a.trade,a.audit,b.address,a.setmeal_id,c.icon,d.deadline as setmeal_deadline'
             )
             ->where('a.uid', 'eq', $jobinfo['uid'])
             ->find();
@@ -581,10 +617,12 @@ class Job extends \app\v1_0\controller\common\Base
             )
             ? $category_data['QS_trade'][$companyinfo['trade']]
             : '';
-            $return['com_info']['setmeal_icon'] =
-            $companyinfo['icon'] > 0
-            ? model('Uploadfile')->getFileUrl($companyinfo['icon'])
-            : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
+            if($companyinfo['setmeal_deadline']==0 || $companyinfo['setmeal_deadline']>time()){
+                $return['com_info']['setmeal_icon'] = $companyinfo['icon'] > 0 ? model('Uploadfile')->getFileUrl($companyinfo['icon']) : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
+            }else{
+                $return['com_info']['setmeal_icon'] = '';
+            }
+            
             $job_list = model('Job')
                 ->field('id,jobname')
                 ->where('company_id', 'eq', $companyinfo['id'])
@@ -1379,7 +1417,7 @@ class Job extends \app\v1_0\controller\common\Base
             ->count();
         $this->ajaxReturn(200,'获取数据成功',$return);
     }
-    
+
     /**
      * 名企
      */
@@ -1421,5 +1459,5 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return $return;
     }
-    
+
 }

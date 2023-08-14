@@ -13,9 +13,6 @@
 <meta name="copyright" content="74cms.com" />
 <link rel="shortcut icon" href="__ROOT__/favicon.ico" />
 {#load href="__ROOT__/assets/js/polyfill.7.11.5.min.js" /#}
-{#load href="__ROOT__/assets/css/base.css" /#}
-{#load href="__ROOT__/assets/css/layout.css" /#}
-{#load href="__ROOT__/assets/css/public.css" /#}
 {#load href="__ROOT__/assets/js/vue.js" /#}
 {#load href="__ROOT__/assets/js/axios.min.js" /#}
 {#load href="__ROOT__/assets/css/element-ui.css" /#}
@@ -79,9 +76,16 @@
             jobfairolJobList: '/home/jobfairol/joblist',//获取网络招聘会参会职位
             jobfairolResList: '/home/jobfairol/resumelist',//获取网络招聘会参会个人
             jobfairolApply: '/home/jobfairol/apply',//报名
-            secretPhone:'/member/index/secretPhone',//号码保护接口
+            secretPhone: '/member/index/secretPhone',//号码保护接口
             config: '/home/config/index',//获取网站配置信息
             serviceOl: '/home/serviceol/index',//获取网站配置信息
+            sendsms_auth_mobile_nocheck: '/member/sendsms/authMobileNoCheck',//获取验证码
+            authMobileCheck: '/home/city_info/authMobileCheck',//验证码验证
+            get_experience: '/home/classify/index',//工作经验
+            getRegQuickCode: '/member/sendsms/regResumeQuick',//获取快速注册简历验证码
+            regResumeQuick: '/member/reg/personalQuick',//快速注册简历
+            interviewAddPre: '/member/index/interviewAddPre',//面试邀请预加载数据
+            company_list_by_trade: '/home/company/listByTrade',// 企业列表
         },
         isLogin: false,
         loginUtype: 0,
@@ -117,6 +121,7 @@
         forget: locationUrl + "/forget/1",
         appeal: locationUrl + "/appeal",
         wxpay: locationUrl + "/wxpay",
+        oauthQq: locationUrl + "/oauth/qq/login",
     }
     //获取列表中已选择的项目
     qscms.getSelItemArr = function () {

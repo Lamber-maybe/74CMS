@@ -19,6 +19,7 @@
             size="small"
             placeholder="请输入"
             style="width:200px;"
+            @keyup.enter.native="fetchData(true)"
           />
         </div>
 

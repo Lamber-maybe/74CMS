@@ -37,3 +37,10 @@ export function companySetmealAdd(data) {
     data
   })
 }
+export function companySetmealOpenLog(params) {
+  return request({
+    url: apiArr.companySetmealOpenLog,
+    method: 'get',
+    params
+  })
+}

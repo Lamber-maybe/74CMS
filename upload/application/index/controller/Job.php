@@ -125,7 +125,6 @@ class Job extends \app\index\controller\Base
             $params['current_page'] = $current_page;
             $params['pagesize'] = $pagesize;
         }
-
         $instance = new \app\common\lib\JobSearchEngine($params);
 
         $searchResult = $instance->run();
@@ -153,14 +152,14 @@ class Job extends \app\index\controller\Base
             }else if($district_level==3){
                 $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
             }
-            
+
             $arr['id'] = $key;
             $arr['url'] = P($params);
             $arr['text'] = $value;
             $options_district[] = $arr;
         }
 
-        
+
         if($category2>0){
             $category_level = 3;
             $category_category = model('CategoryJob')->getCache($category2);
@@ -180,7 +179,7 @@ class Job extends \app\index\controller\Base
             }else if($category_level==3){
                 $params = ['c1'=>$category1,'c2'=>$category2,'c3'=>$key];
             }
-            
+
             $arr['id'] = $key;
             $arr['url'] = P($params);
             $arr['text'] = $value;
@@ -197,7 +196,7 @@ class Job extends \app\index\controller\Base
         $options_nature = model('Job')->map_nature;
 
         $hotjob_list = $this->getHotjob();
-        
+
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $seoData['keyword'] = $keyword;
@@ -220,7 +219,7 @@ class Job extends \app\index\controller\Base
             $seoData['jobcategory'] = '';
         }
         $this->initPageSeo('joblist',$seoData);
-        
+
         $this->assign('selectedTagArr',$selectedTagArr);
         $this->assign('hotjob_list',$hotjob_list);
         $this->assign('currentPage',$current_page);
@@ -327,10 +326,24 @@ class Job extends \app\index\controller\Base
         ? model('Job')->map_sex[$jobinfo['sex']]
         : '不限';
         $base_info['district_text'] = isset(
-            $category_district_data[$jobinfo['district']]
+            $category_district_data[$jobinfo['district1']]
         )
-        ? $category_district_data[$jobinfo['district']]
-        : '';
+            ? $category_district_data[$jobinfo['district1']]
+            : '';
+        if($base_info['district_text']!='' && $jobinfo['district2']>0){
+            $base_info['district_text'] .= isset(
+                $category_district_data[$jobinfo['district2']]
+            )
+                ? ' / '.$category_district_data[$jobinfo['district2']]
+                : '';
+        }
+        if($base_info['district_text']!='' && $jobinfo['district3']>0){
+            $base_info['district_text'] .= isset(
+                $category_district_data[$jobinfo['district3']]
+            )
+                ? ' / '.$category_district_data[$jobinfo['district3']]
+                : '';
+        }
         $base_info['category_text'] = isset(
             $category_job_data[$jobinfo['category']]
         )
@@ -385,7 +398,7 @@ class Job extends \app\index\controller\Base
             $jobinfo['refreshtime']
         );
         $return['base_info'] = $base_info;
-        
+
         $companyinfo = model('Company')
             ->alias('a')
             ->join(
@@ -398,8 +411,13 @@ class Job extends \app\index\controller\Base
                 'a.setmeal_id=c.id',
                 'LEFT'
             )
+            ->join(
+                config('database.prefix') . 'member_setmeal d',
+                'a.uid=d.uid',
+                'LEFT'
+            )
             ->field(
-                'a.id,a.companyname,a.logo,a.district,a.nature,a.scale,a.trade,a.audit,b.address,a.setmeal_id,c.icon,a.addtime'
+                'a.id,a.companyname,a.logo,a.district,a.nature,a.scale,a.trade,a.audit,b.address,a.setmeal_id,c.icon,a.addtime,d.deadline as setmeal_deadline'
             )
             ->where('a.uid', 'eq', $jobinfo['uid'])
             ->find();
@@ -434,10 +452,12 @@ class Job extends \app\index\controller\Base
             )
             ? $category_data['QS_trade'][$companyinfo['trade']]
             : '';
-            $return['com_info']['setmeal_icon'] =
-            $companyinfo['icon'] > 0
-            ? model('Uploadfile')->getFileUrl($companyinfo['icon'])
-            : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
+            if($companyinfo['setmeal_deadline']>time() || $companyinfo['setmeal_deadline']==0){
+                $return['com_info']['setmeal_icon'] = $companyinfo['icon'] > 0 ? model('Uploadfile')->getFileUrl($companyinfo['icon']) : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
+            }else{
+                $return['com_info']['setmeal_icon'] = '';
+            }
+            
             $job_list = model('Job')
                 ->field('id,jobname')
                 ->where('company_id', 'eq', $companyinfo['id'])
@@ -449,8 +469,8 @@ class Job extends \app\index\controller\Base
             ? $job_list[0]['jobname']
             : '';
         }
-        
-        
+
+
         $similar_data = [
             'category1' => $jobinfo['category1'],
             'category2' => $jobinfo['category2'],
@@ -492,9 +512,14 @@ class Job extends \app\index\controller\Base
                         'a.setmeal_id=b.id',
                         'LEFT'
                     )
+                    ->join(
+                        config('database.prefix') . 'member_setmeal c',
+                        'a.uid=c.uid',
+                        'LEFT'
+                    )
                     ->where('a.id', 'in', $comid_arr)
                     ->column(
-                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon',
+                        'a.id,a.companyname,a.audit,a.logo,a.nature,a.scale,a.trade,a.setmeal_id,b.icon,c.deadline as setmeal_deadline',
                         'a.id'
                     );
                 foreach ($cominfo_arr as $key => $value) {
@@ -514,7 +539,7 @@ class Job extends \app\index\controller\Base
             }
             $jids = implode(',', $jobid_arr);
             $field =
-                'id,company_id,jobname,emergency,stick,minwage,maxwage,negotiable,education,experience,tag,district,addtime,refreshtime,map_lat,map_lng,amount,content,setmeal_id';
+                'id,company_id,jobname,emergency,stick,minwage,maxwage,negotiable,education,experience,tag,district1,district2,district3,district,addtime,refreshtime,map_lat,map_lng,amount,content,setmeal_id';
             $joblist = model('Job')
                 ->where('id', 'in', $jids)
                 ->orderRaw('field(id,' . $jids . ')')
@@ -568,11 +593,15 @@ class Job extends \app\index\controller\Base
                         $cominfo_arr[$val['company_id']]['nature']
                     ]
                     : '';
-                    $tmp_arr['setmeal_icon'] = isset(
-                        $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                    )
-                    ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                    : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    if($cominfo_arr[$val['company_id']]['setmeal_deadline']>time() || $cominfo_arr[$val['company_id']]['setmeal_deadline']==0){
+                        $tmp_arr['setmeal_icon'] = isset(
+                            $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                        )
+                        ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                        : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    }else{
+                        $tmp_arr['setmeal_icon'] = '';
+                    }
                 } else {
                     $tmp_arr['companyname'] = '';
                     $tmp_arr['company_audit'] = 0;
@@ -592,6 +621,31 @@ class Job extends \app\index\controller\Base
                 } else {
                     $tmp_arr['district_text'] = '';
                 }
+                if($val['district1']){
+                    $tmp_arr['district_text_full'] = isset(
+                        $category_district_data[$val['district1']]
+                    )
+                        ? $category_district_data[$val['district1']]
+                        : '';
+                }else{
+                    $tmp_arr['district_text_full'] = '';
+                }
+                
+                if($tmp_arr['district_text_full']!='' && $val['district2']>0){
+                    $tmp_arr['district_text_full'] .= isset(
+                        $category_district_data[$val['district2']]
+                    )
+                        ? ' / '.$category_district_data[$val['district2']]
+                        : '';
+                }
+                if($tmp_arr['district_text_full']!='' && $val['district3']>0){
+                    $tmp_arr['district_text_full'] .= isset(
+                        $category_district_data[$val['district3']]
+                    )
+                        ? ' / '.$category_district_data[$val['district3']]
+                        : '';
+                }
+
                 $tmp_arr['negotiable'] = $val['negotiable'];
                 $tmp_arr['wage_text'] = model('BaseModel')->handle_wage(
                     $val['minwage'],

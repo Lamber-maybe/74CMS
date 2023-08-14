@@ -42,7 +42,7 @@ import { memberAdd, memberEdit, memberCheckUnique } from '@/api/member'
 import { validMobile, validUsername, validEmail } from '@/utils/validate'
 
 export default {
-  props: ['uid'],
+  props: ['uid', 'listtype'],
   data() {
     var validateUsername = (rule, value, callback) => {
       if (validUsername(value)) {
@@ -155,7 +155,7 @@ export default {
             this.form.utype = this.form.utype + ''
             this.infoLoading = false
           })
-          .catch(() => {})
+          .catch(() => { })
       } else {
         this.placeholder = ''
         this.infoLoading = false
@@ -167,11 +167,19 @@ export default {
           memberAdd(insertData)
             .then(response => {
               this.$message.success(response.message)
-              this.closeDialog()
+              if (this.listtype != 'invalid') {
+                if (this.form.utype == 1) {
+                  this.closeDialogCompany()
+                } else {
+                  this.closeDialogPersonal()
+                }
+              } else {
+                this.closeDialog()
+              }
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -187,7 +195,7 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -204,6 +212,12 @@ export default {
     },
     closeDialog() {
       this.$emit('setDialogFormVisible')
+    },
+    closeDialogCompany() {
+      this.$emit('setDialogFormVisibleCompany')
+    },
+    closeDialogPersonal() {
+      this.$emit('setDialogFormVisiblePersonal')
     },
     pageReload() {
       this.$emit('pageReload')

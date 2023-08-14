@@ -136,6 +136,16 @@ const statRouter = {
       title: '业务成交统计',
       access: 'statOrder'
     }
+  },
+  {
+    path: '/stat/screen',
+    name: 'statScreen',
+    component: () =>
+      import ('@/views/stat/screen'),
+    meta: {
+      title: '数据大屏',
+      access: 'statScreen'
+    }
   }
   ]
 }

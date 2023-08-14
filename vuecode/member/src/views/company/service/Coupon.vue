@@ -5,7 +5,7 @@
 			<div class="coupon_wrapper" v-if="dataset.length>0">
 				<div class="coupon_list" v-for="(item, index) in dataset" :key="index">
 					<div class="coupon_text">
-						<p>{{item.coupon_name}}</p>
+						<a class="coupon_text_1" :title="item.coupon_name">{{item.coupon_name}}</a>
 						<span>仅限{{item.setmeal_name}}</span>
 						<div class="time_warpper">
 							<p>券编号：{{item.number}}</p>
@@ -107,11 +107,18 @@ import api from '@/api'
 		flex: 2.5;
 		padding-left: 25px;
 	}
-	.coupon_text>p{
+	.coupon_text>.coupon_text_1{
 		font-size:20px ;
 		color: #ff803b;
 		padding:16px 0;
+    display:block;
+    overflow: hidden;
+    white-space:nowrap;
+    max-width: 200px;
 	}
+	.coupon_text>.coupon_text_1:hover{
+    text-decoration: none;
+  }
 	.coupon_text>span{
 		color: #666666;
 		font-size: 14px;

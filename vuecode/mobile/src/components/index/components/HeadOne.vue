@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head>{{ $store.state.config.sitename }}</Head>
+    <Head :show_back="'false'">{{ $store.state.config.sitename }}</Head>
     <Ad
       v-if="ad_dataset_top.items.length > 0"
       :dataset="ad_dataset_top"

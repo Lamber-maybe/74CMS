@@ -28,35 +28,8 @@ class Login extends \app\common\controller\Backend
             if (!$admininfo) {
                 $this->ajaxReturn(0, '没有找到用户信息');
             }
-            $login_update_info['last_login_time'] = time();
-            $login_update_info['last_login_ip'] = get_client_ip();
-            $login_update_info['last_login_ipaddress'] = get_client_ipaddress(
-                $login_update_info['last_login_ip']
-            );
-            $login_update_info['last_login_ip'] =
-                $login_update_info['last_login_ip'] . ':' . get_client_port();
-            model('Admin')
-                ->where('id', $admininfo['id'])
-                ->update($login_update_info);
-            $roleinfo = model('AdminRole')->find($admininfo['role_id']);
-            $admininfo['access'] = $roleinfo['access'] == 'all' ? $roleinfo['access'] : unserialize($roleinfo['access']);
-            $admininfo['access_mobile'] = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
-            $admininfo['access_export'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
-            $admininfo['access_delete'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
-            $admininfo['rolename'] = $roleinfo['name'];
-            $JwtAuth = \app\common\lib\JwtAuth::mkToken(
-                config('sys.safecode'),
-                7776000, //90天有效期
-                ['info' => $admininfo]
-            );
-            $admin_token = $JwtAuth->getString();
-            model('AdminLog')->record('登录成功', $admininfo, 1);
-            $this->ajaxReturn(200, '登录成功', [
-                'token' => $admin_token,
-                'access' => $admininfo['access'],
-                'access_export' => $admininfo['access_export'],
-                'access_delete' => $admininfo['access_delete']
-            ]);
+            $loginReturn = model('Admin')->setLogin($admininfo);
+            $this->ajaxReturn(200, '登录成功', $loginReturn);
         }
     }
     public function logout()
@@ -70,5 +43,18 @@ class Login extends \app\common\controller\Backend
     public function config()
     {
         $this->ajaxReturn(200, '获取数据成功', model('Config')->getCache());
+    }
+    public function scan()
+    {
+        $scan_token = input('post.scan_token/s', '', 'trim');
+        if($scan_token){
+            $certinfo = model('AdminScanCert')->where('token',$scan_token)->find();
+            if($certinfo!==null && $certinfo->info!=''){
+                $info = json_decode($certinfo->info);
+                $certinfo->delete();
+                $this->ajaxReturn(200, '登录成功', ['pass'=>1,'info'=>$info]);
+            }
+        }
+        $this->ajaxReturn(200, '等待扫码', ['pass'=>0,'info'=>[]]);
     }
 }

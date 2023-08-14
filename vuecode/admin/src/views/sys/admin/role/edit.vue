@@ -55,6 +55,7 @@
         <el-form-item label="操作权限">
           <el-checkbox v-model="form.access_export">导出数据</el-checkbox>
           <el-checkbox v-model="form.access_delete">删除数据</el-checkbox>
+          <el-checkbox v-model="form.access_set_service">分配客服</el-checkbox>
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -87,7 +88,8 @@ export default {
         access: [],
         access_mobile: [],
         access_export: false,
-        access_delete: false
+        access_delete: false,
+        access_set_service: false
       },
       accessData: [],
       accessDataMobile: [
@@ -204,6 +206,7 @@ export default {
       const insertData = { ...this.form }
       insertData.access_export = insertData.access_export === true ? 1 : 0
       insertData.access_delete = insertData.access_delete === true ? 1 : 0
+      insertData.access_set_service = insertData.access_set_service === true ? 1 : 0
       this.$refs[formName].validate(valid => {
         if (valid) {
           apiEdit(insertData)

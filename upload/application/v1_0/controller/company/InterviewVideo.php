@@ -38,7 +38,9 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
             ->select();
         $photo_id_arr = [];
         $photo_data = [];
+        $resumeid_arr = [];
         foreach ($list as $key => $value) {
+            $resumeid_arr[] = $value['resume_id'];
             $value['photo_img'] > 0 && ($photo_id_arr[] = $value['photo_img']);
         }
         if (!empty($photo_id_arr)) {
@@ -46,32 +48,10 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
                 $photo_id_arr
             );
         }
+        $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
         foreach ($list as $key => $value) {
-            if ($value['display_name'] == 0) {
-                if ($value['sex'] == 1) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '先生'
-                    );
-                } elseif ($value['sex'] == 2) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '女士'
-                    );
-                } else {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '**'
-                    );
-                }
-            }
+            $value['fullname'] = $fullname_arr[$value['resume_id']];
             $value['sex_text'] = model('Resume')->map_sex[
                 $value['sex']
             ];

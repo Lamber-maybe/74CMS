@@ -119,6 +119,7 @@ class Contrast extends \app\v1_0\controller\common\Base
                     $photo_id_arr
                 );
             }
+            $fullname_arr = model('Resume')->formatFullname($idarr,$this->userinfo);
 
             $category_data = model('Category')->getCache();
             $category_major_data = model('CategoryMajor')->getCache();
@@ -150,31 +151,7 @@ class Contrast extends \app\v1_0\controller\common\Base
             foreach ($resume as $key => $val) {
                 $tmp_arr = [];
                 $tmp_arr['id'] = $val['id'];
-                $tmp_arr['fullname'] = $val['fullname'];
-                if ($val['display_name'] == 0) {
-                    if ($val['sex'] == 1) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '先生'
-                        );
-                    } elseif ($val['sex'] == 2) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '女士'
-                        );
-                    } else {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '**'
-                        );
-                    }
-                }
+                $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
                     : default_empty('photo');

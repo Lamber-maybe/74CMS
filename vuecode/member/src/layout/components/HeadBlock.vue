@@ -7,7 +7,7 @@
       <a :href="link_url_web.index" class="back_home">返回首页</a>
       <router-link to="/company/message" class="head_notice" :class="msgUnread===true?'new':''">通知消息</router-link>
       <div class="head_search">
-        <label><input v-model="keyword" type="text" placeholder="使用关键词搜索简历"></label>
+        <label><input v-model="keyword" type="text" @keyup.enter="searchResume" placeholder="使用关键词搜索简历"></label>
         <div class="btn" @click="searchResume"></div>
       </div>
       <div class="clear"></div>
@@ -77,6 +77,7 @@ import api from '@/api'
       height: 70px;
 
       .site_logo {
+        overflow: hidden;
         position: relative;
         float: left;
         width: 170px;
@@ -89,6 +90,18 @@ import api from '@/api'
           top: 50%;
           transform: translate(0, -50%);
           border: 0;
+        }
+        &::before{
+          content: "";
+          position: absolute;
+          left: -10px;
+          top: -460px;
+          width: 200px;
+          height: 10px;
+          background-color: rgba(255, 255, 255, 0.5);
+          transform: rotate(-45deg);
+          animation: searchLights 1.5s ease-in 1s infinite;
+          z-index: 333;
         }
       }
 
@@ -194,4 +207,44 @@ import api from '@/api'
       }
     }
   }
+  @-webkit-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@-o-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@-moz-keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
+@keyframes searchLights {
+  0% {
+    left: -80px;
+    top: 0;
+  }
+  to {
+    left: 130px;
+    top: 0px;
+  }
+}
 </style>

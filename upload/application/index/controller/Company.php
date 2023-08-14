@@ -23,20 +23,20 @@ class Company extends \app\index\controller\Base
         $current_page = request()->get('page/d',1,'intval');
         $pagesize = request()->get('pagesize/d',10,'intval');
         if ($keyword != '') {
-            $where['companyname'] = ['like', '%' . $keyword . '%'];
+            $where['a.companyname'] = ['like', '%' . $keyword . '%'];
         }
         if ($trade > 0) {
-            $where['trade'] = ['eq', $trade];
+            $where['a.trade'] = ['eq', $trade];
         }
         if ($nature > 0) {
-            $where['nature'] = ['eq', $nature];
+            $where['a.nature'] = ['eq', $nature];
         }
         if ($district3 > 0) {
-            $where['district3'] = ['eq', $district3];
+            $where['a.district3'] = ['eq', $district3];
         } elseif ($district2 > 0) {
-            $where['district2'] = ['eq', $district2];
+            $where['a.district2'] = ['eq', $district2];
         } elseif ($district1 > 0) {
-            $where['district1'] = ['eq', $district1];
+            $where['a.district1'] = ['eq', $district1];
         }
         if($district2>0){
             $district_level = 3;
@@ -63,14 +63,24 @@ class Company extends \app\index\controller\Base
             $arr['text'] = $value;
             $options_district[] = $arr;
         }
+        
+        if (config('global_config.must_com_audit_certificate') == 1) {
+            $where['a.audit'] = 1;
+        }
 
-        $total = model('Company')->where($where)->count();
+        $total = model('Company')->alias('a')->where($where)->count();
         $list = model('Company')
+            ->alias('a')
             ->field(
-                'id,companyname,logo,district,scale,nature,trade,audit,setmeal_id'
+                'a.id,a.companyname,a.logo,a.district1,a.district2,a.district3,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
+            )
+            ->join(
+                config('database.prefix') . 'member_setmeal b',
+                'a.uid=b.uid',
+                'LEFT'
             )
             ->where($where)
-            ->order('id desc')
+            ->order('a.id desc')
             ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);
         $pagerHtml = $list->render();
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];
@@ -107,10 +117,24 @@ class Company extends \app\index\controller\Base
             $tmp_arr['companyname'] = $value['companyname'];
             $tmp_arr['company_audit'] = $value['audit'];
             $tmp_arr['district_text'] = isset(
-                $category_district_data[$value['district']]
+                $category_district_data[$value['district1']]
             )
-                ? $category_district_data[$value['district']]
+                ? $category_district_data[$value['district1']]
                 : '';
+            if($tmp_arr['district_text']!='' && $value['district2']>0){
+                $tmp_arr['district_text'] .= isset(
+                    $category_district_data[$value['district2']]
+                )
+                    ? ' / '.$category_district_data[$value['district2']]
+                    : '';
+            }
+            if($tmp_arr['district_text']!='' && $value['district3']>0){
+                $tmp_arr['district_text'] .= isset(
+                    $category_district_data[$value['district3']]
+                )
+                    ? ' / '.$category_district_data[$value['district3']]
+                    : '';
+            }
             $tmp_arr['trade_text'] = isset(
                 $category_data['QS_trade'][$value['trade']]
             )
@@ -135,7 +159,7 @@ class Company extends \app\index\controller\Base
             $tmp_arr['logo_src'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$value['logo']]
                 : default_empty('logo');
-            if (isset($setmeal_list[$value['setmeal_id']])) {
+            if (isset($setmeal_list[$value['setmeal_id']]) && ($value['setmeal_deadline']>time() || $value['setmeal_deadline']==0)) {
                 $tmp_arr['setmeal_icon'] =
                     $setmeal_list[$value['setmeal_id']]['icon'] > 0
                         ? model('Uploadfile')->getFileUrl(
@@ -260,10 +284,24 @@ class Company extends \app\index\controller\Base
             ? $category_data['QS_trade'][$cominfo['trade']]
             : '';
         $base_info['district_text'] = isset(
-            $category_district_data[$cominfo['district']]
+            $category_district_data[$cominfo['district1']]
         )
-            ? $category_district_data[$cominfo['district']]
+            ? $category_district_data[$cominfo['district1']]
             : '';
+        if($base_info['district_text']!='' && $cominfo['district2']>0){
+            $base_info['district_text'] .= isset(
+                $category_district_data[$cominfo['district2']]
+            )
+                ? ' / '.$category_district_data[$cominfo['district2']]
+                : '';
+        }
+        if($base_info['district_text']!='' && $cominfo['district3']>0){
+            $base_info['district_text'] .= isset(
+                $category_district_data[$cominfo['district3']]
+            )
+                ? ' / '.$category_district_data[$cominfo['district3']]
+                : '';
+        }
         $base_info['scale_text'] = isset(
             $category_data['QS_scale'][$cominfo['scale']]
         )
@@ -292,10 +330,17 @@ class Company extends \app\index\controller\Base
         $base_info['content'] = $detail_info['content'];
 
         //套餐
-        $setmeal = model('Setmeal')
-            ->where('id', $cominfo['setmeal_id'])
+        $setmeal = model('MemberSetmeal')
+            ->alias('a')
+            ->field('b.*,a.deadline as setmeal_deadline')
+            ->join(
+                config('database.prefix') . 'setmeal b',
+                'a.setmeal_id=b.id',
+                'LEFT'
+            )
+            ->where('a.uid', $cominfo['uid'])
             ->find();
-        if ($setmeal !== null) {
+        if ($setmeal !== null && ($setmeal['setmeal_deadline']>time() || $setmeal['setmeal_deadline']==0)) {
             $base_info['setmeal_icon'] =
                 $setmeal['icon'] > 0
                     ? model('Uploadfile')->getFileUrl($setmeal['icon'])
@@ -374,12 +419,18 @@ class Company extends \app\index\controller\Base
     }
     protected function getSimilarList($id,$trade){
         $list = model('Company')
+            ->alias('a')
             ->field(
-                'id,companyname,logo,district,scale,nature,trade,audit,setmeal_id'
+                'a.id,a.companyname,a.logo,a.district,a.scale,a.nature,a.trade,a.audit,a.setmeal_id,b.deadline as setmeal_deadline'
             )
-            ->where('id','neq',$id)
-            ->where('trade',$trade)
-            ->order('id desc')
+            ->join(
+                config('database.prefix') . 'member_setmeal b',
+                'a.uid=b.uid',
+                'LEFT'
+            )
+            ->where('a.id','neq',$id)
+            ->where('a.trade',$trade)
+            ->order('a.id desc')
             ->page(1, 10)
             ->select();
         $job_list = $comid_arr = $logo_arr = $logo_id_arr = $setmeal_id_arr = $setmeal_list = [];
@@ -443,7 +494,7 @@ class Company extends \app\index\controller\Base
             $tmp_arr['logo_src'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$value['logo']]
                 : default_empty('logo');
-            if (isset($setmeal_list[$value['setmeal_id']])) {
+            if (isset($setmeal_list[$value['setmeal_id']]) && ($value['setmeal_deadline']>time() || $value['setmeal_deadline']==0)) {
                 $tmp_arr['setmeal_icon'] =
                     $setmeal_list[$value['setmeal_id']]['icon'] > 0
                         ? model('Uploadfile')->getFileUrl(
@@ -488,16 +539,7 @@ class Company extends \app\index\controller\Base
      */
     protected function getHotword()
     {
-        $list = cache('comshow_hotword_list');
-        if (!$list) {
-            $list = model('Hotword')
-                ->field('word,hot')
-                ->order('hot desc')
-                ->limit(49)
-                ->select();
-            cache('comshow_hotword_list', $list, 3600);
-        }
-        return $list;
+        return model('Hotword')->getList(49);
     }
     /**
      * 实地认证报告

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {#load href="__ROOT__/assets/css/base.css" /#}
+    {#load href="__ROOT__/assets/css/screen.css" /#}
+    <title>数据大屏</title>
+    <script>
+      var token = "";
+      // 获取token
+      var url = window.location.href
+      var urlAry = url.split('?')[1]
+      token = urlAry.split('=')[1]
+      var apiUrl = "{#$global_config.sitedomain#}{#$global_config.sitedir#}index.php?s=v1_0/home/screen/index&token=" + token;
+    </script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="tip">
+            当前浏览器版本较低体验较差，请使用谷歌浏览器或者360浏览器访问
+            <i class="icon">X</i>
+        </div>
+        <div class="header">
+            <div class="title font"></div>
+            <div class="date font">
+                <span class="text_1"></span>
+                <span class="text_2"></span>
+            </div>
+        </div>
+        <div class="content clearfix">
+
+            <div class="left_box">
+                <div class="font left_title">
+                    求职者统计
+                </div>
+                <div class="box box_ht1">
+                    <div class="chart">
+                        <div class="chart_title font">
+                            求职者性别
+                        </div>
+                        <div id="chart1"></div>
+                    </div>
+
+                    <div class="chart">
+                        <div class="chart_title font">
+                            求职者年龄
+                        </div>
+                        <div id="chart2"></div>
+                    </div>
+
+                    <div class="chart">
+                        <div class="chart_title font">
+                            求职者学历
+                        </div>
+                        <div id="chart3"></div>
+                    </div>
+
+                    <div class="chart">
+                        <div class="chart_title font">
+                            求职者经验
+                        </div>
+                        <div id="chart4"></div>
+                    </div>
+
+                </div>
+                <div class="box box_ht2">
+                    <div class="title2 font">意向岗位分布</div>
+                    <div class="position">
+                        <div id="chart5"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="center_box">
+                <div class="box1 clearfix">
+                    <div class="item">
+                      <div class="pos_item">
+                        <div class="title">入驻企业</div>
+                        <div class="color_1 sum">
+                          <span class="sum_text"></span>
+                          <span>家</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="pos_item">
+                        <div class="title">招聘岗位</div>
+                        <div class="color_2 sum">
+                          <span class="sum_text"></span>
+                          <span>个</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="pos_item">
+                        <div class="title">岗位需求</div>
+                        <div class="color_3 sum">
+                          <span class="sum_text"></span>
+                          <span>人</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="pos_item">
+                        <div class="title">求职者数</div>
+                        <div class="color_4 sum">
+                          <span class="sum_text"></span>
+                          <span>人</span>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="box2">
+                    <div class="activity">
+                        <div class="font title">最近一月活跃度统计分析</div>
+                        <div class="activity_chart">
+                            <div id="chart6"></div>
+                        </div>
+                    </div>
+                    <div class="statistics_box clearfix">
+                        <div class="job">
+                            <div class="font title">
+                                求职者实时数据
+                            </div>
+                            <div class="job_list" id="center_swiper_1">
+                                <ul class="center_list"></ul>
+                            </div>
+                        </div>
+                        <div class="com">
+                            <div class="font title">
+                                招聘企业实时数据
+                            </div>
+                            <div class="com_list" id="center_swiper_2">
+                                <ul class="center_list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right_box">
+                <div class="font right_title">
+                    招聘企业统计
+                </div>
+                <div class="box1 clearfix">
+                    <div class="nature">
+                        <div class="font nature_title">企业性质</div>
+                        <div id="chart7"></div>
+                    </div>
+                    <div class="scale">
+                        <div class="font scale_title">企业规模</div>
+                        <div id="chart8"></div>
+                    </div>
+                </div>
+                <div class="box1">
+                    <div class="font hot_title">热门职位排行</div>
+                    <div id="right_swiper_1" class="hot_list">
+                        <ul class="hot_job_list"></ul>
+                    </div>
+                </div>
+                <div class="box2">
+                    <div class="font addr_title">
+                        企业地区分布排行
+                    </div>
+                    <div id="chart9"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {#load href="__ROOT__/assets/js/jquery.min.js" /#}
+    {#load href="__ROOT__/assets/js/jquery.vticker-min.js" /#}
+    {#load href="__ROOT__/assets/js/echarts.min.js" /#}
+    {#load href="__ROOT__/assets/js/echarts-auto-tooltip.js" /#}
+    {#load href="__ROOT__/assets/js/screen.js" /#}
+</body>
+
+</html>

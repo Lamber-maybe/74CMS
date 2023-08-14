@@ -24,6 +24,9 @@
       <el-tab-pane label="模板设置" :lazy="true">
         <smstpl />
       </el-tab-pane>
+      <el-tab-pane label="黑名单" :lazy="true">
+        <blacklist />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -31,10 +34,12 @@
 <script>
 import smsbase from './components/base.vue'
 import smstpl from './components/tpl.vue'
+import blacklist from './components/blacklist.vue'
 export default {
   components: {
     smsbase,
-    smstpl
+    smstpl,
+    blacklist
   }
 }
 </script>

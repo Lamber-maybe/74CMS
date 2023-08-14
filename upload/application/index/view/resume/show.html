@@ -201,10 +201,12 @@
                                     <div class="scan_code_note">微信扫码拔打电话</div>
                                     <div class="scan_code_show">
                                         <div class="code" v-if="codeShow">
-                                            <img v-if="!hasGetCode" class="loading" :src="wx_code_url"/>
-                                            <img v-if="hasGetCode" class="qrcode" :src="wx_code_url"/>
+                                            <img v-if="!hasGetCode" class="loading" :src="wx_code_url" />
+                                            <img v-if="hasGetCode" class="qrcode" :src="wx_code_url" />
                                         </div>
-                                        <div class="scan_code_tip">专属隐私号码,通话安全放心<span v-if="!codeShow" class="common_arrow_gray_down"></span><span v-if="codeShow" class="common_arrow_gray_up"></span></div>
+                                        <div class="scan_code_tip">专属隐私号码,通话安全放心<span v-if="!codeShow"
+                                                class="common_arrow_gray_down"></span><span v-if="codeShow"
+                                                class="common_arrow_gray_up"></span></div>
                                     </div>
                                 </div>
                             </div>
@@ -479,9 +481,9 @@
     var app = new Vue({
         el: '#app',
         data: {
-            wx_code_url:'/assets/images/loading.gif',
+            wx_code_url: '/assets/images/loading.gif',
             codeShow: false,
-            hasGetCode:false,
+            hasGetCode: false,
             showTipoff: false,
             tipoffForm: {
                 reason: '',
@@ -596,20 +598,19 @@
             }
         },
         methods: {
-            onMouseover:function(){
+            onMouseover: function () {
                 this.codeShow = true;
-                if(this.hasGetCode)return;
-                if(!isWxOpen)
-                {
-                    this.wx_code_url = encodeURI(qscms.apiUrl +  qscms.apiList.qrcode + '?url={#$return.share_url#}')
+                if (this.hasGetCode) return;
+                if (!isWxOpen) {
+                    this.wx_code_url = encodeURI(qscms.apiUrl + qscms.apiList.qrcode + '?url={#$return.share_url#}')
                     this.hasGetCode = true;
-                }else{
+                } else {
                     var that = this;
-                    httpget(qscms.apiList.qrcode, {type:'wechat',alias:'subscribe_resume', resumeid:id, getsrc:1}).then(function(res){
-                        if(res.code == 200){
+                    httpget(qscms.apiList.qrcode, { type: 'wechat', alias: 'subscribe_resume', resumeid: id, getsrc: 1 }).then(function (res) {
+                        if (res.code == 200) {
                             that.wx_code_url = res.data;
                             that.hasGetCode = true;
-                        }else{
+                        } else {
                             that.$message({
                                 type: 'error',
                                 message: res.message
@@ -618,7 +619,7 @@
                     });
                 }
             },
-            onMouseout:function(){
+            onMouseout: function () {
                 this.codeShow = false;
             },
             handlerInviteOpened: function () {
@@ -632,12 +633,23 @@
                     })
                     .catch(function () { })
                 this.fetchSetmeal()
+                this.fetchIterviewPre()
             },
             fetchSetmeal: function () {
                 var that = this
                 httpget(qscms.apiList.member_setmeal, {})
                     .then(function (res) {
                         that.mySetmeal = res.data.info
+                    })
+                    .catch(function () { })
+            },
+            fetchIterviewPre: function () {
+                var that = this
+                httpget(qscms.apiList.interviewAddPre, {})
+                    .then(function (res) {
+                        that.form.address = res.data.address
+                        that.form.contact = res.data.contact
+                        that.form.tel = res.data.tel
                     })
                     .catch(function () { })
             },

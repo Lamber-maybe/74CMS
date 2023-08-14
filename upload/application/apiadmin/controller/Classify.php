@@ -530,4 +530,15 @@ class Classify extends \app\common\controller\Backend
     {
         return model('Navigation')->map_page;
     }
+
+    private function setmealOpenType(){
+        $list = model('MemberSetmealOpenLog')->open_type_arr;
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr['id'] = $key;
+            $arr['name'] = $value;
+            $return[] = $arr;
+        }
+        return $return;
+    }
 }

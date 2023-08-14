@@ -378,6 +378,7 @@ class Recommend extends \app\v1_0\controller\common\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
             $photo_arr = $photo_id_arr = [];
             foreach ($resume as $key => $value) {
@@ -418,31 +419,7 @@ class Recommend extends \app\v1_0\controller\common\Base
                 $tmp_arr['id'] = $val['id'];
                 $tmp_arr['stick'] = $val['stick'];
                 $tmp_arr['high_quality'] = $val['high_quality'];
-                $tmp_arr['fullname'] = $val['fullname'];
-                if ($val['display_name'] == 0) {
-                    if ($val['sex'] == 1) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '先生'
-                        );
-                    } elseif ($val['sex'] == 2) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '女士'
-                        );
-                    } else {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '**'
-                        );
-                    }
-                }
+                $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
                     : default_empty('photo');

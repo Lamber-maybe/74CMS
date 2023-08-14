@@ -112,7 +112,7 @@
             :clearable="false"
             placeholder="选择参加工作时间"
             value-format="yyyy-MM"
-            style="width:330px;"
+            style="width: 330px"
             :disabled="enter_job_time_empty === true"
           />
           &nbsp;
@@ -242,7 +242,7 @@
             :on-success="handlePhotoSuccess"
             :before-upload="beforePhotoUpload"
           >
-            <img v-if="form.photo_img" :src="photoUrl" class="photo">
+            <img v-if="form.photo_img" :src="photoUrl" class="photo" />
             <i v-else class="el-icon-plus photo-uploader-icon" />
           </el-upload>
           <span class="smalltip">
@@ -400,7 +400,7 @@ export default {
             trigger: 'change'
           }
         ],
-        photo_img: [{ required: true, message: '请上传照片', trigger: 'blur' }],
+        // photo_img: [{ required: true, message: '请上传照片', trigger: 'blur' }],
         residence: [
           {
             required: true,
@@ -495,7 +495,7 @@ export default {
       return this.$store.state.config
     }
   },
-  mounted() {},
+  mounted() { },
   created() {
     this.fileupload_size = this.config.fileupload_size
     this.fileupload_ext = this.config.fileupload_ext
@@ -637,7 +637,7 @@ export default {
           }
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     onSubmit(formName) {
       if (this.submitLoading === true) {

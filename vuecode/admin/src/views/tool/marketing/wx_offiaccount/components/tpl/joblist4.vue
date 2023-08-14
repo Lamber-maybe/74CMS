@@ -4,7 +4,8 @@
       <section style="margin-bottom:10px;">
         <section style="padding:0;margin: 0 0 -30px;display:block;text-align: center;box-sizing:border-box;">
           <section style="margin:0;padding:0;display: inline-block;box-sizing:border-box;">
-            <section style="padding: 0;display: block;margin:0;width: 100%;background: url(https://ae01.alicdn.com/kf/He26c8e0df2594815809c1e927893d41ei.png);background-repeat: no-repeat;background-size: 100% 100%;height: 100%;line-height: 0;box-sizing:border-box;">
+            <!-- https://ae01.alicdn.com/kf/He26c8e0df2594815809c1e927893d41ei.png -->
+            <section :style="`padding: 0;display: block;margin:0;width: 100%;background: url(${url});background-repeat: no-repeat;background-size: 100% 100%;height: 100%;line-height: 0;box-sizing:border-box;`">
               <section style="padding:0;display:block;margin:0;line-height: 0;box-sizing:border-box;">
                 <section style="display:block;color: #fff;margin:0;font-size:16px;padding: 0 17px 0 20px;letter-spacing:2px;line-height: 30px;text-align:justify;box-sizing:border-box;-webkit-transform:rotate(0);" class=""><section style="padding:0;margin:0">{{ item.jobname }}</section>
                 </section>
@@ -51,6 +52,7 @@ export default {
   props: ['datalist', 'link'],
   data() {
     return {
+      url: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/joblist4-1.png'
     }
   },
   created() {

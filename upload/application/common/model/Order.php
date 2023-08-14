@@ -755,7 +755,7 @@ class Order extends \app\common\model\BaseModel
     /**
      * 设置订单状态为已支付
      */
-    public function orderPaid($oid, $payment, $time, $note = '')
+    public function orderPaid($oid, $payment, $time, $note = '',$admin_id=0)
     {
         $order = $this->where('oid', 'eq', $oid)->find();
         if ($order === null) {
@@ -872,7 +872,7 @@ class Order extends \app\common\model\BaseModel
                 'uid' => $order['uid'],
                 'setmeal_id' => $extra['setmeal_id'],
                 'note' => '',
-            ]);
+            ],$order['id'],$admin_id);
             $points_log = '企业套餐';
         }
         //企业充积分

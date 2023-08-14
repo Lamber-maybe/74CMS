@@ -31,7 +31,8 @@ class AdminRole extends \app\common\controller\Backend
             'access' => input('post.access/a'),
             'access_mobile' => input('post.access_mobile/a'),
             'access_export' => input('post.access_export/d',0,'intval'),
-            'access_delete' => input('post.access_delete/d',0,'intval')
+            'access_delete' => input('post.access_delete/d',0,'intval'),
+            'access_set_service' => input('post.access_set_service/d',0,'intval')
         ];
         $input_data['access'] = serialize($input_data['access']);
         $input_data['access_mobile'] = serialize($input_data['access_mobile']);
@@ -68,6 +69,7 @@ class AdminRole extends \app\common\controller\Backend
             }
             $info['access_export'] = $info['access_export']==1?true:false;
             $info['access_delete'] = $info['access_delete']==1?true:false;
+            $info['access_set_service'] = $info['access_set_service']==1?true:false;
 
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
@@ -77,7 +79,8 @@ class AdminRole extends \app\common\controller\Backend
                 'access' => input('post.access/a'),
                 'access_mobile' => input('post.access_mobile/a'),
                 'access_export' => input('post.access_export/d',0,'intval'),
-                'access_delete' => input('post.access_delete/d',0,'intval')
+                'access_delete' => input('post.access_delete/d',0,'intval'),
+                'access_set_service' => input('post.access_set_service/d',0,'intval')
             ];
             $id = intval($input_data['id']);
             if (!$id) {

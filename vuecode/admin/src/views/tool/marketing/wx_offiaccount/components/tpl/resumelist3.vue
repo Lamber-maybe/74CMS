@@ -3,11 +3,11 @@
     <section v-for="(item,index) in datalist.items" :key="index">
       <section style="padding:0;margin:0;display:block;box-sizing:border-box;margin-bottom:10px;">
         <section style="display:block;margin:0 auto -12px;padding:0;line-height:0;width:50px;box-sizing:border-box">
-          <img src="https://ae01.alicdn.com/kf/H4568fafeedc04c0ba7888861af95d1e4R.png" style="width:100%;display:block;box-sizing:border-box" data-ratio="0.46473029045643155" data-w="241">
+          <img :src="imgurl_1" style="width:100%;display:block;box-sizing:border-box" data-ratio="0.46473029045643155" data-w="241">
         </section>
         <section style="padding:0;display:block;margin:0;border:2px solid #590504;background-color:#fff;overflow:hidden;border-radius:9px;box-sizing:border-box">
-          <section style="padding:0;display:block;margin:0;background-color:#fff;box-sizing:border-box;background-image:url(https://ae01.alicdn.com/kf/H62a3e409961a49d79cc524a3f8649f2b0.png);background-repeat:repeat-y;background-size:5px;background-position:bottom right">
-            <section style="padding:0 5px 5px 0;display:block;margin:0;box-sizing:border-box;background-image:url(https://ae01.alicdn.com/kf/He26b2267baea433a89803cbc2a51a75et.png);background-repeat:repeat-x;background-size:28px;background-position:bottom left">
+          <section :style="`padding:0;display:block;margin:0;background-color:#fff;box-sizing:border-box;background-image:url(${imgurl_2});background-repeat:repeat-y;background-size:5px;background-position:bottom right`">
+            <section :style="`padding:0 5px 5px 0;display:block;margin:0;box-sizing:border-box;background-image:url(${imgurl_3});background-repeat:repeat-x;background-size:28px;background-position:bottom left`">
               <section style="padding:0;display:block;margin:0;border:2px solid #590504;border-top:0;border-left:0;background-color:#fff;overflow:hidden;box-sizing:border-box">
                 <section style="color:#590504;border:0;margin:0;font-size:15px;padding:15px 10px 8px;line-height:30px;text-align:justify;box-sizing:border-box;-webkit-transform:rotate(0);transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-o-transform: rotate(0deg);" class="">
                   <p style="padding:0;margin:0"><span style="caret-color: red; font-size: 18px; font-weight:bold;">{{ item.fullname }}</span><span>({{ item.sex_text }}，{{ item.age_text }}岁，{{ item.education_text }}，{{ item.experience_text }})</span></p>
@@ -47,6 +47,9 @@ export default {
   props: ['datalist', 'link'],
   data() {
     return {
+      imgurl_1: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/resumelist3-1.png',
+      imgurl_2: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/resumelist3-2.png',
+      imgurl_3: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/resumelist3-3.png'
     }
   },
   created() {

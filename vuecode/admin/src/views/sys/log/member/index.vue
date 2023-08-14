@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>会员日志</span>
+        <span>{{ utype == 1 ? "企业" : "个人" }}会员日志</span>
       </div>
       <div class="list-search">
         <div class="filter-item">
@@ -11,7 +11,7 @@
             v-model="uid"
             size="small"
             placeholder="请输入"
-            style="width:200px;"
+            style="width: 200px"
           />
         </div>
         <div class="filter-item">
@@ -20,11 +20,14 @@
             v-model="keyword"
             size="small"
             placeholder="请输入"
-            style="width:200px;"
+            style="width: 200px"
+            @keyup.enter.native="fetchData(true)"
           />
         </div>
 
-        <el-button style="search-btn" size="small" @click="fetchData(true)">查询</el-button>
+        <el-button style="search-btn" size="small" @click="fetchData(true)"
+          >查询</el-button
+        >
       </div>
       <div class="spaceline" />
       <el-table
@@ -40,7 +43,18 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" prop="content" />
-        <el-table-column label="会员UID" prop="uid" width="100" />
+        <el-table-column
+          label="企业名称"
+          prop="companyname"
+          width="300"
+          v-if="utype == 1"
+        />
+        <el-table-column
+          label="姓名"
+          prop="fullname"
+          width="150"
+          v-if="utype == 2"
+        />
         <el-table-column label="IP" prop="ip" width="180" />
         <el-table-column label="IP归属地" prop="ip_addr" width="180" />
         <el-table-column label="来源" prop="platform_cn" width="180" />
@@ -48,11 +62,11 @@
       <div class="spaceline" />
       <el-row :gutter="20">
         <el-col :span="8" />
-        <el-col :offset="8" :span="16" style="text-align: right;">
+        <el-col :offset="8" :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -70,6 +84,7 @@ import { memberActionLog } from '@/api/member'
 import { parseTime } from '@/utils/index'
 
 export default {
+  props: ['utype'],
   filters: {
     timeFilter(timestamp) {
       return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
@@ -97,6 +112,7 @@ export default {
     fetchData() {
       this.listLoading = true
       const param = {
+        utype: this.utype,
         keyword: this.keyword,
         uid: this.uid,
         page: this.currentPage,
@@ -123,21 +139,21 @@ export default {
 </script>
 <style scoped lang="scss">
 .list-search {
-	width: 100%;
-	.filter-item {
-		float: left;
-		.label {
-			color: #666;
-			font-size: 14px;
-		}
-	}
-	.el-select.list-options {
-		margin-right: 10px;
-		width: 150px;
-	}
-	.el-input {
-		margin-right: 10px;
-		width: 150px;
-	}
+  width: 100%;
+  .filter-item {
+    float: left;
+    .label {
+      color: #666;
+      font-size: 14px;
+    }
+  }
+  .el-select.list-options {
+    margin-right: 10px;
+    width: 150px;
+  }
+  .el-input {
+    margin-right: 10px;
+    width: 150px;
+  }
 }
 </style>

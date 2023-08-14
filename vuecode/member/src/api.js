@@ -6,7 +6,7 @@ export default {
   //获取用户信息
   userinfo: '/home/config/userinfo',
   //退出登录
-  logout:'/member/login/logout',
+  logout: '/member/login/logout',
   // 注册发送短信
   get_reg_code: '/member/sendsms/reg',
   // 企业注册
@@ -400,15 +400,22 @@ export default {
   //个人会员中心首页统计
   personal_index: '/personal/index/index',
   //执行计划任务
-  cron_run:'/home/cron/index',
+  cron_run: '/home/cron/index',
   //网络招聘会列表
-  company_jobfairol:'/home/jobfairol/index',
+  company_jobfairol: '/home/jobfairol/index',
   //已报名网络招聘会列表
-  company_jobfairol_reserve:'/company/jobfairol/index',
+  company_jobfairol_reserve: '/company/jobfairol/index',
   // 简历详情
   resumeshow: '/home/resume/show',
   // rtc配置
   rtc_config: '/home/config/webrtc',
   //委托书下载
   downloadproxy: '/home/index/downloadproxy',
+  //职位分类模板
+  categoryjob_template_list: '/company/job/getCategoryJobTemplate',
+  // 面试邀请数据预加载
+  interview_add_pre: '/member/index/interviewAddPre',
+  // 海报
+  create_poster: '/home/poster/index',
+  download_poster: '/home/poster/download',
 }

@@ -127,7 +127,8 @@ export default {
       options_link: [
         { value: 'normal', name: '普通二维码' },
         { value: 'weixin', name: '公众号二维码' },
-        { value: 'mobile', name: '移动端链接' }
+        { value: 'mobile', name: '移动端链接' },
+        { value: 'miniprogram', name: '小程序链接' }
       ]
     }
   },

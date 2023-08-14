@@ -16,14 +16,14 @@
       :rules="rules"
       :inline-message="true"
     >
-      <el-form-item label="新注册会员赠送服务" required>
+      <el-form-item label="新注册会员赠送服务" required class="form_item_1">
         <el-radio-group v-model="form.reg_service">
           <el-radio v-for="(item, index) in list" :key="index" :label="item.id">
             {{ item.name }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="套餐到期前提醒" prop="meal_min_remind">
+      <el-form-item label="套餐到期前提醒" prop="meal_min_remind" class="form_item_2">
         <el-input v-model="form.meal_min_remind" class="small">
           <template slot="prepend">提前</template>
           <template slot="append">天</template>
@@ -33,7 +33,7 @@
           0为不提醒
         </span>
       </el-form-item>
-      <el-form-item label="套餐到期使用权限">
+      <el-form-item label="套餐到期使用权限" class="form_item_3">
         <span
           style="color:#3a8ee6;cursor:pointer;"
           @click="fun_config_overtime"
@@ -41,7 +41,7 @@
           [配置使用权限]
         </span>
       </el-form-item>
-      <el-form-item label="名企套餐">
+      <el-form-item label="名企套餐" class="form_item_4">
         <el-checkbox-group v-model="form.famous_enterprises">
           <el-checkbox v-for="(item, index) in list" :key="index" :label="item.id">{{ item.name }}</el-checkbox>
         </el-checkbox-group>
@@ -400,7 +400,25 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
+.form_item_1 .el-form-item__label,
+.form_item_4 .el-form-item__label{
+  line-height: initial;
+}
+.form_item_2{
+  margin-bottom: 5px;
+}
+.form_item_3{
+  margin-bottom: 15px;
+}
+.form_item_1 .el-radio, .el-radio__input{
+  line-height: 24px;
+}
+.form_item_4 .el-form-item__content{
+  line-height: 24px;
+}
+</style>
+<style lang="scss" scoped>
 .el-row {
   margin-bottom: 20px;
   margin-left: 40px;
@@ -408,4 +426,13 @@ export default {
     margin-bottom: 0;
   }
 }
+// .form_item_1{
+//   line-height: 24px;
+// }
+// ::v-deep .el-radio, .el-radio__input  {
+//   line-height: 40px;
+// }
+// ::v-deep .el-form-item__content{
+//   line-height: 26px;
+// }
 </style>

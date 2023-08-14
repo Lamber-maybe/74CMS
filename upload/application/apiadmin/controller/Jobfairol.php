@@ -205,6 +205,8 @@ class Jobfairol extends \app\common\controller\Backend{
             $val['setmeal_cn'] = model('Setmeal')->where('id', $val['setmeal_id'])->value('name');
             $val['mobile'] = $val['mobile'] ? $val['mobile'] : $val['telephone'];
             $val['add_status'] = !empty($val['qrcode']) ? 1 : 0;
+            $val['audit'] = intval($val['audit']);
+            $val['c_audit'] = intval($val['c_audit']);
             if (!empty($val['qrcode'])) {
                 $qr = model('Uploadfile')->where('id', $val['qrcode'])->field('id,addtime')->find();
                 $val['add_day'] = ceil((time()-$qr['addtime'])/86400);
@@ -439,6 +441,8 @@ class Jobfairol extends \app\common\controller\Backend{
                 $post_data['source'] = 1;
                 $post_data['utype'] = 1;
                 $post_data['audit'] = 1;
+                $post_data['qrcode'] = '';
+                $post_data['stick'] = 0;
                 $post_data['addtime'] = time();
                 $company = model('JobfairOnlineParticipate')->where(array('uid'=>$post_data['uid'],'jobfair_id'=>$post_data['jobfair_id']))->find();
                 if($company){

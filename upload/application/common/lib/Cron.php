@@ -13,6 +13,33 @@ class Cron
     {
         $this->timestamp = time();
     }
+    /**
+     * 外部执行专用方法
+     */
+    public function runOuter($id){
+        $cron = model('Cron')
+            ->where('id', 'eq', $id)
+            ->find();
+        if ($cron === null) {
+            $this->error = '没有找到计划任务';
+            return false;
+        }
+        $class_name = '\\app\\common\\lib\\cron\\' . $cron['action'];
+        if (!class_exists($class_name)) {
+            $this->error = '任务脚本类文件不存在';
+            return false;
+        }
+        $instance = new $class_name();
+        $result = $instance->execute();
+        if ($result===false) {
+            $this->error = $instance->getError();
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 单条执行
+     */
     public function runOne($id)
     {
         $cron = model('Cron')
@@ -54,6 +81,9 @@ class Cron
             'next_execute_time' => $next_execute_time
         ];
     }
+    /**
+     * 多条执行
+     */
     public function run()
     {
         $lockfile = $this->lock();

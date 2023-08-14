@@ -23,6 +23,7 @@ class Company extends \app\common\controller\Backend
         $setmeal = input('get.setmeal/d', 0, 'intval');
         $regtime = input('get.regtime/d', 0, 'intval');
         $service = input('get.service/s', '', 'trim');
+        $setmeal_overtime = input('get.setmeal_overtime/s', '', 'trim');
 
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -50,7 +51,7 @@ class Company extends \app\common\controller\Backend
                     break;
             }
         }
-        
+
         if($setmeal>0){
             $where['c.setmeal_id'] = $setmeal;
         }
@@ -61,8 +62,18 @@ class Company extends \app\common\controller\Backend
         if($service!=''){
             $where['c.cs_id'] = $service;
         }
+        switch($setmeal_overtime){
+            case '0':
+                $where['m.deadline'] = [['eq',0],['gt',time()],'or'];
+                break;
+            case '1':
+                $where['m.deadline'] = [['neq',0],['lt',time()],'and'];
+                break;
+        }
         $total = model('Company')
-            ->alias('c');
+            ->alias('c')
+            ->join(config('database.prefix').'member_setmeal m','c.uid=m.uid','LEFT')
+            ->join(config('database.prefix').'setmeal s','m.setmeal_id=s.id','LEFT');
         if ($list_type == 'noaudit') {
             $total = $total->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null');
         }else if($audit!=''){
@@ -75,7 +86,10 @@ class Company extends \app\common\controller\Backend
         }
         $total = $total->where($where)->count();
         $list = model('Company')
-            ->alias('c');
+            ->alias('c')
+            ->field('c.*,s.name as setmeal_name,m.deadline as setmeal_deadline')
+            ->join(config('database.prefix').'member_setmeal m','c.uid=m.uid','LEFT')
+            ->join(config('database.prefix').'setmeal s','m.setmeal_id=s.id','LEFT');
         if ($list_type == 'noaudit') {
             $list = $list->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null');
         }else if($audit!=''){
@@ -92,16 +106,6 @@ class Company extends \app\common\controller\Backend
             $uid_arr[] = $value['uid'];
         }
         if (!empty($uid_arr)) {
-            $setmeal_list = model('MemberSetmeal')
-                ->alias('m')
-                ->force('index_uid')
-                ->join(
-                    config('database.prefix') . 'setmeal s',
-                    'm.setmeal_id=s.id',
-                    'LEFT'
-                )
-                ->where('uid', 'in', $uid_arr)
-                ->column('uid,name');
             $job_total_list = model('JobSearchRtime')
                 ->where('uid', 'in', $uid_arr)
                 ->group('uid')
@@ -110,6 +114,18 @@ class Company extends \app\common\controller\Backend
                 ->where('uid', 'in', $uid_arr)
                 ->column(
                     'uid,legal_person_idcard_front,legal_person_idcard_back,license,proxy',
+                    'uid'
+                );
+            $member_list = model('Member')
+                ->where('uid', 'in', $uid_arr)
+                ->column(
+                    'uid,mobile,email',
+                    'uid'
+                );
+            $company_contact_list = model('CompanyContact')
+                ->where('uid', 'in', $uid_arr)
+                ->column(
+                    'uid,mobile,contact',
                     'uid'
                 );
             $auth_img_id_arr = $auth_img_url_arr = [];
@@ -152,14 +168,17 @@ class Company extends \app\common\controller\Backend
                     : '';
             }
         } else {
-            $setmeal_list = [];
             $job_total_list = [];
             $auth_list = [];
+            $member_list = [];
+            $company_contact_list = [];
         }
+        $category_data = model('Category')->getCache();
+        $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
-            $value['setmeal_name'] = isset($setmeal_list[$value['uid']])
-                ? $setmeal_list[$value['uid']]
-                : '未开通套餐';
+            $value['setmeal_name'] = $value['setmeal_name']!='' ? $value['setmeal_name'] : '未开通套餐';
+            $value['setmeal_overtime'] = ($value['setmeal_deadline']>time() || $value['setmeal_deadline']==0)?0:1;
+            $value['setmeal_deadline_text'] = ($value['setmeal_deadline']==0)?'无限期':(date('Y-m-d',$value['setmeal_deadline']).'到期');
             $value['jobs_num'] = isset($job_total_list[$value['uid']])
                 ? $job_total_list[$value['uid']]
                 : 0;
@@ -181,6 +200,31 @@ class Company extends \app\common\controller\Backend
             }
             if($value['auth_status']==0 && $value['has_auth_info']==0){
                 $value['auth_status'] = 3;
+            }
+            $value['district_text'] = isset(
+                $category_district_data[$value['district']]
+            )
+                ? $category_district_data[$value['district']]
+                : '';
+            $value['trade_text'] = isset(
+                $category_data['QS_trade'][$value['trade']]
+            )
+                ? $category_data['QS_trade'][$value['trade']]
+                : '';
+            $value['nature_text'] = isset(
+                $category_data['QS_company_type'][$value['nature']]
+            )
+                ? $category_data['QS_company_type'][$value['nature']]
+                : '';
+            if (isset($member_list[$value['uid']])) {
+                $value['mobile'] = $member_list[$value['uid']]['mobile'];
+            } else {
+                $value['mobile'] = '';
+            }
+            if (isset($company_contact_list[$value['uid']])) {
+                $value['contact_mobile'] = $company_contact_list[$value['uid']]['mobile'];
+            } else {
+                $value['contact_mobile'] = '';
             }
             $value['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['id']]);
             $list[$key] = $value;
@@ -266,12 +310,19 @@ class Company extends \app\common\controller\Backend
             $info_contact = model('CompanyContact')
                 ->where('comid', $id)
                 ->find();
-            $info['contact'] = $info_contact->toArray();
+            if (empty($info_contact)) {
+                $info['contact'] = [];
+            } else {
+                $info['contact'] = $info_contact->toArray();
+            }
             $info_info = model('CompanyInfo')
                 ->where('comid', $id)
                 ->find();
-            $info['info'] = $info_info->toArray();
-
+            if (empty($info_info)) {
+                $info['contact'] = [];
+            } else {
+                $info['info'] = $info_info->toArray();
+            }
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,
                 'logoUrl' => $logoUrl
@@ -312,9 +363,6 @@ class Company extends \app\common\controller\Backend
                     'address' => input('post.info.address/s', '', 'trim')
                 ]
             ];
-            if($input_data['audit']==1){
-                $input_data['audit_complete'] = 1;
-            }
 
             if (false === model('Company')->backendEdit($input_data)) {
                 $this->ajaxReturn(500, model('Company')->getError());
@@ -366,6 +414,7 @@ class Company extends \app\common\controller\Backend
      * 分配客服
      */
     public function setService(){
+        $this->checkSetServiceAccess();
         $id = input('post.id/a');
         $cs_id = input('post.cs_id/d',0,'intval');
         if (empty($id)) {

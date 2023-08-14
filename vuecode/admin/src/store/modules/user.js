@@ -1,7 +1,8 @@
 import {
   login,
   logout,
-  getInfo
+  getInfo,
+  loginScan
 } from '@/api/user'
 import {
   getToken,
@@ -13,9 +14,12 @@ import {
   setAccessExport,
   getAccessDelete,
   setAccessDelete,
+  getAccessSetService,
+  setAccessSetService,
   removeAccess,
   removeAccessExport,
-  removeAccessDelete
+  removeAccessDelete,
+  removeAccessSetService
 } from '@/utils/auth'
 import {
   resetRouter
@@ -23,19 +27,24 @@ import {
 
 const getDefaultState = () => {
   return {
+    id: '',
     token: getToken(),
     username: '',
     rolename: '',
     avatar: '',
     access: getAccess(),
     access_export: getAccessExport(),
-    access_delete: getAccessDelete()
+    access_delete: getAccessDelete(),
+    access_set_service: getAccessSetService()
   }
 }
 
 const state = getDefaultState()
 
 const mutations = {
+  SET_ID(state, id) {
+    state.id = id
+  },
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
   },
@@ -56,6 +65,9 @@ const mutations = {
   },
   SET_ACCESS_DELETE: (state, access) => {
     state.access_delete = access
+  },
+  SET_ACCESS_SET_SERVICE: (state, access) => {
+    state.access_set_service = access
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -87,11 +99,38 @@ const actions = {
         commit('SET_ACCESS', data.access)
         commit('SET_ACCESS_EXPORT', data.access_export)
         commit('SET_ACCESS_DELETE', data.access_delete)
+        commit('SET_ACCESS_SET_SERVICE', data.access_set_service)
         setToken(data.token)
         setAccess(data.access)
         setAccessExport(data.access_export)
         setAccessDelete(data.access_delete)
+        setAccessSetService(data.access_set_service)
         resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  scan({
+    commit
+  }, scan_token) {
+    return new Promise((resolve, reject) => {
+      loginScan({
+        scan_token
+      }).then(response => {
+        if (response.data.pass == 1) {
+          commit('SET_TOKEN', response.data.info.token)
+          commit('SET_ACCESS', response.data.info.access)
+          commit('SET_ACCESS_EXPORT', response.data.info.access_export)
+          commit('SET_ACCESS_DELETE', response.data.info.access_delete)
+          commit('SET_ACCESS_SET_SERVICE', response.data.info.access_set_service)
+          setToken(response.data.info.token)
+          setAccess(response.data.info.access)
+          setAccessExport(response.data.info.access_export)
+          setAccessDelete(response.data.info.access_delete)
+          setAccessSetService(response.data.info.access_set_service)
+          resolve()
+        }
       }).catch(error => {
         reject(error)
       })
@@ -114,20 +153,23 @@ const actions = {
         }
 
         const {
+          id,
           username,
           rolename,
           avatar,
           access,
           access_export,
-          access_delete
+          access_delete,
+          access_set_service
         } = data
-
+        commit('SET_ID', id)
         commit('SET_USERNAME', username)
         commit('SET_ROLENAME', rolename)
         commit('SET_AVATAR', avatar)
         commit('SET_ACCESS', access)
         commit('SET_ACCESS_EXPORT', access_export)
         commit('SET_ACCESS_DELETE', access_delete)
+        commit('SET_ACCESS_SET_SERVICE', access_set_service)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -146,6 +188,7 @@ const actions = {
         removeAccess()
         removeAccessExport()
         removeAccessDelete()
+        removeAccessSetService()
         resetRouter()
         commit('RESET_STATE')
         resolve()
@@ -162,6 +205,9 @@ const actions = {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       removeAccess()
+      removeAccessExport()
+      removeAccessDelete()
+      removeAccessSetService()
       commit('RESET_STATE')
       resolve()
     })

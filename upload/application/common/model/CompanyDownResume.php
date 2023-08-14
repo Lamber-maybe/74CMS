@@ -114,6 +114,11 @@ class CompanyDownResume extends \app\common\model\BaseModel
                     $return_data['done'] = 1;
                     break;
                 }
+            }else{
+                $return_data['status'] = 0;
+                $return_data['msg'] = '您当前的套餐不允许下载简历，请升级套餐';
+                $return_data['done'] = 1;
+                break;
             }
             
 

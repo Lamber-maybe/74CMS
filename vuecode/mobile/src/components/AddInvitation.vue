@@ -225,12 +225,23 @@ export default {
           .catch(() => {})
       }
       this.fetchSetmeal()
+      this.fetchIterviewPre()
     },
     fetchSetmeal () {
       http
         .get(api.member_setmeal, {})
         .then(res => {
           this.mySetmeal = res.data.info
+        })
+        .catch(() => {})
+    },
+    fetchIterviewPre: function () {
+      http
+        .get(api.interview_add_pre, {})
+        .then(res => {
+          this.form.address = res.data.address
+          this.form.contact = res.data.contact
+          this.form.tel = res.data.tel
         })
         .catch(() => {})
     },

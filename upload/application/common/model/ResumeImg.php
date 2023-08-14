@@ -16,6 +16,39 @@ class ResumeImg extends \app\common\model\BaseModel
         'addtime' => 'integer',
         'audit' => 'integer'
     ];
+    protected static function init()
+    {
+        ResumeImg::afterInsert(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        ResumeImg::afterUpdate(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        ResumeImg::afterDelete(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['rid'])){
+                model('Resume')->where('id',$info['rid'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Resume')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+    }
     public function getList($map){
         $img_list = model('ResumeImg')
             ->field('rid,uid', true)

@@ -6,7 +6,7 @@
       </div>
       <div class="list-search">
         <el-select
-          v-if="showAuditOption===true"
+          v-if="showAuditOption === true"
           v-model="audit"
           class="list-options"
           placeholder="不限认证状态"
@@ -61,10 +61,21 @@
             :value="item.id"
           />
         </el-select>
+        <el-select
+          v-model="setmeal_overtime"
+          class="list-options"
+          placeholder="不限过期时间"
+          @change="funSearch"
+        >
+          <el-option label="不限过期时间" value="" />
+          <el-option label="套餐已过期" value="1" />
+          <el-option label="套餐未过期" value="0" />
+        </el-select>
         <el-input
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -94,11 +105,24 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="公司名称">
+        <el-table-column label="公司名称" width="300">
           <template slot-scope="scope">
-            <el-link :href="scope.row.link" target="_blank" type="primary">
-              {{ scope.row.companyname }}
-            </el-link>
+            <div v-if="scope.row.companyname != ''">
+              <div>
+                <el-link :href="scope.row.link" target="_blank" type="primary">
+                  {{ scope.row.companyname }}
+                </el-link>
+              </div>
+              <div>
+                {{ scope.row.nature_text ? scope.row.nature_text : "未填写" }} ·
+                {{
+                  scope.row.district_text ? scope.row.district_text : "未填写"
+                }}
+                ·
+                {{ scope.row.trade_text ? scope.row.trade_text : "未填写" }}
+              </div>
+            </div>
+            <span v-else>未完善企业资料</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="认证资料">
@@ -106,7 +130,7 @@
             <span
               v-if="scope.row.has_auth_info == 1"
               class="font_brand"
-              style="cursor:pointer;"
+              style="cursor: pointer"
               @click="fun_show_authinfo(scope.row)"
             >
               [点击查看]
@@ -121,32 +145,52 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建时间">
+        <el-table-column label="会员/企业手机号" width="200">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.addtime | timeFilter }}</span>
+            <div title="会员手机号">
+              <i class="el-icon-user"></i>&nbsp;{{ scope.row.mobile }}
+            </div>
+            <div title="企业联系手机号">
+              <i class="el-icon-document"></i>&nbsp;{{
+                scope.row.contact_mobile ? scope.row.contact_mobile : "-"
+              }}
+            </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="刷新时间">
+        <el-table-column label="创建/刷新时间" width="200">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.refreshtime | timeFilter }}</span>
+            <div title="创建时间">
+              <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
+            </div>
+            <div title="刷新时间">
+              <i class="el-icon-time" />{{ scope.row.refreshtime | timeFilter }}
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="套餐名称" prop="setmeal_name" />
-        <el-table-column
-          align="center"
-          label="在招职位"
-          prop="jobs_num"
-        />
+        <el-table-column label="套餐名称" width="150">
+          <template slot-scope="scope">
+            <div>{{ scope.row.setmeal_name }}</div>
+            <div v-if="scope.row.setmeal_overtime == 1" style="color: #ff0b22">
+              已过期
+            </div>
+            <div v-else>{{ scope.row.setmeal_deadline_text }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="在招职位" prop="jobs_num" />
         <el-table-column align="center" label="推广">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
+            <el-button type="text" @click="funPoster(scope.row.id)"
+              >[海报]</el-button
+            >
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="270">
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click="funManagement(scope.row)">
+            <el-button
+              size="small"
+              type="primary"
+              @click="funManagement(scope.row)"
+            >
               管理
             </el-button>
             <el-button
@@ -167,9 +211,7 @@
                 >
                   日志
                 </el-dropdown-item>
-                <el-dropdown-item
-                  @click.native="funDelete(scope.row)"
-                >
+                <el-dropdown-item @click.native="funDelete(scope.row)">
                   删除
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -200,11 +242,11 @@
             删除
           </el-button>
         </el-col>
-        <el-col :span="16" style="text-align: right;">
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -237,9 +279,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_audit">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_audit"> 确 定 </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -261,9 +301,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogServiceVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_service">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_service"> 确 定 </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -272,46 +310,65 @@
       :width="dialogAuthinfoWidth"
     >
       <el-row>
-        <el-col class="authdialog" :span="12">
+        <el-col
+          class="authdialog"
+          :span="$store.state.config.audit_com_project == 1 ? 12 : 24"
+        >
           <el-image
             v-if="auth_info.license != ''"
-            style="width: 200px;height:150px; "
+            style="width: 200px; height: 150px"
             :src="auth_info.license"
             :preview-src-list="[auth_info.license]"
           />
-          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
+          <el-image
+            v-else
+            :src="require('@/assets/images/defult_upload_null.jpg')"
+          />
           <span class="img-tit">营业执照</span>
         </el-col>
-        <el-col class="authdialog" :span="12">
+        <el-col
+          class="authdialog"
+          :span="12"
+          v-if="$store.state.config.audit_com_project == 1"
+        >
           <el-image
             v-if="auth_info.proxy != ''"
-            style="width: 200px;height:150px; "
+            style="width: 200px; height: 150px"
             :src="auth_info.proxy"
             :preview-src-list="[auth_info.proxy]"
           />
-          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
+          <el-image
+            v-else
+            :src="require('@/assets/images/defult_upload_null.jpg')"
+          />
           <span class="img-tit">委托书(函)</span>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="$store.state.config.audit_com_project == 1">
         <el-col class="authdialog" :span="12">
           <el-image
             v-if="auth_info.legal_person_idcard_front != ''"
-            style="width: 200px;height:150px; "
+            style="width: 200px; height: 150px"
             :src="auth_info.legal_person_idcard_front"
             :preview-src-list="[auth_info.legal_person_idcard_front]"
           />
-          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
+          <el-image
+            v-else
+            :src="require('@/assets/images/defult_upload_null.jpg')"
+          />
           <span class="img-tit">经办人身份证正面照</span>
         </el-col>
         <el-col class="authdialog" :span="12">
           <el-image
             v-if="auth_info.legal_person_idcard_back != ''"
-            style="width: 200px;height:150px; "
+            style="width: 200px; height: 150px"
             :src="auth_info.legal_person_idcard_back"
             :preview-src-list="[auth_info.legal_person_idcard_back]"
           />
-          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
+          <el-image
+            v-else
+            :src="require('@/assets/images/defult_upload_null.jpg')"
+          />
           <span class="img-tit">经办人身份证背面照</span>
         </el-col>
       </el-row>
@@ -326,7 +383,12 @@
     >
       <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
-    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
+    <Poster
+      v-if="showPoster"
+      :poster-id="posterId"
+      :poster-type="posterType"
+      @closeDialog="showPoster = false"
+    />
   </div>
 </template>
 
@@ -393,13 +455,14 @@ export default {
       setmeal: '',
       regtime: '',
       service: '',
+      setmeal_overtime: '',
       form_options_audit: [],
       options_audit: [],
       options_setmeal: [],
       options_service: [],
       options_service_enable: [],
       dialogListVisible: false,
-      listUid: 0
+      listUid: 0,
     }
   },
   created() {
@@ -432,6 +495,7 @@ export default {
             setmeal: this.setmeal,
             regtime: this.regtime,
             service: this.service,
+            setmeal_overtime: this.setmeal_overtime,
             page: this.currentPage,
             pagesize: this.pagesize
           }
@@ -456,6 +520,7 @@ export default {
         setmeal: this.setmeal,
         regtime: this.regtime,
         service: this.service,
+        setmeal_overtime: this.setmeal_overtime,
         page: this.currentPage,
         pagesize: this.pagesize
       }
@@ -504,9 +569,13 @@ export default {
       this.setAuditVal = 0
       this.dialogFormVisible = true
     },
-    funService(){
+    funService() {
       if (this.tableIdarr.length == 0) {
         this.$message.error('请选择要分配客服的企业')
+        return false
+      }
+      if (this.$store.state.user.access_set_service == 0) {
+        this.$message.error('当前管理员没有分配客服权限')
         return false
       }
       this.serviceIdarr = this.tableIdarr
@@ -538,6 +607,10 @@ export default {
       })
     },
     fun_set_service() {
+      if (this.$store.state.user.access_set_service == 0) {
+        this.$message.error('当前管理员没有分配客服权限')
+        return false
+      }
       const params = {
         id: this.serviceIdarr,
         cs_id: this.setServiceVal
@@ -552,7 +625,7 @@ export default {
           this.$message.error(response.message)
           return false
         }
-      }).catch(() => {})
+      }).catch(() => { })
     },
     handleSelectionChange(idlist) {
       this.tableIdarr = []
@@ -567,13 +640,15 @@ export default {
     fun_show_authinfo(row) {
       this.auth_info = { ...row }
       this.dialogAuthinfoVisible = true
-      if (this.auth_info.license != '') {
+      if (this.$store.state.config.audit_com_project == 0) {
+        this.dialogAuthinfoWidth = '300px'
+      } else if (this.auth_info.license != '') {
         this.dialogAuthinfoWidth = '30%'
       } else {
         this.dialogAuthinfoWidth = '40%'
       }
     },
-    funManagement(row){
+    funManagement(row) {
       const params = {
         uid: row.uid
       }
@@ -588,14 +663,14 @@ export default {
         }
       })
     },
-    funLog(index, row){
+    funLog(index, row) {
       this.listUid = row.uid
       this.dialogListVisible = true
     },
     closeListDialog() {
       this.dialogListVisible = false
     },
-    funDelete(row){
+    funDelete(row) {
       var that = this
       that
         .$confirm('删除企业将删除该企业的一切信息，包括会员账号、企业资料、招聘职位等所属信息，删除后不可恢复, 是否继续?', '提示', {
@@ -613,11 +688,11 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funDeleteBatch(){
+    funDeleteBatch() {
       var that = this
-      if (that.tableUidarr.length == 0){
+      if (that.tableUidarr.length == 0) {
         that.$message.error('请选择要删除的企业')
         return false
       }
@@ -637,15 +712,15 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funExport(){
+    funExport() {
       var that = this
-      if (that.$store.state.user.access_export == 0){
+      if (that.$store.state.user.access_export == 0) {
         that.$message.error('当前管理员没有导出权限')
         return false
       }
-      if (that.tableIdarr.length == 0){
+      if (that.tableIdarr.length == 0) {
         that.$message.error('请选择要导出的企业')
         return false
       }
@@ -716,7 +791,7 @@ export default {
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
     },
-    funPoster(id){
+    funPoster(id) {
       this.showPoster = true
       this.posterId = id
       this.posterType = 'company'
@@ -725,26 +800,26 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-row {
   margin-bottom: 20px;
   &:last-child {
     margin-bottom: 0;
   }
 }
-.authdialog{
-  position:relative;
-  margin-bottom:14px;
-  text-align:center;
+.authdialog {
+  position: relative;
+  margin-bottom: 14px;
+  text-align: center;
 }
-.img-tit{
+.img-tit {
   position: absolute;
   left: 0;
   bottom: -20px;
   width: 100%;
   text-align: center;
 }
-.image-error{
+.image-error {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -755,5 +830,4 @@ export default {
   width: 200px;
   height: 150px;
 }
-
 </style>

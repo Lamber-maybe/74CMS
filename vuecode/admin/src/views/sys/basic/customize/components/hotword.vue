@@ -1,10 +1,32 @@
 <template>
   <div class="app-container">
-    <div class="list-search" style="display:inline-block;">
+    <el-form
+      ref="config"
+      v-loading="infoLoading"
+      class="common-form"
+      :model="form"
+      label-width="180px"
+      :rules="rules"
+      :inline-message="true"
+    >
+      <el-form-item label="显示方式">
+        <el-radio-group v-model="configForm.hotword_display_method">
+          <el-radio label="0">默认排序</el-radio>
+          <el-radio label="1">随机排序</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="">
+        <el-button type="primary" @click="onSubmitConfig('config')"
+          >保存</el-button
+        >
+      </el-form-item>
+    </el-form>
+    <div class="list-search" style="display: inline-block">
       <el-input
         v-model="keyword"
         placeholder="请输入搜索关键词"
         class="input-with-select"
+        @keyup.enter.native="funSearchKeyword"
       >
         <el-select
           slot="prepend"
@@ -60,9 +82,11 @@
     <el-row :gutter="20">
       <el-col :span="8">
         <el-button size="small" type="primary" @click="funAdd">添加</el-button>
-        <el-button size="small" type="primary" @click="onSubmit()">保存</el-button>
+        <el-button size="small" type="primary" @click="onSubmit()"
+          >保存</el-button
+        >
       </el-col>
-      <el-col :span="16" style="text-align: right;">
+      <el-col :span="16" style="text-align: right">
         <el-pagination
           background
           :current-page="currentPage"
@@ -93,14 +117,14 @@
           <el-input
             v-model="form.word"
             autocomplete="off"
-            style="width:300px"
+            style="width: 300px"
           />
         </el-form-item>
         <el-form-item label="排序" prop="hot">
           <el-input
             v-model.number="form.hot"
             autocomplete="off"
-            style="width:100px"
+            style="width: 100px"
           />
         </el-form-item>
       </el-form>
@@ -120,6 +144,7 @@ import {
   hotwordEdit,
   hotwordSaveAll
 } from '@/api/hotword'
+import { setConfig } from '@/api/configuration'
 
 export default {
   data() {
@@ -142,6 +167,9 @@ export default {
       pagesize: 20,
       key_type: '1',
       keyword: '',
+      configForm: {
+        hotword_display_method: ''
+      },
       rules: {
         word: [
           { required: true, message: '请输入关键词', trigger: 'blur' },
@@ -161,13 +189,22 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      const param = {
-        key_type: this.key_type,
-        keyword: this.keyword,
-        page: this.currentPage,
-        pagesize: this.pagesize
-      }
-      hotwordList(param)
+      setConfig({}, 'get')
+        .then(response => {
+          const {
+            hotword_display_method
+          } = { ...response.data }
+          this.configForm = {
+            hotword_display_method
+          }
+          const param = {
+            key_type: this.key_type,
+            keyword: this.keyword,
+            page: this.currentPage,
+            pagesize: this.pagesize
+          }
+          return hotwordList(param)
+        })
         .then(response => {
           this.list = response.data.items
           this.saveData = [...this.list]
@@ -175,8 +212,9 @@ export default {
           this.total = response.data.total
           this.currentPage = response.data.current_page
           this.pagesize = response.data.pagesize
+
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funAdd() {
       this.dialogTitle = '添加关键词'
@@ -192,7 +230,7 @@ export default {
           this.form = { ...response.data }
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funDelete(index, row) {
       var that = this
@@ -212,9 +250,9 @@ export default {
               that.fetchData()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funSave(formName) {
       const insertData = { ...this.form }
@@ -239,7 +277,7 @@ export default {
               }
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -260,7 +298,7 @@ export default {
               }
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -275,7 +313,23 @@ export default {
           this.fetchData()
           return true
         })
-        .catch(() => {})
+        .catch(() => { })
+    },
+    onSubmitConfig(formName) {
+      const insertData = { ...this.configForm }
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          setConfig(insertData)
+            .then(response => {
+              this.$store.dispatch('config/getConfigInfo')
+              this.$message.success(response.message)
+              return true
+            })
+            .catch(() => { })
+        } else {
+          return false
+        }
+      })
     },
     handleSizeChange(val) {
       this.pagesize = val

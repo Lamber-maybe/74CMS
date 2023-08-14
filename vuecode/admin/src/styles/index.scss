@@ -200,7 +200,18 @@ div:focus {
   color: #e6a23c;
   line-height: 1em;
 }
-
+.app-container .tip.danger{
+  padding: 8px 16px;
+  background-color: #fef0f0;
+  border-radius: 4px;
+  border-left: 5px solid #ff8989;
+  margin: 0 0 20px;
+}
+.app-container .tip.danger p {
+  font-size: 14px;
+  color: #f56c6c;
+  line-height: 1em;
+}
 .el-icon-time {
   margin-right: 4px;
 }

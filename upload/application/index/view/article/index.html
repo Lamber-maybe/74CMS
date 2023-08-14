@@ -6,7 +6,7 @@
     </div>
     <div class="content_wrapper">
         <div class="content">
-            <div class="information_nav_wrapper clearfix">
+            <div class="information_nav_wrapper clearfix"  @mouseleave.stop="showSecondLine=false">
                 <div class="information_nav_con">
                     <div class="information_nav">
                         <a {#if condition="!$Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>null])#}">全部分类</a>
@@ -14,13 +14,13 @@
                         <a {#if condition="$key eq $Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>$key])#}">{#$vo#}</a>
                         {#/volist#}
                         {#if condition="count($options2) gt 0"#}
-                        <a class="open_btn active_open_btn" href="javascript:;" @mouseover="showSecondLine=true" @mouseout="showSecondLine=false">···</a>
+                        <a class="open_btn active_open_btn" href="javascript:;" @mouseenter.stop="showSecondLine=true">···</a>
                         {#/if#}
                     </div>
                     <div class="information_nav2" v-show="showSecondLine">
-                        {#volist name="options2" id="vo"#}
-                        <a {#if condition="$key eq $Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>$key])#}">{#$vo#}</a>
-                        {#/volist#}
+                      {#volist name="options2" id="vo"#}
+                      <a {#if condition="$key eq $Request.param.cid"#}class="active_text"{#/if#} href="{#:P(['cid'=>$key])#}">{#$vo#}</a>
+                      {#/volist#}
                     </div>
                 </div>
             </div>

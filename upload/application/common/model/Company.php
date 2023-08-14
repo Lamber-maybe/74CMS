@@ -8,6 +8,8 @@ class Company extends \app\common\model\BaseModel
         1 => '已认证',
         2 => '未通过'
     ];
+    protected $insert = ['updatetime'];
+    protected $update = ['updatetime'];
     protected $readonly = ['id', 'uid', 'addtime', 'robot'];
     protected $type = [
         'id' => 'integer',
@@ -23,9 +25,14 @@ class Company extends \app\common\model\BaseModel
         'audit' => 'integer',
         'addtime' => 'integer',
         'refreshtime' => 'integer',
+        'updatetime' => 'integer',
         'click' => 'integer',
         'robot' => 'integer'
     ];
+    protected function setUpdatetimeAttr($value = null)
+    {
+        return $value === null ? time() : $value;
+    }
     public function setUserStatus($uid, $status)
     {
         $model = $this->where('uid', $uid)->find();
@@ -151,6 +158,15 @@ class Company extends \app\common\model\BaseModel
         $data_info = $data['info'];
         unset($data['contact'], $data['info']);
         $data_basic = $data;
+        if(isset($data_basic['district3'])){
+            $data_basic['district'] =
+                $data_basic['district3'] > 0
+                ? $data_basic['district3']
+                : ($data_basic['district2'] > 0
+                    ? $data_basic['district2']
+                    : $data_basic['district1']);
+        }
+        
         if (isset($data_basic['tag'])) {
             $data_basic['tag'] = !empty($data_basic['tag'])
                 ? implode(',', $data_basic['tag'])
@@ -228,9 +244,6 @@ class Company extends \app\common\model\BaseModel
         $company_data = [
             'audit'=>$audit
         ];
-        if($audit==1){
-            $company_data['audit_complete'] = 1;
-        }
         model('Company')
             ->where(['id' => ['in', $idarr]])
             ->update($company_data);
@@ -307,6 +320,13 @@ class Company extends \app\common\model\BaseModel
      */
     public function addViewLog($companyid)
     {
-        $this->where('id', 'eq', $companyid)->setInc('click');
+        $rand_click = config('global_config.rand_click_company');
+        $rand_click = intval($rand_click);
+        if($rand_click<=1){
+            $rand_click = 1;
+        }else{
+            $rand_click = rand(1,$rand_click);
+        }
+        $this->where('id', 'eq', $companyid)->setInc('click',$rand_click);
     }
 }

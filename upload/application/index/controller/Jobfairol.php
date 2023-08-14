@@ -373,8 +373,10 @@ class Jobfairol extends \app\index\controller\Base{
         if(!empty($resumeid_arr)){
             $rids = implode(',', $resumeid_arr);
             $resume = model('Resume')->where('id','in',$rids)->field(true)->orderRaw('field(id,' . $rids . ')')->select();
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->visitor);
         }else{
             $resume = [];
+            $fullname_arr = [];
         }
         $photo_arr = $photo_id_arr = [];
         foreach ($resume as $key => $value) {
@@ -415,31 +417,7 @@ class Jobfairol extends \app\index\controller\Base{
             $tmp_arr['id'] = $val['id'];
             $tmp_arr['stick'] = $val['stick'];
             $tmp_arr['high_quality'] = $val['high_quality'];
-            $tmp_arr['fullname'] = $val['fullname'];
-            if ($val['display_name'] == 0) {
-                if ($val['sex'] == 1) {
-                    $tmp_arr['fullname'] = cut_str(
-                        $val['fullname'],
-                        1,
-                        0,
-                        '先生'
-                    );
-                } elseif ($val['sex'] == 2) {
-                    $tmp_arr['fullname'] = cut_str(
-                        $val['fullname'],
-                        1,
-                        0,
-                        '女士'
-                    );
-                } else {
-                    $tmp_arr['fullname'] = cut_str(
-                        $val['fullname'],
-                        1,
-                        0,
-                        '**'
-                    );
-                }
-            }
+            $tmp_arr['fullname'] = $fullname_arr[$val['id']];
             $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                 ? $photo_arr[$val['photo_img']]
                 : default_empty('photo');
@@ -539,7 +517,7 @@ class Jobfairol extends \app\index\controller\Base{
             $this->ajaxReturn(500,'请选择招聘会');
         }
         $this->checkLogin();
-        if($this->userinfo->utype==1){
+        if($this->visitor->utype==1){
             $this->interceptCompanyProfile();
             $this->interceptCompanyAuth();
             $setmeal_id_arr = $info['enable_setmeal_id']==''?[]:explode(",",$info['enable_setmeal_id']);
@@ -551,18 +529,18 @@ class Jobfairol extends \app\index\controller\Base{
             }
         }else{
             $this->interceptPersonalResume();
-            $compelete_percent = model('Resume')->countCompletePercent(0,$this->userinfo->uid);
+            $compelete_percent = model('Resume')->countCompletePercent(0,$this->visitor->uid);
             if($compelete_percent < $info['min_complete_percent']){
                 $this->ajaxReturn(500,'你的简历完整度不足'.$info['min_complete_percent'].'%，不能参加此招聘会');
             }
         }
-        if(null!==model('JobfairOnlineParticipate')->where('uid',$this->userinfo->uid)->find()){
+        if(null!==model('JobfairOnlineParticipate')->where('uid',$this->visitor->uid)->find()){
             $this->ajaxReturn(500,'您已经报名过此招聘会了');
         }
         $insertData = [
             'jobfair_id'=>$jobfair_id,
-            'utype'=>$this->userinfo->utype,
-            'uid'=>$this->userinfo->uid,
+            'utype'=>$this->visitor->utype,
+            'uid'=>$this->visitor->uid,
             'audit'=>0,
             'qrcode'=>0,
             'addtime'=>time()

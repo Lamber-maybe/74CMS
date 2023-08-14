@@ -30,6 +30,10 @@
         >
           <template slot="append">次 / 天</template>
         </el-input>
+        <el-tooltip class="item" effect="dark" placement="top-start">
+          <div slot="content">0表示不允许</div>
+          <i class="el-icon-info" />
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="下载简历上限" prop="download_resume_max_perday">
         <el-input
@@ -41,6 +45,10 @@
         >
           <template slot="append">份 / 天</template>
         </el-input>
+        <el-tooltip class="item" effect="dark" placement="top-start">
+          <div slot="content">0表示不允许</div>
+          <i class="el-icon-info" />
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="套餐增值包折扣" prop="service_added_discount">
         <el-input
@@ -53,7 +61,7 @@
         <el-tooltip class="item" effect="dark" placement="top-start">
           <div slot="content">
             0表示无折扣
-            <br>
+            <br />
             例：七五折请填写7.5
           </div>
           <i class="el-icon-info" />
@@ -176,7 +184,7 @@ export default {
           }
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     onSubmit(formName) {
       const insertData = {
@@ -192,7 +200,7 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -221,5 +229,8 @@ export default {
 .el-form-item--small .el-form-item__content,
 .el-form-item--small .el-form-item__label {
   width: 100%;
+}
+.el-tooltip {
+  margin-left: 4px;
 }
 </style>

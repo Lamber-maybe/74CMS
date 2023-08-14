@@ -1,0 +1,221 @@
+/* 搜索 */
+.s_content {
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center;
+  background-size: 100%;
+}
+
+.s_content .search_min {
+  padding: 49px 0 29px 241px;
+}
+
+.search_min .search {
+  width: 720px;
+  height: 45px;
+  background-color: #fff;
+  border: 1px solid #01ccb0;
+  box-sizing: border-box;
+}
+
+.search_min .search .ipt {
+  width: 620px;
+  height: 45px;
+  padding: 0 39px;
+  background: url(../../images/campus/search_icon.png) no-repeat 12px center;
+  position: relative;
+}
+.search_min .search .ipt input {
+  width: 575px;
+  height: 95%;
+  border: none;
+}
+
+.search_min .search .btn {
+  width: 89px;
+  height: 43px;
+  background-color: #01cbb3;
+  background-image: linear-gradient(to right, #01cbb3,#01c67e);
+}
+.search_min .search .btn:hover {
+  background-color: #02dac0;
+}
+.search_min .search .btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #feffff;
+  font-size: 16px;
+}
+/* 列表 */
+.publicize_list {
+  padding: 30px 0 0;
+}
+
+.publicize_list .pl_item {
+  width: 388px;
+  height: 203px;
+  margin: 0 17px 17px 0;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.5s;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-top: 2px solid #36cb94;
+}
+.publicize_list .no_mr{
+  margin-right: 0;
+}
+.publicize_list .pl_item:hover {
+  border: 2px solid #36cb94;
+}
+
+.publicize_list .pl_item:hover {
+  transform: translateY(-10px);
+  box-shadow: 3px 3px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.publicize_list .pl_item:hover .school_info .s_name {
+  color: #01c67e;
+}
+
+.publicize_list .pl_item .city {
+  width: 27px;
+  height: 54px;
+  background-color: #ecfaf1;
+  color: #19b955;
+  font-size: 14px;
+  text-align: center;
+  position: absolute;
+  left: 7px;
+  top: 0px;
+  writing-mode:vertical-lr;
+  -ms-writing-mode:lr;
+  display: none;
+}
+.publicize_list .pl_item .city .text{
+  width: 4px;
+  display:block;
+}
+.publicize_list .pl_item .publicize_info {
+  text-align: center;
+  height: 130px;
+  border-bottom: 1px solid #f4f4f4;
+  padding: 33px 0 0;
+  background: linear-gradient(to bottom,#f4fafb , #fff);
+}
+.pl_item .publicize_info .publicize_title {
+  color: #444444;
+  font-size: 20px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.pl_item .publicize_info .time {
+  color: #ff7725;
+  font-size: 18px;
+}
+.pl_item .publicize_school {
+  padding: 15px;
+}
+
+.pl_item .publicize_school .school_img {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  margin-right: 16px;
+}
+
+.pl_item .publicize_school .school_img img {
+  max-width: 40px;
+  max-height: 40px;
+  display: block;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+}
+
+.pl_item .publicize_school .school_info {
+  width: 280px;
+}
+.pl_item .publicize_school .school_info .s_name {
+  color: #444444;
+  font-size: 14px;
+  display: block;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+.pl_item .publicize_school .school_info .s_name:hover {
+  color: #01c67e;
+}
+.pl_item .publicize_school .school_info .address {
+  color: #999999;
+  font-size: 14px;
+}
+
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging {
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more {
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: #20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color: #20c588;
+}
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active {
+  color: #ffffff;
+  background-color: #20c588;
+}

@@ -66,6 +66,7 @@ class JobApply extends \app\v1_0\controller\common\Base
         $intention_arr = [];
         $photo_id_arr = [];
         $photo_data = [];
+        $fullname_arr = [];
         foreach ($list as $key => $value) {
             $resumeid_arr[] = $value['resume_id'];
             $value['photo_img'] > 0 && ($photo_id_arr[] = $value['photo_img']);
@@ -94,36 +95,14 @@ class JobApply extends \app\v1_0\controller\common\Base
                 }
                 $work_list[$value['rid']] = $value;
             }
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
         }
         $category_data = model('Category')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
             $value['high_quality'] = $value['high_quality'];
-            if ($value['display_name'] == 0) {
-                if ($value['sex'] == 1) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '先生'
-                    );
-                } elseif ($value['sex'] == 2) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '女士'
-                    );
-                } else {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '**'
-                    );
-                }
-            }
+            $value['fullname'] = isset($fullname_arr[$value['resume_id']])?$fullname_arr[$value['resume_id']]:$value['fullname'];
             $value['sex_text'] = model('Resume')->map_sex[
                 $value['sex']
             ];

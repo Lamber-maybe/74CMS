@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="b1" v-if="dataset.length > 5">
-      <swiper :options="swiperOption" @click-slide="beforeJump">
+      <swiper :options="swiperOption" @click-slide="beforeJump" v-if="$store.state.swiperLoaded">
         <swiper-slide v-for="(item,index) in dataset" :key="index">
           <div class="item">
             <img :src="item.icon == '' ? require('../../../assets/images/index/ap2/' + item.alias + '.png') : item.icon" alt="" />

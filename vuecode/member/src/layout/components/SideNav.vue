@@ -45,7 +45,7 @@
       <el-menu-item class="i6" :style="{'padding-left':'84px'}" index="/company/recommend">
         <span slot="title">智能推荐</span>
       </el-menu-item>
-      <el-submenu class="i9" index="/company/jobfair">
+      <el-submenu class="i9" index="/company/jobfair/network/index">
         <template slot="title">
           <span :style="{'padding-left':'64px'}">招聘会</span>
         </template>

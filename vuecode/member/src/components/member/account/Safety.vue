@@ -44,7 +44,7 @@
 					<img src="../../../assets/images/emailauth.png" />邮箱认证
 				</div>
 				<div class="nameId" v-if="email!=''"><img src="../../../assets/images/done.png" class="done"/>您已认证：{{email}}</div>
-				<div class="nameId" v-else>认证后可使用邮箱登录网站，邮箱找回登录密码</div>
+				<div class="nameId" v-else>认证后可使用邮箱登录，邮箱找回登录密码</div>
 				<div class="btn">
 					<el-button type="primary" @click="openResetEmail">{{email?'修改':'立即认证'}}</el-button>
 				</div>
@@ -59,7 +59,7 @@
 						微信
 					</div>
 					<div class="nameId2" v-if="bind_weixin==1"><img src="../../../assets/images/done.png" class="done"/>您已绑定：{{bind_weixin_nickname}}</div>
-					<div class="nameId2" v-else>绑定后可使用微信快速登录网站，随时接收面试通知</div>
+					<div class="nameId2" v-else>绑定后可使用微信快速登录，随时接收面试通知</div>
 					<div class="btn">
 						<el-button type="primary" @click="handlerBindWeixin">{{bind_weixin==1?'解除绑定':'立即绑定'}}</el-button>
 					</div>

@@ -1,5 +1,5 @@
 <template>
-  <memberlist listtype="personal" :show-options-status="true" />
+  <memberlist listtype="personal" />
 </template>
 
 <script>

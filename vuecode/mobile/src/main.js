@@ -64,6 +64,7 @@ import {
 } from 'vant'
 import MetaInfo from 'vue-meta-info'
 Vue.use(MetaInfo)
+store.state.swiperLoaded = false
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
 if (!isSpider) {
   Promise.all([
@@ -72,6 +73,7 @@ if (!isSpider) {
     VueAwesomeSwiper
   ]) => {
     Vue.use(VueAwesomeSwiper)
+    store.state.swiperLoaded = true
   })
 } else {
 }

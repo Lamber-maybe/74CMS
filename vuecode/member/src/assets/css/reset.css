@@ -149,4 +149,14 @@
   height: 1px;
 }
 
+@media screen and (min-width:900px) and (max-width:1200px){
+  .card .cardItem.i1::after,
+  .card .cardItem.i2::after,
+  .card .cardItem.i3::after,
+  .card .cardItem.i4::after,
+  .card .cardItem.i5::after{
+    background:none !important;
+  }
+}
+
 /*# sourceMappingURL=reset.css.map */

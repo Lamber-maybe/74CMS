@@ -281,7 +281,7 @@
                     <div class="job_duty">
                       <div class="duty_title">
                         <div class="clearfix">
-                          <p class="require_text">工作地区<span>{#$vo.district_text#}</span></p>
+                          <p class="require_text" title="{#$vo.district_text_full#}">工作地区<span>{#$vo.district_text_full#}</span></p>
                           <p class="require_text">招聘人数<span>{#$vo.amount_text#}人</span></p>
                         </div>
                         <div class="clearfix">
@@ -369,8 +369,10 @@
             <div class="tip-block">
               <div class="tip-block-title">
                 <p class="middle"><span class="font_red">30秒</span>快速注册简历，海量职位任意投！</p>
-                <p class="small">登录或注册简历后可以查看更多数据</p>
+                <p class="small">登录或注册简历后可以查看更多职位</p>
               </div>
+              <div class="tip_block_qr"><img src="{#$global_config.wechat_qrcode#}" alt="" class="tip_qr"></div>
+              <div class="tip_qr_txt">微信扫一扫，求职更轻松</div>
               <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
               <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">30秒注册简历</a>
             </div>
@@ -382,8 +384,10 @@
             <div class="tip-block">
               <div class="tip-block-title">
                 <p class="middle"><span class="font_red">30秒</span>快速注册简历，海量职位任意投！</p>
-                <p class="small">登录或注册简历后可以查看更多数据</p>
+                <p class="small">登录或注册简历后可以查看更多职位</p>
               </div>
+              <div class="tip_block_qr"><img src="{#$global_config.wechat_qrcode#}" alt="" class="tip_qr"></div>
+              <div class="tip_qr_txt">微信扫一扫，求职更轻松</div>
               <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
               <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">30秒注册简历</a>
             </div>

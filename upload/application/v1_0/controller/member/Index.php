@@ -256,6 +256,23 @@ class Index extends \app\v1_0\controller\common\Base
         $this->ajaxReturn(200, '下载成功');
     }
     /**
+     * 邀请面试预加载数据
+     */
+    public function interviewAddPre()
+    {
+        $this->checkLogin(1);
+        $this->interceptCompanyProfile();
+        $this->interceptCompanyAuth();
+        $companyContact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
+        $companyInfo = model('CompanyInfo')->where('uid',$this->userinfo->uid)->find();
+        $return = [
+            'contact'=>$companyContact===null?'':$companyContact->contact,
+            'tel'=>$companyContact===null?'':($companyContact->mobile?$companyContact->mobile:$companyContact->telephone),
+            'address'=>$companyInfo===null?'':$companyInfo->address
+        ];
+        $this->ajaxReturn(200, '获取数据成功',$return);
+    }
+    /**
      * 邀请面试
      */
     public function interviewAdd()

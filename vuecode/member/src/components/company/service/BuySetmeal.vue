@@ -10,8 +10,8 @@
             <div class="item_left">
               <p><span class="service_name">{{ item.name }}<img v-if="item.recommend==1" class="recommend" :src="require('@/assets/images/tuijian2.png')" /></span></p>
               <div>
-                  <span class="item_left_btm"><span class="color1">职位数</span> <span class="color2">{{item.jobs_meanwhile}}个</span></span>
-                  <span class="item_left_btm"><span class="color1">简历点</span> <span class="color2">{{item.download_resume_point}}</span></span>
+                  <span class="item_left_btm"><span class="color1">职位数</span> <span class="color2">{{item.jobs_meanwhile}}个</span></span> +
+                  <span class="item_left_btm"><span class="color1">简历点</span> <span class="color2">{{item.download_resume_point}}</span></span> +
                   <span class="item_left_btm"><span class="color1">{{$store.state.config.points_byname}}</span> <span class="color2">{{item.gift_point}}</span></span>
                 </div>
             </div>
@@ -46,7 +46,7 @@
             <div>使用微海报：<span class="color">{{setmealDetail.enable_poster==1?'允许':'不允许'}}</span></div>
             <div>使用视频面试：<span class="color">{{setmealDetail.enable_video_interview==1?'允许':'不允许'}}</span></div>
             <div>收到简历查看：<span class="color">{{setmealDetail.show_apply_contact==1?'免费':'不免费'}}</span></div>
-            <div>其他说明：<span class="color">{{setmealDetail.note==''?'无':setmealDetail.note}}</span></div>
+            <div class="dec">其他说明：<span class="color">{{setmealDetail.note==''?'无':setmealDetail.note}}</span></div>
         </div>
       </li>
       <li>
@@ -347,7 +347,6 @@ import api from '@/api'
    }
    .jurisdiction>div{
      width: 710px;
-     height: 134px;
      background: #fbfbfb;
      border: 1px solid #eeeeee;
     padding: 20px;
@@ -360,6 +359,10 @@ import api from '@/api'
      font-size: 13px;
      color: #666666;
      width:180px;
+     margin-bottom: 8px;
+     &.dec {
+      height: auto;margin-bottom: 0;width: 100%;
+     }
    }
    .color{
      color: #db8e24;
@@ -379,7 +382,7 @@ import api from '@/api'
    }
 
    .item_left_btm{
-     margin-right: 30px;
+     /*margin-right: 30px;*/
    }
    .item_left_btm .color1{
      color: #666666;

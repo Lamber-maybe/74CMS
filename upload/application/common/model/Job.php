@@ -12,6 +12,46 @@ class Job extends \app\common\model\BaseModel
     public $map_nature = [1 => '全职', 2 => '实习'];
     public $map_display = [1 => '招聘中', 0 => '已暂停'];
 
+    protected $insert = ['updatetime'];
+    protected $update = ['updatetime'];
+    protected static function init()
+    {
+        Job::afterInsert(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['company_id'])){
+                model('Company')->where('id',$info['company_id'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Company')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        Job::afterUpdate(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['company_id'])){
+                model('Company')->where('id',$info['company_id'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Company')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+        Job::afterDelete(function ($info) {
+            if(is_object($info)){
+                $info = $info->toArray();
+            }
+            if(isset($info['company_id'])){
+                model('Company')->where('id',$info['company_id'])->setField('updatetime',time());
+            }else if(isset($info['uid'])){
+                model('Company')->where('uid',$info['uid'])->setField('updatetime',time());
+            }
+        });
+    }
+
+    protected function setUpdatetimeAttr($value = null)
+    {
+        return $value === null ? time() : $value;
+    }
     public function setUserStatus($uid, $status)
     {
         $model = $this->where('uid', $uid)->setField('user_status', $status);
@@ -528,7 +568,14 @@ class Job extends \app\common\model\BaseModel
      */
     public function addViewLog($jobid, $company_uid = 0, $personal_uid = 0)
     {
-        $this->where('id', 'eq', $jobid)->setInc('click');
+        $rand_click = config('global_config.rand_click_job');
+        $rand_click = intval($rand_click);
+        if($rand_click<=1){
+            $rand_click = 1;
+        }else{
+            $rand_click = rand(1,$rand_click);
+        }
+        $this->where('id', 'eq', $jobid)->setInc('click',$rand_click);
         if ($company_uid > 0 && $personal_uid > 0) {
             $resume_info = model('Resume')
                 ->field('id,fullname')

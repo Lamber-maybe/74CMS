@@ -1,0 +1,296 @@
+/* 搜索 */
+.s_content {
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center;
+  background-size: 100%;
+}
+
+.s_content .search_min {
+  padding: 49px 0 0px 241px;
+}
+
+.search_min .search {
+  width: 720px;
+  height: 45px;
+  background-color: #fff;
+  border: 1px solid #01ccb0;
+  box-sizing: border-box;
+}
+
+.search_min .search .ipt {
+  width: 620px;
+  height: 45px;
+  padding: 0 39px;
+  background: url(../../images/campus/search_icon.png) no-repeat 12px center;
+  position: relative;
+}
+.search_min .search .ipt input {
+  width: 575px;
+  height: 95%;
+  border: none;
+}
+
+.search_min .search .btn {
+  width: 89px;
+  height: 43px;
+  background-color: #01cbb3;
+  background-image: linear-gradient(to right, #01cbb3,#01c67e);
+}
+.search_min .search .btn:hover {
+  background-color: #02dac0;
+}
+.search_min .search .btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #feffff;
+  font-size: 16px;
+}
+
+/* 列表 */
+.list_box{
+  width: 808px;
+  margin-right: 65px;
+}
+.list_box .list_item {
+  width: 808px;
+  height: 131px;
+  border-bottom: 1px solid #efefef;
+  padding: 29px 0;
+  cursor: pointer;
+}
+.list_box .list_item:hover .job_name {
+  color: #20c588;
+  text-decoration: underline;
+}
+
+.list_box .list_item:hover .lit_btn {
+  background: #24bb83;
+}
+
+.list_box .list_item .lit_img {
+  width: 75px;
+  height: 75px;
+  border-radius: 3px;
+  border: 1px solid #f1f1f1;
+  margin-left: 3px;
+  margin-right: 23px;
+  position: relative;
+}
+
+.list_box .list_item .lit_img img {
+  max-width: 73px;
+  max-height: 73px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.list_box .list_item .lit_job {
+  width: 707px;
+}
+
+.lit_job .lit_text_box {
+  width: 560px;
+}
+
+.lit_job .lit_text_box .job_name {
+  display: block;
+  color: #444444;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lit_job .lit_text_box .oth {
+  padding: 9px 0;
+}
+
+.lit_job .lit_text_box .oth .salary {
+  color: #ff6000;
+  font-size: 14px;
+  margin-right: 19px;
+}
+
+.lit_job .lit_text_box .oth .oth_list span {
+  position: relative;
+  color: #555555;
+  font-size: 14px;
+  margin-right: 13px;
+}
+.lit_job .lit_text_box .oth .oth_list span::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  background-color: #acacac;
+  border-radius: 50%;
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  margin-top: -2px;
+}
+.lit_job .lit_text_box .oth .oth_list span:last-child:after {
+  display: none;
+}
+
+.lit_job .lit_text_box .address {
+  color: #999999;
+  font-size: 14px;
+}
+.lit_job .lit_text_box .address .t {
+  color: #555555;
+}
+
+.lit_job .lit_btns_box {
+  margin-top: 5px;
+}
+
+.lit_job .lit_btns_box .lit_text {
+  color: #999999;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.lit_job .lit_btns_box .lit_btn {
+  display: block;
+  width: 94px;
+  height: 33px;
+  text-align: center;
+  line-height: 33px;
+  color: #ffffff;
+  font-size: 14px;
+  background-color: #20c588;
+  text-decoration: none;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 2px 2px 3px 1px #c1f3e0;
+}
+.lit_job .lit_btns_box .lit_btn:hover{
+  background-color: #24bb83;
+}
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging{
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more{
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color:#20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color:#20c588 ;
+}
+
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active{
+  color: #ffffff;
+  background-color:#20c588 ;
+}
+/* 热门校招 */
+.hot_recruit{
+  width: 276px;
+  border: 1px solid #f1f1f1;
+  border-top: 2px solid #36cb94;
+  margin-top: 40px;
+  padding: 0 17px  16px;
+}
+.hot_recruit .hot_title{
+  color: #444444;
+  font-size: 18px;
+  padding: 16px 0 22px;
+}
+.hot_rec_list .rec_list_item{
+  margin-bottom: 24px;
+}
+.hot_rec_list .rec_list_item:hover .hot_job_info .job_name{
+  color: #20c588;
+}
+
+.hot_rec_list .rec_list_item .img{
+  width: 63px;
+  height: 63px;
+  border-radius: 3px;
+  border: 1px solid #e8e8e8;
+  margin-right: 12px;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.hot_rec_list .rec_list_item .img img{
+  display: block;
+  max-width: 53px;
+  max-height: 53px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.hot_rec_list .rec_list_item .hot_job_info{
+  width:165px;
+  font-size: 14px;
+}
+.hot_rec_list .rec_list_item .hot_job_info .job_name{
+  color: #444;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+.hot_rec_list .rec_list_item .hot_job_info .com_name{
+  color: #999999;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 5px 0;
+}
+.hot_rec_list .rec_list_item .hot_job_info .address{
+  color: #999999;
+}

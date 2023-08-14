@@ -263,7 +263,8 @@ class Order extends \app\common\controller\Backend
             $order_detail['oid'],
             'backend',
             time(),
-            $note
+            $note,
+            $this->admininfo->id
         );
         model('AdminLog')->record(
             '更改订单状态为【支付成功】。订单ID【' .

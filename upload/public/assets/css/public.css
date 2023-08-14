@@ -2,6 +2,16 @@ button{
 	border: none;
 	background: none;
 }
+::-webkit-scrollbar{
+  width: 8px;
+  background: #fff;
+}
+::-webkit-scrollbar-thumb{
+  width: 8px;
+  height: 30px;
+  border-radius: 10px;
+  background: #cbcbd1;
+}
 .content_wrapper{
 	background-color:#f3f3f3 ;
 }
@@ -387,7 +397,7 @@ select::-ms-expand {
 	font-size: 12px;
 }
 .option_opt label{
-margin-right: 20px;	
+margin-right: 20px;
 font-size: 12px;
 cursor: pointer;
 }
@@ -491,6 +501,7 @@ cursor: pointer;
 	font-size: 12px;
 	color:#FF6600;
 	font-weight: normal;
+	margin-right: 5px;
 }
 .job_salary span{
 	font-size: 12px;
@@ -800,7 +811,7 @@ cursor: pointer;
 .periphery_title span.active {
 	color: #333333;
 	font-weight: bold;
-	
+
 }
 
 
@@ -815,7 +826,7 @@ cursor: pointer;
 }
 .periphery_list .list_box a {
 	display:inline-block;
-	font-size: 14px;	
+	font-size: 14px;
 	color: #666;
 	margin-bottom:10px;
 	width:118px;
@@ -958,7 +969,7 @@ cursor: pointer;
 }
 
 .pagination-simple{
-    
+
 }
 .pagination-simple li{
     display: inline-block;
@@ -1025,7 +1036,7 @@ cursor: pointer;
 	position: relative;
 }
 .jobshow_map .code{
-	width: 180px; 
+	width: 180px;
 	background: #fbfbfb;
 	position: absolute;
 	right: 20px;
@@ -1091,4 +1102,106 @@ cursor: pointer;
 	position: absolute;right: 0;top: 0;height: 46px;line-height: 46px;padding-left: 15px;
 	font-size: 12px;color: #ff6b31;cursor: pointer;
 	background: url("../../assets/images/brw_tip_close_ico.png") 0 center no-repeat;background-size: 10px 10px;
+}
+
+/*快捷注册简历弹窗*/
+.reg_quick_dialog .el-dialog__header, .reg_quick_dialog .el-dialog__body {
+    padding: 0;
+}
+.reg_quick_box {
+    width: 874px;height: 671px;background: url("../../assets/images/reg_quick_bg.png") 0 no-repeat;
+    background-size: 874px 671px;position: relative;
+}
+.reg_quick_box .rqb_tx1 {
+    font-size: 20px;color: #006fe3;line-height: 1;padding: 38px 0 38px 46px;
+}
+.reg_quick_box .to_login_btn {
+    position: absolute;right: 76px;top: 34px;width: 80px;height: 30px;line-height: 30px;text-align: center;
+    font-size: 14px;color: #fefefe;border-radius: 4px;background-color: #0cb166;display: block;transition: all .3s;
+    -webkit-transition: all .3s;cursor: pointer;
+}
+.reg_quick_box .to_login_btn:hover {
+    background-color: #0ca15d;
+}
+.reg_quick_box .to_login_txt {
+    position: absolute;right: 168px;top: 34px;height: 30px;line-height: 30px;font-size: 14px;color: #555555;
+}
+.reg_quick_box .form_group {
+    padding: 0 0 0 50px;margin-bottom: 12px;
+}
+.reg_quick_box .form_group .be_label {
+    float: left;width: 120px;height: 40px;line-height: 40px;padding-right: 10px;font-size: 14px;color: #666666;
+    text-align: right;margin-bottom: 19px;
+}
+.reg_quick_box .form_group .be_input {
+    float: left;width: 255px;margin-bottom: 19px;position: relative;
+}
+.reg_quick_box .form_group .be_input .no_job_time {
+    position: absolute;right: -67px;top: 10px;
+}
+.reg_quick_box .form_group .be_input.no_job_time{
+    width: 188px;margin-right: 67px;
+}
+.reg_quick_box .form_group .be_input.no_job_time .el-checkbox__label {
+    padding-left: 5px;
+}
+.reg_quick_box .form_group .be_ge {
+    float: left;padding-left: 22px;width: 370px;margin-bottom: 19px;
+}
+.reg_quick_box .form_group .be_gender {
+    float: left;width: 76px;height: 40px;line-height: 40px;padding-left: 38px;border-radius: 999px;font-size: 14px;
+    color: #666666;margin-right: 15px;
+}
+.reg_quick_box .form_group .be_gender.s1 {
+    background: #f8f8f8 url("../../assets/images/reg_q_s1.png") 16px center no-repeat;background-size: 16px;
+}
+.reg_quick_box .form_group .be_gender.s2 {
+    background: #f8f8f8 url("../../assets/images/reg_q_s3.png") 16px center no-repeat;background-size: 16px;
+}
+.reg_quick_box .form_group .be_gender.s1.active {
+    background: #ebf5ff url("../../assets/images/reg_q_s2.png") 16px center no-repeat;background-size: 16px;
+    color: #1787fb;
+}
+.reg_quick_box .form_group .be_gender.s2.active {
+    background: #ebf5ff url("../../assets/images/reg_q_s4.png") 16px center no-repeat;background-size: 16px;
+    color: #1787fb;
+}
+.reg_quick_box .el-date-editor.el-input, .reg_quick_box .el-date-editor.el-input__inner {
+    width: 100%;
+}
+.reg_quick_box .el-select, .reg_quick_box .el-cascader {
+    width: 255px;
+}
+.reg_quick_box .el-select.for_wage {
+    width: 120px;
+}
+.reg_quick_box .for_sp {
+    display: inline-block;
+}
+.reg_quick_box .for_sp_line {
+    width: 853px;margin: 0 auto 29px;border-top: 1px dashed #e2ddde;
+}
+.reg_quick_box .form_group .be_tip {
+    float: left;width: 370px;height: 40px;line-height: 40px;padding-left: 22px;font-size: 12px;color: #999999;
+    margin-bottom: 19px;
+}
+.reg_quick_box .to_reg_group {
+    padding-top: 5px;
+}
+.reg_quick_box .to_reg_group .to_reg_btn {
+    width: 610px;height: 45px;line-height: 45px;text-align: center;font-size: 18px;color: #ffffff;border-radius: 4px;
+    background-color: #1787fb;transition: all .3s;-webkit-transition: all .3s;cursor: pointer;margin: 0 auto;
+}
+.reg_quick_box .to_reg_group .to_reg_btn:hover {
+    background-color: #177ee8;
+}
+.reg_quick_box .to_get_code_btn {
+    position: absolute;right: 1px;top: 1px;height: 38px;line-height: 38px;color: #1787fb;width: 96px;cursor: pointer;
+    background-color: #f5f7fa;border: 0;border-left: 1px solid #DCDFE6;border-radius: 0 4px 4px 0;padding: 0;
+}
+.reg_quick_box .to_get_code_btn.disabled {
+    background-color: #f5f7fa;color: #999;cursor: not-allowed;
+}
+.reg_quick_dialog .el-dialog__headerbtn {
+    z-index: 3;
 }

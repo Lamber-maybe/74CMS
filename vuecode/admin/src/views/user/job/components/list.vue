@@ -47,6 +47,7 @@
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -80,20 +81,32 @@
         <el-table-column type="selection" width="42" />
         <el-table-column label="职位名称">
           <template slot-scope="scope">
-            <el-link :href="scope.row.job_link" target="_blank" type="primary">
-              {{ scope.row.jobname }}
-            </el-link>
+            <div>
+              <el-link
+                :href="scope.row.job_link"
+                target="_blank"
+                type="primary"
+              >
+                {{ scope.row.jobname }}
+              </el-link>
+            </div>
+            <div>
+              <el-link :href="scope.row.company_link" target="_blank">
+                {{ scope.row.companyname }}
+              </el-link>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="公司名称">
+        <el-table-column label="会员/职位手机号" width="200">
           <template slot-scope="scope">
-            <el-link
-              :href="scope.row.company_link"
-              target="_blank"
-              type="primary"
-            >
-              {{ scope.row.companyname }}
-            </el-link>
+            <div title="会员手机号">
+              <i class="el-icon-user"></i>&nbsp;{{ scope.row.member_mobile }}
+            </div>
+            <div title="职位联系手机号">
+              <i class="el-icon-document"></i>&nbsp;{{
+                scope.row.mobile ? scope.row.mobile : "-"
+              }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="审核状态" width="120">
@@ -103,13 +116,17 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="刷新时间">
+        <el-table-column align="center" label="创建/刷新时间" width="200">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.refreshtime | timeFilter }}</span>
+            <div title="创建时间">
+              <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
+            </div>
+            <div title="刷新时间">
+              <i class="el-icon-time" />{{ scope.row.refreshtime | timeFilter }}
+            </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="招聘状态" width="120">
+        <el-table-column align="center" label="职位状态" width="120">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
               {{ options_display[scope.row.is_display] }}
@@ -118,12 +135,23 @@
         </el-table-column>
         <el-table-column align="center" label="推广">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
-            <el-button type="text" @click="funCopy(scope.row)">[复制]</el-button>
+            <el-button type="text" @click="funPoster(scope.row.id)"
+              >[海报]</el-button
+            >
+            <el-button type="text" @click="funCopy(scope.row)"
+              >[复制]</el-button
+            >
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" width="300">
           <template slot-scope="scope">
+            <el-button
+              size="small"
+              type="primary"
+              @click="funManagement(scope.row)"
+            >
+              管理
+            </el-button>
             <el-button
               size="small"
               type="primary"
@@ -160,11 +188,11 @@
             删除
           </el-button>
         </el-col>
-        <el-col :span="16" style="text-align: right;">
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -197,20 +225,24 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_audit">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_audit"> 确 定 </el-button>
       </div>
     </el-dialog>
-    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
+    <Poster
+      v-if="showPoster"
+      :poster-id="posterId"
+      :poster-type="posterType"
+      @closeDialog="showPoster = false"
+    />
   </div>
 </template>
 
 <script>
 import { getClassify } from '@/api/classify'
 import { jobList, jobDelete, jobAudit, jobRefresh } from '@/api/job'
-import { parseTime } from '@/utils/index'
+import { parseTime, setMemberLogin } from '@/utils/index'
 import { exportJobById } from '@/api/export'
+import { management } from '@/api/member'
 import Poster from '@/components/Poster'
 
 export default {
@@ -275,6 +307,21 @@ export default {
     this.fetchData()
   },
   methods: {
+    funManagement(row) {
+      const params = {
+        uid: row.uid
+      }
+      management(params).then(response => {
+        if (response.code == 200) {
+          setMemberLogin(response.data)
+          window.open(this.$store.state.config.sitedomain + this.$store.state.config.sitedir + this.$store.state.config.member_dirname)
+          return true
+        } else {
+          this.$message.error(response.message)
+          return false
+        }
+      })
+    },
     fetchData() {
       this.listLoading = true
       getClassify({ type: 'jobAudit,jobDisplay' })
@@ -365,7 +412,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funDeleteBatch() {
       var that = this
@@ -389,7 +436,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     handleSelectionChange(idlist) {
       this.tableIdarr = []
@@ -444,9 +491,9 @@ export default {
         }
       })
     },
-    funRefresh(){
+    funRefresh() {
       var that = this
-      if (that.tableIdarr.length == 0){
+      if (that.tableIdarr.length == 0) {
         that.$message.error('请选择要刷新的职位')
         return false
       }
@@ -459,13 +506,13 @@ export default {
         that.fetchData()
       })
     },
-    funExport(){
+    funExport() {
       var that = this
-      if (that.$store.state.user.access_export == 0){
+      if (that.$store.state.user.access_export == 0) {
         that.$message.error('当前管理员没有导出权限')
         return false
       }
-      if (that.tableIdarr.length == 0){
+      if (that.tableIdarr.length == 0) {
         that.$message.error('请选择要导出的职位')
         return false
       }
@@ -548,13 +595,13 @@ export default {
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
     },
-    funPoster(id){
+    funPoster(id) {
       this.showPoster = true
       this.posterId = id
       this.posterType = 'job'
     },
     // 一键复制
-    funCopy (row) {
+    funCopy(row) {
       const that = this
       const copyMessage = `${row.companyname}
 招聘：${row.jobname}

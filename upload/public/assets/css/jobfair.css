@@ -1,0 +1,693 @@
+button {
+	border: none;
+	background: none;
+	padding: 0;
+}
+
+.banner {
+	height: 300px;
+	background: url(../images/JobFair_banner.png);
+}
+
+.banner .banner_con {
+	width: 1200px;
+	margin: auto;
+}
+.banner .banner_con .banner_text{
+	margin-left: 73px;
+}
+
+.banner .banner_con .banner_title1 {
+	color: #fff;
+	font-size: 57px;
+	padding-top: 57px;
+	position: relative;
+}
+
+.banner .banner_con .banner_title1 span {
+	display: inline-block;
+	width:157px ;
+	height:4px ;
+	background:#ffffff;
+	position: absolute;
+	left: 237px;
+	top: 96px;
+}
+
+.banner .banner_con .banner_title2 {
+	color: #fff;
+	font-size: 70px;
+}
+
+.banner .banner_con .banner_title2 span {
+	color: #ffcc1d;
+}
+
+.banner .banner_con .banner_button {
+	color: #fff;
+	font-size: 18px;
+	border: 1px solid #ffffff;
+	border-radius: 30px;
+	padding: 4px 16px;
+	margin-top: 17px;
+}
+
+
+
+
+.jobFair_list{
+	background-color: #fff;
+	padding: 29px 45px 29px 30px;
+	position: relative;
+	border-bottom: 2px solid #f3f3f3;
+}
+.jobFair_list .reserve_img{
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.jobFair_list .jobFair_img{
+	width: 244px;
+	height:144px ;
+	margin-right: 21px;
+}
+
+.jobFair_list .jobFair_img img{
+	width: 100%;
+	height: 100%;
+}
+
+.jobFair_list  .jobFair_list_con{
+	padding: 5px 0 0 0;
+}
+
+.jobFair_list  .jobFair_list_con .title{
+	color:#333333 ;
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 17px;
+}
+
+.jobFair_list  .jobFair_list_con .Sponsor,
+.jobFair_list  .jobFair_list_con .time,
+.jobFair_list  .jobFair_list_con .place,
+.jobFair_list  .jobFair_list_con .reserve_status{
+	font-size: 14px;
+	margin-bottom: 14px;
+}
+.reserve_status.status0{color:#ff6600}
+.reserve_status.status1{color:#ff6363}
+.reserve_status.status2{color:#8c8c8c}
+.reserve_status.status3{color:#1787fb}
+.reserve_status.status4{color:#1787fb}
+.reserve_status.status5{color:#ff6600}
+.jobFair_list .jobFair_btn{
+	float: right;
+	margin-right: 43px;
+}
+.jobFair_list .jobFair_btn .bt_one {
+	position: absolute;right: 88px;top: 50%;transform: translate(0, -50%);float: none;margin-right: 0;
+}
+.jobFair_list .jobFair_btn .btn{
+	padding:10px 37px ;
+	color: #fff;
+	font-size: 14px;
+	border-radius:5px;
+	text-decoration:none;
+	display:block;
+}
+.jobFair_list .jobFair_btn  .btn_bg1{
+	background:  rgb(255,151,27);
+	margin-top: 29px;
+	margin-bottom: 16px;
+}
+.jobFair_list .jobFair_btn  .btn_bg1:hover{
+	opacity: 0.7;
+}
+.jobFair_list .jobFair_btn  .btn_bg2{
+	background: #3889fa;
+}
+.jobFair_list .jobFair_btn  .btn_bg2:hover{
+	opacity: 0.7;
+}
+.jobFair_list .jobFair_btn  .btn_margin{
+	margin-top: 81px;
+}
+
+
+/* 招聘会参会企业 */
+.jobFair_box{
+	background: #fff;
+	padding: 28px 45px 28px 30px;
+	position: relative;
+	margin-bottom: 10px;
+}
+
+.jobFair_box .right_img{
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.jobFair_box .jobFair_img{
+	width:246px ;
+	height:145px ;
+	margin-right: 20px;
+}
+.jobFair_box .jobFair_img img{
+	width: 100%;
+	height: 100%;
+}
+
+.jobFair_box  .jobFair_text_box{
+
+}
+
+.jobFair_box  .jobFair_text_box .title{
+	color:#333333 ;
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 12px;
+}
+
+.jobFair_box  .jobFair_text_box .sponsor,
+.jobFair_box  .jobFair_text_box .time{
+	color: #666666;
+	font-size:14px ;
+}
+.jobFair_box  .jobFair_text_box .reserve_status{
+	font-size:14px;
+	margin-top:14px;
+}
+.jobFair_box  .jobFair_text_box .sponsor{
+	margin-bottom: 14px;
+}
+
+.jobFair_box  .jobFair_text_box .total{
+	margin-bottom: 15px;
+}
+.jobFair_box  .jobFair_text_box .total p{
+	display: inline-block;
+	margin-right: 40px;
+	font-size: 14px;
+	color: #666;
+}
+.jobFair_box  .jobFair_text_box .total p span{
+	color: #333;
+	font-size: 20px;
+	margin-left: 5px;
+}
+
+
+
+.jobFair_box .jobFair_btn{
+	float: right;
+	text-align: center;
+	margin-right: 43px;
+	margin-top: 44px;
+}
+.jobFair_box .jobFair_btn button{
+	padding: 9px 37px;
+	color:#ffffff ;
+	background:#1787fb ;
+	font-size:14px ;
+	border-radius: 5px;
+	margin-bottom: 18px;
+	cursor: pointer;
+}
+.jobFair_box .jobFair_btn button:hover{
+	background:#177ae0;
+}
+.jobFair_box .jobFair_btn button.not,.jobFair_box .jobFair_btn button.stop{
+	background:#E8E8E8;
+	color:#666;
+}
+.jobFair_box .jobFair_btn span{
+	color:#666666 ;
+	font-size: 14px;
+	cursor:pointer
+}
+
+
+.join_meeting_wrapper{
+	background: #fff;
+}
+
+.join_meeting_wrapper .recommend_box{
+	padding: 0 30px;
+}
+
+.recommend_box .recommend_title{
+	color:#333333 ;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 28px 0;
+}
+
+.recommend_box .recommend_list{
+	width:120px;
+	height:118px;
+	margin-right: 10px;
+
+}
+.recommend_box .recommend_list .comUrl{text-decoration:none}
+
+.recommend_box .recommend_list .recommend_img{
+	width:74px ;
+	height:74px ;
+	border:1px solid #e4e4e4 ;
+	margin: 0 auto 20px;
+
+}
+.recommend_box .recommend_list .recommend_img img{
+	width: 100%;
+	height: 100%;
+}
+.recommend_box .recommend_list  p{
+	color:#666666;
+	font-size:12px ;
+	overflow: hidden;
+	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis
+}
+
+
+
+.join_list_wrapper .join_sum{
+	color:#666666 ;
+	font-size: 16px;
+	padding: 38px 0 18px;
+}
+.join_list_wrapper .join_sum span{
+	color: #ff0000;
+}
+
+.join_list_wrapper .join_list_box{
+	margin-right: -20px;
+}
+
+
+
+.join_list{
+	width:560px;
+	background: #fbfbfb;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	padding: 20px 20px 22px 20px;
+}
+
+.join_list_box .join_list .join_company{
+	color:#333333 ;
+	font-size:16px ;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.join_list_box .join_list .BoothNo{
+	float: right;
+	color: #333;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 21px;
+}
+.join_list_box .join_list  .recruit_post_list{
+	margin-bottom: 10px;
+	height:52px;
+	overflow: hidden;
+}
+
+.join_list_box .join_list  .recruit_post_list .joburl{
+	display: inline-block;
+	color: #666666;
+	font-size: 14px;
+	margin-right: 20px;
+	line-height: 26px;
+}
+.join_list_box .join_list .post_sum{
+	color: #999;
+	font-size:13px ;
+}
+.join_list_box .join_list .post_sum span{
+	color: #FF6600;
+}
+.join_list_box .join_list .post_sum a{
+	color: #1787fb;
+	font-size:13px ;
+	cursor: pointer;
+}
+
+
+
+
+
+
+/* 精彩回顾 */
+.review{
+	background: #fff;
+	padding: 50px 0 49px;
+}
+.review img{
+	display: block;
+	width: 823px;
+	height:617px ;
+	margin:0 auto 45px;
+}
+
+
+
+/* 招聘会详情 */
+.join_con{
+	background: #fff;
+	padding: 50px 60px 67px;
+}
+.join_con .join_con_title{
+	color:#333 ;
+	font-size: 14px;
+	text-align: center;
+	margin-bottom: 32px;
+}
+.join_con .join_article{
+	color:#666666 ;
+	font-size:14px ;
+	line-height: 25px;
+}
+.join_con .beCareful{
+	color:#ff0000 ;
+	font-size: 14px;
+	margin-top: 53px;
+}
+.join_con .beCareful p{
+	text-align: right;
+	color:#666666 ;
+	font-size: 14px;
+	margin-top: 38px;
+}
+
+
+
+
+/* 交通路线 */
+.itinerary_con{
+	background: #fff;
+	padding:0 34px 30px 31px;
+}
+.itinerary_con .title{
+	color:#333 ;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 28px 0 24px;
+}
+
+.itinerary_con .address{
+	color:#333333 ;
+	font-size: 14px;
+	padding-left: 15px;
+	background: url(../images/address_icon.png) no-repeat;
+	margin-bottom: 15px;
+}
+.itinerary_con .map{
+	width:1136px ;
+	height:300px ;
+	background-color: #CCCCCC;
+	margin-bottom: 30px;
+}
+
+
+
+
+/* 在线预定 */
+.book_online_wrapper{
+	background: #fff;
+	padding: 0 30px;
+}
+
+.booth .title{
+	color:#333 ;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 28px 0 20px;
+}
+
+.booth .booth_img img{
+	display: block;
+	margin: auto;
+	max-width: 1140px;
+}
+
+
+.reserve_wrapper .title{
+	color:#333 ;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 43px 0 48px;
+}
+.reserve_wrapper .reserve_state{
+	color:#666 ;
+	font-size: 14px;
+	margin-bottom: 27px;
+	margin-left: 27px;
+}
+
+.reserve_state .explain{
+	float: left;
+	line-height: 28px;
+}
+
+.reserve_state .reserve_state_item{
+	margin-left: 33px;
+	float: left;
+}
+.reserve_state .reserve_state_item div{
+	width: 64px;
+	height: 28px;
+	margin-right: 8px;
+	float: left;
+	border-radius: 5px;
+}
+.reserve_state .reserve_state_item span{
+	float: left;
+	line-height: 28px;
+}
+
+
+.reserve_state  .reserve_state1{
+	border: 1px solid #e2e2e2;
+}
+.reserve_state  .reserve_state2{
+	background: #fff3d9;
+}
+.reserve_state  .reserve_state3{
+	background: #ff772d;
+}
+.reserve_state  .reserve_state4{
+	background: #e2e2e2;
+}
+
+.reserve .reserve_sum{
+	color:#666666 ;
+	font-size: 14px;
+	margin-bottom: 25px;
+	margin-left: 27px;
+}
+.reserve .reserve_sum span{
+	color:#333333 ;
+	font-size: 20px;
+}
+.reserve .seat{
+padding-bottom: 180px;
+}
+
+.seat .region{
+	width: 84px;
+	margin: 0 90px 0 27px;
+}
+
+.seat .region button{
+	width:84px;
+	height:35px;
+	border:1px solid #f5d485 ;
+	background: #fff3d9;
+	text-align: center;
+	line-height: 37px;
+	color:#666666 ;
+	font-size:14px ;
+	margin-bottom: 18px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.seat .storey_sum{
+	width: 830px;
+}
+
+.seat .storey_wrapper{
+	text-align: center;
+}
+
+.storey_wrapper .storey{
+	padding:10px 34px ;
+	border-radius:3px ;
+	background: #ff772d;
+	margin-bottom: 25px;
+	margin-left: -20px;
+	color: #fff;
+	cursor: pointer;
+}
+
+.seat .region_list{
+	margin-right: -20px;
+}
+
+
+.seat .region_list .region_item{
+	padding: 8px 26px;
+	border: 1px solid #e2e2e2;
+	color: #666666;
+	font-size: 14px;
+	margin-right: 15px;
+	margin-bottom: 20px;
+	border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    text-align: center;
+}
+
+
+.region_item:hover .tip{
+    display: block;
+}
+
+
+/* 悬停 */
+.region_item .tip{
+    width: 320px;
+    position: absolute;
+    top: 35px;
+    left: -1px;
+    z-index: 1;
+    display: none;
+}
+
+.region_item .succeed{
+    border: 1px solid #666;
+}
+.region_item .audit{
+    border: 1px solid #FF6600;
+}
+.region_item .bookable{
+    border: 1px solid #FC4C4E ;
+}
+
+ .region_item .tip .arrow{
+    width: 18px;
+    height: 7px;
+    margin-left: 38px;
+    background: url(../images/jobfair_arrow.png);
+    background-repeat: no-repeat;
+}
+
+.region_item .tip .arrow_succeed{
+     background-position: -45px 0;
+}
+
+.region_item .tip .arrow_audit{
+    background-position: -0px 0;
+}
+.region_item .tip .arrow_bookable{
+    background-position: -88px 0;
+}
+
+
+.region_item .tip  .box {
+    background-color: #FFFCF1;
+    border-radius: 5px;
+}
+
+
+.region_item .tip  .box .t{
+    padding-left: 20px;
+    height: 38px;
+    line-height: 38px;
+    color: #FFFFFF;
+}
+.region_item .tip  .box .t_succeed{
+    background-color: #4B4B4B;
+}
+.region_item .tip  .box .t_audit{
+    background-color: #FF6600;
+}
+.region_item .tip  .box .t_bookable{
+    background-color: #FC4C4E;
+}
+
+
+.region_item .tip  .box .restxt{
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    width: 280px;
+    margin: 0 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #666666;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.region_item .tip  .box .restxt .btn{
+    padding: 8px 20px;
+    background-color: #FF6600;
+    border-radius: 20px;
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-left: 20px;
+}
+.reserve .seat .activeButton{
+	background: #ff772d;
+	color: #fff;
+}
+.seat .region_list .status1{background:#fff3d9}
+.seat .region_list .status2{background:#ff772d;color:#fff}
+.seat .region_list .status3{background:#e2e2e2}
+
+
+.el-dialog--center .el-dialog__body {
+    padding: 30px 35px 60px;
+}
+
+.btn_wrapper{
+    text-align: center;
+    margin-top: 53px;
+}
+.btn_wrapper .el-button{
+    padding: 8px 63px;
+    font-size: 16px;
+}
+
+.item{
+    margin-bottom: 20px;
+}
+
+.item .keyName{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+}
+.item .inputWidth{
+    width: 320px;
+}
+.join_con.intro{
+    background: #fff;padding: 30px 280px 67px 60px;position: relative;color:#666666 ;font-size:14px;line-height: 25px;
+}
+.join_con.intro .jc_title {
+    font-size: 18px;font-weight: bold;color: #333;margin-bottom: 5px;
+}
+.join_con.intro .intro_img {
+    position: absolute;right: 60px;top: 30px;width: 175px;height: 175px;border: 0;
+}
+.join_con.intro .jc_content {
+    margin-bottom: 20px;padding-left: 5px;
+}

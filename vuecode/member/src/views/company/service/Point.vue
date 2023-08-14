@@ -54,6 +54,7 @@ import api from '@/api'
             this.logo = logo
             this.companyname = companyname
             this.task = task
+            this.task = this.task.filter(item => parseInt(item.points) > 0)
             this.taskPoints = taskPoints
           })
           .catch(() => {})

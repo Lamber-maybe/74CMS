@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div class="idcard">
+      <div class="idcard" v-if="auth_type == 1">
         <div class="upload_txt">经办人身份证</div>
         <div class="upload margin">
           <van-uploader :after-read="handlerUploadIdcardFrond">
@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="entrust">
+      <div class="entrust" v-if="auth_type == 1">
         <div class="upload_txt">委托书(函)</div>
         <div class="upload">
           <van-uploader :after-read="handlerUploadProxy">
@@ -84,6 +84,7 @@ export default {
   props: ['authinfo'],
   data () {
     return {
+      auth_type: 0,
       uploading: false,
       legal_person_idcard_front: '',
       legal_person_idcard_front_img: '',
@@ -101,6 +102,7 @@ export default {
     }
   },
   mounted () {
+    this.auth_type = this.$store.state.config.audit_com_project
     this.legal_person_idcard_front = this.authinfo.legal_person_idcard_front
     this.legal_person_idcard_front_img = this.authinfo.legal_person_idcard_front_img
     this.legal_person_idcard_back = this.authinfo.legal_person_idcard_back
@@ -224,15 +226,15 @@ export default {
         this.$notify('请上传营业执照照片')
         return false
       }
-      if (this.legal_person_idcard_front == '' || this.legal_person_idcard_front == '0') {
+      if (this.auth_type == 1 && (this.legal_person_idcard_front == '' || this.legal_person_idcard_front == '0')) {
         this.$notify('请上传经办人身份证正面照')
         return false
       }
-      if (this.legal_person_idcard_back == '' || this.legal_person_idcard_back == '0') {
+      if (this.auth_type == 1 && (this.legal_person_idcard_back == '' || this.legal_person_idcard_back == '0')) {
         this.$notify('请上传经办人身份证背面照')
         return false
       }
-      if (this.proxy == '' || this.proxy == '0') {
+      if (this.auth_type == 1 && (this.proxy == '' || this.proxy == '0')) {
         this.$notify('请上传委托书(函)')
         return false
       }

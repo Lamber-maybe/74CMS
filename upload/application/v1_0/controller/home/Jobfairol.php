@@ -51,7 +51,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['starttime'] = $value['starttime'];
             $tmp_arr['endtime'] = $value['endtime'];
             $tmp_arr['click'] = $value['click'];
-            $tmp_arr['score'] = $value['score'];
+            $tmp_arr['score'] = intval($value['score']);
             $tmp_arr['total_company'] = isset($participate_company[$value['id']])?$participate_company[$value['id']]:0;
             $tmp_arr['total_personal'] = isset($participate_personal[$value['id']])?$participate_personal[$value['id']]:0;
             $tmp_arr['jobfair_url'] = config('global_config.sitedomain').url('index/jobfairol/show',['id'=>$value['id']]);

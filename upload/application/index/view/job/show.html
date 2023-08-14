@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="content1_btn float" v-cloak>
-                <button class="btn" @click="doApply">投递简历</button>
+                <button class="btn" @click="doApplyResume">投递简历</button>
                 <p class="operate">
                     <span class="collect" :class="hasFav===true?'has':''"
                         @click="doFav">{{hasFav===true?'已收藏':'收藏'}}</span>
@@ -114,7 +114,7 @@
                                         {#$return.base_info.custom_field_3#}
                                     </div>
                                     {#/if#}
-                                    <div class="post_box1_font2 float">
+                                    <div class="post_box1_font3 float">
                                         <span class="post_box1_font">
                                             工作地区
                                         </span>
@@ -122,9 +122,13 @@
                                     </div>
                                 </div>
                                 <div class="post_box1_local">
+                                {#if condition="$return.base_info.address!=''"#}
                                     <span class="post_box1_font">工作地点</span>
                                     {#$return.base_info.address#}
+                                    {#if condition="!$return.base_info.map_lat || !$return.base_info.map_lng"#}
                                     <span class="post_route" @click="showMap=true">查看上班路线</span>
+                                    {#/if#}
+                                {#/if#}
                                 </div>
                             </div>
                         </div>
@@ -167,7 +171,7 @@
                                     </div>
                                     <div class="contact_details">
                                         <p class="box_text">您还没有投递简历，投递简历后可查看企业联系方式</p>
-                                        <div class="contact_btn" @click="doApply">投递简历</div>
+                                        <div class="contact_btn" @click="doApplyResume">投递简历</div>
                                     </div>
                                 </div>
                                 <div class="details_wrapper contact_margin"
@@ -177,7 +181,7 @@
                                     </div>
                                     <div class="contact_details" v-if="hasApply===false">
                                         <p class="box_text">企业未开启查看联系方式，请直接投递简历</p>
-                                        <div class="contact_btn" @click="doApply" v-if="hasApply===false">投递简历</div>
+                                        <div class="contact_btn" @click="doApplyResume" v-if="hasApply===false">投递简历</div>
                                     </div>
                                     <div class="contact_details" v-else>
                                         <p class="box_text">企业未开启查看联系方式<br /><br />您已投递简历，请等待企业联系</p>
@@ -210,7 +214,7 @@
                                     </div>
                                 </div>
                                 <div class="post_box2_btn">
-                                    <span class="contact_btn1" @click="doApply">投递简历</span>
+                                    <span class="contact_btn1" @click="doApplyResume">投递简历</span>
                                     <el-popover placement="right" width="200" trigger="hover">
                                         <span>
                                             <img :src="imQrcode" width="174" height="174" />
@@ -440,7 +444,7 @@
                     {#eq name="return.base_info.negotiable" value="0"#}<span>/月</span>{#/eq#}</p>
             </div>
             <div class="show_nav_btn">
-                <div class="nav_btn1" @click="doApply">投递简历</div>
+                <div class="nav_btn1" @click="doApplyResume">投递简历</div>
             </div>
         </div>
     </div>
@@ -462,6 +466,12 @@
     </el-dialog>
     <el-dialog title="举报职位" :visible.sync="showTipoff" @opened="tipoffOpened" width="30%">
         {#include file="public/tipoff" /#}
+    </el-dialog>
+    <el-dialog class="reg_quick_dialog" title="" :visible.sync="showRegQuick" width="874px">
+      {#include file="public/regQuick" /#}
+    </el-dialog>
+    <el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
+      {#include file="captcha/picture" /#}
     </el-dialog>
 </div>
 {#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
@@ -554,6 +564,33 @@
     }
     var id = parseInt("{#$return.base_info.id#}")
     var isWxOpen = !!parseInt("{#$global_config.wechat_open#}")
+    function loadTencent() {
+      if (window.BMap !== undefined) {
+        return
+      }
+      var script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
+      document.body.appendChild(script)
+    }
+    function loadVaptcha() {
+      if (window.BMap !== undefined) {
+        return
+      }
+      var script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = 'https://v.vaptcha.com/v3.js'
+      document.body.appendChild(script)
+    }
+    var captcha_open = parseInt("{#$global_config.captcha_open#}");
+    var captcha_type = "{#$global_config.captcha_type#}";
+    if (captcha_open == 1) {
+      if (captcha_type == 'tencent') {
+        loadTencent()
+      } else if (captcha_type == 'vaptcha') {
+        loadVaptcha()
+      }
+    }
     var app = new Vue({
         el: '#app',
         data: {
@@ -600,7 +637,51 @@
             rightFixed: false,
             supplementary: {},
             contentAll: false,
-            contentHeight: 0
+            contentHeight: 0,
+            showRegQuick: false,
+            regQuick: {
+              fullname: '',
+              sex: 1,
+              birthday: '',
+              education: '',
+              optionEducation: [],
+              enter_job_time: '',
+              isNoJobTime: false,
+              mobile: '',
+              code: '',
+              password: '',
+              intentionItemCategory: [],
+              intentionItemDistrict: [],
+              optionCategory: [],
+              optionDistrict: [],
+              current: '',
+              minwage: '',
+              maxwage: '',
+              optionCurrent: [],
+              optionMinWage: [],
+              optionMaxWage: [],
+              doRegQuickBtnDisabled: false
+            },
+            regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+            sendSmsBtnDisabled: false,
+            sendSmsBtnText: '获取验证码',
+            sendSmsTimer: '',
+            sendSmsInterval: 60,
+            captcha_open: 0,
+            captcha_type: '',
+            showPictureCaptcha: false,
+            secret_str: '',
+            catpchaSrc: '',
+            pictureCaptchaCallback: '',
+            formUtype: 2,
+            captchaForm: {
+              code: ''
+            },
+            captchaRules: {
+              code: [
+                { required: true, message: '请输入验证码', trigger: 'blur' }
+              ],
+            }
         },
         created: function () {
             this.getUserInfo()
@@ -608,11 +689,14 @@
             this.getContact()
             this.getFavStatus()
             this.addClick()
+            this.getRegQuickInfo()
             var locationUrl = "{#$return.share_url#}"
             this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_job&url=' + locationUrl + '&jobid=' + id
             this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
             this.imQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url={#$return.im_url#}'
             this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode&jobid=' + id
+            this.captcha_open = captcha_open
+            this.captcha_type = captcha_type
         },
         mounted: function () {
             // 滚动条的获取
@@ -626,6 +710,324 @@
             }
         },
         methods: {
+            doApplyResume: function () {
+              var that = this
+              if (parseInt(this.utype) === 0) {
+                // 未登录
+                this.showRegQuick = true
+              } else {
+                if (parseInt(this.utype) !== 2) {
+                  this.$confirm('当前操作需要登录求职者账号', '提示', {
+                    type: 'warning',
+                    confirmButtonText: '去登录'
+                  }).then(function () {
+                    location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                  })
+                  .catch(function () { })
+                } else {
+                  var params = {
+                    jobid: id
+                  }
+                  httppost(qscms.apiList.jobapply, params)
+                    .then(function (res) {
+                      that.$message({ type: 'success', message: res.message })
+                    })
+                    .catch(function () { })
+                }
+              }
+            },
+            regQuickToLogin: function () {
+              location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+            },
+            // 选择无工作经验
+            handleNoJobTime () {
+              var that = this
+              that.regQuick.enter_job_time = ''
+              that.regQuick.isNoJobTime = true
+            },
+            doRegQuick: function () {
+              var that = this
+              if (that.doRegQuickBtnDisabled === true) {
+                return false
+              }
+              if (!that.regQuick.fullname) {
+                that.$message.error('请输入姓名')
+                return false
+              }
+              if (!that.regQuick.sex) {
+                that.$message.error('请选择性别')
+                return false
+              }
+              if (!that.regQuick.birthday) {
+                that.$message.error('请选择出生日期')
+                return false
+              }
+              if (!that.regQuick.education) {
+                that.$message.error('请选择最高学历')
+                return false
+              }
+              if (!that.regQuick.isNoJobTime) {
+                if (!that.regQuick.enter_job_time) {
+                  that.$message.error('请选择开始工作时间')
+                  return false
+                }
+              }
+              if (!that.regQuick.intentionItemCategory[0]) {
+                that.$message.error('请选择期望职位')
+                return false
+              }
+              if (!that.regQuick.intentionItemDistrict[0]) {
+                that.$message.error('请选择期望地区')
+                return false
+              }
+              if (!that.regQuick.minwage || !that.regQuick.maxwage) {
+                that.$message.error('请选择期望薪资')
+                return false
+              }
+              if (!that.regQuick.current) {
+                that.$message.error('请选择求职状态')
+                return false
+              }
+              if (!that.regQuick.mobile) {
+                that.$message.error('请输入手机号')
+                return false
+              }
+              if (!that.regularMobile.test(that.regQuick.mobile)) {
+                that.$message.error('手机号格式不正确')
+                return false
+              }
+              if (!that.regQuick.code) {
+                that.$message.error('请输入验证码')
+                return false
+              }
+              if (!that.regQuick.password) {
+                that.$message.error('请输入密码')
+                return false
+              }
+              that.doRegQuickBtnDisabled = true
+              httppost(qscms.apiList.regResumeQuick, {
+                jobid: id,
+                fullname: that.regQuick.fullname,
+                sex: that.regQuick.sex,
+                birthday: that.regQuick.birthday,
+                education: that.regQuick.education,
+                enter_job_time: that.regQuick.enter_job_time,
+                category1: that.regQuick.intentionItemCategory[0],
+                category2: that.regQuick.intentionItemCategory[1],
+                category3: that.regQuick.intentionItemCategory[2],
+                district1: that.regQuick.intentionItemDistrict[0],
+                district2: that.regQuick.intentionItemDistrict[1],
+                district3: that.regQuick.intentionItemDistrict[2],
+                minwage: that.regQuick.minwage,
+                maxwage: that.regQuick.maxwage,
+                current: that.regQuick.current,
+                mobile: that.regQuick.mobile,
+                code: that.regQuick.code,
+                password: that.regQuick.password
+              }).then(function (res) {
+                that.doRegQuickBtnDisabled = false
+                if (res.code === 200) {
+                  // 设置登录状态
+                  that.utype = res.data.utype
+                  var visitor = {
+                    utype: res.data.utype,
+                    token: res.data.token,
+                    mobile: res.data.mobile,
+                    userIminfo: res.data.user_iminfo
+                  }
+                  Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
+                  that.showRegQuick = false
+                  setTimeout(function() {
+                    if (parseInt(res.data.next_code) === 50005) {
+                      // 去完善简历
+                      that.$confirm(res.message, '提示', {
+                        type: 'warning',
+                        confirmButtonText: '继续完善',
+                        showCancelButton: false
+                      })
+                      .then(function () {
+                        location.href = qscms.locationList.personalResume + '?redirect=' + location.href
+                      })
+                    } else {
+                      // 投递成功
+                      that.$message({ type: 'success', message: res.message })
+                      setTimeout(function() {
+                        window.location.reload()
+                      }, 1000)
+                    }
+                  }, 300)
+                } else {
+                  that.$message.error(res.message)
+                }
+              })
+            },
+            changeImg: function () {
+              var that = this
+              httpget(qscms.apiList.captchaPicture, {})
+                  .then(function (res) {
+                    that.secret_str = res.data.secret_str
+                    that.catpchaSrc = res.data.src
+                  })
+                  .catch(function () { })
+            },
+            pictureCaptchaOpened: function () {
+              this.changeImg()
+            },
+            submitPictureCaptcha: function () {
+              let that = this
+              that.$refs.captchaForm.validate(function (valid) {
+                if (valid) {
+                  that.showPictureCaptcha = false
+                  that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+                } else {
+                  return false;
+                }
+              });
+            },
+            // 发送验证码
+            sendSms: function () {
+              var that = this
+              if (that.sendSmsBtnDisabled === true) {
+                return false
+              }
+              if (!that.regQuick.mobile) {
+                that.$message.error('请输入手机号')
+                return false
+              }
+              if (!that.regularMobile.test(that.regQuick.mobile)) {
+                that.$message.error('手机号格式不正确')
+                return false
+              }
+              if (that.captcha_open == 1) {
+                if (that.captcha_type == 'tencent') {
+                  var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+                    that.doSendSms(res)
+                  });
+                  captchaWindow.show()
+                } else if (that.captcha_type == 'vaptcha') {
+                  vaptcha({
+                    vid: "{#$global_config.captcha_vaptcha_vid#}", // 验证单元id
+                    type: "invisible", // 显示类型 隐藏式
+                    scene: 0, // 场景值 默认0
+                    offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
+                  }).then(function (vaptchaObj) {
+                    obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
+                    //获取token的方式二：
+                    vaptchaObj.listen("pass", function () {
+                      that.doSendSms({ code: vaptchaObj.getToken() })
+                    });
+                    //关闭验证弹窗时触发
+                    vaptchaObj.listen("close", function () {
+                      //验证弹窗关闭触发
+                    });
+                    obj.validate();
+                  });
+                } else {
+                  that.showPictureCaptcha = true
+                  that.pictureCaptchaCallback = 'doSendSms'
+                }
+              } else {
+                that.doSendSms(null)
+              }
+            },
+            doSendSms: function (captcha) {
+              var that = this
+              httppost(qscms.apiList.getRegQuickCode, { mobile: that.regQuick.mobile, captcha: captcha }).then(function (res) {
+                if (parseInt(res.data.notice) === 1) {
+                  that.showRegQuick = false
+                  setTimeout(function () {
+                    that.$confirm(res.message, '提示', {
+                      type: 'warning',
+                      confirmButtonText: '是',
+                      cancelButtonText: '否'
+                    }).then(function () {
+                      location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                    })
+                    .catch(function () { })
+                  }, 300)
+                } else {
+                  that.$message({
+                    type: 'success',
+                    message: res.message
+                  })
+                  that.sendSmsTimer = setInterval(function () {
+                    if (that.sendSmsInterval === 0) {
+                      that.sendSmsBtnDisabled = false
+                      that.sendSmsBtnText = '获取验证码'
+                      that.sendSmsInterval = 60
+                      clearInterval(that.sendSmsTimer)
+                    } else {
+                      that.sendSmsBtnDisabled = true
+                      that.sendSmsBtnText = '重发 ' + that.sendSmsInterval + ' 秒'
+                      that.sendSmsInterval--
+                    }
+                  }, 1000)
+                }
+              }).catch(function () { })
+            },
+            changeMinWage: function (minWage) {
+              this.makeWageOption('max', minWage + 500)
+            },
+            makeWageOption: function (type, minValue) {
+              var that = this
+              var wageArray = []
+              var storeMaxWage = 15000;
+              if (minValue <= storeMaxWage) {
+                let a = minValue
+                let b = storeMaxWage
+                if (type === 'min') {
+                  that.regQuick.optionMinWage = [...Array(((b - a) / 500))].map((e, i) => a + i * 500)
+                } else if (type === 'max') {
+                  that.regQuick.optionMaxWage = [...Array(((b - a) / 500) + 1)].map((e, i) => a + i * 500)
+                }
+              }
+              return wageArray
+            },
+            getRegQuickInfo: function () {
+              var that = this
+              httpget(qscms.apiList.classify + '?type=education', {}).then(function (res) {
+                if (res.code === 200) {
+                  that.regQuick.optionEducation = res.data
+                }
+              }).catch(function () { });
+              httpget(qscms.apiList.classify + '?type=jobcategory', {}).then(function (res) {
+                if (res.code === 200) {
+                  that.regQuick.optionCategory = that.handleclassify(res.data)
+                }
+              }).catch(function () { });
+              httpget(qscms.apiList.classify + '?type=citycategory', {}).then(function (res) {
+                if (res.code === 200) {
+                  that.regQuick.optionDistrict = that.handleclassify(res.data)
+                }
+              }).catch(function () { });
+              httpget(qscms.apiList.classify + '?type=current', {}).then(function (res) {
+                if (res.code === 200) {
+                  that.regQuick.optionCurrent = res.data
+                }
+              }).catch(function () { });
+              this.makeWageOption('min', 500)
+              this.makeWageOption('max', 1000)
+            },
+            handleclassify: function (data) {
+              var dataArray = JSON.parse(JSON.stringify(data))
+              var commitArray = []
+              commitArray = dataArray.map((item) => {
+                if (item.children.length) {
+                  let level2Array = item.children
+                  level2Array = level2Array.map((level2Item) => {
+                    if (level2Item.children.length) {
+                      return { label: level2Item.label, value: level2Item.value, children: level2Item.children }
+                    } else {
+                      return { label: level2Item.label, value: level2Item.value }
+                    }
+                  })
+                  return { value: item.value, label: item.label, children: level2Array }
+                } else {
+                  return { value: item.value, label: item.label }
+                }
+              })
+              return commitArray;
+            },
             onMouseover:function(){
                 this.codeShow = true;
                 if(this.hasGetCode)return;

@@ -30,6 +30,55 @@ class Http
         }
         return $retrun;
     }
+    public function get2($url)
+    {
+        $retrun = false;
+        try {
+            $response = $this->client->request('GET', $url);
+            $retrun = $response->getBody()->getContents();
+        } catch (ClientException $e) {
+            $this->error = $e->getMessage();
+        }
+        return [
+            'headers' => $response->getHeaders(),
+            'body' => $retrun
+        ];
+    }
+    function request($url, $header, $type, $data, $DataType, $HeaderType = "PC")
+    {
+        //常用header
+        //$header = "user-agent:" . 1 . "\r\n" . "referer:" . 1 . "\r\n" . "AccessToken:" . 1 . "\r\n" . "cookie:" . 1 . "\r\n";
+        if (empty($header)) {
+            if ($HeaderType == "PC") {
+                $header = "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36 Edg/88.0.705.63\r\n";
+            } else if ($HeaderType == "PE") {
+                $header = "user-agent:Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/88.0.4324.150\r\n";
+            }
+        }
+        if (!empty($data)) {
+            if ($DataType == 1) {
+                $data = http_build_query($data); //数据拼接
+            } else if ($DataType == 2) {
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE); //数据格式转换
+            }
+        }
+        $options = array(
+            'http' => array(
+                'method' => $type,
+                "header" => $header,
+                'content' => $data,
+                'timeout' => 30, // 超时时间（单位:s）
+            )
+        );
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        $headers = get_headers($url, true); //获取请求返回的header
+        $ReturnArr = array(
+            'headers' => $headers,
+            'body' => $result
+        );
+        return $ReturnArr;
+    }
     /**
      * POST请求
      */

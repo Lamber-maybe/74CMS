@@ -43,7 +43,7 @@ class Tipoff extends \app\common\controller\Backend
             ->where($where)
             ->where('b.id','not null')
             ->where('c.uid','not null')
-            ->order('a.id desc')
+            ->order('a.status asc')
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {

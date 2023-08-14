@@ -12,7 +12,32 @@ class Index extends \app\common\controller\Backend
         $return['pending_data'] = $this->getPendingData();
         $return['server_info'] = $this->getSystemInfo();
         $return['version'] = config('version.version');
+        $return['warning'] = [
+            'rewrite'=>$this->checkRewrite(),
+            'install'=>$this->checkInstall(),
+        ];
         $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    /**
+     * 检测安装文件
+     */
+    protected function checkInstall(){
+        if(is_dir(PUBLIC_PATH.'install')){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+    /**
+     * 检测伪静态
+     */
+    protected function checkRewrite(){
+        $result = file_get_contents(config('global_config.sitedomain').config('global_config.sitedir').'apiadmin/login/userinfo');
+        if($result===false){
+            return 1;
+        }else{
+            return 0;
+        }
     }
     /**
      * 图表统计
@@ -31,40 +56,25 @@ class Index extends \app\common\controller\Backend
         $this->ajaxReturn(200, '获取数据成功', $data);
     }
     /**
-     * 更新日志
+     * 官方数据
      */
-    public function upgradeLog(){
+    public function officialData(){
         $http = new \app\common\lib\Http;
-        $result = $http->get('https://www.74cms.com/api/upgrade_log');
+        $result = $http->get('https://www.74cms.com/api/official_data?domain='.urlencode($_SERVER['HTTP_HOST']));
         $result = json_decode($result,1);
         if($result['code']==200){
-            $this->ajaxReturn(200, '获取数据成功', $result['data']);
-        }else{
-            $this->ajaxReturn(200, '获取数据成功', []);
-        }
-    }
-    /**
-     * 授权/版权信息
-     */
-    public function authorize(){
-        $http = new \app\common\lib\Http;
-        $result = $http->get('https://www.74cms.com/api/authorize_info?domain='.urlencode($_SERVER['HTTP_HOST']));
-        $result = json_decode($result,1);
-        if($result['code']==200){
-            $this->ajaxReturn(200, '获取数据成功', $result['data']);
-        }else{
-            $this->ajaxReturn(200, '获取数据成功', []);
-        }
-    }
-    /**
-     * 官方动态
-     */
-    public function officialNews(){
-        $http = new \app\common\lib\Http;
-        $result = $http->get('https://www.74cms.com/api/official_news');
-        $result = json_decode($result,1);
-        if($result['code']==200){
-            $this->ajaxReturn(200, '获取数据成功', $result['data']);
+            $return = [
+                'upgrade_log'=>$result['data']['upgrade_log'],
+                'authorize_info'=>$result['data']['authorize_info'],
+                'official_news'=>$result['data']['official_news']
+            ];
+            $ver = explode('.', config('version.version'));
+            $version_int_1 = str_pad($ver[0], 2, '0', STR_PAD_LEFT);
+            $version_int_2 = str_pad($ver[1], 2, '0', STR_PAD_LEFT);
+            $version_int_3 = str_pad($ver[2], 3, '0', STR_PAD_LEFT);
+            $current_version = $version_int_1 . $version_int_2 . $version_int_3;
+            $return['new_version_notice'] = $result['data']['latest_version']>$current_version?1:0;
+            $this->ajaxReturn(200, '获取数据成功', $return);
         }else{
             $this->ajaxReturn(200, '获取数据成功', []);
         }

@@ -15,4 +15,13 @@ class Cron extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '执行成功');
     }
+    public function outer()
+    {
+        $id = input('get.id/d',0,'intval');
+        $instance = new \app\common\lib\Cron();
+        if (false === ($return_data = $instance->runOuter($id))) {
+            $this->ajaxReturn(200, $instance->getError());
+        }
+        $this->ajaxReturn(200, '执行成功');
+    }
 }

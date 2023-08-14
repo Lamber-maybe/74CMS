@@ -31,4 +31,23 @@ class Qrcode extends \app\common\controller\Base{
             $qrcode::png($url,false, 'H', 8, 2);
 		}
     }
+    /**
+     * 生成微信带参数二维码
+     */
+    public function login(){
+        $params = [
+            'alias'=>'admin_login',
+            'token'=>input('get.scan_token/s','','trim')
+        ];
+        $class = new \app\common\lib\Wechat;
+        $qrcode = $class->makeQrcode($params);
+        if($qrcode){
+            model('AdminScanCert')->save(['token'=>$params['token'],'info'=>'','addtime'=>time()]);
+            //删除今天之前的所有记录（废弃的过期的）
+            model('AdminScanCert')->where('addtime','lt',strtotime('today'))->delete();
+            $this->ajaxReturn(200, '', $qrcode);
+        }else{
+            $this->ajaxReturn(501, 'server error');
+        }
+    }
 }

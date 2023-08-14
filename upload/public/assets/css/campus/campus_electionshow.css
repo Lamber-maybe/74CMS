@@ -1,0 +1,144 @@
+.banner {
+  width: 100%;
+  height: 467px;
+  background: url(../../images/campus/double_meet_info.jpg);
+}
+.banner .banner_state {
+  width: 68px;
+  height: 66px;
+}
+
+.double_info_title {
+  box-shadow: 3px 0 3px 3px rgba(0, 0, 0, 0.1);
+  height: 211px;
+}
+
+.info_title_min {
+  padding: 33px 0;
+}
+.info_title_min h1 {
+  text-align: center;
+  color: #444444;
+  font-size: 26px;
+  margin-bottom: 30px;
+}
+
+.info_title_min .address_info {
+  width: 600px;
+  color: #777777;
+  font-size: 14px;
+  margin: 15px 0 0 8px;
+}
+.info_title_min .address_info .t1 {
+  margin-bottom: 15px;
+}
+
+.info_title_min .estimate_box .estimate {
+  width: 185px;
+  height: 82px;
+  background-color: #fafbfa;
+  margin-right: 4px;
+  text-align: center;
+  padding: 14px 0 0;
+}
+.info_title_min .estimate_box .estimate .com_text {
+  color: #777777;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.info_title_min .estimate_box .estimate .num_text {
+  color: #20c588;
+  font-size: 24px;
+}
+
+.double_meet_info {
+  padding: 25px 0;
+  min-height: 400px;
+}
+
+.double_meet_info .d_meet_title {
+  color: #3a3a3a;
+  font-size: 20px;
+  text-align: center;
+  padding: 32px 0;
+}
+.double_meet_info .d_text {
+  color: #555555;
+  font-size: 16px;
+  line-height: 34px;
+  word-break: break-all;
+}
+.double_meet_info .d_text img {
+  max-width: 1200px;
+}
+
+.floatmenu {
+  width: 70px;
+  border-radius: 50px;
+  font-size: 14px;
+  text-align: center;
+  color: #999999;
+}
+.floatmenu .floatmenu_share {
+  padding-top: 20px;
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.floatmenu .floatmenu_share:hover .hover_box{
+  display: block;
+}
+
+.floatmenu .floatmenu_share  .hover_box{
+  width: 200px;
+  height: 224px;
+  background-color: #fff;
+  box-shadow: 0px 0px 1px 2px rgba(0, 0, 0, 0.05);
+  position: absolute;
+  left: 50%;
+  top: 83px;
+  margin-left: -100px;
+  display: none;
+  padding: 12px;
+}
+.floatmenu .floatmenu_share  .hover_box::before{
+  content: '';
+  border: 5px solid transparent;
+  border-bottom: 5px solid #fff;
+  position: absolute;
+  left: 50%;
+  margin-left: -5px;
+  top: -10px;
+  z-index: 1;
+}
+.floatmenu .floatmenu_share  .hover_box::after{
+  content: '';
+  border: 8px solid transparent;
+  border-bottom: 8px solid rgba(0, 0, 0, 0.05);
+  position: absolute;
+  left: 50%;
+  margin-left: -8px;
+  top: -16px;
+}
+
+.floatmenu .floatmenu_share .hover_box .share_img{
+  width: 174px;
+  height: 174px;
+  display: block;
+}
+
+.floatmenu .floatmenu_share .hover_box .share_text{
+  color:#606266;
+  font-size: 14px;
+  display: block;
+  margin-top: 10px;
+}
+
+.floatmenu .floatmenu_share p {
+  margin-top: 10px;
+}
+.floatmenu .floatmenu_coade p {
+  margin-top: 8px;
+}

@@ -83,8 +83,8 @@ class Weixin extends \app\common\controller\Base
      */
     protected function responseMsg() {
         if (!$this->checkSignature()) exit('false');
-        if ($postStr = file_get_contents("php://input")) {
             //解密
+	if ($postStr = file_get_contents("php://input")) {
             if ($this->encrypt_type == 'aes') {
                 $this->pc = new \WXBizMsgCrypt(config('global_config.wechat_token'), config('global_config.wechat_encodingaeskey'), config('global_config.wechat_appid'));
                 $decryptMsg = "";//解密后的明文
@@ -638,6 +638,28 @@ class Weixin extends \app\common\controller\Base
                 }else{
                     $this->outputText($object,'管理员不存在');
                 }
+                break;
+            case 'admin_login':
+                $token = $event['token'];
+                $openid = $object->FromUserName;
+                if(!$openid || !$token){
+                    $this->outputText($object,'扫码失败，请刷新页面重试');
+                    break;
+                }
+                $certinfo = model('AdminScanCert')->where('token',$token)->find();
+                if($certinfo===null){
+                    $this->outputText($object,'扫码失败，请刷新页面重试');
+                    break;
+                }
+                $admininfo = model('Admin')->where('openid',$openid)->find();
+                if($admininfo===null){
+                    $this->outputText($object,'当前微信没有绑定管理员');
+                    break;
+                }
+                $loginReturn = model('Admin')->setLogin($admininfo);
+                $certinfo->info = json_encode($loginReturn);
+                $certinfo->save();
+                $this->outputText($object,'扫码登录成功');
                 break;
             default:
                 break;

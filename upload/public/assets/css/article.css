@@ -14,7 +14,7 @@ button{
 }
 
 .information_nav_wrapper {
-	height: 44px;
+	min-height: 44px;
 }
 
 .information_nav_con {
@@ -52,6 +52,7 @@ button{
 .information_nav_wrapper .information_nav .open_btn {
 	width: 62px;
 	height: 24px;
+  line-height: 24px;
 	border-radius: 30px;
 	border: 1px solid #ccc;
 	text-align: center;
@@ -77,11 +78,6 @@ button{
 .information_nav_wrapper .information_nav span:last-child {
 	margin-right: 0;
 }
-
-
-
-
-
 
 .information_list_con {
 	background: #fff;
@@ -259,6 +255,13 @@ button{
 .information_detailed .detailed_paging{
 	color:#666666 ;
 	font-size: 14px;
+}
+.information_detailed .detailed_paging .rec{
+	width: 360px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+	display: inline-block;
 }
 .information_detailed .detailed_paging a:last-child{
 	float: right;

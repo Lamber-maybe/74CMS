@@ -6,14 +6,14 @@
 			<menu-nav :active-tab="params.type" :list="navList"></menu-nav>
 			<el-button icon="el-icon-plus" @click="handlerJobadd" :loading="btnLoading" >发布职位</el-button>
 		</div>
-      <el-alert :title="`亲爱的HR，您的帐号可同时发布 ${enable_addjob_num_total} 个职位，现已发布 ${enable_addjob_num_total-enable_addjob_num} 个职位。`"
+      <el-alert :title="`亲爱的HR，您的帐号可同时发布 ${enable_addjob_num_total} 个职位，现已发布 ${enable_addjob_num_total-enable_addjob_num} 个(包含审核中和未通过的)职位。`"
                 type="warning" :closable='false' show-icon> </el-alert>
 		<div v-if="params.type==0">
 			<el-table :header-cell-style="{background:'#fcfcfc',color:'#909399',fontSize:'12px'}"  :data="dataset" v-loading="listLoading" @selection-change="handleSelectionChange">
 				<el-table-column type="selection"></el-table-column>
 				<el-table-column width="380" prop='jobname' label="职位名称">
 					<template slot-scope="scope">
-						<div class="name_text" >{{scope.row.jobname}}</div>
+						<div class="name_text" @click="handlerOuterLink(scope.row.job_link_url_web)">{{scope.row.jobname}}</div>
 						<div class="time">更新时间：{{scope.row.refreshtime}} <a href="javascript:;" @click="handlerRefresh(scope.row)">[刷新]</a> </div>
 						<div class="operation"><router-link :to="'/company/jobedit/' + scope.row.id">修改</router-link><router-link :to="'/company/recommend?id='+scope.row.id">匹配</router-link><a href="javascript:;" @click="handlerDisplay(scope.row)">关闭</a><a href="javascript:;" @click="handlerDel(scope.row)">删除</a></div>
 					</template>
@@ -78,7 +78,7 @@
 				<el-table-column type="selection"></el-table-column>
 				<el-table-column width="369" label="职位名称">
 					<template slot-scope="scope">
-						<div class="name_text" >{{scope.row.jobname}}</div>
+						<div class="name_text" @click="handlerOuterLink(scope.row.job_link_url_web)">{{scope.row.jobname}}</div>
 						<div class="time">更新时间：{{scope.row.refreshtime}}</div>
 					</template>
 				</el-table-column>
@@ -111,7 +111,7 @@
 				<el-table-column type="selection"></el-table-column>
 				<el-table-column width="369" label="职位名称">
 					<template slot-scope="scope">
-						<div class="name_text" >{{scope.row.jobname}}</div>
+						<div class="name_text" @click="handlerOuterLink(scope.row.job_link_url_web)">{{scope.row.jobname}}</div>
 						<div class="time">更新时间：{{scope.row.refreshtime}}</div>
 						<div class="err">{{scope.row.audit_reason}}</div>
 					</template>
@@ -210,9 +210,11 @@ import api from '@/api'
 		created () {
 			this.params.type = this.$route.query.type===undefined?'0':this.$route.query.type
 			this.fetchData(true)
-
 		},
 		methods:{
+      handlerOuterLink(url){
+        window.open(url)
+      },
 			submitPay(){
 				this.showBuyService = false
 				this.fetchData(true)
@@ -343,7 +345,9 @@ import api from '@/api'
 						this.fetchData()
 						this.fetchTotal()
 						this.checkJobNum()
-						this.$message({ type: 'success', message: res.message })
+            if (parseInt(res.code) === 200) {
+              this.$message({ type: 'success', message: is_display_text + '成功' })
+            }
 					})
 					.catch(() => {})
 				})
@@ -575,8 +579,8 @@ import api from '@/api'
 		color: #ffffff;
 	}
 	.name_text{
-		font-size: 16px;
-		color: #333;
+		font-size: 16px;cursor: pointer;color: #333;
+    &:hover { text-decoration: underline; }
 	}
 	.time{
 		font-size: 12px;

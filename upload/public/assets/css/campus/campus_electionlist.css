@@ -1,0 +1,245 @@
+/* 搜索 */
+.s_content {
+  background: url(../../images/campus/school_recruit_job_bg.png) no-repeat top center;
+  background-size: 100%;
+}
+
+.s_content .search_min {
+  padding: 49px 0 0px 241px;
+}
+
+.search_min .search {
+  width: 720px;
+  height: 45px;
+  background-color: #fff;
+  border: 1px solid #01ccb0;
+  box-sizing: border-box;
+}
+
+.search_min .search .ipt {
+  width: 620px;
+  height: 45px;
+  padding: 0 39px;
+  background: url(../../images/campus/search_icon.png) no-repeat 12px center;
+  position: relative;
+}
+.search_min .search .ipt input {
+  width: 575px;
+  height: 95%;
+  border: none;
+}
+
+.search_min .search .btn {
+  width: 89px;
+  height: 43px;
+  background-color: #01cbb3;
+  background-image: linear-gradient(to right, #01cbb3,#01c67e);
+}
+.search_min .search .btn:hover {
+  background-color: #02dac0;
+}
+.search_min .search .btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #feffff;
+  font-size: 16px;
+}
+
+/* 双选会列表 */
+.double_meet {
+  padding-top: 30px;
+}
+
+.double_meet .double_meet_it {
+  width: 285px;
+  height: 246px;
+  background-color: #ffffff;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.08);
+  margin: 0 20px 16px 0;
+  cursor: pointer;
+}
+.double_meet .no_mr{
+  margin-right: 0;
+}
+.double_meet_it .school_meet_info {
+  height: 159px;
+  position: relative;
+}
+.double_meet_it .school_meet_info img {
+  width: 100%;
+  height: 100%;
+}
+
+.double_meet_it .school_meet_info .meet_info_min {
+  width: 100%;
+  height: 159px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: center;
+  color: #f2fbf6;
+  padding: 43px 0 0;
+}
+.double_meet_it .school_meet_info .meet_info_min .meet_text_1 {
+  font-size: 20px;
+  margin-bottom: 17px;
+}
+
+.double_meet_it .school_meet_info .meet_info_min .meet_text_2 {
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 22px;
+  font-weight: normal;
+  margin: 0 10px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.double_meet_it .school_meet_info .meet_info_min .meet_text_3,
+.double_meet_it .school_meet_info .meet_info_min .meet_text_4 {
+  font-size: 14px;
+  text-align: left;
+  color: #ffffff;
+  margin-left: 16px;
+  margin-bottom: 5px;
+  max-width: 240px;
+}
+.double_meet_it .school_bot {
+  padding: 14px 9px 0 14px;
+}
+
+.double_meet_it .school_bot .bot_meet_name {
+  color: #555555;
+  font-size: 16px;
+  display: block;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.double_meet_it .school_bot .bot_meet_name:hover {
+  color: #01c67e;
+}
+
+.double_meet_it .school_bot .bot_text_1 {
+  line-height: 24px;
+  margin-bottom: 13px;
+}
+
+.double_meet_it .school_bot .bot_text_1 .time {
+  width: 170px;
+  display: inline-block;
+  color: #777777;
+  font-size: 14px;
+}
+
+.double_meet_it .school_bot .bot_text_1 .state {
+  display: inline-block;
+  padding: 0px 7px 0px 8px;
+  background-color: #ff5f27;
+  color: #ffffff;
+  font-size: 13px;
+  text-align: center;
+  line-height: 24px;
+  border-radius: 5px;
+}
+
+.double_meet_it .school_bot .bot_text_1 .state_1 {
+  background-color: #bebebe;
+}
+
+.double_meet_it .school_bot .bot_text_1 .state_2 {
+  background-color: #ff976a;
+}
+
+.double_meet_it .school_bot .bot_text_1 .state_3 {
+  background-color: #01cf85;
+}
+
+.double_meet_it .school_bot .bot_text_2 {
+  font-size: 14px;
+}
+
+.double_meet_it .school_bot .bot_text_2 .com_text,
+.double_meet_it .school_bot .bot_text_2 .job_txt {
+  display: inline-block;
+  width: 116px;
+  color: #999999;
+  padding-left: 22px;
+}
+.double_meet_it .school_bot .bot_text_2 .com_text{
+  background:url(../../images/campus/double_meet_ico_1.png) no-repeat left center;
+}
+.double_meet_it .school_bot .bot_text_2 .job_txt{
+  margin-left: 26px;
+  background:url(../../images/campus/double_meet_ico_2.png) no-repeat left center;
+}
+
+.double_meet_it .school_bot .bot_text_2 .com_text span,
+.double_meet_it .school_bot .bot_text_2 .job_txt span {
+  color: #03ad6f;
+}
+
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging {
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more {
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: #20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color: #20c588;
+}
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active {
+  color: #ffffff;
+  background-color: #20c588;
+}

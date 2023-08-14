@@ -9,8 +9,6 @@ class Sendsms extends \app\v1_0\controller\common\Base
     }
     protected function _verify($post_data)
     {
-        // $this->ajaxReturn(500, '',htmlspecialchars_decode($post_data['captcha']));
-        // $this->ajaxReturn(500, '',json_decode($_POST['captcha'],1));
         if (config('global_config.captcha_open') == 1) {
             $engine = '';
             $captcha = new \app\common\lib\Captcha($engine);
@@ -235,6 +233,50 @@ class Sendsms extends \app\v1_0\controller\common\Base
         cache('sendsms_time_limit_'.$mobile,1,60);
         \think\Cache::set('smscode_error_num_' . $mobile, 0, 180);
         $this->ajaxReturn(200, '发送验证码成功');
+    }
+    /**
+     * 快速注册简历发送验证码
+     */
+    public function regResumeQuick()
+    {
+        $utype = 2;
+        $mobile = input('post.mobile/s', '', 'trim');
+        if (!fieldRegex($mobile, 'mobile')) {
+            $this->ajaxReturn(500, '手机号格式错误');
+        }
+
+        $this->_verify(input('post.'));
+        if(1===cache('sendsms_time_limit_'.$mobile)){
+            $this->ajaxReturn(500,'请60秒后再重新获取');
+        }
+
+        //检测手机号是否存在
+        $is_exist = $this->checkMobileExist($mobile, $utype);
+        if ($is_exist) {
+            $this->ajaxReturn(200, '您的手机号已注册过简历，是否立即登录',['notice'=>1]);
+        }
+        $code = mt_rand(1000, 9999) . '';
+        $templateCode = 'SMS_1';
+        $params = [
+            'code' => $code,
+            'sitename' => config('global_config.sitename')
+        ];
+        $class = new \app\common\lib\Sms();
+        if (false === $class->send($mobile, $templateCode, $params)) {
+            $this->ajaxReturn(500, $class->getError());
+        }
+        cache(
+            'smscode_' . $mobile,
+            [
+                'code' => $code,
+                'mobile' => $mobile,
+                'utype' => $utype
+            ],
+            180
+        );
+        cache('sendsms_time_limit_'.$mobile,1,60);
+        \think\Cache::set('smscode_error_num_' . $mobile, 0, 180);
+        $this->ajaxReturn(200, '发送验证码成功',['notice'=>0]);
     }
     private function checkMobileExist($mobile, $utype)
     {

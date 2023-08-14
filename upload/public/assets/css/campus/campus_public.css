@@ -1,0 +1,91 @@
+.w1200 {
+  width: 1200px;
+  margin: 0 auto;
+}
+/* 筛选 */
+.campus_filter_combo {
+  padding: 43px 45px 29px 15px;
+  border-bottom: 1px dashed #dadada;
+}
+
+.campus_filter_combo .campus_filter_line {
+  margin-bottom: 16px;
+  position: relative;
+}
+.campus_filter_combo .filter_combo_mgb {
+  margin-bottom: 0;
+}
+
+.campus_filter_line .line_title {
+  color: #444444;
+  font-size: 14px;
+  line-height: 26px;
+}
+
+.campus_filter_line .line_item {
+  width: 1000px;
+}
+
+.campus_filter_line .line_item .f_item {
+  font-size: 14px;
+  color: #444444;
+  padding: 4px 10px 4px 12px;
+  cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
+  border-radius: 3px;
+  float: left;
+}
+
+.campus_filter_line .line_item .f_item_ac {
+  background-color: #20c588;
+  color: #ffffff;
+}
+
+.campus_filter_line .line_item .f_item:hover {
+  background-color: #20c588;
+  color: #ffffff;
+}
+.campus_filter_line .line_item .f_more {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid #20c588;
+  padding: 5px 10px 2px 23px;
+  font-size: 12px;
+  color: #20c588;
+  background: url(../../images/campus/more_ico.png) no-repeat 8px center #fff;
+}
+
+.campus_filter_line .fse_group {
+  width: 1000px;
+}
+.campus_filter_line .fse_group .tag {
+  display: block;
+  padding: 3px 20px 4px 6px;
+  min-height: 25px;
+  border: 1px dashed #20c588;
+  text-decoration: none;
+  color: #20c588;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 9px;
+  position: relative;
+}
+
+.campus_filter_line .fse_group .tag::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: url(../../images/campus/tag_del_ac_ico.png) no-repeat center;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+.campus_filter_line .fse_group .tag:hover {
+  border: 1px dashed #20c588;
+  color: #20c588;
+  background-color: #ecfbf6;
+}

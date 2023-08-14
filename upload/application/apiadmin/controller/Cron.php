@@ -15,6 +15,7 @@ class Cron extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             $list[$key]['rule'] = $this->resolutionRule($value);
+            $list[$key]['runUrl'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/cron/outer?id='.$value['id'];
         }
         $return['items'] = $list;
         $return['total'] = $total;

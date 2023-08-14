@@ -274,8 +274,8 @@
         <div class="option_text">
           排序方式：
         </div>
-        <div class="option_btn option_btn1"><a href="{#:P(['sort'=>null])#}">综合排序</a></div>
-        <div class="option_btn"><a href="{#:P(['sort'=>'rtime'])#}">更新时间</a></div>
+        <div class="option_btn {#if condition="!$Request.param.sort"#}option_btn1{#/if#}"><a href="{#:P(['sort'=>null])#}">综合排序</a></div>
+        <div class="option_btn  {#if condition="$Request.param.sort eq 'rtime'"#}option_btn1{#/if#}"><a href="{#:P(['sort'=>'rtime'])#}">更新时间</a></div>
 
         <div class="option_right clearfix">
           <div class="option_opt">
@@ -382,9 +382,11 @@
         <div class="resumelist-login-layer">
           <div class="tip-block">
             <div class="tip-block-title">
-              <p class="middle"><span class="font_red">免费注册</span>成为企业会员，海量简历任你选！</p>
-              <p class="small">登录或注册会员后可以查看更多数据，各种免费权限爽不停！</p>
+              <p class="middle"><span class="font_red">注册</span>企业会员，海量简历任你选！</p>
+              <p class="small">登录后可查看更多简历</p>
             </div>
+            <div class="tip_block_qr"><img src="{#$global_config.wechat_qrcode#}" alt="" class="tip_qr"></div>
+            <div class="tip_qr_txt">微信扫一扫，招聘更轻松</div>
             <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
             <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">免费注册会员</a>
           </div>
@@ -395,9 +397,11 @@
         <div class="resumelist-login-layer">
           <div class="tip-block">
             <div class="tip-block-title">
-              <p class="middle"><span class="font_red">免费注册</span>成为企业会员，海量简历任你选！</p>
-              <p class="small">登录或注册会员后可以查看更多数据，各种免费权限爽不停！</p>
+              <p class="middle"><span class="font_red">注册</span>企业会员，海量简历任你选！</p>
+              <p class="small">登录后可查看更多简历</p>
             </div>
+            <div class="tip_block_qr"><img src="{#$global_config.wechat_qrcode#}" alt="" class="tip_qr"></div>
+            <div class="tip_qr_txt">微信扫一扫，招聘更轻松</div>
             <a href="javascript:;" class="btn_red btn_inline" @click="handlerLogin">已有账号登录</a>
             <a href="javascript:;" class="btn_lightblue btn_inline" @click="handlerReg">免费注册会员</a>
           </div>

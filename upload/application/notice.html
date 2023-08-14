@@ -1,80 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{#$e->getMessage()#} - {#$global_config.sitename#}</title>
+  <title>{#$e->getMessage()#}</title>
   <style>
-    body{
-      margin:0;
+    body {
+      margin: 0;
       padding: 0;
 
     }
-    .app{
-    }
-    .header{
+
+    .app {}
+
+    .header {
       width: 100%;
       background-color: #f9f9f9;
-      padding:10px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #f3f3f3;
     }
-    .header .content{
-      width:900px;
+
+    .header .content {
+      width: 900px;
       margin: 0 auto;
       position: relative;
     }
-    .logo{
+
+    .logo {
       height: 55px;
     }
-    .return{
+
+    .return {
       position: absolute;
-      right:40px;
-      top:20px;
+      right: 40px;
+      top: 20px;
       font-size: 14px;
       text-decoration: none;
       color: #333;
     }
-    .main{
+
+    .main {
       text-align: center;
       padding-top: 200px;
     }
-    .status{
+
+    .status {
       font-size: 120px;
       font-weight: bold;
       color: #b4b4b4;
     }
-    .msg{
+
+    .msg {
       font-size: 24px;
       color: #b4b4b4;
     }
-    .returnBtn{
+
+    .returnBtn {
       color: #ffffff;
       border-radius: 20px;
       font-size: 16px;
       background: #1787fb;
       padding: 12px 60px;
       cursor: pointer;
-      border:0;
+      border: 0;
       line-height: 1;
       margin-top: 60px;
       display: inline-block;
       text-decoration: none;
     }
-    .returnBtn:hover{
-      opacity:0.8;
+
+    .returnBtn:hover {
+      opacity: 0.8;
     }
   </style>
 </head>
+
 <body>
   <div class="app">
-    <div class="header">
-      <div class="content">
-        <a ><img class="logo" src="{#$global_config.logo#}" /></a>
-      </div>
-    </div>
     <div class="main">
       <div class="msg">{#$e->getMessage()#}</div>
     </div>
   </div>
 </body>
+
 </html>

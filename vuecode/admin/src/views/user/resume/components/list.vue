@@ -6,15 +6,13 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
-    <el-card
-      class="box-card"
-    >
+    <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>简历管理</span>
       </div>
       <div class="list-search">
         <el-select
-          v-if="showOptionsAudit===true"
+          v-if="showOptionsAudit === true"
           v-model="audit"
           class="list-options"
           placeholder="不限审核状态"
@@ -51,6 +49,7 @@
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -80,37 +79,57 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="姓名" width="150">
+        <el-table-column label="姓名" width="300">
           <template slot-scope="scope">
             <div class="namecol">
-              <el-popover
-                placement="right"
-                trigger="hover"
-                width="300"
-              >
-                <img :src="scope.row.photo_img_src" style="max-width:274px;">
+              <el-popover placement="right" trigger="hover" width="300">
+                <img :src="scope.row.photo_img_src" style="max-width: 274px" />
                 <span slot="reference">
                   <span class="avatar">
                     <el-avatar :src="scope.row.photo_img_src" />
                   </span>
                 </span>
               </el-popover>
-              <el-link :href="scope.row.link" target="_blank" type="primary" class="text" :underline="false">
-                {{ scope.row.fullname }}
-              </el-link>
-              <img v-if="scope.row.bind_weixin==1" style="vertical-align:middle;margin-left:4px;" :src="require('@/assets/images/wx_icon.png')">
+              <span>
+                <div>
+                  <el-link
+                    :href="scope.row.link"
+                    target="_blank"
+                    type="primary"
+                    class="text"
+                    :underline="false"
+                  >
+                    {{ scope.row.fullname }}
+                  </el-link>
+                  <img
+                    v-if="scope.row.bind_weixin == 1"
+                    style="vertical-align: middle; margin-left: 4px"
+                    :src="require('@/assets/images/wx_icon.png')"
+                  />
+                </div>
+                <div>
+                  <span>{{ scope.row.age }}</span>
+                  ·
+                  <span>{{ scope.row.sex_cn }}</span>
+                  ·
+                  <span>{{ scope.row.education_cn }}</span>
+                  ·
+                  <span>{{ scope.row.experience_cn }}</span>
+                </div>
+              </span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="300">
+        <el-table-column label="会员/简历手机号" width="250">
           <template slot-scope="scope">
-            <span>{{ scope.row.age }}</span>
-            /
-            <span>{{ scope.row.sex_cn }}</span>
-            /
-            <span>{{ scope.row.education_cn }}</span>
-            /
-            <span>{{ scope.row.experience_cn }}</span>
+            <div title="会员手机号">
+              <i class="el-icon-user"></i>&nbsp;{{ scope.row.mobile }}
+            </div>
+            <div title="简历联系手机号">
+              <i class="el-icon-document"></i>&nbsp;{{
+                scope.row.contact_mobile
+              }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="简历完整度">
@@ -119,14 +138,14 @@
               :text-inside="true"
               :stroke-width="16"
               :percentage="scope.row.complete_percent"
-              style="width:100px"
+              style="width: 100px"
             />
           </template>
         </el-table-column>
         <el-table-column label="简历等级">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.high_quality==1">优质</el-tag>
-            <el-tag v-if="scope.row.high_quality==0" type="info">普通</el-tag>
+            <el-tag v-if="scope.row.high_quality == 1">优质</el-tag>
+            <el-tag v-if="scope.row.high_quality == 0" type="info">普通</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="审核状态">
@@ -136,26 +155,30 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建时间" width="150">
+        <el-table-column align="center" label="创建/刷新时间" width="150">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.addtime | timeFilter }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="刷新时间" width="150">
-          <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.refreshtime | timeFilter }}</span>
+            <div title="创建时间">
+              <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
+            </div>
+            <div title="刷新时间">
+              <i class="el-icon-time" />{{ scope.row.refreshtime | timeFilter }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="推广">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)">[海报]</el-button>
+            <el-button type="text" @click="funPoster(scope.row.id)"
+              >[海报]</el-button
+            >
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click="funManagement(scope.row)">
+            <el-button
+              size="small"
+              type="primary"
+              @click="funManagement(scope.row)"
+            >
               管理
             </el-button>
             <el-button
@@ -177,18 +200,14 @@
                   日志
                 </el-dropdown-item>
                 <el-dropdown-item
-                  @click.native="funComment(scope.$index,scope.row)"
+                  @click.native="funComment(scope.$index, scope.row)"
                 >
                   点评
                 </el-dropdown-item>
-                <el-dropdown-item
-                  @click.native="funLevel(scope.row)"
-                >
+                <el-dropdown-item @click.native="funLevel(scope.row)">
                   等级
                 </el-dropdown-item>
-                <el-dropdown-item
-                  @click.native="funDelete(scope.row)"
-                >
+                <el-dropdown-item @click.native="funDelete(scope.row)">
                   删除
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -206,11 +225,7 @@
           >
             添加简历
           </el-button>
-          <el-button
-            size="small"
-            type="primary"
-            @click="openDialog"
-          >
+          <el-button size="small" type="primary" @click="openDialog">
             导入简历
           </el-button>
           <el-button size="small" type="primary" @click="funRefresh">
@@ -226,11 +241,11 @@
             删除
           </el-button>
         </el-col>
-        <el-col :span="16" style="text-align: right;">
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -263,9 +278,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_audit">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_audit"> 确 定 </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -283,9 +296,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="levelVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_level">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_level"> 确 定 </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -298,34 +309,45 @@
     >
       <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
-    <el-dialog
-      title="简历点评"
-      :visible.sync="commentVisible"
-      width="25%"
-    >
+    <el-dialog title="简历点评" :visible.sync="commentVisible" width="25%">
       <el-form class="common-form" label-width="80px">
         <el-form-item label="点评内容">
-          <el-input v-model="commentVal" type="textarea" rows="3" maxlength="100" show-word-limit />
+          <el-input
+            v-model="commentVal"
+            type="textarea"
+            rows="3"
+            maxlength="100"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="commentVisible = false">取 消</el-button>
-        <el-button type="primary" @click="fun_set_comment">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="fun_set_comment"> 确 定 </el-button>
       </div>
     </el-dialog>
-    <Poster v-if="showPoster" :poster-id="posterId" :poster-type="posterType" @closeDialog="showPoster=false" />
-    <el-dialog v-if="showUpload" title="导入简历" :visible.sync="showUpload" :close-on-click-modal="false" width="30%">
+    <Poster
+      v-if="showPoster"
+      :poster-id="posterId"
+      :poster-type="posterType"
+      @closeDialog="showPoster = false"
+    />
+    <el-dialog
+      v-if="showUpload"
+      title="导入简历"
+      :visible.sync="showUpload"
+      :close-on-click-modal="false"
+      width="30%"
+    >
       <el-form ref="form" label-width="120px" size="small">
         <el-form-item label="上传文件">
           <input
-            style="width:200px;"
+            style="width: 200px"
             class="input-file"
             type="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             @change="exportData"
-          >
+          />
           <span class="smalltip">
             <i class="el-icon-info" />
             <el-button type="text" @click="downTpl">[模板下载]</el-button>
@@ -333,7 +355,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="doUpload">确定</el-button>
-          <el-button @click="showUpload=false">取消</el-button>
+          <el-button @click="showUpload = false">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -498,7 +520,7 @@ export default {
     closeDialog() {
       this.dialogFormVisible = false
     },
-    funComment(index, row){
+    funComment(index, row) {
       this.commentIndex = index
       this.commentVal = row.comment
       this.commentId = row.id
@@ -598,7 +620,7 @@ export default {
         }
       })
     },
-    funManagement(row){
+    funManagement(row) {
       const params = {
         uid: row.uid
       }
@@ -613,14 +635,14 @@ export default {
         }
       })
     },
-    funLog(index, row){
+    funLog(index, row) {
       this.listUid = row.uid
       this.dialogListVisible = true
     },
     closeListDialog() {
       this.dialogListVisible = false
     },
-    funDelete(row){
+    funDelete(row) {
       var that = this
       that
         .$confirm('删除简历将同步删除该会员账号及简历，删除后不可恢复, 是否继续?', '提示', {
@@ -638,11 +660,11 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funDeleteBatch(){
+    funDeleteBatch() {
       var that = this
-      if (that.tableUidarr.length == 0){
+      if (that.tableUidarr.length == 0) {
         that.$message.error('请选择要删除的简历')
         return false
       }
@@ -662,11 +684,11 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    funRefresh(){
+    funRefresh() {
       var that = this
-      if (that.tableIdarr.length == 0){
+      if (that.tableIdarr.length == 0) {
         that.$message.error('请选择要刷新的简历')
         return false
       }
@@ -678,12 +700,12 @@ export default {
         that.fetchData()
       })
     },
-    funPoster(id){
+    funPoster(id) {
       this.showPoster = true
       this.posterId = id
       this.posterType = 'resume'
     },
-    exportData(event){
+    exportData(event) {
       if (!event.currentTarget.files.length) {
         return
       }
@@ -693,12 +715,12 @@ export default {
       // 用FileReader来读取
       var reader = new FileReader()
       // 重写FileReader上的readAsBinaryString方法
-      FileReader.prototype.readAsBinaryString = function(f) {
+      FileReader.prototype.readAsBinaryString = function (f) {
         var binary = ''
         var wb // 读取完成的数据
         var outdata // 你需要的数据
         var reader = new FileReader()
-        reader.onload = function() {
+        reader.onload = function () {
           // 读取成Uint8Array，再转换为Unicode编码（Unicode占两个字节）
           var bytes = new Uint8Array(reader.result)
           var length = bytes.byteLength
@@ -776,7 +798,7 @@ export default {
     },
     // 根据汉字获取分类id
     // 处理数据
-    handleCellData (data, type) {
+    handleCellData(data, type) {
       const that = this
       const returnArray = []
       if (type === 'intention') {
@@ -792,53 +814,55 @@ export default {
           }
         )
       } else {
-        const listArray = data.split('【#】')
-        listArray.forEach(function (val, index, arr) {
-          const valArray = val.split('|')
-          if (type === 'education') {
-            returnArray.push(
-              {
-                'starttime': that.handleDate(valArray[0])[0],
-                'endtime': that.handleDate(valArray[0])[1],
-                'school': valArray[1],
-                'major': valArray[2],
-                'education': valArray[3]
-              }
-            )
-          }
-          if (type === 'work') {
-            returnArray.push(
-              {
-                'starttime': that.handleDate(valArray[0])[0],
-                'endtime': that.handleDate(valArray[0])[1],
-                'companyname': valArray[1],
-                'jobname': valArray[2],
-                'duty': valArray[3]
-              }
-            )
-          }
-          if (type === 'language') {
-            returnArray.push(
-              {
-                'language': valArray[0],
-                'level': valArray[1]
-              }
-            )
-          }
-          if (type === 'certificate') {
-            returnArray.push(
-              {
-                'name': valArray[0],
-                'obtaintime': valArray[1].split('/')[0] + '-' + valArray[1].split('/')[1]
-              }
-            )
-          }
-        })
+        if (data != '') {
+          const listArray = data.split('【#】')
+          listArray.forEach(function (val, index, arr) {
+            const valArray = val.split('|')
+            if (type === 'education') {
+              returnArray.push(
+                {
+                  'starttime': that.handleDate(valArray[0])[0],
+                  'endtime': that.handleDate(valArray[0])[1],
+                  'school': valArray[1],
+                  'major': valArray[2],
+                  'education': valArray[3]
+                }
+              )
+            }
+            if (type === 'work') {
+              returnArray.push(
+                {
+                  'starttime': that.handleDate(valArray[0])[0],
+                  'endtime': that.handleDate(valArray[0])[1],
+                  'companyname': valArray[1],
+                  'jobname': valArray[2],
+                  'duty': valArray[3]
+                }
+              )
+            }
+            if (type === 'language') {
+              returnArray.push(
+                {
+                  'language': valArray[0],
+                  'level': valArray[1]
+                }
+              )
+            }
+            if (type === 'certificate') {
+              returnArray.push(
+                {
+                  'name': valArray[0],
+                  'obtaintime': valArray[1].split('/')[0] + '-' + valArray[1].split('/')[1]
+                }
+              )
+            }
+          })
+        }
       }
       return returnArray
     },
     // 处理日期
-    handleDate (date) {
+    handleDate(date) {
       const dateArray = date.split('-')
       dateArray[0] = dateArray[0].split('/')[0] + '-' + dateArray[0].split('/')[1]
       dateArray[1] = dateArray[1].split('/')[0] + '-' + dateArray[1].split('/')[1]
@@ -863,9 +887,9 @@ export default {
       }
       return fmt
     },
-    doUpload(){
+    doUpload() {
       const that = this
-      if (that.excelData.length <= 0){
+      if (that.excelData.length <= 0) {
         that.$message.error('没有读取到数据，请重新核对、上传')
         return false
       }
@@ -875,14 +899,14 @@ export default {
       that.showUpload = false
       that.loopImport(1, pagesize, totalPage)
     },
-    loopImport(page, pagesize, totalPage){
+    loopImport(page, pagesize, totalPage) {
       const that = this
       const start = (page - 1) * pagesize
       const end = start + pagesize
       const newarr = that.excelData.slice(start, end)
       that.importText = '正在导入第' + start + '-' + end + '条，请稍候'
       resumeImport(newarr).then(response => {
-        if (page >= totalPage){
+        if (page >= totalPage) {
           that.importLoading = false
           that.$message({ type: 'success', message: '导入成功' })
           that.fetchData(true)
@@ -892,32 +916,29 @@ export default {
         }
       })
     },
-    downTpl(){
+    downTpl() {
       location.href = window.global.RequestBaseUrl + apiArr.downloadImportResumeTpl + '?admintoken=' + getToken()
     },
-    openDialog(){
+    openDialog() {
       this.showUpload = true
     }
   }
 }
 </script>
 <style scoped>
-.namecol{
-  position:relative;
-  padding-left:40px;
+.namecol {
+  position: relative;
+  padding-left: 40px;
 }
-.namecol .avatar{
-  width:42px;
-  height:42px;
-  padding:1px;
+.namecol .avatar {
+  width: 42px;
+  height: 42px;
+  padding: 1px;
   display: inline-block;
   border: 0;
   border-radius: 30px;
   position: absolute;
   top: 4px;
   left: -10px;
-}
-.namecol .text{
-  height:50px;
 }
 </style>

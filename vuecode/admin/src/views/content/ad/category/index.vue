@@ -3,6 +3,13 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>广告位管理</span>
+        <el-link
+          href="http://doc.74cms.com/#/se/content?id=pc首页广告位分布图"
+          target="_blank"
+          style="float: right; margin: 3px 20px"
+          type="primary"
+          >查看广告位图例位置说明</el-link
+        >
       </div>
       <div class="tip">
         <p>系统内置广告位不能删除！</p>
@@ -83,11 +90,11 @@
             删除所选
           </el-button>
         </el-col>
-        <el-col :span="16" style="text-align: right;">
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -175,7 +182,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funDeleteBatch() {
       var that = this
@@ -199,7 +206,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     handleSelectionChange(idlist) {
       this.tableIdarr = []

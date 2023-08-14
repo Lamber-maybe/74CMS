@@ -12,76 +12,106 @@
         <div class="t_wel">欢迎登录</div>
         <div class="t_site">{{ $store.state.config.sitename }}管理中心</div>
       </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="请输入用户名"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
+      <div v-if="$store.state.config.wechat_open == 1" class="tab_btn">
+        <div class="tab_text">
+          {{ isTabLogin ? "切换扫码登录" : "切换账户登录" }}
+        </div>
+        <div
+          :class="isTabLogin ? 'btn_img' : 'btn_img active_login_img'"
+          @click="changeTabLogin"
         />
-      </el-form-item>
+      </div>
 
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="请输入密码"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+      <div v-show="isTabLogin">
+        <el-form-item prop="username">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input
+            ref="username"
+            v-model="loginForm.username"
+            placeholder="请输入用户名"
+            name="username"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
           />
-        </span>
-      </el-form-item>
-      <el-form-item prop="code">
-        <el-input
-          v-model="loginForm.code"
-          placeholder="请输入验证码"
-          name="code"
-          auto-complete="off"
-          style="float:left;width:58%"
-          @keyup.enter.native="handleLogin"
-        />
+        </el-form-item>
 
-        <img
-          :src="captchaSrc"
-          alt="点击刷新"
-          class="cap_img"
-          @click="refreshCaptcha"
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="请输入密码"
+            name="password"
+            tabindex="2"
+            auto-complete="on"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon
+              :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+            />
+          </span>
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-input
+            v-model="loginForm.code"
+            placeholder="请输入验证码"
+            name="code"
+            auto-complete="off"
+            style="float: left; width: 58%"
+            @keyup.enter.native="handleLogin"
+          />
+
+          <img
+            :src="captchaSrc"
+            alt="点击刷新"
+            class="cap_img"
+            @click="refreshCaptcha"
+          >
+        </el-form-item>
+
+        <el-button
+          :loading="loading"
+          type="primary"
+          @click.native.prevent="handleLogin"
         >
-      </el-form-item>
+          立即登录
+        </el-button>
+      </div>
 
-      <el-button
-        :loading="loading"
-        type="primary"
-        @click.native.prevent="handleLogin"
-      >
-        立即登录
-      </el-button>
-      <p class="bt_link"><a :href="mobileUrl" class="">使用移动端管理后台</a></p>
+      <div v-show="!isTabLogin" class="code_login">
+        <div class="code_img">
+          <img v-if="qrcode != ''" :src="qrcode">
+        </div>
+        <p class="tips_text">
+          请使用<span class="wx_text">微信扫描</span>二维码登录
+        </p>
+      </div>
+
+      <p class="bt_link">
+        <a :href="mobileUrl" class="">使用移动端管理后台</a>
+      </p>
     </el-form>
     <div class="login_copyright">{{ $store.state.config.bottom_other }}</div>
   </div>
 </template>
 
 <script>
-import { getCaptcha } from '@/api/user'
-
+import { getCaptcha, loginQrcode } from '@/api/user'
+function randomString(e) {
+  e = e || 32
+  var t = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+  var a = t.length
+  var n = ''
+  for (let i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a))
+  return n
+}
 export default {
   name: 'Login',
   data() {
@@ -122,12 +152,16 @@ export default {
         backgroundSize: '100% 100%',
         backgroundPosition: 'center center'
       },
-      mobileUrl: ''
+      mobileUrl: '',
+      isTabLogin: true,
+      qrcode: '',
+      scan_token: '',
+      timer: ''
     }
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -136,6 +170,9 @@ export default {
   created() {
     this.refreshCaptcha()
     this.mobileUrl = this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'adminm'
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
   methods: {
     getRandomInt(min, max) {
@@ -146,8 +183,9 @@ export default {
         .then(res => {
           this.loginForm.secret_str = res.data.secret_str
           this.captchaSrc = res.data.src
+          this.loginForm.code = res.data.code
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     showPwd() {
       if (this.passwordType === 'password') {
@@ -178,6 +216,28 @@ export default {
           return false
         }
       })
+    },
+    changeTabLogin() {
+      this.isTabLogin = !this.isTabLogin
+      if (!this.isTabLogin) {
+        this.scan_token = randomString()
+        loginQrcode({ scan_token: this.scan_token }).then(res => {
+          this.qrcode = res.data
+          this.timer = setInterval(this.funScan, 5000)
+        })
+          .catch(() => { })
+      } else {
+        clearInterval(this.timer)
+      }
+    },
+    funScan() {
+      this.$store
+        .dispatch('user/scan', this.scan_token)
+        .then(() => {
+          this.$router.push({ path: this.redirect || '/' })
+        })
+        .catch(() => {
+        })
     }
   }
 }
@@ -231,14 +291,16 @@ $cursor: #fff;
     border-radius: 5px;
     color: #454545;
     margin-bottom: 25px;
-    transition:border-color .2s cubic-bezier(.645,.045,.355,1);
+    transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     &:hover {
-      border-color:#c0c4cc;
+      border-color: #c0c4cc;
     }
   }
 
   .el-button--primary {
-    padding: 15px 0;font-size: 16px;width: 100%;
+    padding: 15px 0;
+    font-size: 16px;
+    width: 100%;
   }
 
   .el-form-item__content {
@@ -258,10 +320,14 @@ $color_white: #ffffff;
   width: 100%;
   overflow: hidden;
   .bt_link {
-    text-align: center;padding-top: 5px;
+    text-align: center;
+    padding-top: 5px;
     a {
-      color: rgb(102,177,255);font-size: 15px;
-      &:hover { color: #469ffc; }
+      color: rgb(102, 177, 255);
+      font-size: 15px;
+      &:hover {
+        color: #469ffc;
+      }
     }
   }
 
@@ -277,7 +343,7 @@ $color_white: #ffffff;
     overflow: hidden;
     background-color: $color_white;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   }
 
   .login_copyright {
@@ -312,12 +378,19 @@ $color_white: #ffffff;
   }
 
   .title-container {
-    position: relative;text-align: center;
+    position: relative;
+    text-align: center;
     .t_wel {
-      font-size: 26px;line-height: 1;color: #333;margin-bottom: 10px;
+      font-size: 26px;
+      line-height: 1;
+      color: #333;
+      margin-bottom: 10px;
     }
     .t_site {
-      font-size: 14px;line-height: 1;color: #999;margin-bottom: 26px;
+      font-size: 14px;
+      line-height: 1;
+      color: #999;
+      margin-bottom: 26px;
     }
   }
 
@@ -333,7 +406,77 @@ $color_white: #ffffff;
   }
 
   .cap_img {
-    float:left;width:42%;height:48px;
+    float: left;
+    width: 42%;
+    height: 48px;
+  }
+}
+// 扫码登录
+.code_login {
+  .code_img {
+    width: 180px;
+    height: 180px;
+    margin: 46px auto;
+    border: 1px solid #ccc;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .tips_text {
+    text-align: center;
+    color: #1d1d1d;
+    font-size: 16px;
+    margin: 0;
+    margin-top: 24px;
+    margin-bottom: 21px;
+    .wx_text {
+      color: #2a8aff;
+      margin: 0 5px;
+    }
+  }
+}
+
+/* 切换 */
+.tab_btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  .tab_text {
+    width: 110px;
+    height: 25px;
+    padding-left: 23px;
+    line-height: 25px;
+    color: #2788ff;
+    font-size: 13px;
+    background: #e2f9ff;
+    background: url(../../assets/images/login/login_icon.png) no-repeat 7px 8px /13px
+      12px #e2f9ff;
+    border-radius: 5px;
+    position: relative;
+    margin-top: 27px;
+    margin-right: -20px;
+    &::before {
+      position: absolute;
+      content: "";
+      border: 5px solid transparent;
+      border-left: 5px solid #e2f9ff;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .btn_img {
+    width: 70px;
+    height: 70px;
+    background: url(../../assets/images/login/login_code_tab.png) no-repeat
+      right top;
+    cursor: pointer;
+  }
+  .active_login_img {
+    background: url(../../assets/images/login/login_number_tab.png) no-repeat
+      right top;
   }
 }
 </style>

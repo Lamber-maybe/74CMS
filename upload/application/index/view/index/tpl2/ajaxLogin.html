@@ -1,0 +1,114 @@
+<div class="left box1_right">
+	<div class="login_wrapper" v-if="loginUtype==0" v-cloak>
+		<div class="login_hd clearfix">
+			<div class="left text_1" v-if="wechat_login_open==1">
+				<div class="scan_code" :class="scan ? 'scan_bg_2' : 'scan_bg_1'" @click="showScan"></div>
+				<span class="code_tips">{{scan?'账号密码登录':'微信扫码登录'}}</span>
+			</div>
+			<a class="right text_2" @click="handlerMemberCenter(1)">我要招人></a>
+		</div>
+		<!-- 密码登录 -->
+		<div class="login_tab_box" v-show="!scan">
+			<div class="tab_btns">
+				<div class="btn_item" :class="!loginByMobile?'btn_item_active':''" @click="loginByMobile = false">密码登录
+				</div>
+				<div class="btn_item" :class="loginByMobile?'btn_item_active':''" @click="loginByMobile = true">短信登录
+				</div>
+			</div>
+			<div class="login_con">
+				<!-- 密码登录 -->
+				<div class="tab_con_item tab_con" v-if="!loginByMobile">
+					<input type="text" placeholder="请输入用户名/手机号/邮箱" class="user" v-model="username" autocomplete="off">
+					<input type="password" placeholder="请输入密码" class="pas" v-model="password" autocomplete="off">
+				</div>
+				<!-- 验证码登录 -->
+				<div class="tab_con_item code_con" v-if="loginByMobile">
+					<input type="text" placeholder="请输入手机号" class="user" v-model="mobile" autocomplete="off">
+					<div class="code_ipt">
+						<input type="password" placeholder="请输入验证码" class="code" v-model="code" autocomplete="off">
+						<button class="send_code" @click="sendSms">{{sendSmsBtnText}}</button>
+					</div>
+				</div>
+			</div>
+			<div class="index_login_btn" @click="doLogin">求职者用户登录</div>
+			<div class="clearfix order_login">
+				<div class="left text_1 clearfix" v-if="account_qqlogin_open==1 || wechat_login_open==1">
+					<span class="left">第三方登录：</span>
+					<span class="img_1 left" v-if="account_qqlogin_open==1" @click="qqLogin"></span>
+					<span class="img_2 left" v-if="wechat_login_open==1" @click="showScan"></span>
+				</div>
+				<a class="right text_2" @click="handlerForget(formUtype)">忘记密码？</a>
+			</div>
+		</div>
+		<!-- 扫码登录 -->
+		<div class="code_box" v-show="scan" id="wxlogin"></div>
+	</div>
+
+	<div class="login_success" v-if="loginUtype==1" v-cloak>
+		<div class="title">欢迎登录</div>
+		<div class="clearfix info_list">
+			<div class="left item" @click="handlerCompanyJobApplyList">
+				<div class="icon icon_color">{{statAfterLogin.jobapply}}</div>
+				<p class="text">收到投递</p>
+			</div>
+			<div class="left item" @click="handlerCompanyInterviewList">
+				<div class="icon icon_color">{{statAfterLogin.interview}}</div>
+				<p class="text">面试邀请</p>
+			</div>
+			<div class="left item" @click="handlerCompanyViewList">
+				<div class="icon icon_color">{{statAfterLogin.view}}</div>
+				<p class="text">浏览记录</p>
+			</div>
+			<div class="left item" @click="handlerCompanyJoblist">
+				<div class="icon icon_bg icon_bgimg_4">
+				</div>
+				<p class="text">管理职位</p>
+			</div>
+			<div class="left item" @click="handlerRefreshJob">
+				<div class="icon icon_bg icon_bgimg_2">
+				</div>
+				<p class="text">一键刷新</p>
+			</div>
+			<div class="left item" @click="handlerCompanyService">
+				<div class="icon icon_bg icon_bgimg_5">
+				</div>
+				<p class="text">会员服务</p>
+			</div>
+		</div>
+		<a class="btn" @click="handlerMemberCenter(1)">进入会员中心</a>
+	</div>
+	<div class="login_success" v-if="loginUtype==2" v-cloak>
+		<div class="title">欢迎登录</div>
+		<div class="clearfix info_list">
+			<div class="left item" @click="handlerPersonalJobApplyList">
+				<div class="icon icon_color">{{statAfterLogin.jobapply}}</div>
+				<p class="text">我的投递</p>
+			</div>
+			<div class="left item" @click="handlerPersonalInterviewList">
+				<div class="icon icon_color">{{statAfterLogin.interview}}</div>
+				<p class="text">面试邀请</p>
+			</div>
+			<div class="left item" @click="handlerPersonalViewList">
+				<div class="icon icon_color">{{statAfterLogin.view}}</div>
+				<p class="text">我的足迹</p>
+			</div>
+			<div class="left item" @click="handlerResumeIndex">
+				<div class="icon icon_bg icon_bgimg_1">
+				</div>
+				<p class="text">编辑简历</p>
+			</div>
+			<div class="left item" @click="handlerRefreshResume">
+				<div class="icon icon_bg icon_bgimg_2">
+				</div>
+				<p class="text">刷新简历</p>
+			</div>
+			<div class="left item" @click="handlerPersonalRecommend">
+				<div class="icon icon_bg icon_bgimg_3">
+				</div>
+				<p class="text">智能匹配</p>
+			</div>
+		</div>
+		<a class="btn" @click="handlerMemberCenter(2)">进入会员中心</a>
+	</div>
+
+</div>

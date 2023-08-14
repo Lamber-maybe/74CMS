@@ -48,20 +48,28 @@
     <div class="box_nav">
       <div
         class="item "
-        :class="comShow === true ? 'active' : ''"
-        @click="comShow = !comShow"
+        :class="comShow === 'com' ? 'active' : ''"
+        @click="gettab('com')"
       >
         公司介绍
       </div>
       <div
         class="item "
-        :class="comShow === false ? 'active' : ''"
-        @click="comShow = !comShow"
+        :class="comShow === 'job' ? 'active' : ''"
+        @click="gettab('job')"
       >
-        在招职位
+        在招职位({{jobnum}})
+      </div>
+      <div
+        class="item "
+        :class="comShow === 'video' ? 'active' : ''"
+        @click="gettab('video')"
+        v-if="$store.state.config.shortvideo_enable === '1'"
+      >
+        视频({{videonum}})
       </div>
     </div>
-    <div class="box_com_some" v-if="comShow">
+    <div class="box_com_some" v-if="comShow === 'com'">
       <div class="box_3">
         <div class="put">公司简介</div>
         <div class="content">
@@ -91,7 +99,7 @@
       <div class="box_5" v-if="img_list.length > 0">
         <div class="put">公司风采</div>
         <div class="content">
-          <swiper :options="swiperOption" :class="swiperClass">
+          <swiper :options="swiperOption" :class="swiperClass" v-if="$store.state.swiperLoaded">
             <swiper-slide v-for="(item, index) in img_list" :key="index">
               <img :src="item.img_src" :alt="item.title" />
             </swiper-slide>
@@ -106,7 +114,7 @@
       <Subscribe></Subscribe>
       <div class="form_split_10"></div>
     </div>
-    <div class="box_job_some" v-if="!comShow">
+    <div class="box_job_some" v-if="comShow === 'job'">
       <van-empty description="该企业还没有发布职位" v-if="joblist.length==0" />
       <van-list
         v-else
@@ -139,6 +147,10 @@
         </div>
       </van-list>
     </div>
+    <div class="box_video_some" v-if="comShow === 'video'">
+        <VideoList :videotype="1" :id="query_id" :gointype="'unitplay'"></VideoList>
+    </div>
+
     <baidu-map
       class="bm-view"
       :ak="$store.state.config.map_ak"
@@ -179,6 +191,7 @@
 </template>
 
 <script>
+import VideoList from './shortvideo/components/VideoListtwo'
 import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import Subscribe from '@/components/Subscribe'
@@ -198,6 +211,7 @@ Vue.component('BaiduMap', function (resolve, reject) {
 export default {
   name: 'CompanyShow',
   components: {
+    VideoList,
     Login,
     Subscribe,
     Share,
@@ -211,7 +225,7 @@ export default {
       finished: false,
       page: 1,
       pagesize: 10,
-      comShow: true,
+      comShow: 'com',
       showLogin: false,
       is_personal_login: false,
       base_info: {},
@@ -244,15 +258,24 @@ export default {
       showLayer: false,
       showPoster: false,
       showReport: false,
-      reportInfo: {}
+      reportInfo: {},
+      finished_text: '',
+      jobnum: 0,
+      videonum: 0
     }
   },
   created () {
     this.query_id = this.$route.params.id
     this.is_personal_login =
       !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType === 2)
+    if (this.$route.query.type) {
+      this.comShow = this.$route.query.type
+    }
     // 请求数据
     this.fetchData()
+    if (this.$store.state.config.shortvideo_enable === '1') {
+      this.fetchVideonum()
+    }
   },
   mounted () {},
   watch: {
@@ -266,6 +289,10 @@ export default {
     }
   },
   methods: {
+    gettab (comShow) {
+      this.comShow = comShow
+      this.page = 1
+    },
     handlerMap ({ BMap, map }) {
       this.BMap = BMap
     },
@@ -303,11 +330,13 @@ export default {
       http
         .get(api.joblist, {
           company_id: this.query_id,
-          pagesize: this.pagesize
+          pagesize: this.pagesize,
+          count_total: 1
         })
         .then(res => {
           this.page++
           this.joblist = [...res.data.items]
+          this.jobnum = res.data.total
         })
         .catch(() => {})
     },
@@ -348,16 +377,18 @@ export default {
       }
     },
     onLoad () {
-      http
-        .get(api.joblist, {
+      if (this.comShow === 'video') {
+      } else {
+        http.get(api.joblist, {
           company_id: this.query_id,
           page: this.page,
           pagesize: this.pagesize
-        })
-        .then(res => {
+        }).then(res => {
           for (let i = 0; i < res.data.items.length; i++) {
             let item = { ...res.data.items[i] }
-            this.joblist.push(item)
+            if (this.page != 1) {
+              this.joblist.push(item)
+            }
           }
           this.page++
           // 加载状态结束
@@ -367,6 +398,7 @@ export default {
             this.finished = true
           }
         })
+      }
     },
     toDetail (id) {
       this.$router.push('/job/' + id)
@@ -465,6 +497,14 @@ export default {
         }
         this.showReport = true
       }).catch(() => {})
+    },
+    fetchVideonum () {
+      http
+        .get(api.shortvideo_total, {comid: this.query_id})
+        .then((res) => {
+          this.videonum = res.data
+        })
+        .catch(() => {})
     }
   }
 }

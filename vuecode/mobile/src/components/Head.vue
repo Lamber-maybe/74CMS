@@ -39,7 +39,7 @@
           <div class="clear"></div>
         </div>
         <div class="item_wrapper" v-else>
-          <swiper :options="swiperOption" class="item_wrapper_pd">
+          <swiper :options="swiperOption" class="item_wrapper_pd" v-if="$store.state.swiperLoaded">
             <swiper-slide v-for="(item,index) in itemList" :key="index" >
               <div v-for="(item2,index2) in item" :key="index2" class="item_block"  @click="handleHeadClick(item2)">
                 <img :src="item2.src" :alt="item2.name" class="ico" />
@@ -77,6 +77,7 @@ export default {
         { name: '创建简历', src: `member`, url: '/member/personal/index', imgName: 'add_resume' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
         { name: '职场资讯', src: `member`, url: '/newslist', imgName: 'news' },
+        { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `member`, url: '/member/login', imgName: 'user' }
       ],
       personalMoreList: [
@@ -90,6 +91,7 @@ export default {
         { name: '会员服务', src: `personal`, url: '/member/personal/service', imgName: 'service' },
         { name: '我的职聊', src: `personal`, url: '/im/imlist', imgName: 'im' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
+        { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `personal`, url: '/member/login', imgName: 'user' }
       ],
       companyMoreList: [
@@ -103,6 +105,7 @@ export default {
         { name: '会员服务', src: `company`, url: '/member/company/mysetmeal', imgName: 'setmeal' },
         { name: '我的职聊', src: `company`, url: '/im/imlist', imgName: 'im' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
+        { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `company`, url: '/member/login', imgName: 'user' }
       ],
       itemList: [],

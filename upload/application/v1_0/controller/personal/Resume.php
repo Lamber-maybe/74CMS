@@ -591,8 +591,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeEducation')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
 
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
@@ -685,8 +684,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeWork')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
@@ -872,8 +870,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeIntention')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
 
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
@@ -969,8 +966,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeTraining')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
@@ -1065,8 +1061,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeProject')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
@@ -1156,8 +1151,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeCertificate')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
@@ -1246,8 +1240,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '参数错误');
         }
         model('ResumeLanguage')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
@@ -1411,8 +1404,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         $extra = input('post.extra/s','','trim');
         model('ResumeImg')
-            ->where(['id' => ['eq', $id], 'uid' => $this->userinfo->uid])
-            ->delete();
+            ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         $img_total = model('ResumeImg')
             ->where(['uid' => ['eq', $this->userinfo->uid]])
             ->count();

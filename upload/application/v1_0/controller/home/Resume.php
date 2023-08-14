@@ -26,10 +26,6 @@ class Resume extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
 
-        $params['count_total'] = 0;
-        $params['current_page'] = $current_page;
-        $params['pagesize'] = $pagesize;
-
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
@@ -83,10 +79,33 @@ class Resume extends \app\v1_0\controller\common\Base
             }
         }
 
+        if(config('global_config.resume_search_login')==1){
+            if($this->userinfo===null){
+                $show_mask = 1;
+                if(!empty($params)){
+                    $params['district1'] = -1;
+                }
+                $params['count_total'] = 0;
+                $params['current_page'] = 1;
+                $params['pagesize'] = config('global_config.resume_search_login_num')==0?1:config('global_config.resume_search_login_num');
+            }else{
+                $show_mask = 0;
+                $params['count_total'] = 1;
+                $params['current_page'] = $current_page;
+                $params['pagesize'] = $pagesize;
+            }
+        }else{
+            $show_mask = 0;
+            $params['count_total'] = 1;
+            $params['current_page'] = $current_page;
+            $params['pagesize'] = $pagesize;
+        }
+
         $instance = new \app\common\lib\ResumeSearchEngine($params);
 
         $searchResult = $instance->run();
         $return['items'] = $this->get_datalist($searchResult['items']);
+        $return['show_mask'] = $show_mask;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     protected function get_datalist($list)
@@ -105,6 +124,8 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
+            
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
 
             $photo_arr = $photo_id_arr = [];
             foreach ($resume as $key => $value) {
@@ -145,31 +166,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $tmp_arr['id'] = $val['id'];
                 $tmp_arr['stick'] = $val['stick'];
                 $tmp_arr['high_quality'] = $val['high_quality'];
-                $tmp_arr['fullname'] = $val['fullname'];
-                if ($val['display_name'] == 0) {
-                    if ($val['sex'] == 1) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '先生'
-                        );
-                    } elseif ($val['sex'] == 2) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '女士'
-                        );
-                    } else {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '**'
-                        );
-                    }
-                }
+                $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
                     : default_empty('photo');
@@ -296,7 +293,7 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($basic === null) {
             return false;
         }
-        
+
         $category_data = model('Category')->getCache();
         $category_major_data = model('CategoryMajor')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
@@ -306,31 +303,6 @@ class Resume extends \app\v1_0\controller\common\Base
         $basic_info['uid'] = $basic['uid'];
         $basic_info['audit'] = $basic['audit'];
         $basic_info['high_quality'] = $basic['high_quality'];
-        $basic_info['fullname'] = $basic['fullname'];
-        if ($basic['display_name'] == 0) {
-            if ($basic['sex'] == 1) {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '先生'
-                );
-            } elseif ($basic['sex'] == 2) {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '女士'
-                );
-            } else {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '**'
-                );
-            }
-        }
         $basic_info['service_tag'] = $basic['service_tag'];
         $basic_info['residence'] = $basic['residence'];
         $basic_info['height'] = $basic['height'];
@@ -577,9 +549,10 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(500, '简历信息为空');
             }
         }
+        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']],$this->userinfo,true);
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
-        
+
         //联系方式
         $getResumeContact = model('Resume')->getContact($return['base_info'],$this->userinfo);
         $return['show_contact'] = $getResumeContact['show_contact'];

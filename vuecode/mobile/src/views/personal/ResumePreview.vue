@@ -190,7 +190,7 @@
         <van-button round type="info" block native-type="button" @click="doShare">立即分享</van-button>
       </div>
     </div>
-    <van-dialog v-model="showDetail" title="更多基本信息" show-cancel-button>
+    <van-dialog v-model="showDetail" title="更多基本信息">
       <div class="details_pop_box">
         <div class="detail_line" v-if="fieldStore.basic.marriage.is_display">
           <div class="line_left">{{fieldStore.basic.marriage.field_cn}}：</div>
@@ -327,7 +327,7 @@ export default {
       }
     },
     handlePoster () {
-      this.shareid = this.query_id
+      this.shareid = this.basic.id
       this.showPoster = true
     },
     closePoster () {

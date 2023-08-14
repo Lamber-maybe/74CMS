@@ -246,6 +246,7 @@ class ResumeSearchEngine
         $list = $list
             ->where($this->where)
             ->order($this->orderby)
+            ->distinct('a.id')
             // ->page($this->current_page, $this->pagesize)
             // ->select();
             ->paginate(['list_rows'=>$this->pagesize,'page'=>$this->current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);

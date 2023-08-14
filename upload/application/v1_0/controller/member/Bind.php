@@ -315,7 +315,7 @@ class Bind extends \app\v1_0\controller\common\Base
         //检测当前手机号是否绑定过其他账号
         if($empty_bind===true){
             $bindinfo = model('MemberBind')->where('type','weixin')->where('uid',$member['uid'])->find();
-            if($bindinfo!==null && $bindinfo['unionid']!=$input_data['unionid'] && $bindinfo['openid']!=$input_data['openid']){
+            if($bindinfo!==null && ($bindinfo['unionid']!=$input_data['unionid'] || $bindinfo['openid']!=$input_data['openid'])){
                 model('MemberBind')->where('type','weixin')->where('uid',$member['uid'])->delete();
             }
         }

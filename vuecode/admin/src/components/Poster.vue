@@ -8,10 +8,21 @@
       :show-close="false"
       custom-class="poster_dialog"
     >
-      <div v-loading="posterImg==''" style="height:533px;"><img v-if="posterImg!=''" id="posterImg" :src="posterImg" style="width:300px;"></div>
+      <div v-loading="posterImg == ''" style="height: 533px">
+        <img
+          v-if="posterImg != ''"
+          id="posterImg"
+          :src="posterImg"
+          style="width: 300px"
+        />
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="warning" size="small" @click="changeTpl">换一个</el-button>
-        <el-button type="primary" size="small" @click="downloadIamge">保存到电脑</el-button>
+        <el-button type="warning" size="small" @click="changeTpl"
+          >换一个</el-button
+        >
+        <el-button type="primary" size="small" @click="downloadIamge"
+          >保存到电脑</el-button
+        >
         <el-button size="small" @click="$emit('closeDialog')">关 闭</el-button>
       </span>
     </el-dialog>
@@ -24,24 +35,24 @@ import apiArr from '@/api'
 import { makePoster } from '@/api/poster'
 export default {
   props: ['posterId', 'posterType'],
-  data(){
+  data() {
     return {
       currentTplIndex: 0,
       posterImg: ''
     }
   },
-  created(){
+  created() {
     this.funPoster()
   },
   methods: {
-    changeTpl () {
+    changeTpl() {
       this.currentTplIndex++
       if (this.currentTplIndex >= 3) {
         this.currentTplIndex = 0
       }
       this.funPoster()
     },
-    funPoster(){
+    funPoster() {
       this.posterImg = ''
       const param = {
         type: this.posterType,
@@ -59,11 +70,11 @@ export default {
   }
 }
 </script>
-<style >
-.poster_dialog .el-dialog__header{
-    display:none;
+<style lang="scss" scoped>
+::v-deep .el-dialog__header {
+  display: none;
 }
-.poster_dialog .el-dialog__body{
-    padding:0;
+::v-deep .el-dialog__body {
+  padding: 0;
 }
 </style>

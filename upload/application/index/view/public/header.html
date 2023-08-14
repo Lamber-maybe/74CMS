@@ -125,10 +125,38 @@
             </div>
         </div>
     </div>
+
+    {#if condition="$navSelTag eq 'index'"#}
+    <!-- 头部下拉广告位 -->
+    {#if condition="isset($banner_list['QS_index_top_dropdown@web']) && count($banner_list['QS_index_top_dropdown@web'])
+    gt 0"#}
+    <div class="down_source w1200">
+        <div class="source_box">
+            <a class="img_link" {#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''"
+                #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+                <span class="close">X</span>
+                <img src="{#$banner_list['QS_index_top_dropdown@web'][0]['image_src']#}">
+            </a>
+        </div>
+        <button disabled='true' class="source_btn">重播</button>
+    </div>
+    {#/if#}
+    <!-- 弹窗居中广告位 -->
+    {#if condition="isset($banner_list['QS_index_popup@web']) && count($banner_list['QS_index_popup@web']) gt 0"#}
+    <div class="popup_source">
+        <span class="popup_close">关闭</span>
+        <a class="popup_source_link" {#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''"
+            #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+            <img src="{#$banner_list['QS_index_popup@web'][0]['image_src']#}">
+        </a>
+    </div>
+    {#/if#}
+    {#/if#}
+
     <div class="handle_wrapper">
         <div class="handle clearfix">
             <div class="logo">
-                <a href="{#:url('index/index/index')#}">
+                <a class="logo_link" href="{#:url('index/index/index')#}">
                     <img class="handLe_img" src="{#$global_config.logo#}" />
                 </a>
             </div>
@@ -148,7 +176,7 @@
                     </div>
                     <div class="search_input">
                         <input class="inputWidth inputWidth1 inputBorder top_search" v-model="keyword"
-                            placeholder="请输入搜索关键字" type="text" />
+                            placeholder="请输入搜索关键字" @keyup.enter="handlerSearch" type="text" />
                     </div>
                     <div class="search_btn1" @click="handlerSearch"></div>
                 </div>
@@ -280,7 +308,6 @@
             this.getUserInfo()
             this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
             this.wechatQrcode = "{#$global_config.wechat_qrcode#}"
-
 
             this.cronRun()
             // 头部搜索默认选中
@@ -483,5 +510,94 @@
                 }
             },
         }
+    })
+
+    $(function () {
+        // 头部下拉广告位
+        var showPopup = false
+        var current = new Date()
+        var expire_time = localStorage.getItem('index_popup_expire_time')
+        if (expire_time === undefined || !expire_time || current.getTime() > new Date(expire_time)) {
+            showPopup = true
+            expire_time = new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1)
+            localStorage.setItem('index_popup_expire_time', expire_time)
+        }
+        var header_source_time = 6;
+        var header_time = null;
+        var distinguish_source = true;
+
+        if ($(".down_source")[0]) {
+            down_source();
+        } else {
+            if ($(".popup_source")[0] && showPopup === true) {
+                $('<div>').attr({ 'class': 'mantle_box' }).appendTo('body')
+                $(".popup_source").show();
+                popup_source();
+            }
+        }
+
+        function down_source() {
+            $(".source_box .img_link").animate({ height: "500px" });
+            $(".source_box").animate({ height: "500px" });
+            $(".down_source .source_btn").html(header_source_time);
+            header_time = setInterval(function () {
+                header_source_time--;
+                $(".down_source .source_btn").html(header_source_time);
+                if (header_source_time == 0) {
+                    $(".source_box .img_link").animate({ height: "0px" });
+                    $(".source_box").animate({ height: "0px" });
+                    $(".down_source .source_btn").html("重播");
+                    header_source_time = 6;
+                    $(".source_btn").attr({ disabled: false });
+                    clearInterval(header_time);
+                    if ($(".popup_source")[0] && showPopup === true) {
+                        if (distinguish_source) {
+                            $('<div>').attr({ 'class': 'mantle_box' }).appendTo('body')
+                            $(".popup_source").show();
+                            $(".source_btn").attr({ disabled: false });
+                            popup_source();
+                        }
+                    }
+                }
+            }, 1000);
+        }
+        // 重播点击事件
+        $(".down_source .source_btn").click(function () {
+            distinguish_source = false;
+            $(this).attr({ disabled: true });
+            down_source();
+        });
+        // 关闭按钮
+        $(".down_source .source_box .img_link .close").click(function (event) {
+            var e = window.event || event;
+            e.preventDefault();
+            distinguish_source = false;
+            $(".source_box .img_link").animate({ height: "0px" });
+            $(".source_box").animate({ height: "0px" });
+            header_source_time = 6;
+            $(".down_source .source_btn").html("重播");
+            clearInterval(header_time);
+            $(".source_btn").attr({ disabled: false });
+            if (distinguish_source && showPopup === true) {
+                $(".popup_source").show();
+                popup_source();
+            }
+        });
+
+        // 弹窗广告位
+        var popup_time = null;
+
+        function popup_source() {
+            popup_time = setTimeout(function () {
+                $('.mantle_box').hide()
+                $(".popup_source").hide();
+            }, 6000);
+        }
+        // 关闭
+        $(".popup_close").click(function () {
+            $(".popup_source").hide();
+            $('.mantle_box').hide()
+            clearTimeout(popup_time);
+        });
     })
 </script>

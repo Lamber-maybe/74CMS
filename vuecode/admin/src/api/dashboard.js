@@ -8,23 +8,9 @@ export function dashboardBaseinfo(params) {
     params
   })
 }
-export function dashboardUpgradeLog(params) {
+export function officialData(params) {
   return request({
-    url: apiArr.dashboardUpgradeLog,
-    method: 'get',
-    params
-  })
-}
-export function dashboardAuthorize(params) {
-  return request({
-    url: apiArr.dashboardAuthorize,
-    method: 'get',
-    params
-  })
-}
-export function dashboardOfficialNews(params) {
-  return request({
-    url: apiArr.dashboardOfficialNews,
+    url: apiArr.officialData,
     method: 'get',
     params
   })

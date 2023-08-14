@@ -4,10 +4,20 @@
  */
 namespace app\common\lib;
 
+use app\common\model\shortvideo\SvCompanyVideo;
+use app\common\model\shortvideo\SvPersonalVideo;
+use app\common\model\shortvideo\Video;
+
 class Poster
 {
     protected $error='';
-    protected $fontPath = API_LIB_PATH.'poster/font.ttf';
+    protected $fontPath;
+
+    public function __construct()
+    {
+        $this->fontPath = API_LIB_PATH.'poster/font.ttf';
+    }
+
     public function create($config=array(),$filename="")
     {
         //如果要看报什么错，可以先注释调这个header
@@ -56,7 +66,7 @@ class Poster
                 $resHeight = $info[1];
                 //建立画板 ，缩放图片至指定尺寸
                 $canvas=imagecreatetruecolor($val['width'], $val['height']);
-                
+
                 // 圆角处理
                 if(isset($val['radius']) && $val['radius']==1){
                     $bg = imagecolorallocatealpha($canvas, 255, 255, 255,127);
@@ -65,7 +75,7 @@ class Poster
                 }else{
                     imagefill($canvas, 0, 0, $color);
                 }
-                
+
 
 
                 //关键函数，参数（目标资源，源，目标资源的开始坐标x,y, 源资源的开始坐标x,y,目标资源的宽高w,h,源资源的宽高w,h）
@@ -94,20 +104,20 @@ class Poster
                     $val['left'] = -($maxX - $minX + 80);
                 }
                 $val['left'] = $val['left']<0?$backgroundWidth- abs($val['left']):$val['left'];
-                
-                    
+
+
                 if($val['center_y']==1){
                     $val['top'] = ($backgroundHeight - ($maxY - $minY))/2;
                 }else{
                     $val['top'] = $val['top']<0?$backgroundHeight- abs($val['top']):$val['top'];
                 }
-                
+
                 imagettftext($imageRes,$val['fontSize'],$val['angle'],$val['left'],$val['top'],$fontColor,$val['fontPath'],$val['text']);
             }
         }
         //生成图片
         if(!empty($filename)){
-            $res = imagejpeg($imageRes,$filename,100); //保存到本地
+            $res = imagepng($imageRes,$filename,5); //保存到本地
             imagedestroy($imageRes);
             if(!$res){
                 return false;
@@ -176,7 +186,7 @@ class Poster
             $this->error = '没有找到企业信息';
             return false;
         }
-        $filename = $id.'_'.$index.'.jpg';
+        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
         $save_dir = SYS_UPLOAD_PATH.'poster/job/'.($id%10).'/';
         if(!is_dir($save_dir)){
             mkdir($save_dir,0777,true);
@@ -186,7 +196,7 @@ class Poster
         if(file_exists($save_path)){
             return $show_path;
         }
-        
+
         $category_district_data = model('CategoryDistrict')->getCache();
         $info['wage_text'] = model('BaseModel')->handle_wage(
             $info['minwage'],
@@ -213,7 +223,7 @@ class Poster
         )
         ? $category_district_data[$info['district']]
         : '';
-        
+
         $locationUrl = config('global_config.mobile_domain').'job/'.$info['id'];
         $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_job&url='.$locationUrl.'&jobid='.$info['id'];
         switch($index){
@@ -476,8 +486,8 @@ class Poster
             return false;
         }
         $info = $info->toArray();
-        
-        $filename = $id.'_'.$index.'.jpg';
+
+        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
         $save_dir = SYS_UPLOAD_PATH.'poster/resume/'.($id%10).'/';
         if(!is_dir($save_dir)){
             mkdir($save_dir,0777,true);
@@ -529,7 +539,7 @@ class Poster
         )
             ? $category_data['QS_current'][$info['current']]
             : '';
-        
+
         //求职意向
         $intention_data = model('ResumeIntention')
             ->field('id,rid,uid', true)
@@ -560,16 +570,16 @@ class Poster
             $info['intention_district_text'] = array_unique($info['intention_district_text']);
             $info['intention_district_text'] = implode(",",$info['intention_district_text']);
         }
-        
+
         $info['photo_img_src'] = model('Uploadfile')->getFileUrl(
             $info['photo_img']
         );
         $info['photo_img_src'] = $info['photo_img_src']?$info['photo_img_src']:default_empty('photo');
 
-        
+
         $locationUrl = config('global_config.mobile_domain').'resume/'.$info['id'];
         $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_resume&url='.$locationUrl.'&resumeid='.$info['id'];
-        
+
         switch($index){
             case 1:
                 $config = [
@@ -889,7 +899,7 @@ class Poster
             return $show_path;
         }
     }
-    
+
     /**
      * 企业海报
      */
@@ -902,7 +912,7 @@ class Poster
             $this->error = '没有找到企业信息';
             return false;
         }
-        $filename = $id.'_'.$index.'.jpg';
+        $filename = $id.'_'.$info['updatetime'].'_'.$index.'.jpg';
         $save_dir = SYS_UPLOAD_PATH.'poster/company/'.($id%10).'/';
         if(!is_dir($save_dir)){
             mkdir($save_dir,0777,true);
@@ -937,7 +947,7 @@ class Poster
             )
             ? model('Job')->map_nature[$value['nature']]
             : '全职';
-            
+
             $job_list[$key]['education_text'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )
@@ -950,7 +960,7 @@ class Poster
             : '经验不限';
         }
         $info['jobnum'] = count($job_list);
-        
+
         $locationUrl = config('global_config.mobile_domain').'company/'.$info['id'];
         $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_company&url='.$locationUrl.'&comid='.$info['id'];
         switch($index){
@@ -1017,7 +1027,7 @@ class Poster
                     ],
                     'background'=>API_LIB_PATH.'poster/company'.$index.'.jpg' //背景图
                 ];
-                
+
                 $job_index = 0;
                 foreach ($job_list as $key => $value) {
                     if($job_index==2){
@@ -1246,6 +1256,113 @@ class Poster
                     $job_index++;
                 }
                 break;
+        }
+
+        $result = $this->create($config,$save_path);
+        if($result===false){
+            $this->error = '生成海报失败';
+            return false;
+        }else{
+            return $show_path;
+        }
+    }
+
+    public function makeVideoPoster($index, $id, $vtype){
+        $m = new SvCompanyVideo();
+        $locationUrl = config('global_config.mobile_domain').'shortvideo/videoplay?id='.$id.'&videotype='.$vtype;
+        if($vtype == 2){
+            $m = new SvPersonalVideo();
+        }
+        $locationUrl .= '&gointype=playlist';
+        $locationUrl = urlencode($locationUrl);
+        $info = $m->detail($id);
+        if($id<Video::AUDIT_LIMIT){
+            if($info['audit']!= Video::AUDIT_YES){
+                $this->error = '只有已审核的视频可对外分享';
+            }
+            if($info['is_public'] != Video::PUBLIC_YES){
+                $this->error = '本视频不对外展示,不可分享';
+            }
+            return false;
+        }
+        $filename = $id.'_'.$info['fid'].'_'.$index.'.png';
+        $save_dir = SYS_UPLOAD_PATH.'poster/shortvideo/'.($id%10).'/';
+        if(!is_dir($save_dir)){
+            mkdir($save_dir,0777,true);
+        }
+        $save_path = $save_dir.$filename;
+        $show_path = config('global_config.sitedomain').config('global_config.sitedir').SYS_UPLOAD_DIR_NAME.'/poster/shortvideo/'.($id%10).'/'.$filename;
+        if(file_exists($save_path)){
+            //unlink($save_path);
+            return $show_path;
+        }
+
+        $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_shortvideo&url='.$locationUrl;
+        $config = [
+            'image'=>[
+                [
+                    'url'=>$info['qrcode'],//二维码
+                    'stream'=>0,
+                    'left'=>451,
+                    'top'=>1097,
+                    'right'=>0,
+                    'bottom'=>0,
+                    'width'=>190,
+                    'height'=>190,
+                    'opacity'=>100
+                ],
+                [
+                    'url'=>$info['video_src'].'?vframe/jpg/offset/1',
+                    //'url' => 'http://qiniu.weisns.com.cn/2021-06-30-60dc332c71d21.mp4?vframe/jpg/offset/1',
+                    'stream'=>0,
+                    'left'=>96,
+                    'top'=>88,
+                    'right'=>0,
+                    'bottom'=>0,
+                    'width'=>530,
+                    'height'=>868,
+                    'opacity'=>100
+                ],
+                [
+                    'url' => config('global_config.sitedomain').config('global_config.sitedir').'assets/images/shortvideo_play.png',
+                    'stream'=>0,
+                    'left'=>300,
+                    'top'=>460,
+                    'right'=>0,
+                    'bottom'=>0,
+                    'radius' => 1,
+                    'width'=>126,
+                    'height'=>126,
+                    'opacity'=>60
+                ]
+            ],
+            'text'=>[
+                [
+                    'text'=>mb_substr($info['title'],0,15),
+                    'fontPath'=>$this->fontPath,
+                    'left'=>100,
+                    'center_x'=>0,
+                    'top'=>1015,
+                    'center_y'=>0,
+                    'fontSize'=>26,       //字号
+                    'fontColor'=>'0,0,0', //字体颜色
+                    'angle'=>0,
+                ]
+            ],
+            'background'=>API_LIB_PATH.'poster/shortvideo'.$index.'.png' //背景图
+        ];
+        if(mb_strlen($info['title'])>15){
+            $config['text'][] =  [
+                'text'=>mb_strlen($info['title'])>28 ? mb_substr($info['title'],15,13). '...':  mb_substr($info['title'],15,13),
+                'fontPath'=>$this->fontPath,
+                'left'=>100,
+                'center_x'=>0,
+                'top'=>1070,
+                'center_y'=>0,
+                'fontSize'=>26,       //字号
+                'fontColor'=>'0,0,0', //字体颜色
+                'angle'=>0,
+            ];
         }
 
         $result = $this->create($config,$save_path);

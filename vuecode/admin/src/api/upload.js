@@ -8,3 +8,10 @@ export function apiUpload(data) {
     data
   })
 }
+
+export function  checkQiniu() {
+  return request({
+    url: '/upload/checkQiniu',
+    method: 'get',
+  })
+}

@@ -443,7 +443,6 @@
       <div class="line18 font12">(电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)</div>
       <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号</div>
     </van-dialog>
-    <div class="return_list" v-if="isRetrunBtn != null" @click="$router.push('/campus/job')">返回列表</div>
     <div class="click_copy" @click="handlerCopy">一键<br />复制</div>
     <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
   </div>
@@ -755,31 +754,41 @@ export default {
       }
     },
     doApply () {
-      if (this.is_personal_login === false) {
-        this.$dialog
-          .confirm({
-            title: '提示',
-            message: '当前操作需要登录求职者账号',
-            confirmButtonText: '去登录'
-          })
-          .then(() => {
-            this.showLogin = true
-            this.after_login_data = {
-              method: 'doApply'
-            }
-          })
-          .catch(() => {})
-      } else {
-        const params = {
-          jobid: this.query_id
+      if (this.$store.state.LoginOrNot === true) {
+        if (this.$store.state.LoginType !== 2) {
+          this.$dialog
+            .confirm({
+              title: '提示',
+              message: '当前操作需要登录求职者账号',
+              confirmButtonText: '去登录'
+            })
+            .then(() => {
+              this.showLogin = true
+              this.after_login_data = {
+                method: 'doApply'
+              }
+            })
+            .catch(() => {})
+        } else {
+          const params = {
+            jobid: this.query_id
+          }
+          http
+            .post(api.jobapply, params)
+            .then(res => {
+              this.$notify({ type: 'success', message: res.message })
+              this.fetchData()
+            })
+            .catch(() => {})
         }
-        http
-          .post(api.jobapply, params)
-          .then(res => {
-            this.$notify({ type: 'success', message: res.message })
-            this.fetchData()
-          })
-          .catch(() => {})
+      } else {
+        // 快速注册简历
+        this.$router.push({
+          path: '/member/regquick',
+          query: {
+            id: this.query_id
+          }
+        })
       }
     },
     doFav () {

@@ -47,6 +47,7 @@ const store = new Vuex.Store({
     classifyLanguageLevel: '',
     classifyResumeTag: '',
     classifyJobTag: '',
+    classifyJobNature: '',
     classifyExperience: '',
     classifyCompanyNature: '',
     classifyCompanyScale: '',
@@ -84,13 +85,13 @@ const store = new Vuex.Store({
     userSignin: false
   },
   mutations: {
-    setUserPoints (state, data) {
+    setUserPoints(state, data) {
       state.userPoints = data.points
     },
-    setUserSignin (state, data) {
+    setUserSignin(state, data) {
       state.userSignin = data.signin
     },
-    setLoginState (state, data) {
+    setLoginState(state, data) {
       state.LoginOrNot = data.whether
       state.LoginType = data.utype
       state.userToken = data.token
@@ -111,27 +112,27 @@ const store = new Vuex.Store({
           })
           .catch(() => {
           })
-      }else{
-        Cookies.set('qscms_visitor',{
-          utype:data.utype,
-          mobile:data.mobile,
-          token:data.token,
-          userIminfo:data.userIminfo
+      } else {
+        Cookies.set('qscms_visitor', {
+          utype: data.utype,
+          mobile: data.mobile,
+          token: data.token,
+          userIminfo: data.userIminfo
         }, { expires: 7 })
       }
     },
     // 更改是否显示头部的状态
-    toggleHeadShow (state, data) {
+    toggleHeadShow(state, data) {
       state.isHeadShow = data
     },
-    clearCountDownFun (state) {
+    clearCountDownFun(state) {
       state.sendSmsBtnDisabled = false
       state.sendSmsBtnText = '获取验证码'
       state.sendSmsInterval = 60
       clearInterval(state.sendSmsTimer)
     },
     // 倒计时
-    countDownFun (state) {
+    countDownFun(state) {
       if (state.sendSmsInterval === 0) {
         state.sendSmsBtnDisabled = false
         state.sendSmsBtnText = '获取验证码'
@@ -143,7 +144,7 @@ const store = new Vuex.Store({
         state.sendSmsInterval--
       }
     },
-    clearCountDownFunEmail (state) {
+    clearCountDownFunEmail(state) {
       state.sendEmailBtnDisabled = false
       state.sendEmailBtnText = '获取验证码'
       state.sendEmailInterval = 60
@@ -151,7 +152,7 @@ const store = new Vuex.Store({
       clearInterval(state.sendSmsTimer)
     },
     // 倒计时
-    countDownFunEmail (state) {
+    countDownFunEmail(state) {
       if (state.sendEmailInterval === 0) {
         state.sendEmailBtnDisabled = false
         state.sendEmailBtnText = '获取验证码'
@@ -164,14 +165,14 @@ const store = new Vuex.Store({
       }
     },
     // 更新验证码相关状态
-    setSendSmsState (state, data) {
+    setSendSmsState(state, data) {
       state.sendSmsMessage = data.data.message
     },
-    setSendEmailState (state, data) {
+    setSendEmailState(state, data) {
       state.sendEmailMessage = data.data.message
     },
     // 设置分类
-    setClassify (state, data) {
+    setClassify(state, data) {
       if (data.fy === 'education') {
         state.classifyEdu = data.data
       } else if (data.fy === 'current') {
@@ -198,6 +199,8 @@ const store = new Vuex.Store({
         state.classifyExperience = data.data
       } else if (data.fy === 'jobTag') {
         state.classifyJobTag = data.data
+      } else if (data.fy === 'jobNature') {
+        state.classifyJobNature = data.data
       } else if (data.fy === 'companyNature') {
         state.classifyCompanyNature = data.data
       } else if (data.fy === 'companyScale') {
@@ -213,77 +216,77 @@ const store = new Vuex.Store({
       }
     },
     // 设置薪资分类
-    setClassifyWage (state, data) {
+    setClassifyWage(state, data) {
       state.classifyWage = data
     },
     // 设置年龄分类
-    setClassifyAge (state, data) {
+    setClassifyAge(state, data) {
       state.classifyAge = data
     },
     // 设置专业分类
-    setClassifyMajor (state, data) {
+    setClassifyMajor(state, data) {
       state.classifyMajorOriginal = data
     },
     // 设置地区分类
-    setClassifyCity (state, data) {
+    setClassifyCity(state, data) {
       state.classifyCityOriginal = data
     },
     // 更新简历基本资料
-    setBasicInfo (state, data) {
+    setBasicInfo(state, data) {
       state.resume.basic = data
     },
     // 更新简历模块列表
-    setModuleList (state, data) {
+    setModuleList(state, data) {
       state.resume.module_list = data
     },
     // 更新简历字段列表
-    setFieldList (state, data) {
+    setFieldList(state, data) {
       state.resume.field_rule = data
     },
     // 更新简历联系方式
-    setResumeContact (state, data) {
+    setResumeContact(state, data) {
       state.resume.contact = data
     },
     // 更新简历求职意向
-    setIntentionList (state, data) {
+    setIntentionList(state, data) {
       state.resume.intention_list = data
     },
     // 更新简历工作经历
-    setWorkList (state, data) {
+    setWorkList(state, data) {
       state.resume.work_list = data
     },
     // 更新简历教育经历
-    setEducationList (state, data) {
+    setEducationList(state, data) {
       state.resume.education_list = data
     },
     // 更新简历项目经历
-    setProjectList (state, data) {
+    setProjectList(state, data) {
       state.resume.project_list = data
     },
     // 更新简历培训经历
-    setTrainingList (state, data) {
+    setTrainingList(state, data) {
       state.resume.training_list = data
     },
     // 更新简历语言能力
-    setLanguageList (state, data) {
+    setLanguageList(state, data) {
       state.resume.language_list = data
     },
     // 更新简历获得证书
-    setCertificateList (state, data) {
+    setCertificateList(state, data) {
       state.resume.certificate_list = data
     },
     // 更新简历作品
-    setResumeImgList (state, data) {
+    setResumeImgList(state, data) {
       state.resume.img_list = data
     },
     // 设置网站配置
-    setConfig (state, data) {
+    setConfig(state, data) {
       state.config = data
     }
   },
   actions: {
     // 请求网站配置
-    getConfig (context) {
+    getConfig(context) {
       return new Promise((resolve, reject) => {
         service({
           method: 'GET',
@@ -304,7 +307,7 @@ const store = new Vuex.Store({
       })
     },
     // 发送验证码
-    sendSmsFun (context, value) {
+    sendSmsFun(context, value) {
       return new Promise((resolve, reject) => {
         service({
           method: 'POST',
@@ -335,7 +338,7 @@ const store = new Vuex.Store({
       })
     },
     // 发送邮箱验证码
-    sendEmailFun (context, value) {
+    sendEmailFun(context, value) {
       return new Promise((resolve, reject) => {
         service({
           method: 'POST',
@@ -365,7 +368,7 @@ const store = new Vuex.Store({
       })
     },
     // 设置薪资分类
-    getClassifyWage (context) {
+    getClassifyWage(context) {
       let wageArray = []
       for (let i = 500; i <= 15000; i += 500) {
         wageArray.push(i)
@@ -373,7 +376,7 @@ const store = new Vuex.Store({
       context.commit('setClassifyWage', wageArray)
     },
     // 设置年龄分类
-    getClassifyAge (context) {
+    getClassifyAge(context) {
       let ageArray = []
       for (let i = 16; i <= 65; i++) {
         ageArray.push(i)
@@ -381,7 +384,7 @@ const store = new Vuex.Store({
       context.commit('setClassifyAge', ageArray)
     },
     // 获取枚举数据
-    getClassify (context, value) {
+    getClassify(context, value) {
       return new Promise((resolve, reject) => {
         service({
           method: 'GET',
@@ -389,7 +392,8 @@ const store = new Vuex.Store({
             'user-token': context.state.userToken,
             platform: window.global.Platform
           },
-          url: api.classify + '?type=' + value
+          url: api.classify,
+          params: { type: value }
         })
           .then((res) => {
             if (parseInt(res.data.code) === 200) {
@@ -439,7 +443,7 @@ const store = new Vuex.Store({
           })
       })
     },
-    makeChildren (context, value) {
+    makeChildren(context, value) {
       let areaArray = []
       for (let area of value.children) {
         context.dispatch('makeChildrenLast', area.children).then((res) => {
@@ -452,7 +456,7 @@ const store = new Vuex.Store({
       }
       return areaArray
     },
-    makeChildrenLast (context, value) {
+    makeChildrenLast(context, value) {
       let areaArray = []
       for (let item of value) {
         areaArray.push({
@@ -463,56 +467,56 @@ const store = new Vuex.Store({
       return areaArray
     },
     // 更新简历基本资料
-    setBasicInfo (context, value) {
+    setBasicInfo(context, value) {
       context.commit('setBasicInfo', value)
     },
     // 更新简历模块列表
-    setModuleList (context, value) {
+    setModuleList(context, value) {
       context.commit('setModuleList', value)
     },
     // 更新简历字段列表
-    setFieldList (context, value) {
+    setFieldList(context, value) {
       context.commit('setFieldList', value)
     },
     // 更新简历联系方式
-    setResumeContact (context, value) {
+    setResumeContact(context, value) {
       context.commit('setResumeContact', value)
     },
     // 更新简历求职意向
-    setIntentionList (context, value) {
+    setIntentionList(context, value) {
       context.commit('setIntentionList', value)
     },
     // 更新简历工作经历
-    setWorkList (context, value) {
+    setWorkList(context, value) {
       context.commit('setWorkList', value)
     },
     // 更新简历教育经历
-    setEducationList (context, value) {
+    setEducationList(context, value) {
       context.commit('setEducationList', value)
     },
     // 更新简历项目经历
-    setProjectList (context, value) {
+    setProjectList(context, value) {
       context.commit('setProjectList', value)
     },
     // 更新简历培训经历
-    setTrainingList (context, value) {
+    setTrainingList(context, value) {
       context.commit('setTrainingList', value)
     },
     // 更新简历语言能力
-    setLanguageList (context, value) {
+    setLanguageList(context, value) {
       context.commit('setLanguageList', value)
     },
     // 更新简历获得证书
-    setCertificateList (context, value) {
+    setCertificateList(context, value) {
       context.commit('setCertificateList', value)
     },
     // 更新简历作品
-    setResumeImgList (context, value) {
+    setResumeImgList(context, value) {
       context.commit('setResumeImgList', value)
     }
   },
   modules: {},
   getters: {},
-  plugins: [ persistedState({ storage: window.localStorage }) ]
+  plugins: [persistedState({ storage: window.localStorage })]
 })
 export default store

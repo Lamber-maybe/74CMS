@@ -129,6 +129,9 @@
             <el-radio label="view">
               链接事件
             </el-radio>
+            <el-radio label="miniprogram">
+              小程序
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -148,6 +151,16 @@
         >
           <el-input
             v-model="form.url"
+            class="middle"
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="form.type=='miniprogram'"
+          label="跳转路径"
+          prop="pagepath"
+        >
+          <el-input
+            v-model="form.pagepath"
             class="middle"
           />
         </el-form-item>

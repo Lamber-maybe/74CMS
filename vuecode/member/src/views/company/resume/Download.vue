@@ -36,7 +36,6 @@
             </template>
           </el-table-column>
           <el-table-column
-            width="340px"
             header-align="left"
             prop="address"
             label="求职意向"

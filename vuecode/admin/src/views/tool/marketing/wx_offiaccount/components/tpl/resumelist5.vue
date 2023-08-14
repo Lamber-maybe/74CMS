@@ -26,7 +26,7 @@
       </section>
     </section>
     <p style="width:2em;margin-left:auto;margin-top: -38px;margin-right:3px;">
-      <img src="https://ae01.alicdn.com/kf/Hd3af5d3775b54278b2334981fd6b08c8Y.png" alt="" style="width: 2em; height: auto;" data-ratio="1.125" data-w="48">
+      <img :src="url" alt="" style="width: 2em; height: auto;" data-ratio="1.125" data-w="48">
     </p>
   </section>
 </template>
@@ -37,6 +37,7 @@ export default {
   props: ['datalist', 'link'],
   data() {
     return {
+      url: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/resumelist5-1.png'
     }
   },
   created() {

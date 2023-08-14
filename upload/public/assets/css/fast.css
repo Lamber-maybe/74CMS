@@ -1,0 +1,363 @@
+#app{
+    background-color: #f3f3f3;
+}
+.clearfix:after,
+.clearfix:before {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix {
+  *zoom: 1;
+}
+input{
+    border: none;
+}
+.centen{
+    position: relative;
+}
+.centen .topbg{
+    width: 100%;
+    height: 300px;
+    background: url("../images/fast/resume_img.png") center no-repeat;
+}
+.top_ban {
+    width: 100%;
+    height: 300px;
+    background: url("../images/fast/job_img.png") center no-repeat;
+}
+.centen .topdiv{
+    width: 1200px;
+    position: absolute;
+    top: 285px;
+    left: 0;
+    right: 0px;
+    margin: auto;
+    background-color: #FFFFFF;
+    border-radius: 2px;
+}
+.centen  .topdiv .seachdiv{
+    height: 108px;
+    margin-left: 147px;
+    margin-right: 155px;
+    padding-top: 35px;
+    box-sizing: border-box;
+}
+.centen  .topdiv .seachdiv .seachbox{
+    width: 678px;
+    height: 42px;
+    border-radius: 3px;
+    border: 1px solid #efefef;
+    float: left;
+}
+.centen .topdiv .seachdiv .seachbox input{
+    width: 600px;
+    height: 40px;
+    float: left;
+    margin-left: 10px;
+}
+.centen  .topdiv .seachdiv .seachbox .seachbtn{
+    float: right;
+    width: 57px;
+    height: 100%;
+    line-height: 40px;
+    text-align: center;
+    color: #FFFFFF;
+    background-color: #1787fb;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    cursor: pointer;
+}
+.centen  .topdiv .seachdiv .release{
+    width: 200px;
+    height: 42px;
+    float: right;
+    line-height: 42px;
+    background: url("../images/fast/edit.png") 21px center no-repeat #ffae00;
+    background-size: 20px 20px;
+    color: #FFFFFF;
+    padding-left: 51px;
+    font-size: 16px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.centen .tisp{
+    text-align: center;
+    border-top: 1px dashed #dbdbdb;
+    color: #666666;
+    font-size: 14px;
+    height: 56px;
+    line-height: 56px;
+    background-color: #fcf9f5;
+}
+.centen .tisp span,.centen .tisp a{
+    color: #ff3608;
+}
+.centen .list{
+    width: 1210px;
+    margin: auto;
+    margin-top: 160px;
+    padding-bottom: 20px;
+}
+.centen .list .list_empty{
+    width: 1200px;
+    margin-left: 5px;
+}
+.centen .item{
+    width: 292.5px;
+    height: 238px;
+    float: left;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+    position: relative;
+    padding: 27px 18px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.centen .item:hover{
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2) ;
+    transition: all 0.5s;
+}
+.centen .item img{
+    position: absolute;
+    width: 41px;
+    height: 41px;
+    top:0;
+    left: 0;
+}
+.centen .item .title{
+    text-align: center;
+    font-size: 18px;
+    color: #333333;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.centen .item .describe{
+    color: #777777;
+    margin-top: 15px;
+    margin-bottom: 7px;
+    height: 75px;
+    line-height: 1.9;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.centen .item .describetwo{
+    color: #777777;
+    margin-top: 17px;
+    height: 75px;
+    line-height: 1.9;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.centen .item .info{
+    text-align: center;
+    color: #555555;
+    margin-top: 20px;
+    font-size: 16px;
+}
+.centen .item .contactname{
+    color: #999999;
+    margin-top: 17px;
+}
+.centen .item .contactname span{
+    color: #666666;
+}
+.centen .item .btndiv{
+    line-height: 24px;
+    color: #333333;
+    margin-top: 15px;
+}
+.centen .item .btndiv div{
+    float: left;
+}
+.centen .item .btndiv .login{
+    width: 45px;
+    height: 24px;
+    float: right;
+    line-height: 24px;
+    text-align: center;
+    font-size: 14px;
+    margin-left: 18px;
+    color: #FFFFFF;
+    border: 1px solid #1787fb;
+    background-color: #1787fb;
+    border-radius: 3px;
+    padding: 0;
+}
+.centen .item .phone{
+    margin-top: 10px;
+    color: #999999;
+}
+.centen .item .phone span{
+    font-size: 15px;
+    color: #ff3944;
+    font-weight: bold;
+}
+
+
+.dialog .tisptwo{
+    height: 37px;
+    line-height: 37px;
+    text-align: left;
+    color: #eb5e00;
+    font-size: 14px;
+    background: url("../images/fast/sigh.png") 17px center no-repeat #fffcf4;
+    background-size: 17px 17px;
+    padding-left: 45px;
+    margin-bottom: 23px;
+}
+.dialog .form{
+    width: 550px;
+    margin: 0 auto;
+}
+.dialog .form .formitem{
+    float: left;
+    height: 40px;
+    line-height: 40px;
+}
+.dialog .form .formitem .input_name{
+    width: 180px;
+    margin-right: 35px;
+}
+.dialog .form .input_experience{
+    width: 345px;
+}
+.dialog .form .inputlen{
+    width: 200px;
+}
+.el-input-group{
+    width: 300px;
+}
+.el-radio__label{
+    padding-left: 5px;
+}
+.dialog .form .input_address{
+    width: 380px;
+}
+.dialog .form .input_time{
+    width: 160px;
+}
+.dialog .form .righttisp{
+    margin-left: 10px;
+    color: #999999;
+}
+.dialog .btn{
+    width: 550px;
+    margin: 0 auto;
+    padding-left: 100px;
+    box-sizing: border-box;
+}
+.el-dialog__header{
+    height: 50px;
+    padding: 20px 20px 10px;
+}
+.el-dialog__body{
+    padding: 5px 20px 30px 20px;
+}
+
+.dialogtwo .top{
+    margin-bottom: 28px;
+}
+.dialogtwo .top .title{
+    font-size: 26px;
+    color: #333333;
+    float: left;
+    width: 545px;
+    line-height: 1.3;
+}
+.dialogtwo .top .look{
+    font-size: 13px;
+    color: #999999;
+    float: right;
+}
+.dialogtwo .infoitem{
+    margin-bottom: 20px;
+    color: #999999;
+    font-size: 14px;
+}
+.dialogtwo .infoitem div{
+    width: 50%;
+    float: left;
+}
+.dialogtwo .infoitem .back{
+    color: #555555;
+}
+.dialogtwo .infoitem .orange{
+    color: #ff6600;
+}
+.dialogtwo .titletwo{
+    border-top: 1px dashed #d7d7d7;
+    font-size: 16px;
+    color: #333333;
+    padding-top: 20px;
+}
+.dialogtwo .describe{
+    color: #777777;
+    line-height: 2;
+    margin-top: 15px;
+    font: 400 14px Arial;
+}
+.el-textarea__inner{
+    font: 400 14px Arial;
+}
+.el-textarea__inner::-webkit-input-placeholder {
+    font: 400 14px Arial;
+}
+.Validperiod .el-form-item__label,.Validperiod .el-form-item__content{
+    line-height: 1;
+}
+.dialogtwo .tisptwo{
+    margin-top: 20px;
+    margin-bottom: 33px;
+    border: 1px dashed #ebbe86;
+    text-align: left;
+    color: #e6a23c;
+    font-size: 14px;
+    line-height: 1.7;
+    background: url("../images/fast/sightwo.png") 20px 15px no-repeat #fefaf5;
+    background-size: 14px 14px;
+    padding: 10px 20px;
+    padding-left: 45px;
+}
+.dialogtwo .btndiv{
+    margin-left: 147px;
+}
+.dialogtwo .btndiv .btn{
+    width: 100px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    font-size: 15px;
+    color: #FFFFFF;
+    border-radius: 50px;
+    float: left;
+    cursor: pointer;
+}
+.dialogtwo .btndiv .Refresh{
+    background-color: #518eff;
+}
+.dialogtwo .btndiv .modify{
+    margin-left: 18px;
+    margin-right: 18px;
+    background-color: #25c68b;
+}
+.dialogtwo .btndiv .delete{
+    background-color: #ff7575;
+}
+
+
+.dialogthree .btndiv{
+    float: right;
+    text-align: right;
+}

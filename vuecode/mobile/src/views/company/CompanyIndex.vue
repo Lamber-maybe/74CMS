@@ -38,6 +38,10 @@
           <div class="ico ic1"></div>
           <div class="txt">发布职位</div>
         </div>
+        <div class="item" @click="$router.push('/shortvideo/videoManage')" v-if="$store.state.config.shortvideo_enable === '1'">
+          <div class="ico ic6"></div>
+          <div class="txt">视频招聘</div>
+        </div>
         <div class="item" @click="handlerRefreshBatch">
           <div class="ico ic2"></div>
           <div class="txt">一键刷新</div>
@@ -694,6 +698,11 @@ export default {
       color: #292b32;
     }
     .ico {
+      &.ic6 {
+        background: url("../../assets/images/shortvideo/icon_shortvideo.png") center
+          0 no-repeat;
+        background-size: 40px;
+      }
       &.ic4 {
         background: url("../../assets/images/company_index_box4_ic4.png") 0
           no-repeat;

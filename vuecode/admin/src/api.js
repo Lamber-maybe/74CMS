@@ -1,9 +1,7 @@
 export default {
   // 首页仪表盘
   dashboardBaseinfo: '/index/index',
-  dashboardUpgradeLog: '/index/upgradeLog',
-  dashboardAuthorize: '/index/authorize',
-  dashboardOfficialNews: '/index/officialNews',
+  officialData: '/index/officialData',
   dashboardChart: '/index/chart',
   // 登录页图片验证码
   captchaSrc: '/login/captcha',
@@ -329,6 +327,7 @@ export default {
   companySetmealLog: '/company_setmeal/log',
   companySetmealEdit: '/company_setmeal/edit',
   companySetmealAdd: '/company_setmeal/add',
+  companySetmealOpenLog: '/company_setmeal/openlog',
 
   // 订单列表
   orderList: '/order/index',
@@ -625,6 +624,10 @@ export default {
   marketingWxoffiaccountSearchCompany: '/marketing/companySearch',
   // 二维码
   showQrcode: '/qrcode/normal',
+  // 登录二维码
+  showLoginQrcode: '/qrcode/login',
+  // 登录二维码
+  loginScan: '/login/scan',
   // 场景码
   sceneQrcodeList: '/scene_qrcode/index',
   sceneQrcodeAdd: '/scene_qrcode/add',
@@ -633,6 +636,7 @@ export default {
   sceneQrcodeTypeList: '/scene_qrcode/typeList',
   sceneQrcodeDownload: '/scene_qrcode/download',
   sceneSearchList: '/scene_qrcode/searchList',
+
 
   // 敏感词
   badwordList: '/badword/index',
@@ -673,7 +677,20 @@ export default {
   serviceOlAdd: '/service_ol/add',
   serviceOlEdit: '/service_ol/edit',
   serviceOlDelete: '/service_ol/delete',
-  
+
   // 简历导入模板下载
-  downloadImportResumeTpl: '/resume/downloadImportResumeTpl'
+  downloadImportResumeTpl: '/resume/downloadImportResumeTpl',
+
+  // 职位分类模板
+  categoryJobTemplateList: '/category_job_template/index',
+  categoryJobTemplateAdd: '/category_job_template/add',
+  categoryJobTemplateEdit: '/category_job_template/edit',
+  categoryJobTemplateDelete: '/category_job_template/delete',
+  // 手机号黑名单
+  smsBlacklist: '/sms_blacklist/index',
+  smsBlacklistAdd: '/sms_blacklist/add',
+  smsBlacklistEdit: '/sms_blacklist/edit',
+  smsBlacklistDelete: '/sms_blacklist/delete',
+  // pc首页模板
+  tplIndex: '/tpl/index'
 }

@@ -27,6 +27,9 @@ class alipay
             case 'wechat':
                 $return = $this->_pay_from_mobile($data);
                 break;
+            case 'app':
+                $return = $this->_pay_from_app($data);
+                break;
         }
         return $return;
     }
@@ -99,6 +102,42 @@ class alipay
             json_encode($parameter, JSON_UNESCAPED_UNICODE)
         );
         $result = $aop->pageExecute($request, 'GET');
+        return $result;
+    }
+    /**
+     * app支付
+     */
+    protected function _pay_from_app($data)
+    {
+        \think\Loader::import('alipay.AopClient');
+        \think\Loader::import('alipay.request.AlipayTradeAppPayRequest');
+        $parameter = [
+            'body' => $data['service_name'],
+            'subject' => $data['service_name'],
+            'out_trade_no' => $this->order_prefix . $data['oid'],
+            'timeout_express' => '90m',
+            'total_amount' => PAY_TEST_MODE ? 0.01 : $data['amount'],
+            'product_code' => 'QUICK_MSECURITY_PAY',
+        ];
+        $aop = new \AopClient();
+        $aop->gatewayUrl = 'https://openapi.alipay.com/gateway.do';
+        $aop->appId = $this->config['appid'];
+        $aop->rsaPrivateKey = $this->config['privatekey'];
+        $aop->alipayrsaPublicKey = $this->config['publickey'];
+        // $aop->apiVersion = '1.0';
+        $aop->signType = 'RSA2';
+        $aop->postCharset = 'utf-8';
+        $aop->format = 'json';
+        $request = new \AlipayTradeAppPayRequest();
+        $request->setNotifyUrl(
+            config('global_config.sitedomain') .
+            config('global_config.sitedir') .
+            'index/callback/alipayNotify'
+        );
+        $request->setBizContent(
+            json_encode($parameter, JSON_UNESCAPED_UNICODE)
+        );
+        $result = $aop->sdkExecute($request);
         return $result;
     }
 

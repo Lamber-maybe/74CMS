@@ -10,10 +10,16 @@
       :rules="rules"
       :inline-message="true"
     >
+      <el-form-item label="新注册简历审核状态" required>
+        <el-radio-group v-model="form.audit_add_resume">
+          <el-radio label="1">审核通过</el-radio>
+          <el-radio label="0">待审核</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="修改简历后审核状态" required>
         <el-radio-group v-model="form.audit_edit_resume">
           <el-radio label="0">保持不变</el-radio>
-          <el-radio label="1">审核中</el-radio>
+          <el-radio label="1">待审核</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="">
@@ -31,6 +37,7 @@ export default {
     return {
       infoLoading: true,
       form: {
+        audit_add_resume: 0,
         audit_edit_resume: 0
       },
       rules: {}
@@ -45,10 +52,11 @@ export default {
       const param = {}
       setConfig(param, 'get')
         .then(response => {
+          this.form.audit_add_resume = response.data.audit_add_resume
           this.form.audit_edit_resume = response.data.audit_edit_resume
           this.infoLoading = false
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     onSubmit(formName) {
       const insertData = { ...this.form }
@@ -60,7 +68,7 @@ export default {
               this.$message.success(response.message)
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }

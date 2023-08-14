@@ -18,7 +18,7 @@
         </section>
       </section>
       <section style="margin: 10px auto; padding: 0px; color: #333333; font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif; font-size: 17px;       text-align: justify;        ">
-        <section style="margin: 0px; padding: 1em; background-color: #fefefe; border-top: 1px dashed #4b68fc; border-right: 1px dashed #4b68fc; border-left: 1px dashed #4b68fc; border-bottom: none; box-sizing: border-box;">
+        <section style="margin: 0px; padding: 1em; background-color: #fefefe; border-top: 1px dashed #4b68fc; border-right: 1px dashed #4b68fc; border-left: 1px dashed #4b68fc; border-bottom: none;">
           <section data-autoskip="1" style="margin: 0px; padding: 0px; text-align: justify; line-height: 1.75em; letter-spacing: 1.5px; font-size: 14px; color: #232d62;">
             <p style="margin: 0px; padding: 0px; clear: both;">招聘：{{ item.job_text==''?'无':item.job_text }}</p>
             <p style="margin: 0px; padding: 0px; clear: both;"><span style="margin: 0px; padding: 0px; color: #232d62; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;, Arial, sans-serif; font-size: 14px; letter-spacing: 1.5px; text-align: justify; caret-color: #ff0000; background-color: #fefefe; display: inline !important;">联系人：</span>{{ item.contact }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
@@ -57,7 +57,9 @@
           </section>
         </section>
         <section style="margin: 0px; padding: 0px;">
-          <img data-ratio="0.006666666666666667" src="https://ae01.alicdn.com/kf/Hfa8b280f240843e1a8f7e2fc9a22a948H.png" data-type="gif" data-w="600" style="margin: 0px; padding: 0px; max-width: 100%; width: 100%; display: block; height: auto !important;">
+          <!-- ../../../../../../assets/images/marketing/companylist4-2.png -->
+          <!-- https://ae01.alicdn.com/kf/Hfa8b280f240843e1a8f7e2fc9a22a948H.png -->
+          <img data-ratio="0.006666666666666667" :src="url" data-type="gif" data-w="600" style="margin: 0px; padding: 0px; max-width: 100%; width: 100%; display: block; height: auto !important;">
         </section>
       </section>
     </section>
@@ -70,6 +72,7 @@ export default {
   props: ['datalist', 'link'],
   data() {
     return {
+      url: this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'upload/resource/marketing/companylist1-1.gif'
     }
   },
   created() {

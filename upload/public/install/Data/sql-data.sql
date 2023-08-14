@@ -18,10 +18,12 @@ INSERT INTO `qs_ad_category` VALUES
 (27,'QS_index_a10@web','首页A10通栏广告位',1200,80,3,1,'web'),
 (28,'QS_index_a11@web','首页A11名企雇主',199,92,60,1,'web'),
 (29,'QS_index_a12@web','首页A12通栏广告位',1200,80,3,1,'web'),
-(30,'QS_index_popup@mobile','首页弹窗广告',640,960,1,1,'mobile');
+(30,'QS_index_popup@mobile','首页弹窗广告',640,960,1,1,'mobile'),
+(NULL,'QS_index_top_dropdown@web', '顶部下拉广告', '1200', '500', '1', '1', 'web'),
+(NULL,'QS_index_popup@web', '首页弹窗广告位', '660', '280', '1', '1', 'web');
 
 INSERT INTO `qs_admin_role` VALUES
-(1, '超级管理员', 'all','all',1,1);
+(1, '超级管理员', 'all','all',1,1,1);
 
 INSERT INTO `qs_article_category` VALUES
 (1, '招聘动态', 0, '', '', 1),
@@ -855,7 +857,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'single_job_refresh_deduce_points',0,'50','快捷消费刷新职位允许积分抵扣数',0),
 (NULL,'single_resume_download_expense_talent',0,'10','单份简历下载价格（优质简历）',0),
 (NULL,'single_resume_download_points_talent',0,'100','单份简历下载允许积分抵扣数（优质简历）',0),
-(NULL,'wechat_open',0,'1','微信对接开关',0),
+(NULL,'wechat_open',1,'1','微信对接开关',0),
 (NULL,'wechat_type',1,'1','公众号类型：1服务号 2订阅号',0),
 (NULL,'wechat_token',0,'','微信公众号token',0),
 (NULL,'wechat_appid',1,'','微信公众号appid',1),
@@ -913,7 +915,28 @@ INSERT INTO `qs_config` VALUES
 (NULL,'guide_qrcode', '1', '', '底部引导条二维码', '0'),
 (NULL,'service_ol_open', '1', '0', 'PC首页右侧在线客服', '0'),
 (NULL,'account_qqlogin_open', '1', '1', 'qq登录是否开启', '0'),
-(NULL,'wechat_login_open', '1', '1', '微信登录是否开启', '0');
+(NULL,'wechat_login_open', '1', '1', '微信登录是否开启', '0'),
+(NULL,'resume_auto_refresh', '1', '0', '个人会员登录自动刷新简历开关', '0'),
+(NULL,'audit_add_resume', '0', '0', '新注册简历审核状态 0待审核 1审核通过', '0'),
+(NULL,'hotword_display_method', '0', '0', '热门关键词显示方式', '0'), 
+(NULL,'screen_token', '0', '".randstr(16)."', '数据大屏密钥', '0'), 
+(NULL,'screen_base', '0', '0,0,0,0', '数据大屏统计基数', '0'), 
+(NULL,'screen_title', '0', '大数据平台', '数据大屏标题', '0'), 
+(NULL,'rand_click_job', '0', '0', '职位浏览数随机值', '0'), 
+(NULL,'rand_click_company', '0', '0', '企业浏览数随机值', '0'), 
+(NULL,'rand_click_resume', '0', '0', '简历浏览数随机值', '0'), 
+(NULL,'index_tpl', '1', 'def', '首页模板', '0'),
+(NULL,'audit_com_project', '1', '1', '企业认证项目', '0'), 
+(NULL, 'shortvideo_enable', '1', '1', '视频招聘-视频功能开关', '0'),
+(NULL, 'shortvideo_jobing_view_init', '0', '0', '视频招聘-视频招聘浏览量随机值', '0'),
+(NULL, 'shortvideo_finding_view_init', '0', '0', '视频招聘-视频求职浏览量随机值', '0'),
+(NULL, 'shortvideo_jobing_hot', '1', '200', '视频招聘-视频招聘浏览量热门值', '0'),
+(NULL, 'shortvideo_finding_hot', '1', '200', '视频招聘-视频求职浏览量热门值', '0'),
+(NULL, 'shortvideo_enable_setmeal', '1', '[\"1\",\"2\",\"3\",\"4\"]', '视频招聘-允许企业套餐发布', '0'),
+(NULL, 'shortvideo_new_jobing_audit', '0', '1', '视频招聘-新发布视频招聘默认审核状态', '0'),
+(NULL, 'shortvideo_edited_jobing_audit', '0', '0', '视频招聘-修改视频招聘后默认审核状态', '0'),
+(NULL, 'shortvideo_new_finding_audit', '0', '1', '视频招聘-新发布视频简历默认审核状态', '0'),
+(NULL, 'shortvideo_edited_finding_audit', '0', '0', '视频招聘-修改视频简历后默认审核状态', '0');
 
 
 INSERT INTO `qs_cron` VALUES
@@ -1001,6 +1024,7 @@ INSERT INTO `qs_help` VALUES
 (NULL, 2, '简历搜索', '', 1, '', '', 0),
 (NULL, 2, '简历管理', '', 1, '', '', 0),
 (NULL, 2, '会员服务', '', 1, '', '', 0),
+(NULL, 2, '招聘会', '', 1, '', '', 0),
 (NULL, 2, '微信招聘', '', 1, '', '', 0),
 (NULL, 2, '招聘技巧', '', 1, '', '', 0),
 (NULL, 2, '其它问题', '', 1, '', '', 0);
@@ -1075,7 +1099,8 @@ INSERT INTO `qs_mobile_index_menu` VALUES
 (NUll,'nearby','附近职位','',0,'',0,1),
 (NUll,'high_wage','高薪职位','',0,'',0,1),
 (NUll,'article','新闻资讯','',0,'',0,1),
-(NUll,'online_jobfair','网络招聘会','',0,'',0,1);
+(NUll,'online_jobfair','网络招聘会','',0,'',0,1),
+(NULL, 'shortvideo', '视频招聘', '', '0', '', '1', '1');
 
 INSERT INTO `qs_mobile_index_module` VALUES 
 (NUll,'header',1,'1'),
@@ -1153,6 +1178,7 @@ INSERT INTO `qs_page` VALUES
 (NUll,'说明页详情页','explainshow',1,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"关键词\",\"value\":\"seo_keywords\"},{\"name\":\"描述\",\"value\":\"seo_description\"}]'),
 (NULL, '网络招聘会列表', 'jobfairollist', '0', '0', '网络招聘会 - {sitename}', '', '', '[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NULL, '网络招聘会详情', 'jobfairolshow', '0', '0', '{title} - {sitename}', '{title}', '{title}', '[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');
+
 
 
 
@@ -1255,7 +1281,9 @@ INSERT INTO `qs_wechat_share` VALUES
 (NUll,'newslist','资讯列表','【招聘资讯】{sitename}资讯快报-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'newsshow','资讯详情','【招聘资讯】{title}-{sitename}','self','资讯缩略图','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'noticeshow','公告详情','【网站公告】{title}-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
-(NUll,'jobnearby','附近职位','【附近职位】{district}-这有一些家门口的工作-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
+(NUll,'jobnearby','附近职位','【附近职位】{district}-这有一些家门口的工作-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL,'online_jobfairlist','网络招聘会列表','【网络招聘会】{sitename}网络招聘会-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL,'online_jobfairshow','网络招聘会详情','【网络招聘会信息】{title}-{sitename}','self','招聘会图片','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
 
 
 INSERT INTO `qs_tweets_label` VALUES 
@@ -1284,6 +1312,7 @@ INSERT INTO `qs_tweets_label` VALUES
 
 INSERT INTO `qs_tweets_template` VALUES (NULL, '默认模板【系统】', '#nowtime# \n#sitename#', '公司： #company# \n职位： #job# \n薪资： #wage# \n工作地点： #district_cn# | #address# \n联系方式：【 #contact# 】 #telephone#\n点击链接查看详情 #joburl#', '#sitename#  #sitedir#', '1619406876', '1');
 
+
 INSERT INTO `qs_page_mobile` VALUES 
 (NULL,'首页','index',1,30,'{sitename}PHP高端人才系统(www.74cms.com)——更懂运营的地方人才招聘系统','{sitename},74cms,骑士cms,人才网站源码,php人才网程序','{sitename}CMS是基于PHP+MYSQL的免费网站管理系统，提供完善的人才招聘网站建设方案','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NULL,'职位列表页','joblist',0,0,'{jobcategory}{citycategory}{keyword}招聘列表 - {sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"搜索关键词\",\"value\":\"keyword\"},{\"name\":\"筛选职位类别\",\"value\":\"jobcategory\"},{\"name\":\"筛选地区\",\"value\":\"citycategory\"}]'),
@@ -1298,3 +1327,11 @@ INSERT INTO `qs_page_mobile` VALUES
 (NULL,'公告详情页','noticeshow',0,0,'{title} - {sitename}','{seo_keywords}','{seo_description}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"标题\",\"value\":\"title\"},{\"name\":\"资讯关键词\",\"value\":\"seo_keywords\"},{\"name\":\"资讯描述\",\"value\":\"seo_description\"}]'),
 (NULL,'网络招聘会列表','jobfairollist',0,0,'网络招聘会 - {sitename}','','','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NULL,'网络招聘会详情','jobfairolshow',0,0,'{title} - {sitename}','{title}','{title}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');
+
+INSERT INTO `qs_sv_ad_category` VALUES 
+('1', 'QS_shortvideo_jobing_top', '视频招聘页头部', '750', '250', '3', '1', 'mobile'),
+('2', 'QS_shortvideo_finding_top', '视频求职页头部', '750', '250', '3', '1', 'mobile');
+
+INSERT INTO `qs_tpl` VALUES 
+(NULL,'默认风格', 'def', 'index'),
+(NULL,'模板二', 'tpl2', 'index');

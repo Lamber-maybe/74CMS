@@ -41,6 +41,10 @@ class wxpay
             case 'wechat':
                 $return = $this->_pay_from_mobile($option);
                 break;
+            case 'app':
+                WxPayConfig::$appid = $this->config['payment_wechat_app_appid'];
+                WxPayConfig::$appsecret = $this->config['payment_wechat_app_app_appsecret'];
+                $return = $this->_pay_from_app($option);
                 break;
         }
         return $return;
@@ -147,6 +151,41 @@ class wxpay
         }
     }
     
+    /**
+     * APP支付
+     */
+    public function _pay_from_app($option)
+    {
+        $aop = new \app\common\lib\pay\wxpay\WxPayApi();
+        $wxpay = new WxPayUnifiedOrder();
+        $wxpay->SetOut_trade_no($this->order_prefix . $option['oid']); //商户订单号
+        $option['amount'] = PAY_TEST_MODE ? 0.01 : $option['amount'];
+        $wxpay->SetTotal_fee($option['amount'] * 100); //支付金额
+        $wxpay->SetTrade_type('APP'); //交易类型
+        $wxpay->SetBody($option['service_name']); //描述
+        $wxpay->SetNotify_url(
+            config('global_config.sitedomain') .
+                config('global_config.sitedir') .
+                'index/callback/wxpayNotify'
+        ); //支付通知回调地址
+
+        $response = $aop->unifiedOrder($wxpay);
+        if ($response['return_code'] == 'FAIL') {
+            $this->_error = $response['return_msg'];
+            return false;
+        }
+        $info = array();
+        $info['appid'] = $response['appid'];
+        $info['partnerid'] = $response['mch_id'];
+        // $info['package'] = "prepay_id=" . $response['prepay_id'];
+        $info['package'] = 'Sign=WXPay';
+        $info['noncestr'] = $response['nonce_str'];
+        $info['timestamp'] = time();
+        $info['prepayid'] = $response['prepay_id'];
+        $info['sign'] = $aop->MakeSign($info); //生成签名
+        //$response = $aop->getPrePayOrder($subject, $out_trade_no, $total_amount);
+        return $info;
+    }
     /*
 	验证操作(异步)
 	*/

@@ -11,6 +11,7 @@ const service = axios.create({
 })
 const store = new Vuex.Store({
   state: {
+    videoShowPlay: false,
     isHeadShow: true, // 是否显示头部
     LoginOrNot: false, // 用户是否登录
     LoginType: 0, // 用户类型-1为企业 2位个人
@@ -48,6 +49,7 @@ const store = new Vuex.Store({
     classifyResumeTag: '',
     classifyJobTag: '',
     classifyExperience: '',
+    classifyJobNature: '',
     classifyCompanyNature: '',
     classifyCompanyScale: '',
     classifyFeedback: '',
@@ -165,6 +167,8 @@ const store = new Vuex.Store({
         state.classifyResumeTag = data.data
       } else if (data.fy === 'experience') {
         state.classifyExperience = data.data
+      } else if (data.fy === 'jobNature') {
+        state.classifyJobNature = data.data
       } else if (data.fy === 'jobTag') {
         state.classifyJobTag = data.data
       } else if (data.fy === 'companyNature') {
@@ -394,7 +398,8 @@ const store = new Vuex.Store({
             'user-token': context.state.userToken,
             platform: context.state.platform
           },
-          url: api.classify + '?type=' + value
+          url: api.classify,
+          params: {type: value}
         })
           .then((res) => {
             if (parseInt(res.data.code) === 200) {

@@ -4,7 +4,7 @@
     <div class="content">
         <div class="information_detailed clearfix">
             <div class="information_detailed_left float">
-                
+
                 <div class="detailed_title_box">
                     <p class="detailed_title">{#$info.title#}</p>
                     <div class="detailed_bottom clearfix">
@@ -32,14 +32,14 @@
                 </div>
                 <div class="detailed_paging clearfix">
                     {#if condition="$prev===null"#}
-                    <a>上一篇： 没有了</a>
+                    <a class="rec">上一篇： 没有了</a>
                     {#else /#}
-                    <a href="{#$prev.link_url#}" target="_blank">上一篇： {#$prev.title#}</a>
+                    <a class="rec" href="{#$prev.link_url#}" target="_blank">上一篇： {#$prev.title#}</a>
                     {#/if#}
                     {#if condition="$next===null"#}
-                    <a>下一篇： 没有了</a>
+                    <a class="rec">下一篇： 没有了</a>
                     {#else /#}
-                    <a href="{#$next.link_url#}" target="_blank">下一篇： {#$next.title#}</a>
+                    <a class="rec" href="{#$next.link_url#}" target="_blank">下一篇： {#$next.title#}</a>
                     {#/if#}
                 </div>
             </div>
@@ -64,7 +64,7 @@
                             <span>{#:date('Y-m-d H:i')#}</span>
                         </div>
                         {#/volist#}
-                        
+
                     </div>
                 </div>
             </div>
@@ -72,25 +72,25 @@
     </div>
 </div>
 <script>
-var id = parseInt("{#$info.id#}")
-var app = new Vue({
-    el: '#app',
-    data: {
-        clickNum:0,
-        shareQrcode:''
-    },
-    created:function(){
-        this.addClick()
-        var locationUrl = "{#$info.share_url#}"
-        this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
-    },
-    methods:{
-        addClick:function(){
-            var that = this
-            httppost(qscms.apiList.articleClick,{id:id}).then(function(res){
-                that.clickNum = res.data
-            }).catch(function(){})
+    var id = parseInt("{#$info.id#}")
+    var app = new Vue({
+        el: '#app',
+        data: {
+            clickNum: 0,
+            shareQrcode: ''
         },
-    }
-})
+        created: function () {
+            this.addClick()
+            var locationUrl = "{#$info.share_url#}"
+            this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+        },
+        methods: {
+            addClick: function () {
+                var that = this
+                httppost(qscms.apiList.articleClick, { id: id }).then(function (res) {
+                    that.clickNum = res.data
+                }).catch(function () { })
+            },
+        }
+    })
 </script>

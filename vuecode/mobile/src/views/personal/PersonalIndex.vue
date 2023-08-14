@@ -90,6 +90,10 @@
       </div>
       <div class="clear"></div>
     </div>
+    <div class="video" @click="$router.push('/shortvideo/videoManage')" v-if="$store.state.config.shortvideo_enable === '1'">
+      <div class="title">太原人才网现已支持发布视频简历了！</div>
+      <div class="tisp">点击去发布，<span>求职期望、工作经验、个人特长</span>都可以哦~</div>
+    </div>
     <Ad
       v-if="ad_dataset_banner.items.length > 0"
       :dataset="ad_dataset_banner"
@@ -161,7 +165,7 @@
         <div class="tx2">完善的简历有助于您的岗位匹配</div>
         <div class="tx2">是否前往完善？</div>
         <div class="btn_wrapper">
-          <div class="btn_left">取消</div>
+          <div class="btn_left" @click="showLowPop=false">取消</div>
           <div class="btn_right" @click="handlerJump('/member/personal/resume')">继续完善</div>
           <div class="clear"></div>
         </div>
@@ -235,7 +239,7 @@ export default {
           this.showLowPop = true
           localStorage.setItem('mobile_resume_complete_notice_date', current_date)
         }
-        if (this.showLowPop === false) {
+        if (this.showLowPop === false && this.$store.state.config.resume_auto_refresh == 0) {
           let resume_refresh_notice_date = localStorage.getItem('mobile_resume_refresh_notice_date')
           if (dateCompare(resume_refresh_notice_date, current_date) != 'eq') {
             this.showRefreshPop = true
@@ -622,6 +626,31 @@ export default {
           no-repeat;
         background-size: 18px 19px;
       }
+    }
+  }
+}
+.video {
+  background: url("../../assets/images/video.png") 0 center no-repeat #f5f5f5;
+  background-size: 37px 19px;
+  border-radius: 50px;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-top: 11px;
+  margin-bottom: 11px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 42px;
+  box-sizing: border-box;
+  .title {
+    color: #1f1f1f;
+    font-size: 13px;
+  }
+  .tisp {
+    margin-top: 4px;
+    color: #666666;
+    font-size: 11px;
+    span {
+      color: #ff7f3a;
     }
   }
 }

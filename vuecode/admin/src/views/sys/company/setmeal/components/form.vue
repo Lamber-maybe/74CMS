@@ -178,6 +178,10 @@
             >
               <template slot="append">份 / 天</template>
             </el-input>
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content">0表示不允许</div>
+              <i class="el-icon-info" />
+            </el-tooltip>
           </el-form-item>
         </el-col>
       </el-row>
@@ -205,6 +209,10 @@
             >
               <template slot="append">次 / 天</template>
             </el-input>
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content">0表示不允许</div>
+              <i class="el-icon-info" />
+            </el-tooltip>
           </el-form-item>
         </el-col>
       </el-row>
@@ -233,7 +241,7 @@
             <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content">
                 0表示无折扣
-                <br>
+                <br />
                 例：七五折请填写7.5
               </div>
               <i class="el-icon-info" />
@@ -263,7 +271,7 @@
               :on-success="handleIconSuccess"
               :before-upload="beforeIconUpload"
             >
-              <img v-if="form.icon" :src="iconUrl" class="icon">
+              <img v-if="form.icon" :src="iconUrl" class="icon" />
               <i v-else class="el-icon-plus icon-uploader-icon" />
             </el-upload>
             <el-tooltip
@@ -299,9 +307,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="11">
-          &nbsp;
-        </el-col>
+        <el-col :span="11"> &nbsp; </el-col>
       </el-row>
       <el-row>
         <el-col :span="11">
@@ -480,7 +486,7 @@ export default {
             this.iconUrl = response.data.iconUrl
             this.infoLoading = false
           })
-          .catch(() => {})
+          .catch(() => { })
       } else {
         this.infoLoading = false
       }
@@ -495,7 +501,7 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -511,7 +517,7 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => { })
         } else {
           return false
         }
@@ -578,7 +584,7 @@ export default {
       }
       return true
     },
-    delIcon(){
+    delIcon() {
       this.form.icon = 0
       this.iconUrl = ''
     }
@@ -619,5 +625,8 @@ export default {
   height: 58px;
   line-height: 58px;
   text-align: center;
+}
+.el-tooltip {
+  margin-left: 4px;
 }
 </style>

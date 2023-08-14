@@ -5,6 +5,7 @@
         v-model="keyword"
         placeholder="请输入敏感词"
         class="input-with-select"
+        @keyup.enter.native="funSearchKeyword"
       >
         <el-button
           slot="append"

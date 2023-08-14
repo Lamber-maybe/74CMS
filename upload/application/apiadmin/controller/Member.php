@@ -32,21 +32,30 @@ class Member extends \app\common\controller\Backend
                 case 3:
                     $where['a.mobile'] = ['like', '%' . $keyword . '%'];
                     break;
+                case 4:
+                    if($list_type=='company'){
+                        $where['b.companyname'] = ['like', '%' . $keyword . '%'];
+                    }else if($list_type=='personal'){
+                        $where['c.fullname'] = ['like', '%' . $keyword . '%'];
+                    }
+                    break;
                 default:
                     break;
             }
         }
-        switch ($list_type) {
-            case 'company':
-                $where['a.utype'] = 1;
-                break;
-            case 'personal':
-                $where['a.utype'] = 2;
-                break;
-            default:
-                $where['a.status'] = 0;
-                break;
-        }
+        // switch ($list_type) {
+        //     case 'company':
+        //         $where['a.utype'] = 1;
+        //         $where['b.companyname'] = ['neq',''];
+        //         break;
+        //     case 'personal':
+        //         $where['a.utype'] = 2;
+        //         $where['b.fullname'] = 'not null';
+        //         break;
+        //     default:
+        //         $where['a.status'] = 0;
+        //         break;
+        // }
         if($status!=''){
             $where['a.status'] = intval($status);
         }
@@ -66,17 +75,33 @@ class Member extends \app\common\controller\Backend
             $where['a.utype'] = $utype;
         }
 
-        $total = model('Member')->alias('a')
-            ->where($where)
-            ->count();
+        $total = model('Member')->alias('a');
+        if($list_type=='company'){
+            $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')->where('a.utype',1)->where('b.companyname','neq','');
+        }else if($list_type=='personal'){
+            $total = $total->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')->where('a.utype',2)->where('c.fullname','NOT NULL');
+        }else{
+            $total = $total->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+                ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
+                ->where(function($query){
+                    $query->where('b.companyname','eq','')->whereOr('c.fullname','NULL');
+                });
+        }
+        $total = $total->where($where)->count();
         $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform';
         $list = model('Member')->alias('a');
         if($list_type=='company'){
             $field .= ',b.companyname';
-            $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT');
+            $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')->where('a.utype',1)->where('b.companyname','neq','');
         }else if($list_type=='personal'){
-            $field .= ',b.fullname';
-            $list = $list->join(config('database.prefix').'resume b','a.uid=b.uid','LEFT');
+            $field .= ',c.fullname';
+            $list = $list->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')->where('a.utype',2)->where('c.fullname','NOT NULL');
+        }else{
+            $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+                    ->join(config('database.prefix').'resume c','a.uid=c.uid','LEFT')
+                    ->where(function($query){
+                        $query->where('b.companyname','eq','')->whereOr('c.fullname','NULL');
+                    });
         }
         $list = $list->field($field)->where($where)
                 ->order($order)
@@ -565,12 +590,16 @@ class Member extends \app\common\controller\Backend
     public function actionlog()
     {
         $where = [];
+        $utype = input('get.utype/d', 0, 'intval');
         $keyword = input('get.keyword/s', '', 'trim');
         $uid = input('get.uid/d', 0, 'intval');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if ($uid > 0) {
-            $where['uid'] = $uid;
+            $where['a.uid'] = $uid;
+        }
+        if ($utype > 0) {
+            $where['a.utype'] = $utype;
         }
         if ($keyword!='') {
             $against = '';
@@ -585,18 +614,26 @@ class Member extends \app\common\controller\Backend
             } else {
                 $against = $keyword;
             }
-            $wherefulltext = " MATCH (`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
+            $wherefulltext = " MATCH (a.`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
         }else{
             $wherefulltext = '';
         }
         $total = model('MemberActionLog')
+            ->alias('a')
             ->where($where)
             ->where($wherefulltext)
             ->count();
-        $list = model('MemberActionLog')
+        $list = model('MemberActionLog')->alias('a');
+        if($utype==1){
+            $list = $list->field('a.*,b.companyname')->join(config('database.prefix').'company b','a.uid=b.uid','LEFT');
+        }
+        if($utype==2){
+            $list = $list->field('a.*,b.fullname')->join(config('database.prefix').'resume b','a.uid=b.uid','LEFT');
+        }
+        $list = $list
             ->where($where)
             ->where($wherefulltext)
-            ->order('id desc')
+            ->order('a.id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {

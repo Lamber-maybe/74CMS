@@ -1,11 +1,15 @@
 <template>
   <div class="app-container">
     <el-card class="box-card">
-      <div
-        slot="header"
-        class="clearfix"
-      >
+      <div slot="header" class="clearfix">
         <span>广告管理</span>
+        <el-link
+          href="http://doc.74cms.com/#/se/content?id=pc首页广告位分布图"
+          target="_blank"
+          style="float: right; margin: 3px 20px"
+          type="primary"
+          >查看广告位图例位置说明</el-link
+        >
       </div>
       <div class="list-search">
         <el-select
@@ -15,10 +19,7 @@
           class="list-options"
           @change="funPlatform"
         >
-          <el-option
-            label="不限平台"
-            value=""
-          />
+          <el-option label="不限平台" value="" />
           <el-option
             v-for="(item, index) in adPlatform"
             :key="index"
@@ -32,10 +33,7 @@
           class="list-options"
           @change="funSearch"
         >
-          <el-option
-            label="不限广告位"
-            value="0"
-          />
+          <el-option label="不限广告位" value="0" />
           <el-option
             v-for="(item, index) in adCategory"
             :key="index"
@@ -49,18 +47,9 @@
           class="list-options"
           @change="funSearch"
         >
-          <el-option
-            label="不限显示状态"
-            value=""
-          />
-          <el-option
-            label="显示"
-            value="1"
-          />
-          <el-option
-            label="隐藏"
-            value="0"
-          />
+          <el-option label="不限显示状态" value="" />
+          <el-option label="显示" value="1" />
+          <el-option label="隐藏" value="0" />
         </el-select>
         <el-select
           v-model="settr"
@@ -68,27 +57,16 @@
           class="list-options"
           @change="funSearch"
         >
-          <el-option
-            label="不限到期时间"
-            value=""
-          />
-          <el-option
-            label="已经到期"
-            value="1"
-          />
-          <el-option
-            label="三天内"
-            value="3"
-          />
-          <el-option
-            label="一周内"
-            value="7"
-          />
+          <el-option label="不限到期时间" value="" />
+          <el-option label="已经到期" value="1" />
+          <el-option label="三天内" value="3" />
+          <el-option label="一周内" value="7" />
         </el-select>
         <el-input
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -96,14 +74,8 @@
             placeholder="请选择"
             class="input-sel"
           >
-            <el-option
-              label="标题"
-              value="1"
-            />
-            <el-option
-              label="广告ID"
-              value="2"
-            />
+            <el-option label="标题" value="1" />
+            <el-option label="广告ID" value="2" />
           </el-select>
           <el-button
             slot="append"
@@ -121,29 +93,19 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column
-          type="selection"
-          width="42"
-        />
-        <el-table-column
-          align="center"
-          label="ID"
-          width="95"
-        >
+        <el-table-column type="selection" width="42" />
+        <el-table-column align="center" label="ID" width="95">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column
-          label="广告标题"
-          show-overflow-tooltip
-        >
+        <el-table-column label="广告标题" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-popover
-              placement="right"
-              trigger="hover"
-            >
-              <img :src="scope.row.imageurl">
+            <el-popover placement="right" trigger="hover">
+              <img
+                :src="scope.row.imageurl"
+                style="max-width: 500px; max-height: 400px"
+              />
               <span slot="reference">
                 {{ scope.row.title }}
                 <i class="el-icon-picture" />
@@ -151,18 +113,12 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column
-          label="所属平台"
-          width="150"
-        >
+        <el-table-column label="所属平台" width="150">
           <template slot-scope="scope">
             {{ scope.row.platform }}
           </template>
         </el-table-column>
-        <el-table-column
-          label="所属广告位"
-          width="150"
-        >
+        <el-table-column label="所属广告位" width="150">
           <template slot-scope="scope">
             {{ scope.row.cname }}
           </template>
@@ -192,29 +148,19 @@
             <span v-else>无限期</span>
           </template>
         </el-table-column>
-        <el-table-column
-          label="排序"
-          width="150"
-        >
+        <el-table-column label="排序" width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.sort_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          label="是否显示"
-          width="150"
-        >
+        <el-table-column label="是否显示" width="150">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
-              {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
+              {{ scope.row.is_display == 1 ? "显示" : "隐藏" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          fixed="right"
-          label="操作"
-          width="220"
-        >
+        <el-table-column fixed="right" label="操作" width="220">
           <template slot-scope="scope">
             <el-button
               size="small"
@@ -236,29 +182,18 @@
       <div class="spaceline" />
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-button
-            size="small"
-            type="primary"
-            @click="goTo"
-          >
+          <el-button size="small" type="primary" @click="goTo">
             添加广告
           </el-button>
-          <el-button
-            size="small"
-            type="danger"
-            @click="funDeleteBatch"
-          >
+          <el-button size="small" type="danger" @click="funDeleteBatch">
             删除所选
           </el-button>
         </el-col>
-        <el-col
-          :span="16"
-          style="text-align: right;"
-        >
+        <el-col :span="16" style="text-align: right">
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10,15, 20, 30, 40]"
+            :page-sizes="[10, 15, 20, 30, 40]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -396,7 +331,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     funDeleteBatch() {
       var that = this
@@ -420,7 +355,7 @@ export default {
             return true
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     handleSelectionChange(idlist) {
       this.tableIdarr = []

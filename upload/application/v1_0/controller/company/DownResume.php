@@ -70,30 +70,6 @@ class DownResume extends \app\v1_0\controller\common\Base
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
             $value['fullname'] = $value['fullname'];
-            if ($value['display_name'] == 0) {
-                if ($value['sex'] == 1) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '先生'
-                    );
-                } elseif ($value['sex'] == 2) {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '女士'
-                    );
-                } else {
-                    $value['fullname'] = cut_str(
-                        $value['fullname'],
-                        1,
-                        0,
-                        '**'
-                    );
-                }
-            }
             $value['high_quality'] = $value['high_quality'];
             $value['sex_text'] = model('Resume')->map_sex[
                 $value['sex']

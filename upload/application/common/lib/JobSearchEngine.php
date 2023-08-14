@@ -262,7 +262,6 @@ class JobSearchEngine
             // ->page($this->current_page, $this->pagesize)
             // ->select();
             ->paginate(['list_rows'=>$this->pagesize,'page'=>$this->current_page,'type'=>'\\app\\common\\lib\\Pager'],$total);
-
         $return['items'] = $list;
         $return['total'] = $total;
         $return['total_page'] =

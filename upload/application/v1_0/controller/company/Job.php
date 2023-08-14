@@ -17,7 +17,7 @@ class Job extends \app\v1_0\controller\common\Base
     {
         $enable_num = model('Job')->getEnableJobaddNum($this->userinfo->uid);
         $member_setmeal_info = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        
+
         $this->ajaxReturn(200, '获取数据成功', [
             'enable_addjob_num_total' => $member_setmeal_info['jobs_meanwhile'],
             'enable_addjob_num' => $enable_num,
@@ -58,7 +58,7 @@ class Job extends \app\v1_0\controller\common\Base
             'basic' => [
                 'uid' => $this->userinfo->uid,
                 'jobname' => input('post.basic.jobname/s', '', 'trim,badword_filter'),
-                'nature' => 1,
+                'nature' => input('post.basic.nature/d', 1, 'intval'),
                 'category1' => input('post.basic.category1/d', 0, 'intval'),
                 'category2' => input('post.basic.category2/d', 0, 'intval'),
                 'category3' => input('post.basic.category3/d', 0, 'intval'),
@@ -262,6 +262,7 @@ class Job extends \app\v1_0\controller\common\Base
             if (false === $result) {
                 throw new \Exception(model('JobContact')->getError());
             }
+            model('Company')->where('uid',$this->userinfo->uid)->setField('refreshtime',$input_data['basic']['refreshtime']);
 
             \think\Db::commit();
         } catch (\Exception $e) {
@@ -315,6 +316,31 @@ class Job extends \app\v1_0\controller\common\Base
         )
         ? $category_district_data[$basic['district']]
         : '';
+        $basic['district_text_full'] = '';
+        if($basic['district1']){
+            $basic['district_text_full'] = isset(
+                $category_district_data[$basic['district1']]
+            )
+                ? $category_district_data[$basic['district1']]
+                : '';
+        }else{
+            $basic['district_text_full'] = '';
+        }
+        
+        if($basic['district_text_full']!='' && $basic['district2']>0){
+            $basic['district_text_full'] .= isset(
+                $category_district_data[$basic['district2']]
+            )
+                ? $category_district_data[$basic['district2']]
+                : '';
+        }
+        if($basic['district_text_full']!='' && $basic['district3']>0){
+            $basic['district_text_full'] .= isset(
+                $category_district_data[$basic['district3']]
+            )
+                ? $category_district_data[$basic['district3']]
+                : '';
+        }
         $basic['category_text'] = isset($category_job_data[$basic['category']])
         ? $category_job_data[$basic['category']]
         : '';
@@ -407,7 +433,7 @@ class Job extends \app\v1_0\controller\common\Base
                 'id' => input('post.basic.id/d', 0, 'intval'),
                 'uid' => $this->userinfo->uid,
                 'jobname' => input('post.basic.jobname/s', '', 'trim,badword_filter'),
-                'nature' => 1,
+                'nature' => input('post.basic.nature/d', 1, 'intval'),
                 'category1' => input('post.basic.category1/d', 0, 'intval'),
                 'category2' => input('post.basic.category2/d', 0, 'intval'),
                 'category3' => input('post.basic.category3/d', 0, 'intval'),
@@ -591,6 +617,7 @@ class Job extends \app\v1_0\controller\common\Base
             if (false === $result) {
                 throw new \Exception(model('JobContact')->getError());
             }
+
             \think\Db::commit();
         } catch (\Exception $e) {
             \think\Db::rollBack();
@@ -705,6 +732,7 @@ class Job extends \app\v1_0\controller\common\Base
                 $value['job_status_cn'] = '发布中';
             }
             $value['refreshtime'] = daterange(time(), $value['refreshtime']);
+            $value['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['id']]);
             $list[$key] = $value;
         }
 
@@ -713,7 +741,7 @@ class Job extends \app\v1_0\controller\common\Base
         $return['enable_poster'] = $member_setmeal['enable_poster'];
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    
+
     public function total()
     {
         $type = input('get.type/d', 0, 'intval');
@@ -835,7 +863,7 @@ class Job extends \app\v1_0\controller\common\Base
                 ])
                 ->select();
         }
-        
+
         $refresh_jobid_arr = $log_arr = [];
         $timestamp = time();
         foreach ($joblist as $key => $value) {
@@ -909,6 +937,7 @@ class Job extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(500, '当前可发布职位数为0，无法恢复');
             }
         }
+        $jobinfo->uid = $this->userinfo->uid;
         $jobinfo->is_display = $is_display;
         $jobinfo->save();
         model('Job')->refreshSearch($id);
@@ -961,5 +990,14 @@ class Job extends \app\v1_0\controller\common\Base
         }
         $this->writeMemberActionLog($this->userinfo->uid,'批量删除职位【职位名称：' . implode(",",$namearr) . '】');
         $this->ajaxReturn(200, '删除成功');
+    }
+    public function getCategoryJobTemplate()
+    {
+        $pid = input('get.pid/d', 0, 'intval');
+        $list = model('CategoryJobTemplate')
+            ->where('pid', $pid)
+            ->order('id asc')
+            ->select();
+        $this->ajaxReturn(200, '获取数据成功', $list);
     }
 }

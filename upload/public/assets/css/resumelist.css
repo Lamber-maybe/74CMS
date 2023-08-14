@@ -370,8 +370,12 @@
 /*搜索蒙版*/
 .resumelist-login-layer{width:100%;height:580px;background:url(../images/224.jpg) no-repeat;background-size:100% 100%;}
 .resumelist-login-layer .tip-block{height:160px;text-align:center;font-size:22px;margin:0 auto;padding-top:140px;}
-.resumelist-login-layer .tip-block .tip-block-title p{padding-bottom:20px;}
+.resumelist-login-layer .tip-block .tip-block-title p{padding-bottom:15px;}
 .resumelist-login-layer .tip-block .tip-block-title .small{font-size:16px;color:#666;}
 .resumelist-login-layer .tip-block .tip-block-title .middle{color:#333;font-weight:bold;}
 .resumelist-login-layer .tip-block .tip-block-title .large{font-size:40px;}
 .resumelist-login-layer .tip-block .btn_inline{font-size:14px;padding:10px 24px;}
+.resumelist-login-layer .tip-block .btn_inline { font-size: 14px; padding: 10px 24px; }
+.resumelist-login-layer .tip-block .tip_block_qr { width: 130px;height: 130px;margin: 0 auto 5px; }
+.resumelist-login-layer .tip-block .tip_block_qr .tip_qr { width: 130px;height: 130px; }
+.resumelist-login-layer .tip-block .tip_qr_txt { text-align:center;font-size: 14px;color: #666;padding-bottom: 20px; }

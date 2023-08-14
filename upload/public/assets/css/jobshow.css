@@ -286,6 +286,12 @@
 	margin-bottom: 18px;
 	overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
+.post_box1_font3{
+	color: #333;
+	font-size:14px ;
+	margin-right: 17px;
+	margin-bottom: 18px;
+}
 .post_box1_local{
 	color: #333;
 	font-size: 14px;
@@ -565,6 +571,8 @@
 	color: #333333;
 	font-size: 14px;
 	border-radius: 5px;width: 760px;margin: 20px auto 30px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background: url(../images/job_show_login_bg.png);
+  background-size: 100% 100%;
 }
 .resume_contact .details_wrapper .contact_details .box_text{
 	padding-top: 34px;

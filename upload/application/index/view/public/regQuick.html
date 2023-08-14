@@ -1,0 +1,105 @@
+<div class="reg_quick_box" id="quickApp">
+  <div class="rqb_tx1">没简历怎么投职位？花30秒轻松填写简历搞定工作</div>
+  <div class="to_login_btn" @click="regQuickToLogin">立即登录</div><p class="to_login_txt">已有简历，请直接</p>
+  <div class="form_group clearfix">
+    <div class="be_label">姓名</div>
+    <div class="be_input"><el-input v-model="regQuick.fullname" placeholder="请填写姓名"></el-input></div>
+    <div class="be_ge clearfix">
+      <div :class="regQuick.sex === 1 ? 'be_gender s1 active' : 'be_gender s1'" @click="regQuick.sex = 1">男</div>
+      <div :class="regQuick.sex === 2 ? 'be_gender s2 active' : 'be_gender s2'" @click="regQuick.sex = 2">女</div>
+    </div>
+    <div class="be_label">出生日期</div>
+    <div class="be_input">
+      <el-date-picker
+        v-model="regQuick.birthday"
+        type="month"
+        format="yyyy-MM"
+        value-format="yyyy-MM"
+        placeholder="请选择出生日期">
+      </el-date-picker>
+    </div>
+    <div class="be_label">最高学历</div>
+    <div class="be_input">
+      <el-select v-model="regQuick.education" placeholder="请选择">
+        <el-option v-for="(item, index) in regQuick.optionEducation"
+                   :key="index"
+                   :label="item.name"
+                   :value="item.id"></el-option>
+      </el-select>
+    </div>
+    <div class="be_label">开始工作时间</div>
+    <div class="be_input no_job_time">
+      <el-date-picker
+        v-model="regQuick.enter_job_time"
+        type="month"
+        format="yyyy-MM"
+        value-format="yyyy-MM"
+        :disabled="regQuick.isNoJobTime"
+        placeholder="请选择开始工作时间">
+      </el-date-picker>
+      <el-checkbox :style="{'font-size': '12px'}" class="no_job_time" v-model="regQuick.isNoJobTime">无经验</el-checkbox>
+    </div>
+    <div class="be_label">期望职位</div>
+    <div class="be_input">
+      <el-cascader
+        ref="intCategory"
+        v-model="regQuick.intentionItemCategory"
+        placeholder="请选择期望职位"
+        :options="regQuick.optionCategory"
+        filterable>
+      </el-cascader>
+    </div>
+    <div class="be_label">期望地区</div>
+    <div class="be_input">
+      <el-cascader
+          ref="intDistrict"
+          v-model="regQuick.intentionItemDistrict"
+          placeholder="请选择期望地区"
+          :options="regQuick.optionDistrict"
+          :props="{ checkStrictly: true }"
+          filterable></el-cascader>
+    </div>
+    <div class="be_label">期望薪资</div>
+    <div class="be_input">
+      <el-select class="for_wage" v-model="regQuick.minwage" placeholder="请选择" @change="changeMinWage(regQuick.minwage)">
+        <el-option v-for="(item, index) in regQuick.optionMinWage"
+                   :key="index"
+                   :label="`${item}元/月`"
+                   :value="item"></el-option>
+      </el-select>
+      <div class="for_sp"> - </div>
+      <el-select class="for_wage" v-model="regQuick.maxwage" placeholder="请选择">
+        <el-option v-for="(item, index) in regQuick.optionMaxWage"
+                   :key="index"
+                   :label="`${item}元/月`"
+                   :value="item"></el-option>
+      </el-select>
+    </div>
+    <div class="be_label">求职状态</div>
+    <div class="be_input">
+      <el-select v-model="regQuick.current" placeholder="请选择求职状态"
+                 >
+        <el-option v-for="(item, index) in regQuick.optionCurrent"
+                   :key="index"
+                   :label="item.name"
+                   :value="item.id"></el-option>
+      </el-select>
+    </div>
+  </div>
+  <div class="for_sp_line"></div>
+  <div class="form_group clearfix">
+    <div class="be_label">联系电话</div>
+    <div class="be_input">
+      <el-input v-model="regQuick.mobile" placeholder="请填写联系电话"></el-input>
+      <input type="button" :class="sendSmsBtnDisabled ? 'to_get_code_btn disabled' : 'to_get_code_btn'" :value="sendSmsBtnText" @click="sendSms">
+    </div>
+    <div class="be_label">验证码</div>
+    <div class="be_input"><el-input v-model="regQuick.code" placeholder="请输入内容"></el-input></div>
+    <div class="be_label">账户密码</div>
+    <div class="be_input"><el-input type="password" v-model="regQuick.password" placeholder="请输入内容"></el-input></div>
+    <div class="be_tip">请妥善保管账户密码，下次可使用密码登录网站</div>
+  </div>
+  <div class="to_reg_group">
+    <div class="to_reg_btn" @click="doRegQuick">立即注册</div>
+  </div>
+</div>

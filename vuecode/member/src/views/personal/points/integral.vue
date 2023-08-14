@@ -39,7 +39,8 @@
         this.$store.commit('setUserPoints',{
           points:points
         })
-        this.task=task
+        this.task = task
+        this.task = this.task.filter(item => parseInt(item.points) > 0)
 			})
       .catch(() => {})
 		},
@@ -106,7 +107,7 @@
             break
         }
       }
-      
+
     }
 	}
   }

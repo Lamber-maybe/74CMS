@@ -23,6 +23,7 @@ class Marketing extends \app\common\controller\Backend
                 ->where('id', 'eq', $keyword)
                 ->whereOr('companyname', 'like', '%' . $keyword . '%')
                 ->field('id,companyname')
+                ->order('refreshtime desc')
                 ->select();
             $comid_arr = [];
             foreach ($datalist as $key => $value) {
@@ -205,7 +206,7 @@ class Marketing extends \app\common\controller\Backend
     }
     protected function companylist($condition){
         $model = $this->_parseConditionOfCompany($condition);
-        $comid_arr = $model->column('a.id');
+        $comid_arr = $model->order('a.refreshtime desc')->column('a.id');
         $list = $joblist = $jobname_arr = [];
         $class = new \app\common\lib\Wechat;
         if(!empty($comid_arr)){

@@ -1,0 +1,320 @@
+.badge {
+  padding: 36px 0 88px;
+  background: url(../../images/campus/college_info_bg.png) no-repeat top center;
+  background-size: 100%;
+}
+.badge .badge_img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: #fff;
+  margin: 0 auto;
+  position: relative;
+}
+
+.badge .badge_img img {
+  max-width: 69px;
+  max-height: 69px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.badge .school_name {
+  text-align: center;
+  color: #ffffff;
+  font-size: 20px;
+  margin-top: 19px;
+}
+
+.school_info_box {
+  background: #fff;
+  padding: 40px 21px 14px 43px;
+  border-bottom: 1px solid #ececec;
+  position: relative;
+  margin-top: -53px;
+  border-radius: 5px 5px 0 0;
+  border-bottom: 1px solid #ececec;
+}
+.school_info_box .school_info {
+  width: 860px;
+}
+
+.school_info_box .school_info .info_item {
+  width: 256px;
+  margin-bottom: 15px;
+  margin-right: 26px;
+}
+.school_info_box .code_img {
+  position: absolute;
+  top: 14px;
+  right: 21px;
+  width: 184px;
+  background: url(../../images/campus/school_code_bg.png) no-repeat bottom center;
+}
+.school_info_box .code_img .img {
+  width: 78px;
+  height: 78px;
+  background-color: #fff;
+  margin: 0 auto;
+  box-shadow: 1px -1px 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+.school_info_box .code_img .img img {
+  width: 73px;
+  height: 73px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.school_info_box .code_text {
+  text-align: center;
+  color: #919191;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 大会切换 */
+.toggles_meet_btns {
+  height: 64px;
+  line-height: 64px;
+  box-shadow: 0px 3px 3px 0px rgba(0, 0, 0, 0.05);
+  border-radius: 0 0 5px 5px;
+  margin-bottom: 23px;
+  padding: 0 10px 0 0;
+}
+
+.toggles_meet_btns .meet_btn {
+  position: relative;
+  color: #444444;
+  cursor: pointer;
+  font-size: 18px;
+}
+.toggles_meet_btns .meet_btn .btn_text {
+  margin: 0 50px;
+  display: block;
+  height: 64px;
+}
+
+.toggles_meet_btns .meet_btn .btn_text span {
+  color: #20c588;
+}
+
+.toggles_meet_btns .meet_btn .btn_text_ac {
+  color: #20c588;
+}
+
+.toggles_meet_btns .meet_btn .btn_text::after {
+  content: "";
+  width: 0;
+  height: 4px;
+  background-color: #20c588;
+  display: block;
+  position: relative;
+  bottom: 0px;
+  transition: width 0.5s;
+  margin: 0 auto;
+}
+
+.toggles_meet_btns .meet_btn .btn_text_ac::after {
+  width: 100%;
+}
+
+.article_box{
+  min-height: 300px;
+}
+
+/* 学校介绍 */
+.article_box .article_item .article_title {
+  color: #333333;
+  font-size: 30px;
+  text-align: center;
+  padding: 28px 0;
+}
+
+.article_box .article_item .article_text {
+  color: #444444;
+  font-size: 16px;
+  line-height: 45px;
+  padding-bottom: 70px;
+}
+.article_box .article_item .article_text img {
+  max-width: 1200px;
+}
+/* 宣讲会  双选会*/
+.article_box .article_item .left_box {
+  width: 869px;
+  margin-right: 23px;
+}
+
+.article_item .left_box .meet_list .ml_item {
+  width: 869px;
+  height: 110px;
+  border: 1px solid #deeee8;
+  margin-bottom: 14px;
+  padding: 28px 26px;
+  position: relative;
+  cursor: pointer;
+}
+.article_item .left_box .meet_list .ml_item::after {
+  content: "";
+  width: 3px;
+  height: 108px;
+  background-color: #20c588;
+  position: absolute;
+  left: -2px;
+  top: 0;
+  border-radius: 3px 0 0px 3px;
+  display: none;
+}
+
+.article_item .left_box .meet_list .ml_item:hover {
+  box-shadow: 0px 0px 3px 3px rgba(217, 245, 235, 1);
+}
+
+.article_item .left_box .meet_list .ml_item:hover:after {
+  display: block;
+}
+
+.article_item .left_box .meet_list .ml_item .com_name {
+  color: #00bb76;
+  font-size: 16px;
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  max-width: 690px;
+}
+.article_item .left_box .meet_list .ml_item .oth {
+  color: #777777;
+  max-width: 690px;
+  font-size: 14px;
+}
+.article_item .left_box .meet_list .ml_item .ml_btn {
+  display: block;
+  width: 84px;
+  height: 31px;
+  text-align: center;
+  line-height: 31px;
+  background-color: #20c588;
+  border-radius: 3px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  position: absolute;
+  right: 30px;
+  top: 40px;
+}
+.article_item .left_box .meet_list .ml_item .ml_btn_end {
+  background-color: #929292;
+  box-shadow: 2px 2px 3px 1px #dcdada;
+}
+
+.article_item .left_box .meet_list .ml_item .ml_btn_progress {
+  background-color: #01cf85;
+  box-shadow: 2px 2px 3px 1px #c1f3e0;
+}
+
+.article_item .left_box .meet_list .ml_item .ml_btn_start {
+  background-color: #ff976a;
+  box-shadow: 2px 2px 3px 1px #f8d2c2;
+}
+
+.article_item .right_box {
+  width: 308px;
+  background-color: #fbfbfb;
+  border-top: 1px solid #20c588;
+  padding: 0 20px;
+}
+
+.right_box .oth_meet_title{
+  color:#444444;
+  font-size: 18px;
+  padding: 20px 0;
+}
+.right_box .oth_meet_list .list_item{
+  width: 78px;
+  margin-right: 17px;
+  color:#444444 ;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 14px;
+  cursor: pointer;
+  padding-bottom: 7px;
+}
+.right_box .oth_meet_list .list_item img{
+  display: block;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+}
+
+/* 分页 */
+.paging {
+  text-align: center;
+  font-size: 0;
+  padding: 40px 0;
+}
+
+.paging .paging_min {
+  display: inline-block;
+}
+.paging .paging_min .pre_paging {
+  margin-right: 8px;
+}
+.paging .paging_min .pre_paging,
+.paging .paging_min .next_paging {
+  width: 73px;
+  height: 32px;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+}
+
+.paging .paging_min a {
+  font-size: 16px;
+  color: #13a381;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paging .paging_min .paging_more {
+  display: block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  color: #20c588;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.paging .paging_min a:hover {
+  color: #ffffff;
+  background-color: #20c588;
+}
+
+.paging .paging_min .paging_it {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 1px solid #20c588;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+}
+.paging .paging_min .paging_it_active {
+  color: #ffffff;
+  background-color: #20c588;
+}

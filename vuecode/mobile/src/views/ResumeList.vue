@@ -135,7 +135,7 @@
       image="search"
       description="没有找到对应的数据"
       style="background-color:#fff"
-      v-if="show_empty === true"
+      v-if="show_empty === true && showLayer === false"
     />
     <van-list
       v-if="dataset.length > 0"
@@ -188,6 +188,17 @@
         </div>
       </div>
     </van-list>
+    <div class="login_layer" v-if="showLayer">
+      <div class="ll_tip">注册企业会员，海量简历任你选</div>
+      <div class="ll_tip_more">登录后可查看更多简历</div>
+      <div class="ll_qr_box"><img :src="$store.state.config.wechat_qrcode" alt="" class="ll_qr"></div>
+      <div class="ll_tip_more">微信扫一扫，招聘更轻松</div>
+      <div class="ll_tip_bth">
+        <router-link to="/member/login" class="a_btn">登录</router-link>
+        <router-link to="/member/reg/company" class="a_btn blue">注册</router-link>
+      </div>
+      <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}</div>
+    </div>
     <BottomNav></BottomNav>
   </div>
 </template>
@@ -265,7 +276,9 @@ export default {
       optionEducation: [],
       optionExperience: [],
       optionResumeTag: [],
-      selectResumeTag: []
+      selectResumeTag: [],
+      // 未登录引导
+      showLayer: false
     }
   },
   watch: {
@@ -486,7 +499,9 @@ export default {
     // 地区筛选打开之后给筛选组件赋值
     openedDistrict () {
       this.$refs.dropDistrict.$children[0].$children[0].initData()
-      this.setComponentAttribute(this.$refs.dropDistrict)
+      setTimeout(() => {
+        this.setComponentAttribute(this.$refs.dropDistrict)
+      }, 300)
     },
     closedDistrict () {
       this.$refs.dropDistrict.$children[0].$children[0].handleCityOverlay()
@@ -715,6 +730,7 @@ export default {
         .then(res => {
           if (init === true) {
             this.dataset = [...res.data.items]
+            this.showLayer = parseInt(res.data.show_mask) === 1
           } else {
             this.dataset = this.dataset.concat(res.data.items)
           }
@@ -819,6 +835,30 @@ export default {
     position: relative;
     padding-bottom: 41px;
   }
+.login_layer {
+  width: 100%;padding: 40px 0;text-align: center;background: url("../assets/images/login_layer_resume_bg.jpg") 0 no-repeat;
+  background-size: 100%;
+  .ll_tip_tel {
+    font-size: 14px;color: #666;padding-top: 10px;
+  }
+  .ll_tip_bth {
+    .a_btn {
+      &.blue { background: #128bed; }
+      display: inline-block;padding: 6px 25px;background: #e33244;color: #fff;border-radius: 3px;margin: 0 10px;
+      font-size: 14px;
+    }
+  }
+  .ll_qr_box {
+    .ll_qr { width: 100px;height: 100px;border: 0; }
+    width: 100px;height: 100px;margin: 10px auto 5px;
+  }
+  .ll_tip {
+    font-size: 16px;font-weight: bold;margin-bottom: 5px;color: #333;
+  }
+  .ll_tip_more {
+    font-size: 14px;color: #666;margin-bottom: 10px;
+  }
+}
 .box_3 {
   .list {
     .tag {

@@ -1,15 +1,15 @@
 <template>
   <div>
-	<el-card>
+    <el-card>
       <company-title>企业认证</company-title>
       <el-alert
-        title="根据相关法律法规要求，企业认证需要上传企业营业执照、经办人身份证、委托书(函)三项资料"
+        :title="tip"
         type="warning"
         show-icon
         :closable="false"
       ></el-alert>
       <div class="auth_box">
-        <div class="com_title">企业名称：{{authinfo.companyname}}</div>
+        <div class="com_title">企业名称：{{ authinfo.companyname }}</div>
 
         <div class="certificate marginBottom30">
           <div class="upload_box">
@@ -18,11 +18,16 @@
             <div class="upload">
               <el-upload
                 class="avatar-uploader"
-				:show-file-list="false"  action="#" :http-request="handlerUploadLisence"
+                :show-file-list="false"
+                action="#"
+                :http-request="handlerUploadLisence"
               >
-				<img v-if="license_img!=''" class="img" :src="license_img" />
-              <i v-if="license_img==''" class="el-icon-plus avatar-uploader-icon"></i>
-              <p v-if="license_img==''" class="text">点击上传</p>
+                <img v-if="license_img != ''" class="img" :src="license_img" />
+                <i
+                  v-if="license_img == ''"
+                  class="el-icon-plus avatar-uploader-icon"
+                ></i>
+                <p v-if="license_img == ''" class="text">点击上传</p>
               </el-upload>
             </div>
           </div>
@@ -31,48 +36,81 @@
           </div>
         </div>
 
-        <div class="idcard marginBottom30">
+        <div class="idcard marginBottom30" v-if="auth_type == 1">
           <div class="margin20 upload_text">经办人身份证</div>
           <div class="upload margin20">
             <el-upload
               class="avatar-uploader"
-				:show-file-list="false"  action="#" :http-request="handlerUploadIdcardFrond"
+              :show-file-list="false"
+              action="#"
+              :http-request="handlerUploadIdcardFrond"
             >
-				<img v-if="legal_person_idcard_front_img!=''" class="img" :src="legal_person_idcard_front_img" />
-              <i v-if="legal_person_idcard_front_img==''" class="el-icon-plus avatar-uploader-icon"></i>
-              <p v-if="legal_person_idcard_front_img==''" class="text">身份证正面</p>
+              <img
+                v-if="legal_person_idcard_front_img != ''"
+                class="img"
+                :src="legal_person_idcard_front_img"
+              />
+              <i
+                v-if="legal_person_idcard_front_img == ''"
+                class="el-icon-plus avatar-uploader-icon"
+              ></i>
+              <p v-if="legal_person_idcard_front_img == ''" class="text">
+                身份证正面
+              </p>
             </el-upload>
           </div>
           <div class="upload">
             <el-upload
               class="avatar-uploader"
-				:show-file-list="false"  action="#" :http-request="handlerUploadIdcardBack"
+              :show-file-list="false"
+              action="#"
+              :http-request="handlerUploadIdcardBack"
             >
-				<img v-if="legal_person_idcard_back_img!=''" class="img" :src="legal_person_idcard_back_img" />
-              <i v-if="legal_person_idcard_back_img==''" class="el-icon-plus avatar-uploader-icon"></i>
-              <p v-if="legal_person_idcard_back_img==''" class="text">身份证背面</p>
+              <img
+                v-if="legal_person_idcard_back_img != ''"
+                class="img"
+                :src="legal_person_idcard_back_img"
+              />
+              <i
+                v-if="legal_person_idcard_back_img == ''"
+                class="el-icon-plus avatar-uploader-icon"
+              ></i>
+              <p v-if="legal_person_idcard_back_img == ''" class="text">
+                身份证背面
+              </p>
             </el-upload>
           </div>
         </div>
 
-        <div class="entrust marginBottom30">
+        <div class="entrust marginBottom30" v-if="auth_type == 1">
           <div class="upload_box">
             <div class="margin20 upload_text">委托书(函)</div>
             <div class="upload">
-              <el-upload class="avatar-uploader" :show-file-list="false"  action="#" :http-request="handlerUploadProxy">
-                <img v-if="proxy_img!=''" class="img" :src="proxy_img" />
-                <i v-if="proxy_img==''" class="el-icon-plus avatar-uploader-icon"></i>
-                <p v-if="proxy_img==''" class="text">点击上传</p>
+              <el-upload
+                class="avatar-uploader"
+                :show-file-list="false"
+                action="#"
+                :http-request="handlerUploadProxy"
+              >
+                <img v-if="proxy_img != ''" class="img" :src="proxy_img" />
+                <i
+                  v-if="proxy_img == ''"
+                  class="el-icon-plus avatar-uploader-icon"
+                ></i>
+                <p v-if="proxy_img == ''" class="text">点击上传</p>
               </el-upload>
             </div>
           </div>
           <div class="tip_text">
-            填写相关信息后盖章扫描上传委托书 <el-button type="text" @click="download">[下载模板]</el-button>
+            填写相关信息后盖章扫描上传委托书
+            <el-button type="text" @click="download">[下载模板]</el-button>
           </div>
         </div>
 
         <div>
-          <el-button type="primary" class="btn" @click="onSubmit">提交</el-button>
+          <el-button type="primary" class="btn" @click="onSubmit"
+            >提交</el-button
+          >
         </div>
       </div>
     </el-card>
@@ -85,19 +123,23 @@ import api from '@/api'
 export default {
   name: 'AuthForm',
   props: ['authinfo'],
-  data () {
+  data() {
     return {
+      auth_type: 0,
+      tip: '',
       legal_person_idcard_front: '',
       legal_person_idcard_front_img: '',
       legal_person_idcard_back: '',
-      legal_person_idcard_back_img:'',
-      proxy:'',
-      proxy_img:'',
+      legal_person_idcard_back_img: '',
+      proxy: '',
+      proxy_img: '',
       license: '',
       license_img: ''
     }
   },
-  mounted(){
+  mounted() {
+    this.auth_type = this.$store.state.config.audit_com_project
+    this.tip = this.auth_type == 1 ? "根据相关法律法规要求，企业认证需要上传企业营业执照、经办人身份证、委托书(函)三项资料" : "根据相关法律法规要求，企业认证需要上传企业营业执照"
     this.legal_person_idcard_front = this.authinfo.legal_person_idcard_front
     this.legal_person_idcard_front_img = this.authinfo.legal_person_idcard_front_img
     this.legal_person_idcard_back = this.authinfo.legal_person_idcard_back
@@ -108,96 +150,96 @@ export default {
     this.license_img = this.authinfo.license_img
   },
   methods: {
-    handlerUploadLisence(file){
+    handlerUploadLisence(file) {
       http
         .postFormData(api.uploadFile, { file: file.file })
         .then(res => {
-        if (parseInt(res.code) === 200) {
-          this.license = res.data.file_id
-          this.license_img = res.data.file_url
-          this.$message({ type: 'success', message: res.message })
-        } else {
-          this.$message.error(res.message)
-        }
+          if (parseInt(res.code) === 200) {
+            this.license = res.data.file_id
+            this.license_img = res.data.file_url
+            this.$message({ type: 'success', message: res.message })
+          } else {
+            this.$message.error(res.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-    handlerUploadIdcardFrond(file){
+    handlerUploadIdcardFrond(file) {
       http
         .postFormData(api.uploadFile, { file: file.file })
         .then(res => {
-        if (parseInt(res.code) === 200) {
-          this.legal_person_idcard_front = res.data.file_id
-          this.legal_person_idcard_front_img = res.data.file_url
-          this.$message({ type: 'success', message: res.message })
-        } else {
-          this.$message.error(res.message)
-        }
+          if (parseInt(res.code) === 200) {
+            this.legal_person_idcard_front = res.data.file_id
+            this.legal_person_idcard_front_img = res.data.file_url
+            this.$message({ type: 'success', message: res.message })
+          } else {
+            this.$message.error(res.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-    handlerUploadIdcardBack(file){
+    handlerUploadIdcardBack(file) {
       http
         .postFormData(api.uploadFile, { file: file.file })
         .then(res => {
-        if (parseInt(res.code) === 200) {
-          this.legal_person_idcard_back = res.data.file_id
-          this.legal_person_idcard_back_img = res.data.file_url
-          this.$message({ type: 'success', message: res.message })
-        } else {
-          this.$message.error(res.message)
-        }
+          if (parseInt(res.code) === 200) {
+            this.legal_person_idcard_back = res.data.file_id
+            this.legal_person_idcard_back_img = res.data.file_url
+            this.$message({ type: 'success', message: res.message })
+          } else {
+            this.$message.error(res.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-    handlerUploadProxy(file){
+    handlerUploadProxy(file) {
       http
         .postFormData(api.uploadFile, { file: file.file })
         .then(res => {
-        if (parseInt(res.code) === 200) {
-          this.proxy = res.data.file_id
-          this.proxy_img = res.data.file_url
-          this.$message({ type: 'success', message: res.message })
-        } else {
-          this.$message.error(res.message)
-        }
+          if (parseInt(res.code) === 200) {
+            this.proxy = res.data.file_id
+            this.proxy_img = res.data.file_url
+            this.$message({ type: 'success', message: res.message })
+          } else {
+            this.$message.error(res.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-	onSubmit () {
-      if (this.license=='' || this.license=='0') {
+    onSubmit() {
+      if (this.license == '' || this.license == '0') {
         this.$message.error('请上传营业执照照片')
         return false
       }
-      if (this.legal_person_idcard_front=='' || this.legal_person_idcard_front=='0') {
+      if (this.auth_type == 1 && (this.legal_person_idcard_front == '' || this.legal_person_idcard_front == '0')) {
         this.$message.error('请上传经办人身份证正面照')
         return false
       }
-      if (this.legal_person_idcard_back=='' || this.legal_person_idcard_back=='0') {
+      if (this.auth_type == 1 && (this.legal_person_idcard_back == '' || this.legal_person_idcard_back == '0')) {
         this.$message.error('请上传经办人身份证背面照')
         return false
       }
-      if (this.proxy=='' || this.proxy=='0') {
+      if (this.auth_type == 1 && (this.proxy == '' || this.proxy == '0')) {
         this.$message.error('请上传委托书(函)')
         return false
       }
       http
-        .post(api.company_auth_license, { license: this.license,legal_person_idcard_front: this.legal_person_idcard_front,legal_person_idcard_back: this.legal_person_idcard_back,proxy: this.proxy })
+        .post(api.company_auth_license, { license: this.license, legal_person_idcard_front: this.legal_person_idcard_front, legal_person_idcard_back: this.legal_person_idcard_back, proxy: this.proxy })
         .then(() => {
           this.$emit('reload')
         })
-        .catch(() => {})
+        .catch(() => { })
     },
-    download(){
-      location.href=window.global.RequestBaseUrl+api.downloadproxy
+    download() {
+      location.href = window.global.RequestBaseUrl + api.downloadproxy
     }
   }
 }
@@ -227,7 +269,7 @@ export default {
   border: 2px dashed #f3f3f3;
   cursor: pointer;
 }
-.upload .img{
+.upload .img {
   width: 152px;
   height: 152px;
 }
@@ -257,25 +299,25 @@ export default {
   padding-left: 20px;
   background: url("../../../assets/images/tips_icon.png") no-repeat left center;
 }
-.idcard{
+.idcard {
   display: flex;
 }
-.entrust{
+.entrust {
   // display: flex;
 }
-.margin20{
+.margin20 {
   margin-right: 20px;
 }
 
-.marginBottom30{
+.marginBottom30 {
   margin-bottom: 30px;
 }
 
-.upload_text{
+.upload_text {
   width: 90px;
   text-align: right;
 }
-.btn{
+.btn {
   width: 260px;
   height: 42px;
   margin-left: 107px;

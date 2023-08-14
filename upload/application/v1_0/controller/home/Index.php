@@ -95,12 +95,7 @@ class Index extends \app\v1_0\controller\common\Base
      */
     protected function getHotword()
     {
-        $list = model('Hotword')
-            ->field('word,hot')
-            ->order('hot desc')
-            ->limit(16)
-            ->select();
-        return $list;
+        return model('Hotword')->getList(16);
     }
     /**
      * 名企

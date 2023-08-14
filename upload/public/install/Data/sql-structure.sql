@@ -46,6 +46,7 @@ CREATE TABLE `qs_admin` (
   `last_login_ip` varchar(30) NOT NULL,
   `last_login_ipaddress` varchar(30) NOT NULL,
   `openid` varchar(50) NOT NULL DEFAULT '',
+  `is_sc` tinyint(3) NOT NULL DEFAULT 0 COMMENT '是否是销售',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin||-_-||
@@ -73,6 +74,7 @@ CREATE TABLE `qs_admin_role` (
   `access_mobile` text NOT NULL,
   `access_export` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `access_delete` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `access_set_service` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin_role||-_-||
@@ -217,10 +219,10 @@ CREATE TABLE `qs_company` (
   `map_lng` decimal(9,6) NOT NULL,
   `map_zoom` tinyint(1) unsigned NOT NULL,
   `audit` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `audit_complete` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `logo` int(10) unsigned NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `refreshtime` int(10) unsigned NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL COMMENT '更新时间',
   `click` int(10) unsigned NOT NULL DEFAULT '1',
   `robot` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `user_status` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -774,6 +776,7 @@ CREATE TABLE `qs_job` (
   `address` varchar(200) NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `refreshtime` int(10) unsigned NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL COMMENT '更新时间',
   `setmeal_id` int(10) unsigned NOT NULL,
   `audit` tinyint(1) unsigned NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL,
@@ -924,7 +927,6 @@ CREATE TABLE `qs_job_search_rtime` (
   KEY `index_category1` (`category1`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_job_search_rtime||-_-||
-
 
 DROP TABLE IF EXISTS `qs_link`;
 CREATE TABLE `qs_link` (
@@ -1382,6 +1384,7 @@ CREATE TABLE `qs_resume` (
   `photo_img` int(10) NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `refreshtime` int(10) unsigned NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL COMMENT '更新时间',
   `current` int(10) unsigned NOT NULL,
   `click` int(10) unsigned NOT NULL DEFAULT '1',
   `tpl` varchar(30) NOT NULL,
@@ -2005,6 +2008,8 @@ CREATE TABLE `qs_identity_token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_identity_token||-_-||
 
+
+
 DROP TABLE IF EXISTS `qs_member_action_log`;
 CREATE TABLE `qs_member_action_log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2049,3 +2054,172 @@ CREATE TABLE `qs_service_ol` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_service_ol||-_-||
+
+
+DROP TABLE IF EXISTS `qs_category_job_template`;
+CREATE TABLE `qs_category_job_template` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `pid` int(10) unsigned NOT NULL COMMENT 'pid',
+  `title` varchar(30) NOT NULL COMMENT '标题',
+  `content` text NOT NULL COMMENT '内容',
+  PRIMARY KEY (`id`),
+  KEY `pid` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='职位分类描述模板表';
+||-_-||qs_category_job_template||-_-||
+
+DROP TABLE IF EXISTS `qs_admin_scan_cert`;
+CREATE TABLE `qs_admin_scan_cert` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `token` varchar(32) NOT NULL,
+  `info` text NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_admin_scan_cert||-_-||
+
+
+DROP TABLE IF EXISTS `qs_tpl`;
+CREATE TABLE `qs_tpl` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(30) NOT NULL,
+  `alias` varchar(30) NOT NULL,
+  `type` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_tpl||-_-||
+
+DROP TABLE IF EXISTS `qs_member_setmeal_open_log`;
+CREATE TABLE `qs_member_setmeal_open_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
+  `setmeal_id` int(10) unsigned NOT NULL,
+  `setmeal_name` varchar(30) NOT NULL COMMENT '套餐名称',
+  `addtime` int(10) unsigned NOT NULL,
+  `type` tinyint(1) unsigned NOT NULL COMMENT '开通方式 1注册赠送 2自主开通 3后台开通',
+  `type_cn` varchar(30) NOT NULL,
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单id',
+  `admin_username` varchar(30) NOT NULL,
+  `admin_id` int(10) unsigned NOT NULL COMMENT '管理员id',
+  PRIMARY KEY (`id`),
+  KEY `setmeal_id` (`setmeal_id`),
+  KEY `admin_id` (`admin_id`),
+  KEY `uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_member_setmeal_open_log||-_-||
+
+
+
+DROP TABLE IF EXISTS `qs_sms_blacklist`;
+CREATE TABLE `qs_sms_blacklist` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mobile` varchar(11) NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  `note` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `mobile` (`mobile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_sms_blacklist||-_-||
+
+
+DROP TABLE IF EXISTS `qs_sv_ad`;
+CREATE TABLE `qs_sv_ad` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `is_display` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+  `cid` int(10) NOT NULL COMMENT '分类id',
+  `title` varchar(100) NOT NULL COMMENT '标题',
+  `imageid` int(10) unsigned NOT NULL COMMENT '图片id',
+  `imageurl` varchar(255) NOT NULL COMMENT '图片地址',
+  `explain` varchar(255) NOT NULL COMMENT '图片文字说明 ',
+  `sort_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `starttime` int(10) unsigned NOT NULL COMMENT '开始时间',
+  `deadline` int(10) NOT NULL DEFAULT '0' COMMENT '结束时间',
+  `target` tinyint(1) unsigned NOT NULL COMMENT '跳转链接类型',
+  `link_url` varchar(255) NOT NULL COMMENT '跳转地址',
+  `inner_link` varchar(30) NOT NULL COMMENT '跳转内链地址',
+  `inner_link_params` int(10) NOT NULL COMMENT '跳转内链参数',
+  `company_id` int(10) unsigned NOT NULL COMMENT '企业id',
+  `addtime` int(10) unsigned NOT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频招聘广告表';
+||-_-||qs_sv_ad||-_-||
+
+DROP TABLE IF EXISTS `qs_sv_ad_category`;
+CREATE TABLE `qs_sv_ad_category` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `alias` varchar(50) NOT NULL COMMENT '调用名称',
+  `name` varchar(100) NOT NULL COMMENT '广告位名称',
+  `width` int(10) NOT NULL COMMENT '建议宽度',
+  `height` int(10) NOT NULL COMMENT '建议高度',
+  `ad_num` int(10) unsigned NOT NULL COMMENT '广告数量',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否是系统自带，1是，0否',
+  `platform` varchar(30) NOT NULL COMMENT '所属平台',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频招聘广告分类表';
+||-_-||qs_sv_ad_category||-_-||
+
+
+DROP TABLE IF EXISTS `qs_sv_collect`;
+CREATE TABLE `qs_sv_collect` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `vid` int(11) NOT NULL COMMENT '视频id',
+  `type` tinyint(4) NOT NULL COMMENT '视频类型,1企业,2个人',
+  `addtime` int(11) NOT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`),
+  KEY `uid_type_vid` (`uid`,`type`,`vid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='赞记录表';
+||-_-||qs_sv_collect||-_-||
+
+DROP TABLE IF EXISTS `qs_sv_company_video`;
+CREATE TABLE `qs_sv_company_video` (
+  `id` int(11) NOT NULL COMMENT 'id<10万是未审核,',
+  `is_public` tinyint(4) NOT NULL DEFAULT '2' COMMENT '1不公开，2公开',
+  `audit` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1未审核,2审核通过,3审核失败',
+  `uid` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
+  `filesize` int(11) NOT NULL DEFAULT '0' COMMENT '视频大小',
+  `fid` int(11) NOT NULL DEFAULT '0' COMMENT '文件id',
+  `view_count` int(11) NOT NULL DEFAULT '0' COMMENT '浏览量',
+  `lon` double NOT NULL DEFAULT '0' COMMENT '经度',
+  `lat` double NOT NULL DEFAULT '0' COMMENT '纬度',
+  `address` varchar(30) NOT NULL DEFAULT '' COMMENT '当前地址',
+  `like` int(11) NOT NULL DEFAULT '0' COMMENT '赞的数量',
+  `real_id` int(11) NOT NULL DEFAULT '0',
+  `reason` varchar(50) NOT NULL DEFAULT '' COMMENT '审核未通过理由',
+  `addtime` int(11) NOT NULL COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `addtime` (`addtime`),
+  KEY `view_count` (`view_count`),
+  KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='企业视频表';
+||-_-||qs_sv_company_video||-_-||
+
+
+DROP TABLE IF EXISTS `qs_sv_personal_video`;
+CREATE TABLE `qs_sv_personal_video` (
+  `id` int(11) NOT NULL COMMENT 'id<10万是未审核,',
+  `is_public` tinyint(4) NOT NULL DEFAULT '2' COMMENT '1不公开，2公开',
+  `audit` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1未审核,2审核通过,3审核失败',
+  `uid` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
+  `filesize` int(11) NOT NULL DEFAULT '0' COMMENT '视频大小',
+  `fid` int(11) NOT NULL DEFAULT '0' COMMENT '文件id',
+  `view_count` int(11) NOT NULL DEFAULT '0' COMMENT '浏览量',
+  `lon` double NOT NULL DEFAULT '0' COMMENT '经度',
+  `lat` double NOT NULL DEFAULT '0' COMMENT '纬度',
+  `address` varchar(30) NOT NULL DEFAULT '' COMMENT '当前地址',
+  `like` int(11) NOT NULL DEFAULT '0' COMMENT '赞的数量',
+  `real_id` int(11) NOT NULL DEFAULT '0',
+  `reason` varchar(50) NOT NULL DEFAULT '' COMMENT '审核未通过理由',
+  `addtime` int(11) NOT NULL COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `addtime` (`addtime`),
+  KEY `view_count` (`view_count`),
+  KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='个人视频表';
+||-_-||qs_sv_personal_video||-_-||

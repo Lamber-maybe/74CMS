@@ -6,7 +6,12 @@
       ref="form"
       label-width="100px"
     >
-    <el-alert v-show="scanNewUpload===true" title="企业logo已上传，点击页面底部保存按钮即可保存！" type="warning" style="margin-bottom:10px;"></el-alert>
+      <el-alert
+        v-show="scanNewUpload === true"
+        title="企业logo已上传，点击页面底部保存按钮即可保存！"
+        type="warning"
+        style="margin-bottom: 10px"
+      ></el-alert>
       <el-card>
         <company-title>企业资料</company-title>
         <div class="enterpriseData">基本信息</div>
@@ -17,13 +22,13 @@
             {
               required: true,
               message: '请输入公司名称',
-              trigger: 'blur'
+              trigger: 'blur',
             },
             {
               max: 60,
               message: '长度在 1 到 60 个字符',
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
         >
           <el-input
@@ -42,9 +47,9 @@
               required:
                 field_rule.basic.short_name.is_require == 1 ? true : false,
               message: '请输入' + field_rule.basic.short_name.field_cn,
-              trigger: 'blur'
+              trigger: 'blur',
             },
-            { max: 60, message: '长度在 1 到 60 个字符', trigger: 'blur' }
+            { max: 60, message: '长度在 1 到 60 个字符', trigger: 'blur' },
           ]"
           :label="field_rule.basic.short_name.field_cn"
           prop="basic.short_name"
@@ -64,8 +69,8 @@
             {
               required: true,
               message: '请选择公司性质',
-              trigger: 'change'
-            }
+              trigger: 'change',
+            },
           ]"
         >
           <el-select v-model="form.basic.nature" class="el-select_width">
@@ -85,8 +90,8 @@
             {
               required: true,
               message: '请选择公司规模',
-              trigger: 'change'
-            }
+              trigger: 'change',
+            },
           ]"
         >
           <el-select v-model="form.basic.scale" class="el-select_width">
@@ -106,8 +111,8 @@
             {
               required: true,
               message: '请选择所属行业',
-              trigger: 'change'
-            }
+              trigger: 'change',
+            },
           ]"
         >
           <el-select v-model="form.basic.trade" class="el-select_width">
@@ -124,16 +129,15 @@
           v-if="field_rule.basic.registered.is_display === 1"
           :rules="[
             {
-              required:
-                field_rule.basic.registered.is_require === 1,
+              required: field_rule.basic.registered.is_require === 1,
               message: '请输入注册资金',
-              trigger: 'blur'
+              trigger: 'blur',
             },
             {
               max: 15,
               message: '长度在 1 到 15 个字符',
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.basic.registered.field_cn"
           prop="basic.registered"
@@ -144,7 +148,7 @@
             class="input-with-select el-select_width"
           >
             <el-select
-              style="width:120px;"
+              style="width: 120px"
               slot="append"
               v-model="form.basic.currency"
               placeholder="请选择"
@@ -160,14 +164,14 @@
             {
               required: field_rule.info.website.is_require === 1,
               message: '请输入' + field_rule.info.website.field_cn,
-              trigger: 'blur'
+              trigger: 'blur',
             },
             {
               max: 50,
               message: '长度在 0 到 50 个字符',
-              trigger: 'blur'
+              trigger: 'blur',
             },
-            { validator: validateUrl, trigger: 'blur' }
+            { validator: validateUrl, trigger: 'blur' },
           ]"
           :label="field_rule.info.website.field_cn"
           prop="info.website"
@@ -185,8 +189,8 @@
             {
               required: field_rule.basic.tag.is_require == 1 ? true : false,
               message: '请选择' + field_rule.basic.tag.field_cn,
-              trigger: 'change'
-            }
+              trigger: 'change',
+            },
           ]"
           :label="field_rule.basic.tag.field_cn"
           prop="basic.tag"
@@ -219,17 +223,19 @@
               type: 'array',
               required: true,
               message: '请选择所在地区',
-              trigger: 'change'
-            }
+              trigger: 'change',
+            },
           ]"
         >
           <el-cascader
-            v-if="areaDistrict.length>0"
+            ref="cascaderAddr"
+            v-if="areaDistrict.length > 0"
             class="el_input_widht"
             v-model="form.basic.citycategory_arr"
             :options="areaDistrict"
             :show-all-levels="false"
             filterable
+            @change="setLocation"
           ></el-cascader>
           <el-input
             class="el-select_width"
@@ -245,13 +251,13 @@
               required:
                 field_rule.info.short_desc.is_require == 1 ? true : false,
               message: '请输入公司简介',
-              trigger: 'blur'
+              trigger: 'blur',
             },
             {
               max: 255,
               message: '长度在 0 到 255 个字符',
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.info.short_desc.field_cn"
           prop="info.short_desc"
@@ -270,8 +276,8 @@
             {
               required: field_rule.info.content.is_require === 1,
               message: '请输入' + field_rule.info.content.field_cn,
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.info.content.field_cn"
           prop="info.content"
@@ -281,7 +287,7 @@
             type="textarea"
             class="synopsis"
             placeholder="请介绍一下您的企业"
-            :autosize="{ minRows: 3}"
+            :autosize="{ minRows: 3 }"
           ></el-input>
         </el-form-item>
         <!-- 文件上传 -->
@@ -303,11 +309,11 @@
               <div class="codeImg">
                 <img :src="scanQrcode" />
                 <p>
-                  微信扫描二维码<br/>
+                  微信扫描二维码<br />
                   快速上传手机相册图片
                 </p>
-                  <em>&#9670;</em>
-                  <span>&#9670;</span>
+                <em>&#9670;</em>
+                <span>&#9670;</span>
               </div>
             </div>
             建议尺寸：120*120
@@ -323,13 +329,13 @@
             {
               required: true,
               message: '请输入联系人',
-              trigger: 'blur'
+              trigger: 'blur',
             },
             {
               max: 30,
               message: '长度在 1 到 30 个字符',
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
         >
           <el-input
@@ -345,9 +351,9 @@
             {
               required: true,
               message: '请输入联系手机',
-              trigger: 'blur'
+              trigger: 'blur',
             },
-            { validator: validateContactMobile, trigger: 'blur' }
+            { validator: validateContactMobile, trigger: 'blur' },
           ]"
         >
           <el-input
@@ -364,8 +370,8 @@
               required:
                 field_rule.contact.weixin.is_require == 1 ? true : false,
               message: '请输入' + field_rule.contact.weixin.field_cn,
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.contact.weixin.field_cn"
           prop="contact.weixin"
@@ -390,8 +396,8 @@
               required:
                 field_rule.contact.telephone.is_require == 1 ? true : false,
               message: '请输入' + field_rule.contact.telephone.field_cn,
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.contact.telephone.field_cn"
           prop="contact.telephone"
@@ -401,8 +407,8 @@
             class="el-select_width"
             :placeholder="
               '请输入' +
-                field_rule.contact.telephone.field_cn +
-                '(格式:区号+电话号)'
+              field_rule.contact.telephone.field_cn +
+              '(格式:区号+电话号)'
             "
           >
             ></el-input
@@ -414,9 +420,9 @@
             {
               required: field_rule.contact.email.is_require === 1,
               message: '请输入' + field_rule.contact.email.field_cn,
-              trigger: 'blur'
+              trigger: 'blur',
             },
-            { validator: validateContactEmail, trigger: 'blur' }
+            { validator: validateContactEmail, trigger: 'blur' },
           ]"
           :label="field_rule.contact.email.field_cn"
           prop="contact.email"
@@ -434,8 +440,8 @@
             {
               required: field_rule.contact.qq.is_require == 1 ? true : false,
               message: '请输入' + field_rule.contact.qq.field_cn,
-              trigger: 'blur'
-            }
+              trigger: 'blur',
+            },
           ]"
           :label="field_rule.contact.qq.field_cn"
           prop="contact.qq"
@@ -458,25 +464,42 @@
       </el-card>
     </el-form>
 
-
-    <el-dialog title="标注详情地址" :visible.sync="showMap" width="800px" height="500px" @opened="handlerMapOpened" @closed="handlerMapClose">
-        <Mapset
-          ref="mapset"
-          title="地图标注"
-          :mapLat="form.basic.map_lat"
-          :mapLng="form.basic.map_lng"
-          :mapZoom="form.basic.map_zoom"
-          :address="form.info.address"
-        ></Mapset>
+    <el-dialog
+      title="标注详情地址"
+      :visible.sync="showMap"
+      width="800px"
+      height="500px"
+      @opened="handlerMapOpened"
+      @closed="handlerMapClose"
+    >
+      <Mapset
+        ref="mapset"
+        title="地图标注"
+        :location="location"
+        :mapLat="form.basic.map_lat"
+        :mapLng="form.basic.map_lng"
+        :mapZoom="form.basic.map_zoom"
+        :address="form.info.address"
+      ></Mapset>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handlerMapClose(true)">保 存</el-button>
-        <el-button  @click="handlerMapClose">取 消</el-button>
+        <el-button type="primary" @click="handlerMapClose(true)"
+          >保 存</el-button
+        >
+        <el-button @click="handlerMapClose">取 消</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+var getCascaderObj = function (val, opt) {
+  return val.map(function (value) {
+    for (var itm of opt) {
+      if (itm.value == value) { opt = itm.children; return itm; }
+    }
+    return null;
+  });
+}
 import Mapset from '@/components/company/Mapset'
 import { validMobile, validEmail, validUrl } from "@/utils/validate";
 import http from "@/utils/http";
@@ -487,10 +510,11 @@ export default {
   },
   data() {
     return {
+      location: '',
       companynameDisabled: true,
-      scanNewUpload:false,
-      showMap:false,
-      areaDistrictKey:0,
+      scanNewUpload: false,
+      showMap: false,
+      areaDistrictKey: 0,
       logoUrl: "",
       weixin_sync_mobile: false,
       // 企业资料对象
@@ -547,9 +571,9 @@ export default {
           qq: ""
         }
       },
-      dialogVisible:false,
-      timer:'',
-      scanQrcode:''
+      dialogVisible: false,
+      timer: '',
+      scanQrcode: ''
     };
   },
   created() {
@@ -560,7 +584,7 @@ export default {
     this.$store.dispatch("getClassify", "citycategory");
     this.$store.dispatch("getClassify", "jobTag");
     this.fetchData();
-    let locationUrl = this.$store.state.config.mobile_domain + 'scan_upload?type=company_logo&access='+this.$store.state.userToken
+    let locationUrl = this.$store.state.config.mobile_domain + 'scan_upload?type=company_logo&access=' + this.$store.state.userToken
     locationUrl = encodeURIComponent(locationUrl)
     this.scanQrcode = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + locationUrl
   },
@@ -588,17 +612,25 @@ export default {
     }
   },
   methods: {
-    scanUploadResult () {
+    setLocation(e) {
+      let that = this
+      that.location = ''
+      let locationArr = getCascaderObj(e, that.areaDistrict);
+      locationArr.forEach(element => {
+        that.location += element.label
+      });
+    },
+    scanUploadResult() {
       http
-        .post(api.scan_upload_result, {type:'company_logo'})
+        .post(api.scan_upload_result, { type: 'company_logo' })
         .then(res => {
-          if(res.data!=0){
+          if (res.data != 0) {
             this.scanNewUpload = true
             this.logoUrl = res.data.file_url
             this.form.basic.logo = res.data.file_id
           }
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     validateContactMobile(rule, value, callback) {
       if (!validMobile(value)) {
@@ -647,7 +679,7 @@ export default {
             .then(res => {
               this.$message({ type: "success", message: res.message });
             })
-            .catch(() => {});
+            .catch(() => { });
         } else {
           return false;
         }
@@ -680,9 +712,9 @@ export default {
             short_name: basic.short_name,
             registered: basic.registered,
             currency: basic.currency,
-            nature: basic.nature?basic.nature:'',
-            trade: basic.trade?basic.trade:'',
-            scale: basic.scale?basic.scale:'',
+            nature: basic.nature ? basic.nature : '',
+            trade: basic.trade ? basic.trade : '',
+            scale: basic.scale ? basic.scale : '',
             district1: basic.district1,
             district2: basic.district2,
             district3: basic.district3,
@@ -690,7 +722,7 @@ export default {
             map_lng: basic.map_lng,
             map_zoom: basic.map_zoom,
             tag: basic.tag,
-            citycategory_arr:[]
+            citycategory_arr: []
           };
           this.form.info = {
             content: info.content,
@@ -719,7 +751,6 @@ export default {
           }
 
           this.field_rule = field_rule;
-          console.log(this.field_rule)
           this.logoUrl = basic.logo_src;
           if (basic.district1 != 0) {
             this.form.basic.citycategory_arr.push(basic.district1);
@@ -730,48 +761,49 @@ export default {
           if (basic.district3 != 0) {
             this.form.basic.citycategory_arr.push(basic.district3);
           }
+          this.location = basic.district_text_full
         })
-        .catch(() => {});
+        .catch(() => { });
     },
-    handlerUpload(file){
+    handlerUpload(file) {
       let fileRaw = file.file
       let filetypeArr = (fileRaw.type || "").split("/");
       let filetype = filetypeArr[1];
       let tyepArr = ['png', 'jpg', 'jpeg', 'bmp', 'gif']
-      if(-1 == tyepArr.indexOf(filetype)){
+      if (-1 == tyepArr.indexOf(filetype)) {
         this.$message.error('文件类型不支持')
         return false
       }
-      if(fileRaw.size>this.$store.state.config.fileupload_size*1024){
-        let size = this.$store.state.config.fileupload_size/1024
+      if (fileRaw.size > this.$store.state.config.fileupload_size * 1024) {
+        let size = this.$store.state.config.fileupload_size / 1024
         size = size.toFixed(1)
-        this.$message.error('文件大小超出限制，最大'+size+'mb')
+        this.$message.error('文件大小超出限制，最大' + size + 'mb')
         return false
       }
       http
         .postFormData(api.uploadFile, { file: fileRaw })
         .then(res => {
-        if (parseInt(res.code) === 200) {
-          this.form.basic.logo = res.data.file_id;
-          this.logoUrl = res.data.file_url
-          this.$message({ type: 'success', message: res.message })
-        } else {
-          this.$message.error(res.message)
-        }
+          if (parseInt(res.code) === 200) {
+            this.form.basic.logo = res.data.file_id;
+            this.logoUrl = res.data.file_url
+            this.$message({ type: 'success', message: res.message })
+          } else {
+            this.$message.error(res.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-    handlerShowMap () {
+    handlerShowMap() {
       this.showMap = true
     },
-    handlerMapOpened(){
+    handlerMapOpened() {
       this.$refs.mapset.initCB()
     },
-    handlerMapClose(setData){
+    handlerMapClose(setData) {
       this.showMap = false
-      if(setData===true){
+      if (setData === true) {
         this.form.basic.map_lat = this.$refs.mapset.mapData.lat
         this.form.basic.map_lng = this.$refs.mapset.mapData.lng
         this.form.basic.map_zoom = this.$refs.mapset.mapData.zoom
@@ -788,7 +820,7 @@ export default {
   padding-left: 27px;
   margin-left: 10px;
   font-size: 14px;
-  background: url('../../../assets/images/tagging.png') 0 center no-repeat;
+  background: url("../../../assets/images/tagging.png") 0 center no-repeat;
   cursor: pointer;
 }
 .el-form {
@@ -876,21 +908,21 @@ export default {
   color: #1787fb;
   cursor: pointer;
 }
-.Wx_upload{
+.Wx_upload {
   font-size: 13px;
   color: #4d9afc;
-  position:relative;
+  position: relative;
 }
-.Wx_upload img{
+.Wx_upload img {
   vertical-align: -2px;
 }
-.Wx_upload:hover .codeImg{
-display: block;
+.Wx_upload:hover .codeImg {
+  display: block;
 }
-.codeImg{
+.codeImg {
   // width:150px ;
   // height: 160px;
-   width:180px ;
+  width: 180px;
   height: 240px;
   border: 1px solid #eeeeee;
   position: absolute;
@@ -900,27 +932,26 @@ display: block;
   font-size: 12px;
   display: none;
 }
-.codeImg p{
+.codeImg p {
   line-height: 18px;
 }
-.codeImg img{
-   width:150px ;
-   height: 150px;
-   margin: 19px 0 10px 0;
+.codeImg img {
+  width: 150px;
+  height: 150px;
+  margin: 19px 0 10px 0;
 }
 
-
-.codeImg em,.codeImg span{
-  font-style:normal;
-  font-size:30px;
-  position:absolute;
-  left:-10px;
-  top:108px;
-  color:#efefef;
- }
-.codeImg span{
-  left:-8px;
-  color:white;
-  }
-
+.codeImg em,
+.codeImg span {
+  font-style: normal;
+  font-size: 30px;
+  position: absolute;
+  left: -10px;
+  top: 108px;
+  color: #efefef;
+}
+.codeImg span {
+  left: -8px;
+  color: white;
+}
 </style>

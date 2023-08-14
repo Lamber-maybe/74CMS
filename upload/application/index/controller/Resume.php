@@ -320,6 +320,7 @@ class Resume extends \app\index\controller\Base
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
         $return['share_url'] = config('global_config.mobile_domain').'resume/'.$return['base_info']['id'];
+        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']],$this->visitor,true);
         $this->pageHeader['title'] = $return['base_info']['fullname'].'的简历 - '.$this->pageHeader['title'];
         $this->pageHeader['keywords'] = $return['base_info']['fullname'].'的简历,'.$this->pageHeader['keywords'];
         $this->pageHeader['description'] = $return['base_info']['fullname'].'的简历,'.$this->pageHeader['description'];
@@ -354,31 +355,6 @@ class Resume extends \app\index\controller\Base
         $basic_info['uid'] = $basic['uid'];
         $basic_info['audit'] = $basic['audit'];
         $basic_info['high_quality'] = $basic['high_quality'];
-        $basic_info['fullname'] = $basic['fullname'];
-        if ($basic['display_name'] == 0) {
-            if ($basic['sex'] == 1) {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '先生'
-                );
-            } elseif ($basic['sex'] == 2) {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '女士'
-                );
-            } else {
-                $basic_info['fullname'] = cut_str(
-                    $basic['fullname'],
-                    1,
-                    0,
-                    '**'
-                );
-            }
-        }
         $basic_info['comment'] = $basic['comment'];
         $basic_info['service_tag'] = $basic['service_tag'];
         $basic_info['residence'] = $basic['residence'];
@@ -486,10 +462,14 @@ class Resume extends \app\index\controller\Base
         if(!empty($return['base_info']['intention_jobs_text'])){
             $return['base_info']['intention_jobs_text'] = array_unique($return['base_info']['intention_jobs_text']);
             $return['base_info']['intention_jobs_text'] = implode(",",$return['base_info']['intention_jobs_text']);
+        }else{
+            $return['base_info']['intention_jobs_text'] = '';
         }
         if(!empty($return['base_info']['intention_district_text'])){
             $return['base_info']['intention_district_text'] = array_unique($return['base_info']['intention_district_text']);
             $return['base_info']['intention_district_text'] = implode(",",$return['base_info']['intention_district_text']);
+        }else{
+            $return['base_info']['intention_district_text'] = '';
         }
         
         $return['intention_list'] = $intention_list;
@@ -599,6 +579,7 @@ class Resume extends \app\index\controller\Base
                 ->orderRaw('field(id,' . $rids . ')')
                 ->field($field)
                 ->select();
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->visitor);
 
             $photo_arr = $photo_id_arr = [];
             foreach ($resume as $key => $value) {
@@ -639,31 +620,7 @@ class Resume extends \app\index\controller\Base
                 $tmp_arr['id'] = $val['id'];
                 $tmp_arr['stick'] = $val['stick'];
                 $tmp_arr['high_quality'] = $val['high_quality'];
-                $tmp_arr['fullname'] = $val['fullname'];
-                if ($val['display_name'] == 0) {
-                    if ($val['sex'] == 1) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '先生'
-                        );
-                    } elseif ($val['sex'] == 2) {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '女士'
-                        );
-                    } else {
-                        $tmp_arr['fullname'] = cut_str(
-                            $val['fullname'],
-                            1,
-                            0,
-                            '**'
-                        );
-                    }
-                }
+                $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
                     : default_empty('photo');

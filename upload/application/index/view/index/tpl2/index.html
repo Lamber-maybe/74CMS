@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	{#include file="public/meta" /#}
+	{#load href="__ROOT__/assets/css/base.css" /#}
+	{#load href="__ROOT__/assets/theme/index/tpl2/css/header.css" /#}
+	{#load href="__ROOT__/assets/css/public.css" /#}
+	{#load href="__ROOT__/assets/theme/index/tpl2/css/index.css" /#}
+</head>
+
+<body>
+	{#include file="index/tpl2/header" /#}
+	<div id="app">
+		<!-- 顶部下拉广告位 -->
+		{#if condition="count($banner_list['QS_index_top_dropdown@web']) gt 0"#}
+		<div class="down_source w1200">
+			<div class="source_box">
+			<a class="img_link" {#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+				<span class="close">X</span>
+				<img src="{#$banner_list['QS_index_top_dropdown@web'][0]['image_src']#}">
+			</a>
+			</div>
+			<button disabled='true' class="source_btn">重播</button>
+		</div>
+		{#/if#}
+		<!-- 首页弹窗广告位 -->
+		{#if condition="count($banner_list['QS_index_popup@web']) gt 0"#}
+		<div class="popup_source">
+			<span class="popup_close">关闭</span>
+			<a class="popup_source_link" {#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+			<img src="{#$banner_list['QS_index_popup@web'][0]['image_src']#}" alt="">
+			</a>
+		</div>
+		{#/if#}
+		<!-- content -->
+		<div class="wrapper">
+			<div class="nav_box">
+				<div class="w1200 nav clearfix">
+					<div class="logo_box left">
+						<a class="logo_link" href="{#:url('index/index/index')#}">
+							<img src="{#$global_config.logo#}" alt="logo">
+						</a>
+					</div>
+					<?php
+						$navlist = model('Navigation')->getList();
+						foreach($navlist as $key=>$value){
+							switch($value['page']){
+								case 'job':
+									$navlist[$key]['url'] = url('index/job/index');
+									break;
+								case 'resume':
+									$navlist[$key]['url'] = url('index/resume/index');
+									break;
+								case 'company':
+									$navlist[$key]['url'] = url('index/company/index');
+									break;
+								case 'article':
+									$navlist[$key]['url'] = url('index/article/index');
+									break;
+								case 'map':
+									$navlist[$key]['url'] = url('index/map/index');
+									break;
+								case 'hrtool':
+									$navlist[$key]['url'] = url('index/hrtool/index');
+									break;
+								case 'help':
+									$navlist[$key]['url'] = url('index/help/show');
+									break;
+								case 'jobfairol':
+									$navlist[$key]['url'] = url('index/jobfairol/index');
+									break;
+								default:
+									break;
+							}
+						}
+						$navlist1 = array_slice($navlist,0,7);
+						$navlist2 = array_slice($navlist,7);
+					?>
+					<ul class="clearfix right nav_wrapper">
+						<li class="left nav_item">
+							<a class="nav_link {#if condition="$navSelTag eq 'index'"#}nav_link_active{#/if#}" href="{#:url('index/index/index')#}">网站首页</a>
+						</li>
+						<?php
+							foreach($navlist1 as $key=>$value){
+						?>
+						<li class="left nav_item">
+							<a class="nav_link <?php if($navSelTag==$value['page']){?>nav_link_active<?php }?>" href="<?php echo $value['url'];?>" target="<?php echo $value['target'];?>"><?php echo $value['title'];?></a>
+						</li>
+            			<?php }?>
+						{#if condition="count($navlist2) gt 0"#}
+						<li class="left nav_more">
+							<a class="nav_more_link">更多服务</a>
+							<div class="more_popup">
+								{#volist name="navlist2" id="vo"#}
+								<a class="popup_item" href="{#$vo.url#}" target="{#$vo.target#}">{#$vo.title#}</a>
+								{#/volist#}
+							</div>
+						</li>
+            			{#/if#}
+					</ul>
+				</div>
+
+			</div>
+			<div class="w1200">
+				<!-- 广告位 -->
+				<!--通栏-->
+				<!--a4-->
+				<div class="source_1">
+					{#volist name="banner_list['QS_index_a4@web']" id="vo"#}
+					<a class="img" {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+						<img src="{#$vo.image_src#}">
+						<div class="pcd"></div>
+					</a>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!-- 公告 -->
+				<div class="notice_box clearfix mgb10">
+					<div class="left notice_lsit  j_notice_lsit">
+						<ul class="list">
+							{#volist name="notice_list" id="vo"#}
+							<li class="list_item substring">
+								<a href="{#$vo.link_url#}" title="{#$vo.title#}" target="{#$vo.target#}"
+									class="notice_link">{#$vo.title#}</a>
+							</li>
+							{#/volist#}
+						</ul>
+					</div>
+					<div class="right more">
+						<a class="more_link" href="{#:url('index/notice/index')#}">更多</a>
+					</div>
+				</div>
+				<!-- 搜索 -->
+				<div class="search_wrapper mgb10">
+					<div class="search_box clearfix">
+						<div class="search left clearfix">
+							<div class="search_select left" v-cloak>
+								<div class="select_text">{{searchAliasCn}}</div>
+								<div class="select_popup">
+									<div class="select_item" @click="changeSearchType('joblist','找工作')">找工作</div>
+									<div class="select_item" @click="changeSearchType('companylist','找企业')">找企业</div>
+									<div class="select_item" @click="changeSearchType('resumelist','找人才')">找人才</div>
+								</div>
+							</div>
+							<div class="search_input left">
+								<input type="text" placeholder="请输入搜索关键字" v-model="keyword" @keyup.enter="handlerSearch">
+							</div>
+						</div>
+						<div class="left search_btn" @click="handlerSearch">搜 索</div>
+					</div>
+
+					<div class="hot_job_box clearfix">
+						<div class="left hot_text">热门职位：</div>
+						<div class="left hot_list">
+							{#volist name="hotword_list" id="vo"#}
+							<a class="hot_item" href="{#:url('index/job/index',['keyword'=>$vo.word])#}">{#$vo.word#}</a>
+							{#/volist#}
+						</div>
+					</div>
+				</div>
+				<!-- 登录 -->
+				<div class="box1 mgb10">
+					<div class="left box1_left">
+						<div class="index_title clearfix">
+							<div class="title_text title_bg_4 left">急聘职位</div>
+							<a class="title_more right" href="{#:url('index/job/index',['listtype'=>'emergency'])#}">更多</a>
+						</div>
+						<div class="list clearfix">
+							{#volist name="emergency_list" id="vo"#}
+							<div class="item substring left">
+								<a class="text_1 substring" target="_blank" href="{#:url('index/company/show',['id'=>$vo.company_id])#}">{#$vo.companyname#}</a>
+								<a class="text_2 substring" target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}（{#$vo.wage_text#}）</a>
+							</div>
+							{#/volist#}
+						</div>
+					</div>
+					<!-- 登录 -->
+					{#include file="index/tpl2/ajaxLogin" /#}
+				</div>
+				<!--1/6-->
+				<!--a3-->
+				<div class="source_6">
+					{#volist name="banner_list['QS_index_a3@web']" id="vo"#}
+					<div class="sou_cell">
+						<div class="igb">
+							<a {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+								<img src="{#$vo.image_src#}">
+							</a>
+						</div>
+						<div class="name substring"><a {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}"
+								target="_blank" {#/if#}>{#$vo.companyname#}</a></div>
+						{#if condition="$vo.jobnum > 0"#}
+						<div class="sou_layer">
+							<a href="{#$vo.web_link_url#}" target="_blank" class="sou_layer_box">
+								<p>{#$vo.jobnum#}个在招职位</p><span>查看详情</span>
+							</a>
+						</div>
+						{#/if#}
+					</div>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!--1/2-->
+				<!--a5-->
+				<div class="source_2">
+					{#volist name="banner_list['QS_index_a5@web']" id="vo"#}
+					<a class="img" {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+						<img src="{#$vo.image_src#}">
+						<div class="pcd"></div>
+					</a>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!--通栏-->
+				<!--a6-->
+				<div class="source_1">
+					{#volist name="banner_list['QS_index_a6@web']" id="vo"#}
+					<a class="img" {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+						<img class="lazy" src="__ROOT__/assets/theme/index/tpl2/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+						<div class="pcd"></div>
+					</a>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+
+				<!-- 行业名企 -->
+				<div class="box2 mgb10">
+					<div class="index_title clearfix">
+						<div class="title_text title_bg_1 left">行业名企</div>
+						<a class="title_more right" target="_blank" href="{#:url('index/company/index')#}">更多</a>
+					</div>
+					<div class="tab_wrapper" v-cloak>
+						<div class="tab_box clearfix">
+							{#volist name="trade_list" id="vo"#}
+							<div class="tab_item left" :class="currentTrade=='{#$vo.id#}'?'tab_active_item':''" @click="getCompanyByTrade('{#$vo.id#}')">
+								{#$vo.name#}
+							</div>
+							{#/volist#}
+						</div>
+						<div class="tab_con clearfix">
+							<a class="con_item left substring" v-for="(item,index) in companyList" :key="index" :href="item.web_link" target="_blank">{{item.companyname}}</a>
+						</div>
+					</div>
+				</div>
+				<!--1/3-->
+				<div class="source_3">
+					{#volist name="banner_list['QS_index_a8@web']" id="vo"#}
+					<div class="sou_cell">
+						<div class="sc_ab">
+							<a {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+								<img class="lazy" src="__ROOT__/assets/theme/index/tpl2/images/lazy_pre.png"
+									data-original="{#$vo.image_src#}"></a>
+							{#if condition="$vo.joblist != ''"#}
+							<div class="a2_jobs">
+								{#volist name="vo.joblist" id="job"#}
+								<div class="jn">
+									<a class="substring" href="{#:url('index/job/show',['id'=>$job.id])#}"
+										target="_blank">{#$job.jobname#}</a><i class="hot">Hot</i>
+									<div class="clear"></div>
+								</div>
+								{#/volist#}
+							</div>
+							<div class="a2_btn clearfix">
+								<a class="bt_l l" href="{#$vo.web_link_url#}" target="_blank">更多职位</a>
+								<a class="bt_l r" href="{#$vo.web_link_url#}" target="_blank">公司主页</a>
+							</div>
+							{#/if#}
+						</div>
+						<div class="pcd"></div>
+					</div>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!--1/5-->
+				<div class="source_5">
+					{#volist name="banner_list['QS_index_a9@web']" id="vo"#}
+					<div class="sou_cell">
+						<div class="sc_ab">
+							<a {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+								<img class="lazy" src="__ROOT__/assets/theme/index/tpl2/images/lazy_pre.png"
+									data-original="{#$vo.image_src#}"></a>
+							{#if condition="$vo.joblist!=''"#}
+							<div class="a2_jobs">
+								{#volist name="vo.joblist" id="job"#}
+								<div class="jn">
+									<a class="substring" href="{#:url('index/job/show',['id'=>$job.id])#}"
+										target="_blank">{#$job.jobname#}</a><i class="hot">Hot</i>
+									<div class="clear"></div>
+								</div>
+								{#/volist#}
+							</div>
+							{#/if#}
+						</div>
+						<div class="pcd"></div>
+					</div>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!--通栏-->
+				<div class="source_1">
+					{#volist name="banner_list['QS_index_a10@web']" id="vo"#}
+					<a class="img" {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+						<img class="lazy" src="__ROOT__/assets/theme/index/tpl2/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+						<div class="pcd"></div>
+					</a>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+
+				<!-- 名企直招 -->
+				<div class="box3 mgb10">
+					<div class="index_title clearfix">
+						<div class="left title_text title_bg_2">名企直招</div>
+						<div class="right title_more">更多</div>
+					</div>
+					<div>
+						<div class="clearfix box3_header box3_header_pd">
+							<div class="left head_width_1 ">职位名称</div>
+							<div class="left head_width_2 ">公司名称</div>
+							<div class="left head_width_3">工作地区</div>
+							<div class="left head_width_4 text_center">薪资待遇</div>
+							<div class="left head_width_5 text_center">发布日期</div>
+						</div>
+						<ul class="worry_list">
+							{#volist name="famous_list" id="vo"#}
+							<li class="clearfix item" onclick="javascript:window.open('{#:url('index/job/show',['id'=>$vo.id])#}')">
+								<div class="left index_box head_width_6">
+									<span class="index_text {#if condition="$i elt 5"#}index_color_{#$i#}{#/if#}">{#$i#}</span>
+								</div>
+								<div class="left head_width_1 substring">
+									<a class="color_1 mg_right font16" target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}</a>
+									<a class="color_2">{#$vo.category_text#}</a>
+								</div>
+								<div class="left head_width_2 substring">
+									<a target="_blank">{#$vo.companyname#}</a>
+								</div>
+								<div class="left head_width_3 substring">
+									{#$vo.district_text_full#}
+								</div>
+								<div class="left head_width_4 text_center substring">
+									<span class="color_1">{#$vo.wage_text#}</span>
+								</div>
+								<div class="left head_width_5 text_center substring">
+									{#if condition="$vo.stick eq '1'"#}
+									<span class="color_3">置顶</span>
+									{#else#}
+									<span class="color_2">{#$vo.refreshtime#}</span>
+									{#/if#}
+								</div>
+							</li>
+							{#/volist#}
+						</ul>
+					</div>
+				</div>
+				<!--通栏-->
+				<div class="source_1">
+					{#volist name="banner_list['QS_index_a12@web']" id="vo"#}
+					<a class="img" {#if condition="$vo.web_link_url!=''" #}href="{#$vo.web_link_url#}" target="_blank" {#/if#}>
+						<img class="lazy" src="__ROOT__/assets/theme/index/tpl2/images/lazy_pre.png" data-original="{#$vo.image_src#}">
+						<div class="pcd"></div>
+					</a>
+					{#/volist#}
+					<div class="clear"></div>
+				</div>
+				<!-- 最新职位 -->
+				<div class="box3 mgb10">
+					<div class="index_title clearfix">
+						<div class="left title_text title_bg_3">最新职位</div>
+						<div class="right title_more">更多</div>
+					</div>
+					<div>
+						<div class="clearfix box3_header">
+							<div class="left job_width_1 ">职位名称</div>
+							<div class="left job_width_2 ">公司名称</div>
+							<div class="left job_width_3 ">工作地区</div>
+							<div class="left job_width_4 text_center">薪资待遇</div>
+							<div class="left job_width_5 text_center">发布日期</div>
+						</div>
+						<ul class="worry_list">
+							{#volist name="newjob_list" id="vo"#}
+							<li class="clearfix item item_pd" onclick="javascript:window.open('{#:url('index/job/show',['id'=>$vo.id])#}')">
+								<div class="left job_width_1 substring">
+									<a class="font16" target="_blank" href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}</a>
+									<span class="new_job_img">
+										<img src="__ROOT__/assets/theme/index/tpl2/images/new_job.gif" alt="">
+									</span>
+								</div>
+								<div class="left job_width_2 substring">
+									<a>{#$vo.companyname#}</a>
+								</div>
+								<div class="left job_width_3 substring">
+									{#$vo.district_text_full#}
+								</div>
+								<div class="left job_width_4 text_center substring">
+									<span class="color_1">{#$vo.wage_text#}</span>
+								</div>
+								<div class="left job_width_5 text_center substring">
+									<span class="color_2">{#$vo.refreshtime#}</span>
+								</div>
+							</li>
+							{#/volist#}
+						</ul>
+					</div>
+				</div>
+				<!-- 搜索 -->
+				<div class="search_wrapper mgb10">
+					<div class="search_box clearfix">
+						<div class="search left clearfix">
+							<div class="search_select left" v-cloak>
+								<div class="select_text">{{searchAliasCn}}</div>
+								<div class="select_popup">
+									<div class="select_item" @click="changeSearchType('joblist','找工作')">找工作</div>
+									<div class="select_item" @click="changeSearchType('companylist','找企业')">找企业</div>
+									<div class="select_item" @click="changeSearchType('resumelist','找人才')">找人才</div>
+								</div>
+							</div>
+							<div class="search_input left">
+								<input type="text" placeholder="请输入搜索关键字" v-model="keyword" @keyup.enter="handlerSearch">
+							</div>
+						</div>
+						<div class="left search_btn" @click="handlerSearch">搜 索</div>
+					</div>
+
+					<div class="hot_job_box clearfix">
+						<div class="left hot_text">热门职位：</div>
+						<div class="left hot_list">
+							{#volist name="hotword_list" id="vo"#}
+							<a class="hot_item" href="{#:url('index/job/index',['keyword'=>$vo.word])#}">{#$vo.word#}</a>
+							{#/volist#}
+						</div>
+					</div>
+				</div>
+				<!-- 友链 -->
+				<div class="box4">
+					<div class="box4_title clearfix">
+						<div class="text_1 left">友情链接</div>
+            {#if condition="$global_config.flink_qq neq ''"#}
+						<div class="text_2 right">申请友链请加QQ <a class="text_2_link" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={#$global_config.flink_qq#}&site=在线客服&menu=yes">{#$global_config.flink_qq#}</a></div>
+            {#/if#}
+					</div>
+					<div class="box4_lsit">
+						{#volist name="flink_list" id="vo"#}
+						<a class="box4_link" target="_blank" href="{#$vo.link_url#}">{#$vo.name#}</a>
+						{#/volist#}
+					</div>
+				</div>
+			</div>
+		</div>
+		<el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
+			{#include file="captcha/picture" /#}
+		</el-dialog>
+		<!--底部未登录引导-->
+		<div class="bottom_guide" :style="showGuide===true?'display:block;':'display:none;'">
+			<div class="btg_pop"></div>
+			<div class="btg_container">
+			<div class="btg_icon"></div>
+			<p class="btg_t1">{#$global_config.guide_title#}</p><p class="btg_t2">{#$global_config.guide_content#}</p>
+			<button class="btg_btn_1" @click="handlerMemberCenter(2)">免费注册简历</button><button class="btg_btn_2" @click="handlerMemberCenter(1)">企业发布职位</button>
+			<div class="btg_icon_1"></div>
+			<div class="btg_qr_box"><img class="qr_img" :src="guideQrcode" alt=""></div>
+			<div class="btg_close" @click="showGuide=false"></div><p class="btg_t3">微信扫码 求职更简单</p>
+			</div>
+		</div>
+	</div>
+	<!-- footer -->
+	{#include file="public/footer" /#}
+	
+<script>
+function loadTencent() {
+	if (window.BMap !== undefined) {
+		return
+	}
+	var script = document.createElement('script')
+	script.type = 'text/javascript'
+	script.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
+	document.body.appendChild(script)
+}
+function loadVaptcha() {
+	if (window.BMap !== undefined) {
+		return
+	}
+	var script = document.createElement('script')
+	script.type = 'text/javascript'
+	script.src = 'https://v.vaptcha.com/v3.js'
+	document.body.appendChild(script)
+}
+var captcha_open = parseInt("{#$global_config.captcha_open#}");
+var captcha_type = "{#$global_config.captcha_type#}";
+if (captcha_open == 1) {
+	if (captcha_type == 'tencent') {
+		loadTencent()
+	} else if (captcha_type == 'vaptcha') {
+		loadVaptcha()
+	}
+}
+var app = new Vue({
+	el: '#app',
+	data: {
+		regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+		loginUtype: 0,
+		username: '',
+		password: '',
+		mobile: '',
+		code: '',
+		formUtype: 2,
+		statAfterLogin: {},
+		loginByMobile: false,
+		sendSmsBtnDisabled: false,
+		sendSmsBtnText: '获取验证码',
+		sendSmsTimer: '',
+		sendSmsInterval: 60,
+		captcha_open: 0,
+		captcha_type: '',
+		showPictureCaptcha: false,
+		captchaForm: {
+			code: ''
+		},
+		captchaRules: {
+			code: [
+				{ required: true, message: '请输入验证码', trigger: 'blur' }
+			],
+		},
+		secret_str: '',
+		catpchaSrc: '',
+		pictureCaptchaCallback: '',
+		guideQrcode: '',
+		showGuide: false,
+		keyword: '',
+		searchAlias: 'joblist',
+		searchAliasCn: '找工作',
+        scan: false,
+		account_qqlogin_open:0,
+		wechat_login_open:0,
+		wechat_open_appid:'',
+		companyList:[],
+		currentTrade:0
+	},
+	created: function () {
+		this.wechat_open_appid = "{#$global_config.wechat_open_appid#}"
+		this.wechat_login_open = parseInt("{#$global_config.wechat_login_open#}")
+		this.account_qqlogin_open = parseInt("{#$global_config.account_qqlogin_open#}")
+		this.getUserInfo()
+		this.captcha_open = captcha_open
+		this.captcha_type = captcha_type
+		var guide_qrcode = "{#$global_config.guide_qrcode#}"
+		if (guide_qrcode == '') {
+			this.guideQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
+		} else {
+			this.guideQrcode = guide_qrcode
+		}
+		this.keyword = "{#$Request.param.keyword#}"
+		// 搜索默认选中
+		var locationArr = location.pathname.split('/');
+		if (locationArr[1] === '' || locationArr[1] === 'job') {
+			this.searchAliasCn = '找工作'
+			this.searchAlias = 'joblist'
+		} else if (locationArr[1] === 'resume') {
+			this.searchAliasCn = '找人才'
+			this.searchAlias = 'resumelist'
+		} else if (locationArr[1] === 'company') {
+			this.searchAliasCn = '找企业'
+			this.searchAlias = 'companylist'
+		}
+		if (window.WxLogin === undefined) {
+			var script = document.createElement('script')
+			var head = document.getElementsByTagName('head')[0]
+			script.type = 'text/javascript'
+			script.charset = 'UTF-8'
+			script.src = 'https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js'
+			head.appendChild(script)
+		}
+		this.getCompanyByTrade(0)
+	},
+	methods: {
+		getCompanyByTrade:function(trade){
+			var that = this
+			httpget(qscms.apiList.company_list_by_trade,{trade:trade,limit:40}).then(function (res) {
+				that.companyList = res.data.items
+				that.currentTrade = res.data.trade
+			}).catch(function () { })
+		},
+		qqLogin:function(){
+			location.href = qscms.locationList.oauthQq
+		},
+		showScan: function(){
+			var that = this
+			this.scan = !this.scan
+			if(this.scan===true){
+			new window.WxLogin({
+				id:"wxlogin",
+				appid: that.wechat_open_appid,
+				scope: "snsapi_login",
+				redirect_uri: location.href,
+				state: "",
+				style: "",
+				href: "data:text/css;base64,LmxvZ2luUGFuZWx7CiAgd2lkdGg6MjgwcHg7Cn0KLmltcG93ZXJCb3ggLnFyY29kZSB7CiAgd2lkdGg6IDEyMHB4Owp9Ci5pbXBvd2VyQm94IC5pbmZvIHsKICB3aWR0aDogMjAwcHg7Cn0KLmltcG93ZXJCb3ggLnN0YXR1cyB7CiAgdGV4dC1hbGlnbjogY2VudGVyOwp9"
+			});
+			}
+		},
+		handlerMemberCenter: function (utype) {
+			if (utype == 1) {
+				location.href = qscms.locationList.indexCompany
+			} else {
+				location.href = qscms.locationList.indexPersonal
+			}
+		},
+		getUserInfo: function () {
+			var that = this
+			httpget(qscms.apiList.userinfo).then(function (res) {
+				if (res.data.login === true) {
+					that.loginUtype = res.data.userinfo.utype
+					that.getStatAfterLogin()
+					that.showGuide = false
+				} else {
+					var guide_open = "{#$global_config.guide_open#}"
+					if (guide_open == '1') {
+						that.showGuide = true
+					}
+				}
+			}).catch(function () { })
+		},
+		getStatAfterLogin: function () {
+			var that = this
+			httpget(qscms.apiList.statAfterLogin).then(function (res) {
+				that.statAfterLogin = res.data
+			}).catch(function () { })
+		},
+		// 发送验证码
+		sendSms: function () {
+			var that = this
+			if (that.sendSmsBtnDisabled === true) {
+				return false
+			}
+			if (!that.mobile) {
+				that.$message.error('请输入手机号')
+				return false
+			}
+			if (!that.regularMobile.test(that.mobile)) {
+				that.$message.error('手机号格式不正确')
+				return false
+			}
+			if (that.captcha_open == 1) {
+				if (that.captcha_type == 'tencent') {
+					var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+						that.doSendSms(res)
+					});
+					captchaWindow.show()
+				} else if (that.captcha_type == 'vaptcha') {
+					vaptcha({
+						vid: "{#$global_config.captcha_vaptcha_vid#}", // 验证单元id
+						type: "invisible", // 显示类型 隐藏式
+						scene: 0, // 场景值 默认0
+						offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
+					}).then(function (vaptchaObj) {
+						obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
+						//获取token的方式二：
+						vaptchaObj.listen("pass", function () {
+							that.doSendSms({ code: vaptchaObj.getToken() })
+						});
+						//关闭验证弹窗时触发
+						vaptchaObj.listen("close", function () {
+							//验证弹窗关闭触发
+						});
+						obj.validate();
+					});
+				} else {
+					that.showPictureCaptcha = true
+					that.pictureCaptchaCallback = 'doSendSms'
+				}
+			} else {
+				that.doSendSms(null)
+			}
+		},
+		doSendSms: function (captcha) {
+			var that = this
+			httppost(qscms.apiList.getLoginCode, { mobile: that.mobile, utype: that.formUtype, captcha: captcha }).then(function (res) {
+				that.$message({
+					type: 'success',
+					message: '验证码发送成功'
+				})
+				that.sendSmsTimer = setInterval(function () {
+					if (that.sendSmsInterval === 0) {
+						that.sendSmsBtnDisabled = false
+						that.sendSmsBtnText = '获取验证码'
+						that.sendSmsInterval = 60
+						clearInterval(that.sendSmsTimer)
+					} else {
+						that.sendSmsBtnDisabled = true
+						that.sendSmsBtnText = '重发 ' + that.sendSmsInterval + ' 秒'
+						that.sendSmsInterval--
+					}
+				}, 1000)
+			}).catch(function () { })
+		},
+		doLogin: function () {
+			var that = this
+			if (that.loginByMobile) {
+				if (!that.mobile) {
+					that.$message.error('请输入手机号')
+					return false
+				}
+				if (!that.regularMobile.test(that.mobile)) {
+					that.$message.error('手机号格式不正确')
+					return false
+				}
+				if (!that.code) {
+					that.$message.error('请输入验证码')
+					return false
+				}
+				var data = {
+					mobile: that.mobile
+				}
+				httpget(qscms.apiList.loginByCode, data).then(function (check_res) {
+					var setShow = false
+					if (check_res.data == 1) {
+						setShow = true
+					}
+					if (setShow) {
+						if (that.captcha_type == 'tencent') {
+							var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+								that.doRequestLoginByCode(res)
+							});
+							captchaWindow.show()
+						} else if (that.captcha_type == 'vaptcha') {
+							vaptcha({
+								vid: "{#$global_config.captcha_vaptcha_vid#}", // 验证单元id
+								type: "invisible", // 显示类型 隐藏式
+								scene: 0, // 场景值 默认0
+								offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
+							}).then(function (vaptchaObj) {
+								obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
+								//获取token的方式二：
+								vaptchaObj.listen("pass", function () {
+									that.doRequestLoginByCode({ code: vaptchaObj.getToken() })
+								});
+								//关闭验证弹窗时触发
+								vaptchaObj.listen("close", function () {
+									//验证弹窗关闭触发
+								});
+								obj.validate();
+							});
+						} else {
+							that.showPictureCaptcha = true
+							that.pictureCaptchaCallback = 'doRequestLoginByCode'
+						}
+					} else {
+						that.doRequestLoginByCode(null)
+					}
+				}).catch(function () { })
+
+			} else {
+				if (!that.username) {
+					that.$message.error('请输入手机号/用户名/邮箱')
+					return false
+				}
+				if (!that.password) {
+					that.$message.error('请输入密码')
+					return false
+				}
+				var data = {
+					username: that.username
+				}
+				httpget(qscms.apiList.loginByPwd, data).then(function (check_res) {
+					var setShow = false
+					if (check_res.data == 1) {
+						setShow = true
+					}
+					if (setShow) {
+						if (that.captcha_type == 'tencent') {
+							var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+								that.doRequestLoginByPwd(res)
+							});
+							captchaWindow.show()
+						} else if (that.captcha_type == 'vaptcha') {
+							vaptcha({
+								vid: "{#$global_config.captcha_vaptcha_vid#}", // 验证单元id
+								type: "invisible", // 显示类型 隐藏式
+								scene: 0, // 场景值 默认0
+								offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
+							}).then(function (vaptchaObj) {
+								obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
+								//获取token的方式二：
+								vaptchaObj.listen("pass", function () {
+									that.doRequestLoginByPwd({ code: vaptchaObj.getToken() })
+								});
+								//关闭验证弹窗时触发
+								vaptchaObj.listen("close", function () {
+									//验证弹窗关闭触发
+								});
+								obj.validate();
+							});
+						} else {
+							that.showPictureCaptcha = true
+							that.pictureCaptchaCallback = 'doRequestLoginByPwd'
+						}
+					} else {
+						that.doRequestLoginByPwd(null)
+					}
+				}).catch(function () { })
+			}
+		},
+		doRequestLoginByPwd: function (captcha) {
+			var that = this
+			var data = {
+				username: that.username,
+				password: that.password,
+				utype: that.formUtype,
+				captcha: captcha
+			}
+			httppost(qscms.apiList.loginByPwd, data).then(function (res) {
+				var visitor = {
+					utype: res.data.utype,
+					token: res.data.token,
+					mobile: res.data.mobile,
+					userIminfo: res.data.user_iminfo
+				}
+				Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
+				window.location.reload()
+			}).catch(function () { })
+		},
+		doRequestLoginByCode: function (captcha) {
+			var that = this
+			var data = {
+				mobile: that.mobile,
+				code: that.code,
+				utype: that.formUtype,
+				captcha: captcha
+			}
+			httppost(qscms.apiList.loginByCode, data).then(function (res) {
+				var visitor = {
+					utype: res.data.utype,
+					token: res.data.token,
+					mobile: res.data.mobile,
+					userIminfo: res.data.user_iminfo
+				}
+				Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
+				window.location.reload()
+			}).catch(function () { })
+		},
+		handlerCompanyJobApplyList: function () {
+			location.href = qscms.locationList.companyJobApplyList
+		},
+		handlerPersonalJobApplyList: function () {
+			location.href = qscms.locationList.personalJobApplyList
+		},
+		handlerCompanyInterviewList: function () {
+			location.href = qscms.locationList.companyInterviewList
+		},
+		handlerPersonalInterviewList: function () {
+			location.href = qscms.locationList.personalInterviewList
+		},
+		handlerCompanyViewList: function () {
+			location.href = qscms.locationList.companyViewList
+		},
+		handlerPersonalViewList: function () {
+			location.href = qscms.locationList.personalViewList
+		},
+		handlerCompanyJoblist: function () {
+			location.href = qscms.locationList.companyJoblist
+		},
+		handlerCompanyService: function () {
+			location.href = qscms.locationList.companyService
+		},
+		handlerResumeIndex: function () {
+			location.href = qscms.locationList.personalResume
+		},
+		handlerPersonalRecommend: function () {
+			location.href = qscms.locationList.recommendJob
+		},
+		handlerRefreshJob: function () {
+			var that = this
+			this.$confirm('确定刷新所有发布中的职位吗？', '系统提示', {
+				type: 'warning'
+			})
+				.then(function () {
+					httppost(qscms.apiList.companyJobRefreshBatch, {}).then(function (res) {
+						if (res.data.done === 0) {
+							that.$confirm(res.message, '系统提示', { type: 'warning' })
+								.then(function () {
+									location.href = qscms.locationList.companyJoblist
+								})
+								.catch(function () { })
+							return false
+						} else {
+							that.$message({ type: 'success', message: res.message })
+						}
+					}).catch(function () { })
+				})
+				.catch(function () { })
+		},
+		handlerRefreshResume: function () {
+			var that = this
+			httppost(qscms.apiList.resumeRefresh).then(function (res) {
+				if (parseInt(res.code) === 200) {
+					that.$message({ type: 'success', message: res.message })
+				} else {
+					that.$message.error(res.message)
+				}
+			}).catch(function () { })
+		},
+		handlerMemberCenter: function (utype) {
+			if (utype == 1) {
+				location.href = qscms.locationList.indexCompany
+			} else {
+				location.href = qscms.locationList.indexPersonal
+			}
+		},
+		handlerRegCompany: function () {
+			location.href = qscms.locationList.regCompany
+		},
+		handlerForget: function (utype) {
+			var url = qscms.locationList.forget
+			url = url.replace('1', utype)
+			location.href = url
+		},
+		handlerReg: function (utype) {
+			if (utype == 1) {
+				location.href = qscms.locationList.regCompany
+			} else {
+				location.href = qscms.locationList.regPersonal
+			}
+		},
+		changeImg: function () {
+			var that = this
+			httpget(qscms.apiList.captchaPicture, {})
+				.then(function (res) {
+					that.secret_str = res.data.secret_str
+					that.catpchaSrc = res.data.src
+				})
+				.catch(function () { })
+		},
+		pictureCaptchaOpened: function () {
+			this.changeImg()
+		},
+		submitPictureCaptcha: function () {
+			var that = this
+			that.$refs.captchaForm.validate(function (valid) {
+				if (valid) {
+					that.showPictureCaptcha = false
+					that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+				} else {
+					return false;
+				}
+			});
+		},
+		handlerSearch: function () {
+			var that = this
+			httpget(qscms.apiList.searchLocation, { alias: that.searchAlias, keyword: that.keyword }).then(function (res) {
+				location.href = res.data
+			}).catch(function () { })
+		},
+		changeSearchType: function (alias, aliasCn) {
+			this.searchAlias = alias
+			this.searchAliasCn = aliasCn
+		}
+	}
+})
+</script>
+{#load href="__ROOT__/assets/js/jquery.min.js" /#}
+{#load href="__ROOT__/assets/js/jquery.vticker-min.js" /#}
+{#load href="__ROOT__/assets/theme/index/tpl2/js/index.js" /#}
+{#load href="__ROOT__/assets/js/jquery.lazyload.js" /#}
+<script>
+
+$(document).ready(function () {
+	$(function () {
+		$("img").lazyload({ effect: "fadeIn" });
+	})
+})
+</script>
+</body>
+
+</html>
