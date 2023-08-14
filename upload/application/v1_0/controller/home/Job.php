@@ -57,6 +57,23 @@ class Job extends \app\v1_0\controller\common\Base
             ];
             $count_distance = true;
         } else {
+            $subsiteCondition = get_subsite_condition();
+            if(!empty($subsiteCondition)){
+                foreach ($subsiteCondition as $key => $value) {
+                    if($key=='district1'){
+                        $district1 = $value;
+                        break;
+                    }
+                    if($key=='district2'){
+                        $district2 = $value;
+                        break;
+                    }
+                    if($key=='district3'){
+                        $district3 = $value;
+                        break;
+                    }
+                }
+            }
             if ($district1 > 0) {
                 $params['district1'] = $district1;
             }
@@ -634,7 +651,9 @@ class Job extends \app\v1_0\controller\common\Base
             ? $job_list[0]['jobname']
             : '';
         }
+        $subsiteCondition = get_subsite_condition();
         $similar_data = [
+            'subsiteCondition'=>$subsiteCondition,
             'category1' => $jobinfo['category1'],
             'category2' => $jobinfo['category2'],
             'category3' => $jobinfo['category3'],
@@ -1429,6 +1448,7 @@ class Job extends \app\v1_0\controller\common\Base
         if (empty($famous_enterprises_setmeal)) {
             return $return;
         }
+        $subsiteCondition = get_subsite_condition('c');
         $list = model('Company')
             ->alias('c')
             ->join(
@@ -1436,7 +1456,9 @@ class Job extends \app\v1_0\controller\common\Base
                 's.uid=c.uid',
                 'LEFT'
             )
-            ->where('district1','gt',0)
+            ->where('c.is_display',1)
+            ->where('c.district1','gt',0)
+            ->where($subsiteCondition)
             ->where('s.setmeal_id', 'in', $famous_enterprises_setmeal)
             ->field('c.id,c.logo,c.companyname')
             ->order('c.refreshtime desc')

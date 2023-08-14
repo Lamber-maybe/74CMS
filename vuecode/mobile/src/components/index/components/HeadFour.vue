@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head :show_back="'false'">{{ $store.state.config.sitename }}</Head>
+    <Head :show_back="'false'" :show_sub="$store.state.config.subsite_open==1?'true':''">{{ $store.state.config.sitename }}</Head>
     <Ad
       v-if="ad_dataset_top.items.length > 0"
       :dataset="ad_dataset_top"

@@ -8,14 +8,14 @@
       :data="list"
       style="width: 100%"
     >
-      <el-table-column prop="name" label="名称" width="180" />
-      <el-table-column label="服务时长">
+      <el-table-column prop="name" label="名称" min-width="180" />
+      <el-table-column label="服务时长" min-width="80">
         <template slot-scope="scope">{{ scope.row.days }}天</template>
       </el-table-column>
-      <el-table-column label="服务价格">
+      <el-table-column label="服务价格" min-width="100">
         <template slot-scope="scope">￥{{ scope.row.expense }}</template>
       </el-table-column>
-      <el-table-column label="积分抵扣">
+      <el-table-column label="积分抵扣" min-width="150">
         <template slot-scope="scope">
           <span v-if="scope.row.enable_points_deduct == 0">不允许抵扣</span>
           <span v-if="scope.row.enable_points_deduct == 1">允许全额兑换</span>
@@ -24,26 +24,26 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="显示状态">
+      <el-table-column label="显示状态" min-width="80">
         <template slot-scope="scope">
           <el-tag :type="scope.row.is_display | colorFilter">
             {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="推荐">
+      <el-table-column label="推荐" min-width="80">
         <template slot-scope="scope">
           <el-tag :type="scope.row.recommend | colorFilter">
             {{ scope.row.recommend == 1 ? '是' : '否' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="排序">
+      <el-table-column label="排序" min-width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.sort_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="220">
+      <el-table-column fixed="right" label="操作" min-width="150">
         <template slot-scope="scope">
           <el-button
             type="primary"

@@ -12,35 +12,34 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" />
-        <el-table-column label="ID" prop="id" />
-        <el-table-column label="短码" prop="code" />
-        <el-table-column label="备注" prop="remark">
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="短码" prop="code" min-width="80" />
+        <el-table-column label="备注" prop="remark" min-width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.remark" v-html="scope.row.remark" />
             <span v-if="scope.row.remark">-</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="到期时间">
+        <el-table-column align="center" label="到期时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span v-if="!scope.row.endtime">永久</span>
             <span v-else v-html="timeFilter(scope.row.endtime)" />
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建时间">
+        <el-table-column align="center" label="创建时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ timeFilter(scope.row.addtime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建者">
+        <el-table-column align="center" label="创建者" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.admin_id" v-html="scope.row.admin_name" />
             <span v-if="scope.row.admin_id<=0">系统</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="250">
+        <el-table-column fixed="right" label="操作" min-width="320">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funEdit(scope.row)">
               编辑
@@ -149,9 +148,9 @@
 </template>
 
 <script>
+import { shorturlList, shorturlSave, shorturlDelete } from '@/api/shorturl'
 import { parseTime } from '@/utils/index'
 import QRCode from 'qrcodejs2'
-import request from '@/utils/request'
 
 export default {
   data() {
@@ -202,12 +201,14 @@ export default {
           const insertData = Object.assign({}, this.form)
           delete insertData.title
           delete insertData.show
-          request({ url: '/short_url/save', method: 'post', data: insertData })
+
+          shorturlSave(insertData)
             .then(response => {
               this.$message.success(response.message)
               this.form.show = false
               this.fetchData()
             })
+            .catch(() => {})
         }
       })
     },
@@ -245,13 +246,16 @@ export default {
         page: this.currentPage,
         pagesize: this.pagesize
       }
-      request({ url: '/short_url/lists', params }).then(response => {
-        this.list = response.data.list
-        this.listLoading = false
-        this.total = parseInt(response.data.total)
-        this.currentPage = response.data.current_page
-        this.pagesize = parseInt(response.data.pagesize)
-      })
+
+      shorturlList(params)
+        .then(response => {
+          this.list = response.data.list
+          this.listLoading = false
+          this.total = parseInt(response.data.total)
+          this.currentPage = response.data.current_page
+          this.pagesize = parseInt(response.data.pagesize)
+        })
+        .catch(() => {})
     },
     handleSizeChange(val) {
       this.pagesize = val
@@ -295,11 +299,14 @@ export default {
           const data = {
             id: [row.id]
           }
-          request({ url: '/short_url/del', method: 'post', data }).then(response => {
-            that.$message.success(response.message)
-            that.fetchData()
-            return true
-          })
+
+          shorturlDelete(data)
+            .then(response => {
+              that.$message.success(response.message)
+              that.fetchData()
+              return true
+            })
+            .catch(() => {})
         })
         .catch(() => {
         })
@@ -320,11 +327,13 @@ export default {
           const data = {
             id: that.tableIdarr
           }
-          request({ url: '/short_url/del', method: 'post', data }).then(response => {
-            that.$message.success(response.message)
-            that.fetchData()
-            return true
-          })
+          shorturlDelete(data)
+            .then(response => {
+              that.$message.success(response.message)
+              that.fetchData()
+              return true
+            })
+            .catch(() => {})
         })
         .catch(() => {
         })
@@ -341,15 +350,5 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-  .qrcode {
-    display: inline-block;
 
-    img {
-      width: 132px;
-      height: 132px;
-      background-color: #fff; //设置白色背景色
-      padding: 6px; // 利用padding的特性，挤出白边
-      box-sizing: border-box;
-    }
-  }
 </style>

@@ -71,26 +71,26 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="名称" prop="title" />
-        <el-table-column align="center" label="页面" prop="type_cn" />
-        <el-table-column align="center" label="到期时间">
+        <el-table-column label="名称" prop="title" min-width="150" />
+        <el-table-column align="center" label="页面" prop="type_cn" min-width="100" />
+        <el-table-column align="center" label="到期时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span v-if="scope.row.deadline>0">{{ scope.row.deadline | timeFilter }}</span>
             <span v-else>永久有效</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="类型" prop="platform_cn" />
-        <el-table-column align="center" label="扫码次数" prop="total_scan" />
-        <el-table-column align="center" label="关注人数" prop="total_subscribe" />
-        <el-table-column align="center" label="注册量" prop="total_reg" />
-        <el-table-column align="center" label="是否有效">
+        <el-table-column align="center" label="类型" prop="platform_cn" min-width="120" />
+        <el-table-column align="center" label="扫码次数" prop="total_scan" min-width="80" />
+        <el-table-column align="center" label="关注人数" prop="total_subscribe" min-width="80" />
+        <el-table-column align="center" label="注册量" prop="total_reg" min-width="80" />
+        <el-table-column align="center" label="是否有效" min-width="100">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.deadline>0" :type="scope.row.status|colorFilter">{{ scope.row.status==1?'有效':'已过期' }}</el-tag>
             <el-tag v-else type="success">有效</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="300">
+        <el-table-column fixed="right" label="操作" min-width="250">
           <template slot-scope="scope">
             <el-button
               size="small"

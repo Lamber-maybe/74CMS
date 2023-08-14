@@ -35,22 +35,22 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="姓名">
+        <el-table-column label="姓名" min-width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.fullname }}【uid:{{ scope.row.uid }}】</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="当前积分">
+        <el-table-column align="center" label="当前积分" min-width="150">
           <template slot-scope="scope">
             {{ scope.row.points | defaultValFilter }}
           </template>
         </el-table-column>
-        <el-table-column label="手机号">
+        <el-table-column label="手机号" min-width="120">
           <template slot-scope="scope">
             <span>{{ scope.row.mobile }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="320">
+        <el-table-column fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
               size="small"

@@ -1,6 +1,9 @@
 <template>
   <div class="public_head" v-if="$store.state.isHeadShow">
     <div :class="classname" :style="bgColor!==undefined?'background-color:'+bgColor:''">
+      <router-link class="head_substation" v-if="showSubstationName" to="/subsitelist">
+        {{ $store.state.config.subsite_info.district_text }}
+      </router-link>
       <div class="head_back" v-if="showBackArrow" @click="goBack"></div>
       <div class="substring"><slot></slot></div>
       <div
@@ -60,9 +63,11 @@ import http from '@/utils/http'
 import api from '@/api'
 export default {
   name: 'Head',
-  props: ['goback_custom', 'bg', 'show_right', 'show_back', 'bgColor'],
+  props: ['goback_custom', 'bg', 'show_right', 'show_back', 'bgColor', 'show_sub'],
   data () {
     return {
+      showSubstationName: false,
+      substationName: '总站',
       showBackArrow: true,
       name: '',
       user_link: '',
@@ -131,6 +136,7 @@ export default {
     window.addEventListener('scroll', this.scrollToTop)
     this.showRight = this.show_right !== 'false'
     this.showBackArrow = this.show_back !== 'false'
+    this.showSubstationName = this.show_sub === 'true'
   },
   created () {
     this.initWeixinPaymentOpenid()
@@ -413,6 +419,13 @@ export default {
           no-repeat;
         background-size: 15px 14.5px;
       }
+      .head_substation {
+        color: #ffffff;
+        &::after {
+          border-top: 1px solid #ffffff;
+          border-left: 1px solid #ffffff;
+        }
+      }
     }
     &.wh {
       background-color: #ffffff;
@@ -459,6 +472,31 @@ export default {
     }
     &.bt {
       border-bottom: 1px solid #ebebeb;
+    }
+    .head_substation {
+      &::after {
+        content: "";
+        position: absolute;
+        right: 1px;
+        top: 21px;
+        width: 6px;
+        height: 6px;
+        border-top: 1px solid #666666;
+        border-left: 1px solid #666666;
+        transform: rotate(-135deg);
+      }
+      position: absolute;
+      left: 0;
+      top: 0;
+      max-width: 105px;
+      height: 100%;
+      font-size: 14px;
+      font-weight: normal;
+      padding: 16px 14px;
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
+      color: #666666;
     }
     .head_back {
       &::after {

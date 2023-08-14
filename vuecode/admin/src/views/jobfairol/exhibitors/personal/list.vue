@@ -1,5 +1,11 @@
 <template>
-  <div class="app-container">
+  <div
+    v-loading.fullscreen.lock="fullscreenLoading"
+    class="app-container"
+    :element-loading-text="fullscreenLoading_text"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>参会个人</span>
@@ -124,8 +130,11 @@
         </el-table-column>
         <el-table-column align="center" prop="created_at" label="添加时间" width="150">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.jaddtime | timeFilter }}</span>
+            <span v-if="scope.row.jaddtime>0">
+              <i class="el-icon-time" />
+              <span>{{ scope.row.jaddtime | timeFilter }}</span>
+            </span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column align="right" label="操作">
@@ -289,7 +298,9 @@ export default {
         source: '',
         keyword: '',
         key_type: '1'
-      }
+      },
+      fullscreenLoading: false,
+      fullscreenLoading_text: ''
     }
   },
   created(){
@@ -460,31 +471,42 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          if (that.listLoading === true) {
-            return false
-          }
-          that.listLoading = true
-          const params = {
-            jobfair_id: that.jobfair_id,
-            settr: that.add.settr,
-            education: that.add.edu,
-            experience: that.add.exp
-          }
-          personalBatchAdd(params, 'post').then(response => {
-            if (response.code === 200) {
-              that.$message.success(response.message)
-              that.listLoading = false
-              that.dialogAddVisible = false
-              that.getExhibitors()
-              return true
-            } else {
-              that.listLoading = false
-              that.$message.error(response.message)
-              return false
-            }
-          })
+          that.fullscreenLoading_text = '正在添加数据，请稍候'
+          that.fullscreenLoading = true
+          that.dialogAddVisible = false
+          this.funAddBatchRun(1)
         })
         .catch(() => {})
+    },
+    funAddBatchRun(page){
+      const that = this
+      const params = {
+        jobfair_id: that.jobfair_id,
+        settr: that.add.settr,
+        education: that.add.edu,
+        experience: that.add.exp,
+        page: page,
+        pagesize: 100
+      }
+      personalBatchAdd(params, 'post').then(response => {
+        if (response.code === 200) {
+          if (response.data == 0){
+            that.fullscreenLoading_text = '正在添加数据，' + response.message
+            that.funAddBatchRun(parseInt(page) + 1)
+          } else {
+            that.$message.success(response.message)
+            that.fullscreenLoading = false
+            that.getExhibitors()
+            return true
+          }
+        } else {
+          that.listLoading = false
+          that.$message.error(response.message)
+          return false
+        }
+      }).catch(() => {
+        that.listLoading = false
+      })
     },
     changeOption (type) {
       if (type === 'settr') {

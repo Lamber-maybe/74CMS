@@ -2,6 +2,7 @@
   <div class="login-container" :style="serviceBg">
     <el-form
       ref="loginForm"
+      v-loading="loading"
       :model="loginForm"
       :rules="loginRules"
       class="login-form"
@@ -89,8 +90,12 @@
         <div class="code_img">
           <img v-if="qrcode != ''" :src="qrcode">
         </div>
-        <p class="tips_text">
+        <p v-if="!qrcodefaild" class="tips_text">
           请使用<span class="wx_text">微信扫描</span>二维码登录
+        </p>
+        <p v-if="qrcodefaild" class="tips_text" style="color:#F56C6C">
+          系统未配置微信,暂不支持微信扫码登录 <br>
+          请联系超级管理员完成微信必要配置并绑定管理员帐号
         </p>
       </div>
 
@@ -124,6 +129,7 @@ export default {
     }
     return {
       captchaSrc: '',
+      qrcodefaild: false,
       loginForm: {
         username: '',
         password: '',
@@ -204,7 +210,8 @@ export default {
           this.$store
             .dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
+              // this.$router.push({ path: this.redirect || '/' })
+              this.$router.push({ path: '/' })
               this.loading = false
             })
             .catch(() => {
@@ -220,8 +227,14 @@ export default {
     changeTabLogin() {
       this.isTabLogin = !this.isTabLogin
       if (!this.isTabLogin) {
+        this.loading = true
         this.scan_token = randomString()
         loginQrcode({ scan_token: this.scan_token }).then(res => {
+          this.loading = false
+          if (!res.data){
+            this.qrcodefaild = true
+            return
+          }
           this.qrcode = res.data
           this.timer = setInterval(this.funScan, 5000)
         })

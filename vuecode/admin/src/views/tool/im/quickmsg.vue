@@ -30,6 +30,7 @@
         <el-table-column
           prop="content"
           label="内容"
+          min-width="300"
         />
         <el-table-column label="会员类型">
           <template slot-scope="scope">
@@ -44,7 +45,7 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="220"
+          width="160"
         >
           <template slot-scope="scope">
             <el-button

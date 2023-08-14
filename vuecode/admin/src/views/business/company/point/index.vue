@@ -37,7 +37,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="企业名称">
+        <el-table-column label="企业名称" min-width="250">
           <template slot-scope="scope">
             <span>{{ scope.row.companyname }}【uid:{{ scope.row.uid }}】</span>
           </template>
@@ -46,13 +46,14 @@
           align="center"
           label="当前积分"
           prop="points"
+          min-width="150"
         />
-        <el-table-column label="联系人">
+        <el-table-column label="联系人" min-width="180">
           <template slot-scope="scope">
             {{ scope.row.contact }}({{ scope.row.mobile }})
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="320">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               size="small"

@@ -25,6 +25,22 @@ import http from '@/utils/http'
     },
     methods:{
         handlerSubmit (url,data,callback) {
+            if (data.payment == 'alipay' && !this.$store.state.config.account_alipay_appid) {
+                this.$alert('暂不支持支付宝付款，请选择其他付款方式', '提示', {
+                    confirmButtonText: '确定',
+                    type: 'warning',
+                    callback: () => {}
+                });
+                return false
+            }
+            if (data.payment == 'wxpay' && !this.$store.state.config.payment_wechat_appid) {
+                this.$alert('暂不支持微信付款，请选择其他付款方式', '提示', {
+                    confirmButtonText: '确定',
+                    type: 'warning',
+                    callback: () => {}
+                });
+                return false
+            }
             let that = this
             http
                 .post(url, data)

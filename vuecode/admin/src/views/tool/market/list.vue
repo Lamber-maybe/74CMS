@@ -12,21 +12,21 @@
           fit
           highlight-current-row
         >
-          <el-table-column label="任务名称" prop="title" />
-          <el-table-column align="center" label="生成时间">
+          <el-table-column label="任务名称" prop="title" min-width="150" />
+          <el-table-column align="center" label="生成时间" min-width="150">
             <template slot-scope="scope">
               <i class="el-icon-time" />
               <span>{{ scope.row.addtime | timeFilter }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="发送对象">
+          <el-table-column label="发送对象" min-width="120">
             <template slot-scope="scope">
               <span>
                 {{ scope.row.target | targetFilter }}({{ scope.row.total }})
               </span>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="内容详情">
+          <el-table-column align="center" label="内容详情" min-width="100">
             <template slot-scope="scope">
               <el-popover
                 placement="bottom"
@@ -38,12 +38,12 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column label="发送渠道">
+          <el-table-column label="发送渠道" min-width="100">
             <template slot-scope="scope">
               <span>{{ scope.row.send_type | sendTypeFilter }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="执行状态">
+          <el-table-column align="center" label="执行状态" min-width="200">
             <template slot-scope="scope">
               <span v-if="scope.row.status == 1" class="font_info">
                 已执行(成功{{ scope.row.success }}，失败{{
@@ -55,7 +55,7 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="300">
+          <el-table-column fixed="right" label="操作" min-width="160">
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.status == 0"

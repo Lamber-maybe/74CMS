@@ -44,8 +44,8 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" min-width="30" />
-        <el-table-column label="举报对象" min-width="200">
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="举报对象" min-width="180">
           <template slot-scope="scope">
             <el-link :href="scope.row.link" target="_blank" type="primary">
               {{ scope.row.target }}
@@ -59,17 +59,17 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="举报原因" min-width="250">
+        <el-table-column label="举报原因" min-width="220">
           <template slot-scope="scope">
             {{ scope.row.reason_cn }}
           </template>
         </el-table-column>
-        <el-table-column label="举报内容" show-overflow-tooltip>
+        <el-table-column label="举报内容" show-overflow-tooltip min-width="250">
           <template slot-scope="scope">
             <span>{{ scope.row.content }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="举报者" min-width="200">
+        <el-table-column label="举报者" min-width="210">
           <template slot-scope="scope">
             {{ scope.row.mobile }} 【uid：{{ scope.row.uid }}】
           </template>
@@ -78,14 +78,14 @@
           align="center"
           prop="addtime"
           label="举报时间"
-          min-width="200"
+          min-width="160"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="220">
+        <el-table-column fixed="right" label="操作" min-width="60">
           <template slot-scope="scope">
             <el-button
               size="small"

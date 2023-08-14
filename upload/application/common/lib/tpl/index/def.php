@@ -52,10 +52,13 @@ class def
     protected function getEventList(){
         //发布职位（包含刷新职位）
         $list1 = model('JobSearchRtime')->alias('a')->join(config('database.prefix').'job b','a.id=b.id','LEFT')->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')->where('c.id','not null')->order('a.refreshtime desc')->limit(15)->column('a.refreshtime,a.id,a.company_id,b.jobname,c.companyname','a.id');
+        
         //申请职位
         $list2 = model('JobApply')->alias('a')->join(config('database.prefix').'resume b','a.resume_id=b.id','LEFT')->order('a.id desc')->limit(15)->column('a.addtime,a.resume_id,a.jobid,a.jobname,b.fullname,b.sex,b.display_name','a.id');
+        
         //刷新简历
-        $list3 = model('ResumeSearchRtime')->alias('a')->join(config('database.prefix').'resume b','a.id=b.id','LEFT')->order('a.refreshtime desc')->where('addtime','egt',strtotime('-1 hour'))->limit(15)->column('a.refreshtime,a.id,b.fullname,b.sex,b.display_name','a.id');
+        $list3 = model('ResumeSearchRtime')->alias('a')->join(config('database.prefix').'resume b','a.id=b.id','LEFT')->where('addtime','egt',strtotime('-1 hour'))->order('a.refreshtime desc')->limit(15)->column('a.refreshtime,a.id,b.fullname,b.sex,b.display_name','a.id');
+
         $list = [];
         foreach ($list1 as $key => $value) {
             $arr = [];
@@ -158,13 +161,17 @@ class def
      * 今日更新
      */
     protected function getNewTodayList(){
+        $subsiteCondition = get_subsite_condition('a');
         $companyList = model('Company')->alias('a')
                     ->join(config('database.prefix').'job_search_rtime b','a.uid=b.uid','LEFT')
+                    ->where($subsiteCondition)
+                    ->where('a.is_display',1)
                     ->where('b.id','not null')
                     ->order('a.refreshtime desc')
                     ->limit(9)
                     ->distinct('a.id')
                     ->column('a.id,a.companyname,a.audit,a.setmeal_id,a.refreshtime','a.id');
+
         $company_id_arr = $setmeal_id_arr = $setmeal_list = [];
         foreach ($companyList as $key => $value) {
             $company_id_arr[] = $value['id'];
@@ -207,9 +214,11 @@ class def
         return $list;
     }
     protected function getEmergencyList($limit=5){
+        $subsiteCondition = get_subsite_condition('a');
         $list = model('JobSearchRtime')->alias('a')
                 ->join(config('database.prefix').'job b','a.id=b.id','LEFT')
                 ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+                ->where($subsiteCondition)
                 ->where('a.emergency',1)
                 ->where('c.id','not null')
                 ->order('a.refreshtime desc')
@@ -246,6 +255,7 @@ class def
                 : explode(',', $famous_enterprises_setmeal);
         $list = [];
         if (!empty($famous_enterprises_setmeal)) {
+            $subsiteCondition = get_subsite_condition('a');
             $list = model('JobSearchRtime')
                 ->alias('a')
                 ->join(
@@ -263,6 +273,7 @@ class def
                     'a.setmeal_id=d.id',
                     'LEFT'
                 )
+                ->where($subsiteCondition)
                 ->where('c.id','not null')
                 ->where('a.setmeal_id', 'in', $famous_enterprises_setmeal)
                 ->order('a.refreshtime desc')
@@ -342,9 +353,11 @@ class def
      * 热门职位
      */
     protected function getHotjobList(){
+        $subsiteCondition = get_subsite_condition('a');
         $list = model('JobSearchRtime')->alias('a')
                 ->join(config('database.prefix').'job b','a.id=b.id','LEFT')
                 ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+                ->where($subsiteCondition)
                 ->where('c.id','not null')
                 ->order('b.click desc,a.refreshtime desc')
                 ->limit(10)
@@ -375,7 +388,8 @@ class def
      * 企业主页
      */
     protected function getCompanyList(){
-        $list = model('Company')->where('district1','gt',0)->order('refreshtime desc')->limit(9)->column('id,logo,companyname');
+        $subsiteCondition = get_subsite_condition();
+        $list = model('Company')->where('district1','gt',0)->where('is_display',1)->where($subsiteCondition)->order('refreshtime desc')->limit(9)->column('id,logo,companyname');
         $logo_arr = $logo_id_arr = [];
         foreach ($list as $key => $value) {
             $value['logo'] > 0 && ($logo_id_arr[] = $value['logo']);
@@ -407,6 +421,10 @@ class def
                 $list = $list->join(config('database.prefix') . 'shield c','a.uid=c.personal_uid','LEFT')
                     ->where('c.company_uid<>' . $this->visitor['uid'] . ' OR c.id is NULL');
             }
+        }
+        $subsiteCondition = get_subsite_condition('d');
+        if(!empty($subsiteCondition)){
+            $list = $list->join(config('database.prefix') . 'resume_intention d','a.id=d.rid','LEFT')->where($subsiteCondition);
         }
         $list = $list->order('a.refreshtime desc')
                 ->limit(12)
@@ -640,7 +658,7 @@ class def
     protected function getAllCompany($allCompanyId){
         $companyData = [];
         if(!empty($allCompanyId)){
-            $companyData = model('Company')->whereIn('id',$allCompanyId)->column('id,companyname');
+            $companyData = model('Company')->where('is_display',1)->whereIn('id',$allCompanyId)->column('id,companyname');
         }
         return $companyData;
     }

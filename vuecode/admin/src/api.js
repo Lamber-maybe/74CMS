@@ -257,6 +257,7 @@ export default {
   companyAudit: '/company/setAudit',
   companyDelete: '/company/delete',
   companySetService: '/company/setService',
+  companySetDisplay: '/company/setDisplay',
 
   // 职位管理
   jobList: '/job/index',
@@ -692,5 +693,20 @@ export default {
   smsBlacklistEdit: '/sms_blacklist/edit',
   smsBlacklistDelete: '/sms_blacklist/delete',
   // pc首页模板
-  tplIndex: '/tpl/index'
+  tplIndex: '/tpl/index',
+
+  // 短链接
+  shorturlList: '/short_url/lists',
+  shorturlSave: '/short_url/save',
+  shorturlDelete: '/short_url/del',
+
+  // 分站
+  subsiteList: '/subsite/index',
+  subsiteAdd: '/subsite/add',
+  subsiteEdit: '/subsite/edit',
+  subsiteDelete: '/subsite/delete',
+
+  // 系统工具箱
+  sysToolSyncSetmeal: '/sys_tool/syncSetmeal',
+  sysToolSyncCompanyDisplay: '/sys_tool/syncCompanyDisplay'
 }

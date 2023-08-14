@@ -489,7 +489,7 @@ button { border: none; background: none; }
 .post_list .l_link:hover { -webkit-box-shadow: 0 3px 20px 2px #f0f0f0; box-shadow: 0 3px 20px 2px #f0f0f0; -webkit-transform: translateY(-3px); transform: translateY(-3px); z-index: 1; }
 .post_list .l_link:hover .post_name .tit { color: #1787fb; font-weight: bold; }
 .post_list .l_link .post_name { line-height: 20px; margin-bottom: 8px; }
-.post_list .l_link .post_name .tit { float: left; max-width: 290px; height: 20px; font-size: 16px; color: #333; }
+.post_list .l_link .post_name .tit { float: left; max-width: 286px; height: 20px; font-size: 16px; color: #333; }
 .post_list .l_link .post_name .date { float: right; font-size: 14px; color: #999; }
 .post_list .l_link .post_name .date .new { color: #ff6600; }
 .post_list .l_link .post_require { line-height: 20px; margin-bottom: 8px; }

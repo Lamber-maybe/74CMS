@@ -22,6 +22,25 @@ class Company extends \app\v1_0\controller\common\Base
         if ($keyword != '') {
             $where['a.companyname'] = ['like', '%' . $keyword . '%'];
         }
+        
+        $subsiteCondition = get_subsite_condition('a');
+        if(!empty($subsiteCondition)){
+            foreach ($subsiteCondition as $key => $value) {
+                if($key=='a.district1'){
+                    $district1 = $value;
+                    break;
+                }
+                if($key=='a.district2'){
+                    $district2 = $value;
+                    break;
+                }
+                if($key=='a.district3'){
+                    $district3 = $value;
+                    break;
+                }
+            }
+        }
+
         if ($district3 > 0) {
             $where['a.district3'] = ['eq', $district3];
         } elseif ($district2 > 0) {
@@ -38,9 +57,7 @@ class Company extends \app\v1_0\controller\common\Base
         if ($nature > 0) {
             $where['a.nature'] = ['eq', $nature];
         }
-        if (config('global_config.must_com_audit_certificate') == 1) {
-            $where['a.audit'] = 1;
-        }
+        $where['a.is_display'] = 1;
 
         $list = model('Company')
             ->alias('a')
@@ -449,7 +466,8 @@ class Company extends \app\v1_0\controller\common\Base
         }else{
             $list = $list->where('trade',$trade);
         }
-        $list = $list->order('refreshtime desc')->limit($limit)->column('id,companyname');
+        $subsiteCondition = get_subsite_condition();
+        $list = $list->where('is_display',1)->where($subsiteCondition)->order('refreshtime desc')->limit($limit)->column('id,companyname');
         $return = [];
         foreach ($list as $key => $value) {
             $arr['id'] = $key;

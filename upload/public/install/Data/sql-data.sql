@@ -936,7 +936,13 @@ INSERT INTO `qs_config` VALUES
 (NULL, 'shortvideo_new_jobing_audit', '0', '1', '视频招聘-新发布视频招聘默认审核状态', '0'),
 (NULL, 'shortvideo_edited_jobing_audit', '0', '0', '视频招聘-修改视频招聘后默认审核状态', '0'),
 (NULL, 'shortvideo_new_finding_audit', '0', '1', '视频招聘-新发布视频简历默认审核状态', '0'),
-(NULL, 'shortvideo_edited_finding_audit', '0', '0', '视频招聘-修改视频简历后默认审核状态', '0');
+(NULL, 'shortvideo_edited_finding_audit', '0', '0', '视频招聘-修改视频简历后默认审核状态', '0'),
+(NULL,'subsite_open','1','0','分站开关','0'),
+(NULL,'display_new_com','0','1','新注册企业显示状态','0'),
+(NULL,'reopen_setmeal_deadline','1','1','重开套餐时间处理 1叠加 0不叠加','0'),
+(NULL,'reopen_setmeal_resource','1','1','重开套餐资源处理 1叠加 0不叠加','0'),
+(NULL,'overtime_setmeal_resource','0','1','套餐到期资源处理 1保留 2清空','0'),
+(NULL,'overtime_setmeal_jobnum','0','1','套餐到期超出职位处理 1保留全部职位 2关闭超出职位','0');
 
 
 INSERT INTO `qs_cron` VALUES
@@ -949,7 +955,8 @@ INSERT INTO `qs_cron` VALUES
 (NULL,'休眠用户提醒','NologinNotice',-1,-1,7,'1',0,0,1,1,1),
 (NULL,'点击量/浏览量少提醒','FewViewNotice',-1,-1,7,'1',0,0,0,1,0),
 (NULL,'简历点不足100提醒','FewResumePointNotice',-1,-1,7,'1',0,0,0,1,0),
-(NULL,'生成百度百聘xml','Baiduxml','-1','-1','0','1','0','0','0','1','0');
+(NULL,'生成百度百聘xml','Baiduxml','-1','-1','0','1','0','0','0','1','0'),
+(NULL,'清除过期套餐','SetmealClear','-1','-1','-1','1','0','0','0','1','0');
 
 
 INSERT INTO `qs_explain` VALUES

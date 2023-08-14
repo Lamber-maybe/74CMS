@@ -16,7 +16,7 @@ NProgress.configure({
 }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
   const hasGetConfig = store.getters.sitename
@@ -73,7 +73,8 @@ router.beforeEach(async (to, from, next) => {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           // Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
+          // next(`/login?redirect=${to.path}`)
+          next(`/login`)
           NProgress.done()
         }
       }

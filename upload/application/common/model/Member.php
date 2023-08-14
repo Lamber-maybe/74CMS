@@ -107,7 +107,7 @@ class Member extends \app\common\model\BaseModel
             $setmeal_info['enable_video_interview'];
         $data['enable_poster'] = $setmeal_info['enable_poster'];
         $data['show_apply_contact'] = $setmeal_info['show_apply_contact'];
-
+        $data['expired'] = 0;
         $check_setmeal = model('MemberSetmeal')
             ->where('uid', $data['uid'])
             ->find();
@@ -123,12 +123,17 @@ class Member extends \app\common\model\BaseModel
                 ->save($data);
         } else {
             if ($check_setmeal['deadline'] > time()) {
-                //没过期,时间叠加到原有套餐
-                $data['deadline'] =
-                $setmeal_info['days'] == 0
-                ? 0
-                : $check_setmeal['deadline'] +
-                    $setmeal_info['days'] * 3600 * 24;
+
+                //-------------------没过期,时间叠加到原有套餐 ---------------------> 旧逻辑，已废弃，以下为新逻辑
+
+                //没过期，根据配置信息决定是否叠加时间
+                if($setmeal_info['days'] == 0){
+                    $data['deadline'] = 0;
+                }else if(config('global_config.reopen_setmeal_deadline')==1){
+                    $data['deadline'] = $check_setmeal['deadline'] + $setmeal_info['days'] * 3600 * 24;
+                }else{
+                    $data['deadline'] = strtotime('+' . $setmeal_info['days'] . ' day');
+                }
             } else {
                 //已过期或者之前是无限期的，从现在开始算起
                 $data['deadline'] =
@@ -136,9 +141,15 @@ class Member extends \app\common\model\BaseModel
                 ? 0
                 : strtotime('+' . $setmeal_info['days'] . ' day');
             }
-            $data['download_resume_point'] =
-                $check_setmeal['download_resume_point'] +
-                $setmeal_info['download_resume_point'];
+            //重开套餐资源处理
+            if(config('global_config.reopen_setmeal_resource')==1){
+                //叠加
+                $data['download_resume_point'] = $check_setmeal['download_resume_point'] + $setmeal_info['download_resume_point'];
+            }else{
+                //不叠加
+                $data['download_resume_point'] = $setmeal_info['download_resume_point'];
+            }
+            
             model('MemberSetmeal')
                 ->allowField(true)
                 ->save($data, ['uid' => $data['uid']]);
@@ -260,6 +271,11 @@ class Member extends \app\common\model\BaseModel
             ->field('id,uid', true)
             ->find();
         if ($info['deadline'] != 0 && $info['deadline'] < time()) {
+            //如果过期，看配置参数中资源是保留还是清空
+            if(config('global_config.overtime_setmeal_resource')==0){
+                //清空
+                $info['download_resume_point'] = 0;
+            }
             $overtime_config = config('global_config.setmeal_overtime_conf');
             $info['jobs_meanwhile'] = $overtime_config['jobs_meanwhile'];
             $info['refresh_jobs_free_perday'] =
@@ -360,7 +376,7 @@ class Member extends \app\common\model\BaseModel
                     'cs_id'
                 ] = $this->distributionCustomerService();
                 $insert_data_company['platform'] = config('platform');
-            
+
                 if (
                     false ===
                     model('Company')

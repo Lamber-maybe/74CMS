@@ -8,6 +8,7 @@
  */
 import axios from 'axios'
 import store from '@/store'
+import VueCookies from 'vue-cookies'
 import { Notify } from 'vant'
 import { handlerHttpError } from '@/utils/error'
 const service = axios.create({
@@ -30,7 +31,8 @@ export default {
         .get(url, {
           headers: {
             'user-token': store.state.userToken,
-            platform: store.state.platform
+            platform: store.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           params: params
         })
@@ -61,7 +63,8 @@ export default {
         .post(url, data, {
           headers: {
             'user-token': store.state.userToken,
-            platform: store.state.platform
+            platform: store.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           }
         })
         .then((res) => {
@@ -91,7 +94,8 @@ export default {
         headers: {
           'Content-Type': 'multipart/form-data', // ;boundary=----WebKitFormBoundaryQ6d2Qh69dv9wad2u,
           'user-token': store.state.userToken,
-          platform: store.state.platform
+          platform: store.state.platform,
+          'subsiteid': VueCookies.get('qscms_subsiteid')
         },
         transformRequest: [
           function (data) {

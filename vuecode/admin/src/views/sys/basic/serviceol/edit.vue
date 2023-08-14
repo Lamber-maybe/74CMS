@@ -59,7 +59,7 @@
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-          <el-button @click="goto('/sys/basic/nav')">返回</el-button>
+          <el-button @click="goto('/sys/basic/serviceol')">返回</el-button>
         </el-form-item>
       </el-form>
     </el-card>

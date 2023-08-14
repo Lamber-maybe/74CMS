@@ -5,6 +5,7 @@
 namespace app\common\lib;
 class JobRecommend
 {
+    protected $subsiteCondition=[];
     protected $category1;
     protected $category2;
     protected $category3;
@@ -35,6 +36,9 @@ class JobRecommend
     }
     protected function init_searchdata($getdata)
     {
+        $this->subsiteCondition = isset($getdata['subsiteCondition'])
+        ? $getdata['subsiteCondition']
+        : [];
         $this->category1 = isset($getdata['category1'])
             ? $getdata['category1']
             : null;
@@ -89,6 +93,7 @@ class JobRecommend
 
         $list = \think\Db::table($this->tablename)
             ->field($this->field)
+            ->where($this->subsiteCondition)
             ->where($this->where)
             ->orderRaw($this->orderby)
             ->page($this->current_page, $this->pagesize)

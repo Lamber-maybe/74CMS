@@ -75,24 +75,21 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="企业名称">
+      <el-table-column label="企业名称" min-width="250">
         <template slot-scope="scope">
-          <span
-            >{{
-              scope.row.companyname
-                ? scope.row.companyname
-                : "[未填写企业名称]"
-            }}【uid:{{ scope.row.uid }}】</span
-          >
+          <span>{{
+            scope.row.companyname
+              ? scope.row.companyname
+              : "[未填写企业名称]"
+          }}【uid:{{ scope.row.uid }}】</span>
         </template>
       </el-table-column>
-      <el-table-column width="200" label="开通套餐名称" prop="setmeal_name" />
-      <el-table-column width="200" prop="type_cn" label="开通方式">
+      <el-table-column label="开通套餐名称" prop="setmeal_name" min-width="120" />
+      <el-table-column prop="type_cn" label="开通方式" min-width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.type_cn }}</span>
           <i
             v-if="scope.row.order_id > 0"
-            @click="fun_detail(scope.row)"
             style="
               margin-left: 6px;
               color: #409eff;
@@ -100,11 +97,12 @@
               cursor: pointer;
             "
             class="el-icon-view"
-          ></i>
+            @click="fun_detail(scope.row)"
+          />
         </template>
       </el-table-column>
       <el-table-column
-        width="200"
+        min-width="150"
         align="center"
         prop="created_at"
         label="开通时间"
@@ -114,7 +112,7 @@
           <span>{{ scope.row.addtime | timeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作人" width="200">
+      <el-table-column label="操作人" min-width="100">
         <template slot-scope="scope">
           <span>{{
             scope.row.admin_username ? scope.row.admin_username : "-"
@@ -180,7 +178,6 @@ import { getClassify } from '@/api/classify'
 import { companySetmealOpenLog } from '@/api/company_setmeal'
 import { adminAllList } from '@/api/admin'
 import { parseTime } from '@/utils/index'
-
 
 export default {
   filters: {

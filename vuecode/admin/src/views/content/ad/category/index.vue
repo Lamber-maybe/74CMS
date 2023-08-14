@@ -8,8 +8,7 @@
           target="_blank"
           style="float: right; margin: 3px 20px"
           type="primary"
-          >查看广告位图例位置说明</el-link
-        >
+        >查看广告位图例位置说明</el-link>
       </div>
       <div class="tip">
         <p>系统内置广告位不能删除！</p>
@@ -24,40 +23,35 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column align="center" label="ID" width="95">
-          <template slot-scope="scope">
-            {{ scope.row.id }}
-          </template>
-        </el-table-column>
-        <el-table-column label="广告位名称">
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="广告位名称" min-width="200">
           <template slot-scope="scope">
             [{{ scope.row.platform }}]{{ scope.row.name }}
           </template>
         </el-table-column>
-        <el-table-column label="调用名称">
+        <el-table-column label="调用名称" min-width="150">
           <template slot-scope="scope">
             {{ scope.row.alias }}
           </template>
         </el-table-column>
-        <el-table-column label="建议尺寸" width="120">
+        <el-table-column label="建议尺寸" min-width="80">
           <template slot-scope="scope">
             {{ scope.row.width }}*{{ scope.row.height }}
           </template>
         </el-table-column>
-        <el-table-column label="广告数量" width="120" align="center">
+        <el-table-column label="广告数量" min-width="80" align="center">
           <template slot-scope="scope">
             {{ scope.row.ad_num }}
           </template>
         </el-table-column>
-        <el-table-column label="类型" width="150" align="center">
+        <el-table-column label="类型" min-width="90" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_sys == 1 ? 'info' : ''">
               {{ scope.row.is_sys | sysFilter }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               size="small"

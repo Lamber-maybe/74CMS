@@ -6,14 +6,17 @@
       <el-table-column
         label="关键词"
         prop="word"
+        min-width="100"
       />
       <el-table-column
         label="返回文字"
         prop="return_text"
+        min-width="200"
       />
       <el-table-column
         align="center"
         label="返回图片"
+        min-width="110"
       >
         <template slot-scope="scope">
           <img
@@ -25,11 +28,12 @@
       <el-table-column
         label="返回链接"
         prop="return_link"
+        min-width="240"
       />
       <el-table-column
         fixed="right"
         label="操作"
-        min-width="220"
+        min-width="150"
       >
         <template slot-scope="scope">
           <el-button

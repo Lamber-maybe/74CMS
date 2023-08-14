@@ -3,11 +3,12 @@
 <div class="content_wrapper" id="app">
   <div class="content" v-cloak>
     <div :class="showSelected ? 'filter_combo n_pd' : 'filter_combo'">
+      {#if condition="!empty($options_district)"#}
       <div class="filter_line">
         <div class="line_title">地标地段：</div>
         <div class="line_item">
           <a href="{#:P(['d1'=>null,'d2'=>null,'d3'=>null])#}"
-            class="f_item {#if condition='!$Request.param.d1'#}active{#/if#}">不限</a>
+            class="f_item {#if condition='$Request.param.d1==""'#}active{#/if#}">不限</a>
           <a href="javascript:;" class="f_item back classifyReturn" data-type="cityReturn" style="display: none">上级</a>
           <span id="cityLinkArea">
             {#volist name="options_district" id="vo"#}
@@ -22,6 +23,7 @@
         </div>
         <div class="clear"></div>
       </div>
+      {#/if#}
       <div class="filter_line">
         <div class="line_title">职位分类：</div>
         <div class="line_item">
@@ -572,8 +574,13 @@
               d1 = parseInt('{#$Request.param.d1#}');
               d2 = parseInt('{#$Request.param.d2#}');
               d3 = parseInt('{#$Request.param.d3#}');
+              subsite_district_level = parseInt('{#$subsite_district_level#}');
               if (cityLevel !== 1) {
-                $('[data-type=cityReturn]').show();
+                if(qscms.subsiteid>0 && cityLevel==subsite_district_level+1){
+                  $('[data-type=cityReturn]').hide();
+                }else{
+                  $('[data-type=cityReturn]').show();
+                }
               }
             } else if (type === 'jobcategory') {
               categoryList = res.data;

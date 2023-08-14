@@ -9,10 +9,14 @@
 	<div class="header_wrapper" v-cloak>
 		<div class="header clearfix">
 			<div class="header_left clearfix">
-				<a class="left_item homeImg" href="{#:url('index/index/index')#}">网站首页</a>
-				<a class="left_item" href="javascript:;" @click="AddFavorite">设为收藏</a>
-				<a class="left_item" href="{#:url('index/shortcut/index')#}">保存桌面</a>
-				<a href="{#:url('index/job/index')#}">搜职位</a>
+                <div class="subsite_btn left" v-if="subsite_open==1" @click.stop="subsite_sel = 1">
+                    <a class="current_city">{#$subsite.district_text|default="总站"#}</a>
+                    <span class="switch_city">[切换城市]</span>
+                </div>
+                <a class="left_item homeImg" href="{#:url('index/index/index')#}" v-if="subsite_open==0">网站首页</a>
+                <a class="left_item" href="javascript:;" @click="AddFavorite" v-if="subsite_open==0">设为收藏</a>
+                <a class="left_item" href="{#:url('index/shortcut/index')#}" v-if="subsite_open==0">保存桌面</a>
+                <a href="{#:url('index/job/index')#}" v-if="subsite_open==0">搜职位</a>
 			</div>
 			<div class="header_right clearfix">
 				<span class="right_item" v-if="isLogin===true">
@@ -125,6 +129,25 @@
 			</div>
 		</div>
 	</div>
+    <!-- 分站弹窗 -->
+    <div class="subsite_pupop" v-show="subsite_sel==1" v-cloak>
+        <div class="subsite_box">
+            <span class="close_icon" @click.stop="subsite_sel=0"></span>
+            <div class="subsite_title">
+                <div class="text_1">选择城市</div>
+                <div class="text_2">切换城市分站，让我们为您提供更准确的信息</div>
+            </div>
+            <hr>
+            <div class="subsite_list">
+                <div class="current_site">当前选择城市：<a class="site_link">{#$subsite.district_text|default="总站"#}</a></div>
+                <div class="lsit_box clearfix">
+                    <span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}" @click.stop="setSubsite(0)">总站</span>
+                    <span class="item" :class="item.id==current_subsiteid?'active_item':''" v-for="(item,index) in subsite_list" :key="index"
+                        @click.stop="setSubsite(item.id)">{{item.district_text}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
 	$(document).ready(function () {
@@ -173,7 +196,11 @@
 			searchAlias: 'joblist',
 			searchAliasCn: '找工作',
 			mobileQrcode: '',
-			wechatQrcode: ''
+			wechatQrcode: '',
+            current_subsiteid:0,
+            subsite_open: 0,
+            subsite_sel: 0,
+            subsite_list: []
 		},
 		created: function () {
 			this.keyword = "{#$Request.param.keyword#}"
@@ -181,8 +208,23 @@
 			this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
 			this.wechatQrcode = "{#$global_config.wechat_qrcode#}"
 			this.cronRun()
+            this.current_subsiteid = parseInt(qscms.subsiteid)
+            this.subsite_open = parseInt("{#$global_config.subsite_open#}")
+            this.getConfig()
 		},
 		methods: {
+            setSubsite(subsiteid) {
+                Cookies.set('qscms_subsiteid', subsiteid)
+                location.reload();
+            },
+            getConfig: function () {
+                var that = this
+                httpget(qscms.apiList.config)
+                    .then(function (res) {
+                        that.subsite_list = res.data.subsite_list
+                    })
+                    .catch(function () { })
+            },
 			cronRun: function () {
 				httpget(qscms.apiList.cronRun)
 					.then(function () {

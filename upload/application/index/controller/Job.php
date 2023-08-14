@@ -42,6 +42,27 @@ class Job extends \app\index\controller\Base
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
+        $subsiteCondition = get_subsite_condition();
+        $subsite_district_level = 0;
+        if(!empty($subsiteCondition)){
+            foreach ($subsiteCondition as $key => $value) {
+                if($key=='district1'){
+                    $district1 = $value;
+                    $subsite_district_level = 1;
+                    break;
+                }
+                if($key=='district2'){
+                    $district2 = $value;
+                    $subsite_district_level = 2;
+                    break;
+                }
+                if($key=='district3'){
+                    $district3 = $value;
+                    $subsite_district_level = 3;
+                    break;
+                }
+            }
+        }
         if ($district1 > 0) {
             $params['district1'] = $district1;
         }
@@ -51,6 +72,8 @@ class Job extends \app\index\controller\Base
         if ($district3 > 0) {
             $params['district3'] = $district3;
         }
+
+        
         if ($category1 > 0) {
             $params['category1'] = $category1;
         }
@@ -133,7 +156,10 @@ class Job extends \app\index\controller\Base
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
 
-        if($district2>0){
+        if($district3>0){
+            $district_level = 0;
+            $category_district = [];
+        }else if($district2>0){
             $district_level = 3;
             $category_district = model('CategoryDistrict')->getCache($district2);
         }else if($district1>0){
@@ -220,6 +246,7 @@ class Job extends \app\index\controller\Base
         }
         $this->initPageSeo('joblist',$seoData);
 
+        $this->assign('subsite_district_level',$subsite_district_level);
         $this->assign('selectedTagArr',$selectedTagArr);
         $this->assign('hotjob_list',$hotjob_list);
         $this->assign('currentPage',$current_page);
@@ -457,7 +484,7 @@ class Job extends \app\index\controller\Base
             }else{
                 $return['com_info']['setmeal_icon'] = '';
             }
-            
+
             $job_list = model('Job')
                 ->field('id,jobname')
                 ->where('company_id', 'eq', $companyinfo['id'])
@@ -471,7 +498,9 @@ class Job extends \app\index\controller\Base
         }
 
 
+        $subsiteCondition = get_subsite_condition();
         $similar_data = [
+            'subsiteCondition'=>$subsiteCondition,
             'category1' => $jobinfo['category1'],
             'category2' => $jobinfo['category2'],
             'category3' => $jobinfo['category3'],
@@ -630,7 +659,7 @@ class Job extends \app\index\controller\Base
                 }else{
                     $tmp_arr['district_text_full'] = '';
                 }
-                
+
                 if($tmp_arr['district_text_full']!='' && $val['district2']>0){
                     $tmp_arr['district_text_full'] .= isset(
                         $category_district_data[$val['district2']]
@@ -719,6 +748,8 @@ class Job extends \app\index\controller\Base
      * 热门职位
      */
     protected function getHotjob($id=0){
+        $subsiteCondition = get_subsite_condition();
+        $params = $subsiteCondition;
         $params['count_total'] = 0;
         $params['pagesize'] = 5;
         $params['sort'] = 'emergency';

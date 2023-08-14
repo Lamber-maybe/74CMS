@@ -37,7 +37,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="求职者姓名">
+        <el-table-column label="求职者姓名" min-width="100">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.resume_link"
@@ -48,7 +48,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="400">
+        <el-table-column label="基本信息" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.age }}</span>
             /
@@ -59,18 +59,18 @@
             <span>{{ scope.row.experience_ }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="委托期限">
+        <el-table-column label="委托期限" min-width="100">
           <template slot-scope="scope">
             {{ scope.row.days }}天
           </template>
         </el-table-column>
-        <el-table-column align="center" label="简历创建时间">
+        <el-table-column align="center" label="简历创建时间" min-width="160">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="简历刷新时间">
+        <el-table-column align="center" label="简历刷新时间" min-width="160">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.refreshtime | timeFilter }}</span>

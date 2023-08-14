@@ -25,7 +25,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/list/add',
           name: 'jobfairolAdd',
-          component: () => import('@/views/jobfairol/list/add'),
+          component: () => import ('@/views/jobfairol/list/add'),
           meta: {
             title: '添加网络招聘会',
             access: 'jobfairolList',
@@ -36,7 +36,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/list/edit',
           name: 'jobfairolEdit',
-          component: () => import('@/views/jobfairol/list/edit'),
+          component: () => import ('@/views/jobfairol/list/edit'),
           meta: {
             title: '编辑网络招聘会',
             access: 'jobfairolList',
@@ -47,7 +47,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/exhibitors/company/list',
           name: 'jobfairolExhibitorsCompanyList',
-          component: () => import('@/views/jobfairol/exhibitors/company/list'),
+          component: () => import ('@/views/jobfairol/exhibitors/company/list'),
           meta: {
             title: '参会企业',
             access: 'jobfairolList',
@@ -58,7 +58,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/exhibitors/company/add',
           name: 'jobfairolExhibitorsCompanyAdd',
-          component: () => import('@/views/jobfairol/exhibitors/company/add'),
+          component: () => import ('@/views/jobfairol/exhibitors/company/add'),
           meta: {
             title: '新增参会企业',
             access: 'jobfairolList',
@@ -69,7 +69,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/exhibitors/personal/list',
           name: 'jobfairolExhibitorsPersonalList',
-          component: () => import('@/views/jobfairol/exhibitors/personal/list'),
+          component: () => import ('@/views/jobfairol/exhibitors/personal/list'),
           meta: {
             title: '参会个人',
             access: 'jobfairolList',
@@ -80,7 +80,7 @@ const applicationRouter = {
         {
           path: '/jobfairol/exhibitors/personal/add',
           name: 'jobfairolExhibitorsPersonalAdd',
-          component: () => import('@/views/jobfairol/exhibitors/personal/add'),
+          component: () => import ('@/views/jobfairol/exhibitors/personal/add'),
           meta: {
             title: '新增参会个人',
             access: 'jobfairolList',
@@ -114,7 +114,7 @@ const applicationRouter = {
           path: '/shortvideo/ad',
           name: 'shortvideoAd',
           component: () => import('@/views/shortvideo/ad'),
-          meta: { title: '广告管理', access: 'shortvideoAd' },
+          meta: { title: '广告管理', access: 'shortvideoAd' }
         },
         {
           path: '/shortvideo/ad/list/add',
@@ -149,6 +149,36 @@ const applicationRouter = {
           name: 'shortvideoSetting',
           component: () => import('@/views/shortvideo/setting.vue'),
           meta: { title: '功能配置', access: 'shortvideoSetting' }
+        }
+      ]
+    },
+    {
+      path: '/subsite',
+      name: 'subsite',
+      component: () => import('@/views/subsite'),
+      redirect: 'noRedirect',
+      alwaysShow: true,
+      meta: { title: '地区分站', access: 'subsite' },
+      children: [
+        {
+          path: '/subsite/index',
+          name: 'subsiteIndex',
+          component: () => import('@/views/subsite/list'),
+          meta: { title: '分站管理', access: 'subsiteIndex' }
+        },
+        {
+          path: '/subsite/add',
+          name: 'subsiteAdd',
+          component: () => import('@/views/subsite/add'),
+          meta: { title: '添加分站', access: 'subsiteAdd', activeMenu: '/subsite/index' },
+          hidden: true
+        },
+        {
+          path: '/subsite/edit',
+          name: 'subsiteEdit',
+          component: () => import('@/views/subsite/edit'),
+          meta: { title: '编辑分站', access: 'subsiteEdit', activeMenu: '/subsite/index' },
+          hidden: true
         }
       ]
     }

@@ -6,11 +6,12 @@
       <el-table-column
         label="页面"
         prop="name"
-        min-width="150"
+        min-width="120"
       />
       <el-table-column
         label="分享语句"
         prop="content"
+        min-width="200"
       />
       <el-table-column
         align="center"
@@ -25,11 +26,12 @@
       <el-table-column
         label="说明文字"
         prop="explain"
+        min-width="200"
       />
       <el-table-column
         fixed="right"
         label="操作"
-        min-width="220"
+        min-width="80"
       >
         <template slot-scope="scope">
           <el-button

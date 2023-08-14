@@ -47,25 +47,25 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column align="center" label="ID" width="95">
+        <el-table-column type="selection" width="42" />
+        <el-table-column align="center" label="ID" width="80">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column label="标题" show-overflow-tooltip>
+        <el-table-column label="标题" show-overflow-tooltip min-width="300">
           <template slot-scope="scope">
             <el-link :href="scope.row.link" target="_blank" type="primary">
               {{ scope.row.title }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="150">
+        <el-table-column label="排序" min-width="60">
           <template slot-scope="scope">
             <span>{{ scope.row.sort_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="点击" width="150">
+        <el-table-column label="点击" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.click }}</span>
           </template>
@@ -74,21 +74,21 @@
           align="center"
           prop="created_at"
           label="添加日期"
-          width="200"
+          min-width="150"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" width="150">
+        <el-table-column label="是否显示" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
               {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               size="small"

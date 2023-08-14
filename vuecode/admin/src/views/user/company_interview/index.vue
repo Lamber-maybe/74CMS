@@ -38,7 +38,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="求职者姓名">
+        <el-table-column label="求职者姓名" min-width="120">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.resume_link"
@@ -49,7 +49,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="400">
+        <el-table-column label="基本信息" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.age }}</span>
             /
@@ -60,14 +60,14 @@
             <span>{{ scope.row.experience_ }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="职位名称">
+        <el-table-column label="职位名称" min-width="200">
           <template slot-scope="scope">
             <el-link :href="scope.row.job_link" target="_blank" type="primary">
               {{ scope.row.jobname }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="企业名称">
+        <el-table-column label="企业名称" min-width="200">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.company_link"
@@ -78,13 +78,13 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="面试时间">
+        <el-table-column align="center" label="面试时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.interview_time | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="80">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="fun_detail(scope.row)">
               详情

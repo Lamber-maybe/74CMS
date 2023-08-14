@@ -36,19 +36,19 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="企业名称" prop="companyname" />
-        <el-table-column label="联系人">
+        <el-table-column label="企业名称" prop="companyname" min-width="200" />
+        <el-table-column label="联系人" min-width="200">
           <template slot-scope="scope">
             {{ scope.row.contact }}({{ scope.row.mobile }})
           </template>
         </el-table-column>
-        <el-table-column align="center" label="认证时间">
+        <el-table-column align="center" label="认证时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="320">
+        <el-table-column fixed="right" label="操作" width="240">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funEdit(scope.$index, scope.row)">
               编辑

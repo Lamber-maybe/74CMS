@@ -69,31 +69,31 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="所属企业" prop="companyname" />
-        <el-table-column label="推广职位" prop="jobname" />
-        <el-table-column align="center" label="推广类型">
+        <el-table-column label="所属企业" prop="companyname" min-width="220" />
+        <el-table-column label="推广职位" prop="jobname" min-width="170" />
+        <el-table-column align="center" label="推广类型" min-width="80">
           <template slot-scope="scope">
             {{ scope.row.type == 'jobstick' ? '置顶' : '紧急' }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="推广天数">
+        <el-table-column align="center" label="推广天数" min-width="80">
           <template slot-scope="scope">
             {{ scope.row.days }}天
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开始时间">
+        <el-table-column align="center" label="开始时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="结束时间">
+        <el-table-column align="center" label="结束时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.deadline | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="320">
+        <el-table-column fixed="right" label="操作" min-width="170">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funEdit(scope.row)">
               编辑

@@ -25,7 +25,7 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <el-table-column type="selection" width="42" />
         <el-table-column label="处理情况" width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | statusFilter">

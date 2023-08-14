@@ -32,6 +32,10 @@ class wxpay
      */
     public function callPay($option)
     {
+        if(!$this->config['payment_wechat_appid'] || !$this->config['payment_wechat_mchid'] || !$this->config['payment_wechat_key'] || !$this->config['payment_wechat_appsecret']){
+            $this->_error = '暂不支持微信付款，请选择其他付款方式。';
+            return false;
+        }
         $return = '';
         switch ($option['platform']) {
             case 'web':

@@ -37,6 +37,42 @@ class Config extends \app\v1_0\controller\common\Base
             'companyshow'=>config('global_config.sitedomain').url('index/company/show',['id'=>'_id_']),
             'jobfairollist'=>config('global_config.sitedomain').url('index/jobfairol/index')
         ];
+        $list['subsite_list'] = [];
+        if(config('global_config.subsite_open')==1){
+            $subsite_list = model('Subsite')->where('is_display',1)->field('id,sitename,district')->order('sort_id desc,id asc')->select();
+            if(!empty($subsite_list)){
+                $category_district_data = model('CategoryDistrict')->getCache();
+                foreach ($subsite_list as $key => $value) {
+                    $arr = [
+                        'id'=>$value['id'],
+                        'sitename'=>$value['sitename']
+                    ];
+                    $arr['district_text'] = isset($category_district_data[$value['district']]) ? $category_district_data[$value['district']] : '';
+                    $list['subsite_list'][] = $arr;
+                }
+            }
+        }
+        if($this->subsite===null){
+            $list['subsite_info'] = [
+                'id'=>0,
+                'sitename'=>'总站',
+                'district_text'=>'总站',
+                'district1'=>0,
+                'district2'=>0,
+                'district3'=>0,
+                'district'=>0,
+                'district_level'=>0,
+                'title'=>'',
+                'keywords'=>'',
+                'description'=>''
+            ];
+        }else{
+            $list['sitename'] = $this->subsite->sitename;
+            $list['subsite_info'] = $this->subsite->toArray();
+        }
+        
+        $config_payment = config('global_config.account_alipay');
+        $list['account_alipay_appid'] = $config_payment['appid'];
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
     /**
@@ -162,6 +198,18 @@ class Config extends \app\v1_0\controller\common\Base
         $return = model('PageMobile')->getCache($alias);
         if(!$return){
             $this->ajaxReturn(200,'获取数据成功',[]);
+        }
+        
+        if($this->subsite!==null){
+            if($this->subsite->title!=''){
+                $return['seo_title'] = $this->subsite->title;
+            }
+            if($this->subsite->keywords!=''){
+                $return['seo_keywords'] = $this->subsite->keywords;
+            }
+            if($this->subsite->description!=''){
+                $return['seo_description'] = $this->subsite->description;
+            }
         }
         $return['seo_title'] = str_replace("{sitename}",config('global_config.sitename'),$return['seo_title']);
         $return['seo_keywords'] = str_replace("{sitename}",config('global_config.sitename'),$return['seo_keywords']);

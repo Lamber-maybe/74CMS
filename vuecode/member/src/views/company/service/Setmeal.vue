@@ -56,7 +56,7 @@
         <company-title>请选择套餐</company-title>
         <div class="waning_text">
           <img src="../../../assets/images/warning_icon.png" />
-          在当前套餐未结束前，购买新的套餐，将获得套餐时间叠加，资源叠加，权限以新购买的会员为准
+          在当前套餐未结束前，购买新的套餐，将获得套餐时间{{$store.state.config.reopen_setmeal_deadline==0?'不':''}}叠加，资源{{$store.state.config.reopen_setmeal_resource==0?'不':''}}叠加，权限以新购买的会员为准
         </div>
         <div class="item_wrapper">
           <div class="item_con">

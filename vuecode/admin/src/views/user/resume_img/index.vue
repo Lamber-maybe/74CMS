@@ -37,9 +37,9 @@
               "
               class="image"
             >
+            <span class="note">{{ item.title }}</span>
           </div>
           <div style="padding: 14px;">
-            <span class="note">{{ item.title }}</span>
             <div class="bottom clearfix">
               <span class="time">{{ item.addtime | timeFilter }}</span>
               <div class="clearfix" />
@@ -142,7 +142,7 @@ export default {
       list: [],
       total: 0,
       currentPage: 1,
-      pagesize: 10
+      pagesize: 12
     }
   },
   created() {
@@ -246,6 +246,21 @@ export default {
   float: left;
   margin-bottom:10px;
 }
+.img-content-box .note{
+    position: absolute;
+    left: 0px;
+    bottom: 0;
+    width: 235px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: rgba(51, 51, 51, 0.8);
+    color: #e3e3e3;
+    padding: 0 10px;
+    font-size: 14px;
+    display: inline-block;
+    line-height:30px;
+}
 .audit {
   font-size: 13px;
 }
@@ -262,9 +277,10 @@ export default {
   border-bottom: 1px solid #e3e3e3;
   background-color: #999;
   overflow:hidden;
+  position:relative;
 }
 .bottom {
-  margin-top: 13px;
+  margin-top: 4px;
   line-height: 12px;
 }
 .botton {

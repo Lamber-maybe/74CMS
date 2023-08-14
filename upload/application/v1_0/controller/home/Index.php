@@ -112,8 +112,11 @@ class Index extends \app\v1_0\controller\common\Base
         if (empty($famous_enterprises_setmeal)) {
             $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
         }
+        $subsiteCondition = get_subsite_condition();
         $list = model('Company')
+            ->where('is_display',1)
             ->where('setmeal_id', 'in', $famous_enterprises_setmeal)
+            ->where($subsiteCondition)
             ->field('id,logo,companyname')
             ->order('refreshtime desc')
             ->limit(9)

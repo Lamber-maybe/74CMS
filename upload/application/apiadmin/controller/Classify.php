@@ -541,4 +541,15 @@ class Classify extends \app\common\controller\Backend
         }
         return $return;
     }
+    private function tplOfIndex($params = [])
+    {
+        $list = model('Tpl')->where('type','index')->select();
+        $return = [];
+        foreach ($list as $key => $value) {
+            $arr['id'] = $value['alias'];
+            $arr['name'] = $value['title'];
+            $return[] = $arr;
+        }
+        return $return;
+    }
 }

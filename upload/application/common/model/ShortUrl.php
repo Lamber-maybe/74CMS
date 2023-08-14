@@ -65,11 +65,6 @@ class ShortUrl extends BaseModel
         return $this->hasOne(Admin::class, 'id', 'admin_id')->bind(['admin_name'=>'username']);
     }
 
-    public function getValidUrl($code){
-        $row = $this->where(['endtime'=>['gt', time()], 'code'=>trim($code)])->find();
-        return $row;
-    }
-
     public function saveOrAdd($id, $url, $remark, $endtime=0, $admin=null){
         if(!$endtime){
             $endtime = 0;
@@ -114,7 +109,10 @@ class ShortUrl extends BaseModel
     }
 
     public function getValidByCode($code){
-        $row = $this->where(['code'=>$code, 'endtime'=>[['gt', time()], ['eq', 0], 'or']])->find();
+        $row = $this->where('code',$code)->find();
+        if($row===null || ($row['endtime']!=0 && $row['endtime']<time())){
+            return null;
+        }
         return $row;
     }
 

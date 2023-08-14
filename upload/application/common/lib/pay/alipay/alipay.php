@@ -18,6 +18,10 @@ class alipay
      */
     public function callPay($data)
     {
+        if(!$this->config['appid'] || !$this->config['privatekey'] || !$this->config['publickey']){
+            $this->_error = '暂不支持支付宝付款，请选择其他付款方式。';
+            return false;
+        }
         $return = '';
         switch ($data['platform']) {
             case 'web':

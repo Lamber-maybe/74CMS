@@ -15,8 +15,9 @@ return [
     // +----------------------------------------------------------------------
 
     // 应用调试模式
-    'app_debug' => false,
-    'pay_test_mode' => false,
+    'app_debug' => \think\Env::get('DEBUG', false),
+
+    'pay_test_mode' =>  \think\Env::get('PAY_TEST_MODE', false),
     // 应用Trace
     'app_trace' => false,
     // 应用模式状态

@@ -12,30 +12,30 @@
         :data="list"
         style="width: 100%"
       >
-        <el-table-column label="姓名">
+        <el-table-column label="姓名" min-width="100">
           <template slot-scope="scope">
             {{ scope.row.name }}
           </template>
         </el-table-column>
-        <el-table-column prop="mobile" label="手机号" />
-        <el-table-column prop="tel" label="座机" />
-        <el-table-column prop="weixin" label="微信" />
-        <el-table-column prop="qq" label="QQ" />
-        <el-table-column label="状态" align="center">
+        <el-table-column prop="mobile" label="手机号" min-width="120" />
+        <el-table-column prop="tel" label="座机" min-width="120" />
+        <el-table-column prop="weixin" label="微信" min-width="120" />
+        <el-table-column prop="qq" label="QQ" min-width="120" />
+        <el-table-column label="状态" align="center" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | colorFilter">
               {{ scope.row.status == 1 ? '正常' : '暂停' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="关联企业数" align="center">
+        <el-table-column label="关联企业数" align="center" min-width="110">
           <template slot-scope="scope">
             <span>
               {{ scope.row.company_num }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               type="primary"

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div v-loading.fullscreen.lock="fullscreenLoading" :element-loading-text="fullscreenLoading_text" class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>参会企业</span>
@@ -81,19 +81,19 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="企业名称" show-overflow-tooltip width="200">
+        <el-table-column label="企业名称" show-overflow-tooltip min-width="180">
           <template slot-scope="scope">
             <el-link :href="scope.row.link" target="_blank" type="primary">
               {{ scope.row.companyname }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="会员套餐" align="center" width="110">
+        <el-table-column label="会员套餐" align="center" min-width="110">
           <template slot-scope="scope">
             {{ scope.row.setmeal_cn }}
           </template>
         </el-table-column>
-        <el-table-column label="认证状态" align="center">
+        <el-table-column label="认证状态" align="center" min-width="90">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.c_audit === 0" type="warning">待认证</el-tag>
             <el-tag v-else-if="scope.row.c_audit === 1" type="success">已认证</el-tag>
@@ -101,19 +101,19 @@
             <el-tag v-else type="info">未认证</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="数据来源" align="center" width="110">
+        <el-table-column label="数据来源" align="center" min-width="90">
           <template slot-scope="scope">
             {{ scope.row.source === 1 ? '后台添加' : '自主申请' }}
           </template>
         </el-table-column>
-        <el-table-column label="参会状态" align="center">
+        <el-table-column label="参会状态" align="center" min-width="90">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.audit === 0" type="warning">待审核</el-tag>
             <el-tag v-else-if="scope.row.audit === 1" type="success">已通过</el-tag>
             <el-tag v-else-if="scope.row.audit === 2" type="danger">未通过</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="联系方式" align="center">
+        <el-table-column label="联系方式" align="center" min-width="160">
           <template slot-scope="scope">
             {{ scope.row.mobile }}({{ scope.row.contact }})
           </template>
@@ -122,18 +122,19 @@
           align="center"
           prop="created_at"
           label="添加日期"
+          min-width="150"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="微信直面" align="center">
+        <el-table-column label="微信直面" align="center" min-width="120">
           <template slot-scope="scope">
             {{ scope.row.add_status === 1 ? '已添加(' + scope.row.add_day + '天)' : '客服' }}
           </template>
         </el-table-column>
-        <el-table-column align="right" label="操作" width="280">
+        <el-table-column fixed="right" align="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="editCompany(scope.row)">修改</el-button>
             <el-button size="mini" type="primary" @click="setWxQr(scope.row)">直面</el-button>
@@ -201,7 +202,7 @@
             <el-radio label="0">当场客服</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="" v-if="qr_mode === '1'">
+        <el-form-item v-if="qr_mode === '1'" label="">
           <el-upload
             class="thumb-uploader"
             :action="apiUpload"
@@ -215,7 +216,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input type="textarea" v-model="note"></el-input>
+          <el-input v-model="note" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -379,7 +380,9 @@ export default {
         stick: '',
         keyword: '',
         key_type: '1'
-      }
+      },
+      fullscreenLoading: false,
+      fullscreenLoading_text: ''
     }
   },
   computed: {
@@ -693,31 +696,42 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          if (that.listLoading === true) {
-            return false
-          }
-          that.listLoading = true
-          const params = {
-            jobfair_id: that.jobfair_id,
-            settr: that.add.settr,
-            audit: that.add.audit,
-            setmeal_id: that.add.setmeal_id
-          }
-          companyBatchAdd(params, 'post').then(response => {
-            if (response.code === 200) {
-              that.$message.success(response.message)
-              that.listLoading = false
-              that.dialogAddVisible = false
-              that.getExhibitors()
-              return true
-            } else {
-              that.listLoading = false
-              that.$message.error(response.message)
-              return false
-            }
-          })
+          that.fullscreenLoading_text = '正在添加数据，请稍候'
+          that.fullscreenLoading = true
+          that.dialogAddVisible = false
+          this.funAddBatchRun(1)
         })
         .catch(() => {})
+    },
+    funAddBatchRun(page){
+      const that = this
+      const params = {
+        jobfair_id: that.jobfair_id,
+        settr: that.add.settr,
+        audit: that.add.audit,
+        setmeal_id: that.add.setmeal_id,
+        page: page,
+        pagesize: 100
+      }
+      companyBatchAdd(params, 'post').then(response => {
+        if (response.code === 200) {
+          if (response.data == 0){
+            that.fullscreenLoading_text = '正在添加数据，' + response.message
+            that.funAddBatchRun(parseInt(page) + 1)
+          } else {
+            that.$message.success(response.message)
+            that.fullscreenLoading = false
+            that.getExhibitors()
+            return true
+          }
+        } else {
+          that.listLoading = false
+          that.$message.error(response.message)
+          return false
+        }
+      }).catch(() => {
+        that.listLoading = false
+      })
     },
     changeOption (type) {
       if (type === 'settr') {

@@ -79,11 +79,11 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="姓名" width="300">
+        <el-table-column label="姓名" min-width="220">
           <template slot-scope="scope">
             <div class="namecol">
               <el-popover placement="right" trigger="hover" width="300">
-                <img :src="scope.row.photo_img_src" style="max-width: 274px" />
+                <img :src="scope.row.photo_img_src" style="max-width: 274px">
                 <span slot="reference">
                   <span class="avatar">
                     <el-avatar :src="scope.row.photo_img_src" />
@@ -105,7 +105,7 @@
                     v-if="scope.row.bind_weixin == 1"
                     style="vertical-align: middle; margin-left: 4px"
                     :src="require('@/assets/images/wx_icon.png')"
-                  />
+                  >
                 </div>
                 <div>
                   <span>{{ scope.row.age }}</span>
@@ -120,19 +120,19 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="会员/简历手机号" width="250">
+        <el-table-column label="会员/简历手机号" min-width="130">
           <template slot-scope="scope">
             <div title="会员手机号">
-              <i class="el-icon-user"></i>&nbsp;{{ scope.row.mobile }}
+              <i class="el-icon-user" />&nbsp;{{ scope.row.mobile }}
             </div>
             <div title="简历联系手机号">
-              <i class="el-icon-document"></i>&nbsp;{{
+              <i class="el-icon-document" />&nbsp;{{
                 scope.row.contact_mobile
               }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="简历完整度">
+        <el-table-column label="简历完整度" min-width="120">
           <template slot-scope="scope">
             <el-progress
               :text-inside="true"
@@ -142,20 +142,20 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="简历等级">
+        <el-table-column label="简历等级" min-width="80">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.high_quality == 1">优质</el-tag>
             <el-tag v-if="scope.row.high_quality == 0" type="info">普通</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="审核状态">
+        <el-table-column label="审核状态" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.audit | auditFilter">
               {{ options_audit[scope.row.audit] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建/刷新时间" width="150">
+        <el-table-column align="center" label="创建/刷新时间" min-width="150">
           <template slot-scope="scope">
             <div title="创建时间">
               <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
@@ -165,14 +165,15 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="推广">
+        <el-table-column align="center" label="推广" min-width="70">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)"
-              >[海报]</el-button
-            >
+            <el-button
+              type="text"
+              @click="funPoster(scope.row.id)"
+            >[海报]</el-button>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="280">
+        <el-table-column fixed="right" label="操作" min-width="260">
           <template slot-scope="scope">
             <el-button
               size="small"
@@ -347,7 +348,7 @@
             type="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             @change="exportData"
-          />
+          >
           <span class="smalltip">
             <i class="el-icon-info" />
             <el-button type="text" @click="downTpl">[模板下载]</el-button>

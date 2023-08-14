@@ -38,7 +38,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="求职者姓名" width="100">
+        <el-table-column label="求职者姓名" min-width="100">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.resume_link"
@@ -49,7 +49,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="250">
+        <el-table-column label="基本信息" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.age }}</span>
             /
@@ -60,14 +60,14 @@
             <span>{{ scope.row.experience_ }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="职位名称">
+        <el-table-column label="职位名称" min-width="200">
           <template slot-scope="scope">
             <el-link :href="scope.row.job_link" target="_blank" type="primary">
               {{ scope.row.jobname }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="企业名称">
+        <el-table-column label="企业名称" min-width="200">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.company_link"
@@ -78,32 +78,32 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="投递时间">
+        <el-table-column align="center" label="投递时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="是否已查看" width="100">
+        <el-table-column align="center" label="是否已查看" min-width="90">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.is_look==1">已查看</el-tag>
             <el-tag v-if="scope.row.is_look==0" type="warning">未查看</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="处理状态" width="100">
+        <el-table-column align="center" label="处理状态" min-width="80">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.handle_status==1">已同意</el-tag>
             <el-tag v-if="scope.row.handle_status==2" type="info">已拒绝</el-tag>
             <el-tag v-if="scope.row.handle_status==0" type="warning">待处理</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="投递方式" width="100">
+        <el-table-column align="center" label="投递方式" min-width="80">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.source==1" type="info">委托投递</el-tag>
             <el-tag v-if="scope.row.source==0">自主投递</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="来源" width="120">
+        <el-table-column align="center" label="来源" min-width="120">
           <template slot-scope="scope">
             <span>{{ scope.row.platform_cn }}</span>
           </template>

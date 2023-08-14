@@ -182,7 +182,7 @@
             v-if="columnsCitycategory.length > 0"
             v-model="form.basic.citycategory_arr"
             :options="columnsCitycategory"
-            :show-all-levels="false"
+            :show-all-levels="true"
             filterable
             @change="setLocation"
           ></el-cascader>

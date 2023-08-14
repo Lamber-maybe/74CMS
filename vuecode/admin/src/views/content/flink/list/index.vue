@@ -46,40 +46,40 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column align="center" label="ID" width="95">
+        <el-table-column type="selection" width="42" />
+        <el-table-column align="center" label="ID" width="80">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column label="名称" width="150">
+        <el-table-column label="名称" min-width="250">
           <template slot-scope="scope">
             {{ scope.row.name }}
           </template>
         </el-table-column>
-        <el-table-column label="网址" width="500">
+        <el-table-column label="网址" min-width="300">
           <template slot-scope="scope">
             {{ scope.row.link_url }}
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="150">
+        <el-table-column label="排序" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.sort_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="备注" show-overflow-tooltip>
+        <el-table-column label="备注" show-overflow-tooltip min-width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.notes }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" width="150">
+        <el-table-column label="是否显示" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
               {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-button
               size="small"

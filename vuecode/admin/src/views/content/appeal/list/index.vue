@@ -25,7 +25,7 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <el-table-column type="selection" width="42" />
         <el-table-column label="真实姓名" width="200">
           <template slot-scope="scope">
             {{ scope.row.realname }}
@@ -59,7 +59,7 @@
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="100">
           <template slot-scope="scope">
             <el-button
               size="small"

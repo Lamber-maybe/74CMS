@@ -229,6 +229,7 @@ CREATE TABLE `qs_company` (
   `cs_id` int(10) unsigned NOT NULL DEFAULT '0',
   `platform` varchar(30) NOT NULL DEFAULT '',
   `setmeal_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1088,6 +1089,7 @@ DROP TABLE IF EXISTS `qs_member_setmeal`;
 CREATE TABLE `qs_member_setmeal` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(10) unsigned NOT NULL,
+  `expired` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `setmeal_id` int(10) unsigned NOT NULL,
   `deadline` int(10) unsigned NOT NULL,
   `download_resume_point` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2230,18 +2232,36 @@ CREATE TABLE `qs_sv_personal_video` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='个人视频表';
 ||-_-||qs_sv_personal_video||-_-||
 
+
 DROP TABLE IF EXISTS `qs_short_url`;
 CREATE TABLE `qs_short_url` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `url` varchar(125) NOT NULL DEFAULT '' COMMENT '原始链接',
-  `code` varchar(5) NOT NULL DEFAULT '' COMMENT '短码',
+  `code` varbinary(5) NOT NULL DEFAULT '' COMMENT '短码',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `endtime` int(11) NOT NULL DEFAULT '0' COMMENT '截止时间',
   `pv` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
   `admin_id` int(11) NOT NULL DEFAULT '0' COMMENT '建创者id',
   `remark` varchar(50) NOT NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`),
-  KEY `code_endtime` (`code`,`endtime`),
-  KEY `url_endtime` (`url`,`endtime`)
+  KEY `code_endtime` (`code`,`endtime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='短链接表';
 ||-_-||qs_short_url||-_-||
+
+DROP TABLE IF EXISTS `qs_subsite`;
+CREATE TABLE `qs_subsite` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sitename` varchar(30) NOT NULL,
+  `district1` int(10) unsigned NOT NULL,
+  `district2` int(10) unsigned NOT NULL,
+  `district3` int(10) unsigned NOT NULL,
+  `district` int(10) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `keywords` varchar(100) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `tpl` varchar(30) NOT NULL,
+  `is_display` tinyint(1) unsigned NOT NULL,
+  `sort_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_subsite||-_-||

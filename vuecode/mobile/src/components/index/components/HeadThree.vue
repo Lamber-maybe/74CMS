@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="b1">
-      <Head :show_back="'false'" :bg="'tran'">{{ $store.state.config.sitename }}</Head>
+      <Head :show_back="'false'" :bg="'tran'" :show_sub="$store.state.config.subsite_open==1?'true':''">{{ $store.state.config.sitename }}</Head>
       <div class="head_search" @click="toggleSearch">请输入职位/公司</div>
     </div>
     <van-popup

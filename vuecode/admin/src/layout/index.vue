@@ -157,7 +157,8 @@ export default {
       })
         .then(() => {
           this.$store.dispatch('user/logout').then(() => {
-            this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+            // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+            this.$router.push(`/login`)
           })
         })
         .catch(() => {})

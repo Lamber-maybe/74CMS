@@ -12,7 +12,11 @@ class Index extends \app\index\controller\Base
             $this->redirect(config('global_config.mobile_domain'),302);
             exit;
         }
-        $index_tpl = config('global_config.index_tpl');
+        if($this->subsite!==null){
+            $index_tpl = $this->subsite->tpl;
+        }else{
+            $index_tpl = config('global_config.index_tpl');
+        }
         $index_tpl = $index_tpl?$index_tpl:'def';
         $instance = new \app\common\lib\Tpl($this->visitor);
         $return = $instance->index($index_tpl);

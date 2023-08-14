@@ -3,9 +3,9 @@
       <!-- <div class="b_bg" :class="utype==1?'':'p'"></div> -->
       <div class="b_group">
         <div v-if="$store.state.config.wechat_login_open==1" :class="scan ? 'b_sw aco' : 'b_sw'" @click="showScan"></div>
-        <div class="login_tips" :class="utype==1 ? 'tips_color_2' : 'tips_color_1'" @click="showScan">
+        <div class="login_tips" :class="utype==1 ? 'tips_color_2' : 'tips_color_1'" @click.stop="$router.push(layout.utype_other_login_route)">
           <div class="text_1">{{utype==1?'我是求职者':'我是招聘方'}}</div>
-          <div class="text_2" @click="$router.push(layout.utype_other_login_route)">{{utype==1?'个人在此登录':'企业在此登录'}}</div>
+          <div class="text_2" @click.stop="$router.push(layout.utype_other_login_route)">{{utype==1?'个人在此登录':'企业在此登录'}}</div>
         </div>
         <div v-show="!scan">
           <div class="b_title">{{layout.utype_current_text}}登录</div>
@@ -332,6 +332,7 @@ import Captcha from '@/components/captcha/index'
         text-align: center;
         color: #fff;
         padding: 0 2px;
+        cursor: pointer;
         &::before{
           content: '';
           border-style: solid;

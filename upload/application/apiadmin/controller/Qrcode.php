@@ -47,7 +47,7 @@ class Qrcode extends \app\common\controller\Base{
             model('AdminScanCert')->where('addtime','lt',strtotime('today'))->delete();
             $this->ajaxReturn(200, '', $qrcode);
         }else{
-            $this->ajaxReturn(501, 'server error');
+            $this->ajaxReturn(200, 'server error', false);
         }
     }
 }

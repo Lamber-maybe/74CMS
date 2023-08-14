@@ -43,6 +43,27 @@ class Resume extends \app\index\controller\Base
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
+        $subsiteCondition = get_subsite_condition();
+        $subsite_district_level = 0;
+        if(!empty($subsiteCondition)){
+            foreach ($subsiteCondition as $key => $value) {
+                if($key=='district1'){
+                    $district1 = $value;
+                    $subsite_district_level = 1;
+                    break;
+                }
+                if($key=='district2'){
+                    $district2 = $value;
+                    $subsite_district_level = 2;
+                    break;
+                }
+                if($key=='district3'){
+                    $district3 = $value;
+                    $subsite_district_level = 3;
+                    break;
+                }
+            }
+        }
 
         if ($district1 > 0) {
             $params['district1'] = $district1;
@@ -152,7 +173,10 @@ class Resume extends \app\index\controller\Base
         $return['total'] = $searchResult['total'];
         $return['total_page'] = $searchResult['total_page'];
 
-        if($district2>0){
+        if($district3>0){
+            $district_level = 0;
+            $category_district = [];
+        }else if($district2>0){
             $district_level = 3;
             $category_district = model('CategoryDistrict')->getCache($district2);
         }else if($district1>0){
@@ -238,6 +262,7 @@ class Resume extends \app\index\controller\Base
         }
         $this->initPageSeo('resumelist',$seoData);
         
+        $this->assign('subsite_district_level',$subsite_district_level);
         $this->assign('selectedTagArr',$selectedTagArr);
         $this->assign('currentPage',$current_page);
         $this->assign('prevPage',$current_page-1);

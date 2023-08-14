@@ -16,10 +16,10 @@
       <el-table-column
         label="模板名称"
         prop="title"
-        min-width="130"
+        min-width="110"
       />
-      <el-table-column label="模板内容" prop="content" />
-      <el-table-column label="参数" prop="params" min-width="290" />
+      <el-table-column label="模板内容" prop="content" min-width="300" />
+      <el-table-column label="参数" prop="params" min-width="150" />
       <el-table-column v-if="alias == 'alisms'" label="阿里模板ID" min-width="210">
         <template slot-scope="scope">
           <el-input

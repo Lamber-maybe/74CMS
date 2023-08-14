@@ -101,6 +101,7 @@ import videopersonallist from '../views/shortvideo/personalList'
 import videoManage from '../views/shortvideo/videoManage'
 import videoRelease from '../views/shortvideo/releaseVideo'
 import videoplay from '../views/shortvideo/VideoPlay'
+import subsiteList from '../views/SubsiteList'
 
 Vue.use(VueRouter)
 
@@ -108,7 +109,7 @@ Vue.use(VueRouter)
  * 重写路由的push方法
  */
 const routerPush = VueRouter.prototype.push
-VueRouter.prototype.push = function push(location) {
+VueRouter.prototype.push = function push (location) {
   return routerPush.call(this, location).catch((error) => error)
 }
 
@@ -1200,6 +1201,16 @@ const routes = [
     component: videoplay,
     meta: {
       title: '视频播放',
+      keepAlive: false,
+      loginCheck: false
+    }
+  },
+  {
+    path: '/subsitelist',
+    name: 'subsiteList',
+    component: subsiteList,
+    meta: {
+      title: '分站列表',
       keepAlive: false,
       loginCheck: false
     }

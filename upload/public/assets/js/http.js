@@ -3,17 +3,18 @@ var service = axios.create({
   withCredentials: true, // 跨域支持发送cookie
   timeout: 5000 // 请求超时时间
 })
-function httpget (url, params) {
-  return new Promise(function(resolve, reject){
+function httpget(url, params) {
+  return new Promise(function (resolve, reject) {
     service
       .get(url, {
         headers: {
           'user-token': qscms.userToken,
-          platform: qscms.platform
+          platform: qscms.platform,
+          subsiteid: Cookies.get('qscms_subsiteid')
         },
         params: params
       })
-      .then(function(res) {
+      .then(function (res) {
         if (res.data.code != 200) {
           handlerHttpError(res.data)
           reject(res.data)
@@ -21,7 +22,7 @@ function httpget (url, params) {
           resolve(res.data)
         }
       })
-      .catch(function(err){
+      .catch(function (err) {
         if (err.message.includes('timeout')) {
           window.ELEMENT.Message.error('请求超时，请刷新页面再试')
         }
@@ -29,16 +30,17 @@ function httpget (url, params) {
       })
   })
 }
-function httppost (url, data) {
-  return new Promise(function(resolve, reject){
+function httppost(url, data) {
+  return new Promise(function (resolve, reject) {
     service
       .post(url, data, {
         headers: {
           'user-token': qscms.userToken,
-          platform: qscms.platform
+          platform: qscms.platform,
+          subsiteid: Cookies.get('qscms_subsiteid')
         }
       })
-      .then(function(res){
+      .then(function (res) {
         if (res.data.code != 200) {
           handlerHttpError(res.data)
           reject(res.data)
@@ -46,7 +48,7 @@ function httppost (url, data) {
           resolve(res.data)
         }
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err.message.includes('timeout')) {
           window.ELEMENT.Message.error('请求超时，请刷新页面再试')
         }
@@ -54,19 +56,20 @@ function httppost (url, data) {
       })
   })
 }
-function postFormData (url, params) {
-  return new Promise(function(resolve, reject){
+function postFormData(url, params) {
+  return new Promise(function (resolve, reject) {
     service({
       headers: {
         'Content-Type': 'multipart/form-data', // ;boundary=----WebKitFormBoundaryQ6d2Qh69dv9wad2u,
         'user-token': qscms.userToken,
-        platform: qscms.platform
+        platform: qscms.platform,
+        subsiteid: Cookies.get('qscms_subsiteid')
       },
       transformRequest: [
         function (data) {
           // 在请求之前对data传参进行格式转换
           var formData = new FormData()
-          Object.keys(data).forEach(function(key){
+          Object.keys(data).forEach(function (key) {
             formData.append(key, data[key])
           })
           return formData
@@ -76,7 +79,7 @@ function postFormData (url, params) {
       method: 'post',
       data: params
     })
-      .then(function(res){
+      .then(function (res) {
         if (res.data.code != 200) {
           handlerHttpError(res.data)
           reject(res.data)
@@ -84,7 +87,7 @@ function postFormData (url, params) {
           resolve(res.data)
         }
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err.message.includes('timeout')) {
           window.ELEMENT.Message.error('请求超时，请刷新页面再试')
         }

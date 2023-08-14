@@ -31,6 +31,31 @@ class Company extends \app\index\controller\Base
         if ($nature > 0) {
             $where['a.nature'] = ['eq', $nature];
         }
+
+        
+        $subsiteCondition = get_subsite_condition('a');
+        $subsite_district_level = 0;
+        if(!empty($subsiteCondition)){
+            foreach ($subsiteCondition as $key => $value) {
+                if($key=='a.district1'){
+                    $district1 = $value;
+                    $subsite_district_level = 1;
+                    break;
+                }
+                if($key=='a.district2'){
+                    $district2 = $value;
+                    $subsite_district_level = 2;
+                    break;
+                }
+                if($key=='a.district3'){
+                    $district3 = $value;
+                    $subsite_district_level = 3;
+                    break;
+                }
+            }
+        }
+
+
         if ($district3 > 0) {
             $where['a.district3'] = ['eq', $district3];
         } elseif ($district2 > 0) {
@@ -38,7 +63,10 @@ class Company extends \app\index\controller\Base
         } elseif ($district1 > 0) {
             $where['a.district1'] = ['eq', $district1];
         }
-        if($district2>0){
+        if($district3>0){
+            $district_level = 0;
+            $category_district = [];
+        }else if($district2>0){
             $district_level = 3;
             $category_district = model('CategoryDistrict')->getCache($district2);
         }else if($district1>0){
@@ -64,9 +92,8 @@ class Company extends \app\index\controller\Base
             $options_district[] = $arr;
         }
         
-        if (config('global_config.must_com_audit_certificate') == 1) {
-            $where['a.audit'] = 1;
-        }
+        //根据显示状态筛选数据
+        $where['a.is_display'] = 1;
 
         $total = model('Company')->alias('a')->where($where)->count();
         $list = model('Company')
@@ -196,6 +223,7 @@ class Company extends \app\index\controller\Base
 
         $this->initPageSeo('companylist',$seoData);
 
+        $this->assign('subsite_district_level',$subsite_district_level);
         $this->assign('dataset',$return);
         $this->assign('pagerHtml',$pagerHtml);
         $this->assign('district_level',$district_level);
@@ -373,13 +401,16 @@ class Company extends \app\index\controller\Base
         if (empty($famous_enterprises_setmeal)) {
             return $returnlist;
         }
+        $subsiteCondition = get_subsite_condition('c');
         $list = model('Company')
             ->alias('c')
             ->join(
                 config('database.prefix') . 'member_setmeal s',
                 's.uid=c.uid',
                 'LEFT'
-            );
+            )
+            ->where('c.is_display',1)
+            ->where($subsiteCondition);
         if($id>0){
             $list = $list->where('c.id','neq',$id);
         }
@@ -418,6 +449,7 @@ class Company extends \app\index\controller\Base
         return $returnlist;
     }
     protected function getSimilarList($id,$trade){
+        $subsiteCondition = get_subsite_condition('a');
         $list = model('Company')
             ->alias('a')
             ->field(
@@ -428,6 +460,8 @@ class Company extends \app\index\controller\Base
                 'a.uid=b.uid',
                 'LEFT'
             )
+            ->where('a.is_display',1)
+            ->where($subsiteCondition)
             ->where('a.id','neq',$id)
             ->where('a.trade',$trade)
             ->order('a.id desc')

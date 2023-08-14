@@ -25,13 +25,15 @@ class PageMobile extends \app\common\model\BaseModel
     }
     public function writeCacheByAlias($alias,$content,$expire=600,$id=0){
         if($alias){
-            $cache_name = 'mobile_cache_'.$alias.'_'.$id;
+            $subsiteid = config('subsite.id')?config('subsite.id'):0;
+            $cache_name = 'mobile_cache_'.$alias.'_'.$id.'_'.$subsiteid;
             cache($cache_name,$content,$expire);
         }
     }
     public function getCacheByAlias($alias,$id=0){
         if($alias){
-            $cache_name = 'mobile_cache_'.$alias.'_'.$id;
+            $subsiteid = config('subsite.id')?config('subsite.id'):0;
+            $cache_name = 'mobile_cache_'.$alias.'_'.$id.'_'.$subsiteid;
             return cache($cache_name);
         }
         return false;

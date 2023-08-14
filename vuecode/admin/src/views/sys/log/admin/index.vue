@@ -33,15 +33,15 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="时间" width="180">
+        <el-table-column label="时间" width="160">
           <template slot-scope="scope">
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" prop="content" />
-        <el-table-column label="管理员" prop="admin_name" width="180" />
-        <el-table-column label="IP" prop="ip" width="180" />
-        <el-table-column label="IP归属地" prop="ip_addr" width="180" />
+        <el-table-column label="管理员" prop="admin_name" width="100" />
+        <el-table-column label="IP" prop="ip" width="130" />
+        <el-table-column label="IP归属地" prop="ip_addr" width="120" />
       </el-table>
       <div class="spaceline" />
       <el-row :gutter="20">

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div>
-      <div slot="header" class="clearfix" v-if="0">
+      <div v-if="0" slot="header" class="clearfix">
         <span>广告管理</span>
       </div>
       <div class="list-search">
@@ -87,18 +87,13 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column align="center" label="ID" width="95">
-          <template slot-scope="scope">
-            {{ scope.row.id }}
-          </template>
-        </el-table-column>
-        <el-table-column label="广告标题" show-overflow-tooltip>
+        <el-table-column label="广告标题" show-overflow-tooltip min-width="200">
           <template slot-scope="scope">
             <el-popover placement="right" trigger="hover">
               <img
                 :src="scope.row.imageurl"
                 style="max-width: 500px; max-height: 400px"
-              />
+              >
               <span slot="reference">
                 {{ scope.row.title }}
                 <i class="el-icon-picture" />
@@ -106,12 +101,12 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="所属平台" width="100">
+        <el-table-column label="所属平台" min-width="90">
           <template slot-scope="scope">
             {{ scope.row.platform }}
           </template>
         </el-table-column>
-        <el-table-column label="所属广告位" width="200">
+        <el-table-column label="所属广告位" min-width="160">
           <template slot-scope="scope">
             {{ scope.row.cname }}
           </template>
@@ -120,7 +115,7 @@
           align="center"
           prop="created_at"
           label="开始时间"
-          width="200"
+          min-width="160"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
@@ -131,7 +126,7 @@
           align="center"
           prop="created_at"
           label="到期时间"
-          width="200"
+          min-width="160"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
@@ -141,19 +136,19 @@
             <span v-else>无限期</span>
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="150">
+        <el-table-column label="排序" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.sort_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" width="150">
+        <el-table-column label="是否显示" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
               {{ scope.row.is_display == 1 ? "显示" : "隐藏" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               size="small"

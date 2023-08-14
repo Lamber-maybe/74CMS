@@ -37,7 +37,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="姓名">
+        <el-table-column label="姓名" min-width="120">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.resume_link"
@@ -48,7 +48,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="400">
+        <el-table-column label="基本信息" min-width="180">
           <template slot-scope="scope">
             <span>{{ scope.row.age }}</span>
             /
@@ -59,7 +59,7 @@
             <span>{{ scope.row.experience_ }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="企业名称">
+        <el-table-column label="企业名称" min-width="300">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.company_link"
@@ -70,7 +70,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="下载时间">
+        <el-table-column align="center" label="下载时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>

@@ -68,30 +68,30 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="推广简历" prop="fullname" />
-        <el-table-column align="center" label="推广类型">
+        <el-table-column label="推广简历" prop="fullname" min-width="120" />
+        <el-table-column align="center" label="推广类型" min-width="120">
           <template slot-scope="scope">
             {{ scope.row.type == 'stick' ? '置顶' : '醒目标签' }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="推广天数">
+        <el-table-column align="center" label="推广天数" min-width="120">
           <template slot-scope="scope">
             {{ scope.row.days }}天
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开始时间">
+        <el-table-column align="center" label="开始时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="结束时间">
+        <el-table-column align="center" label="结束时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.deadline | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="320">
+        <el-table-column fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funEdit(scope.row)">
               编辑

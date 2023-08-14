@@ -204,6 +204,14 @@ import BindWeixin from './components/BindWeixin.vue'
 					.catch(() => {})
 			},
 			handlerBindWeixin(){
+				if(this.$store.state.config.wechat_login_open==0){
+					this.$alert('暂不支持此功能，如需使用请联系网站客服。', '提示', {
+						confirmButtonText: '确定',
+						type: 'warning',
+						callback: () => {}
+					});
+					return false
+				}
 				if(this.bind_weixin==0){
 					this.showBindWeixin = true
 				}else{
@@ -225,6 +233,14 @@ import BindWeixin from './components/BindWeixin.vue'
 				}
 			},
 			handlerBindQq () {
+				if(this.$store.state.config.account_qqlogin_open==0){
+					this.$alert('暂不支持此功能，如需使用请联系网站客服。', '提示', {
+						confirmButtonText: '确定',
+						type: 'warning',
+						callback: () => {}
+					});
+					return false
+				}
 				if(this.bind_qq==0){
 					const {href} = this.$router.resolve({path: '/oauth/qq/bind',});
 					window.open(href);

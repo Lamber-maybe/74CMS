@@ -79,7 +79,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="职位名称">
+        <el-table-column label="职位名称" min-width="200">
           <template slot-scope="scope">
             <div>
               <el-link
@@ -97,26 +97,26 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="会员/职位手机号" width="200">
+        <el-table-column label="会员/职位手机号" min-width="130">
           <template slot-scope="scope">
             <div title="会员手机号">
-              <i class="el-icon-user"></i>&nbsp;{{ scope.row.member_mobile }}
+              <i class="el-icon-user" />&nbsp;{{ scope.row.member_mobile }}
             </div>
             <div title="职位联系手机号">
-              <i class="el-icon-document"></i>&nbsp;{{
+              <i class="el-icon-document" />&nbsp;{{
                 scope.row.mobile ? scope.row.mobile : "-"
               }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="审核状态" width="120">
+        <el-table-column align="center" label="审核状态" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.audit | auditFilter">
               {{ options_audit[scope.row.audit] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建/刷新时间" width="200">
+        <el-table-column align="center" label="创建/刷新时间" min-width="150">
           <template slot-scope="scope">
             <div title="创建时间">
               <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
@@ -126,24 +126,26 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="职位状态" width="120">
+        <el-table-column align="center" label="职位状态" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_display | displayFilter">
               {{ options_display[scope.row.is_display] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="推广">
+        <el-table-column align="center" label="推广" min-width="120">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)"
-              >[海报]</el-button
-            >
-            <el-button type="text" @click="funCopy(scope.row)"
-              >[复制]</el-button
-            >
+            <el-button
+              type="text"
+              @click="funPoster(scope.row.id)"
+            >[海报]</el-button>
+            <el-button
+              type="text"
+              @click="funCopy(scope.row)"
+            >[复制]</el-button>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="300">
+        <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button
               size="small"

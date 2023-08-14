@@ -246,6 +246,7 @@ class Jobfairol extends \app\common\controller\Backend{
             ->field('a.id jid,a.uid juid,a.jobfair_id,a.utype,a.audit jaudit,a.qrcode,a.addtime jaddtime,a.source jsource,a.stick jstick,a.note,b.*,c.mobile')
             ->join(config('database.prefix') . 'resume b', 'a.uid=b.uid', 'left')
             ->join(config('database.prefix') . 'resume_contact c', 'a.uid=c.uid', 'left')
+            ->where('b.id is not null')
             ->where($where);
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -425,42 +426,57 @@ class Jobfairol extends \app\common\controller\Backend{
         $setmeal_id = input('post.setmeal_id/d',0,'intval');
         if($setmeal_id){
             $where['a.setmeal_id'] = $setmeal_id;
-            $where['b.deadline'] = ['gt', time()];
-            $count = model('Company')->alias('a')->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')->where($where)->count();
-        }else{
-            $count = model('Company')->alias('a')->where($where)->count();
+            $where['b.deadline'] = [['gt', time()],['eq', 0],'or'];
         }
         $limit = 100;
-
-        if($count===0){
-            $this->ajaxReturn(500, '没有符合条件的数据');
-        }
-        $a = 0;
-        for ($i=0; $i < ceil($count/$limit); $i++) { //分段查询
-            $offset = $i * $limit;
-            if($setmeal_id){
-                $com_list = model('Company')->alias('a')->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')->where($where)->order('a.refreshtime desc')->limit($offset.','.$limit)->field('a.uid')->select();
-            }else{
-                $com_list = model('Company')->alias('a')->where($where)->order('a.refreshtime desc')->limit($offset.','.$limit)->field('a.uid')->select();
-            }
-            foreach ($com_list as $key => $value) {
-                $post_data['uid'] = $value['uid'];
-                $post_data['jobfair_id'] = $jobfair_id;
-                $post_data['source'] = 1;
-                $post_data['utype'] = 1;
-                $post_data['audit'] = 1;
-                $post_data['qrcode'] = '';
-                $post_data['stick'] = 0;
-                $post_data['addtime'] = time();
-                $company = model('JobfairOnlineParticipate')->where(array('uid'=>$post_data['uid'],'jobfair_id'=>$post_data['jobfair_id']))->find();
-                if($company){
-                    continue;
-                }
-                model('JobfairOnline')->participateAdd($post_data);
-                $a++;
+        $page = input('post.page/d',1,'intval');
+        $pagesize = input('post.pagesize/d',1000,'intval');
+        if($page==1){
+            $total = model('Company')
+                    ->alias('a')
+                    ->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')
+                    ->where('a.uid','NOT IN',function($query) use ($jobfair_id){
+                        $query->table(config('database.prefix').'jobfair_online_participate')->where('jobfair_id',$jobfair_id)->field('uid');
+                    })
+                    ->where($where)
+                    ->count();
+            if($total==0){
+                $this->ajaxReturn(500, '没有符合条件的数据');
             }
         }
-        $this->ajaxReturn(200, '成功添加了'.$a++.'个企业！');
+        $list = model('Company')
+                ->alias('a')
+                ->join(config('database.prefix').'member_setmeal b', 'a.uid=b.uid')
+                ->where('a.uid','NOT IN',function($query) use ($jobfair_id){
+                    $query->table(config('database.prefix').'jobfair_online_participate')->where('jobfair_id',$jobfair_id)->field('uid');
+                })
+                ->where($where)
+                ->field('a.uid')
+                ->order('a.id asc')
+                ->page($page,$pagesize)
+                ->select();
+        if(empty($list)){
+            $this->ajaxReturn(200, '添加完成',1);
+        }
+        $counter = 0;
+        $insert_data = [];
+        foreach ($list as $key => $value) {
+            $counter++;
+            $post_data['uid'] = $value['uid'];
+            $post_data['jobfair_id'] = $jobfair_id;
+            $post_data['source'] = 1;
+            $post_data['utype'] = 1;
+            $post_data['audit'] = 1;
+            $post_data['qrcode'] = 0;
+            $post_data['stick'] = 0;
+            $post_data['addtime'] = time();
+            $post_data['note'] = '';
+            $insert_data[] = $post_data;
+        }
+        if(!empty($insert_data)){
+            model('JobfairOnlineParticipate')->saveAll($insert_data);
+        }
+        $this->ajaxReturn(200, '已成功添加了'.$counter.'个企业！',0);
     }
     // 批量添加个人
     public function personalBatchAdd() {
@@ -482,47 +498,47 @@ class Jobfairol extends \app\common\controller\Backend{
             $tmp_str = '';
             switch ($experience) {
                 case 1: //无经验/应届生
-                    $tmp_str .= ' or b.enter_job_time=0';
+                    $tmp_str .= ' or enter_job_time=0';
                     break;
                 case 2:
                     $tmp_str .=
-                        ' or b.enter_job_time>' . strtotime('-2 year');
+                        ' or enter_job_time>' . strtotime('-2 year');
                     break;
                 case 3:
                     $tmp_str .=
-                        ' or (b.enter_job_time<=' .
+                        ' or (enter_job_time<=' .
                         strtotime('-2 year') .
-                        ' and b.enter_job_time>' .
+                        ' and enter_job_time>' .
                         strtotime('-3 year') .
                         ')';
                     break;
                 case 4:
                     $tmp_str .=
-                        ' or (b.enter_job_time<=' .
+                        ' or (enter_job_time<=' .
                         strtotime('-3 year') .
-                        ' and b.enter_job_time>' .
+                        ' and enter_job_time>' .
                         strtotime('-4 year') .
                         ')';
                     break;
                 case 5:
                     $tmp_str .=
-                        ' or (b.enter_job_time<=' .
+                        ' or (enter_job_time<=' .
                         strtotime('-3 year') .
-                        ' and b.enter_job_time>' .
+                        ' and enter_job_time>' .
                         strtotime('-5 year') .
                         ')';
                     break;
                 case 6:
                     $tmp_str .=
-                        ' or (b.enter_job_time<=' .
+                        ' or (enter_job_time<=' .
                         strtotime('-5 year') .
-                        ' and b.enter_job_time>' .
+                        ' and enter_job_time>' .
                         strtotime('-10 year') .
                         ')';
                     break;
                 case 7:
                     $tmp_str .=
-                        ' or b.enter_job_time<=' . strtotime('-10 year');
+                        ' or enter_job_time<=' . strtotime('-10 year');
                     break;
                 default:
                     break;
@@ -534,29 +550,36 @@ class Jobfairol extends \app\common\controller\Backend{
             $where['enter_job_time'] = $tmp_str;
         }
         $limit = 100;
-        $count = model('Resume')->where($where)->count();
-        if($count==0){
-            $this->ajaxReturn(500, '没有符合条件的数据');
-        }
-        $a = 0;
-        for ($i=0; $i < ceil($count/$limit); $i++) { //分段查询
-            $offset = $i * $limit;
-            $com_list = model('Resume')->where($where)->order('id desc')->limit($offset.','.$limit)->field('uid')->select();
-            foreach ($com_list as $key => $value) {
-                $post_data['uid'] = $value['uid'];
-                $post_data['jobfair_id'] = $jobfair_id;
-                $post_data['source'] = 1;
-                $post_data['utype'] = 2;
-                $post_data['audit'] = 1;
-                $post_data['addtime'] = time();
-                $company = model('JobfairOnlineParticipate')->where(array('uid'=>$post_data['uid'],'jobfair_id'=>$post_data['jobfair_id']))->select();
-                if($company){
-                    continue;
-                }
-                model('JobfairOnline')->participateAdd($post_data);
-                $a++;
+        $page = input('post.page/d',1,'intval');
+        $pagesize = input('post.pagesize/d',1000,'intval');
+        if($page==1){
+            $total = model('ResumeSearchRtime')->where($where)->count();
+            if($total==0){
+                $this->ajaxReturn(500, '没有符合条件的数据');
             }
         }
-        $this->ajaxReturn(200, '成功添加了'.$a++.'份简历！');
+        $list = model('ResumeSearchRtime')->where($where)->field('uid')->order('id asc')->page($page,$pagesize)->select();
+        if(empty($list)){
+            $this->ajaxReturn(200, '添加完成',1);
+        }
+        $counter = 0;
+        $insert_data = [];
+        foreach ($list as $key => $value) {
+            $counter++;
+            $post_data['uid'] = $value['uid'];
+            $post_data['jobfair_id'] = $jobfair_id;
+            $post_data['source'] = 1;
+            $post_data['utype'] = 2;
+            $post_data['audit'] = 1;
+            $post_data['qrcode'] = 0;
+            $post_data['stick'] = 0;
+            $post_data['addtime'] = time();
+            $post_data['note'] = '';
+            $insert_data[] = $post_data;
+        }
+        if(!empty($insert_data)){
+            model('JobfairOnlineParticipate')->saveAll($insert_data);
+        }
+        $this->ajaxReturn(200, '已成功添加了'.$counter.'份简历！',0);
     }
 }

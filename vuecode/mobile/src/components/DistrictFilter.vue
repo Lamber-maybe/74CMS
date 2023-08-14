@@ -71,10 +71,14 @@ export default {
       city_pop_lay: 'city_pop_lay',
       count_pop_lay: 'count_pop_lay',
       zIndex: 1,
-      showAll: true
+      showAll: true,
+      level: 1
     }
   },
   mounted () {
+    if (this.type) {
+      this.initSubstation()
+    }
     this.$store.dispatch('getClassify', 'citycategory').then(() => {
       // 处理地区格式
       this.citySource = this.$store.state.classifyCityOriginal
@@ -85,15 +89,115 @@ export default {
       this.citySource = storeDistrict.map(function (item) {
         return { id: item.value, text: item.label, children: item.children }
       })
+      if (this.type) {
+        if (this.level === 0) {
+          this.provinceList = this.citySource.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children ? item.children : [],
+              select: false
+            }
+          })
+        } else if (this.level === 1) {
+          let disList = this.citySource.filter(item => parseInt(item.id) === parseInt(this.district1))
+          let currentDis = disList[0].children
+          currentDis.unshift({ value: '', label: '不限', children: [] })
+          currentDis = currentDis.map(function (item) {
+            return { id: item.value, text: item.label, children: item.children }
+          })
+          this.provinceList = currentDis.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children ? item.children : [],
+              select: false
+            }
+          })
+        } else if (this.level === 2) {
+          let disList = this.citySource.filter(item => parseInt(item.id) === parseInt(this.district1))
+          let currentDis = disList[0].children
+          let disListT = currentDis.filter(item => parseInt(item.value) === parseInt(this.district2))
+          let currentDisT = disListT[0].children
+          currentDisT.unshift({ value: '', label: '不限', children: [] })
+          currentDisT = currentDisT.map(function (item) {
+            return { id: item.value, text: item.label, children: item.children }
+          })
+          this.provinceList = currentDisT.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children ? item.children : [],
+              select: false
+            }
+          })
+        } else {
+          let currentDis = []
+          currentDis.unshift({ value: '', label: '不限', children: [] })
+          currentDis = currentDis.map(function (item) {
+            return { id: item.value, text: item.label, children: item.children }
+          })
+          this.provinceList = currentDis.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children ? item.children : [],
+              select: false
+            }
+          })
+        }
+      }
       this.initData()
     })
   },
   methods: {
+    initSubstation () {
+      this.level = this.$store.state.config.subsite_info.district_level === undefined ? 0 : this.$store.state.config.subsite_info.district_level
+      this.district1 = this.$store.state.config.subsite_info.district1 === undefined ? 0 : this.$store.state.config.subsite_info.district1
+      this.district2 = this.$store.state.config.subsite_info.district2 === undefined ? 0 : this.$store.state.config.subsite_info.district2
+      this.district3 = this.$store.state.config.subsite_info.district3 === undefined ? 0 : this.$store.state.config.subsite_info.district3
+    },
     // 初始化数据
     initData () {
       if (this.all === false) {
         this.showAll = false
       }
+      if (this.type) {
+        // 外部筛选
+        if (this.level === 0) {
+          this.funForInitData()
+        } else if (this.level === 1) {
+          if (this.districts[1]) {
+            // 需要恢复选中
+            this.district2 = this.districts[1]
+            this.district3 = this.districts[2]
+
+            let disList = this.citySource.filter(item => parseInt(item.id) === parseInt(this.district1))
+            let currentDis = disList[0].children
+            currentDis = currentDis.map(function (item) {
+              return { id: item.value, text: item.label, children: item.children }
+            })
+            if (parseInt(this.district3) !== 0) {
+              this.makeElement(this.district2, currentDis, 2)
+              if (this.cityList.length) {
+                this.showCityPop = true
+              }
+            }
+          }
+          this.syncSelect()
+        } else if (this.level === 2) {
+          if (this.districts[2]) {
+            this.district3 = this.districts[2]
+          }
+          this.syncSelect()
+        } else {
+          this.syncSelect()
+        }
+      } else {
+        this.funForInitData()
+      }
+    },
+    funForInitData () {
       if (this.districts[0]) {
         // 需要恢复选中
         this.district1 = this.districts[0]
@@ -115,14 +219,16 @@ export default {
           }
         }
       }
-      this.provinceList = this.citySource.map(function (item) {
-        return {
-          id: item.id,
-          text: item.text,
-          children: item.children,
-          select: false
-        }
-      })
+      if (!this.type) {
+        this.provinceList = this.citySource.map(function (item) {
+          return {
+            id: item.id,
+            text: item.text,
+            children: item.children ? item.children : [],
+            select: false
+          }
+        })
+      }
       this.syncSelect()
     },
     // 点击遮罩层
@@ -132,6 +238,42 @@ export default {
     },
     // 同步选中状态
     syncSelect () {
+      let _this = this
+      if (_this.type) {
+        if (_this.level === 0) {
+          _this.funForSyncSelect()
+        } else if (_this.level === 1) {
+          this.provinceList = this.provinceList.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children,
+              select: parseInt(item.id) === parseInt(_this.district2)
+            }
+          })
+          this.cityList = this.cityList.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children ? item.children : [],
+              select: parseInt(item.id) === parseInt(_this.district3)
+            }
+          })
+        } else if (_this.level === 2) {
+          this.provinceList = this.provinceList.map(function (item) {
+            return {
+              id: item.id,
+              text: item.text,
+              children: item.children,
+              select: parseInt(item.id) === parseInt(_this.district3)
+            }
+          })
+        }
+      } else {
+        _this.funForSyncSelect()
+      }
+    },
+    funForSyncSelect () {
       let _this = this
       this.provinceList = this.provinceList.map(function (item) {
         return {
@@ -212,6 +354,60 @@ export default {
        * @param item 选中项
        */
     makeCityElement (item) {
+      if (this.type) {
+        // 外部筛选
+        if (this.level === 0) {
+          this.funForMakeCity(item)
+        } else if (this.level === 1) {
+          let id = item.id
+          if (id) {
+            this.district2 = id
+            this.cityList = []
+            this.countyList = []
+            let disList = this.citySource.filter(item => parseInt(item.id) === parseInt(this.district1))
+            let currentDis = disList[0].children
+            currentDis = currentDis.map(function (item) {
+              return { id: item.value, text: item.label, children: item.children }
+            })
+            this.makeElement(id, currentDis, 2)
+            if (!this.cityList.length) {
+              // 没有市级，跳转
+              this.district3 = 0
+              this.districtName = item.text
+              this.toSearch()
+            } else {
+              this.showCityPop = !this.showCityPop
+            }
+          } else {
+            // 不限
+            this.district2 = ''
+            this.district3 = ''
+            this.districtName = '地区'
+            this.toSearch()
+          }
+          this.syncSelect()
+        } else if (this.level === 2) {
+          let id = item.id
+          if (id) {
+            this.district3 = id
+            this.districtName = item.text
+            this.toSearch()
+          } else {
+            // 不限
+            this.district3 = ''
+            this.districtName = '地区'
+            this.toSearch()
+          }
+          this.syncSelect()
+        } else {
+          this.districtName = '地区'
+          this.toSearch()
+        }
+      } else {
+        this.funForMakeCity(item)
+      }
+    },
+    funForMakeCity (item) {
       let id = item.id
       if (id) {
         this.district1 = id
@@ -244,6 +440,22 @@ export default {
        * @param item 选中项
        */
     makeCountyElement (item) {
+      if (this.type) {
+        // 外部筛选
+        if (this.level === 0) {
+          this.funForMakeCounty(item)
+        } else if (this.level === 1) {
+          let id = item.id
+          this.district3 = id
+          this.districtName = item.text
+          this.toSearch()
+          this.syncSelect()
+        }
+      } else {
+        this.funForMakeCounty(item)
+      }
+    },
+    funForMakeCounty (item) {
       let id = item.id
       this.district2 = id
       this.countyList = []
@@ -271,6 +483,16 @@ export default {
        * @param item 选中项
        */
     handleSearch (item) {
+      if (this.type) {
+        // 外部筛选
+        if (this.level === 0) {
+          this.funForHandleSearch(item)
+        }
+      } else {
+        this.funForHandleSearch(item)
+      }
+    },
+    funForHandleSearch (item) {
       this.district3 = item.id
       this.districtName = item.text
       this.toSearch()

@@ -1,8 +1,11 @@
 <?php
 namespace app\common\controller;
+use think\Cookie;
 
 class Base extends \think\Controller
 {
+    protected $subsite=null;
+    protected $subsiteCondition=[];
     protected $request;
     protected $module_name;
     protected $controller_name;
@@ -21,6 +24,51 @@ class Base extends \think\Controller
         $this->controller_name = strtolower($this->request->controller());
         $this->action_name = strtolower($this->request->action());
         $this->filterIp();
+        $this->initSubsite();
+    }
+    /**
+     * 初始化分站信息
+     */
+    protected function initSubsite(){
+        if(intval(config('global_config.subsite_open'))==0){
+            return;
+        }
+        $subsiteid = 0;
+        do{
+            $subsiteid = Cookie::has('subsiteid')?Cookie::get('subsiteid'):0;
+            if($subsiteid){
+                break;
+            }
+            $header_info = \think\Request::instance()->header();
+            $subsiteid = isset($header_info['subsiteid']) ? $header_info['subsiteid'] : 0;
+            if($subsiteid){
+                break;
+            }
+            $subsiteid = input('param.subsiteid/d',0,'intval');
+        }while(0);
+        if($subsiteid>0){
+            $this->subsite = model('Subsite')->where('id',$subsiteid)->find();
+            if($this->subsite===null){
+                return;
+            }
+            if($this->subsite->district3>0){
+                $this->subsiteCondition = ['district3'=>$this->subsite->district3];
+            }else if($this->subsite->district2>0){
+                $this->subsiteCondition = ['district2'=>$this->subsite->district2];
+            }else{
+                $this->subsiteCondition = ['district1'=>$this->subsite->district1];
+            }
+            $category_district_data = model('CategoryDistrict')->getCache();
+            $this->subsite->district_text = isset($category_district_data[$this->subsite->district]) ? $category_district_data[$this->subsite->district] : '';
+            $this->subsite->district_text = cut_str($this->subsite->district_text,5);
+            $this->subsite->district_level = $this->subsite->district3>0?3:($this->subsite->district2>0?2:1);
+        }
+        \think\Config::set('subsite', $this->subsite);
+        \think\Config::set('subsiteid', $this->subsite===null?0:$this->subsite->id);
+        \think\Config::set('subsiteCondition', $this->subsiteCondition);
+        if($this->subsite!==null){
+            \think\Config::set('global_config.sitename',$this->subsite->sitename);
+        }
     }
     public function filterIp(){
         if(!in_array($this->module_name,['apiadmin','apiadminmobile'])){

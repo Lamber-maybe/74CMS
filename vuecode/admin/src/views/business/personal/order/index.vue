@@ -115,12 +115,13 @@
         <el-table-column
           label="会员手机号"
           prop="member_mobile"
+          min-width="120"
         />
-        <el-table-column label="服务内容" prop="service_name" />
-        <el-table-column label="订单金额" width="120">
+        <el-table-column label="服务内容" prop="service_name" min-width="120" />
+        <el-table-column label="订单金额" min-width="120">
           <template slot-scope="scope">￥{{ scope.row.amount }}</template>
         </el-table-column>
-        <el-table-column label="支付方式" width="120">
+        <el-table-column label="支付方式" min-width="120">
           <template slot-scope="scope">
             <span v-if="scope.row.payment == ''">
               -
@@ -135,20 +136,20 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="订单状态" width="120">
+        <el-table-column label="订单状态" min-width="120">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | statusFilter">
               {{ options_status[scope.row.status] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="下单时间">
+        <el-table-column align="center" label="下单时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="付款时间">
+        <el-table-column align="center" label="付款时间" min-width="160">
           <template slot-scope="scope">
             <span v-if="scope.row.paytime > 0">
               <i class="el-icon-time" />

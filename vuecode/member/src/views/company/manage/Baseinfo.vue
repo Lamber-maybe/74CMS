@@ -233,7 +233,7 @@
             class="el_input_widht"
             v-model="form.basic.citycategory_arr"
             :options="areaDistrict"
-            :show-all-levels="false"
+            :show-all-levels="true"
             filterable
             @change="setLocation"
           ></el-cascader>

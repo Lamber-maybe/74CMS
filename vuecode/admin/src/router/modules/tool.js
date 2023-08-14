@@ -325,7 +325,7 @@ const toolRouter = {
       path: '/tool/shorturl',
       name: 'shorturl',
       component: () =>
-          import ('@/views/tool/shorturl'),
+        import ('@/views/tool/shorturl'),
       redirect: 'noRedirect',
       alwaysShow: true,
       meta: {
@@ -336,7 +336,7 @@ const toolRouter = {
         path: '/tool/shorturl/lists',
         name: 'shorturlList',
         component: () =>
-            import ('@/views/tool/shorturl/lists.vue'),
+          import ('@/views/tool/shorturl/lists.vue'),
         meta: {
           title: '短链接',
           access: 'shorturlList'
@@ -353,15 +353,25 @@ const toolRouter = {
       },
       redirect: 'noRedirect',
       component: () =>
-          import ('@/views/tool/index.vue'),
+        import ('@/views/tool/index.vue'),
       children: [{
         path: '/tool/syncsetmeal',
         name: 'toolsyncsetmeal',
         component: () =>
-            import ('@/views/tool/syncsetmeal/index.vue'),
+          import ('@/views/tool/syncsetmeal/index.vue'),
         meta: {
           title: '套餐权限同步',
           access: 'toolsyncsetmeal'
+        }
+      },
+      {
+        path: '/tool/sync_com_display',
+        name: 'toolsync_com_display',
+        component: () =>
+          import ('@/views/tool/sync_com_display/index.vue'),
+        meta: {
+          title: '企业显示状态同步',
+          access: 'toolsync_com_display'
         }
       }]
     }

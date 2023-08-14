@@ -72,18 +72,20 @@ class Job extends \app\common\model\BaseModel
         if (empty($userinfo)) {
             $userinfo = model('Member')->find($jobinfo['uid']);
         }
+        $companyinfo = model('Company')
+                ->where('id', $jobinfo['company_id'])
+                ->find();
         if (
             !$userinfo ||
             $userinfo['status'] == 0 ||
             $jobinfo['audit'] != 1 ||
             $jobinfo['is_display'] == 0
+            || $companyinfo===null
+            || $companyinfo['is_display']==0
         ) {
             $job_status = false; //无效信息，不进索引表
         }
         if ($job_status) {
-            $companyinfo = model('Company')
-                ->where('id', $jobinfo['company_id'])
-                ->find();
             $membersetmeal = model('MemberSetmeal')
                 ->where('uid', $jobinfo['uid'])
                 ->find();
@@ -180,6 +182,10 @@ class Job extends \app\common\model\BaseModel
                 ->where('uid', 'in', $uid_arr)
                 ->column('uid,status,mobile', 'uid');
         }
+        //查出所有的company信息，用于判断企业是否是不显示状态
+        $companyinfo_list = model('Company')
+            ->where('uid', 'in', $uid_arr)
+            ->column('id,uid,nature,audit,trade,scale,companyname,is_display', 'id');
         //整理出需要整理索引的职位信息(所有的有效职位)
         $valid_jobinfo_list = [];
         foreach ($jobinfo_list as $key => $jobinfo) {
@@ -187,7 +193,9 @@ class Job extends \app\common\model\BaseModel
                 isset($membeninfo_list[$jobinfo['uid']]) &&
                 $membeninfo_list[$jobinfo['uid']]['status'] == 1 &&
                 $jobinfo['audit'] == 1 &&
-                $jobinfo['is_display'] == 1
+                $jobinfo['is_display'] == 1 && 
+                isset($companyinfo_list[$jobinfo['company_id']]) && 
+                $companyinfo_list[$jobinfo['company_id']]['is_display']==1
             ) {
                 $valid_jobinfo_list[] = $jobinfo->toArray();
             }
@@ -200,10 +208,6 @@ class Job extends \app\common\model\BaseModel
         }
 
         //------------------开始整理索引更新数据-----------------------
-        //查出所有的企业信息
-        $companyinfo_list = model('Company')
-            ->where('uid', 'in', $uid_arr)
-            ->column('id,uid,nature,audit,trade,scale,companyname', 'id');
         //查出所有的会员套餐信息
         $member_setmeal_list = model('MemberSetmeal')
             ->where('uid', 'in', $uid_arr)
@@ -630,7 +634,8 @@ class Job extends \app\common\model\BaseModel
             return 0;
         }
         $published_joball = model('Job')->where('uid', $uid)->where('is_display', 1)->count();
-        return $setmeal_joball - $published_joball;
+        $counter = $setmeal_joball - $published_joball;
+        return $counter<0?0:$counter;
     }
     /**
      * 获取联系方式

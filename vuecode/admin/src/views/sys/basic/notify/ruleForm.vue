@@ -7,7 +7,10 @@
       :inline-message="true"
     >
       <el-form-item>
-        <el-table border :data="list">
+        <el-table
+          border
+          :data="list"
+        >
           <el-table-column label="通知内容" min-width="120">
             <template slot-scope="scope">
               {{ scope.row.title }}

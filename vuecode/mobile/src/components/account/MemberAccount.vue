@@ -370,6 +370,14 @@ export default {
       this.$router.push('/member/company/auth')
     },
     handlerBindQq () {
+      if (this.$store.state.config.account_qqlogin_open == 0) {
+        this.$dialog.alert({
+          message: '暂不支持此功能<br />如需使用请联系网站客服'
+        }).then(() => {
+          // on close
+        })
+        return false
+      }
       if (this.bind_qq == 0) {
         const {href} = this.$router.resolve({ path: '/member/oauth/qq/bind' })
         window.location.href = href
@@ -395,6 +403,14 @@ export default {
       }
     },
     handlerBindWeixin () {
+      if (this.$store.state.config.wechat_login_open == 0) {
+        this.$dialog.alert({
+          message: '暂不支持此功能<br />如需使用请联系网站客服'
+        }).then(() => {
+          // on close
+        })
+        return false
+      }
       if (this.bind_weixin === 1) {
         this.$dialog
           .confirm({

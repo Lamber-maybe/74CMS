@@ -1,6 +1,6 @@
 <template>
   <div class="hb">
-    <Head :show_back="'false'">{{ $store.state.config.sitename }}</Head>
+    <Head :show_back="'false'" :show_sub="$store.state.config.subsite_open==1?'true':''">{{ $store.state.config.sitename }}</Head>
     <div class="b2">
       <img :src="$store.state.config.logo" alt="" />
     </div>

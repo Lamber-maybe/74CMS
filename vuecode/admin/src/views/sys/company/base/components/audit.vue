@@ -19,6 +19,12 @@
           <el-radio label="1">营业执照+经办人身份证+委托函</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="新注册企业显示状态" required>
+        <el-radio-group v-model="form.display_new_com">
+          <el-radio label="1">显示</el-radio>
+          <el-radio label="0">不显示</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="新注册企业认证状态" required>
         <el-radio-group v-model="form.audit_new_com">
           <el-radio label="0">待认证</el-radio>
@@ -72,6 +78,7 @@ export default {
       form: {
         must_com_audit_certificate: false,
         audit_com_project: 0,
+        display_new_com: 0,
         audit_new_com: 0,
         audit_edit_com: 0,
         audit_verifycom_addjob: 0,
@@ -92,6 +99,7 @@ export default {
       setConfig(param, 'get')
         .then(response => {
           const {
+            display_new_com,
             audit_new_com,
             audit_edit_com,
             audit_verifycom_addjob,
@@ -103,6 +111,7 @@ export default {
           } = { ...response.data }
 
           this.form = {
+            display_new_com,
             audit_new_com,
             audit_edit_com,
             audit_verifycom_addjob,

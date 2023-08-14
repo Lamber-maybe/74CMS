@@ -93,3 +93,10 @@ export function companySetService(data) {
     data
   })
 }
+export function companySetDisplay(data) {
+  return request({
+    url: apiArr.companySetDisplay,
+    method: 'post',
+    data
+  })
+}

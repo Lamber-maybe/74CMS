@@ -34,8 +34,8 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" min-width="30" />
-        <el-table-column label="类型" min-width="80">
+        <el-table-column type="selection" width="42" />
+        <el-table-column label="类型" min-width="60">
           <template slot-scope="scope">
             {{ scope.row.type_cn }}
           </template>
@@ -47,12 +47,12 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="内容">
+        <el-table-column label="内容" min-width="400">
           <template slot-scope="scope">
             <el-popover
               placement="right"
               trigger="hover"
-              min-width="400"
+              width="400"
             >
               {{ scope.row.content }}
               <span slot="reference">
@@ -70,14 +70,14 @@
           align="center"
           prop="addtime"
           label="添加时间"
-          min-width="200"
+          min-width="150"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="220">
+        <el-table-column fixed="right" label="操作" min-width="80">
           <template slot-scope="scope">
             <el-button
               size="small"

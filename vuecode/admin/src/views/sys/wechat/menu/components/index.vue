@@ -15,28 +15,32 @@
       <el-table-column
         prop="title"
         label="菜单名称"
+        min-width="130"
       />
       <el-table-column
         prop="key"
         label="菜单关键字"
+        min-width="130"
       />
       <el-table-column
         prop="type"
         label="菜单类型"
+        min-width="120"
       />
       <el-table-column
         prop="url"
         label="链接地址"
+        min-width="200"
       />
       <el-table-column
         prop="sort_id"
         label="排序"
-        min-width="180"
+        min-width="80"
       />
       <el-table-column
         fixed="right"
         label="操作"
-        min-width="350"
+        min-width="300"
       >
         <template slot-scope="scope">
           <el-button

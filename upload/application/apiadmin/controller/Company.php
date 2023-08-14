@@ -24,6 +24,7 @@ class Company extends \app\common\controller\Backend
         $regtime = input('get.regtime/d', 0, 'intval');
         $service = input('get.service/s', '', 'trim');
         $setmeal_overtime = input('get.setmeal_overtime/s', '', 'trim');
+        $is_display = input('get.is_display/s', '', 'trim');
 
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -61,6 +62,9 @@ class Company extends \app\common\controller\Backend
         }
         if($service!=''){
             $where['c.cs_id'] = $service;
+        }
+        if($is_display!=''){
+            $where['c.is_display'] = intval($is_display);
         }
         switch($setmeal_overtime){
             case '0':
@@ -425,5 +429,29 @@ class Company extends \app\common\controller\Backend
         }
         model('Company')->save(['cs_id'=>$cs_id],['id'=>['in',$id]]);
         $this->ajaxReturn(200, '分配成功');
+    }
+    /**
+     * 设置显示状态
+     */
+    public function setDisplay()
+    {
+        $id = input('post.id/d',0,'intval');
+        if ($id==0) {
+            $this->ajaxReturn(500, '请选择数据');
+        }
+        $is_display = input('post.is_display/d',1,'intval');
+
+        model('Company')->where('id',$id)->setField('is_display',$is_display);
+        $jobid_arr = model('Job')->where('company_id',$id)->column('id');
+        model('Job')->refreshSearchBatch($jobid_arr);
+        model('AdminLog')->record(
+            '将企业显示状态变更为【' .
+                ($is_display==1?'显示':'不显示') .
+                '】。企业ID【' .
+                $id .
+                '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '设置成功');
     }
 }

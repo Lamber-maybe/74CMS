@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import persistedState from 'vuex-persistedstate'
 import axios from 'axios'
 import api from '@/api'
+import VueCookies from 'vue-cookies'
 Vue.use(Vuex)
 const service = axios.create({
   baseURL: window.global.RequestBaseUrl,
@@ -266,7 +267,8 @@ const store = new Vuex.Store({
           method: 'GET',
           headers: {
             'user-token': this.state.userToken,
-            platform: this.state.platform
+            platform: this.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: api.global_config,
           data: {}
@@ -287,7 +289,8 @@ const store = new Vuex.Store({
           method: 'POST',
           headers: {
             'user-token': context.state.userToken,
-            platform: context.state.platform
+            platform: context.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -318,7 +321,8 @@ const store = new Vuex.Store({
           method: 'POST',
           headers: {
             'user-token': context.state.userToken,
-            platform: context.state.platform
+            platform: context.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: value.url,
           data: {
@@ -396,7 +400,8 @@ const store = new Vuex.Store({
           method: 'GET',
           headers: {
             'user-token': context.state.userToken,
-            platform: context.state.platform
+            platform: context.state.platform,
+            'subsiteid': VueCookies.get('qscms_subsiteid')
           },
           url: api.classify,
           params: {type: value}

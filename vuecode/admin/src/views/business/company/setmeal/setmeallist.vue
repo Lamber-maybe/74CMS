@@ -57,25 +57,23 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="企业名称" width="340">
+      <el-table-column label="企业名称" min-width="250">
         <template slot-scope="scope">
-          <span
-            >{{
-              scope.row.companyname ? scope.row.companyname : "未完善企业资料"
-            }}【uid:{{ scope.row.uid }}】</span
-          >
+          <span>{{
+            scope.row.companyname ? scope.row.companyname : "未完善企业资料"
+          }}【uid:{{ scope.row.uid }}】</span>
         </template>
       </el-table-column>
-      <el-table-column label="套餐名称" prop="setmeal_name" />
-      <el-table-column label="联系人">
+      <el-table-column label="套餐名称" prop="setmeal_name" min-width="120" />
+      <el-table-column label="联系人" min-width="180">
         <template slot-scope="scope">
-          <span v-if="scope.row.contact"
-            >{{ scope.row.contact }}({{ scope.row.mobile }})</span
-          >
+          <span
+            v-if="scope.row.contact"
+          >{{ scope.row.contact }}({{ scope.row.mobile }})</span>
           <span v-else>-</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="到期时间">
+      <el-table-column align="center" label="到期时间" min-width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.expire == 0">{{ scope.row.deadline_cn }}</span>
           <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{
@@ -86,18 +84,19 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="剩余天数">
+      <el-table-column label="剩余天数" min-width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.expire == 0">{{ scope.row.surplus_days }}</span>
           <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{
             scope.row.surplus_days
           }}</span>
-          <span v-if="scope.row.expire == 1" style="color: #f56c6c"
-            >{{ scope.row.surplus_days }}(已过期)</span
-          >
+          <span
+            v-if="scope.row.expire == 1"
+            style="color: #f56c6c"
+          >{{ scope.row.surplus_days }}(已过期)</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="320">
+      <el-table-column fixed="right" label="操作" min-width="240">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="funAdd(scope.row)">
             更换套餐

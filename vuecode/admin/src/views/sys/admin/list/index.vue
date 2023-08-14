@@ -11,25 +11,25 @@
         fit
         highlight-current-row
       >
-        <el-table-column align="center" label="ID" min-width="95">
+        <el-table-column align="center" label="ID" width="80">
           <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column label="登录名" prop="username" />
-        <el-table-column label="角色" prop="role_name" />
-        <el-table-column label="是否是销售" prop="is_sc">
+        <el-table-column label="登录名" prop="username" min-width="120" />
+        <el-table-column label="角色" prop="role_name" min-width="120" />
+        <el-table-column label="是否是销售" prop="is_sc" min-width="100" align="center">
           <template slot-scope="scope">
             <span v-if="!!parseInt(scope.row.is_sc)">是</span><span v-else>不是</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="openid" label="微信绑定">
+        <el-table-column align="center" prop="openid" label="微信绑定" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.openid==''"><el-button type="text" @click="funBind(scope.row.id)">[点击绑定]</el-button></span>
             <span v-else>已绑定<el-button type="text" @click="funBindCancel(scope.row.id)">[解绑]</el-button></span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="最后登录时间">
+        <el-table-column align="center" prop="last_login_time" label="最后登录时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.last_login_time | timeFilter }}</span>
@@ -38,8 +38,9 @@
         <el-table-column
           label="最后登录IP"
           prop="last_login_ip"
+          min-width="170"
         />
-        <el-table-column fixed="right" label="操作" min-width="400">
+        <el-table-column fixed="right" label="操作" min-width="330">
           <template slot-scope="scope">
             <el-button
               size="small"

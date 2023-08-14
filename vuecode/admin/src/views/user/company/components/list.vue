@@ -71,6 +71,16 @@
           <el-option label="套餐已过期" value="1" />
           <el-option label="套餐未过期" value="0" />
         </el-select>
+        <el-select
+          v-model="is_display"
+          class="list-options"
+          placeholder="不限显示状态"
+          @change="funSearch"
+        >
+          <el-option label="不限显示状态" value="" />
+          <el-option label="显示中" value="1" />
+          <el-option label="不显示" value="0" />
+        </el-select>
         <el-input
           v-model="keyword"
           placeholder="请输入搜索内容"
@@ -105,7 +115,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="公司名称" width="300">
+        <el-table-column label="公司名称" min-width="220">
           <template slot-scope="scope">
             <div v-if="scope.row.companyname != ''">
               <div>
@@ -125,7 +135,7 @@
             <span v-else>未完善企业资料</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="认证资料">
+        <el-table-column align="center" label="认证资料" min-width="100">
           <template slot-scope="scope">
             <span
               v-if="scope.row.has_auth_info == 1"
@@ -138,26 +148,38 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="认证状态">
+        <el-table-column label="认证状态" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.auth_status | auditFilter">
               {{ options_audit[scope.row.auth_status] }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="会员/企业手机号" width="200">
+        <el-table-column label="显示状态" min-width="100">
+          <template slot-scope="scope">
+            <el-tooltip :content="scope.row.is_display==1?'显示中':'不显示'" placement="top">
+              <el-switch
+                v-model="scope.row.is_display"
+                :active-value="1"
+                :inactive-value="0"
+                @change="changeDisplay(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="会员/企业手机号" min-width="130">
           <template slot-scope="scope">
             <div title="会员手机号">
-              <i class="el-icon-user"></i>&nbsp;{{ scope.row.mobile }}
+              <i class="el-icon-user" />&nbsp;{{ scope.row.mobile }}
             </div>
             <div title="企业联系手机号">
-              <i class="el-icon-document"></i>&nbsp;{{
+              <i class="el-icon-document" />&nbsp;{{
                 scope.row.contact_mobile ? scope.row.contact_mobile : "-"
               }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="创建/刷新时间" width="200">
+        <el-table-column label="创建/刷新时间" min-width="150">
           <template slot-scope="scope">
             <div title="创建时间">
               <i class="el-icon-time" />{{ scope.row.addtime | timeFilter }}
@@ -167,7 +189,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="套餐名称" width="150">
+        <el-table-column label="套餐名称" min-width="120">
           <template slot-scope="scope">
             <div>{{ scope.row.setmeal_name }}</div>
             <div v-if="scope.row.setmeal_overtime == 1" style="color: #ff0b22">
@@ -176,15 +198,16 @@
             <div v-else>{{ scope.row.setmeal_deadline_text }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="在招职位" prop="jobs_num" />
-        <el-table-column align="center" label="推广">
+        <el-table-column align="center" label="在招职位" prop="jobs_num" min-width="80" />
+        <el-table-column align="center" label="推广" min-width="80">
           <template slot-scope="scope">
-            <el-button type="text" @click="funPoster(scope.row.id)"
-              >[海报]</el-button
-            >
+            <el-button
+              type="text"
+              @click="funPoster(scope.row.id)"
+            >[海报]</el-button>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="270">
+        <el-table-column fixed="right" label="操作" min-width="270">
           <template slot-scope="scope">
             <el-button
               size="small"
@@ -327,9 +350,9 @@
           <span class="img-tit">营业执照</span>
         </el-col>
         <el-col
+          v-if="$store.state.config.audit_com_project == 1"
           class="authdialog"
           :span="12"
-          v-if="$store.state.config.audit_com_project == 1"
         >
           <el-image
             v-if="auth_info.proxy != ''"
@@ -395,7 +418,7 @@
 <script>
 import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
-import { companyList, companyAudit, companyDelete, companySetService } from '@/api/company'
+import { companyList, companyAudit, companyDelete, companySetService, companySetDisplay } from '@/api/company'
 import { management } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
 import { exportCompanyById } from '@/api/export'
@@ -451,6 +474,7 @@ export default {
       pagesize: 10,
       key_type: '1',
       keyword: '',
+      is_display: '',
       audit: '',
       setmeal: '',
       regtime: '',
@@ -462,7 +486,7 @@ export default {
       options_service: [],
       options_service_enable: [],
       dialogListVisible: false,
-      listUid: 0,
+      listUid: 0
     }
   },
   created() {
@@ -491,6 +515,7 @@ export default {
             list_type,
             key_type: this.key_type,
             keyword: this.keyword,
+            is_display: this.is_display,
             audit: this.audit,
             setmeal: this.setmeal,
             regtime: this.regtime,
@@ -516,6 +541,7 @@ export default {
         list_type,
         key_type: this.key_type,
         keyword: this.keyword,
+        is_display: this.is_display,
         audit: this.audit,
         setmeal: this.setmeal,
         regtime: this.regtime,
@@ -795,6 +821,24 @@ export default {
       this.showPoster = true
       this.posterId = id
       this.posterType = 'company'
+    },
+    changeDisplay(row){
+      const id = row.id
+      const is_display = row.is_display
+      const params = {
+        id,
+        is_display
+      }
+      companySetDisplay(params, 'post').then(response => {
+        if (response.code == 200) {
+          this.$message.success(response.message)
+          this.fetchListData()
+          return true
+        } else {
+          this.$message.error(response.message)
+          return false
+        }
+      }).catch(() => { })
     }
   }
 }

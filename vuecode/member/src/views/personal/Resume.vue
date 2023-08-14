@@ -1591,7 +1591,18 @@
         this[`${editName}Item`] = item ? item : {}
         if (editName === 'intention' && item) {
           this.intentionItemCategory = [item.category1, item.category2, item.category3]
-          this.intentionItemDistrict = [item.district1, item.district2, item.district3]
+          this.intentionItemDistrict = []
+          if(item.district1>0){
+            this.intentionItemDistrict.push(item.district1)
+          }
+          if(item.district2>0){
+            this.intentionItemDistrict.push(item.district2)
+          }
+          if(item.district3>0){
+            this.intentionItemDistrict.push(item.district3)
+          }
+          // this.intentionItemDistrict = [item.district1, item.district2, item.district3]
+          console.log(this.intentionItemDistrict)
           if (item.trade === 0) {
             item.trade = ''
           }

@@ -31,15 +31,15 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="页面名称" prop="name" min-width="200" />
-        <el-table-column label="seo标题" prop="seo_title" />
-        <el-table-column label="缓存时长" min-width="200">
+        <el-table-column label="页面名称" prop="name" min-width="150" />
+        <el-table-column label="seo标题" prop="seo_title" min-width="300" />
+        <el-table-column label="缓存时长" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.enable_cache==1">{{ scope.row.expire==0?'不缓存':scope.row.expire+'秒' }}</span>
             <span v-else style="font-style:italic;color:#d3d3d3;font-size:13px;">不可缓存</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="220">
+        <el-table-column fixed="right" label="操作" min-width="80">
           <template slot-scope="scope">
             <el-button
               size="small"

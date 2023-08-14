@@ -730,20 +730,4 @@ class Member extends \app\common\controller\Backend
             'user_iminfo' => model('ImToken')->getUserImInfo($uid,$userinfo['utype'])
         ];
     }
-    public function syncSetmeal(){
-        if($this->admininfo->access != 'all'){
-            $this->ajaxReturn(500, '只有超级管理员才有权限执行此操作');
-        }
-        $setmealId = input('post.setmeal_id/d', 0, 'intval');
-        $pwd = input('post.pwd/s', '', 'trim');
-        $validate = validate('Login');
-        $validate->processRule();
-        if (!$validate->check(['username'=>$this->admininfo->username, 'password'=>$pwd])) {
-            $this->ajaxReturn(500, '密码有误');
-        }
-
-        $m = new MemberSetmeal();
-        $n = $m->syncSet($setmealId, $this->admininfo);
-        $this->ajaxReturn(200, '同步成功', $n);
-    }
 }

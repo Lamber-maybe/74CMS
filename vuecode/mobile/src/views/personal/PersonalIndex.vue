@@ -91,7 +91,7 @@
       <div class="clear"></div>
     </div>
     <div class="video" @click="$router.push('/shortvideo/videoManage')" v-if="$store.state.config.shortvideo_enable === '1'">
-      <div class="title">太原人才网现已支持发布视频简历了！</div>
+      <div class="title">{{$store.state.config.sitename}}现已支持发布视频简历了！</div>
       <div class="tisp">点击去发布，<span>求职期望、工作经验、个人特长</span>都可以哦~</div>
     </div>
     <Ad

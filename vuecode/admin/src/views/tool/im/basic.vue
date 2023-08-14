@@ -135,7 +135,7 @@ export default {
       const that = this
       const param = {}
       param.page = page
-      param.pagesize = 10
+      param.pagesize = 500
       that.fullscreenLoading = true
       that.fullscreenLoadingText = '正在同步数据...（已完成 ' + (page - 1) * param.pagesize + ' 条）'
       syncImTokenBatch(param)

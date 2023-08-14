@@ -3,7 +3,7 @@
     <el-header height="114px">
       <head-block />
     </el-header>
-    <div class="personal_top" v-if="$route.path=='/personal/index'"></div>
+    <div class="personal_top_box" v-if="$route.path=='/personal/index'"></div>
     <el-container class="my_personal">
       <el-aside width="224px">
         <side-nav />
@@ -43,7 +43,7 @@
     width: 1200px; height: 42px; margin: 0 auto;
     .el-breadcrumb { padding: 16px 0;}
   }
-  .personal_top {
-    display: inline-table;width: 100%; height: 153px; margin-bottom: 170px;
+  .personal_top_box {
+    display: inline-table;width: 100%; margin-bottom: 170px;
   }
 </style>

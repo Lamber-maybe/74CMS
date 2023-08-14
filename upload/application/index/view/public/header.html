@@ -9,10 +9,14 @@
     <div class="header_wrapper" v-cloak>
         <div class="header clearfix">
             <div class="header_left clearfix">
-                <a class="left_item homeImg" href="{#:url('index/index/index')#}">网站首页</a>
-                <a class="left_item" href="javascript:;" @click="AddFavorite">设为收藏</a>
-                <a class="left_item" href="{#:url('index/shortcut/index')#}">保存桌面</a>
-                <a href="{#:url('index/job/index')#}">搜职位</a>
+                <div class="subsite_btn left" v-if="subsite_open==1" @click.stop="subsite_sel = 1">
+                    <a class="current_city">{#$subsite.district_text|default="总站"#}</a>
+                    <span class="switch_city">[切换城市]</span>
+                </div>
+                <a class="left_item homeImg" href="{#:url('index/index/index')#}" v-if="subsite_open==0">网站首页</a>
+                <a class="left_item" href="javascript:;" @click="AddFavorite" v-if="subsite_open==0">设为收藏</a>
+                <a class="left_item" href="{#:url('index/shortcut/index')#}" v-if="subsite_open==0">保存桌面</a>
+                <a href="{#:url('index/job/index')#}" v-if="subsite_open==0">搜职位</a>
             </div>
             <div class="header_right clearfix">
                 <span class="right_item" v-if="isLogin===true">
@@ -127,26 +131,23 @@
     </div>
 
     {#if condition="$navSelTag eq 'index'"#}
-    <!-- 头部下拉广告位 -->
-    {#if condition="isset($banner_list['QS_index_top_dropdown@web']) && count($banner_list['QS_index_top_dropdown@web'])
-    gt 0"#}
-    <div class="down_source w1200">
-        <div class="source_box">
-            <a class="img_link" {#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''"
-                #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+        <!-- 头部下拉广告位 -->
+        {#if condition="isset($banner_list['QS_index_top_dropdown@web']) && count($banner_list['QS_index_top_dropdown@web']) gt 0"#}
+        <div class="down_source w1200">
+            <div class="source_box">
+            <a class="img_link" {#if condition="$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_top_dropdown@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
                 <span class="close">X</span>
                 <img src="{#$banner_list['QS_index_top_dropdown@web'][0]['image_src']#}">
             </a>
+            </div>
+            <button disabled='true' class="source_btn">重播</button>
         </div>
-        <button disabled='true' class="source_btn">重播</button>
-    </div>
-    {#/if#}
-    <!-- 弹窗居中广告位 -->
-    {#if condition="isset($banner_list['QS_index_popup@web']) && count($banner_list['QS_index_popup@web']) gt 0"#}
-    <div class="popup_source">
-        <span class="popup_close">关闭</span>
-        <a class="popup_source_link" {#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''"
-            #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
+        {#/if#}
+        <!-- 弹窗居中广告位 -->
+        {#if condition="isset($banner_list['QS_index_popup@web']) && count($banner_list['QS_index_popup@web']) gt 0"#}
+        <div class="popup_source">
+            <span class="popup_close">关闭</span>
+            <a class="popup_source_link" {#if condition="$banner_list['QS_index_popup@web'][0]['web_link_url']!=''" #}href="{#$banner_list['QS_index_popup@web'][0]['web_link_url']#}" target="_blank" {#/if#}>
             <img src="{#$banner_list['QS_index_popup@web'][0]['image_src']#}">
         </a>
     </div>
@@ -228,7 +229,7 @@
     ?>
     <div class="nav_wrapper">
         <ul class="nav clearfix">
-            <li class="nav_item {#if condition=" $navSelTag eq 'index'"#}active{#/if#}">
+            <li class="nav_item {#if condition="$navSelTag eq 'index'"#}active{#/if#}">
                 <a class="item" href="{#:url('index/index/index')#}">网站首页</a>
             </li>
             <?php
@@ -252,6 +253,25 @@
             <li class="nav_item nav_right"><a class="item" href="javascript:;" @click="handlerMemberCenter">管理中心</a>
             </li>
         </ul>
+    </div>
+    <!-- 分站弹窗 -->
+    <div class="subsite_pupop" v-show="subsite_sel==1" v-cloak>
+        <div class="subsite_box">
+            <span class="close_icon" @click.stop="subsite_sel=0"></span>
+            <div class="subsite_title">
+                <div class="text_1">选择城市</div>
+                <div class="text_2">切换城市分站，让我们为您提供更准确的信息</div>
+            </div>
+            <hr>
+            <div class="subsite_list">
+                <div class="current_site">当前选择城市：<a class="site_link">{#$subsite.district_text|default="总站"#}</a></div>
+                <div class="lsit_box clearfix">
+                    <span class="item {#if condition="$subsiteid==0"#}active_item{#/if#}" @click.stop="setSubsite(0)">总站</span>
+                    <span class="item" :class="item.id==current_subsiteid?'active_item':''" v-for="(item,index) in subsite_list" :key="index"
+                        @click.stop="setSubsite(item.id)">{{item.district_text}}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script>
@@ -301,7 +321,11 @@
             searchAlias: 'joblist',
             searchAliasCn: '找工作',
             mobileQrcode: '',
-            wechatQrcode: ''
+            wechatQrcode: '',
+            current_subsiteid:0,
+            subsite_open: 0,
+            subsite_sel: 0,
+            subsite_list: []
         },
         created: function () {
             this.keyword = "{#$Request.param.keyword#}"
@@ -325,8 +349,23 @@
                 this.searchAliasCn = '找资讯'
                 this.searchAlias = 'articlelist'
             }
+            this.current_subsiteid = parseInt(qscms.subsiteid)
+            this.subsite_open = parseInt("{#$global_config.subsite_open#}")
+            this.getConfig()
         },
         methods: {
+            setSubsite(subsiteid) {
+                Cookies.set('qscms_subsiteid', subsiteid)
+                location.reload();
+            },
+            getConfig: function () {
+                var that = this
+                httpget(qscms.apiList.config)
+                    .then(function (res) {
+                        that.subsite_list = res.data.subsite_list
+                    })
+                    .catch(function () { })
+            },
             cronRun: function () {
                 httpget(qscms.apiList.cronRun)
                     .then(function () {

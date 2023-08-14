@@ -32,6 +32,7 @@ class tpl2 extends \app\common\lib\tpl\index\def
                 : explode(',', $famous_enterprises_setmeal);
         $list = [];
         if (!empty($famous_enterprises_setmeal)) {
+            $subsiteCondition = get_subsite_condition('a');
             $list = model('JobSearchRtime')
                 ->alias('a')
                 ->join(
@@ -49,6 +50,7 @@ class tpl2 extends \app\common\lib\tpl\index\def
                     'a.setmeal_id=d.id',
                     'LEFT'
                 )
+                ->where($subsiteCondition)
                 ->where('c.id','not null')
                 ->where('a.setmeal_id', 'in', $famous_enterprises_setmeal)
                 ->order('a.stick desc,a.refreshtime desc')
@@ -161,9 +163,11 @@ class tpl2 extends \app\common\lib\tpl\index\def
      * 最新职位
      */
     protected function getNewjobList($limit=10){
+        $subsiteCondition = get_subsite_condition('a');
         $list = model('JobSearchRtime')->alias('a')
                 ->join(config('database.prefix').'job b','a.id=b.id','LEFT')
                 ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+                ->where($subsiteCondition)
                 ->where('c.id','not null')
                 ->order('a.refreshtime desc')
                 ->limit($limit)

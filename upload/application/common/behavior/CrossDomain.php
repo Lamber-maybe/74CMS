@@ -11,7 +11,7 @@ class CrossDomain
         header('Access-Control-Allow-Methods:POST,OPTIONS,GET');
         header('Access-Control-Allow-Credentials:true');
         header(
-            'Access-Control-Allow-Headers:x-requested-with,content-type,x-token,safecode,sessionid,admintoken,user-token,platform'
+            'Access-Control-Allow-Headers:x-requested-with,content-type,x-token,safecode,sessionid,admintoken,user-token,platform,subsiteid'
         );
     }
 }

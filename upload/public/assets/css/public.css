@@ -1205,3 +1205,119 @@ cursor: pointer;
 .reg_quick_dialog .el-dialog__headerbtn {
     z-index: 3;
 }
+
+
+/* 分站按钮 */
+.subsite_btn{
+	cursor: pointer;
+  }
+  .subsite_btn .current_city{
+	  margin-right: 0 !important;
+	  padding-left: 13px;
+	  background: url(../images/subsite_icon.png) no-repeat left center;
+	  background-size: 9px 12px;
+  }
+  .subsite_btn .switch_city{
+	  color: #1787fb;
+	  margin-right: 20px;
+	  margin-left: 10px;
+  }
+  /* 分站弹窗 */
+  .subsite_pupop {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 20;
+	/* display: none; */
+  }
+  .subsite_pupop .subsite_box {
+	width: 580px;
+	background: #fff;
+	padding: 30px;
+	border-radius: 10px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+  }
+  .subsite_pupop .subsite_box .close_icon {
+	width: 16px;
+	height: 16px;
+	display: block;
+	position: absolute;
+	right: 15px;
+	top: 15px;
+	cursor: pointer;
+  }
+  .subsite_pupop .subsite_box .close_icon::before {
+	content: "";
+	width: 14px;
+	height: 2px;
+	display: block;
+	background: #ccc;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%) rotate(45deg);
+	border-radius: 3px;
+  }
+  .subsite_pupop .subsite_box .close_icon::after {
+	content: "";
+	width: 14px;
+	height: 2px;
+	display: block;
+	background: #ccc;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	border-radius: 3px;
+	transform: translate(-50%, -50%) rotate(-50deg);
+  }
+  
+  .subsite_pupop .subsite_box .subsite_title {
+	color: #333;
+  }
+  .subsite_pupop .subsite_box .subsite_title .text_1 {
+	margin-bottom: 10px;
+	font-size: 16px;
+  }
+  .subsite_pupop .subsite_box .subsite_title .text_2 {
+	font-size: 14px;
+  }
+  .subsite_pupop .subsite_box hr {
+	margin: 20px 0;
+	border: 0;
+	border-top: 1px solid #eee;
+  }
+  .subsite_pupop .subsite_box .subsite_list {
+	
+  }
+  .subsite_pupop .subsite_box .subsite_list .current_site{
+	color: #999;
+	margin-bottom: 20px;
+  }
+  .subsite_pupop .subsite_box .subsite_list .current_site .site_link{
+	color:#1787fb ;
+  }
+  .subsite_pupop .subsite_box .subsite_list .lsit_box .item{
+	display: block;
+	float: left;
+	padding: 10px 20px;
+	color:#333 ;
+	font-size:14px ;
+	margin: 0 20px 20px 0;
+	border-radius: 5px;
+	border: 1px solid rgba(233,233,240,1);
+	cursor: pointer;
+  }
+  .subsite_pupop .subsite_box .subsite_list .lsit_box .active_item{
+	color: #1787fb;
+	border: 1px solid #1787fb;
+  }
+  
+  

@@ -136,6 +136,7 @@
   width: 1200px;
   margin: auto;
   height: 91px;
+  position: relative;
 }
 
 .handle .logo {

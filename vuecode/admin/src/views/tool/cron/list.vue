@@ -19,8 +19,8 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="名称" prop="name" />
-        <el-table-column align="center" label="类型">
+        <el-table-column label="名称" prop="name" min-width="160" />
+        <el-table-column align="center" label="类型" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.is_sys == 1" class="font_info">
               系统内置
@@ -30,12 +30,12 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="执行间隔">
+        <el-table-column label="执行间隔" min-width="140">
           <template slot-scope="scope">
             <span>{{ scope.row.rule }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="上次执行时间">
+        <el-table-column align="center" label="上次执行时间" min-width="200">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.last_execute_time | timeFilter }}</span>
@@ -47,20 +47,20 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="下次执行时间">
+        <el-table-column align="center" label="下次执行时间" min-width="180">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.next_execute_time | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="状态">
+        <el-table-column align="center" label="状态" min-width="80">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | colorFilter">
               {{ scope.row.status == 1 ? '可用' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="400">
+        <el-table-column fixed="right" label="操作" min-width="380">
           <template slot-scope="scope">
             <el-button size="small" @click="funRun(scope.row, scope.$index)">
               执行

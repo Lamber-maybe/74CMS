@@ -21,6 +21,22 @@ export default {
   },
   methods: {
     handlerSubmit (url, data, callback) {
+      if (data.payment == 'alipay' && !this.$store.state.config.account_alipay_appid) {
+        this.$dialog.alert({
+          message: '暂不支持支付宝付款，请选择其他付款方式'
+        }).then(() => {
+          // on close
+        })
+        return false
+      }
+      if (data.payment == 'wxpay' && !this.$store.state.config.payment_wechat_appid) {
+        this.$dialog.alert({
+          message: '暂不支持微信付款，请选择其他付款方式'
+        }).then(() => {
+          // on close
+        })
+        return false
+      }
       let that = this
       data.openid = localStorage.getItem('weixinOpenid')
       http

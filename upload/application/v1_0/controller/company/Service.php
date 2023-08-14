@@ -277,20 +277,11 @@ class Service extends \app\v1_0\controller\common\Base
         if (in_array($input_data['service_type'], ['jobstick','emergency','refresh_job_package',]) && $input_data['jobid'] <= 0) {
             $this->ajaxReturn(500,'请选择职位');
         }
-        $jobInfo = model('job')->find($input_data['jobid']);
-        if(empty($jobInfo))$this->ajaxReturn(500,'无效的职位');
-        if ($input_data['service_type'] == 'refresh_job_package') {
-            if(!$input_data['timerange'])$this->ajaxReturn(500,'请选择刷新时间间隔');
-            if(empty($input_data['starttime'])) $this->ajaxReturn(500,'请选择开始时间');
-            $has = model('RefreshjobQueue')
-                ->where('jobid', $input_data['jobid'])->find();
-            if($has)$this->ajaxReturn(500,'请勿重复购买');
+        if ($input_data['service_type'] == 'refresh_job_package' && $input_data['timerange'] == 0) {
+            $this->ajaxReturn(500,'请选择刷新时间间隔');
         }
-        if($input_data['service_type'] == 'jobstick'){
-            if($jobInfo['stick']>0)$this->ajaxReturn(500,'请勿重复购买');
-        }
-        if($input_data['service_type'] == 'emergency'){
-            if($jobInfo['emergency']>0)$this->ajaxReturn(500,'请勿重复购买');
+        if ($input_data['service_type'] == 'refresh_job_package' && $input_data['starttime'] == '') {
+            $this->ajaxReturn(500,'请选择开始时间');
         }
 
         if ($input_data['service_type'] == 'setmeal') {

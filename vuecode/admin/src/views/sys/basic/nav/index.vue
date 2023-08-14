@@ -12,26 +12,26 @@
         highlight-current-row
       >
         <el-table-column label="导航名称" prop="title" min-width="200" />
-        <el-table-column label="跳转链接">
+        <el-table-column label="跳转链接" min-width="300">
           <template slot-scope="scope">
             <span v-if="scope.row.link_type==1">{{ scope.row.page_cn }}</span>
             <span v-else>{{ scope.row.url }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="打开方式" min-width="200">
+        <el-table-column label="打开方式" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.target=='_blank'">新窗口</span>
             <span v-if="scope.row.target=='_self'">原窗口</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="显示状态">
+        <el-table-column align="center" label="显示状态" min-width="100">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.is_display == 1" type="success">显示</el-tag>
             <el-tag v-else type="danger">不显示</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="sort_id" />
-        <el-table-column fixed="right" label="操作" min-width="220">
+        <el-table-column label="排序" prop="sort_id" min-width="80" />
+        <el-table-column fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-button
               size="small"

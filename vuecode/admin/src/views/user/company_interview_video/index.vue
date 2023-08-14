@@ -38,7 +38,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="企业名称">
+        <el-table-column label="企业名称" min-width="200">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.company_link"
@@ -49,14 +49,14 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="面试职位">
+        <el-table-column label="面试职位" min-width="200">
           <template slot-scope="scope">
             <el-link :href="scope.row.job_link" target="_blank" type="primary">
               {{ scope.row.jobname }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="面试简历" width="400">
+        <el-table-column label="面试简历" min-width="220">
           <template slot-scope="scope">
             <el-link
               :href="scope.row.resume_link"
@@ -74,20 +74,20 @@
             <span>{{ scope.row.experience_ }}</span>)
           </template>
         </el-table-column>
-        <el-table-column align="center" label="面试时间">
+        <el-table-column align="center" label="面试时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.interview_time | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="面试房间">
+        <el-table-column align="center" label="面试房间" min-width="80">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.room_status=='overtime'" type="info">已关闭</el-tag>
             <el-tag v-if="scope.row.room_status=='nostart'" type="warning">未开启</el-tag>
             <el-tag v-if="scope.row.room_status=='opened'" type="success">开启中</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="80">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="fun_detail(scope.row)">
               详情

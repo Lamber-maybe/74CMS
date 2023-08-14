@@ -28,9 +28,9 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="姓名" prop="name" width="200" />
-        <el-table-column label="电话" prop="mobile" width="300" />
-        <el-table-column label="微信" prop="weixin" width="300">
+        <el-table-column label="姓名" prop="name" min-width="120" />
+        <el-table-column label="电话" prop="mobile" min-width="150" />
+        <el-table-column label="微信" prop="weixin" min-width="150">
           <template slot-scope="scope">
             <el-popover
               placement="right"
@@ -43,16 +43,16 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="QQ" prop="qq" />
-        <el-table-column label="是否显示" prop="title">
+        <el-table-column label="QQ" prop="qq" min-width="150" />
+        <el-table-column label="是否显示" prop="title" min-width="90">
           <template slot-scope="scope">
             <el-tag :type="scope.row.display | displayFilter">
               {{ scope.row.display == 1 ? '显示' : '隐藏' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="sort" width="100" />
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column label="排序" prop="sort" min-width="90" />
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button
               size="small"

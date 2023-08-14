@@ -29,6 +29,24 @@ class Resume extends \app\v1_0\controller\common\Base
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
+        
+        $subsiteCondition = get_subsite_condition();
+        if(!empty($subsiteCondition)){
+            foreach ($subsiteCondition as $key => $value) {
+                if($key=='district1'){
+                    $district1 = $value;
+                    break;
+                }
+                if($key=='district2'){
+                    $district2 = $value;
+                    break;
+                }
+                if($key=='district3'){
+                    $district3 = $value;
+                    break;
+                }
+            }
+        }
 
         if ($district1 > 0) {
             $params['district1'] = $district1;

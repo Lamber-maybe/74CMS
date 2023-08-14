@@ -888,3 +888,14 @@ function url($url = '', $vars = '', $suffix = true, $domain = false)
     $url = str_replace("/index.php/","/",$url);
     return $url;
 }
+function get_subsite_condition($table_alias=''){
+    if(config('subsite')===null){
+        return [];
+    }
+    $table_alias = $table_alias!=''?($table_alias.'.'):'';
+    $list = [];
+    foreach (config('subsiteCondition') as $key => $value) {
+        $list[$table_alias.$key] = $value;
+    }
+    return $list;
+}

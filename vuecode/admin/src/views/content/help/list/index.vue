@@ -61,7 +61,7 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <el-table-column type="selection" width="42" />
         <el-table-column align="center" label="ID" width="95">
           <template slot-scope="scope">
             {{ scope.row.id }}

@@ -34,30 +34,30 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="企业名称" prop="companyname" />
-        <el-table-column label="注册时间" prop="regtime" />
-        <el-table-column label="联系人" prop="contact" />
-        <el-table-column label="手机号" prop="mobile" />
-        <el-table-column align="center" label="处理状态">
+        <el-table-column label="企业名称" prop="companyname" min-width="200" />
+        <el-table-column label="注册时间" prop="regtime" min-width="100" />
+        <el-table-column label="联系人" prop="contact" min-width="90" />
+        <el-table-column label="手机号" prop="mobile" min-width="120" />
+        <el-table-column align="center" label="处理状态" min-width="100">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.status==1" type="success">已处理</el-tag>
             <el-tag v-if="scope.row.status==0" type="danger">待处理</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="申请时间">
+        <el-table-column align="center" label="申请时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="处理时间">
+        <el-table-column align="center" label="处理时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span v-if="scope.row.handlertime!=0">{{ scope.row.handlertime | timeFilter }}</span>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
+        <el-table-column fixed="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="funHandle(scope.row)">
               处理

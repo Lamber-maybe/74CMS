@@ -12,9 +12,9 @@ class CompanyImg extends \app\common\controller\Backend
         $pagesize = input('get.pagesize/d', 10, 'intval');
 
         if ($audit != '') {
-            $where['audit'] = ['eq', $audit];
+            $where['a.audit'] = ['eq', $audit];
         }
-        $total = model('CompanyImg')
+        $total = model('CompanyImg')->alias('a')
             ->where($where)
             ->count();
         $list = model('CompanyImg')->alias('a')

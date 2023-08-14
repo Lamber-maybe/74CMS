@@ -53,37 +53,37 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="标题" show-overflow-tooltip>
+        <el-table-column label="标题" show-overflow-tooltip min-width="200">
           <template slot-scope="scope">
             <el-link :href="scope.row.jobfair_link" target="_blank" type="primary">
               {{ scope.row.title }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="举办时间" show-overflow-tooltip width="300">
+        <el-table-column label="举办时间" show-overflow-tooltip width="260">
           <template slot-scope="scope">
             {{ scope.row.starttime|timeFilter }} 至 {{ scope.row.endtime|timeFilter }}
           </template>
         </el-table-column>
-        <el-table-column label="预定状态" width="150">
+        <el-table-column label="预定状态" width="100">
           <template slot-scope="scope">
-            <el-tag type="success" v-if="scope.row.score === 2">预定中</el-tag>
-            <el-tag type="danger" v-else-if="scope.row.score === 1">未开始</el-tag>
-            <el-tag type="info" v-else>已结束</el-tag>
+            <el-tag v-if="scope.row.score === 2" type="success">预定中</el-tag>
+            <el-tag v-else-if="scope.row.score === 1" type="danger">未开始</el-tag>
+            <el-tag v-else type="info">已结束</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           align="center"
           prop="created_at"
           label="添加日期"
-          width="200"
+          width="150"
         >
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="允许报名" align="center">
+        <el-table-column label="允许报名" align="center" width="100">
           <template slot-scope="scope">
             <el-tooltip v-if="scope.row.setmeal === 1" effect="dark" :content="scope.row.setmeal_cn" placement="top-start">
               <el-tag>限制套餐</el-tag>
@@ -91,12 +91,12 @@
             <span v-else>全部套餐</span>
           </template>
         </el-table-column>
-        <el-table-column label="参会企业/个人" align="center">
+        <el-table-column label="参会企业/个人" align="center" width="100">
           <template slot-scope="scope">
             {{ scope.row.total_company }} / {{ scope.row.total_personal }}
           </template>
         </el-table-column>
-        <el-table-column align="right" label="操作" width="420">
+        <el-table-column fixed="right" align="right" label="操作" width="330">
           <template slot-scope="scope">
             <el-button
               size="mini"

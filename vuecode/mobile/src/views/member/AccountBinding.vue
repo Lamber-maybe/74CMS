@@ -8,8 +8,8 @@
       <div class="field_cell_group">
         <div class="field_cell choose-utype" style="border:0;">
           <div class="t_box">
-            <router-link class="swb" :class="$route.query.utype==2?'active':''" :to="genCurUrl(2)">我要找工作</router-link>
-            <router-link class="swb" :class="$route.query.utype==1?'active':''" :to="genCurUrl(1)">我要招聘</router-link>
+            <span class="swb" :class="utype==2?'active':''" @click="utype=2">我要找工作</span>
+            <span class="swb" :class="utype==1?'active':''" @click="utype=1">我要招聘</span>
           </div>
         </div>
         <div class="field_cell">
@@ -90,19 +90,13 @@ export default {
     }
   },
   created () {
-    this.utype = this.$route.query.utype ? parseInt(this.$route.query.utype) : 2
     this.openid = this.$route.query.openid
     this.unionid = this.$route.query.unionid
     this.nickname = this.$route.query.nickname
     this.avatar = this.$route.query.avatar
     this.bindType = this.$route.query.bindType
-    this.$route.query.utype = this.utype
   },
   methods: {
-    genCurUrl (utype) {
-      let avatar = encodeURIComponent(this.avatar)
-      return `/member/bind?openid=${this.openid}&unionid=${this.unionid}&nickname=${this.nickname}&avatar=${avatar}&bindType=${this.bindType}&utype=${utype}`
-    },
     showAgreement (alias) {
       this.showTextContent = ''
       this.showText = true

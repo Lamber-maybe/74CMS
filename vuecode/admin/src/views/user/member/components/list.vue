@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="tip" v-if="listtype == 'invalid'">
+    <div v-if="listtype == 'invalid'" class="tip">
       <p>
         无效会员指个人会员注册后未创建简历、企业会员未完善企业资料的会员信息
       </p>
@@ -81,11 +81,11 @@
             <el-option label="用户名" value="2" />
             <el-option label="手机号" value="3" />
             <el-option
+              v-if="listtype == 'company'"
               label="企业名称"
               value="4"
-              v-if="listtype == 'company'"
             />
-            <el-option label="姓名" value="4" v-if="listtype == 'personal'" />
+            <el-option v-if="listtype == 'personal'" label="姓名" value="4" />
           </el-select>
           <el-button
             slot="append"
@@ -109,26 +109,28 @@
           v-if="listtype == 'company'"
           label="企业名称"
           prop="companyname"
+          min-width="280"
         />
-        <el-table-column label="用户名" prop="username" />
+        <el-table-column label="用户名" prop="username" min-width="150" />
         <el-table-column
+          v-if="listtype == 'invalid'"
           align="center"
           label="身份类型"
-          v-if="listtype == 'invalid'"
+          min-width="100"
         >
           <template slot-scope="scope">
             <span v-if="scope.row.utype == 1">企业会员</span>
             <span v-if="scope.row.utype == 2">个人会员</span>
           </template>
         </el-table-column>
-        <el-table-column label="手机号" prop="mobile" />
-        <el-table-column align="center" label="注册时间">
+        <el-table-column label="手机号" prop="mobile" min-width="120" />
+        <el-table-column align="center" label="注册时间" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.reg_time | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="最近登录">
+        <el-table-column align="center" label="最近登录" min-width="150">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span v-if="scope.row.last_login_time == 0">从未登录</span>
@@ -370,7 +372,7 @@ export default {
       }).then(() => {
         this.$router.push('/user/member/invalid')
       }).catch(() => {
-      });
+      })
     },
     closeDialogPersonal() {
       this.dialogFormVisible = false
@@ -381,7 +383,7 @@ export default {
       }).then(() => {
         this.$router.push('/user/member/invalid')
       }).catch(() => {
-      });
+      })
     },
     funAdd(index, row) {
       this.childId = 0
