@@ -79,7 +79,7 @@ class Interview extends \app\v1_0\controller\common\Base
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
             $value['resume_link_url_web'] = url('index/resume/show', ['id' => $value['resume_id']], true, $this->sub_site_domain);
             $value['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']], true, $this->sub_site_domain);
             $list[$key] = $value;

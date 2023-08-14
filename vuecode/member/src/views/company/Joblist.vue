@@ -213,6 +213,10 @@
 		type="job"
 		@closeDialog="showPoster = false"
 	/>
+
+  <!-- 微信二维码弹窗 start -->
+  <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+  <!-- 微信二维码弹窗 end -->
 	</div>
 </template>
 
@@ -221,11 +225,13 @@ import BuyIncrementDialog from '@/components/company/service/BuyIncrementDialog.
 import http from '@/utils/http'
 import api from '@/api'
 import Poster from '@/components/Poster'
+import WeChatQrcode from '@/components/WeChatQrcode'
 	export default{
-		components:{
-			BuyIncrementDialog,
-			Poster
-		},
+    components: {
+      BuyIncrementDialog,
+      Poster,
+      WeChatQrcode
+    },
 		data(){
 			return{
 				showBuyService:false,
@@ -271,7 +277,18 @@ import Poster from '@/components/Poster'
 			this.params.page = 1
 			this.fetchData(true)
 		},
-		methods:{
+    mounted() {
+      // 从编辑页面跳转到列表时触发
+      if (this.$route.query.operate_type && this.$route.query.operate_type == 'edit') {
+        /**
+         * 【ID1000719】
+         * 【新增】公众号引导弹窗场景（修改职位）
+         * cy 2023-7-17
+         */
+        this.popupWechatQrcodeWindow('company_pc_save_job')
+      }
+    },
+    methods:{
 			handlerOuterLink(url){
 				window.open(url)
 			},
@@ -386,6 +403,12 @@ import Poster from '@/components/Poster'
 							} else {
 								this.fetchData()
 								this.$message({ type: 'success', message: res.message })
+                /**
+                 * 【ID1000719】
+                 * 【新增】公众号引导弹窗场景（刷新职位）
+                 * cy 2023-7-17
+                 */
+                this.popupWechatQrcodeWindow('company_pc_refresh_job')
 							}
 						})
 						.catch(() => {})
@@ -473,6 +496,12 @@ import Poster from '@/components/Poster'
 						} else {
 							this.fetchData()
 							this.$message({ type: 'success', message: res.message })
+              /**
+               * 【ID1000719】
+               * 【新增】公众号引导弹窗场景（刷新职位）
+               * cy 2023-7-17
+               */
+              this.popupWechatQrcodeWindow('company_pc_refresh_job')
 						}
 						})
 						.catch(() => {})
@@ -629,6 +658,10 @@ import Poster from '@/components/Poster'
       companyServiceDownloadResume(){
         window.open('/company/service/increment/add/job_refresh')
       },
+      // 弹出微信二维码弹框
+      popupWechatQrcodeWindow(val) {
+        this.$refs.weChatQrcodeRef.handleOpen(val, '扫码绑定，随时随地接收简历信息')
+      }
 		}
 	}
 </script>

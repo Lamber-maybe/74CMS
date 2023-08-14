@@ -1168,6 +1168,7 @@ CREATE TABLE `qs_member_setmeal` (
   `purchase_resume_point` int(10) NOT NULL DEFAULT '0' COMMENT '购买增值简历包',
   `resume_view_num` int(10) NOT NULL DEFAULT '0' COMMENT '收到简历免费查看数',
   `opening_time` int(10) NOT NULL DEFAULT '0' COMMENT '套餐开通时间',
+  `im_added_package` INT (10) UNSIGNED DEFAULT 0 NOT NULL COMMENT '职聊增值包次数',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_setmeal_id` (`setmeal_id`)
@@ -2932,7 +2933,7 @@ UNIQUE INDEX `idx_comid_resumeid` (`comid`, `resume_id`) USING BTREE
 DROP TABLE IF EXISTS `qs_audit_template`;
 CREATE TABLE `qs_audit_template` (
 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-`type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '类型：1|简历',
+`type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '类型：1|简历,2|企业认证,3|职位',
 `content` varchar(100) NOT NULL DEFAULT '' COMMENT '内容',
 `add_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加人ID',
 `add_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',

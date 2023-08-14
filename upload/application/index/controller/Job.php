@@ -81,20 +81,24 @@ class Job extends \app\index\controller\Base
         }
         $subsiteCondition = get_subsite_condition();
         $subsite_district_level = 0;
+        $subsiteParams = [];
         if (!empty($subsiteCondition)) {
             foreach ($subsiteCondition as $key => $value) {
                 if ($key == 'district1') {
                     $district1 = $value;
+                    $subsiteParams['district1'] = $district1;
                     $subsite_district_level = 1;
                     break;
                 }
                 if ($key == 'district2') {
                     $district2 = $value;
+                    $subsiteParams['district2'] = $district2;
                     $subsite_district_level = 2;
                     break;
                 }
                 if ($key == 'district3') {
                     $district3 = $value;
+                    $subsiteParams['district3'] = $district3;
                     $subsite_district_level = 3;
                     break;
                 }
@@ -175,37 +179,52 @@ class Job extends \app\index\controller\Base
             $params['filter_apply_uid'] = $this->visitor['uid'];
         }
 
-        if (config('global_config.job_search_login') == 1) {
-            if ($this->visitor === null) {
-                $show_mask = 1;
-                /**
-                 * 【ID1000524】
-                 * 【bug】后台设置未登录搜索限制时，职位/简历列表地区切换为子地区时，不受控制
-                 * yx - 2023.02.02
-                 * 【新增】:
-                 * 1.判断条件if中，新增` || config('global_config.job_search_login_num') == 0`
-                 * 2.$params，新增`$params['district2'] = -1;$params['district3'] = -1;`
-                 */
-                if (!empty($params) || config('global_config.job_search_login_num') == 0) {
-                    $params['district1'] = -1;
-                    $params['district2'] = -1;
-                    $params['district3'] = -1;
+        do {
+            if (config('global_config.job_search_login') == 1) {
+                if ($this->visitor === null) {
+                    $show_mask = 1;
+
+                    if (config('global_config.job_search_login_num') == 0) {
+                        $params['district1'] = -1;
+                        $params['district2'] = -1;
+                        $params['district3'] = -1;
+                        break;
+                    }
+
+                    if (!empty($params)) {
+                        if ($params === $subsiteParams) {
+                            $params['count_total'] = 0;
+                            $params['current_page'] = 1;
+                            $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
+                            break;
+                        } else {
+                            $params['district1'] = -1;
+                            $params['district2'] = -1;
+                            $params['district3'] = -1;
+                            break;
+                        }
+                    }
+
+                    $params['count_total'] = 0;
+                    $params['current_page'] = 1;
+                    $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
+                    break;
+                } else {
+                    $show_mask = 0;
+                    $params['count_total'] = 1;
+                    $params['current_page'] = $current_page;
+                    $params['pagesize'] = $pagesize;
+                    break;
                 }
-                $params['count_total'] = 0;
-                $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
             } else {
                 $show_mask = 0;
                 $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
+                break;
             }
-        } else {
-            $show_mask = 0;
-            $params['count_total'] = 1;
-            $params['current_page'] = $current_page;
-            $params['pagesize'] = $pagesize;
-        }
+        } while (0);
+
         $instance = new \app\common\lib\JobSearchEngine($params);
 
         $searchResult = $instance->run();
@@ -414,7 +433,7 @@ class Job extends \app\index\controller\Base
             $last_login_time = date('Y/m/d H:i:s', $logo['last_login_time']);
         }
 
-        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'],$return['base_info']['map_lat']);
+        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'], $return['base_info']['map_lat']);
         $return['base_info']['map_lng'] = $coordinate['lng'];
         $return['base_info']['map_lat'] = $coordinate['lat'];
 
@@ -564,7 +583,7 @@ class Job extends \app\index\controller\Base
             $jobinfo['addtime'],
             $jobinfo['refreshtime']
         );
-        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content'] );
+        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content']);
         $return['base_info'] = $base_info;
 
         $companyinfo = model('Company')

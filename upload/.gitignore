@@ -31,3 +31,6 @@ public/sitemap.xml
 public/sitemap
 public/.htaccess
 public/nginx.htaccess
+/vue/member/public/static/config.js
+/public/tpl/mobile/static/tongji.js
+/public/tpl/mobile/static/config.js

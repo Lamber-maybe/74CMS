@@ -370,14 +370,18 @@ function make_file_url($path, $type = 'default')
 /**
  * 获取默认图片
  */
-function default_empty($alias)
+function default_empty($alias, $scene = '')
 {
     switch ($alias) {
         case 'thumb':
             $filename = 'empty_thumb.jpg';
             break;
         case 'photo':
-            $filename = 'empty_photo.png';
+            if ($scene === 2) {
+                $filename = 'empty_photo_2.png';
+            } else {
+                $filename = 'empty_photo_1.png';
+            }
             break;
         case 'logo':
             $filename = 'empty_logo.jpg';
@@ -1113,4 +1117,20 @@ function setConfigPHP($pat, $rep)
     } else {
         return false;
     }
+}
+
+
+/**
+ * 判断数组是否存在相同值
+ * @param $array
+ * @param $return bool 返回类型 true|返回重复数组;false|返回bool
+ * @return array|bool
+ */
+function arrayIsDuplicate($array,$return = false){
+    $uniqueArr = array_unique($array);
+    $diffArr = array_diff_assoc($array,$uniqueArr);
+    if ($return){
+        return $diffArr;
+    }
+    return !empty($diffArr);
 }

@@ -1,7 +1,7 @@
 {#layout name="public/layout" /#}
 {#load href="__ROOT__/assets/css/highslide.css" /#}
 {#load href="__ROOT__/assets/css/show_tpl/def/companyshow.css" /#}
-<div class="content_wrapper" id="app">
+<div class="content_wrapper" id="app" v-cloak>
     <div class="content">
         <div class="list_box1">
             <div class="details">
@@ -193,7 +193,7 @@
                     <div class="periphery_list" v-if="relationActive=='hot'">
                         <div class="list_box peripheryMargin">
                             {#volist name="return.hotword_list" id="vo"#}
-                            <a target="_blank" href="{#:url('index/job/index',['key'=>$vo['word']])#}">{#$vo.word#}</a>
+                            <a target="_blank" href="{#:url('index/job/index',['keyword'=>$vo['word']])#}">{#$vo.word#}</a>
                             {#/volist#}
                         </div>
                     </div>
@@ -264,6 +264,10 @@
             </div>
         </div>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+    {#include file="public/weChatQrcode" /#}
+    <!-- 微信二维码弹窗 end -->
 </div>
 {#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
 <script>
@@ -369,7 +373,11 @@
             total_page: 0,
             hasAttention: false,
             contentAll: false,
-            contentHeight: 0
+            contentHeight: 0,
+            scanQrcodeImg: '',
+            showWeChatQrcode: false,
+            weChatQrcodeContent: '',
+            bind_timer: ''
         },
         created: function () {
             this.getUserInfo()
@@ -505,12 +513,78 @@
                     var _api_url = that.hasAttention === true ? qscms.apiList.companyAttentionCancel : qscms.apiList.companyAttention
                     httppost(_api_url, params)
                         .then(function (res) {
-                            that.hasAttention = that.hasAttention === true ? false : true
                             that.$message({ type: 'success', message: res.message })
+                            if (that.hasAttention === false) {
+                                /**
+                                 * 【ID1000719】
+                                 * 【新增】公众号引导弹窗场景（关注企业）
+                                 * cy 2023-7-17
+                                 */
+                                that.popupWechatQrcodeWindow('user_pc_attention_company')
+                            }
+                            that.hasAttention = that.hasAttention === true ? false : true
                         })
                         .catch(function () { })
                 }
             },
+            // 弹出微信二维码弹框
+            popupWechatQrcodeWindow: function (val) {
+                if (true === whetherPopupWeChatQrcodeWindow(val)) {
+                    var that = this
+                    var requestUrl = qscms.apiUrl + qscms.apiList.member_account
+                    httppost(requestUrl, {})
+                        .then(res => {
+                            if (parseInt(res.data.bind_weixin) === 0) {
+                                httpget(qscms.apiList.qrcode, {type: 'bind_weixin'})
+                                    .then(function (res) {
+                                        if (res.data) {
+                                            that.scanQrcodeImg = res.data
+                                            that.showWeChatQrcode = true
+                                            that.weChatQrcodeContent = '扫码绑定公众号，求职快人一步'
+                                            whetherPopupWeChatQrcodeWindow(val, true)
+                                            that.bind_timer = setInterval(that.verifyWeChatBind, 3000);
+                                        }
+                                    })
+                                    .catch(function () {
+                                    })
+                            }
+                        })
+                        .catch(() => {
+                        })
+                }
+            },
+            // 关闭弹窗
+            closeWeChatQrcode: function () {
+                this.showWeChatQrcode = false
+                clearInterval(this.bind_timer);
+            },
+            // 查看微信是否已绑定，绑定后自动关闭二维码
+            verifyWeChatBind() {
+                var that = this
+                httpget(qscms.apiList.imCheckBind, {})
+                    .then(res => {
+                        if (res.code == 200) {
+                            if (res.data == 1) {
+                                that.showWeChatQrcode = false
+                                clearInterval(that.bind_timer);
+                                that.$message({type: 'success', message: '绑定成功'})
+                            }
+                        }
+                    })
+            }
         }
     })
 </script>
+<style>
+    .wx_dialog {
+        border-radius: 15px;
+    }
+
+    .wx_dialog .el-dialog__header {
+        border-radius: 15px;
+    }
+
+    .wx_dialog .el-dialog__body {
+        padding: 0;
+    }
+</style>

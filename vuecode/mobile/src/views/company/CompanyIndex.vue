@@ -235,6 +235,10 @@
         <div class="tip_text">微信内使用“扫一扫”打开图片，识别关注公众号完成绑定操作。绑定后即可随时随地接收最新消息通知，还可使用微信快速登录网站。</div>
       </div>
     </van-dialog>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -246,11 +250,13 @@ import http from '@/utils/http'
 import api from '@/api'
 import Ad from '@/components/Ad'
 import {mapState} from 'vuex'
+import WeChatQrcode from '@/components/WeChatQrcode'
 export default {
   name: 'CompanyIndex',
   components: {
     SwitchType,
-    Ad
+    Ad,
+    WeChatQrcode
   },
   filters: {
     timeFilter (timestamp) {
@@ -441,6 +447,13 @@ export default {
               .catch(() => {
                 // on cancel
               })
+          } else {
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（登录）
+             * cy 2023-7-19
+             */
+            this.popupWechatQrcodeWindow('company_m_login', 1)
           }
         })
         .catch(() => {})
@@ -498,6 +511,12 @@ export default {
                 return false
               } else {
                 this.$notify({ type: 'success', message: res.message })
+                /**
+                 * 【ID1000719】
+                 * 【新增】公众号引导弹窗场景（刷新职位）
+                 * cy 2023-7-19
+                 */
+                this.popupWechatQrcodeWindow('company_m_refresh_job', 3)
               }
             })
             .catch(() => {})
@@ -505,6 +524,10 @@ export default {
         .catch(() => {
           // on cancel
         })
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

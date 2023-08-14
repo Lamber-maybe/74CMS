@@ -392,9 +392,10 @@
 import { resumeDetailsList, updateResume } from '@/api/resume_urm'
 import { parseTime } from '@/utils'
 import { classify } from '@/api/company_crm'
-import { resumeImgDel, getAuditTemplateList, deleteAuditTemplate } from '@/api/resume'
+import { resumeImgDel } from '@/api/resume'
 import { memberLock } from '@/api/member'
 import { outboundCall } from '@/api/outbound'
+import { getAuditTemplateList, deleteAuditTemplate } from '@/api/auditTemplate'
 
 export default {
   name: 'MemberInformation',
@@ -578,8 +579,6 @@ export default {
           add_template: this.addAuditTemplate ? 1 : 0,
           'type': 'audit'
         }
-        // 获取审核模板列表
-        this.getAuditTemplateList()
       }
       if (type == 'examine'){
         data = { 'examine': this.form.examine, 'resume_img': this.form.resume_img, 'uid': this.uid, 'type': 'resume_img' }
@@ -592,8 +591,6 @@ export default {
           this.$message.success(res.message)
           this.resumeDetails()
           this.editDialog = false
-          this.auditTemplateId = ''
-          this.setAuditReason = ''
         }).catch(() => {
 
         })
@@ -702,6 +699,8 @@ export default {
         this.form.examine = 0
         // 获取审核模板列表
         this.getAuditTemplateList()
+        this.auditTemplateId = ''
+        this.setAuditReason = ''
       }
       this.edit_type = type
       this.editDialog = true
@@ -1397,6 +1396,7 @@ export default {
   justify-content: flex-start;
   box-sizing: border-box;
   padding-left: 50px;
+  align-items: baseline;
   .reason{
     min-height: initial;
     width: 70px;

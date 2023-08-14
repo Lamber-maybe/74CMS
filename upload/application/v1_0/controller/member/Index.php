@@ -78,7 +78,7 @@ class Index extends \app\v1_0\controller\common\Base
                 $data['photo'] =
                     $basic['photo_img'] > 0
                         ? model('Uploadfile')->getFileUrl($basic['photo_img'])
-                        : default_empty('photo');
+                        : default_empty('photo', $basic['sex']);
                 /**
                  * 首页新增个人信息
                  */

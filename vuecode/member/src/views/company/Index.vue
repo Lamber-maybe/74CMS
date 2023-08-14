@@ -200,6 +200,10 @@
           type="company"
           @closeDialog="showPoster = false"
         />
+
+        <!-- 微信二维码弹窗 start -->
+        <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+        <!-- 微信二维码弹窗 end -->
     </div>
 </template>
 
@@ -210,12 +214,14 @@ import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Poster from '@/components/Poster'
+import WeChatQrcode from "@/components/WeChatQrcode";
 export default {
   name: 'CompanyIndex',
-  components:{
-      echarts,
-      CustomerServiceComplaint,
-      Poster
+  components: {
+    echarts,
+    CustomerServiceComplaint,
+    Poster,
+    WeChatQrcode
   },
   filters: {
     timeFilter (timestamp) {
@@ -389,6 +395,14 @@ export default {
                 this.serviceInfo = { ...res.data.info }
                 res = await http.post(api.ad_list, {alias: ['QS_member_company_banner@web']})
                 this.ad_dataset_banner.items = res.data.items['QS_member_company_banner@web']
+                if (parseInt(companyinfo.notice_auth_complete) !== 1) {
+                  /**
+                   * 【ID1000719】
+                   * 【新增】公众号引导弹窗场景（登录）
+                   * cy 2023-7-17
+                   */
+                  this.popupWechatQrcodeWindow('company_pc_login')
+                }
             } catch (err) {
                 console.log(err)
             }
@@ -479,6 +493,12 @@ export default {
               points:res.data.points
             })
             this.$message({ type: 'success', message: res.message })
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（签到）
+             * cy 2023-7-17
+             */
+            this.popupWechatQrcodeWindow('company_pc_sign_in')
           }).catch(() => {})
         },
         toSearchResume(){
@@ -498,6 +518,10 @@ export default {
               })
             }
           }).catch(() => {})
+        },
+        // 弹出微信二维码弹框
+        popupWechatQrcodeWindow(val) {
+          this.$refs.weChatQrcodeRef.handleOpen(val, '扫码绑定，随时随地接收简历信息')
         }
   }
 }

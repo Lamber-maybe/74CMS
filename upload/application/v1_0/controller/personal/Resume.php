@@ -162,7 +162,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $basic['photo_img_src'] =
             $basic['photo_img'] > 0
                 ? model('Uploadfile')->getFileUrl($basic['photo_img'])
-                : default_empty('photo');
+                : default_empty('photo', $basic['sex']);
 
         //求职意向
         $intention_list = model('ResumeIntention')

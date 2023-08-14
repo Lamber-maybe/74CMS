@@ -62,12 +62,12 @@
                 <el-checkbox label="enable_video_interview">使用视频面试: <span v-if="enable_video_interview" class="val">允许</span><span v-else class="val">不允许</span></el-checkbox>
               </el-col>
               <el-col :span="8">
-                <el-checkbox v-if="detail.show_apply_contact === 0" label="enable_video_interview">
+                <el-checkbox v-if="detail.show_apply_contact === 0" label="show_apply_contact">
                   收到简历免费查看:
                   <span class="val">不允许</span>
                 </el-checkbox>
-                <el-checkbox v-else-if="detail.resume_view_num === 0" label="im_max_perday">收到简历免费查看: <span class="val">不限</span></el-checkbox>
-                <el-checkbox v-else label="im_max_perday">收到简历免费查看: <span class="val" v-html="detail.resume_view_num" /> 份/天</el-checkbox>
+                <el-checkbox v-else-if="detail.resume_view_num === 0" label="show_apply_contact">收到简历免费查看: <span class="val">不限</span></el-checkbox>
+                <el-checkbox v-else label="show_apply_contact">收到简历免费查看: <span class="val" v-html="detail.resume_view_num" /> 份/天</el-checkbox>
               </el-col>
             </el-row>
             <el-row>

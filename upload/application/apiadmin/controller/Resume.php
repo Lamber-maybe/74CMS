@@ -5,6 +5,7 @@ namespace app\apiadmin\controller;
 use app\common\lib\FileManager;
 use phpDocumentor\Reflection\File;
 use think\Db;
+use app\common\logic\AuditTemplateLogic;
 
 class Resume extends \app\common\controller\Backend
 {
@@ -108,7 +109,7 @@ class Resume extends \app\common\controller\Backend
             $value['fullname'] = htmlspecialchars_decode($value['fullname'], ENT_QUOTES);
             $value['photo_img_src'] = isset($photo_arr[$value['photo_img']])
                 ? $photo_arr[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
             $value['age'] =
                 intval($value['birthday']) == 0
                     ? '年龄未知'
@@ -282,7 +283,7 @@ class Resume extends \app\common\controller\Backend
                     ? model('Uploadfile')->getFileUrl(
                         $info['photo_img']
                     )
-                    : default_empty('photo');
+                    : default_empty('photo', $info['sex']);
             } else {
                 $info['contact'] = [];
                 $photoUrl = '';
@@ -1742,23 +1743,14 @@ class Resume extends \app\common\controller\Backend
                  */
                 // 添加模板
                 if ($addTemplate == 1 && !empty($reason)) {
-                    $templateWhere = [
+                    $templateParams = [
                         'type' => 1,
-                        'is_del' => 0
+                        'content' => $reason
                     ];
-                    $templateModel = model('audit_template');
-                    // 模板最多可添加6条
-                    if ($templateModel->getCount($templateWhere) < 6) {
-                        $templateData = [
-                            'type' => 1,
-                            'content' => $reason,
-                            'add_id' => $this->admininfo->id,
-                            'add_time' => time()
-                        ];
-                        $result = $templateModel->addTemplate($templateData);
-                        if (empty($result)) {
-                            throw new \Exception('添加模板失败');
-                        }
+                    $auditTemplateLogic = new AuditTemplateLogic();
+                    $result = $auditTemplateLogic->addTemplate($templateParams, $this->admininfo);
+                    if (false === $result['status']) {
+                        throw new \Exception($result['msg']);
                     }
                 }
                 // 填写了原因的话不获取模板内容

@@ -436,6 +436,10 @@
         </div>
       </div>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+      {#include file="public/weChatQrcode" /#}
+    <!-- 微信二维码弹窗 end -->
   </div>
 
 </div>
@@ -696,7 +700,11 @@
       settr: '{#$Request.param.settr#}',
       settrSelectedText: '',
       showSelected: false,
-      displayMethod: true
+      displayMethod: true,
+      scanQrcodeImg: '',
+      showWeChatQrcode: false,
+      weChatQrcodeContent: '',
+      bind_timer: ''
     },
     mounted: function () {
       var listtype = getStorageValue('joblist_type');
@@ -921,6 +929,12 @@
           var params = { jobid: jobid };
           httppost(qscms.apiList.jobapply, params).then(function (res) {
             that.$message({ type: 'success', message: res.message });
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（申请职位）
+             * cy 2023-7-17
+             */
+            that.popupWechatQrcodeWindow('user_pc_apply_job')
           }).catch(function () { });
         }
       },
@@ -986,7 +1000,65 @@
           }
           location.href = url
         }
+      },
+      // 弹出微信二维码弹框
+      popupWechatQrcodeWindow: function (val) {
+        if (true === whetherPopupWeChatQrcodeWindow(val)) {
+          var that = this
+          var requestUrl = qscms.apiUrl + qscms.apiList.member_account
+          httppost(requestUrl, {})
+              .then(res => {
+                if (parseInt(res.data.bind_weixin) === 0) {
+                  httpget(qscms.apiList.qrcode, {type: 'bind_weixin'})
+                      .then(function (res) {
+                        if (res.data) {
+                          that.scanQrcodeImg = res.data
+                          that.showWeChatQrcode = true
+                          that.weChatQrcodeContent = '扫码绑定公众号，求职快人一步'
+                          whetherPopupWeChatQrcodeWindow(val, true)
+                          that.bind_timer = setInterval(that.verifyWeChatBind, 3000);
+                        }
+                      })
+                      .catch(function () {
+                      })
+                }
+              })
+              .catch(() => {
+              })
+        }
+      },
+      // 关闭弹窗
+      closeWeChatQrcode: function () {
+        this.showWeChatQrcode = false
+        clearInterval(this.bind_timer);
+      },
+      // 查看微信是否已绑定，绑定后自动关闭二维码
+      verifyWeChatBind() {
+        var that = this
+        httpget(qscms.apiList.imCheckBind, {})
+            .then(res => {
+              if (res.code == 200) {
+                if (res.data == 1) {
+                  that.showWeChatQrcode = false
+                  clearInterval(that.bind_timer);
+                  that.$message({type: 'success', message: '绑定成功'})
+                }
+              }
+            })
       }
     },
   });
 </script>
+<style>
+  .wx_dialog {
+    border-radius: 15px;
+  }
+
+  .wx_dialog .el-dialog__header {
+    border-radius: 15px;
+  }
+
+  .wx_dialog .el-dialog__body {
+    padding: 0;
+  }
+</style>

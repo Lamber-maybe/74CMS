@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\common\model\shortvideo\SvCompanyVideo;
 use app\common\model\Uploadfile;
 use think\Db;
+use app\common\logic\AuditTemplateLogic;
 
 class Company extends Backend
 {
@@ -1434,6 +1435,36 @@ class Company extends Backend
                 $this->updateMember($uid, $post, $info); // 修改密码或手机号
             }
             if (!empty($arr)) {
+                if ($arr['audit'] === 2) {
+                    /**
+                     * 【ID1000725】
+                     * 【新增】职位审核，企业营业执照审核的不通过原因选择
+                     * cy 2023-7-13
+                     */
+                    // 添加模板
+                    if (isset($post['add_template']) && !empty($post['add_template']) == 1 && !empty($reason)) {
+                        $templateParams = [
+                            'type' => 2,
+                            'content' => $reason
+                        ];
+                        $auditTemplateLogic = new AuditTemplateLogic();
+                        $result = $auditTemplateLogic->addTemplate($templateParams, $this->admininfo);
+                        if (false === $result['status']) {
+                            throw new \Exception($result['msg']);
+                        }
+                    }
+                    // 填写了原因的话不获取模板内容
+                    if (empty($reason) && isset($post['template_id']) && !empty($post['template_id'])) {
+                        // 获取模板内容
+                        $templateWhere = [
+                            'id' => $post['template_id'],
+                            'is_del' => 0
+                        ];
+                        $templateContent = model('audit_template')->getValue($templateWhere, 'content');
+                        $reason = !empty($templateContent) ? $templateContent : $reason;
+                    }
+                }
+
                 $this->editCompany($uid, $arr, $reason);
             }
             if (isset($post['company_img'])) {

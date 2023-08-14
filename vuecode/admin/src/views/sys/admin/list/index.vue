@@ -23,11 +23,11 @@
           </template>
         </el-table-column>
         <el-table-column label="角色" prop="role_name" min-width="120" />
-        <el-table-column label="是否是销售" prop="is_sc" min-width="100" align="center">
-          <template slot-scope="scope">
-            <span v-if="!!parseInt(scope.row.is_sc)">是</span><span v-else>不是</span>
-          </template>
-        </el-table-column>
+<!--        <el-table-column label="是否是销售" prop="is_sc" min-width="100" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            <span v-if="!!parseInt(scope.row.is_sc)">是</span><span v-else>不是</span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column align="center" prop="openid" label="微信绑定" min-width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.openid==''"><el-button type="text" @click="funBind(scope.row.id)">[点击绑定]</el-button></span>

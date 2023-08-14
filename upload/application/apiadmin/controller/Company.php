@@ -4,6 +4,7 @@ namespace app\apiadmin\controller;
 
 use app\common\controller\Backend;
 use think\Db;
+use app\common\logic\AuditTemplateLogic;
 
 class Company extends Backend
 {
@@ -436,6 +437,8 @@ class Company extends Backend
         $id = input('post.id/a');
         $audit = input('post.audit/d', 0, 'intval');
         $reason = input('post.reason/s', '', 'trim');
+        $templateId = input('post.template_id/d', 0, 'intval');
+        $addTemplate = input('post.add_template/d', 0, 'intval');
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择数据');
         }
@@ -447,6 +450,36 @@ class Company extends Backend
                 ->column('id,companyname,audit');
             if (empty($list)) {
                 $this->ajaxReturn(500, '没有要审核的企业');
+            }
+
+            if ($audit === 2) {
+                /**
+                 * 【ID1000725】
+                 * 【新增】职位审核，企业营业执照审核的不通过原因选择
+                 * cy 2023-7-13
+                 */
+                // 添加模板
+                if ($addTemplate == 1 && !empty($reason)) {
+                    $templateParams = [
+                        'type' => 2,
+                        'content' => $reason
+                    ];
+                    $auditTemplateLogic = new AuditTemplateLogic();
+                    $result = $auditTemplateLogic->addTemplate($templateParams, $this->admininfo);
+                    if (false === $result['status']) {
+                        throw new \Exception($result['msg']);
+                    }
+                }
+                // 填写了原因的话不获取模板内容
+                if (empty($reason) && !empty($templateId)) {
+                    // 获取模板内容
+                    $templateWhere = [
+                        'id' => $templateId,
+                        'is_del' => 0
+                    ];
+                    $templateContent = model('audit_template')->getValue($templateWhere, 'content');
+                    $reason = !empty($templateContent) ? $templateContent : $reason;
+                }
             }
 
             model('Company')->setAudit($id, $audit, $reason);

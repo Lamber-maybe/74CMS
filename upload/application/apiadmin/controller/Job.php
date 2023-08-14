@@ -3,6 +3,7 @@
 namespace app\apiadmin\controller;
 
 use app\common\controller\Backend;
+use app\common\logic\AuditTemplateLogic;
 use think\Db;
 
 class Job extends Backend
@@ -305,6 +306,8 @@ class Job extends Backend
         $id = input('post.id/a');
         $audit = input('post.audit/d', 0, 'intval');
         $reason = input('post.reason/s', '', 'trim');
+        $templateId = input('post.template_id/d', 0, 'intval');
+        $addTemplate = input('post.add_template/d', 0, 'intval');
         if (empty($id)) {
             $this->ajaxReturn(500, '请选择职位');
         }
@@ -316,6 +319,36 @@ class Job extends Backend
                 ->column('id,jobname,audit');
             if (empty($list)) {
                 $this->ajaxReturn(500, '没有要审核的职位');
+            }
+
+            if ($audit === 2) {
+                /**
+                 * 【ID1000719】
+                 * 【新增】公众号引导弹窗场景
+                 * cy 2023-7-20
+                 */
+                // 添加模板
+                if ($addTemplate == 1 && !empty($reason)) {
+                    $templateParams = [
+                        'type' => 3,
+                        'content' => $reason
+                    ];
+                    $auditTemplateLogic = new AuditTemplateLogic();
+                    $result = $auditTemplateLogic->addTemplate($templateParams, $this->admininfo);
+                    if (false === $result['status']) {
+                        throw new \Exception($result['msg']);
+                    }
+                }
+                // 填写了原因的话不获取模板内容
+                if (empty($reason) && !empty($templateId)) {
+                    // 获取模板内容
+                    $templateWhere = [
+                        'id' => $templateId,
+                        'is_del' => 0
+                    ];
+                    $templateContent = model('audit_template')->getValue($templateWhere, 'content');
+                    $reason = !empty($templateContent) ? $templateContent : $reason;
+                }
             }
 
             model('Job')->setAudit($id, $audit, $reason);

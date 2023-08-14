@@ -54,6 +54,16 @@ class Account extends \app\v1_0\controller\common\Base
                 }
             }
         }
+        /**
+         * 【ID1000719】
+         * 【新增】公众号引导弹窗场景
+         * cy 2023-7-19
+         * 检测后台微信配置是否开启状态
+         * bind_weixin：0|未绑定，1|已绑定，2|未开启
+         */
+        if (config('global_config.wechat_open') != 1 || config('global_config.wechat_login_open') != 1) {
+            $return['bind_weixin'] = 2;
+        }
         if ($this->userinfo->utype == 1) {
             $company_profile = model('Company')
                 ->field(true)

@@ -42,7 +42,7 @@ export default {
         .post(api.company_jobedit_save, values)
         .then(res => {
           this.$notify({ type: 'success', message: res.message })
-          this.$router.push('/member/company/joblist')
+          this.$router.push('/member/company/joblist?operate_type=' + 'edit')
         })
         .catch(() => {})
     }

@@ -276,7 +276,6 @@ export default {
       http
         .get(api.company_servicelist, this.params)
         .then(res => {
-          console.log(res)
           this.active_index = 0
           this.dataset = []
           let list = res.data.items
@@ -333,7 +332,45 @@ export default {
             }
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
+      if (this.params.type === 'im' && parseInt(this.mySetmeal.im_max_perday) === 0) {
+        this.$dialog
+          .confirm({
+            title: '系统提示',
+            message:
+              '您当前是' + this.mySetmeal.name + '，暂不能使用聊天功能，建议您升级套餐！',
+            confirmButtonText: '升级套餐',
+            messageAlign: 'left'
+          })
+          .then(() => {
+            this.$router.push('/member/order/add/common?type=setmeal')
+          })
+          .catch(() => {
+            // on cancel
+          })
+        this.submitLock = true
+        return false
+      }
+      if (this.params.type === 'resume_package' && parseInt(this.mySetmeal.download_resume_max_perday) === 0) {
+        this.$dialog
+          .confirm({
+            title: '系统提示',
+            message:
+              '您当前是' + this.mySetmeal.name + '，暂不能下载简历，建议您升级套餐！',
+            confirmButtonText: '升级套餐',
+            messageAlign: 'left'
+          })
+          .then(() => {
+            this.$router.push('/member/order/add/common?type=setmeal')
+          })
+          .catch(() => {
+            // on cancel
+          })
+        this.submitLock = true
+        return false
+      }
+      this.submitLock = false
     },
     changeDeduct () {
       // 计算最终需要支付的金额

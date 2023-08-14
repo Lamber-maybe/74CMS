@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-class Order extends \app\common\model\BaseModel
+class Order extends BaseModel
 {
     public $map_status = [0 => '待支付', 1 => '已支付', 2 => '已取消'];
     public $map_payment = [
@@ -876,7 +876,7 @@ class Order extends \app\common\model\BaseModel
                 model('MemberSetmeal')
                     ->where('uid', $order['uid'])
                     ->setInc(
-                        'im_total',
+                        'im_added_package', // yx - 2023.07.14 im_total => im_added_package
                         $extra['times']
                     );
             }
@@ -969,11 +969,11 @@ class Order extends \app\common\model\BaseModel
         $name = '';
         if ($order['utype'] == 1) {
             $company = model('Company')->where('uid', $order['uid'])->field('companyname')->find();
-            $name = !empty($company['companyname']) ? mb_substr($company['companyname'],0,10) : '';
+            $name = !empty($company['companyname']) ? mb_substr($company['companyname'], 0, 10) : '';
         }
         if ($order['utype'] == 2) {
             $resume = model('Resume')->where('uid', $order['uid'])->field('fullname')->find();
-            $name = !empty($resume['fullname']) ? mb_substr($resume['fullname'],0,10) : '';
+            $name = !empty($resume['fullname']) ? mb_substr($resume['fullname'], 0, 10) : '';
         }
         //微信通知
         model('WechatNotifyRule')->notify(
@@ -983,7 +983,7 @@ class Order extends \app\common\model\BaseModel
             [
                 '亲，您的订单已支付成功',
                 $order['oid'],
-                $name .'-'.$order['service_name'],
+                $name . '-' . $order['service_name'],
                 $order['amount'] . '元',
                 $this->map_payment[$payment],
                 date('Y年m月d日 H:i:s', $time),

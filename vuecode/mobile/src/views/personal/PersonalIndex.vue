@@ -187,6 +187,10 @@
         :target_utype="1"
       ></SwitchType>
     </van-popup>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -198,11 +202,13 @@ import http from '@/utils/http'
 import api from '@/api'
 import Ad from '@/components/Ad'
 import {mapState} from 'vuex'
+import WeChatQrcode from '@/components/WeChatQrcode'
 export default {
   name: 'PersonalIndex',
   components: {
     SwitchType,
-    Ad
+    Ad,
+    WeChatQrcode
   },
   data () {
     return {
@@ -250,6 +256,14 @@ export default {
             this.showRefreshPop = true
             localStorage.setItem('mobile_resume_refresh_notice_date', current_date)
           }
+        }
+        if (this.showLowPop === false && this.showRefreshPop === false) {
+          /**
+           * 【ID1000719】
+           * 【新增】公众号引导弹窗场景（登录）
+           * cy 2023-7-19
+           */
+          this.popupWechatQrcodeWindow('user_m_login', 2)
         }
       }
     },
@@ -442,6 +456,12 @@ export default {
         .then(res => {
           if (parseInt(res.code) === 200) {
             this.$notify({ type: 'success', message: res.message })
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（刷新简历）
+             * cy 2023-7-19
+             */
+            this.popupWechatQrcodeWindow('user_m_refresh_resume', 3)
           } else {
             this.$notify(res.message)
           }
@@ -449,6 +469,10 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

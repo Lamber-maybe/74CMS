@@ -605,7 +605,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             }
             $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                 ? $photo_arr[$val['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $val['sex']);
             $tmp_arr['service_tag'] = $val['service_tag'];
             $tmp_arr['sex'] = $val['sex'];
             $tmp_arr['sex_text'] = model('Resume')->map_sex[$val['sex']];

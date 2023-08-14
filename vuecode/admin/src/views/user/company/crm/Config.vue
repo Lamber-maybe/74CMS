@@ -99,42 +99,42 @@
       <div v-if="type=='configure'" class="bottoms_two">
         <el-form ref="form" :model="form" label-width="150px">
           <el-form-item label="主动领取客户限制/天">
-            <el-input-number v-model="configureData.customer_receive_limit.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_receive_limit.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售当天能主动领取客户的限制数，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="未跟进掉入公海">
-            <el-input-number v-model="configureData.customer_fall_seas.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_fall_seas.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售未跟进自己的客户达到设置的天数后，客户会自动掉入公共客户中，0为不掉入。
             </span>
           </el-form-item>
           <el-form-item label="未成交掉入公海">
-            <el-input-number v-model="configureData.customer_unsettled_fall_seas.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_unsettled_fall_seas.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售自领取之日起，指定天数内未成交的客户自动掉入公共客户中，0为不掉入。
             </span>
           </el-form-item>
           <el-form-item label="禁止领取期限(销售)">
-            <el-input-number v-model="configureData.customer_forbidden_sale.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_forbidden_sale.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售将客户丢入公客后多长时间不能再领取该客户，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="禁止领取期限(系统)">
-            <el-input-number v-model="configureData.customer_forbidden_sys.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_forbidden_sys.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="销售客户总数上限">
-            <el-input-number v-model="configureData.customer_total_limit.value" :min="0" :max="9999" />
+            <el-input-number v-model="configureData.customer_total_limit.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示单个销售最多能拥有的客户总数，超过设定值后将不能领取客户，0为不允许领取。
@@ -164,35 +164,35 @@
       <div v-if="type=='clue'" class="bottoms_two">
         <el-form ref="form" :model="form" label-width="160px">
           <el-form-item label="主动领取线索限制/天">
-            <el-input-number v-model="threadeData.thread_receive_limit.value" :min="0" :max="9999" />
+            <el-input-number v-model="threadeData.thread_receive_limit.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售当天能主动领取线索的限制数，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="未跟进掉入线索池">
-            <el-input-number v-model="threadeData.thread_fall_seas.value" :min="0" :max="9999" />
+            <el-input-number v-model="threadeData.thread_fall_seas.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售未跟进自己的客户达到设置的天数后，客户会自动掉入线索池中，0为不掉入。
             </span>
           </el-form-item>
           <el-form-item label="禁止领取期限(销售)">
-            <el-input-number v-model="threadeData.thread_forbidden_sale.value" :min="0" :max="9999" />
+            <el-input-number v-model="threadeData.thread_forbidden_sale.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示销售将客户丢入公客后多长时间不能再领取该客户，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="禁止领取期限(系统)">
-            <el-input-number v-model="threadeData.thread_forbidden_sys.value" :min="0" :max="9999" />
+            <el-input-number v-model="threadeData.thread_forbidden_sys.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示系统自动掉公客的客户掉入公客后多长时间不能再领取该客户，0为不允许领取。
             </span>
           </el-form-item>
           <el-form-item label="销售线索总数上限">
-            <el-input-number v-model="threadeData.thread_total_limit.value" :min="0" :max="9999" />
+            <el-input-number v-model="threadeData.thread_total_limit.value" :min="0" />
             <span class="smalltip">
               <i class="el-icon-info" />
               表示单个销售最多能拥有的线索总数，超过设定值后将不能领取线索，0为不允许领取。

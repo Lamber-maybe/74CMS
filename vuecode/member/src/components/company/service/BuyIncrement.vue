@@ -144,8 +144,47 @@ import api from '@/api'
           .then(res => {
             this.mySetmeal = res.data.info
             this.fetchData()
+            if (this.type === 'im' && parseInt(this.mySetmeal.im_max_perday) === 0) {
+              this.$confirm('您当前是' +
+                this.mySetmeal.name +
+                '，暂不能使用聊天功能，建议您升级套餐！',
+                '系统提示',
+                {
+                  confirmButtonText: '升级套餐',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                })
+                .then(() => {
+                  this.$router.push('/company/service/setmeal')
+                })
+                .catch(() => {
+                  // on cancel
+                })
+              this.ispay = true
+              return false
+            }
+            if (this.type === 'resume_package' && parseInt(this.mySetmeal.download_resume_max_perday) === 0) {
+              this.$confirm('您当前是' +
+                this.mySetmeal.name +
+                '，暂不能下载简历，建议您升级套餐！',
+                '系统提示',
+                {
+                  confirmButtonText: '升级套餐',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                })
+                .then(() => {
+                  this.$router.push('/company/service/setmeal')
+                })
+                .catch(() => {
+                  // on cancel
+                })
+              this.ispay = true
+              return false
+            }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       },
       fetchData () {
         http

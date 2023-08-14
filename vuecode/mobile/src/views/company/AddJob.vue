@@ -48,11 +48,16 @@
                   result_id
               )
             "
-            >购买</van-button
+          >购买
+          </van-button
           >
         </div>
       </div>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -60,10 +65,13 @@
 import JobForm from '@/components/JobForm'
 import http from '@/utils/http'
 import api from '@/api'
+import WeChatQrcode from '@/components/WeChatQrcode'
+
 export default {
   name: 'AddJob',
   components: {
-    JobForm
+    JobForm,
+    WeChatQrcode
   },
   data () {
     return {
@@ -79,8 +87,32 @@ export default {
   },
   methods: {
     addAgain () {
-      this.fetchData()
-      this.showResult = !this.showResult
+      http
+        .get(api.company_check_jobadd_num, {})
+        .then(res => {
+          this.enable_addjob_num = res.data.enable_addjob_num
+          if (this.enable_addjob_num <= 0) {
+            this.$dialog
+              .confirm({
+                title: '系统提示',
+                message:
+                  '您当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！',
+                confirmButtonText: '升级套餐',
+                messageAlign: 'left'
+              })
+              .then(() => {
+                this.$router.push('/member/order/add/common?type=setmeal')
+              })
+              .catch(() => {
+                // on cancel
+              })
+            return false
+          } else {
+            this.showResult = !this.showResult
+          }
+        })
+        .catch(() => {
+        })
     },
     fetchData () {
       http
@@ -88,13 +120,15 @@ export default {
         .then(res => {
           this.enable_addjob_num = res.data.enable_addjob_num
         })
-        .catch(() => {})
+        .catch(() => {
+        })
       http
         .get(api.company_jobadd_pre, {})
         .then(res => {
           this.$refs.child.field_rule = res.data.field_rule
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     submit (values) {
       http
@@ -104,10 +138,20 @@ export default {
           this.result_audit = [...res.data.audit]
           this.result_service_list = [...res.data.service_stick_list]
           this.showResult = true
+          /**
+           * 【ID1000719】
+           * 【新增】公众号引导弹窗场景（发布职位）
+           * cy 2023-7-19
+           */
+          this.popupWechatQrcodeWindow('company_m_save_job', 3)
         })
         .catch(() => {
           this.$refs.child.resetSubmit()
         })
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }
@@ -122,6 +166,7 @@ export default {
       top: 50%;
       transform: translate(0, -50%);
     }
+
     .price {
       color: #ff6600;
       font-size: 15px;
@@ -130,10 +175,12 @@ export default {
       right: 106px;
       top: 50%;
       transform: translate(0, -50%);
+
       span {
         font-size: 9px;
       }
     }
+
     position: relative;
     width: 100%;
     padding: 20.5px 170px 20.5px 10px;
@@ -145,25 +192,30 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
     &:not(:last-child) {
       margin-bottom: 15px;
     }
   }
+
   .head_txt {
     span {
       font-size: 12px;
       color: #c9c9c9;
       margin-left: 12px;
     }
+
     font-size: 18px;
     color: #333333;
     font-weight: bold;
     padding: 27.5px 0 17.5px;
   }
+
   width: 100%;
   background-color: #ffffff;
   padding: 0 17px;
 }
+
 .box_5 {
   .btn_box {
     .btn_item {
@@ -174,23 +226,28 @@ export default {
       padding: 5px 18px;
       background-color: #fff;
       border-radius: 30px;
+
       &.blue {
         background-color: #1787fb;
         color: #fff;
       }
+
       &:not(:first-child) {
         margin-left: 15px;
       }
     }
+
     margin: 0 auto;
     width: 313px;
     padding-bottom: 42px;
   }
+
   .tx2 {
     padding: 17.5px 0 32.5px;
     font-size: 15px;
     color: #999999;
   }
+
   .tx1 {
     font-size: 24px;
     color: #333333;
@@ -199,6 +256,7 @@ export default {
     background: url("../../assets/images/success_green.svg") 0 center no-repeat;
     background-size: 40px;
   }
+
   width: 100%;
   background-color: #ffffff;
   padding-top: 60px;

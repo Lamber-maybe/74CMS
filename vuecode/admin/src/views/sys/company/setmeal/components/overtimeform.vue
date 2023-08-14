@@ -76,7 +76,7 @@
         <el-tooltip class="item" effect="dark" placement="top-start">
           <div slot="content">
             0表示无折扣
-            <br />
+            <br>
             例：七五折请填写7.5
           </div>
           <i class="el-icon-info" />
@@ -89,10 +89,29 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="收到简历免费查看">
-        <el-radio-group v-model="form.show_apply_contact">
+        <el-radio-group
+          v-model="form.show_apply_contact"
+          @change="fun_change_show_apply_contact"
+        >
           <el-radio :label="1">允许</el-radio>
           <el-radio :label="0">不允许</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="收到简历查看上限">
+        <el-input
+          v-model.number="form.resume_view_num"
+          type="number"
+          class="small"
+          min="0"
+          :disabled="form.show_apply_contact == 0"
+          @blur="format_number(0, 'resume_view_num')"
+        >
+          <template slot="append">份 / 天</template>
+        </el-input>
+        <el-tooltip class="item" effect="dark" placement="top-start">
+          <div slot="content">0表示不限制</div>
+          <i class="el-icon-info" />
+        </el-tooltip>
       </el-form-item>
       <el-form-item label=" ">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -114,9 +133,10 @@ export default {
         jobs_meanwhile: 0,
         refresh_jobs_free_perday: 0,
         download_resume_max_perday: 0,
-        im_max_perday:0,
+        im_max_perday: 0,
         enable_video_interview: 1,
-        show_apply_contact: 1
+        show_apply_contact: 1,
+        resume_view_num: 1
       },
       rules: {
         jobs_meanwhile: [
@@ -192,20 +212,23 @@ export default {
             download_resume_max_perday,
             im_max_perday,
             enable_video_interview,
-            show_apply_contact
+            show_apply_contact,
+            resume_view_num
           } = { ...response.data.setmeal_overtime_conf }
           this.form = {
-            service_added_discount: parseInt(service_added_discount),
-            jobs_meanwhile: parseInt(jobs_meanwhile),
-            refresh_jobs_free_perday: parseInt(refresh_jobs_free_perday),
-            download_resume_max_perday: parseInt(download_resume_max_perday),
-            im_max_perday: parseInt(im_max_perday),
-            enable_video_interview: parseInt(enable_video_interview),
-            show_apply_contact: parseInt(show_apply_contact)
+            service_added_discount: this.formParseInt(service_added_discount),
+            jobs_meanwhile: this.formParseInt(jobs_meanwhile),
+            refresh_jobs_free_perday: this.formParseInt(refresh_jobs_free_perday),
+            download_resume_max_perday: this.formParseInt(download_resume_max_perday),
+            im_max_perday: this.formParseInt(im_max_perday),
+            enable_video_interview: this.formParseInt(enable_video_interview),
+            show_apply_contact: this.formParseInt(show_apply_contact),
+            resume_view_num: this.formParseInt(resume_view_num)
           }
           this.infoLoading = false
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
     onSubmit(formName) {
       const insertData = {
@@ -221,7 +244,8 @@ export default {
               this.pageReload()
               return true
             })
-            .catch(() => { })
+            .catch(() => {
+            })
         } else {
           return false
         }
@@ -237,6 +261,14 @@ export default {
       if (this.form[field] == '' || parseInt(this.form[field]) < default_val) {
         this.form[field] = default_val
       }
+    },
+    fun_change_show_apply_contact(val) {
+      if (val === 0) {
+        this.form.resume_view_num = 0
+      }
+    },
+    formParseInt(val) {
+      return val ? parseInt(val) : 0
     }
   }
 }
@@ -247,10 +279,12 @@ export default {
 .el-input-group {
   width: 90%;
 }
+
 .el-form-item--small .el-form-item__content,
 .el-form-item--small .el-form-item__label {
   width: 100%;
 }
+
 .el-tooltip {
   margin-left: 4px;
 }

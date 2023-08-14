@@ -99,13 +99,22 @@ class FollowUp extends Backend
             switch ($data['type']) {
                 case 1:
                     // 1:线索跟进;
-                    $clue_name = model('b2bcrm.CrmClue')->where('id', $data['clue_id'])->value('name');
-                    $log_field = '对{' . $clue_name . '}(线索ID:' . $data['clue_id'];
+                    $clueInfo = model('b2bcrm.CrmClue')->field('name,admin_id')->where('id', $data['clue_id'])->find();
+                    if ($clueInfo['admin_id'] != $this->admininfo->id) {
+                        $this->ajaxReturn(500, '该线索不是您的线索，无法跟进');
+                    }
+                    $log_field = '对{' . $clueInfo['name'] . '}(线索ID:' . $data['clue_id'];
                     break;
 
                 case 2:
                     // 2:客户跟进;
-                    $company_info = model('Company')->field('id,companyname')->where('uid', $data['uid'])->find();
+                    $company_info = model('Company')->field('id,admin_id,companyname')->where('uid', $data['uid'])->find();
+                    if (null === $company_info) {
+                        $this->ajaxReturn(500, '要跟进的客户不存在');
+                    }
+                    if ($company_info['admin_id'] != $this->admininfo->id) {
+                        $this->ajaxReturn(500, '该客户不是您的客户，无法跟进');
+                    }
                     $log_field = '对{' . $company_info['companyname'] . '}(企业ID:' . $company_info['id'];
                     break;
 

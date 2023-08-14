@@ -222,9 +222,9 @@ export default {
       options_citycategory: [],
       options_tag: [],
       form: {
-        recruit_status: '',
-        audit_status: '',
-        nature: '',
+        recruit_status: 1,
+        audit_status: 0,
+        nature: 1,
         jobcategory_arr: '',
         education: '',
         experience: '',

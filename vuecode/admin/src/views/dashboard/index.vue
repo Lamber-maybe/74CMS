@@ -391,8 +391,8 @@
               <!-- <span style="margin-left:10px;">请您及时更新到最新版本 <span class="color-link3"
                   @click="$router.push('/upgrade')">立即升级</span></span> -->
               <span v-if="new_version_notice == 1" style="margin-left:10px;">
-              <span class="color-link3" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</span>
-            </span>
+                <span class="color-link3" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</span>
+              </span>
             </el-col>
             <el-col :span="8">
               授权类型：
@@ -445,9 +445,9 @@ import {
   newOfficialData
 } from '@/api/dashboard'
 import reg_line from './components/reg_line.vue'
-import down_resume_line from './components/down_resume_line.vue'
-import jobapply_line from './components/jobapply_line.vue'
-import income_line from './components/income_line.vue'
+// import down_resume_line from './components/down_resume_line.vue'
+// import jobapply_line from './components/jobapply_line.vue'
+// import income_line from './components/income_line.vue'
 import echarts from 'echarts'
 import {
   checkRoleAuth
@@ -456,10 +456,10 @@ import {
 export default {
   name: 'Dashboard',
   components: {
-    reg_line,
-    down_resume_line,
-    jobapply_line,
-    income_line
+    reg_line
+    // down_resume_line,
+    // jobapply_line,
+    // income_line
   },
   data() {
     return {

@@ -3,6 +3,7 @@
 namespace app\apiadmin\controller\b2burm;
 
 use app\common\controller\Backend;
+use app\common\logic\AuditTemplateLogic;
 use app\common\model\shortvideo\SvPersonalVideo;
 use app\common\model\Uploadfile;
 use Think\Db;
@@ -620,7 +621,7 @@ class Resume extends Backend
                 ? model('Uploadfile')->getFileUrl(
                     $v['photo_img']
                 )
-                : default_empty('photo');
+                : default_empty('photo', $v['sex']);
             $v['education_cn'] = isset(
                 model('BaseModel')->map_education[$v['education']]
             )
@@ -783,7 +784,7 @@ class Resume extends Backend
             ? model('Uploadfile')->getFileUrl(
                 $data['photo_img']
             )
-            : default_empty('photo');
+            : default_empty('photo', $data['sex']);
         $data['education_cn'] = isset(
             model('BaseModel')->map_education[$data['education']]
         )
@@ -1312,27 +1313,19 @@ class Resume extends Backend
                              * cy 2023-7-3
                              */
                             // 添加模板
-                            if (!empty($input_data['add_template']) == 1 && !empty($input_data['reason'])) {
-                                $templateWhere = [
+                            if (isset($input_data['add_template']) && $input_data['add_template'] == 1 && !empty($input_data['reason'])) {
+                                $templateParams = [
                                     'type' => 1,
-                                    'is_del' => 0
+                                    'content' => $input_data['reason']
                                 ];
-                                $templateModel = model('audit_template');
-                                // 模板最多可添加6条
-                                if ($templateModel->getCount($templateWhere) < 6) {
-                                    $templateData = [
-                                        'type' => 1,
-                                        'content' => $input_data['reason'],
-                                        'add_id' => $this->admininfo->id,
-                                        'add_time' => time()
-                                    ];
-                                    $result = $templateModel->addTemplate($templateData);
-                                    if (empty($result)) {
-                                        throw new \Exception('添加模板失败');
-                                    }
+                                $auditTemplateLogic = new AuditTemplateLogic();
+                                $result = $auditTemplateLogic->addTemplate($templateParams, $this->admininfo);
+                                if (false === $result['status']) {
+                                    throw new \Exception($result['msg']);
                                 }
                             }
-                            if (!empty($input_data['template_id'])) {
+                            // 填写了原因的话不获取模板内容
+                            if (empty($input_data['reason']) && isset($input_data['template_id']) && !empty($input_data['template_id'])) {
                                 // 获取模板内容
                                 $templateWhere = [
                                     'id' => $input_data['template_id'],

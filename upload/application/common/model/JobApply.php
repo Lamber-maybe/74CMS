@@ -181,7 +181,7 @@ class JobApply extends BaseModel
                 'job_apply',
                 [
                     $resume_info['fullname'] . '刚刚投递了您的职位。',
-                    $resume_info['fullname'].'('. $sex_text . ',' . $education . ',' . $experience .')',
+                    $resume_info['fullname'] . '(' . $sex_text . ',' . $education . ',' . $experience . ')',
                     $job_info['jobname'],
                     '点击立即查看简历详情'
                 ],

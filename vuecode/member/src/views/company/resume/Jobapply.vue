@@ -1,7 +1,7 @@
 <template>
   <el-card>
     <menuheader>收到投递</menuheader>
-      <div class="resumedetails">
+    <div class="resumedetails">
       <div class="resume_header">
         <div>
           <span class="resume_header_font">应聘职位：</span>
@@ -66,9 +66,9 @@
           <span class="bar"></span>近两周简历处理情况
         </div>
         <div class="resume_header_font">
-          收到简历：<span>{{watchSituation.total}}</span> 待查看简历：<span>{{watchSituation.noWatch}}</span> 查看率：<span
-            >{{watchSituation.percent}}</span
-          >
+          收到简历：<span>{{ watchSituation.total }}</span>
+          待查看简历：<span>{{ watchSituation.noWatch }}</span>
+          查看率：<span>{{ watchSituation.percent }}</span>
         </div>
       </div>
     </div>
@@ -76,7 +76,7 @@
     <el-table
       :data="dataset"
       :header-cell-style="{ background: '#fcfcfc', color: '#b8babd' }"
-       v-loading="listLoading"
+      v-loading="listLoading"
     >
       <el-table-column
         width="280"
@@ -88,11 +88,11 @@
         <template slot-scope="scope">
           <div class="information_wrapper">
             <div class="portraitImg">
-              <img :src="scope.row.photo_img_src" />
+              <img :src="scope.row.photo_img_src"/>
             </div>
             <div class="information_list">
               <div class="fn_bar">
-                <div class="name a-link" @click="handlerLook(scope.row)">{{scope.row.fullname}}</div>
+                <div class="name a-link" @click="handlerLook(scope.row)">{{ scope.row.fullname }}</div>
                 <div class="hq" v-if="scope.row.high_quality > 0"></div>
                 <div class="no_look" v-if="parseInt(scope.row.is_look) === 0"></div>
                 <div class="clear"></div>
@@ -107,7 +107,9 @@
       </el-table-column>
       <el-table-column label="应聘职位" align="center" prop="jobname">
         <template slot-scope="scope">
-          <a class="stations_fonts a-link" :href="scope.row.job_link_url_web" target="_blank">{{ scope.row.jobname }}</a>
+          <a class="stations_fonts a-link" :href="scope.row.job_link_url_web" target="_blank">{{
+              scope.row.jobname
+            }}</a>
         </template>
       </el-table-column>
       <el-table-column
@@ -132,6 +134,17 @@
       >
         <template slot-scope="scope">
           <p class="time">{{ scope.row.addtime | timeFilter }}</p>
+        </template>
+      </el-table-column>
+      <el-table-column
+        header-align="center"
+        align="center"
+        width="200px"
+        label="联系方式"
+      >
+        <template slot-scope="scope">
+          <a class="contact" @click="handlerLook(scope.row)" v-if="scope.row.resume_contact == 0">获取联系方式</a>
+          <p class="time" v-if="scope.row.resume_contact != 0">{{ scope.row.resume_contact }}</p>
         </template>
       </el-table-column>
       <el-table-column header-align="center" align="center" label="操作状态">
@@ -169,14 +182,16 @@
             type="primary"
             v-if="scope.row.handle_status == 0"
             @click.stop="handlerAgree(scope.row)"
-            >同意</el-button
+          >同意
+          </el-button
           >
           <el-button
             size="mini"
             type="danger"
             v-if="scope.row.handle_status == 0"
             @click="handlerRefuse(scope.row)"
-            >婉拒</el-button
+          >婉拒
+          </el-button
           >
           <el-button size="mini" type="primary" @click="handlerRemark(scope.row)">备注</el-button>
           <el-button size="mini" type="warning" @click="handlerSave(scope.row.resume_id)">保存到电脑</el-button>
@@ -191,7 +206,8 @@
       @handleCurrentChange="doSearch"
     ></pagination>
 
-    <el-dialog width='540px' :destroy-on-close="true"  title="面试邀请"  :visible.sync="showInvite" @opened="handlerInviteOpened" @closed="handlerInviteClose">
+    <el-dialog width='540px' :destroy-on-close="true" title="面试邀请" :visible.sync="showInvite"
+               @opened="handlerInviteOpened" @closed="handlerInviteClose">
       <Invite
         ref="invite"
         from="apply"
@@ -200,15 +216,16 @@
       ></Invite>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handlerInviteClose(true)" :loading="btnLoading">确  定</el-button>
-        <el-button  @click="handlerInviteClose">取  消</el-button>
+        <el-button @click="handlerInviteClose">取  消</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog width='540px'  title="填写备注"  :visible.sync="showRemark" @opened="handlerRemarkOpened" @closed="handlerRemarkClose">
+    <el-dialog width='540px' title="填写备注" :visible.sync="showRemark" @opened="handlerRemarkOpened"
+               @closed="handlerRemarkClose">
       <Remark ref="remark" :remark_item="remark_item"></Remark>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handlerRemarkClose(true)" :loading="btnLoading">确  定</el-button>
-        <el-button  @click="handlerRemarkClose">取  消</el-button>
+        <el-button @click="handlerRemarkClose">取  消</el-button>
       </span>
     </el-dialog>
 
@@ -217,12 +234,13 @@
 </template>
 
 <script>
-import { formatTime } from '@/utils/index'
+import {formatTime} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import menuheader from './components/menuHeader.vue'
 import Remark from './components/Remark.vue'
 import Invite from './components/Invite.vue'
+
 export default {
   components: {
     menuheader,
@@ -237,13 +255,13 @@ export default {
   data() {
     return {
       jobid: 0,
-      btnLoading:false,
-      showInvite:false,
-      apply_id:0,
-      apply_fullname:'',
-      showRemark:false,
-      remark_item:{},
-      listLoading:false,
+      btnLoading: false,
+      showInvite: false,
+      apply_id: 0,
+      apply_fullname: '',
+      showRemark: false,
+      remark_item: {},
+      listLoading: false,
       dataset: [],
       total: 0,
       params: {
@@ -254,28 +272,29 @@ export default {
         page: 1,
         pagesize: 10,
       },
-      watchSituation:{
-        total:0,
-        noWatch:0,
-        percent:'100%'
+      watchSituation: {
+        total: 0,
+        noWatch: 0,
+        percent: '100%'
       },
-      options_job: [{ text: '全部', value: 0 }],
+      options_job: [{text: '全部', value: 0}],
       options_status: [
-        { text: '全部', value: '' },
-        { text: '待处理', value: 0 },
-        { text: '已同意', value: 1 },
-        { text: '已拒绝', value: 2 },
+        {text: '全部', value: ''},
+        {text: '待处理', value: 0},
+        {text: '已同意', value: 1},
+        {text: '已拒绝', value: 2},
       ],
       options_look: [
-        { text: '全部', value: '' },
-        { text: '未查看', value: 0 },
-        { text: '已查看', value: 1 }
+        {text: '全部', value: ''},
+        {text: '未查看', value: 0},
+        {text: '已查看', value: 1}
       ],
       options_source: [
-        { text: '全部', value: '' },
-        { text: '自主投递', value: 0 },
-        { text: '委托投递', value: 1 },
-      ]
+        {text: '全部', value: ''},
+        {text: '自主投递', value: 0},
+        {text: '委托投递', value: 1},
+      ],
+      companySetmeal: {}
     }
   },
   created() {
@@ -296,7 +315,7 @@ export default {
       http
         .get(api.company_jobapply_list, this.params)
         .then((res) => {
-          this.options_job = [{ text: '全部', value: 0 }]
+          this.options_job = [{text: '全部', value: 0}]
           let options_job = [...res.data.option_jobs]
           options_job.forEach((element) => {
             this.options_job.push({
@@ -306,49 +325,53 @@ export default {
           })
           this.dataset = [...res.data.items]
           this.listLoading = false
-          if(init===true){
+          if (init === true) {
             this.fetchTotal()
             this.fetchWatchSituation()
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
+      this.fetchSetmeal()
     },
-    fetchTotal(){
+    fetchTotal() {
       http
         .get(api.company_jobapply_list_total, this.params)
         .then((res) => {
           this.total = res.data
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
-    fetchWatchSituation(){
+    fetchWatchSituation() {
       http
         .get(api.company_jobapply_watch_situation, {})
         .then((res) => {
           this.watchSituation = {
-            total:res.data.total,
-            noWatch:res.data.noWatch,
-            percent:res.data.watch_percent
+            total: res.data.total,
+            noWatch: res.data.noWatch,
+            percent: res.data.watch_percent
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
-    doSearch(page,initPagination) {
+    doSearch(page, initPagination) {
       this.params.page = page
       this.fetchData()
-      if(initPagination===true){
+      if (initPagination === true) {
         this.fetchTotal()
       }
     },
-    handlerAgree (item) {
-     this.jobid = item.jobid
+    handlerAgree(item) {
+      this.jobid = item.jobid
       if (item.audit != 1) {
         this.$message.error('该简历尚未通过审核，不能继续此操作')
         return false
       }
       this.btnLoading = true
       http
-        .post(api.company_jobapply_set_agree_pre, { id: item.id })
+        .post(api.company_jobapply_set_agree_pre, {id: item.id})
         .then((res) => {
           this.btnLoading = false
           if (res.data.finish === 1) {
@@ -361,18 +384,19 @@ export default {
             this.openAddInvitation(item)
           }
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
-    openAddInvitation (item) {
+    openAddInvitation(item) {
       this.apply_id = item.id
       this.apply_fullname = item.fullname
       this.showInvite = true
     },
-    handlerInviteOpened(){
+    handlerInviteOpened() {
       this.$refs.invite.initCB(this.jobid)
     },
-    handlerInviteClose(setData){
-      if(setData===true){
+    handlerInviteClose(setData) {
+      if (setData === true) {
         this.btnLoading = true
         this.$refs.invite.$refs.form.validate((valid) => {
           if (valid) {
@@ -383,7 +407,7 @@ export default {
               .then(() => {
                 this.btnLoading = false
                 this.fetchData(true)
-                this.$message({ type: 'success', message: '邀请面试成功' })
+                this.$message({type: 'success', message: '邀请面试成功'})
                 this.showInvite = false
               })
               .catch(() => {
@@ -394,19 +418,19 @@ export default {
             return false;
           }
         });
-      }else{
+      } else {
         this.showInvite = false
       }
     },
-    handlerRefuse (item) {
+    handlerRefuse(item) {
       if (item.audit != 1) {
         this.$message.error('该简历尚未通过审核，不能继续此操作')
         return false
       }
-      this.$confirm('确定将处理状态更改为【已婉拒】吗？','系统提示',{type:'warning'})
+      this.$confirm('确定将处理状态更改为【已婉拒】吗？', '系统提示', {type: 'warning'})
         .then(() => {
           http
-            .post(api.company_jobapply_set_refuse, { id: item.id })
+            .post(api.company_jobapply_set_refuse, {id: item.id})
             .then(() => {
               this.$message({
                 type: 'success',
@@ -414,17 +438,18 @@ export default {
               })
               this.fetchData(true)
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         })
         .catch(() => {
           // on cancel
         })
     },
-    handlerDel (item) {
-      this.$confirm('确定删除该简历吗？','系统提示',{type:'warning'})
+    handlerDel(item) {
+      this.$confirm('确定删除该简历吗？', '系统提示', {type: 'warning'})
         .then(() => {
           http
-            .post(api.company_jobapply_del, { id: item.id })
+            .post(api.company_jobapply_del, {id: item.id})
             .then(() => {
               this.$message({
                 type: 'success',
@@ -432,49 +457,121 @@ export default {
               })
               this.fetchData(true)
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         })
         .catch(() => {
           // on cancel
         })
     },
-    handlerLook (item) {
-      if (item.is_look === 0) {
-        item.is_look = 1
-        http
-          .post(api.company_jobapply_set_looked, { id: item.id })
-          .then(() => {
-            window.open(item.resume_link_url_web)
-          })
-          .catch(() => {})
+    handlerLook(item) {
+      if (item.is_look === 0 || item.resume_contact === 0) {
+        if (item.resume_contact) {
+          item.is_look = 1
+          http
+            .post(api.company_jobapply_set_looked, {id: item.id})
+            .then(() => {
+              window.open(item.resume_link_url_web)
+              this.fetchData(true)
+            })
+            .catch(() => {
+            })
+          return false
+        }
+        if (this.companySetmeal.resume_view_num_today == -1) {
+          item.is_look = 1
+          http
+            .post(api.company_jobapply_set_looked, {id: item.id})
+            .then(() => {
+              window.open(item.resume_link_url_web)
+              this.fetchData(true)
+            })
+            .catch(() => {
+            })
+        } else if (this.companySetmeal.resume_view_num_today > 0) {
+          this.$confirm('您今天还可免费查看 ' + this.companySetmeal.resume_view_num_today + ' 次收到简历的联系方式，是否立即查看?',
+            '系统提示',
+            {
+              type: 'warning',
+              confirmButtonText: '立即查看'
+            }
+          )
+            .then(() => {
+              item.is_look = 1
+              http
+                .post(api.company_jobapply_set_looked, {id: item.id})
+                .then(() => {
+                  window.open(item.resume_link_url_web)
+                  this.fetchData(true)
+                })
+                .catch(() => {
+                })
+            })
+            .catch(() => {
+              // on cancel
+            })
+        } else {
+          this.$confirm('您今天暂无可用免费查看次数，如需获取联系方式请下载简历后查看。',
+            '系统提示',
+            {
+              type: 'warning',
+              cancelButtonText: '升级套餐',
+              confirmButtonText: '继续查看',
+              distinguishCancelAndClose: true //区分取消与关闭
+            }
+          )
+            .then(() => {
+              item.is_look = 1
+              http
+                .post(api.company_jobapply_set_looked, {id: item.id})
+                .then(() => {
+                  window.open(item.resume_link_url_web)
+                  this.fetchData(true)
+                })
+                .catch(() => {
+                })
+            })
+            .catch(action => {
+                // on cancel
+                // 判断是 cancel (自定义的取消) 还是 close （关闭弹窗）
+                if (action === 'cancel') {
+                  this.$router.push('/company/service/setmeal')
+                  this.fetchData(true)
+                }
+                if (action === 'close') {
+                  return false
+                }
+              }
+            )
+        }
       } else {
         window.open(item.resume_link_url_web)
       }
     },
-    handlerRemark (item) {
+    handlerRemark(item) {
       this.showRemark = true
       this.remark_item = item
     },
-    handlerRemarkOpened(){
+    handlerRemarkOpened() {
       this.$refs.remark.initCB()
     },
-    handlerRemarkClose(setData){
+    handlerRemarkClose(setData) {
       this.showRemark = false
-      if(setData===true){
+      if (setData === true) {
         this.btnLoading = true
         let data = {
-          remark:this.$refs.remark.content,
-          resume_id:this.remark_item.resume_id
+          remark: this.$refs.remark.content,
+          resume_id: this.remark_item.resume_id
         }
         http
           .post(api.remark_resume, data)
           .then((res) => {
             if (res.code == 200) {
-              this.$message({ type: 'success', message: res.message })
+              this.$message({type: 'success', message: res.message})
               this.btnLoading = false
               this.showRemark = false
             } else {
-              this.$message({ type: 'error', message: res.message })
+              this.$message({type: 'error', message: res.message})
             }
             this.fetchData(true)
           })
@@ -484,14 +581,23 @@ export default {
       }
       this.$refs.remark.content = ''
     },
-    handlerSave(resume_id){
+    handlerSave(resume_id) {
       let routeData = this.$router.resolve({
         name: "ResumeSave",
         query: '',
-        params:{id:resume_id}
+        params: {id: resume_id}
       });
       window.open(routeData.href, '_blank');
     },
+    fetchSetmeal() {
+      http
+        .get(api.member_setmeal, {})
+        .then(res => {
+          this.companySetmeal = res.data.info
+        })
+        .catch(() => {
+        })
+    }
   },
 }
 </script>
@@ -500,19 +606,23 @@ export default {
 .a-link{
   cursor:pointer;
 }
-.a-link:hover{
-  text-decoration:underline;
-  color:#1787fb;
+
+.a-link:hover {
+  text-decoration: underline;
+  color: #1787fb;
 }
+
 .resumedetails {
   display: flex;
   background-color: #f9f9f9;
   padding: 18px 0;
 }
-.resumedetails  .resume_header {
+
+.resumedetails .resume_header {
   flex: 5.5;
   padding-left: 35px;
 }
+
 .resume_header > div:nth-of-type(1) {
   margin-bottom: 10px;
 }
@@ -520,21 +630,26 @@ export default {
 .resume_list {
   flex: 4;
 }
+
 .resume_list div:nth-of-type(2) {
   margin-left: 15px;
 }
+
 .resume_header_font {
   font-size: 14px;
   color: #666666;
 }
+
 .resume_header_margin {
   margin-left: 44px;
 }
+
 .resume_header_font span {
   color: #4a88f7;
   font-size: 22px;
   margin-right: 65px;
 }
+
 .resume_list .resume_handle {
   line-height: 20px;
   margin-bottom: 10px;
@@ -542,6 +657,7 @@ export default {
   color: #333;
   font-size: 14px;
 }
+
 .bar {
   width: 4px;
   height: 16px;
@@ -549,100 +665,136 @@ export default {
   display: inline-block;
   margin: -3px 5px -3px 0;
 }
+
 .el-checkbox {
   margin-left: 20px;
 }
-.information_list .fn_bar .name{
-  display: block;float: left;height: 20px;line-height: 20px;
-    cursor:pointer;
-    color: #333;
-    font-size: 16px;
+
+.information_list .fn_bar .name {
+  display: block;
+  float: left;
+  height: 20px;
+  line-height: 20px;
+  cursor: pointer;
+  color: #333;
+  font-size: 16px;
 }
+
 .information_list .fn_bar .hq {
-	float: left;
-	margin-left: 10px;
-	width: 45px;
-	height: 20px;
+  float: left;
+  margin-left: 10px;
+  width: 45px;
+  height: 20px;
   background: url("../../../assets/images/great.png") 0 center no-repeat;
 }
+
 .information_list .fn_bar .no_look {
-  float: left;margin-left: 10px;width: 33px;height: 20px;background: url("../../../assets/images/no_look.png") 0 center no-repeat;
+  float: left;
+  margin-left: 10px;
+  width: 33px;
+  height: 20px;
+  background: url("../../../assets/images/no_look.png") 0 center no-repeat;
 }
+
 .information {
   color: #999;
   font-size: 14px;
   margin-top: 6px;
 }
+
 .information_wrapper {
   display: flex;
 }
+
 .portraitImg {
   flex: 1;
   margin-right: 10px;
   border-radius: 50%;
 }
+
 .portraitImg img {
   border-radius: 50%;
   width: 52px;
   height: 52px;
 }
+
 .information_list {
   flex: 8;
 }
+
 .information_list img {
   vertical-align: -1px;
   margin-left: 10px;
 }
+
 .el-pagination {
   text-align: center;
   margin-top: 20px;
 }
+
 .intention_post,
 .intention_local {
   font-size: 14px;
   color: #999;
 }
+
 .intention_post span,
 .intention_local span {
   color: #666666;
 }
 
-.time{
-  color:#666 ;
+.time {
+  color: #666;
   font-size: 14px;
 }
+
 .del_btn {
   margin-left: 14px;
   margin-top: 20px;
 }
+
 .del_btn .el-button {
   margin-left: 15px;
 }
+
 .stations_fonts {
   font-size: 14px;
   color: #1787fb;
 }
+
 .btn {
   width: 60px;
   height: 24px;
   display: inline-block;
   font-size: 12px;
 }
+
 .btnsColor1 {
   background: #fdf6ec;
   color: #e8ab60;
 }
+
 .btnsColor2 {
   background: #ecf5ff;
   color: #4a88f7;
 }
+
 .btnsColor3 {
   background: #fef0f0;
   color: #f68b8b;
 }
+
 .el-select {
   width: 259px;
 }
 
+.contact {
+  color: #1787fb;
+  cursor: pointer;
+}
+
+.contact:hover {
+  text-decoration: underline;
+}
 
 </style>

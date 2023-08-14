@@ -50,6 +50,7 @@ import api from '@/api'
         http.post(api.personal_entrust_save ,{days:this.days}).then(res=>{
           this.$message({type:'success',message:res.message})
           this.$emit('closeEntrust')
+          this.$emit('popupWechatQrcodeWindow')
         })
       },
       onCancel(){

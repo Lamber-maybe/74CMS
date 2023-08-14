@@ -434,3 +434,7 @@ u { text-decoration: none; }
 .editor-content-view input[type="checkbox"] {
 	margin-right: 5px;
 }
+
+[v-cloak] {
+	display: none !important;
+}

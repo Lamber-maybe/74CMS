@@ -48,20 +48,24 @@ class Resume extends \app\index\controller\Base
         }
         $subsiteCondition = get_subsite_condition();
         $subsite_district_level = 0;
+        $subsiteParams = [];
         if (!empty($subsiteCondition)) {
             foreach ($subsiteCondition as $key => $value) {
                 if ($key == 'district1') {
                     $district1 = $value;
+                    $subsiteParams['district1'] = $district1;
                     $subsite_district_level = 1;
                     break;
                 }
                 if ($key == 'district2') {
                     $district2 = $value;
+                    $subsiteParams['district2'] = $district2;
                     $subsite_district_level = 2;
                     break;
                 }
                 if ($key == 'district3') {
                     $district3 = $value;
+                    $subsiteParams['district3'] = $district3;
                     $subsite_district_level = 3;
                     break;
                 }
@@ -156,38 +160,51 @@ class Resume extends \app\index\controller\Base
             }
         }
 
+        do {
+            if (config('global_config.job_search_login') == 1) {
+                if ($this->visitor === null) {
+                    $show_mask = 1;
 
-        if (config('global_config.resume_search_login') == 1) {
-            if ($this->visitor === null) {
-                $show_mask = 1;
-                /**
-                 * 【ID1000524】
-                 * 【bug】后台设置未登录搜索限制时，职位/简历列表地区切换为子地区时，不受控制
-                 * yx - 2023.02.02
-                 * 【新增】:
-                 * 1.判断条件if中，新增` || config('global_config.job_search_login_num') == 0`
-                 * 2.$params，新增`$params['district2'] = -1;$params['district3'] = -1;`
-                 */
-                if (!empty($params) || config('global_config.resume_search_login_num') == 0) {
-                    $params['district1'] = -1;
-                    $params['district2'] = -1;
-                    $params['district3'] = -1;
+                    if (config('global_config.resume_search_login_num') == 0) {
+                        $params['district1'] = -1;
+                        $params['district2'] = -1;
+                        $params['district3'] = -1;
+                        break;
+                    }
+
+                    if (!empty($params)) {
+                        if ($params === $subsiteParams) {
+                            $params['count_total'] = 0;
+                            $params['current_page'] = 1;
+                            $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
+                            break;
+                        } else {
+                            $params['district1'] = -1;
+                            $params['district2'] = -1;
+                            $params['district3'] = -1;
+                            break;
+                        }
+                    }
+
+                    $params['count_total'] = 0;
+                    $params['current_page'] = 1;
+                    $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
+                    break;
+                } else {
+                    $show_mask = 0;
+                    $params['count_total'] = 1;
+                    $params['current_page'] = $current_page;
+                    $params['pagesize'] = $pagesize;
+                    break;
                 }
-                $params['count_total'] = 0;
-                $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
             } else {
                 $show_mask = 0;
                 $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
+                break;
             }
-        } else {
-            $show_mask = 0;
-            $params['count_total'] = 1;
-            $params['current_page'] = $current_page;
-            $params['pagesize'] = $pagesize;
-        }
+        } while (0);
 
         $instance = new \app\common\lib\ResumeSearchEngine($params);
 
@@ -530,7 +547,7 @@ class Resume extends \app\index\controller\Base
         $basic_info['photo_img_src'] =
             $basic['photo_img'] > 0
                 ? model('Uploadfile')->getFileUrl($basic['photo_img'])
-                : default_empty('photo');
+                : default_empty('photo', $basic['sex']);
         $return['base_info'] = $basic_info;
 
         //求职意向
@@ -786,7 +803,7 @@ class Resume extends \app\index\controller\Base
                 $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
-                    : default_empty('photo');
+                    : default_empty('photo', $val['sex']);
                 $tmp_arr['service_tag'] = $val['service_tag'];
                 $tmp_arr['sex'] = $val['sex'];
                 $tmp_arr['sex_text'] = model('Resume')->map_sex[$val['sex']];

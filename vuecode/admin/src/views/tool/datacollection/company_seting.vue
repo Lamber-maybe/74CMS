@@ -38,8 +38,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="公司规模无法匹配时为" prop="scale">
-        <el-select v-model="form.scale" placeholder="请选择公司规模">
+      <el-form-item label="企业规模无法匹配时为" prop="scale">
+        <el-select v-model="form.scale" placeholder="请选择企业规模">
           <el-option
             v-for="(item, index) in options_scale"
             :key="index"
@@ -120,8 +120,8 @@ export default {
       options_trade: [],
       options_citycategory: [],
       form: {
-        is_display: '',
-        audit_status: '',
+        is_display: 1,
+        audit_status: 0,
         nature: '',
         scale: '',
         trade: '',

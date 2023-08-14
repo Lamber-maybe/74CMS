@@ -63,15 +63,23 @@
       <div class="tx1">手机找工作</div>
       <div class="tx2">微信扫一扫，入职更快速</div>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
 <script>
   import http from '@/utils/http'
   import api from '@/api'
+  import WeChatQrcode from '@/components/WeChatQrcode'
 
   export default {
     name: 'SideNav',
+    components: {
+      WeChatQrcode
+    },
     data () {
       return {
         'is_look_interview': 0
@@ -129,23 +137,33 @@
             points:res.data.points
           })
           this.$message({ type: 'success', message: res.message })
+          /**
+           * 【ID1000719】
+           * 【新增】公众号引导弹窗场景（签到）
+           * cy 2023-7-17
+           */
+          this.popupWechatQrcodeWindow('user_pc_sign_in')
         }).catch(() => {})
       },
-    },
-    userSignin()
-    {
-      http.get(api.member_user_ignin).then(res => {
-        if (res.data > 0)
-        {
-          this.$store.commit('setUserSignin', {
-            signin: true
-          })
-        }else {
-          this.$store.commit('setUserSignin', {
-            signin: false
-          })
-        }
-      }).catch(() => {})
+      userSignin()
+      {
+        http.get(api.member_user_ignin).then(res => {
+          if (res.data > 0)
+          {
+            this.$store.commit('setUserSignin', {
+              signin: true
+            })
+          }else {
+            this.$store.commit('setUserSignin', {
+              signin: false
+            })
+          }
+        }).catch(() => {})
+      },
+      // 弹出微信二维码弹框
+      popupWechatQrcodeWindow(val) {
+        this.$refs.weChatQrcodeRef.handleOpen(val, '扫码绑定公众号，求职快人一步')
+      }
     }
   }
 </script>

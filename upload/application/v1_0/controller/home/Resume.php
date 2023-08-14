@@ -1,4 +1,5 @@
 <?php
+
 namespace app\v1_0\controller\home;
 
 use phpService\PdfService;
@@ -9,6 +10,7 @@ class Resume extends \app\v1_0\controller\common\Base
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $keyword = input('get.keyword/s', '', 'trim,addslashes');
@@ -33,18 +35,22 @@ class Resume extends \app\v1_0\controller\common\Base
         }
 
         $subsiteCondition = get_subsite_condition();
-        if(!empty($subsiteCondition)){
+        $subsiteParams = [];
+        if (!empty($subsiteCondition)) {
             foreach ($subsiteCondition as $key => $value) {
-                if($key=='district1'){
+                if ($key == 'district1') {
                     $district1 = $value;
+                    $subsiteParams['district1'] = $district1;
                     break;
                 }
-                if($key=='district2'){
+                if ($key == 'district2') {
                     $district2 = $value;
+                    $subsiteParams['district2'] = $district2;
                     break;
                 }
-                if($key=='district3'){
+                if ($key == 'district3') {
                     $district3 = $value;
+                    $subsiteParams['district3'] = $district3;
                     break;
                 }
             }
@@ -84,7 +90,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $params['maxwage'] = $maxwage;
         }
         if ($tag != '') {
-            $tag = str_replace(",","_",$tag);
+            $tag = str_replace(",", "_", $tag);
             $params['tag'] = $tag;
         }
         if ($settr > 0) {
@@ -99,27 +105,51 @@ class Resume extends \app\v1_0\controller\common\Base
             }
         }
 
-        if(config('global_config.resume_search_login')==1 && $this->platform=='mobile'){
-            if($this->userinfo===null){
-                $show_mask = 1;
-                if(!empty($params)){
-                    $params['district1'] = -1;
+        do {
+            if (config('global_config.resume_search_login') == 1 && $this->platform == 'mobile') {
+                if ($this->userinfo === null) {
+                    $show_mask = 1;
+
+                    if (config('global_config.resume_search_login_num') == 0) {
+                        $params['district1'] = -1;
+                        $params['district2'] = -1;
+                        $params['district3'] = -1;
+                        break;
+                    }
+
+                    if (!empty($params)) {
+                        if ($params === $subsiteParams) {
+                            $params['count_total'] = 0;
+                            $params['current_page'] = 1;
+                            $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
+                            break;
+                        } else {
+                            $params['district1'] = -1;
+                            $params['district2'] = -1;
+                            $params['district3'] = -1;
+                            break;
+                        }
+                    }
+
+                    $params['count_total'] = 0;
+                    $params['current_page'] = 1;
+                    $params['pagesize'] = config('global_config.resume_search_login_num') == 0 ? 1 : config('global_config.resume_search_login_num');
+                    break;
+                } else {
+                    $show_mask = 0;
+                    $params['count_total'] = 1;
+                    $params['current_page'] = $current_page;
+                    $params['pagesize'] = $pagesize;
+                    break;
                 }
-                $params['count_total'] = 0;
-                $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.resume_search_login_num')==0?1:config('global_config.resume_search_login_num');
-            }else{
+            } else {
                 $show_mask = 0;
                 $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
+                break;
             }
-        }else{
-            $show_mask = 0;
-            $params['count_total'] = 1;
-            $params['current_page'] = $current_page;
-            $params['pagesize'] = $pagesize;
-        }
+        } while (0);
 
         $instance = new \app\common\lib\ResumeSearchEngine($params);
 
@@ -130,6 +160,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $return['show_mask'] = $show_mask;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     protected function get_datalist($list)
     {
         $result_data_list = [];
@@ -147,12 +178,12 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->field($field)
                 ->select();
 
-            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr, $this->userinfo);
 
             $photo_arr = $photo_id_arr = [];
             foreach ($resume as $key => $value) {
                 $value['photo_img'] > 0 &&
-                    ($photo_id_arr[] = $value['photo_img']);
+                ($photo_id_arr[] = $value['photo_img']);
             }
             if (!empty($photo_id_arr)) {
                 $photo_arr = model('Uploadfile')->getFileUrlBatch(
@@ -186,18 +217,16 @@ class Resume extends \app\v1_0\controller\common\Base
             $resume_tag = model('Category')->getCache('QS_resumetag');
             $resume_work = model('ResumeWork')
                 ->field('rid,uid,starttime,endtime,todate,companyname,jobname,duty')
-                ->where('rid','in',$rids)
+                ->where('rid', 'in', $rids)
                 ->group('rid')
-                ->order('id','desc')
+                ->order('id', 'desc')
                 ->select();
             foreach ($resume as $key => $val) {
                 $tmp_arr = [];
                 $tmp_arr['tag'] = [];
-                foreach(explode(',',$val['tag']) as $k=>$v)
-                {
+                foreach (explode(',', $val['tag']) as $k => $v) {
                     $tag = isset($resume_tag[$v]) ? $resume_tag[$v] : '';
-                    if (!empty($tag))
-                    {
+                    if (!empty($tag)) {
                         $tmp_arr['tag'][] = $tag;
                     }
                 }
@@ -207,19 +236,15 @@ class Resume extends \app\v1_0\controller\common\Base
                 $tmp_arr['starttime'] = '';
                 $tmp_arr['endtime'] = '';
                 $tmp_arr['specialty'] = $val['specialty'];
-                foreach ($resume_work as $k=>$v)
-                {
-                    if ($val['id'] == $v['rid'])
-                    {
+                foreach ($resume_work as $k => $v) {
+                    if ($val['id'] == $v['rid']) {
                         $tmp_arr['companyname'] = $v['companyname'];
                         $tmp_arr['jobname'] = $v['jobname'];
-                        $tmp_arr['starttime'] = date('Y',$v['starttime']);
-                        if ($v['todate'] == 1)
-                        {
+                        $tmp_arr['starttime'] = date('Y', $v['starttime']);
+                        if ($v['todate'] == 1) {
                             $tmp_arr['endtime'] = '至今';
-                        }else
-                        {
-                            $tmp_arr['endtime'] = date('Y',$v['endtime']);
+                        } else {
+                            $tmp_arr['endtime'] = date('Y', $v['endtime']);
                         }
                     }
                 }
@@ -229,7 +254,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $tmp_arr['fullname'] = $fullname_arr[$val['id']];
                 $tmp_arr['photo_img_src'] = isset($photo_arr[$val['photo_img']])
                     ? $photo_arr[$val['photo_img']]
-                    : default_empty('photo');
+                    : default_empty('photo', $val['sex']);
                 $tmp_arr['service_tag'] = $val['service_tag'];
                 $tmp_arr['sex'] = $val['sex'];
                 $tmp_arr['sex_text'] = model('Resume')->map_sex[$val['sex']];
@@ -281,9 +306,7 @@ class Resume extends \app\v1_0\controller\common\Base
                                 $category_data['QS_trade'][$v['trade']];
                         }
                         if ($v['nature']) {
-                            $nature_arr[] = model('Resume')->map_nature[
-                                $v['nature']
-                            ];
+                            $nature_arr[] = model('Resume')->map_nature[$v['nature']];
                         }
                         $wage_arr[0] = model('BaseModel')->handle_wage(
                             $v['minwage'],
@@ -344,7 +367,9 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         return $result_data_list;
     }
-    protected function writeShowCache($id,$resume_module,$pageCache){
+
+    protected function writeShowCache($id, $resume_module, $pageCache)
+    {
         $where['id'] = $id;
         $basic = model('Resume')
             ->where($where)
@@ -426,7 +451,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $basic_info['photo_img_src'] =
             $basic['photo_img'] > 0
                 ? model('Uploadfile')->getFileUrl($basic['photo_img'])
-                : default_empty('photo');
+                : default_empty('photo', $basic_info['sex']);
         $return['base_info'] = $basic_info;
 
         //求职意向
@@ -495,13 +520,13 @@ class Resume extends \app\v1_0\controller\common\Base
             $return['base_info']['intention_district_full_text'][] = $tmp_arr['district_full_text'];
             $intention_list[] = $tmp_arr;
         }
-        if(!empty($return['base_info']['intention_jobs_text'])){
+        if (!empty($return['base_info']['intention_jobs_text'])) {
             $return['base_info']['intention_jobs_text'] = array_unique($return['base_info']['intention_jobs_text']);
-            $return['base_info']['intention_jobs_text'] = implode(",",$return['base_info']['intention_jobs_text']);
+            $return['base_info']['intention_jobs_text'] = implode(",", $return['base_info']['intention_jobs_text']);
         }
-        if(!empty($return['base_info']['intention_district_text'])){
+        if (!empty($return['base_info']['intention_district_text'])) {
             $return['base_info']['intention_district_text'] = array_unique($return['base_info']['intention_district_text']);
-            $return['base_info']['intention_district_text'] = implode(",",$return['base_info']['intention_district_text']);
+            $return['base_info']['intention_district_text'] = implode(",", $return['base_info']['intention_district_text']);
         }
 
         if (!empty($return['base_info']['intention_district_full_text'])) {
@@ -590,16 +615,17 @@ class Resume extends \app\v1_0\controller\common\Base
         $return['certificate_list'] = $certificate_list;
         //照片作品
         if ($resume_module['img']['is_display'] == 1) {
-            $img_list = model('ResumeImg')->getList(['rid'=>$basic['id'],'audit'=>1]);
+            $img_list = model('ResumeImg')->getList(['rid' => $basic['id'], 'audit' => 1]);
         } else {
             $img_list = [];
         }
         $return['img_list'] = $img_list;
-        if($pageCache['expire']>0){
-            model('PageMobile')->writeCacheByAlias('resumeshow',$return,$pageCache['expire'],$id);
+        if ($pageCache['expire'] > 0) {
+            model('PageMobile')->writeCacheByAlias('resumeshow', $return, $pageCache['expire'], $id);
         }
         return $return;
     }
+
     /**
      * 获取简历详情
      */
@@ -634,23 +660,23 @@ class Resume extends \app\v1_0\controller\common\Base
         //读取页面缓存配置
         $pageCache = model('PageMobile')->getCache('resumeshow');
         //如果缓存有效期为0，则不使用缓存
-        if($pageCache['expire']>0){
-            $return = model('PageMobile')->getCacheByAlias('resumeshow',$id);
-        }else{
+        if ($pageCache['expire'] > 0) {
+            $return = model('PageMobile')->getCacheByAlias('resumeshow', $id);
+        } else {
             $return = false;
         }
-        if(!$return){
-            $return = $this->writeShowCache($id,$resume_module,$pageCache);
-            if($return===false){
+        if (!$return) {
+            $return = $this->writeShowCache($id, $resume_module, $pageCache);
+            if ($return === false) {
                 $this->ajaxReturn(500, '简历信息为空');
             }
         }
-        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']],$this->userinfo,true);
+        $return['base_info']['fullname'] = model('Resume')->formatFullname([$return['base_info']['id']], $this->userinfo, true);
         $return['field_rule'] = $field_rule;
         $return['resume_module'] = $resume_module;
 
         //联系方式
-        $getResumeContact = model('Resume')->getContact($return['base_info'],$this->userinfo);
+        $getResumeContact = model('Resume')->getContact($return['base_info'], $this->userinfo);
         $return['show_contact'] = $getResumeContact['show_contact'];
         $return['show_contact_note'] = $getResumeContact['show_contact_note'];
         $return['contact_info'] = $getResumeContact['contact_info'];
@@ -668,6 +694,7 @@ class Resume extends \app\v1_0\controller\common\Base
 
         return $return;
     }
+
     /**
      * 简历详情
      */
@@ -733,7 +760,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 );
                 $this->writeMemberActionLog($company_uid, '收到的简历设为已查看【简历id：' . $id . '】');
             }
-        }else{
+        } else {
             model('Resume')->addViewLog(
                 $info['base_info']['id'],
                 $this->userinfo !== null && $this->userinfo->utype == 1
@@ -744,39 +771,37 @@ class Resume extends \app\v1_0\controller\common\Base
         }
 
         unset($info['base_info']['uid']);
-        $info['share_url'] = $this->sub_site_domain_m.'resume/'.$info['base_info']['id'];
-        $info['phone_protect_open'] =  false;
+        $info['share_url'] = $this->sub_site_domain_m . 'resume/' . $info['base_info']['id'];
+        $info['phone_protect_open'] = false;
         $info['phone_protect_timeout'] = 180;
         $info['phone_protect_type'] = '';
-        if(intval(config('global_config.alicloud_phone_protect_open'))){
+        if (intval(config('global_config.alicloud_phone_protect_open'))) {
             $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
-            if(in_array(2, $protectTarget)){
-                $info['phone_protect_open'] =  true;
+            if (in_array(2, $protectTarget)) {
+                $info['phone_protect_open'] = true;
             }
-            if(intval(config('global_config.alicloud_phone_protect_type'))==2){
+            if (intval(config('global_config.alicloud_phone_protect_type')) == 2) {
                 $info['phone_protect_timeout'] = 120;
             }
             $info['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
-            if($info['phone_protect_type']==1 && $this->userinfo===null){
+            if ($info['phone_protect_type'] == 1 && $this->userinfo === null) {
                 $info['show_contact'] = 0;
                 $info['show_contact_note'] = 'need_login';
             }
         }
         $info['cur_com_mobile'] = '';
-        if($info['show_contact'] && $this->userinfo!==null){
-            $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
-            if($company_contact){
+        if ($info['show_contact'] && $this->userinfo !== null) {
+            $company_contact = model('CompanyContact')->where('uid', $this->userinfo->uid)->find();
+            if ($company_contact) {
                 $info['cur_com_mobile'] = $company_contact['mobile'];
-            }else{
+            } else {
                 $info['cur_com_mobile'] = $this->userinfo->mobile;
             }
         }
-        if($this->userinfo != null && $this->userinfo->utype == 2)
-        {
-            $resume = model('Resume')->where('uid',$this->userinfo->uid)->find();
+        if ($this->userinfo != null && $this->userinfo->utype == 2) {
+            $resume = model('Resume')->where('uid', $this->userinfo->uid)->find();
             $info['logo_resume_id'] = !empty($resume) ? $resume['id'] : 0;
-            if (!empty($resume) && $id ==  $info['logo_resume_id'])
-            {
+            if (!empty($resume) && $id == $info['logo_resume_id']) {
                 $info['base_info']['fullname'] = $resume['fullname'];
                 $contact_info = model('ResumeContact')
                     ->field('id,rid,uid', true)
@@ -787,16 +812,18 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
-    public function getContact(){
-        $id = input('get.id/d',0,'intval');
+
+    public function getContact()
+    {
+        $id = input('get.id/d', 0, 'intval');
         $basic = model('Resume')
-            ->where('id',$id)
+            ->where('id', $id)
             ->field(true)
             ->find();
         if ($basic === null) {
             $this->ajaxReturn(500, '简历信息为空');
         }
-        $getResumeContact = model('Resume')->getContact($basic,$this->userinfo);
+        $getResumeContact = model('Resume')->getContact($basic, $this->userinfo);
         $return['show_contact'] = $getResumeContact['show_contact'];
         $return['show_contact_note'] = $getResumeContact['show_contact_note'];
         $return['contact_info'] = $getResumeContact['contact_info'];
@@ -813,13 +840,15 @@ class Resume extends \app\v1_0\controller\common\Base
             $field_rule[$field] = $_arr;
         }
         $return['field_rule'] = $field_rule;
-        $this->ajaxReturn(200, '获取数据成功',$return);
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 获取简历收藏状态
      */
-    public function checkFav(){
-        $id = input('get.id/d',0,'intval');
+    public function checkFav()
+    {
+        $id = input('get.id/d', 0, 'intval');
         if ($this->userinfo != null && $this->userinfo->utype == 1) {
             $fav_info = model('FavResume')
                 ->where('resume_id', $id)
@@ -833,13 +862,15 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $has_fav = 0;
         }
-        $this->ajaxReturn(200,'获取数据成功',$has_fav);
+        $this->ajaxReturn(200, '获取数据成功', $has_fav);
     }
+
     /**
      * 简历点击量加1
      */
-    public function click(){
-        $id = input('post.id/d',0,'intval');
+    public function click()
+    {
+        $id = input('post.id/d', 0, 'intval');
         $resumeinfo = model('Resume')
             ->where('id', 'eq', $id)
             ->field('id,uid,click')
@@ -848,17 +879,19 @@ class Resume extends \app\v1_0\controller\common\Base
             model('Resume')->addViewLog(
                 $resumeinfo['id'],
                 $this->userinfo !== null && $this->userinfo->utype == 1
-                ? $this->userinfo->uid
-                : 0,
+                    ? $this->userinfo->uid
+                    : 0,
                 $resumeinfo['uid']
             );
-            $click = $resumeinfo['click']+1;
-        }else{
+            $click = $resumeinfo['click'] + 1;
+        } else {
             $click = 0;
         }
-        $this->ajaxReturn(200, '数据添加成功',$click);
+        $this->ajaxReturn(200, '数据添加成功', $click);
     }
-    public function supplementary(){
+
+    public function supplementary()
+    {
         $id = input('get.id/d', 0, 'intval');
         $return['apply_num'] = model('JobApply')
             ->where([
@@ -880,14 +913,14 @@ class Resume extends \app\v1_0\controller\common\Base
             ])
             ->count();
         $video_interview_num = model('CompanyInterviewVideo')
-                ->where([
-                    'resume_id' => $id,
-                    'addtime' => ['egt', strtotime('-14 day')]
-                ])
-                ->count();
+            ->where([
+                'resume_id' => $id,
+                'addtime' => ['egt', strtotime('-14 day')]
+            ])
+            ->count();
         $return['interview_num'] = $interview_num + $video_interview_num;
-        $return['img_list'] = model('ResumeImg')->getList(['rid'=>$id,'audit'=>1]);
-        $this->ajaxReturn(200,'获取数据成功',$return);
+        $return['img_list'] = model('ResumeImg')->getList(['rid' => $id, 'audit' => 1]);
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
 
     public function exportPdfByPhp()

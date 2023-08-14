@@ -9,7 +9,7 @@ class Resume extends \app\common\model\BaseModel
         1 => '已通过',
         2 => '未通过'
     ];
-    public  $needle = [
+    public $needle = [
         'password' => [
             'password' => [
                 'type' => '/s',
@@ -150,7 +150,7 @@ class Resume extends \app\common\model\BaseModel
      * 【新】
      *  public $map_sex = [0 => '保密',1 => '男', 2 => '女'];
      */
-    public $map_sex = [0 => '保密',1 => '男', 2 => '女'];
+    public $map_sex = [0 => '保密', 1 => '男', 2 => '女'];
     public $map_marriage = [0 => '保密', 1 => '未婚', 2 => '已婚'];
     public $map_nature = [1 => '全职', 2 => '兼职', 3 => '实习'];
     public $map_is_display = [0 => '关闭', 1 => '开启'];
@@ -176,22 +176,27 @@ class Resume extends \app\common\model\BaseModel
         'tpl' => ''
     ];
     protected $update = ['updatetime'];
+
     protected function setAuditAttr($value = null)
     {
         return $value === null ? config('global_config.audit_add_resume') : $value;
     }
+
     protected function setAddtimeAttr($value = null)
     {
         return $value === null ? time() : $value;
     }
+
     protected function setRefreshtimeAttr($value = null)
     {
         return $value === null ? $this->addtime : $value;
     }
+
     protected function setUpdatetimeAttr($value = null)
     {
         return $value === null ? time() : $value;
     }
+
     protected function setDisplayNameAttr($value = null)
     {
         return $value === null
@@ -264,6 +269,7 @@ class Resume extends \app\common\model\BaseModel
         }
         return true;
     }
+
     /**
      * 计算简历的完整度
      */
@@ -293,6 +299,7 @@ class Resume extends \app\common\model\BaseModel
         }
         return $score;
     }
+
     /**
      * 计算简历的完整度(批量)
      */
@@ -319,6 +326,7 @@ class Resume extends \app\common\model\BaseModel
         }
         return $returnlist;
     }
+
     /**
      * 更新索引表
      */
@@ -479,6 +487,7 @@ class Resume extends \app\common\model\BaseModel
 
         return;
     }
+
     /**
      * 更新索引表（批量）
      */
@@ -677,6 +686,7 @@ class Resume extends \app\common\model\BaseModel
         }
         return;
     }
+
     public function backendAdd($data)
     {
         $data_member = $data['member'];
@@ -723,8 +733,8 @@ class Resume extends \app\common\model\BaseModel
             $data_basic['major2'] != 0
                 ? $data_basic['major2']
                 : ($data_basic['major1'] != 0
-                    ? $data_basic['major1']
-                    : 0);
+                ? $data_basic['major1']
+                : 0);
 
         $data_basic['tag'] = '';
         $data_basic['specialty'] = '';
@@ -740,19 +750,36 @@ class Resume extends \app\common\model\BaseModel
             return false;
         }
         $data_intention['rid'] = model('Resume')->id;
+        /**
+         * 为解决TP框架，数据自动完成 【$insert】
+         * 故先保存，紧接更新
+         * yx - 2023.07.13
+         */
+        $basicResult_update = model('Resume')
+            ->validate(true)
+            ->allowField(true)
+            ->save($data_basic,
+                ['id' => $data_intention['rid']]);
+        if (false === $basicResult_update) {
+            //事务回滚
+            \think\Db::rollBack();
+            $this->error = model('Resume')->getError();
+            return false;
+        }
+
         $data_intention['uid'] = model('Member')->uid;
         $data_intention['category'] =
             $data_intention['category3'] != 0
                 ? $data_intention['category3']
                 : ($data_intention['category2'] != 0
-                    ? $data_intention['category2']
-                    : $data_intention['category1']);
+                ? $data_intention['category2']
+                : $data_intention['category1']);
         $data_intention['district'] =
             $data_intention['district3'] != 0
                 ? $data_intention['district3']
                 : ($data_intention['district2'] != 0
-                    ? $data_intention['district2']
-                    : $data_intention['district1']);
+                ? $data_intention['district2']
+                : $data_intention['district1']);
         $result = model('ResumeIntention')
             ->validate(true)
             ->allowField(true)
@@ -789,6 +816,7 @@ class Resume extends \app\common\model\BaseModel
 
         return model('Resume')->id;
     }
+
     /**
      * 审核简历
      */
@@ -860,6 +888,7 @@ class Resume extends \app\common\model\BaseModel
         $this->refreshSearchBatch($idarr);
         return;
     }
+
     /**
      * 刷新简历
      */
@@ -892,7 +921,7 @@ class Resume extends \app\common\model\BaseModel
         if ($global_config['refresh_resume_max_perday'] > 0) {
             $total_refresh_time = model('RefreshResumeLog')
                 ->whereTime('addtime', 'today')
-                ->where('uid',$uid)
+                ->where('uid', $uid)
                 ->count();
             if (
                 $total_refresh_time >=
@@ -920,24 +949,26 @@ class Resume extends \app\common\model\BaseModel
         ]);
         return;
     }
+
     /**
      * 后台刷新简历
      */
     public function backendRefreshResume($id)
     {
-        if(empty($id)){
+        if (empty($id)) {
             return false;
         }
         $timestamp = time();
-        $this->whereIn('id',$id)->setField('refreshtime', $timestamp);
+        $this->whereIn('id', $id)->setField('refreshtime', $timestamp);
         model('ResumeSearchRtime')
-            ->whereIn('id',$id)
+            ->whereIn('id', $id)
             ->setField('refreshtime', $timestamp);
         model('ResumeSearchKey')
-            ->whereIn('id',$id)
+            ->whereIn('id', $id)
             ->setField('refreshtime', $timestamp);
         return;
     }
+
     public function setDisplay($resume_id = 0, $uid = 0, $display)
     {
         $resume_id = intval($resume_id);
@@ -952,6 +983,7 @@ class Resume extends \app\common\model\BaseModel
         $this->refreshSearch($resume_id, $uid);
         return;
     }
+
     /**
      * 增加查看数
      */
@@ -959,18 +991,18 @@ class Resume extends \app\common\model\BaseModel
     {
         $rand_click = config('global_config.rand_click_resume');
         $rand_click = intval($rand_click);
-        if($rand_click<=1){
+        if ($rand_click <= 1) {
             $rand_click = 1;
-        }else{
-            $rand_click = rand(1,$rand_click);
+        } else {
+            $rand_click = rand(1, $rand_click);
         }
-        $this->where('id', 'eq', $resume_id)->setInc('click',$rand_click);
+        $this->where('id', 'eq', $resume_id)->setInc('click', $rand_click);
         if ($company_uid > 0 && $personal_uid > 0) {
             $company_info = model('Company')
                 ->field('id,companyname')
                 ->where('uid', $company_uid)
                 ->find();
-            if($company_info===null){
+            if ($company_info === null) {
                 return false;
             }
             $view_data['company_uid'] = $company_uid;
@@ -998,181 +1030,18 @@ class Resume extends \app\common\model\BaseModel
             );
         }
     }
+
     /**
      * 获取联系方式
      */
-    public function getContact($basic,$userinfo){
-        $global_config = config('global_config');
-        $return['show_contact'] = 0;
+    public function getContact($basic, $userinfo)
+    {
         $contact_info = model('ResumeContact')
             ->field('id,rid,uid', true)
             ->where(['rid' => ['eq', $basic['id']]])
             ->find();
-        if(config('platform')=='web'){
-            if ($global_config['showresumecontact'] == 0) {
-                //游客可见
-                $return['show_contact'] = 1;
-                $return['show_contact_note'] = '';
-            } elseif ($global_config['showresumecontact'] == 1) {
-                //已登录可见
-                if ($userinfo === null) {
-                    //未登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_login';
-                } elseif ($userinfo->utype == 2) {
-                    //不是企业登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_company_login';
-                } else {
-                    $return['show_contact'] = 1;
-                    $return['show_contact_note'] = '';
-                }
-            } elseif ($global_config['showresumecontact'] == 2) {
-                //下载后可见
-                if ($userinfo === null) {
-                    //未登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_login';
-                } elseif ($userinfo->utype == 2) {
-                    //不是企业登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_company_login';
-                } else {
-                    $member_setmeal = model('Member')->getMemberSetmeal(
-                        $userinfo->uid
-                    );
-                    if ($member_setmeal['show_apply_contact'] == 1) {
-                        if($member_setmeal['resume_view_num'] > 0){
-                            $job_apply = model('JobApply')
-                                ->where('company_uid', $userinfo->uid)
-                                ->where('is_look',1)
-                                ->where('free_viewing',1)
-                                ->where('personal_uid',$basic['uid'])
-                                ->find();
-                            if ($job_apply === null){
-                                $count = model('JobApply')
-                                    ->where('company_uid', $userinfo->uid)
-                                    ->where('is_look',1)
-                                    ->whereTime('free_viewing_time', 'today')
-                                    ->where('free_viewing',1)
-                                    ->count();
-                                if ($count >= $member_setmeal['resume_view_num']){
-                                    $return['show_contact'] = 0;
-                                    $return['show_contact_note'] = 'need_download';
-                                }else{
-                                    $return['show_contact'] = 1;
-                                    $return['show_contact_note'] = '';
-                                }
-                            }else{
-                                $return['show_contact'] = 1;
-                                $return['show_contact_note'] = '';
-                            }
-                        }
-                        else
-                        {
-                            $JobApply = model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find();
-                            if($JobApply === null){
-                                $return['show_contact'] = 0;
-                                $return['show_contact_note'] = 'need_download';
-                            }else{
-                                $return['show_contact'] = 1;
-                                $return['show_contact_note'] = '';
-                            }
-                        }
-                    }
-                    if ($return['show_contact'] === 0 && model('CompanyDownResume')->where('uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null) {
-                        //没有下载简历
-                        $return['show_contact'] = 0;
-                        $return['show_contact_note'] = 'need_download';
-                    } else {
-                        $return['show_contact'] = 1;
-                        $return['show_contact_note'] = '';
-                    }
-                }
-            }
-        }else{
-            if ($global_config['showresumecontact_mobile'] == 0) {
-                //游客可见
-                $return['show_contact'] = 1;
-                $return['show_contact_note'] = '';
-            } elseif ($global_config['showresumecontact_mobile'] == 1) {
-                //已登录可见
-                if ($userinfo === null) {
-                    //未登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_login';
-                } elseif ($userinfo->utype == 2) {
-                    //不是企业登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_company_login';
-                } else {
-                    $return['show_contact'] = 1;
-                    $return['show_contact_note'] = '';
-                }
-            } elseif ($global_config['showresumecontact_mobile'] == 2) {
-                //下载后可见
-                if ($userinfo === null) {
-                    //未登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_login';
-                } elseif ($userinfo->utype == 2) {
-                    //不是企业登录
-                    $return['show_contact'] = 0;
-                    $return['show_contact_note'] = 'need_company_login';
-                } else {
-                    $member_setmeal = model('Member')->getMemberSetmeal(
-                        $userinfo->uid
-                    );
-                    if ($member_setmeal['show_apply_contact'] == 1) {
-                        if($member_setmeal['resume_view_num'] > 0){
-                            $job_apply = model('JobApply')
-                                ->where('company_uid', $userinfo->uid)
-                                ->where('is_look',1)
-                                ->where('free_viewing',1)
-                                ->where('personal_uid',$basic['uid'])
-                                ->find();
-                            if ($job_apply === null){
-                                $count = model('JobApply')
-                                    ->where('company_uid', $userinfo->uid)
-                                    ->where('is_look',1)
-                                    ->whereTime('free_viewing_time', 'today')
-                                    ->where('free_viewing',1)
-                                    ->count();
-                                if ($count >= $member_setmeal['resume_view_num']){
-                                    $return['show_contact'] = 0;
-                                    $return['show_contact_note'] = 'need_download';
-                                }else{
-                                    $return['show_contact'] = 1;
-                                    $return['show_contact_note'] = '';
-                                }
-                            }else{
-                                $return['show_contact'] = 1;
-                                $return['show_contact_note'] = '';
-                            }
-                        }
-                        else
-                        {
-                            $JobApply = model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find();
-                            if($JobApply === null){
-                                $return['show_contact'] = 0;
-                                $return['show_contact_note'] = 'need_download';
-                            }else{
-                                $return['show_contact'] = 1;
-                                $return['show_contact_note'] = '';
-                            }
-                        }
-                    }
-                    if ($return['show_contact'] === 0 && model('CompanyDownResume')->where('uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null) {
-                        //没有下载简历
-                        $return['show_contact'] = 0;
-                        $return['show_contact_note'] = 'need_download';
-                    } else {
-                        $return['show_contact'] = 1;
-                        $return['show_contact_note'] = '';
-                    }
-                }
-            }
-        }
+
+        $return = $this->_getShowResumeContact($basic, $userinfo);
 
         if ($return['show_contact'] == 1) {
             $return['contact_info'] = $contact_info;
@@ -1195,15 +1064,17 @@ class Resume extends \app\common\model\BaseModel
         }
         return $return;
     }
+
     /**
      * 处理简历姓名显示方式
      */
-    public function formatFullname($rids,$userinfo,$single=false){
+    public function formatFullname($rids, $userinfo, $single = false)
+    {
 
-        $list = $this->whereIn('id',$rids)->field(true)->select();
+        $list = $this->whereIn('id', $rids)->field(true)->select();
         $return = [];
         $userinfo = (array)$userinfo;
-        if(empty($userinfo) || !$userinfo || $userinfo['utype']!=1){
+        if (empty($userinfo) || !$userinfo || $userinfo['utype'] != 1) {
             foreach ($list as $key => $value) {
                 $return[$value['id']] = $value['fullname'];
                 if ($value['display_name'] == 0) {
@@ -1231,7 +1102,7 @@ class Resume extends \app\common\model\BaseModel
                     }
                 }
             }
-            if($single===true){
+            if ($single === true) {
                 $array_values = array_values($return);
                 return $array_values[0];
             }
@@ -1241,18 +1112,18 @@ class Resume extends \app\common\model\BaseModel
         foreach ($list as $key => $value) {
             $resumeidarr[] = $value['id'];
         }
-        if(empty($resumeidarr)){
+        if (empty($resumeidarr)) {
             return [];
         }
         //下载记录
         $down_resumeidarr = [];
-        $downlist = model('CompanyDownResume')->whereIn('resume_id',$resumeidarr)->where('uid',$userinfo['uid'])->select();
+        $downlist = model('CompanyDownResume')->whereIn('resume_id', $resumeidarr)->where('uid', $userinfo['uid'])->select();
         foreach ($downlist as $key => $value) {
             $down_resumeidarr[] = $value['resume_id'];
         }
         //收到的简历记录
         $apply_resumeidarr = [];
-        $applylist = model('JobApply')->whereIn('resume_id',$resumeidarr)->where('company_uid',$userinfo['uid'])->select();
+        $applylist = model('JobApply')->whereIn('resume_id', $resumeidarr)->where('company_uid', $userinfo['uid'])->select();
         foreach ($applylist as $key => $value) {
             $apply_resumeidarr[] = $value['resume_id'];
         }
@@ -1260,14 +1131,14 @@ class Resume extends \app\common\model\BaseModel
         $setmeal = model('Member')->getMemberSetmeal($userinfo['uid']);
         //收到的简历是否能直接查看
         foreach ($list as $key => $value) {
-            do{
+            do {
                 $return[$value['id']] = $value['fullname'];
                 //是否下载过,下载过的话直接显示姓名
-                if(in_array($value['id'],$down_resumeidarr)){
+                if (in_array($value['id'], $down_resumeidarr)) {
                     break;
                 }
                 //是否是收到的简历，并且和套餐权限对比
-                if(in_array($value['id'],$apply_resumeidarr) && $setmeal['show_apply_contact']==1){
+                if (in_array($value['id'], $apply_resumeidarr) && $setmeal['show_apply_contact'] == 1) {
                     break;
                 }
                 if ($value['display_name'] == 0) {
@@ -1294,9 +1165,9 @@ class Resume extends \app\common\model\BaseModel
                         );
                     }
                 }
-            }while(0);
+            } while (0);
         }
-        if($single===true){
+        if ($single === true) {
             $array_values = array_values($return);
             return $array_values[0];
         }
@@ -1306,13 +1177,14 @@ class Resume extends \app\common\model\BaseModel
     /**
      * 刷新简历信息
      * @access public
-     * @author chenyang
-     * @param  array   $params [请求参数]
-     * @param  integer $source [来源:1|登录自动刷新,2|系统级手动刷新,3|会员手动刷新]
+     * @param array $params [请求参数]
+     * @param integer $source [来源:1|登录自动刷新,2|系统级手动刷新,3|会员手动刷新]
      * @return array
      * Date Time：2022年3月15日09:27:45
+     * @author chenyang
      */
-    public function refreshResumeData($params, $source = 1){
+    public function refreshResumeData($params, $source = 1)
+    {
         if (!isset($params['uid']) || empty($params['uid'])) {
             return callBack(false, '缺少会员ID');
         }
@@ -1353,7 +1225,7 @@ class Resume extends \app\common\model\BaseModel
                 case 3:
                     // 校验简历刷新条件
                     $validateParams = [
-                        'uid'          => $params['uid'],
+                        'uid' => $params['uid'],
                         'current_time' => $currentTime,
                     ];
                     $validateResult = $this->_validateRefreshResume($validateParams);
@@ -1375,8 +1247,8 @@ class Resume extends \app\common\model\BaseModel
                 ############### 系统级刷新不记录在log表中 ###############
                 if ($source == 3) {
                     $saveData = [
-                        'uid'      => $params['uid'],
-                        'addtime'  => $currentTime,
+                        'uid' => $params['uid'],
+                        'addtime' => $currentTime,
                         'platform' => config('platform'),
                     ];
                     model('RefreshResumeLog')->save($saveData);
@@ -1389,13 +1261,14 @@ class Resume extends \app\common\model\BaseModel
     /**
      * 校验简历刷新条件
      * @access private
-     * @author chenyang
-     * @param  integer $params['uid']          [会员ID]
-     * @param  integer $params['current_time'] [当前时间]
+     * @param integer $params ['uid']          [会员ID]
+     * @param integer $params ['current_time'] [当前时间]
      * @return array
      * Date Time：2022年3月15日11:49:46
+     * @author chenyang
      */
-    private function _validateRefreshResume($params){
+    private function _validateRefreshResume($params)
+    {
         // 判断是否设置每天刷新简历次数
         $refreshResumeMaxPerday = config('global_config.refresh_resume_max_perday');
         if ($refreshResumeMaxPerday > 0) {
@@ -1416,11 +1289,11 @@ class Resume extends \app\common\model\BaseModel
         if ($refreshResumeSpace > 0) {
             // 获取简历log刷新时间
             $resumeLogInfo = model('RefreshResumeLog')
-                            ->field('addtime')
-                            ->where('uid', $params['uid'])
-                            ->whereTime('addtime', 'today')
-                            ->order(['addtime' => 'desc'])
-                            ->find();
+                ->field('addtime')
+                ->where('uid', $params['uid'])
+                ->whereTime('addtime', 'today')
+                ->order(['addtime' => 'desc'])
+                ->find();
             // 校验简历刷新间隔
             if (!empty($resumeLogInfo) && $params['current_time'] - $resumeLogInfo['addtime'] < $refreshResumeSpace * 60) {
                 $errorMsg = '刷新间隔不能小于' . $refreshResumeSpace . '分钟，请稍后再试';
@@ -1437,6 +1310,117 @@ class Resume extends \app\common\model\BaseModel
             ->value('fullname');
 
         return (null === $fullname) ? $fault : $fullname;
+    }
+
+    private function _getShowResumeContact($basic, $userinfo)
+    {
+        //  初始值，仅下载简历可查看
+        $return = [
+            'show_contact' => 0,
+            'show_contact_note' => 'need_download'
+        ];
+
+        $global_config = config('global_config');
+
+        if (config('platform') == 'web') {
+            $showConfig = $global_config['showresumecontact'];
+        } else {
+            $showConfig = $global_config['showresumecontact_mobile'];
+        }
+
+        switch ($showConfig) {
+            case 0:
+                // 0|游客可见
+                $return = [
+                    'show_contact' => 1,
+                    'show_contact_note' => ''
+                ];
+                break;
+
+            case 1:
+                // 1|登录可见
+                if ($userinfo === null) {
+                    // 1.1未登录-需要登录
+                    $return = [
+                        'show_contact' => 0,
+                        'show_contact_note' => 'need_login'
+                    ];
+                } elseif ($userinfo->utype != 1) {
+                    // 1.2不是企业登录-需要登录企业
+                    $return = [
+                        'show_contact' => 0,
+                        'show_contact_note' => 'need_company_login'
+                    ];
+                } else {
+                    // 1.3企业登录-可以查看
+                    $return = [
+                        'show_contact' => 1,
+                        'show_contact_note' => ''
+                    ];
+                }
+                break;
+
+            case 2:
+                // 2|下载后可见
+                if ($userinfo === null) {
+                    // 2.1未登录-需要登录
+                    $return = [
+                        'show_contact' => 0,
+                        'show_contact_note' => 'need_login'
+                    ];
+                } else {
+                    // 2.2不是企业登录-需要登录企业
+                    if ($userinfo->utype != 1) {
+                        $return = [
+                            'show_contact' => 0,
+                            'show_contact_note' => 'need_company_login'
+                        ];
+                        continue;
+                    }
+
+                    // 2.3企业登录-可以查看
+                    // 2.3.1已下载简历可查看
+                    $isDownload = model('CompanyDownResume')
+                        ->where('uid', $userinfo->uid)
+                        ->where('personal_uid', $basic['uid'])
+                        ->find();
+                    if ($isDownload) {
+                        $return = [
+                            'show_contact' => 1,
+                            'show_contact_note' => ''
+                        ];
+                        continue;
+                    }
+
+                    // 2.3.2判断是否为收到的投递
+                    $isApply = model('JobApply')
+                        ->where('company_uid', $userinfo->uid)
+                        ->where('is_look', 1)
+                        ->where('free_viewing', 1)
+                        ->where('personal_uid', $basic['uid'])
+                        ->find();
+
+                    // 2.3.2.1 不是收到的投递-不能查看
+                    if (null === $isApply) {
+                        $return = [
+                            'show_contact' => 0,
+                            'show_contact_note' => 'need_download'
+                        ];
+                        continue;
+                    }
+
+                    // 2.3.2.2 已经查看过-已查看可直接查看
+                    if ($isApply['free_viewing'] == 1) {
+                        $return = [
+                            'show_contact' => 1,
+                            'show_contact_note' => ''
+                        ];
+                    }
+                }
+                break;
+        }
+
+        return $return;
     }
 
 }

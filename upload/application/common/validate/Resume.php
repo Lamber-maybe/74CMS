@@ -42,7 +42,30 @@ class Resume extends BaseValidate
     ];
 
     protected $message  =   [
+        'is_display' => '请选择正确的显示状态',
+        'audit' => '请选择正确的审核状态',
+        'stick' => '请选择正确的置顶状态',
+        'fullname' => '请填写正确的姓名',
+        'sex' => '请选择正确的性别',
+        'birthday' => '请填写正确的出生日期',
         'residence' => '现居住地最多30个字',
+        'height' => '请填写正确的身高',
+        'marriage' => '请选择正确的婚姻状况',
+        'education' => '请选择正确的学历',
+        'enter_job_time' => '请选择正确的参加工作时间',
+        'householdaddress' => '籍贯最多30个字',
+        'major1' => '请选择正确的专业一级分类',
+        'major2' => '请选择正确的专业二级分类',
+        'major' => '请选择正确的专业',
+        'tag' => '请填写正确的简历标签',
+        'idcard' => '请输入正确的身份证号码',
+        'photo_img' => '请上传正确的照片',
+        'current' => '请选择正确的求职状态',
+        'click' => '请填写正确的点击量',
+        'tpl' => '请填写正确的简历模板',
+        'custom_field_1' => '自定义字段1最多255个字',
+        'custom_field_2' => '自定义字段2最多255个字',
+        'custom_field_3' => '自定义字段3最多255个字'
     ];
 
     protected function checkIdcard($value, $rule, $data)

@@ -1,0 +1,21 @@
+<el-dialog
+        title=""
+        custom-class="wx_dialog"
+        width="300px"
+        :visible.sync="showWeChatQrcode"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+>
+    <div class="wx_img" style="text-align: center;">
+        <div>
+            <img v-if="scanQrcodeImg" :src="scanQrcodeImg" width="215" height="215"/>
+        </div>
+        <p class="wx_p1" style="font-size: 14px;color: #4CBF00;display: flex;align-items: center;justify-content: center;">
+            <span class="wx_p1_span1" style="background: url('__ROOT__/assets/images/weixin_ico.png') center center no-repeat;display: inline-block;width: 16px;height: 16px;background-size: 100% 100%;margin-right: 8px;"></span>
+            <span class="wx_p1_span2">微信扫一扫</span>
+        </p>
+        <p class="wx_p2" style="font-size: 16px;color: #000000;box-sizing: border-box;padding: 15px 0;">
+            {{ weChatQrcodeContent }}
+        </p>
+    </div>
+</el-dialog>

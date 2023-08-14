@@ -221,11 +221,11 @@
     <el-dialog
       title="将所选职位设置为"
       :visible.sync="dialogFormVisible"
-      width="25%"
+      width="520px"
     >
-      <el-form class="common-form" label-width="80px">
-        <el-form-item label="认证状态">
-          <el-radio-group v-model="setAuditVal">
+      <el-form class="common-form" label-width="82px">
+        <el-form-item label="认证状态：">
+          <el-radio-group v-model="setAuditVal" @change="auditDataChange">
             <el-radio
               v-for="(item, index) in options_audit"
               :key="index"
@@ -235,8 +235,28 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="setAuditVal == 2" label="原因">
-          <el-input v-model="setAuditReason" type="textarea" rows="3" />
+        <el-form-item v-if="setAuditVal == 2" class="audit_template_select" label="审核模板：">
+          <el-select v-model="auditTemplateId" :clearable="true" placeholder="请选择" @change="selectedAuditTemplate">
+            <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content">
+              <span class="multiline-text">{{ item.content }}</span>
+              <span v-if="item.id != 0" class="el-icon-delete" @click.stop="deleteAuditTemplate(item.id)" />
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="setAuditVal == 2" class="reason-box" label="原因：">
+          <el-input
+            v-model="setAuditReason"
+            type="textarea"
+            placeholder="请填写不通过原因"
+            rows="3"
+            maxlength="40"
+            show-word-limit
+          />
+        </el-form-item>
+        <el-form-item v-if="setAuditVal == 2" class="checkboxAddAuditTemplate">
+          <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">
+            {{ addAuditTemplateDesc }}
+          </el-checkbox>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -324,6 +344,7 @@ import { exportJobById } from '@/api/export'
 import { management } from '@/api/member'
 import Poster from '@/components/Poster'
 import { outboundCall } from '@/api/outbound'
+import { getAuditTemplateList, deleteAuditTemplate } from '@/api/auditTemplate'
 
 export default {
   filters: {
@@ -384,7 +405,12 @@ export default {
       callDialogVisible: false,
       meetDialogVisible: false,
       dialPhone: '',
-      dialName: ''
+      dialName: '',
+      auditTemplateId: '',
+      auditTemplateList: {},
+      addAuditTemplate: 0,
+      addAuditTemplateDesc: '',
+      canAddAuditTemplate: false
     }
   },
   created() {
@@ -570,10 +596,13 @@ export default {
       this.dialogFormVisible = false
     },
     funAudit(row) {
-      this.setAuditReason = ''
       this.setAuditVal = row.audit
       this.auditIdarr = [row.id]
       this.dialogFormVisible = true
+      // 获取审核模板列表
+      this.getAuditTemplateList()
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
     },
     funAuditBatch() {
       if (this.tableIdarr.length == 0) {
@@ -581,9 +610,12 @@ export default {
         return false
       }
       this.auditIdarr = this.tableIdarr
-      this.setAuditReason = ''
       this.setAuditVal = 0
       this.dialogFormVisible = true
+      // 获取审核模板列表
+      this.getAuditTemplateList()
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
     },
     fun_set_audit() {
       if (this.auditSubmitLoading == true) {
@@ -593,7 +625,9 @@ export default {
       const params = {
         id: this.auditIdarr,
         audit: this.setAuditVal,
-        reason: this.setAuditReason
+        reason: this.setAuditReason,
+        template_id: this.auditTemplateId,
+        add_template: this.addAuditTemplate ? 1 : 0
       }
       jobAudit(params, 'post').then(response => {
         if (response.code == 200) {
@@ -761,6 +795,88 @@ export default {
     },
     meetHandleClose(){
       this.meetDialogVisible = false
+    },
+    // 审核切换事件
+    auditDataChange(){
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
+      this.defaultSelectedAuditTemplate()
+    },
+    // 获取审核模板列表
+    getAuditTemplateList() {
+      getAuditTemplateList({ type: 3 })
+        .then(res => {
+          this.auditTemplateList = res.data
+
+          let maxTemplate = 6;
+          let currentNum = this.auditTemplateList.length;
+          if (currentNum >= maxTemplate) {
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，当前已添加' + currentNum + '条）';
+            // 超过最大可添加就不能再添加模板了
+            this.canAddAuditTemplate = true
+          } else {
+            let diffNum = maxTemplate - currentNum;
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，还可添加' + diffNum + '条）';
+            this.canAddAuditTemplate = false
+          }
+          // 最后拼接一个默认选中项
+          this.auditTemplateList.push({
+            id: 0,
+            content: '其他'
+          })
+          // 默认选中审核模板
+          this.defaultSelectedAuditTemplate()
+          this.addAuditTemplate = 0
+        })
+        .catch(() => {
+        })
+    },
+    // 删除审核模板
+    deleteAuditTemplate(id) {
+      this.$confirm('确定要删除此模板吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteAuditTemplate({ id: id })
+            .then(res => {
+              // 如果删除的模板当前已被选中就将选中值清空
+              if (this.auditTemplateId == id) {
+                this.auditTemplateId = ''
+              }
+              // 获取审核模板列表
+              this.getAuditTemplateList()
+            })
+            .catch(() => {
+            })
+        })
+        .catch(() => {
+        })
+    },
+    // 选中审核模板事件
+    selectedAuditTemplate() {
+      // 选中模板后将模板内容放入到原因中
+      if (this.auditTemplateId > 0 && this.auditTemplateList.length > 0) {
+        this.auditTemplateList.forEach((item) => {
+          if (item.id == this.auditTemplateId) {
+            this.setAuditReason = item.content
+            return
+          }
+        })
+      } else {
+        this.setAuditReason = ''
+      }
+    },
+    // 默认选中审核模板
+    defaultSelectedAuditTemplate(){
+      if (this.setAuditVal == 2 && this.auditTemplateList.length > 0) {
+        // 默认选中第一个模板
+        this.auditTemplateId = this.auditTemplateList[0].id
+        if (this.auditTemplateId > 0) {
+          this.setAuditReason = this.auditTemplateList[0].content
+        }
+      }
     }
   }
 }
@@ -938,6 +1054,47 @@ export default {
   }
   100% {
     -moz-transform:scale(1)
+  }
+}
+
+.audit_template_select{
+  .el-select{
+    width: 100% !important;
+  }
+}
+.reason-box{
+  margin-bottom: 10px;
+}
+.checkboxAddAuditTemplate{
+  margin-bottom: 10px;
+  ::v-deep .el-checkbox__inner{
+    border-radius: 50%;
+  }
+}
+
+.multiline-text{
+  white-space: normal;
+  width: 330px;
+}
+
+.el-select-dropdown__item {
+  font-size: 14px;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: auto;
+  line-height: 1.5;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  &:first-child{
+    margin-top: 10px;
   }
 }
 </style>

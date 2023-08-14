@@ -196,15 +196,15 @@ class ImChatmanage extends \app\common\controller\Backend
             $self_name = $self['companyname'];
             $self_avatar = $self_avatar ? $self_avatar : default_empty('logo');
 
-            $other = model('Resume')->where('uid', $target_uid)->field('photo_img,fullname')->find();
+            $other = model('Resume')->where('uid', $target_uid)->field('photo_img,fullname,sex')->find();
             $other_avatar = model('Uploadfile')->getFileUrl($other['photo_img']);
             $other_name = $other['fullname'];
-            $other_avatar = $other_avatar ? $other_avatar : default_empty('photo');
+            $other_avatar = $other_avatar ? $other_avatar : default_empty('photo', $other['sex']);
         } else {
-            $self = model('Resume')->where('uid', $userinfo['uid'])->field('photo_img,fullname')->find();
+            $self = model('Resume')->where('uid', $userinfo['uid'])->field('photo_img,fullname,sex')->find();
             $self_avatar = model('Uploadfile')->getFileUrl($self['photo_img']);
             $self_name = $self['fullname'];
-            $self_avatar = $self_avatar ? $self_avatar : default_empty('photo');
+            $self_avatar = $self_avatar ? $self_avatar : default_empty('photo', $self['sex']);
 
             $other = model('Company')->where('uid', $target_uid)->field('logo,companyname')->find();
             $other_avatar = model('Uploadfile')->getFileUrl($other['logo']);

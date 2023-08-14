@@ -714,7 +714,7 @@ class Poster
             $info['photo_img_src'] = model('Uploadfile')->getFileUrl(
                 $info['photo_img']
             );
-            $info['photo_img_src'] = $info['photo_img_src'] ? $info['photo_img_src'] : default_empty('photo');
+            $info['photo_img_src'] = $info['photo_img_src'] ? $info['photo_img_src'] : default_empty('photo', $info['sex']);
 
 
             $locationUrl = config('global_config.mobile_domain') . 'resume/' . $info['id'];

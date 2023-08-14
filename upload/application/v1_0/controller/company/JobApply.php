@@ -2,6 +2,7 @@
 /**
  * 收到的简历
  */
+
 namespace app\v1_0\controller\company;
 
 class JobApply extends \app\v1_0\controller\common\Base
@@ -13,6 +14,7 @@ class JobApply extends \app\v1_0\controller\common\Base
         $this->interceptCompanyProfile();
         $this->interceptCompanyAuth();
     }
+
     public function index()
     {
         $where['a.company_uid'] = $this->userinfo->uid;
@@ -56,9 +58,9 @@ class JobApply extends \app\v1_0\controller\common\Base
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
             ->join(config('database.prefix') . 'resume_remark rr', 'a.resume_id=rr.resume_id and a.comid=rr.comid', 'left')
-            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.note,a.addtime,a.is_look,a.handle_status,a.source,a.platform,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,IFNULL(rr.remark,"") as remark,b.audit')
+            ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.note,a.addtime,a.is_look,a.handle_status,a.source,a.platform,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,IFNULL(rr.remark,"") as remark,b.audit,b.uid as resume_uid')
             ->where($where)
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
@@ -96,23 +98,19 @@ class JobApply extends \app\v1_0\controller\common\Base
                 }
                 $work_list[$value['rid']] = $value;
             }
-            $fullname_arr = model('Resume')->formatFullname($resumeid_arr,$this->userinfo);
+            $fullname_arr = model('Resume')->formatFullname($resumeid_arr, $this->userinfo);
         }
         $category_data = model('Category')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
             $value['high_quality'] = $value['high_quality'];
-            $value['fullname'] = isset($fullname_arr[$value['resume_id']])?$fullname_arr[$value['resume_id']]:$value['fullname'];
-            $value['sex_text'] = model('Resume')->map_sex[
-                $value['sex']
-            ];
+            $value['fullname'] = isset($fullname_arr[$value['resume_id']]) ? $fullname_arr[$value['resume_id']] : $value['fullname'];
+            $value['sex_text'] = model('Resume')->map_sex[$value['sex']];
             $value['education_text'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )
-                ? model('BaseModel')->map_education[
-                    $value['education']
-                ]
+                ? model('BaseModel')->map_education[$value['education']]
                 : '';
             $value['experience_text'] =
                 $value['enter_job_time'] == 0
@@ -139,9 +137,7 @@ class JobApply extends \app\v1_0\controller\common\Base
                             $category_data['QS_trade'][$v['trade']];
                     }
                     if ($v['nature']) {
-                        $nature_arr[] = model('Resume')->map_nature[
-                            $v['nature']
-                        ];
+                        $nature_arr[] = model('Resume')->map_nature[$v['nature']];
                     }
                     $wage_arr[0] = $v['minwage'] . '-' . $v['maxwage'];
                     if ($v['category']) {
@@ -194,10 +190,26 @@ class JobApply extends \app\v1_0\controller\common\Base
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
 
             $value['resume_link_url_web'] = url('index/resume/show', ['id' => $value['resume_id']], true, $this->sub_site_domain);
             $value['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']], true, $this->sub_site_domain);
+
+            /**
+             * 联系方式
+             */
+            $resumeinfo = [
+                'id' => $value['resume_id'],
+                'uid' => $value['resume_uid']
+            ];
+            $getResumeContact = model('Resume')->getContact($resumeinfo, $this->userinfo);
+            if ($getResumeContact['show_contact'] == 1) {
+                $resume_mobile = model('Member')->where('uid', $value['resume_uid'])->value('mobile');
+                $value['resume_contact'] = $resume_mobile;
+            } else {
+                $value['resume_contact'] = 0;
+            }
+
             $list[$key] = $value;
         }
 
@@ -212,6 +224,7 @@ class JobApply extends \app\v1_0\controller\common\Base
 
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function total()
     {
         $where['a.company_uid'] = $this->userinfo->uid;
@@ -252,10 +265,11 @@ class JobApply extends \app\v1_0\controller\common\Base
             ->alias('a')
             ->join(config('database.prefix') . 'resume b', 'a.resume_id=b.id', 'left')
             ->where($where)
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->count();
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
+
     /**
      * 简历处理情况
      */
@@ -280,9 +294,10 @@ class JobApply extends \app\v1_0\controller\common\Base
             $return['watch_percent'] = '100%';
         }
         $return['total'] = $total;
-        $return['noWatch'] = $total-$looked;
+        $return['noWatch'] = $total - $looked;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 拒绝
      */
@@ -311,24 +326,26 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
-        $this->writeMemberActionLog($this->userinfo->uid,'处理收到的简历【处理状态：拒绝，简历id：'.$apply_info->resume_id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '处理收到的简历【处理状态：拒绝，简历id：' . $apply_info->resume_id . '】');
         $this->ajaxReturn(200, '设置成功');
     }
+
     /**
      * 同意面试
      */
     public function setAgree()
     {
-        $type = input('post.type/d',1,'intval');//1普通面试邀请 2视频面试邀请
-        if($type==1){
+        $type = input('post.type/d', 1, 'intval');//1普通面试邀请 2视频面试邀请
+        if ($type == 1) {
             $this->_interviewCommonAdd();
-        }else{
+        } else {
             $this->_interviewVideoAdd();
         }
 
     }
 
-    protected function _interviewCommonAdd(){
+    protected function _interviewCommonAdd()
+    {
         $input_data = [
             'apply_id' => input('post.apply_id/d', 0, 'intval'),
             'interview_date' => input('post.interview_date/s', '', 'trim'),
@@ -392,10 +409,12 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
-        $this->writeMemberActionLog($this->userinfo->uid,'面试邀请【简历id：'.$apply_info->resume_id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '面试邀请【简历id：' . $apply_info->resume_id . '】');
         $this->ajaxReturn(200, '邀请面试成功');
     }
-    protected function _interviewVideoAdd(){
+
+    protected function _interviewVideoAdd()
+    {
         $input_data = [
             'apply_id' => input('post.apply_id/d', 0, 'intval'),
             'interview_date' => input('post.interview_date/s', '', 'trim'),
@@ -446,9 +465,10 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
-        $this->writeMemberActionLog($this->userinfo->uid,'视频面试邀请【简历id：'.$apply_info->resume_id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '视频面试邀请【简历id：' . $apply_info->resume_id . '】');
         $this->ajaxReturn(200, '邀请面试成功');
     }
+
     /**
      * 同意面试前置检查
      */
@@ -509,30 +529,81 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
-        $this->writeMemberActionLog($this->userinfo->uid,'同意面试【简历id：'.$apply_info->resume_id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '同意面试【简历id：' . $apply_info->resume_id . '】');
         $this->ajaxReturn(200, '设置成功', ['finish' => 1]);
     }
+
     public function setLook()
     {
         $id = input('post.id/d', 0, 'intval');
         $info = model('JobApply')->where(['id' => ['eq', $id]])->find();
-        $arr = ['is_look'=>1];
-        $free_viewing_count = model('JobApply')
-            ->where('free_viewing',1)
-            ->whereTime('free_viewing_time', 'today')
-            ->where('company_uid',$this->userinfo->uid)
-            ->count();
-        $resume_view_num = model('MemberSetmeal')->where('uid',$this->userinfo->uid)->value('resume_view_num');
-        if ($free_viewing_count < $resume_view_num){
-            $arr['free_viewing'] = 1;
-            $arr['free_viewing_time'] = time();
+        if (null === $info) {
+            $this->ajaxReturn(500, '收到的简历不存在');
         }
-        model('JobApply')
-            ->where(['id' => ['eq', $id]])
-            ->update($arr);
-        $this->writeMemberActionLog($this->userinfo->uid,'收到的简历设为已查看【简历id：'.$info->resume_id.'】');
-        $this->ajaxReturn(200, '设置成功');
+        $info = $info->toArray();
+
+        $updateDate = [];
+
+        if ($info['is_look'] === 0) {
+            $updateDate['is_look'] = 1;
+        }
+
+        $is_free_viewing = false;
+
+        do {
+            $haveLook = model('JobApply')
+                ->where('company_uid', $this->userinfo->uid)
+                ->where('is_look', 1)
+                ->where('free_viewing', 1)
+                ->where('personal_uid', $info['personal_uid'])
+                ->find();
+            if ($haveLook) {
+                continue;
+            }
+
+            $isDownload = model('CompanyDownResume')
+                ->where('uid', $this->userinfo->uid)
+                ->where('personal_uid', $info['personal_uid'])
+                ->find();
+            if ($isDownload) {
+                continue;
+            }
+
+            if ($info['free_viewing'] != 1) {
+                $memberSetmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
+                if ($memberSetmeal['resume_view_num_today'] === -1 || $memberSetmeal['resume_view_num_today'] > 0) {
+                    $updateDate['free_viewing'] = 1;
+                    $updateDate['free_viewing_time'] = time();
+                    $is_free_viewing = true;
+                }
+            }
+
+        } while (0);
+
+        if (!empty($updateDate)) {
+            model('JobApply')
+                ->where(['id' => ['eq', $id]])
+                ->update($updateDate);
+        }
+
+        if ($info['is_look'] === 0) {
+            if ($is_free_viewing) {
+                $this->writeMemberActionLog($this->userinfo->uid,
+                    '查看收到的简历【' . $info['fullname'] . '】(简历ID:' . $info['resume_id'] . ')并获取简历联系方式。');
+            } else {
+                $this->writeMemberActionLog($this->userinfo->uid,
+                    '查看收到的简历【' . $info['fullname'] . '】(简历ID:' . $info['resume_id'] . ')。');
+            }
+        } else {
+            if ($is_free_viewing) {
+                $this->writeMemberActionLog($this->userinfo->uid,
+                    '获取收到的简历【' . $info['fullname'] . '】(简历ID:' . $info['resume_id'] . ')联系方式。');
+            }
+        }
+
+        $this->ajaxReturn(200, 'SUCCESS');
     }
+
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
@@ -543,7 +614,7 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'company_uid' => $this->userinfo->uid
             ])
             ->delete();
-        $this->writeMemberActionLog($this->userinfo->uid,'删除收到的简历【简历id：'.$info->resume_id.'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '删除收到的简历【简历id：' . $info->resume_id . '】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

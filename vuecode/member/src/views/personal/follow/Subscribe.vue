@@ -49,12 +49,19 @@
       </el-form-item>
     </el-form>
 
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 <script>
   import http from '@/utils/http'
   import api from '@/api'
+  import WeChatQrcode from '@/components/WeChatQrcode'
   export default {
+    components: {
+      WeChatQrcode
+    },
     data() {
       return {
         form:{
@@ -205,6 +212,12 @@
             http.post(api.personal_subscribe_job_save ,submitData).then(res=>{
               this.$message({type:'success',message:res.message})
               this.hasInfo = true
+              /**
+               * 【ID1000719】
+               * 【新增】公众号引导弹窗场景（职位订阅）
+               * cy 2023-7-17
+               */
+              this.popupWechatQrcodeWindow('user_pc_job_subscribe')
             })
           } else {
             return false;
@@ -218,6 +231,10 @@
           this.hasInfo = false
           this.$refs.form.resetFields();
         })
+      },
+      // 弹出微信二维码弹框
+      popupWechatQrcodeWindow(val) {
+        this.$refs.weChatQrcodeRef.handleOpen(val, '扫码绑定公众号，求职快人一步')
       }
     }
   }

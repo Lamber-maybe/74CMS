@@ -1,12 +1,16 @@
 <?php
+
 namespace app\v1_0\controller\home;
 
-class Job extends \app\v1_0\controller\common\Base
+use app\v1_0\controller\common\Base;
+
+class Job extends Base
 {
     public function _initialize()
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $search_type = input('get.search_type/s', '', 'trim');
@@ -40,24 +44,21 @@ class Job extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $count_total = input('get.count_total/d', 0, 'intval');
-        $minage = input('get.minage/d',0,'intval'); // 最低年龄
-        $maxage = input('get.maxage/d',0,'intval');  // 最高年龄
-        if (!empty($lat) && !empty($lng))
-        {
-            $coordinate = model('Config')->bd09ToWgs84($lng,$lat);
+        $minage = input('get.minage/d', 0, 'intval'); // 最低年龄
+        $maxage = input('get.maxage/d', 0, 'intval');  // 最高年龄
+        if (!empty($lat) && !empty($lng)) {
+            $coordinate = model('Config')->bd09ToWgs84($lng, $lat);
             $lng = $coordinate['lng'];
             $lat = $coordinate['lat'];
         }
         if ($keyword != '') {
             $params['keyword'] = $keyword;
         }
-        if ($minage > 0)
-        {
-            $params['minage'] = ['egt',$minage];
+        if ($minage > 0) {
+            $params['minage'] = ['egt', $minage];
         }
-        if ($maxage > 0)
-        {
-            $params['maxage'] = ['elt',$maxage];
+        if ($maxage > 0) {
+            $params['maxage'] = ['elt', $maxage];
         }
         $distanceData = [];
         if ($lat > 0 && $lng > 0) {
@@ -67,24 +68,28 @@ class Job extends \app\v1_0\controller\common\Base
                 $params['range'] = $range;
             }
             $distanceData = [
-                'current_lat'=>$lat,
-                'current_lng'=>$lng
+                'current_lat' => $lat,
+                'current_lng' => $lng
             ];
             $count_distance = true;
         } else {
             $subsiteCondition = get_subsite_condition();
-            if(!empty($subsiteCondition)){
+            $subsiteParams = [];
+            if (!empty($subsiteCondition)) {
                 foreach ($subsiteCondition as $key => $value) {
-                    if($key=='district1'){
+                    if ($key == 'district1') {
                         $district1 = $value;
+                        $subsiteParams['district1'] = $district1;
                         break;
                     }
-                    if($key=='district2'){
+                    if ($key == 'district2') {
                         $district2 = $value;
+                        $subsiteParams['district2'] = $district2;
                         break;
                     }
-                    if($key=='district3'){
+                    if ($key == 'district3') {
                         $district3 = $value;
+                        $subsiteParams['district3'] = $district3;
                         break;
                     }
                 }
@@ -144,7 +149,7 @@ class Job extends \app\v1_0\controller\common\Base
             $params['trade'] = $trade;
         }
         if ($tag != '') {
-            $tag = str_replace(",","_",$tag);
+            $tag = str_replace(",", "_", $tag);
             $params['tag'] = $tag;
         }
         if ($settr > 0) {
@@ -165,34 +170,58 @@ class Job extends \app\v1_0\controller\common\Base
             $params['north_east_lng'] = $north_east_lng;
         }
 
-        if(config('global_config.job_search_login')==1 && $search_type=='list' && $this->platform=='mobile'){
-            if($this->userinfo===null){
-                $show_mask = 1;
-                if(!empty($params)){
-                    $params['district1'] = -1;
+        do {
+            if (config('global_config.job_search_login') == 1 && $search_type == 'list' && $this->platform == 'mobile') {
+                if ($this->userinfo === null) {
+                    $show_mask = 1;
+
+                    if (config('global_config.job_search_login_num') == 0) {
+                        $params['district1'] = -1;
+                        $params['district2'] = -1;
+                        $params['district3'] = -1;
+                        break;
+                    }
+
+                    if (!empty($params)) {
+                        if ($params === $subsiteParams) {
+                            $params['count_total'] = 0;
+                            $params['current_page'] = 1;
+                            $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
+                            break;
+                        } else {
+                            $params['district1'] = -1;
+                            $params['district2'] = -1;
+                            $params['district3'] = -1;
+                            break;
+                        }
+                    }
+
+                    $params['count_total'] = 0;
+                    $params['current_page'] = 1;
+                    $params['pagesize'] = config('global_config.job_search_login_num') == 0 ? 1 : config('global_config.job_search_login_num');
+                    break;
+                } else {
+                    $show_mask = 0;
+                    $params['count_total'] = 1;
+                    $params['current_page'] = $current_page;
+                    $params['pagesize'] = $pagesize;
+                    break;
                 }
-                $params['count_total'] = 0;
-                $params['current_page'] = 1;
-                $params['pagesize'] = config('global_config.job_search_login_num')==0?1:config('global_config.job_search_login_num');
-            }else{
+            } else {
                 $show_mask = 0;
-                $params['count_total'] = $count_total;
+                $params['count_total'] = 1;
                 $params['current_page'] = $current_page;
                 $params['pagesize'] = $pagesize;
+                break;
             }
-        }else{
-            $show_mask = 0;
-            $params['count_total'] = $count_total;
-            $params['current_page'] = $current_page;
-            $params['pagesize'] = $pagesize;
-        }
+        } while (0);
+
         $instance = new \app\common\lib\JobSearchEngine($params);
 
         $searchResult = $instance->run();
-        $return['items'] = $this->get_datalist($searchResult['items'],$distanceData);
-        foreach($return['items'] as $k=>$v)
-        {
-            $coordinate = model('Config')->bd09ToWgs84($v['map_lng'],$v['map_lat']);
+        $return['items'] = $this->get_datalist($searchResult['items'], $distanceData);
+        foreach ($return['items'] as $k => $v) {
+            $coordinate = model('Config')->bd09ToWgs84($v['map_lng'], $v['map_lat']);
             $return['items'][$k]['map_lng'] = $coordinate['lng'];
             $return['items'][$k]['map_lat'] = $coordinate['lat'];
         }
@@ -201,6 +230,7 @@ class Job extends \app\v1_0\controller\common\Base
         $return['show_mask'] = $show_mask;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 附近职位
      */
@@ -208,6 +238,7 @@ class Job extends \app\v1_0\controller\common\Base
     {
         $this->index();
     }
+
     /**
      * 地图找工作
      */
@@ -222,11 +253,11 @@ class Job extends \app\v1_0\controller\common\Base
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $marker_num = input('get.marker_num/d', 100, 'intval');
 
-        $coordinate = model('Config')->wgs84ToBd09($south_west_lng,$south_west_lat);
+        $coordinate = model('Config')->wgs84ToBd09($south_west_lng, $south_west_lat);
         $south_west_lng = $coordinate['lng'];
         $south_west_lat = $coordinate['lat'];
 
-        $coordinate = model('Config')->wgs84ToBd09($north_east_lng,$north_east_lat);
+        $coordinate = model('Config')->wgs84ToBd09($north_east_lng, $north_east_lat);
         $north_east_lng = $coordinate['lng'];
         $north_east_lat = $coordinate['lat'];
 
@@ -264,6 +295,7 @@ class Job extends \app\v1_0\controller\common\Base
         $return['marks'] = $this->get_marklist($searchResult['items']);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     protected function get_marklist($list)
     {
         $joblist = $jobid_arr = [];
@@ -272,7 +304,7 @@ class Job extends \app\v1_0\controller\common\Base
         }
         if ($jobid_arr) {
             $jids = implode(',', $jobid_arr);
-            $joblist = model('JobSearchRtime')->alias('a')->join(config('database.prefix').'job b','a.id=b.id','LEFT')->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+            $joblist = model('JobSearchRtime')->alias('a')->join(config('database.prefix') . 'job b', 'a.id=b.id', 'LEFT')->join(config('database.prefix') . 'company c', 'a.uid=c.uid', 'LEFT')
                 ->field('a.id,b.jobname,a.map_lat,a.map_lng,b.address,b.negotiable,b.minwage,b.maxwage,b.district,b.education,b.experience,c.id as company_id,c.companyname,c.audit as company_audit')
                 ->where('a.id', 'in', $jids)
                 ->select();
@@ -286,19 +318,19 @@ class Job extends \app\v1_0\controller\common\Base
                 $joblist[$key]['education_text'] = isset(
                     model('BaseModel')->map_education[$value['education']]
                 )
-                ? model('BaseModel')->map_education[$value['education']]
-                : '学历不限';
+                    ? model('BaseModel')->map_education[$value['education']]
+                    : '学历不限';
                 $joblist[$key]['experience_text'] = isset(
                     model('BaseModel')->map_experience[$value['experience']]
                 )
-                ? model('BaseModel')->map_experience[$value['experience']]
-                : '经验不限';
+                    ? model('BaseModel')->map_experience[$value['experience']]
+                    : '经验不限';
                 if ($value['district']) {
                     $joblist[$key]['district_text'] = isset(
                         $category_district_data[$value['district']]
                     )
-                    ? $category_district_data[$value['district']]
-                    : '';
+                        ? $category_district_data[$value['district']]
+                        : '';
                 } else {
                     $joblist[$key]['district_text'] = '';
                 }
@@ -306,7 +338,8 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return $joblist;
     }
-    protected function get_datalist($list,$distanceData=[])
+
+    protected function get_datalist($list, $distanceData = [])
     {
         $result_data_list = $jobid_arr = $comid_arr = $cominfo_arr = $logo_id_arr = $logo_arr = $icon_id_arr = $icon_arr = [];
         foreach ($list as $key => $value) {
@@ -372,8 +405,8 @@ class Job extends \app\v1_0\controller\common\Base
                 $tmp_arr['nature_text'] = isset(
                     model('Job')->map_nature[$val['nature']]
                 )
-                ? model('Job')->map_nature[$val['nature']]
-                : '全职';
+                    ? model('Job')->map_nature[$val['nature']]
+                    : '全职';
                 if (isset($cominfo_arr[$val['company_id']])) {
                     $tmp_arr['companyname'] =
                         $cominfo_arr[$val['company_id']]['companyname'];
@@ -391,7 +424,7 @@ class Job extends \app\v1_0\controller\common\Base
                         ->find();
                     if ($contact_info['use_company_contact'] == 1) {
                         $tmp_arr['job_contact'] = $cominfo_arr[$val['company_id']]['contact'];
-                    }else{
+                    } else {
                         $tmp_arr['job_contact'] = $contact_info['contact'];
                     }
                     $tmp_arr['company_audit'] =
@@ -399,45 +432,33 @@ class Job extends \app\v1_0\controller\common\Base
                     $tmp_arr['company_logo'] = isset(
                         $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
                     )
-                    ? $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
-                    : default_empty('logo');
+                        ? $logo_arr[$cominfo_arr[$val['company_id']]['logo']]
+                        : default_empty('logo');
                     $tmp_arr['company_trade_text'] = isset(
-                        $category_data['QS_trade'][
-                            $cominfo_arr[$val['company_id']]['trade']
-                        ]
+                        $category_data['QS_trade'][$cominfo_arr[$val['company_id']]['trade']]
                     )
-                    ? $category_data['QS_trade'][
-                        $cominfo_arr[$val['company_id']]['trade']
-                    ]
-                    : '';
+                        ? $category_data['QS_trade'][$cominfo_arr[$val['company_id']]['trade']]
+                        : '';
                     $tmp_arr['company_scale_text'] = isset(
-                        $category_data['QS_scale'][
-                            $cominfo_arr[$val['company_id']]['scale']
-                        ]
+                        $category_data['QS_scale'][$cominfo_arr[$val['company_id']]['scale']]
                     )
-                    ? $category_data['QS_scale'][
-                        $cominfo_arr[$val['company_id']]['scale']
-                    ]
-                    : '';
+                        ? $category_data['QS_scale'][$cominfo_arr[$val['company_id']]['scale']]
+                        : '';
                     $tmp_arr['company_nature_text'] = isset(
-                        $category_data['QS_company_type'][
-                            $cominfo_arr[$val['company_id']]['nature']
-                        ]
+                        $category_data['QS_company_type'][$cominfo_arr[$val['company_id']]['nature']]
                     )
-                    ? $category_data['QS_company_type'][
-                        $cominfo_arr[$val['company_id']]['nature']
-                    ]
-                    : '';
-                    if($cominfo_arr[$val['company_id']]['setmeal_deadline']>time() || $cominfo_arr[$val['company_id']]['setmeal_deadline']==0){
+                        ? $category_data['QS_company_type'][$cominfo_arr[$val['company_id']]['nature']]
+                        : '';
+                    if ($cominfo_arr[$val['company_id']]['setmeal_deadline'] > time() || $cominfo_arr[$val['company_id']]['setmeal_deadline'] == 0) {
                         $tmp_arr['setmeal_icon'] = isset(
                             $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
                         )
-                        ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
-                        : model('Setmeal')->getSysIcon($val['setmeal_id']);
-                    }else{
+                            ? $icon_arr[$cominfo_arr[$val['company_id']]['icon']]
+                            : model('Setmeal')->getSysIcon($val['setmeal_id']);
+                    } else {
                         $tmp_arr['setmeal_icon'] = '';
                     }
-                    
+
                 } else {
                     $tmp_arr['companyname'] = '';
                     $tmp_arr['company_audit'] = 0;
@@ -452,8 +473,8 @@ class Job extends \app\v1_0\controller\common\Base
                     $tmp_arr['district_text'] = isset(
                         $category_district_data[$val['district']]
                     )
-                    ? $category_district_data[$val['district']]
-                    : '';
+                        ? $category_district_data[$val['district']]
+                        : '';
                 } else {
                     $tmp_arr['district_text'] = '';
                 }
@@ -466,13 +487,13 @@ class Job extends \app\v1_0\controller\common\Base
                 $tmp_arr['education_text'] = isset(
                     model('BaseModel')->map_education[$val['education']]
                 )
-                ? model('BaseModel')->map_education[$val['education']]
-                : '学历不限';
+                    ? model('BaseModel')->map_education[$val['education']]
+                    : '学历不限';
                 $tmp_arr['experience_text'] = isset(
                     model('BaseModel')->map_experience[$val['experience']]
                 )
-                ? model('BaseModel')->map_experience[$val['experience']]
-                : '经验不限';
+                    ? model('BaseModel')->map_experience[$val['experience']]
+                    : '经验不限';
                 $tmp_arr['tag'] = [];
                 if ($val['tag']) {
                     $tag_arr = explode(',', $val['tag']);
@@ -493,9 +514,9 @@ class Job extends \app\v1_0\controller\common\Base
                 );
                 $tmp_arr['map_lat'] = $val['map_lat'];
                 $tmp_arr['map_lng'] = $val['map_lng'];
-                if(!empty($distanceData)){
-                    $tmp_arr['distance'] = get_distance($distanceData['current_lat'],$distanceData['current_lng'],$val['map_lat'],$val['map_lng']);
-                }else{
+                if (!empty($distanceData)) {
+                    $tmp_arr['distance'] = get_distance($distanceData['current_lat'], $distanceData['current_lng'], $val['map_lat'], $val['map_lng']);
+                } else {
                     $tmp_arr['distance'] = '';
                 }
                 $tmp_arr['job_link_url_web'] = url('index/job/show', ['id' => $tmp_arr['id']], true, $this->sub_site_domain);
@@ -505,7 +526,9 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return $result_data_list;
     }
-    protected function writeShowCache($id,$pageCache){
+
+    protected function writeShowCache($id, $pageCache)
+    {
         $jobinfo = model('Job')
             ->where('id', 'eq', $id)
             ->field(true)
@@ -542,21 +565,21 @@ class Job extends \app\v1_0\controller\common\Base
         $base_info['nature_text'] = isset(
             model('Job')->map_nature[$jobinfo['nature']]
         )
-        ? model('Job')->map_nature[$jobinfo['nature']]
-        : '全职';
+            ? model('Job')->map_nature[$jobinfo['nature']]
+            : '全职';
         $base_info['sex_text'] = isset(model('Job')->map_sex[$jobinfo['sex']])
-        ? model('Job')->map_sex[$jobinfo['sex']]
-        : '不限';
+            ? model('Job')->map_sex[$jobinfo['sex']]
+            : '不限';
         $base_info['district_text'] = isset(
             $category_district_data[$jobinfo['district']]
         )
-        ? $category_district_data[$jobinfo['district']]
-        : '';
+            ? $category_district_data[$jobinfo['district']]
+            : '';
         $base_info['category_text'] = isset(
             $category_job_data[$jobinfo['category']]
         )
-        ? $category_job_data[$jobinfo['category']]
-        : '';
+            ? $category_job_data[$jobinfo['category']]
+            : '';
         $base_info['wage_text'] = model('BaseModel')->handle_wage(
             $jobinfo['minwage'],
             $jobinfo['maxwage'],
@@ -565,13 +588,13 @@ class Job extends \app\v1_0\controller\common\Base
         $base_info['education_text'] = isset(
             model('BaseModel')->map_education[$jobinfo['education']]
         )
-        ? model('BaseModel')->map_education[$jobinfo['education']]
-        : '学历不限';
+            ? model('BaseModel')->map_education[$jobinfo['education']]
+            : '学历不限';
         $base_info['experience_text'] = isset(
             model('BaseModel')->map_experience[$jobinfo['experience']]
         )
-        ? model('BaseModel')->map_experience[$jobinfo['experience']]
-        : '经验不限';
+            ? model('BaseModel')->map_experience[$jobinfo['experience']]
+            : '经验不限';
 
         $base_info['tag_text_arr'] = [];
         if ($jobinfo['tag'] != '') {
@@ -590,7 +613,7 @@ class Job extends \app\v1_0\controller\common\Base
         }
 
         $base_info['amount_text'] =
-        $jobinfo['amount'] == 0 ? '若干' : $jobinfo['amount'] . '人';
+            $jobinfo['amount'] == 0 ? '若干' : $jobinfo['amount'] . '人';
         if ($jobinfo['age_na'] == 1) {
             $base_info['age_text'] = '不限';
         } else if ($jobinfo['minage'] > 0 || $jobinfo['maxage'] > 0) {
@@ -611,7 +634,7 @@ class Job extends \app\v1_0\controller\common\Base
             $jobinfo['addtime'],
             $jobinfo['refreshtime']
         );
-        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content'] );
+        $base_info['content'] = preg_replace(['/\d{11}/', '/\d{7}/'], '', $base_info['content']);
         $return['base_info'] = $base_info;
 
         $apply_map['company_uid'] = $jobinfo['uid'];
@@ -637,11 +660,11 @@ class Job extends \app\v1_0\controller\common\Base
             ->where('uid', 'eq', $jobinfo['uid'])
             ->find();
         $return['last_login_time'] =
-        $last_login_time['last_login_time'] == 0
-        ? '从未登录'
-        : format_last_login_time(
-            $last_login_time['last_login_time']
-        );
+            $last_login_time['last_login_time'] == 0
+                ? '从未登录'
+                : format_last_login_time(
+                $last_login_time['last_login_time']
+            );
         $companyinfo = model('Company')
             ->alias('a')
             ->join(
@@ -672,9 +695,9 @@ class Job extends \app\v1_0\controller\common\Base
             $return['com_info']['audit'] = $companyinfo['audit'];
             $return['com_info']['address'] = $companyinfo['address'];
             $return['com_info']['logo_src'] =
-            $companyinfo['logo'] > 0
-            ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
-            : default_empty('logo');
+                $companyinfo['logo'] > 0
+                    ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
+                    : default_empty('logo');
             $img_list = model('CompanyImg')::getImgListByComId($companyinfo['id'], 3);
             if (count($img_list) === 3) {
                 $return['com_info']['img_list'] = $img_list;
@@ -684,29 +707,29 @@ class Job extends \app\v1_0\controller\common\Base
             $return['com_info']['district_text'] = isset(
                 $category_district_data[$companyinfo['district']]
             )
-            ? $category_district_data[$companyinfo['district']]
-            : '';
+                ? $category_district_data[$companyinfo['district']]
+                : '';
             $return['com_info']['scale_text'] = isset(
                 $category_data['QS_scale'][$companyinfo['scale']]
             )
-            ? $category_data['QS_scale'][$companyinfo['scale']]
-            : '';
+                ? $category_data['QS_scale'][$companyinfo['scale']]
+                : '';
             $return['com_info']['nature_text'] = isset(
                 $category_data['QS_company_type'][$companyinfo['nature']]
             )
-            ? $category_data['QS_company_type'][$companyinfo['nature']]
-            : '';
+                ? $category_data['QS_company_type'][$companyinfo['nature']]
+                : '';
             $return['com_info']['trade_text'] = isset(
                 $category_data['QS_trade'][$companyinfo['trade']]
             )
-            ? $category_data['QS_trade'][$companyinfo['trade']]
-            : '';
-            if($companyinfo['setmeal_deadline']==0 || $companyinfo['setmeal_deadline']>time()){
+                ? $category_data['QS_trade'][$companyinfo['trade']]
+                : '';
+            if ($companyinfo['setmeal_deadline'] == 0 || $companyinfo['setmeal_deadline'] > time()) {
                 $return['com_info']['setmeal_icon'] = $companyinfo['icon'] > 0 ? model('Uploadfile')->getFileUrl($companyinfo['icon']) : model('Setmeal')->getSysIcon($companyinfo['setmeal_id']);
-            }else{
+            } else {
                 $return['com_info']['setmeal_icon'] = '';
             }
-            
+
             $job_list = model('Job')
                 ->field('id,jobname')
                 ->where('company_id', 'eq', $companyinfo['id'])
@@ -715,12 +738,12 @@ class Job extends \app\v1_0\controller\common\Base
                 ->select();
             $return['com_info']['jobnum'] = count($job_list);
             $return['com_info']['first_jobname'] = !empty($job_list)
-            ? $job_list[0]['jobname']
-            : '';
+                ? $job_list[0]['jobname']
+                : '';
         }
         $subsiteCondition = get_subsite_condition();
         $similar_data = [
-            'subsiteCondition'=>$subsiteCondition,
+            'subsiteCondition' => $subsiteCondition,
             'category1' => $jobinfo['category1'],
             'category2' => $jobinfo['category2'],
             'category3' => $jobinfo['category3'],
@@ -737,11 +760,12 @@ class Job extends \app\v1_0\controller\common\Base
         $instance = new \app\common\lib\JobRecommend($similar_data);
         $similar_list = $instance->run('id != ' . $jobinfo['id']);
         $return['similar'] = $this->get_datalist($similar_list['items']);
-        if($pageCache['expire']>0){
-            model('PageMobile')->writeCacheByAlias('jobshow',$return,$pageCache['expire'],$id);
+        if ($pageCache['expire'] > 0) {
+            model('PageMobile')->writeCacheByAlias('jobshow', $return, $pageCache['expire'], $id);
         }
         return $return;
     }
+
     /**
      * 职位详情
      */
@@ -767,33 +791,33 @@ class Job extends \app\v1_0\controller\common\Base
         //读取页面缓存配置
         $pageCache = model('PageMobile')->getCache('jobshow');
         //如果缓存有效期为0，则不使用缓存
-        if($pageCache['expire']>0){
-            $return = model('PageMobile')->getCacheByAlias('jobshow',$id);
-        }else{
+        if ($pageCache['expire'] > 0) {
+            $return = model('PageMobile')->getCacheByAlias('jobshow', $id);
+        } else {
             $return = false;
         }
         if (!$return) {
-            $return = $this->writeShowCache($id,$pageCache);
-            if($return===false){
+            $return = $this->writeShowCache($id, $pageCache);
+            if ($return === false) {
                 $this->ajaxReturn(500, '职位信息为空');
             }
         }
         $return['field_rule'] = $field_rule;
 
-        $getJobContact = model('Job')->getContact($return['base_info'],$this->userinfo);
+        $getJobContact = model('Job')->getContact($return['base_info'], $this->userinfo);
         $return['show_contact'] = $getJobContact['show_contact'];
         $return['show_contact_note'] = $getJobContact['show_contact_note'];
         $return['contact_info'] = $getJobContact['contact_info'];
-        if($this->userinfo===null){
+        if ($this->userinfo === null) {
             $return['has_apply'] = 0;
-        }else if($this->userinfo->utype == 2){
-            $check_apply = model('JobApply')->where('personal_uid',$this->userinfo->uid)->where('jobid',$return['base_info']['id'])->find();
-            if($check_apply===null){
+        } else if ($this->userinfo->utype == 2) {
+            $check_apply = model('JobApply')->where('personal_uid', $this->userinfo->uid)->where('jobid', $return['base_info']['id'])->find();
+            if ($check_apply === null) {
                 $return['has_apply'] = 0;
-            }else{
+            } else {
                 $return['has_apply'] = 1;
             }
-        }else{
+        } else {
             $return['has_apply'] = 0;
         }
 
@@ -811,41 +835,42 @@ class Job extends \app\v1_0\controller\common\Base
             $return['has_fav'] = 0;
         }
         $return['base_info']['im_userid'] = '';
-        $return['share_url'] = $this->sub_site_domain_m.'job/'.$return['base_info']['id'];
+        $return['share_url'] = $this->sub_site_domain_m . 'job/' . $return['base_info']['id'];
         model('Job')->addViewLog(
             $return['base_info']['id'],
             $return['base_info']['uid'],
             $this->userinfo !== null && $this->userinfo->utype == 2
-            ? $this->userinfo->uid
-            : 0
+                ? $this->userinfo->uid
+                : 0
         );
         unset($return['base_info']['uid']);
-        $return['phone_protect_open'] =  false;
+        $return['phone_protect_open'] = false;
         $return['phone_protect_timeout'] = 180;
         $return['phone_protect_type'] = '';
-        if(intval(config('global_config.alicloud_phone_protect_open'))){
+        if (intval(config('global_config.alicloud_phone_protect_open'))) {
             $protectTarget = array_map('intval', explode(',', config('global_config.alicloud_phone_protect_target')));
-            if(in_array(1, $protectTarget)){
-                $return['phone_protect_open'] =  true;
+            if (in_array(1, $protectTarget)) {
+                $return['phone_protect_open'] = true;
             }
-            if(intval(config('global_config.alicloud_phone_protect_type'))==2){
+            if (intval(config('global_config.alicloud_phone_protect_type')) == 2) {
                 $return['phone_protect_timeout'] = 120;
             }
             $return['phone_protect_type'] = intval(config('global_config.alicloud_phone_protect_type'));
-            if($return['phone_protect_type']==1 && $this->userinfo===null){
+            if ($return['phone_protect_type'] == 1 && $this->userinfo === null) {
                 $return['show_contact'] = 0;
                 $return['show_contact_note'] = 'need_login';
             }
         }
         $return['cur_user_mobile'] = '';
-        if($return['show_contact'] && $this->userinfo!==null){
+        if ($return['show_contact'] && $this->userinfo !== null) {
             $return['cur_user_mobile'] = $this->userinfo->mobile;
         }
-        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'],$return['base_info']['map_lat']);
+        $coordinate = model('Config')->bd09ToWgs84($return['base_info']['map_lng'], $return['base_info']['map_lat']);
         $return['base_info']['map_lng'] = $coordinate['lng'];
         $return['base_info']['map_lat'] = $coordinate['lat'];
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 获取友好距离
      */
@@ -864,6 +889,7 @@ class Job extends \app\v1_0\controller\common\Base
             ),
         ]);
     }
+
     /**
      * 竞争力分析
      */
@@ -898,8 +924,8 @@ class Job extends \app\v1_0\controller\common\Base
             ->field('id,education,enter_job_time')
             ->where('uid', $this->userinfo->uid)
             ->find();
-        if($resume_info===null){
-            $this->ajaxReturn(200, '请先创建一份简历',[]);
+        if ($resume_info === null) {
+            $this->ajaxReturn(200, '请先创建一份简历', []);
         }
         //匹配信息
         $config_apply_job_min_percent = config(
@@ -912,30 +938,28 @@ class Job extends \app\v1_0\controller\common\Base
                 'cn' => isset(
                     model('BaseModel')->map_education[$job_info['education']]
                 )
-                ? model('BaseModel')->map_education[$job_info['education']]
-                : '',
+                    ? model('BaseModel')->map_education[$job_info['education']]
+                    : '',
                 'is_match' => 0,
             ],
             'experience' => [
                 'cn' => isset(
                     model('BaseModel')->map_experience[$job_info['experience']]
                 )
-                ? model('BaseModel')->map_experience[
-                    $job_info['experience']
-                ]
-                : '',
+                    ? model('BaseModel')->map_experience[$job_info['experience']]
+                    : '',
                 'is_match' => 0,
             ],
             'category' => [
                 'cn' => isset($category_job_data[$job_info['category']])
-                ? $category_job_data[$job_info['category']]
-                : '',
+                    ? $category_job_data[$job_info['category']]
+                    : '',
                 'is_match' => 0,
             ],
             'district' => [
                 'cn' => isset($category_district_data[$job_info['district']])
-                ? $category_district_data[$job_info['district']]
-                : '',
+                    ? $category_district_data[$job_info['district']]
+                    : '',
                 'is_match' => 0,
             ],
             'wage' => [
@@ -1083,6 +1107,7 @@ class Job extends \app\v1_0\controller\common\Base
         $return['statistics_wage'] = $statistics_wage;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 获取统计数据-学历
      */
@@ -1122,12 +1147,10 @@ class Job extends \app\v1_0\controller\common\Base
                 ) {
                     continue;
                 }
-                $arr['label'] = model('BaseModel')->map_education[
-                    $value['education']
-                ];
+                $arr['label'] = model('BaseModel')->map_education[$value['education']];
                 $arr['total'] = $value['num'];
                 $arr['percent'] =
-                $total == 0 ? 0 : round($value['num'] / $total, 2) * 100;
+                    $total == 0 ? 0 : round($value['num'] / $total, 2) * 100;
                 if ($resume_education == $value['education']) {
                     $arr['here'] = 1;
                 } else {
@@ -1140,9 +1163,9 @@ class Job extends \app\v1_0\controller\common\Base
                 $returnlist[4]['total'] =
                     $returnlist[4]['total'] + $value['num'];
                 $returnlist[4]['percent'] =
-                $total == 0
-                ? 0
-                : round($returnlist[4]['total'] / $total, 2) * 100;
+                    $total == 0
+                        ? 0
+                        : round($returnlist[4]['total'] / $total, 2) * 100;
                 if (
                     $returnlist[4]['here'] == 1 ||
                     $resume_education == $value['education']
@@ -1161,29 +1184,29 @@ class Job extends \app\v1_0\controller\common\Base
     {
         $where1 = 'i.category1=' . $category . ' AND r.enter_job_time=0'; //无经验
         $where2 =
-        'i.category1=' .
-        $category .
-        ' AND r.enter_job_time!=0 AND r.enter_job_time>' .
-        strtotime('-4 year'); //1-3年
+            'i.category1=' .
+            $category .
+            ' AND r.enter_job_time!=0 AND r.enter_job_time>' .
+            strtotime('-4 year'); //1-3年
         $where3 =
-        'i.category1=' .
-        $category .
-        ' AND r.enter_job_time<=' .
-        strtotime('-4 year') .
-        ' AND r.enter_job_time>' .
-        strtotime('-6 year'); //3-5年
+            'i.category1=' .
+            $category .
+            ' AND r.enter_job_time<=' .
+            strtotime('-4 year') .
+            ' AND r.enter_job_time>' .
+            strtotime('-6 year'); //3-5年
         $where4 =
-        'i.category1=' .
-        $category .
-        ' AND r.enter_job_time<=' .
-        strtotime('-6 year') .
-        ' AND r.enter_job_time>' .
-        strtotime('-11 year'); //5-10年
+            'i.category1=' .
+            $category .
+            ' AND r.enter_job_time<=' .
+            strtotime('-6 year') .
+            ' AND r.enter_job_time>' .
+            strtotime('-11 year'); //5-10年
         $where5 =
-        'i.category1=' .
-        $category .
-        ' AND r.enter_job_time<=' .
-        strtotime('-11 year'); //10年以上
+            'i.category1=' .
+            $category .
+            ' AND r.enter_job_time<=' .
+            strtotime('-11 year'); //10年以上
 
         $total1 = model('ResumeSearchRtime')
             ->alias('r')
@@ -1279,6 +1302,7 @@ class Job extends \app\v1_0\controller\common\Base
 
         return $returnlist;
     }
+
     /**
      * 获取统计数据-薪资
      */
@@ -1358,6 +1382,7 @@ class Job extends \app\v1_0\controller\common\Base
 
         return $returnlist;
     }
+
     protected function handle_one($jobs_attr, $intention_attr)
     {
         if ($intention_attr[2] > 0) {
@@ -1367,6 +1392,7 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return $intention_attr[0] == $jobs_attr[0];
     }
+
     protected function handle_wage_one($jobs_attr, $intention_attr)
     {
         if (
@@ -1377,8 +1403,10 @@ class Job extends \app\v1_0\controller\common\Base
         }
         return false;
     }
-    public function getContact(){
-        $id = input('get.id/d',0,'intval');
+
+    public function getContact()
+    {
+        $id = input('get.id/d', 0, 'intval');
         $jobinfo = model('Job')
             ->where('id', 'eq', $id)
             ->field(true)
@@ -1386,7 +1414,7 @@ class Job extends \app\v1_0\controller\common\Base
         if ($jobinfo === null) {
             $this->ajaxReturn(500, '职位信息为空');
         }
-        $getJobContact = model('Job')->getContact($jobinfo,$this->userinfo);
+        $getJobContact = model('Job')->getContact($jobinfo, $this->userinfo);
         $return['show_contact'] = $getJobContact['show_contact'];
         $return['show_contact_note'] = $getJobContact['show_contact_note'];
         $return['contact_info'] = $getJobContact['contact_info'];
@@ -1400,13 +1428,13 @@ class Job extends \app\v1_0\controller\common\Base
          */
         $return['is_secrecy'] = $getJobContact['is_secrecy'];
 
-        if($this->userinfo===null){
+        if ($this->userinfo === null) {
             $return['has_apply'] = 0;
-        }else{
-            $check_apply = model('JobApply')->where('personal_uid',$this->userinfo->uid)->where('jobid',$jobinfo['id'])->find();
-            if($check_apply===null){
+        } else {
+            $check_apply = model('JobApply')->where('personal_uid', $this->userinfo->uid)->where('jobid', $jobinfo['id'])->find();
+            if ($check_apply === null) {
                 $return['has_apply'] = 0;
-            }else{
+            } else {
                 $return['has_apply'] = 1;
             }
         }
@@ -1423,10 +1451,12 @@ class Job extends \app\v1_0\controller\common\Base
             $field_rule[$field] = $_arr;
         }
         $return['field_rule'] = $field_rule;
-        $this->ajaxReturn(200, '获取数据成功',$return);
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    public function click(){
-        $id = input('post.id/d',0,'intval');
+
+    public function click()
+    {
+        $id = input('post.id/d', 0, 'intval');
         $jobinfo = model('Job')
             ->where('id', 'eq', $id)
             ->field('id,uid,click')
@@ -1436,17 +1466,19 @@ class Job extends \app\v1_0\controller\common\Base
                 $jobinfo['id'],
                 $jobinfo['uid'],
                 $this->userinfo !== null && $this->userinfo->utype == 2
-                ? $this->userinfo->uid
-                : 0
+                    ? $this->userinfo->uid
+                    : 0
             );
-            $click = $jobinfo['click']+1;
-        }else{
+            $click = $jobinfo['click'] + 1;
+        } else {
             $click = 0;
         }
-        $this->ajaxReturn(200, '数据添加成功',$click);
+        $this->ajaxReturn(200, '数据添加成功', $click);
     }
-    public function checkFav(){
-        $id = input('get.id/d',0,'intval');
+
+    public function checkFav()
+    {
+        $id = input('get.id/d', 0, 'intval');
         if ($this->userinfo != null && $this->userinfo->utype == 2) {
             $fav_info = model('FavJob')
                 ->where('jobid', $id)
@@ -1460,23 +1492,25 @@ class Job extends \app\v1_0\controller\common\Base
         } else {
             $has_fav = 0;
         }
-        $this->ajaxReturn(200, '数据查询成功',$has_fav);
+        $this->ajaxReturn(200, '数据查询成功', $has_fav);
     }
-    public function supplementary(){
+
+    public function supplementary()
+    {
         $id = input('get.id/d', 0, 'intval');
         $jobinfo = model('Job')
-                ->where('id', $id)
-                ->field('id,uid')
-                ->find();
+            ->where('id', $id)
+            ->field('id,uid')
+            ->find();
         if ($jobinfo === null) {
-            $this->ajaxReturn(200,'获取数据成功',null);
+            $this->ajaxReturn(200, '获取数据成功', null);
         }
         $cominfo = model('Company')
             ->where('uid', 'eq', $jobinfo['uid'])
             ->field('id,uid,addtime')
             ->find();
         if ($cominfo === null) {
-            $this->ajaxReturn(200,'获取数据成功',null);
+            $this->ajaxReturn(200, '获取数据成功', null);
         }
         //名企
         $return['famous_list'] = $this->getFamous();
@@ -1507,8 +1541,8 @@ class Job extends \app\v1_0\controller\common\Base
         $starttime = $endtime - 3600 * 24 * 14;
         $apply_data = model('JobApply')
             ->field('id,is_look')
-            ->where('company_uid',$jobinfo['uid'])
-            ->where('addtime','between',[$starttime, $endtime])
+            ->where('company_uid', $jobinfo['uid'])
+            ->where('addtime', 'between', [$starttime, $endtime])
             ->select();
         if (!empty($apply_data)) {
             $total = $looked = 0;
@@ -1523,9 +1557,9 @@ class Job extends \app\v1_0\controller\common\Base
             $return['apply_num'] = 0;
         }
         $return['job_apply_num'] = model('JobApply')
-            ->where('jobid',$jobinfo['id'])
+            ->where('jobid', $jobinfo['id'])
             ->count();
-        $this->ajaxReturn(200,'获取数据成功',$return);
+        $this->ajaxReturn(200, '获取数据成功', $return);
     }
 
     /**
@@ -1547,8 +1581,8 @@ class Job extends \app\v1_0\controller\common\Base
                 's.uid=c.uid',
                 'LEFT'
             )
-            ->where('c.is_display',1)
-            ->where('c.district1','gt',0)
+            ->where('c.is_display', 1)
+            ->where('c.district1', 'gt', 0)
             ->where($subsiteCondition)
             ->where('s.setmeal_id', 'in', $famous_enterprises_setmeal)
             ->field('c.id,c.logo,c.companyname')

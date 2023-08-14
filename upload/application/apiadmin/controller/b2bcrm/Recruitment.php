@@ -269,7 +269,7 @@ class Recruitment extends Backend
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
 
             $arr['resume_link_url_web'] = url('index/resume/show',['id'=>$value['resume_id']]);
             $lists[] = $arr;
@@ -416,7 +416,7 @@ class Recruitment extends Backend
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
 
             $arr['resume_link_url_web'] = url('index/resume/show',['id'=>$value['resume_id']]);
             $lists[] = $arr;
@@ -564,7 +564,7 @@ class Recruitment extends Backend
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
 
             $arr['resume_link_url_web'] = url('index/resume/show',['id'=>$value['resume_id']]);
             $arr['jobname'] = model('job')->where('id',$value['jobid'])->value('jobname');

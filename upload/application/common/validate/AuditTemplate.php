@@ -12,17 +12,24 @@ class AuditTemplate extends BaseValidate
     protected $rule = [
         'id' => 'checkEmpty',
         'type' => 'checkEmpty',
+        'content' => 'require|checkEmpty',
     ];
 
     protected $message = [
         'id' => 'ID不存在',
         'type' => '类型缺失',
+        'content' => '请填写模板内容',
     ];
 
     protected $scene = [
         // 获取列表
         'get_list' => [
             'type'
+        ],
+        // 添加模板
+        'add' => [
+            'type',
+            'content'
         ],
         // 删除模板
         'delete' => [

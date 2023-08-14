@@ -493,7 +493,9 @@ class Weixin extends \app\common\controller\Base
                 )
                     ? $category_data['QS_current'][$resumeinfo['current']]
                     : '';
-                $resumeinfo['photo_img_src'] = $resumeinfo['photo_img'] > 0 ? model('Uploadfile')->getFileUrl($resumeinfo['photo_img']) : default_empty('photo');
+                $resumeinfo['photo_img_src'] = $resumeinfo['photo_img'] > 0
+                    ? model('Uploadfile')->getFileUrl($resumeinfo['photo_img'])
+                    : default_empty('photo', $resumeinfo['sex']);
                 //求职意向
                 $intention_data = model('ResumeIntention')
                     ->field('id,rid,uid', true)

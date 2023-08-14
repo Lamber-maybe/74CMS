@@ -196,6 +196,10 @@
       <Report @closePopout="showReport=false" :report-info="reportInfo"></Report>
     </van-popup>
     <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -214,6 +218,7 @@ import Report from '@/components/Report'
 import TianMap from '@/components/map/TianMap/TianMap'
 import { mapState } from 'vuex'
 import {ImagePreview} from 'vant'
+import WeChatQrcode from '@/components/WeChatQrcode'
 Vue.use(ImagePreview)
 
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
@@ -231,7 +236,8 @@ export default {
     Share,
     SharePoster,
     Report,
-    TianMap
+    TianMap,
+    WeChatQrcode
   },
   data () {
     return {
@@ -497,8 +503,16 @@ export default {
         http
           .post(_api_url, params)
           .then(res => {
-            this.has_attention = this.has_attention === 1 ? 0 : 1
             this.$notify({ type: 'success', message: res.message })
+            if (this.has_attention === 0) {
+              /**
+               * 【ID1000719】
+               * 【新增】公众号引导弹窗场景（关注企业）
+               * cy 2023-7-19
+               */
+              this.popupWechatQrcodeWindow('user_m_attention_company', 3)
+            }
+            this.has_attention = this.has_attention === 1 ? 0 : 1
           })
           .catch(() => {})
       }
@@ -577,6 +591,10 @@ export default {
           this.videonum = res.data
         })
         .catch(() => {})
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

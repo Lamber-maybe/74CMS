@@ -509,7 +509,7 @@ class def
                 }
                 $arr['photo_img_src'] = isset($photo_arr[$arr['photo_img']])
                     ? $photo_arr[$arr['photo_img']]
-                    : default_empty('photo');
+                    : default_empty('photo', $arr['sex']);
                 $arr['sex_text'] = model('Resume')->map_sex[$arr['sex']];
                 $arr['age_text'] = date('Y') - intval($arr['birthday']);
                 $arr['education_text'] = isset(

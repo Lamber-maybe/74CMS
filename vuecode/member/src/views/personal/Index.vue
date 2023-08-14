@@ -145,8 +145,12 @@
             <div class="b_empty" v-if="recommendList.length==0 && showRecommendEmpty===true">没有数据了</div>
         </div>
         <el-dialog title="委托投递" :visible.sync="showEntrust" width="400px" :close-on-press-escape="false" :close-on-click-modal="false" @opened="handlerEntrustInit">
-        <Entrust ref="entrust" @closeEntrust="showEntrust=false"></Entrust>
+        <Entrust ref="entrust" @closeEntrust="showEntrust=false" @popupWechatQrcodeWindow="submitEntrust"></Entrust>
         </el-dialog>
+
+        <!-- 微信二维码弹窗 start -->
+        <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+        <!-- 微信二维码弹窗 end -->
     </div>
 </template>
 
@@ -156,10 +160,12 @@ import {dateCompare,formatTime,adLink} from '@/utils/index'
 import {handlerHttpError} from '@/utils/error'
 import http from '@/utils/http'
 import api from '@/api'
+import WeChatQrcode from '@/components/WeChatQrcode'
   export default {
     name: 'Index',
-    components:{
-        Entrust
+    components: {
+      Entrust,
+      WeChatQrcode
     },
     filters: {
         timeFilter(timestamp) {
@@ -315,6 +321,12 @@ import api from '@/api'
                 if (parseInt(res.code) === 200) {
                     this.basic.refreshtime = res.data
                     this.$message({ type: 'success', message: res.message })
+                    /**
+                     * 【ID1000719】
+                     * 【新增】公众号引导弹窗场景（刷新简历）
+                     * cy 2023-7-17
+                     */
+                    this.popupWechatQrcodeWindow('user_pc_refresh_resume')
                 } else {
                     this.$message.error(res.message)
                 }
@@ -348,6 +360,12 @@ import api from '@/api'
                         this.previewUrl = res.data.preview_url
                         this.changeRecommendIntention(this.currentIntention)
                         this.fetchResumeTotal()
+                        /**
+                         * 【ID1000719】
+                         * 【新增】公众号引导弹窗场景（登录）
+                         * cy 2023-7-17
+                         */
+                        this.popupWechatQrcodeWindow('user_pc_login')
                     }
                 })
                 .catch(err => {
@@ -396,6 +414,19 @@ import api from '@/api'
         },
         handlerEntrustInit(){
             this.$refs.entrust.initCB()
+        },
+        // 提交投递事件
+        submitEntrust(){
+          /**
+           * 【ID1000719】
+           * 【新增】公众号引导弹窗场景（委托投递）
+           * cy 2023-7-17
+           */
+          this.popupWechatQrcodeWindow('user_pc_entrust')
+        },
+        // 弹出微信二维码弹框
+        popupWechatQrcodeWindow(val) {
+          this.$refs.weChatQrcodeRef.handleOpen(val, '扫码绑定公众号，求职快人一步')
         }
     }
   }

@@ -42,7 +42,7 @@ class Info extends \app\v1_0\controller\common\Base
                     ? model('Uploadfile')->getFileUrl(
                     $this->resume_info['photo_img']
                 )
-                    : default_empty('photo');
+                    : default_empty('photo', $this->resume_info['sex']);
             $return['fullname'] = $this->resume_info['fullname'];
         }
         $return['task'] = model('Task')->taskSituation(
@@ -220,7 +220,7 @@ class Info extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $validate->getError());
         }
         model('Feedback')->save($input_data);
-        $this->writeMemberActionLog($this->userinfo->uid,'提交意见反馈信息');
+        $this->writeMemberActionLog($this->userinfo->uid, '提交意见反馈信息');
         $this->ajaxReturn(200, '感谢您的反馈，我们会尽快处理');
     }
 
@@ -253,7 +253,7 @@ class Info extends \app\v1_0\controller\common\Base
         if ($input_data['type'] == 1) {
             model('Task')->doTask($this->userinfo->uid, 2, 'report_job');
         }
-        $this->writeMemberActionLog($this->userinfo->uid,'举报'.($input_data['type']==1?'职位':'简历').'信息【举报信息ID：'.$input_data['target_id'].'】');
+        $this->writeMemberActionLog($this->userinfo->uid, '举报' . ($input_data['type'] == 1 ? '职位' : '简历') . '信息【举报信息ID：' . $input_data['target_id'] . '】');
         $this->ajaxReturn(200, '举报成功，我们会尽快核实处理');
     }
 }

@@ -72,6 +72,10 @@
         <div class="down" v-else></div>
       </div>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -79,8 +83,12 @@
 import {handlerHttpError} from '@/utils/error'
 import http from '@/utils/http'
 import api from '@/api'
+import WeChatQrcode from '@/components/WeChatQrcode'
 export default {
   name: 'PersonalServiceIndex',
+  components: {
+    WeChatQrcode
+  },
   data () {
     return {
       points_byname: '',
@@ -183,11 +191,21 @@ export default {
               element.is_done = 1
             }
           })
+          /**
+           * 【ID1000719】
+           * 【新增】公众号引导弹窗场景（签到）
+           * cy 2023-7-19
+           */
+          this.popupWechatQrcodeWindow('user_m_sign_in', 3)
         })
         .catch(() => {})
     },
     goBack () {
       window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

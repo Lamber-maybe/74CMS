@@ -85,7 +85,7 @@
 						<div class="up">
 							<div class="avatar_box">
 								<img :src="item.photo_img_src" :alt="item.fullname" />
-								<div class="gender " :class="item.sex == 1 ? 'male' : 'female'"></div>
+								<div class="gender " :class="item.sex == 1 ? 'male' : item.sex == 2 ? 'female' : ''"></div>
 							</div>
 							<div class="tx1">
 								<div :class="item.clicked?'name clickedColor':'name'">{{ item.fullname }}</div>

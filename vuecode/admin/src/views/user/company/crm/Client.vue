@@ -722,14 +722,36 @@
             <el-button type="primary" @click="funIsDisplayBtn">确 定</el-button>
           </div>
         </el-dialog>
-        <el-dialog title="将所选企业设置为" :visible.sync="dialogFormVisible" width="25%">
-          <el-form class="common-form" label-width="80px">
-            <el-form-item label="认证状态">
-              <el-radio-group v-model="setAuditVal">
+        <el-dialog title="将所选企业设置为" :visible.sync="dialogFormVisible" width="520px">
+          <el-form class="common-form" label-width="82px">
+            <el-form-item label="认证状态：">
+              <el-radio-group v-model="setAuditVal" @change="auditChange">
                 <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-if="setAuditVal == 2" label="原因"><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
+            <el-form-item v-if="setAuditVal == 2" class="audit_template_select" label="审核模板：">
+              <el-select v-model="auditTemplateId" :clearable="true" placeholder="请选择" @change="selectedAuditTemplate">
+                <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content">
+                  <span class="multiline-text">{{ item.content }}</span>
+                  <span v-if="item.id != 0" class="el-icon-delete" @click.stop="deleteAuditTemplate(item.id)" />
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="setAuditVal == 2" class="reason-box" label="原因：">
+              <el-input
+                v-model="setAuditReason"
+                type="textarea"
+                placeholder="请填写不通过原因"
+                rows="3"
+                maxlength="40"
+                show-word-limit
+              />
+            </el-form-item>
+            <el-form-item v-if="setAuditVal == 2" class="checkboxAddAuditTemplate">
+              <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">
+                {{ addAuditTemplateDesc }}
+              </el-checkbox>
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -834,13 +856,26 @@
               </div>
               <div class="com_opration">
                 <!--          <span class="title"></span>-->
-                <el-form class="common-form">
+                <el-form class="common-form" label-width="82px">
                   <el-form-item label="审核操作：">
                     <el-radio-group v-model="setAuditVal" @change="auditChange">
                       <el-radio v-for="(item, index) in form_options_audit" :key="index" :label="index">{{ item }}</el-radio>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item v-if="setAuditVal == 2" label="原因："><el-input v-model="setAuditReason" type="textarea" rows="3" /></el-form-item>
+                  <el-form-item class="audit_template_select" v-if="setAuditVal == 2" label="审核模板：">
+                    <el-select v-model="auditTemplateId" :clearable="true" placeholder="请选择" @change="selectedAuditTemplate">
+                      <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content" >
+                        <span class="multiline-text">{{ item.content }}</span>
+                        <span class="el-icon-delete" v-if="item.id != 0" @click.stop="deleteAuditTemplate(item.id)"></span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item class="reason-box" v-if="setAuditVal == 2" label="原因：">
+                    <el-input v-model="setAuditReason" type="textarea" placeholder="请填写不通过原因" rows="3" maxlength="40" show-word-limit />
+                  </el-form-item>
+                  <el-form-item class="checkboxAddAuditTemplate" v-if="setAuditVal == 2">
+                    <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">{{ addAuditTemplateDesc }}</el-checkbox>
+                  </el-form-item>
                 </el-form>
               </div>
             </div>
@@ -878,6 +913,7 @@ import { export_json_to_excel } from '@/excel/Export2Excel';
 import { parseTime, setMemberLogin } from '@/utils';
 import { outboundCall } from '@/api/outbound';
 import { management } from '@/api/member';
+import { getAuditTemplateList, deleteAuditTemplate } from '@/api/auditTemplate'
 
 export default {
   name: 'Client',
@@ -985,7 +1021,12 @@ export default {
       previewList: [], // 放大查看企业认证图片
       regScreenData: [{ id: 0, name: '全部' }, { id: 1, name: '今日' }, { id: 2, name: '3天内' }, { id: 3, name: '7天内' }, { id: 4, name: '30天内' }],
       regScreen: '',
-      regScreenFilter: ''
+      regScreenFilter: '',
+      auditTemplateId: '',
+      auditTemplateList: {},
+      addAuditTemplate: 0,
+      addAuditTemplateDesc: '',
+      canAddAuditTemplate: false
     };
   },
   computed: {
@@ -1100,10 +1141,10 @@ export default {
         }
       });
     },
-    auditChange(val) {
-      if (val == 0 || val == 1) {
-        this.setAuditReason = '';
-      }
+    auditChange() {
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
+      this.defaultSelectedAuditTemplate()
     },
     auditSure() {
       if (this.auditSubmitLoading == true) {
@@ -1113,7 +1154,9 @@ export default {
       const params = {
         id: this.comInfoData.id,
         audit: this.setAuditVal,
-        reason: this.setAuditReason
+        reason: this.setAuditReason,
+        template_id: this.auditTemplateId,
+        add_template: this.addAuditTemplate ? 1 : 0
       };
       companyCrmAudit(params, 'post')
         .then(response => {
@@ -1304,7 +1347,9 @@ export default {
       const params = {
         id: this.multipleSelection,
         audit: this.setAuditVal,
-        reason: this.setAuditReason
+        reason: this.setAuditReason,
+        template_id: this.auditTemplateId,
+        add_template: this.addAuditTemplate ? 1 : 0
       };
       companyCrmAudit(params, 'post')
         .then(response => {
@@ -1375,6 +1420,10 @@ export default {
       }
       this.setAuditVal = 0;
       this.dialogFormVisible = true;
+      // 获取审核模板列表
+      this.getAuditTemplateList()
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
     },
     setFieldClose() {
       this.menu_icon = 'menu';
@@ -1978,7 +2027,6 @@ export default {
     handleCompanyAuthAduit(row, companyAuth) {
       this.dialogAudit = true;
       this.setAuditVal = '';
-      this.setAuditReason = '';
       this.comInfoData = row;
       this.license_src = row.company_auth.license;
       this.legal_person_idcard_back_src = row.company_auth.legal_person_idcard_back;
@@ -1996,6 +2044,10 @@ export default {
       if (this.proxy_src) {
         this.previewList.push(this.proxy_src);
       }
+      // 获取审核模板列表
+      this.getAuditTemplateList()
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
     },
     companyAuthAduit(comId, companyAuth) {
       if (this.auditSubmitLoading == true) {
@@ -2024,6 +2076,82 @@ export default {
         .catch(() => {
           this.auditSubmitLoading = false;
         });
+    },
+    // 获取审核模板列表
+    getAuditTemplateList() {
+      getAuditTemplateList({ type: 2 })
+        .then(res => {
+          this.auditTemplateList = res.data
+
+          let maxTemplate = 6;
+          let currentNum = this.auditTemplateList.length;
+          if (currentNum >= maxTemplate) {
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，当前已添加' + currentNum + '条）';
+            // 超过最大可添加就不能再添加模板了
+            this.canAddAuditTemplate = true
+          } else {
+            let diffNum = maxTemplate - currentNum;
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，还可添加' + diffNum + '条）';
+            this.canAddAuditTemplate = false
+          }
+          // 最后拼接一个默认选中项
+          this.auditTemplateList.push({
+            id: 0,
+            content: '其他'
+          })
+          // 默认选中审核模板
+          this.defaultSelectedAuditTemplate()
+          this.addAuditTemplate = 0
+        })
+        .catch(() => {
+        })
+    },
+    // 删除审核模板
+    deleteAuditTemplate(id) {
+      this.$confirm('确定要删除此模板吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteAuditTemplate({ id: id })
+            .then(res => {
+              // 如果删除的模板当前已被选中就将选中值清空
+              if (this.auditTemplateId == id) {
+                this.auditTemplateId = ''
+              }
+              // 获取审核模板列表
+              this.getAuditTemplateList()
+            })
+            .catch(() => {
+            })
+        })
+        .catch(() => {
+        })
+    },
+    // 选中审核模板事件
+    selectedAuditTemplate() {
+      // 选中模板后将模板内容放入到原因中
+      if (this.auditTemplateId > 0 && this.auditTemplateList.length > 0) {
+        this.auditTemplateList.forEach((item) => {
+          if (item.id == this.auditTemplateId) {
+            this.setAuditReason = item.content
+            return
+          }
+        })
+      } else {
+        this.setAuditReason = ''
+      }
+    },
+    // 默认选中审核模板
+    defaultSelectedAuditTemplate(){
+      if (this.setAuditVal == 2 && this.auditTemplateList.length > 0) {
+        // 默认选中第一个模板
+        this.auditTemplateId = this.auditTemplateList[0].id
+        if (this.auditTemplateId > 0) {
+          this.setAuditReason = this.auditTemplateList[0].content
+        }
+      }
     }
   }
 };
@@ -2090,7 +2218,7 @@ export default {
 }
 .comDialog {
   ::v-deep .el-dialog__body {
-    padding: 30px 20px 0;
+    padding: 0 20px;
   }
   ::v-deep .el-dialog__footer {
     padding: 0 20px 30px;
@@ -2506,4 +2634,54 @@ export default {
     -moz-transform: scale(1);
   }
 }
+
+.audit_template_select {
+  .el-select {
+    width: 96% !important;
+  }
+}
+
+.reason-box {
+  margin-bottom: 0;
+
+  .el-textarea {
+    width: 96% !important;
+  }
+}
+
+.checkboxAddAuditTemplate {
+  margin-bottom: 10px;
+
+  ::v-deep .el-checkbox__inner {
+    border-radius: 50%;
+  }
+}
+
+.multiline-text {
+  white-space: normal;
+  width: 330px;
+}
+
+.el-select-dropdown__item {
+  font-size: 14px;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: auto;
+  line-height: 1.5;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+}
+
 </style>

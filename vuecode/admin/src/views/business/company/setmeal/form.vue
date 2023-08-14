@@ -143,6 +143,10 @@
             >
               <template slot="append">次 / 天</template>
             </el-input>
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content">0表示不允许</div>
+              <i class="el-icon-info" />
+            </el-tooltip>
           </el-form-item>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
@@ -193,25 +197,30 @@
           </el-form-item>
         </el-col>
       </el-row>
-
-      <!--增加简历包下载点数 zch-->
-      <div class="xuxian" />
-      <div class="purchase_resume_point">
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="简历包下载点数" prop="purchase_resume_point">
-              <el-input
-                v-model.number="form.purchase_resume_point"
-                class="small"
-                :disabled="true"
-                @blur="format_number(0, 'purchase_resume_point')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="2">&nbsp;</el-col>
-        </el-row>
-      </div>
-
+      <hr class="dashed_hr">
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="简历包下载点数" prop="purchase_resume_point">
+            <el-input
+              v-model.number="form.purchase_resume_point"
+              class="small"
+              :disabled="true"
+              @blur="format_number(0, 'purchase_resume_point')"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="职聊增值包次数" prop="im_added_package">
+            <el-input
+              v-model.number="form.im_added_package"
+              class="small"
+              :disabled="true"
+              @blur="format_number(0, 'im_added_package')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
   </div>
 </template>
@@ -313,13 +322,10 @@ export default {
 </style>
 <!--增加简历包下载点数 zch-->
 <style scoped lang="scss">
-.xuxian{
-  width:100%;
-  border-bottom: #a8a2a2 1px dashed;
-  padding-top: 13px;
-}
-.purchase_resume_point{
-  padding-top: 30px;
+.dashed_hr {
+  border: #a8a2a2 1px dashed;
+  margin-top: 13px;
+  margin-bottom: 30px;
 }
 .el-tooltip {
   margin-left: 4px;

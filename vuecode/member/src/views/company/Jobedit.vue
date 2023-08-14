@@ -108,7 +108,7 @@ export default {
         .post(api.company_jobedit_save, values)
         .then(res => {
           this.$message({ type: 'success', message: res.message })
-          this.$router.push('/company/joblist')
+          this.$router.push('/company/joblist?operate_type=' + 'edit')
         })
         .catch(() => { })
     }

@@ -67,6 +67,7 @@ class RecycleBin extends Backend
             ->field('r.id as rid,
             r.uid,
             r.audit,
+            r.sex,
             r.last_visit_time,
             r.fullname,
             r.remark,
@@ -115,7 +116,8 @@ class RecycleBin extends Backend
                 ? model('Uploadfile')->getFileUrl(
                     $resume['photo_img']
                 )
-                : default_empty('photo');
+                : default_empty('photo', $resume['sex']);
+            unset($resume['sex']);
             unset($resume['photo_img']);
             $resume['education_cn'] = isset(
                 model('BaseModel')->map_education[$resume['education']]

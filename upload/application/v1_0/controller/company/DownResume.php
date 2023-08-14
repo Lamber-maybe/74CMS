@@ -171,7 +171,7 @@ class DownResume extends \app\v1_0\controller\common\Base
                 $photo_data[$value['photo_img']]
             )
                 ? $photo_data[$value['photo_img']]
-                : default_empty('photo');
+                : default_empty('photo', $value['sex']);
 
             $value['resume_link_url_web'] = url('index/resume/show', ['id' => $value['resume_id']], true, $this->sub_site_domain);
             $list[$key] = $value;

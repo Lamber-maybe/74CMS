@@ -87,13 +87,13 @@ export default {
       }
       newDataStatisticsChart(params).then(response => {
         const res = response.data
-        if ((this.type = 'reg')) {
+        if ((this.type === 'reg')) {
           this.drawChart('reg_line1', res)
-        } else if ((this.type = 'income')) {
+        } else if ((this.type === 'income')) {
           this.drawChart('reg_line2', res)
-        } else if ((this.type = 'personal')) {
+        } else if ((this.type === 'personal')) {
           this.drawChart('reg_line3', res)
-        } else if ((this.type = 'company')) {
+        } else if ((this.type === 'company')) {
           this.drawChart('reg_line4', res)
         }
       })
@@ -133,7 +133,7 @@ export default {
           top: '55'
         },
         grid: {
-          x: '2%',
+          x: '5%',
           y: '33%',
           x2: '2%',
           y2: '10%'

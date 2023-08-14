@@ -2,7 +2,7 @@
 {#load href="__ROOT__/assets/css/highslide.css" /#}
 {#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
 {#load href="__ROOT__/assets/css/show_tpl/def/resumeshow.css" /#}
-<div class="content_wrapper" id="app">
+<div class="content_wrapper" id="app" v-cloak>
     <div class="content_box clearfix">
         <div class="content2 clearfix">
             <div class="left_sidebar">
@@ -50,7 +50,7 @@
                                                         class="item_text1">婚姻状况：<span>{#$return.base_info.marriage_text#}</span></span>
                                                     {#/if#}
                                                     {#if condition="$return.field_rule.basic.height.is_display==1 &&
-                                                    $return.base_info.height!=''"#}
+                                                    $return.base_info.height>0"#}
                                                     <span
                                                         class="item_text1">身高：<span>{#$return.base_info.height#}CM</span></span>
                                                     {#/if#}
@@ -557,6 +557,10 @@
             <el-button style="width: 108px; padding: 10px 20px;" @click="companyServiceUpgradePackage" type="primary" >升级套餐</el-button>
         </div>
     </el-dialog>
+
+    <!-- 微信二维码弹窗 start -->
+    {#include file="public/weChatQrcode" /#}
+    <!-- 微信二维码弹窗 end -->
 </div>
 <script>
     $(document).ready(function () {
@@ -679,7 +683,9 @@
             isPayment:false,
             showUpgradePackage: false,
             showUpgradePackageMsg: '',
-            preview_id: 0
+            preview_id: 0,
+            showWeChatQrcode: false,
+            weChatQrcodeContent: ''
         },
         watch: {
             'form.interview_date': function (value) {
@@ -898,6 +904,12 @@
                                     that.btnLoading = false
                                     that.$message({ type: 'success', message: '邀请面试成功' })
                                     that.showInvite = false
+                                    /**
+                                     * 【ID1000719】
+                                     * 【新增】公众号引导弹窗场景（面试邀请）
+                                     * cy 2023-7-17
+                                     */
+                                    that.popupWechatQrcodeWindow('company_pc_interview_invite')
                                 })
                                 .catch(function () {
                                     that.btnLoading = false
@@ -988,8 +1000,16 @@
                     var _api_url = that.hasFav === true ? qscms.apiList.resumeFavCancel : qscms.apiList.resumeFav
                     httppost(_api_url, params)
                         .then(function (res) {
-                            that.hasFav = that.hasFav === true ? false : true
                             that.$message({ type: 'success', message: res.message })
+                            if (that.hasFav === false) {
+                                /**
+                                 * 【ID1000719】
+                                 * 【新增】公众号引导弹窗场景（收藏简历）
+                                 * cy 2023-7-17
+                                 */
+                                that.popupWechatQrcodeWindow('company_pc_collect_resume')
+                            }
+                            that.hasFav = that.hasFav === true ? false : true
                         })
                         .catch(function () { })
                 }
@@ -1061,6 +1081,12 @@
                     } else {
                         that.$message({ type: 'success', message: res.message })
                         that.getContact()
+                        /**
+                         * 【ID1000719】
+                         * 【新增】公众号引导弹窗场景（下载简历）
+                         * cy 2023-7-17
+                         */
+                        that.popupWechatQrcodeWindow('company_pc_download_resume')
                     }
                 })
                     .catch(function () { })
@@ -1265,6 +1291,51 @@
                             .catch(function () { })
                     }
                 }
+            },
+            // 弹出微信二维码弹框
+            popupWechatQrcodeWindow: function (val) {
+                if (true === whetherPopupWeChatQrcodeWindow(val)) {
+                    var that = this
+                    var requestUrl = qscms.apiUrl + qscms.apiList.member_account
+                    httppost(requestUrl, {})
+                        .then(res => {
+                            if (parseInt(res.data.bind_weixin) === 0) {
+                                httpget(qscms.apiList.qrcode, {type: 'bind_weixin'})
+                                    .then(function (res) {
+                                        if (res.data) {
+                                            that.scanQrcodeImg = res.data
+                                            that.showWeChatQrcode = true
+                                            that.weChatQrcodeContent = '扫码绑定，随时随地接收简历信息'
+                                            whetherPopupWeChatQrcodeWindow(val, true)
+                                            that.bind_timer = setInterval(that.verifyWeChatBind, 3000);
+                                        }
+                                    })
+                                    .catch(function () {
+                                    })
+                            }
+                        })
+                        .catch(() => {
+                        })
+                }
+            },
+            // 关闭弹窗
+            closeWeChatQrcode: function () {
+                this.showWeChatQrcode = false
+                clearInterval(this.bind_timer);
+            },
+            // 查看微信是否已绑定，绑定后自动关闭二维码
+            verifyWeChatBind() {
+                var that = this
+                httpget(qscms.apiList.imCheckBind, {})
+                    .then(res => {
+                        if (res.code == 200) {
+                            if (res.data == 1) {
+                                that.showWeChatQrcode = false
+                                clearInterval(that.bind_timer);
+                                that.$message({type: 'success', message: '绑定成功'})
+                            }
+                        }
+                    })
             }
         }
     })
@@ -1344,5 +1415,17 @@
         text-align: right;
         line-height: 13px;
         padding-right: 1px;
+    }
+
+    .wx_dialog {
+        border-radius: 15px;
+    }
+
+    .wx_dialog .el-dialog__header {
+        border-radius: 15px;
+    }
+
+    .wx_dialog .el-dialog__body {
+        padding: 0;
     }
 </style>

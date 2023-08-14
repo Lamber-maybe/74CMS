@@ -235,6 +235,10 @@
         @handlerSubmit="handlerSubmitRefreshJob"
       ></PopupPayment>
     </van-popup>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -243,10 +247,12 @@ import { isWeiXin } from '@/utils/index'
 import PopupPayment from '@/components/service/PopupPayment'
 import http from '@/utils/http'
 import api from '@/api'
+import WeChatQrcode from '@/components/WeChatQrcode'
 export default {
   name: 'JobList',
   components: {
-    PopupPayment
+    PopupPayment,
+    WeChatQrcode
   },
   data () {
     return {
@@ -270,6 +276,17 @@ export default {
   },
   created () {
     this.fetchData(true)
+  },
+  mounted() {
+    // 从编辑页面跳转到列表时触发
+    if (this.$route.query.operate_type && this.$route.query.operate_type == 'edit') {
+      /**
+       * 【ID1000719】
+       * 【新增】公众号引导弹窗场景（修改职位）
+       * cy 2023-7-19
+       */
+      this.popupWechatQrcodeWindow('company_m_save_job', 3)
+    }
   },
   methods: {
     handlerJobadd () {
@@ -381,6 +398,12 @@ export default {
               } else {
                 item.refreshtime = '刚刚'
                 this.$notify({ type: 'success', message: res.message })
+                /**
+                 * 【ID1000719】
+                 * 【新增】公众号引导弹窗场景（刷新职位）
+                 * cy 2023-7-19
+                 */
+                this.popupWechatQrcodeWindow('company_m_refresh_job', 3)
               }
             })
             .catch(() => {})
@@ -537,6 +560,10 @@ export default {
       } else {
         window.location.href = parameter
       }
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

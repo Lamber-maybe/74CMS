@@ -182,7 +182,7 @@
                     // 创建信息窗口
                     var sContent = '<div class="map_hover">'
                     sContent += '<div>'
-                    sContent += '<a class="hover_title">' + element.jobname + '</a>'
+                    sContent += '<a class="hover_title" target="_blank" href="' + jobUrl.replace('_id_', element.id) + '">' + element.jobname + '</a>'
                     sContent += '<p class="map_job_salary">' + element.wage_text + '</p>'
                     sContent += '<p class="info">'
                     sContent += '<span>' + element.district_text + '</span>'
@@ -190,7 +190,7 @@
                     sContent += '<span>' + element.experience_text + '</span>'
                     sContent += '</p>'
                     sContent += '<div class="hover_company_box">'
-                    sContent += '<a class="company_name" target="_blank" href="' + companyUrl.replace('_id_', element.id) + '">' + element.companyname + '</a>'
+                    sContent += '<a class="company_name" target="_blank" href="' + companyUrl.replace('_id_', element.company_id) + '">' + element.companyname + '</a>'
                     if (element.company_audit == 1) {
                         sContent += '<img class="setmeal_icon1 img1" src="__ROOT__/assets/images/details_icon_1.png" >'
                     }
@@ -227,7 +227,7 @@
                         // 创建信息窗口
                         var sContent = '<div class="tian_map_hover">'
                         sContent += '<div>'
-                        sContent += '<a class="tian_hover_title">' + element.jobname + '</a>'
+                        sContent += '<a class="tian_hover_title" target="_blank" href="' + jobUrl.replace('_id_', element.id) + '">' + element.jobname + '</a>'
                         sContent += '<div class="tian_map_job_salary">' + element.wage_text + '</div>'
                         sContent += '<div class="tian_info">'
                         sContent += '<span>' + element.district_text + '</span>'
@@ -235,7 +235,7 @@
                         sContent += '<span>' + element.experience_text + '</span>'
                         sContent += '</div>'
                         sContent += '<div class="tian_hover_company_box">'
-                        sContent += '<a class="tian_company_name" target="_blank" href="' + companyUrl.replace('_id_', element.id) + '">' + element.companyname + '</a>'
+                        sContent += '<a class="tian_company_name" target="_blank" href="' + companyUrl.replace('_id_', element.company_id) + '">' + element.companyname + '</a>'
                         if (element.company_audit == 1) {
                             sContent += '<img class="setmeal_icon1 img1" src="__ROOT__/assets/images/details_icon_1.png" >'
                         }

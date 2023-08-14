@@ -620,6 +620,10 @@
     </van-dialog>
     <Captcha ref="captcha" @setSubmitFun="setSubmitFun"></Captcha>
     <!-- 弹窗登录 end -->
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -639,6 +643,7 @@ import TianMap from '@/components/map/TianMap/TianMap'
 import { mapMutations, mapState } from 'vuex'
 import Captcha from '@/components/captcha/index'
 import { handlerHttpError } from '@/utils/error'
+import WeChatQrcode from '@/components/WeChatQrcode'
 let isSpider = new RegExp(
   '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
 ).test(navigator.userAgent)
@@ -657,7 +662,8 @@ export default {
     Share,
     SharePoster,
     TianMap,
-    Captcha
+    Captcha,
+    WeChatQrcode
   },
   data () {
     return {
@@ -1140,6 +1146,12 @@ export default {
           .then((res) => {
             this.$notify({type: 'success', message: res.message})
             this.fetchData()
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（申请职位）
+             * cy 2023-7-19
+             */
+            this.popupWechatQrcodeWindow('user_m_apply_job', 3)
           })
           .catch(() => {
           })
@@ -1175,8 +1187,16 @@ export default {
         http
           .post(_api_url, params)
           .then((res) => {
-            this.has_fav = this.has_fav === 1 ? 0 : 1
             this.$notify({ type: 'success', message: res.message })
+            if (this.has_fav === 0) {
+              /**
+               * 【ID1000719】
+               * 【新增】公众号引导弹窗场景（收藏职位）
+               * cy 2023-7-19
+               */
+              this.popupWechatQrcodeWindow('user_m_collect_job', 3)
+            }
+            this.has_fav = this.has_fav === 1 ? 0 : 1
           })
           .catch(() => {})
       }
@@ -1381,6 +1401,10 @@ export default {
         .catch(err => {
           console.log(err, 'updateBasicResume')
         })
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

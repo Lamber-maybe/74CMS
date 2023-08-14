@@ -22,7 +22,7 @@
           <div class="up">
             <div class="avatar_box">
               <img :src="base_info.photo_img_src" :alt="base_info.fullname"/>
-              <div class="gender" :class="base_info.sex == 1 ? 'male' : 'female'"></div>
+              <div class="gender" :class="base_info.sex == 1 ? 'male' : base_info.sex == 2 ? 'female' : ''"></div>
             </div>
             <div class="tx1">
               <div class="name">{{ base_info.fullname }}</div>
@@ -562,7 +562,7 @@
     <van-popup :lazy-render="false" v-model="showInvite" position="right" :overlay="false"
                style="width: 100%; height: 100%">
       <AddInvitation ref="child" from="detail" :apply_fullname="base_info.fullname" :resume_id="base_info.id"
-                     @closePopup="showInvite = false"></AddInvitation>
+                     @closePopup="closeInvitePopup"></AddInvitation>
     </van-popup>
     <van-popup :lazy-render="false" v-model="showTipoff" position="right" :overlay="false"
                style="width: 100%; height: 100%">
@@ -607,6 +607,10 @@
                                                                         :class="putAway ? 'all-item-img-qx' : ''"></span>
       </p>
     </div>
+
+    <!-- 微信二维码弹窗 start -->
+    <WeChatQrcode ref="weChatQrcodeRef"></WeChatQrcode>
+    <!-- 微信二维码弹窗 end -->
   </div>
 </template>
 
@@ -627,6 +631,7 @@ import {ImagePreview} from 'vant'
 import SelectJob from '@/views/im/components/SelectJob.vue'
 import {mapMutations} from 'vuex'
 import PaySubmit from '@/components/service/PaySubmit'
+import WeChatQrcode from '@/components/WeChatQrcode'
 
 Vue.use(ImagePreview)
 export default {
@@ -640,7 +645,8 @@ export default {
     Share,
     SharePoster,
     SelectJob,
-    PaySubmit
+    PaySubmit,
+    WeChatQrcode
   },
   filters: {
     monthTimeFilter (timestamp) {
@@ -1166,6 +1172,12 @@ export default {
               message: res.message
             })
             this.fetchData()
+            /**
+             * 【ID1000719】
+             * 【新增】公众号引导弹窗场景（下载简历）
+             * cy 2023-7-19
+             */
+            this.popupWechatQrcodeWindow('company_m_download_resume', 3)
           }
         })
         .catch(() => {
@@ -1205,11 +1217,19 @@ export default {
         http.post(_api_url, params)
           .then(res => {
             this.enableClick = true
-            this.has_fav = this.has_fav == 1 ? 0 : 1
             this.$notify({
               type: 'success',
               message: res.message
             })
+            if (this.has_fav === 0) {
+              /**
+               * 【ID1000719】
+               * 【新增】公众号引导弹窗场景（收藏简历）
+               * cy 2023-7-19
+               */
+              this.popupWechatQrcodeWindow('company_m_collect_resume', 3)
+            }
+            this.has_fav = this.has_fav == 1 ? 0 : 1
           })
           .catch(() => {
             this.enableClick = true
@@ -1398,6 +1418,20 @@ export default {
             })
         }
       }
+    },
+    // 关闭面试邀请弹窗
+    closeInvitePopup(){
+      this.showInvite = false
+      /**
+       * 【ID1000719】
+       * 【新增】公众号引导弹窗场景（面试邀请）
+       * cy 2023-7-19
+       */
+      this.popupWechatQrcodeWindow('company_m_interview_invite', 3)
+    },
+    // 弹出微信二维码弹框
+    popupWechatQrcodeWindow(val, type) {
+      this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   }
 }

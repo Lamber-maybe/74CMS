@@ -1,5 +1,11 @@
 <template>
-  <div class="app-container">
+  <div
+    v-loading="importLoading"
+    class="app-container"
+    :element-loading-text="importText"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-tabs type="border-card">
       <el-tab-pane label="全部简历" :lazy="true">
         <div style="float:right;z-index: 8;position: relative;">
@@ -265,7 +271,13 @@
                       class="text"
                       :underline="false"
                     >{{ scope.row.fullname }}</el-link>
-                    <img v-if="scope.row.is_bind != 0" class="chat_icon" src="../../../../assets/images/urm/2-1.png" alt="" title="已绑定微信">
+                    <img
+                      v-if="scope.row.is_bind != 0"
+                      class="chat_icon"
+                      src="../../../../assets/images/urm/2-1.png"
+                      alt=""
+                      title="已绑定微信"
+                    >
                   </span>
                 </div>
               </template>
@@ -299,7 +311,10 @@
                     <div v-if="items.field == 'experience_cn'" class="screen_s">
                       <el-checkbox-group>
                         <div v-for="item in experienceData" class="screenStyle">
-                          <el-radio :key="item.id" v-model="experienceScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <el-radio :key="item.id" v-model="experienceScreen" :label="item.id">{{
+                              item.name
+                            }}
+                          </el-radio>
                         </div>
                       </el-checkbox-group>
                     </div>
@@ -308,7 +323,10 @@
                     <div v-if="items.field == 'high_quality'" class="screen_s">
                       <el-checkbox-group>
                         <div v-for="item in highQualityData" class="screenStyle">
-                          <el-radio :key="item.id" v-model="highQualityScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <el-radio :key="item.id" v-model="highQualityScreen" :label="item.id">{{
+                              item.name
+                            }}
+                          </el-radio>
                         </div>
                       </el-checkbox-group>
                     </div>
@@ -363,8 +381,8 @@
                       <el-checkbox-group>
                         <div v-for="item in contactStatusData" class="screenStyle">
                           <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{
-                            item.name
-                          }}
+                              item.name
+                            }}
                           </el-radio>
                         </div>
                       </el-checkbox-group>
@@ -375,8 +393,8 @@
                       <el-checkbox-group>
                         <div v-for="item in enclosureResumeData" class="screenStyle">
                           <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{
-                            item.name
-                          }}
+                              item.name
+                            }}
                           </el-radio>
                         </div>
                       </el-checkbox-group>
@@ -641,9 +659,15 @@
                         </div>
                       </div>
                       <span v-if="scope.row.img_audit_id == 1">{{ scope.row.img_audit_cn }}</span>
-                      <span v-if="scope.row.img_audit_id == 2" style="color:#e6a23c;">{{ scope.row.img_audit_cn }}</span>
-                      <span v-if="scope.row.img_audit_id == 3" style="color:#f56c6c;">{{ scope.row.img_audit_cn }}</span>
-                      <span v-if="scope.row.img_audit_id == 4" style="color:#67c23a;">{{ scope.row.img_audit_cn }}</span>
+                      <span v-if="scope.row.img_audit_id == 2" style="color:#e6a23c;">{{
+                          scope.row.img_audit_cn
+                        }}</span>
+                      <span v-if="scope.row.img_audit_id == 3" style="color:#f56c6c;">{{
+                          scope.row.img_audit_cn
+                        }}</span>
+                      <span v-if="scope.row.img_audit_id == 4" style="color:#67c23a;">{{
+                          scope.row.img_audit_cn
+                        }}</span>
                     </el-tooltip>
                   </div>
                 </div>
@@ -686,7 +710,10 @@
                     <div v-if="items.field == 'experience_cn'" class="screen_s">
                       <el-checkbox-group>
                         <div v-for="item in experienceData" class="screenStyle">
-                          <el-radio :key="item.id" v-model="experienceScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <el-radio :key="item.id" v-model="experienceScreen" :label="item.id">{{
+                              item.name
+                            }}
+                          </el-radio>
                         </div>
                       </el-checkbox-group>
                     </div>
@@ -695,7 +722,10 @@
                     <div v-if="items.field == 'high_quality'" class="screen_s">
                       <el-checkbox-group>
                         <div v-for="item in highQualityData" class="screenStyle">
-                          <el-radio :key="item.id" v-model="highQualityScreen" :label="item.id">{{ item.name }}</el-radio>
+                          <el-radio :key="item.id" v-model="highQualityScreen" :label="item.id">{{
+                              item.name
+                            }}
+                          </el-radio>
                         </div>
                       </el-checkbox-group>
                     </div>
@@ -759,8 +789,8 @@
                       <el-checkbox-group>
                         <div v-for="item in contactStatusData" class="screenStyle">
                           <el-radio :key="item.id" v-model="contactStatusScreen" :label="item.id">{{
-                            item.name
-                          }}
+                              item.name
+                            }}
                           </el-radio>
                         </div>
                       </el-checkbox-group>
@@ -771,8 +801,8 @@
                       <el-checkbox-group>
                         <div v-for="item in enclosureResumeData" class="screenStyle">
                           <el-radio :key="item.id" v-model="enclosureResumeScreen" :label="item.id">{{
-                            item.name
-                          }}
+                              item.name
+                            }}
                           </el-radio>
                         </div>
                       </el-checkbox-group>
@@ -837,7 +867,12 @@
                     class="lock_display"
                     @click="locking(items.field)"
                   />
-                  <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
+                  <div
+                    v-if="items.is_lock_display == false"
+                    slot="reference"
+                    class="lock"
+                    @click="locking(items.field)"
+                  />
                 </div>
               </template>
               <template slot-scope="scope">
@@ -1054,7 +1089,12 @@
                 <el-button class="operation" type="text" size="small" @click="funAuditBatch('single', scope.row.id)">
                   审核
                 </el-button>
-                <el-button class="operation" type="text" size="small" @click="operationResumeDel('single', scope.row.id)">
+                <el-button
+                  class="operation"
+                  type="text"
+                  size="small"
+                  @click="operationResumeDel('single', scope.row.id)"
+                >
                   删除
                 </el-button>
               </template>
@@ -1088,7 +1128,9 @@
         </div>
         </el-card>
       </el-tab-pane>
-      <el-tab-pane label="简历作品" :lazy="true"><resumeStyleReview></resumeStyleReview></el-tab-pane>
+      <el-tab-pane label="简历作品" :lazy="true">
+        <resumeStyleReview />
+      </el-tab-pane>
     </el-tabs>
     <el-drawer
       v-if="drawer"
@@ -1156,25 +1198,35 @@
       </el-dialog>
     </div>
     <el-dialog title="将所选简历设置为" :visible.sync="dialogFormVisible" width="520px">
-      <el-form class="common-form" label-width="80px">
-        <el-form-item label="审核状态">
+      <el-form class="common-form" label-width="82px">
+        <el-form-item label="审核状态：">
           <el-radio-group v-model="setAuditVal" @change="auditDataChange">
             <el-radio v-for="item in auditData" :key="item.id" :label="item.id">{{ item.name }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item class="audit_template_select" v-if="setAuditVal == 2" label="审核模板">
+        <el-form-item v-if="setAuditVal == 2" class="audit_template_select" label="审核模板：">
           <el-select v-model="auditTemplateId" :clearable="true" placeholder="请选择" @change="selectedAuditTemplate">
-            <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content" >
+            <el-option v-for="item in auditTemplateList" :key="item.id" :value="item.id" :label="item.content">
               <span class="multiline-text">{{ item.content }}</span>
-              <span class="el-icon-delete" v-if="item.id != 0" @click.stop="deleteAuditTemplate(item.id)"></span>
+              <span v-if="item.id != 0" class="el-icon-delete" @click.stop="deleteAuditTemplate(item.id)" />
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item class="reason-box" v-if="setAuditVal == 2" label="原因">
-          <el-input v-model="setAuditReason" type="textarea" placeholder="请填写不通过原因" rows="3" maxlength="40" show-word-limit />
+        <el-form-item v-if="setAuditVal == 2" class="reason-box" label="原因：">
+          <el-input
+            v-model="setAuditReason"
+            type="textarea"
+            placeholder="请填写不通过原因"
+            rows="3"
+            maxlength="40"
+            show-word-limit
+          />
         </el-form-item>
-        <el-form-item class="checkboxAddAuditTemplate" v-if="setAuditVal == 2">
-            <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">{{ addAuditTemplateDesc }}</el-checkbox>
+        <el-form-item v-if="setAuditVal == 2" class="checkboxAddAuditTemplate">
+          <el-checkbox v-model="addAuditTemplate" :disabled="canAddAuditTemplate">{{
+              addAuditTemplateDesc
+            }}
+          </el-checkbox>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -1225,7 +1277,12 @@
 
 <script>
 import urmShow from '@/views/user/resume/urm/components/urmShow'
-import { resumeAudit, resumeLevel, resumeRefresh, resumeImport, getAuditTemplateList, deleteAuditTemplate } from '@/api/resume'
+import {
+  resumeAudit,
+  resumeLevel,
+  resumeRefresh,
+  resumeImport
+} from '@/api/resume'
 import { urmList, resumeDel, setContactStatus } from '@/api/resume_urm'
 import { parseTime } from '@/utils'
 import apiArr from '@/api'
@@ -1236,6 +1293,7 @@ import { customLndex, customLndexAdd, outboundCall } from '@/api/outbound'
 import { documentConfig, documentCheck } from '@/api/configuration'
 import md5 from 'js-md5'
 import resumeStyleReview from '@/views/user/resume/urm/components/resumeStyleReview'
+import { getAuditTemplateList, deleteAuditTemplate } from '@/api/auditTemplate'
 
 export default {
   name: 'List',
@@ -1250,32 +1308,210 @@ export default {
   },
   data() {
     return {
+      importText: '正在导入，请稍候',
+      importLoading: false,
       keyword: '',
       key_type: '1',
       menu_icon: 'menu',
       fieldData: [
-        { name: '性别', field: 'sex', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '年龄', field: 'age', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '学历', field: 'education_cn', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '经验', field: 'experience_cn', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '简历完整度', field: 'complete_percent', select: true, is_locking: false, is_lock_display: false, width: 170, is_sortable: false },
-        { name: '审核状态', field: 'audit', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
-        { name: '简历作品', field: 'img_audit', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
-        { name: '简历联系方式', field: 'contact_mobile', select: true, is_locking: false, is_lock_display: false, width: 130, is_sortable: false },
-        { name: '会员联系方式', field: 'member_mobile', select: true, is_locking: false, is_lock_display: false, width: 130, is_sortable: false },
-        { name: '等级', field: 'high_quality', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '投递数', field: 'delivery_num', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '被下载', field: 'downloaded', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '被查看', field: 'viewed', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '被面邀', field: 'invitation', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '刷新时间', field: 'refreshtime', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
-        { name: '登录时间', field: 'last_login_time', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
-        { name: '注册时间', field: 'reg_time', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
-        { name: '附件', field: 'enclosure_resume', select: true, is_locking: false, is_lock_display: false, width: 90, is_sortable: false },
-        { name: '联系状态', field: 'contact_status', select: true, is_locking: false, is_lock_display: false, width: 120, is_sortable: false },
-        { name: '跟进次数', field: 'follow_num', select: true, is_locking: false, is_lock_display: false, width: 110, is_sortable: false },
-        { name: '最后跟进', field: 'final_follow', select: true, is_locking: false, is_lock_display: false, width: 160, is_sortable: 'custom' },
-        { name: '简历备注', field: 'remark', select: true, is_locking: false, is_lock_display: false, width: 180, is_sortable: false }
+        {
+          name: '性别',
+          field: 'sex',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '年龄',
+          field: 'age',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '学历',
+          field: 'education_cn',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '经验',
+          field: 'experience_cn',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '简历完整度',
+          field: 'complete_percent',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 170,
+          is_sortable: false
+        },
+        {
+          name: '审核状态',
+          field: 'audit',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 120,
+          is_sortable: false
+        },
+        {
+          name: '简历作品',
+          field: 'img_audit',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 120,
+          is_sortable: false
+        },
+        {
+          name: '简历联系方式',
+          field: 'contact_mobile',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 130,
+          is_sortable: false
+        },
+        {
+          name: '会员联系方式',
+          field: 'member_mobile',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 130,
+          is_sortable: false
+        },
+        {
+          name: '等级',
+          field: 'high_quality',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '投递数',
+          field: 'delivery_num',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '被下载',
+          field: 'downloaded',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '被查看',
+          field: 'viewed',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '被面邀',
+          field: 'invitation',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '刷新时间',
+          field: 'refreshtime',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 160,
+          is_sortable: 'custom'
+        },
+        {
+          name: '登录时间',
+          field: 'last_login_time',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 160,
+          is_sortable: 'custom'
+        },
+        {
+          name: '注册时间',
+          field: 'reg_time',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 160,
+          is_sortable: 'custom'
+        },
+        {
+          name: '附件',
+          field: 'enclosure_resume',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 90,
+          is_sortable: false
+        },
+        {
+          name: '联系状态',
+          field: 'contact_status',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 120,
+          is_sortable: false
+        },
+        {
+          name: '跟进次数',
+          field: 'follow_num',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 110,
+          is_sortable: false
+        },
+        {
+          name: '最后跟进',
+          field: 'final_follow',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 160,
+          is_sortable: 'custom'
+        },
+        {
+          name: '简历备注',
+          field: 'remark',
+          select: true,
+          is_locking: false,
+          is_lock_display: false,
+          width: 180,
+          is_sortable: false
+        }
       ],
       tableData: [],
       columnCheckedId: '',
@@ -2061,10 +2297,11 @@ export default {
         this.auditIdarr = id
       }
       this.setAuditVal = 0
-      this.setAuditReason = ''
       this.dialogFormVisible = true
       // 获取审核模板列表
       this.getAuditTemplateList()
+      this.auditTemplateId = ''
+      this.setAuditReason = ''
     },
     fun_set_audit() {
       if (this.auditSubmitLoading == true) {
@@ -2086,9 +2323,6 @@ export default {
             this.urmList()
             this.closeDialog()
             this.dialogFormVisible = false
-            // 获取审核模板列表
-            this.getAuditTemplateList()
-            this.auditTemplateId = ''
             return true
           } else {
             this.auditSubmitLoading = false
@@ -2273,6 +2507,16 @@ export default {
       })
     },
     dateFormat(fmt, date) {
+      /**
+       * 【ID1000732】
+       * 【bug】后台简历导入失败
+       * yx - 2023.07.19
+       * [新增]:
+       * 字符串时间格式兼容
+       */
+      if (isNaN(date) && !isNaN(Date.parse(date))) {
+        date = new Date(date)
+      }
       let ret
       const opt = {
         'Y+': date.getFullYear().toString(), // 年
@@ -2397,15 +2641,15 @@ export default {
         .then(res => {
           this.auditTemplateList = res.data
 
-          let maxTemplate = 6;
-          let currentNum = this.auditTemplateList.length;
+          const maxTemplate = 6
+          const currentNum = this.auditTemplateList.length
           if (currentNum >= maxTemplate) {
-            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，当前已添加' + currentNum + '条）';
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，当前已添加' + currentNum + '条）'
             // 超过最大可添加就不能再添加模板了
             this.canAddAuditTemplate = true
           } else {
-            let diffNum = maxTemplate - currentNum;
-            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，还可添加' + diffNum + '条）';
+            const diffNum = maxTemplate - currentNum
+            this.addAuditTemplateDesc = '新增模板（最多可添加' + maxTemplate + '条，还可添加' + diffNum + '条）'
             this.canAddAuditTemplate = false
           }
           // 最后拼接一个默认选中项
@@ -2420,7 +2664,7 @@ export default {
         })
     },
     // 切换审核状态
-    auditDataChange(){
+    auditDataChange() {
       this.auditTemplateId = ''
       this.setAuditReason = ''
       this.defaultSelectedAuditTemplate()
@@ -2463,7 +2707,7 @@ export default {
       }
     },
     // 默认选中审核模板
-    defaultSelectedAuditTemplate(){
+    defaultSelectedAuditTemplate() {
       if (this.setAuditVal == 2 && this.auditTemplateList.length > 0) {
         // 默认选中第一个模板
         this.auditTemplateId = this.auditTemplateList[0].id
@@ -2864,7 +3108,7 @@ export default {
   margin-left: 10px;
 }
 
-.checkboxName{
+.checkboxName {
   position: absolute;
   top: 15px;
   left: 30px;
@@ -2952,22 +3196,25 @@ export default {
   }
 }
 
-.audit_template_select{
-  .el-select{
+.audit_template_select {
+  .el-select {
     width: 100% !important;
   }
 }
-.reason-box{
+
+.reason-box {
   margin-bottom: 10px;
 }
-.checkboxAddAuditTemplate{
+
+.checkboxAddAuditTemplate {
   margin-bottom: 10px;
-  ::v-deep .el-checkbox__inner{
+
+  ::v-deep .el-checkbox__inner {
     border-radius: 50%;
   }
 }
 
-.multiline-text{
+.multiline-text {
   white-space: normal;
   width: 330px;
 }
@@ -2988,7 +3235,8 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  &:first-child{
+
+  &:first-child {
     margin-top: 10px;
   }
 }

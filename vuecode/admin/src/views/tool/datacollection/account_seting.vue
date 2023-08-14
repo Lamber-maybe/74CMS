@@ -83,8 +83,8 @@ export default {
       ],
       form: {
         name_prefix: '',
-        name_rule: '',
-        pwd_rule: '',
+        name_rule: 1,
+        pwd_rule: 1,
         password: ''
       }
     }

@@ -133,7 +133,7 @@ class Config extends BaseModel
                             continue;
                         }
                         $field_json_config = $field_json[$config_key];
-                        $config_old = $old_arr[$config_key];
+                        $config_old = isset($old_arr[$config_key]) ? $old_arr[$config_key] : '未知';
                         // 配置项单位
                         $unit = !empty($field_json_config['unit']) ? $field_json_config['unit'] : '';
                         if (isset($field_json_config['map']) && !empty($field_json_config['map'])) {
