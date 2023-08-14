@@ -287,7 +287,18 @@ class Resume extends \app\common\controller\Backend
             $extra_validate_rule['contact'] = model('FieldRule')->getCache(
                 'ResumeContact'
             );
-
+            /**
+             * 【bug】前台有专业，后台不显示
+             *  zdq 2022-11-03
+             *  新增：$category_major_data = model('CategoryMajor')->getCache();
+             *  $info['major_text'] = isset($category_major_data[$info['major']])
+             *  ? $category_major_data[$info['major']]
+             *  : '';
+             */
+            $category_major_data = model('CategoryMajor')->getCache();
+            $info['major_text'] = isset($category_major_data[$info['major']])
+                ? $category_major_data[$info['major']]
+                : '';
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,
                 'photoUrl' => $photoUrl,

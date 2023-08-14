@@ -118,7 +118,18 @@ class Member extends \app\common\controller\Backend
                     $query->where('(b.companyname="" or b.companyname is NULL) AND a.utype=1')->whereOr('c.fullname IS NULL AND a.utype=2');
                 });
         }
-        $total = $total->join(config('database.prefix').'member_bind d','d.uid=a.uid and d.type="weixin"','left')->where($wheres)->where($where)->count();
+
+        /**
+         * 【ID1000418】
+         * 【bug】微信绑定重复数据导致后台多条信息
+         * yx - 2022.11.10
+         * [旧]：
+         * ->join(config('database.prefix').'member_bind d','d.uid=a.uid and d.type="weixin"','left')
+         * [join查询修改]：
+         * $memberBindSql = model('MemberBind')->where(['type'=>'weixin'])->group('uid')->buildSql();
+         */
+        $memberBindSql = model('MemberBind')->where(['type'=>'weixin'])->group('uid')->buildSql();
+        $total = $total->join([$memberBindSql=>'d'],'d.uid=a.uid','left')->where($wheres)->where($where)->count();
         $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform,a.disable_im,d.openid';
         $list = model('Member')->alias('a');
         if($list_type=='company'){
@@ -135,7 +146,7 @@ class Member extends \app\common\controller\Backend
                     });
         }
         $list = $list->field($field)->where($where)->where($wheres)
-                ->join(config('database.prefix').'member_bind d','d.uid=a.uid and d.type="weixin"','left')
+                ->join([$memberBindSql=>'d'],'d.uid=a.uid','left')
                 ->order($order)
                 ->page($current_page . ',' . $pagesize)
                 ->select();
@@ -266,6 +277,19 @@ class Member extends \app\common\controller\Backend
             ) {
                 $this->ajaxReturn(500, model('Member')->getError());
             }
+
+            /**
+             * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+             * yx - 2022.11.09
+             */
+            if (
+                $input_data['password'] != $info['password']
+                ||
+                $input_data['mobile'] != $info['mobile']
+            ) {
+                model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
+            }
+
             model('AdminLog')->record(
                 '编辑会员。会员UID【' . $uid . '】',
                 $this->admininfo

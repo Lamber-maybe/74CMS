@@ -9,7 +9,7 @@
       :rules="rules"
       :inline-message="true"
     >
-      <el-form-item v-if="uid == 0" label="身份">
+      <el-form-item v-if="uid == 0 && utypeDisabled" label="身份">
         <el-radio-group v-model="form.utype">
           <el-radio label="1">企业会员</el-radio>
           <el-radio label="2">个人会员</el-radio>
@@ -138,7 +138,8 @@ export default {
           },
           { validator: validateMobile, trigger: 'blur' }
         ]
-      }
+      },
+      utypeDisabled: true
     }
   },
   created() {
@@ -157,6 +158,15 @@ export default {
           })
           .catch(() => { })
       } else {
+        if (this.listtype == 'company') {
+          this.form.utype = '1'
+          this.utypeDisabled = false
+        } else if (this.listtype == 'personal') {
+          this.form.utype = '2'
+          this.utypeDisabled = false
+        } else {
+          this.utypeDisabled = true
+        }
         this.placeholder = ''
         this.infoLoading = false
       }

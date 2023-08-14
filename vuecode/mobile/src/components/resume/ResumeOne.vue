@@ -441,6 +441,22 @@
         </div>
       </div>
     </van-dialog>
+    <van-dialog
+      v-model="showUpgradePackage"
+      title="下载简历"
+      :closeOnClickOverlay = "true"
+      show-cancel-button
+      cancel-button-text="取消"
+      confirm-button-text="升级套餐"
+      @cancel="cancels"
+      @confirm="companyServiceUpgradePackage"
+    >
+      <div class="dialog_tip_wrapper">
+        <div class="tx1">
+          很抱歉，您的套餐暂不支持下载简历，请升级套餐。
+        </div>
+      </div>
+    </van-dialog>
     <van-dialog v-model="codePro.show" show-cancel-button :confirm-button-text="codePro.btnCn" @confirm="callCodePro" confirm-button-color="#1989fa">
       <div class="line18 m-top">拔打号码</div>
       <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
@@ -750,7 +766,8 @@ export default {
       params: {
         company_uid: '',
         job_apply_id: ''
-      }
+      },
+      showUpgradePackage: false
     }
   },
   created () {
@@ -1109,25 +1126,29 @@ export default {
           .then(res => {
             this.enableClick = true
             if (res.data.done == 0) {
-              this.showDirectService = true
-              var btnCn = ''
-              if (res.data.use_type == 'points') {
-                btnCn = '立即兑换'
-              }
-              if (res.data.use_type == 'package') {
-                btnCn = '购买增值包'
-              }
-              if (res.data.use_type == 'money') {
-                btnCn = '立即支付'
-              }
-              this.directServiceInfo = {
-                use_type: res.data.use_type,
-                need_points: res.data.need_points,
-                need_expense: res.data.need_expense,
-                discount: res.data.discount,
-                resume: this.query_id,
-                btnCn: btnCn,
-                cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
+              if (res.data.need_upgrade == 1) {
+                this.showUpgradePackage = true
+              } else {
+                this.showDirectService = true
+                var btnCn = ''
+                if (res.data.use_type == 'points') {
+                  btnCn = '立即兑换'
+                }
+                if (res.data.use_type == 'package') {
+                  btnCn = '购买增值包'
+                }
+                if (res.data.use_type == 'money') {
+                  btnCn = '立即支付'
+                }
+                this.directServiceInfo = {
+                  use_type: res.data.use_type,
+                  need_points: res.data.need_points,
+                  need_expense: res.data.need_expense,
+                  discount: res.data.discount,
+                  resume: this.query_id,
+                  btnCn: btnCn,
+                  cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
+                }
               }
               return false
             } else {
@@ -1323,6 +1344,12 @@ export default {
         }
       }
       this.fetchData()
+    },
+    companyServiceDownloadResume () {
+      this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
+    },
+    companyServiceUpgradePackage () {
+      this.$router.push('/member/order/add/common?type=setmeal')
     }
   }
 }

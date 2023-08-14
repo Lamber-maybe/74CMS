@@ -933,10 +933,9 @@ class Order extends \app\common\model\BaseModel
             // 刷新职位信息 chenyang 2022年3月21日15:13:24
             $refreshParams = [
                 'id' => $extra['jobid'],
-                'refresh_log' => true,
                 'platform' => $order['add_platform'],
             ];
-            model('Job')->refreshJobData($refreshParams);
+            model('Job')->refreshJobMind($refreshParams, 5);
             $points_log = '刷新职位';
         }
         //快捷支付-下载简历

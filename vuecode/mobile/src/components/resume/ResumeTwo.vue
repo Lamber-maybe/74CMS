@@ -571,7 +571,7 @@
           <div class="box_report">
             <div class="tx1">{{ $store.state.config.sitename }}温馨提示</div>
             <div class="tx2">
-              求职过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请立即举报，我们将及时处理
+              招聘过程如遇无效、虚假简历，联系方式不实等情况，请立即举报，我们将及时处理。
               <span class="report" @click="handlerReport">立即举报</span>
             </div>
           </div>
@@ -664,6 +664,22 @@
           >立即了解
           </router-link
           >
+        </div>
+      </div>
+    </van-dialog>
+    <van-dialog
+      v-model="showUpgradePackage"
+      title="下载简历"
+      :closeOnClickOverlay = "true"
+      show-cancel-button
+      cancel-button-text="取消"
+      confirm-button-text="升级套餐"
+      @cancel="cancels"
+      @confirm="companyServiceUpgradePackage"
+    >
+      <div class="dialog_tip_wrapper">
+        <div class="tx1">
+          很抱歉，您的套餐暂不支持下载简历，请升级套餐。
         </div>
       </div>
     </van-dialog>
@@ -1040,7 +1056,8 @@ export default {
       params: {
         company_uid: '',
         job_apply_id: ''
-      }
+      },
+      showUpgradePackage: false
     }
   },
   created () {
@@ -1423,25 +1440,29 @@ export default {
           .then((res) => {
             this.enableClick = true
             if (res.data.done == 0) {
-              this.showDirectService = true
-              var btnCn = ''
-              if (res.data.use_type == 'points') {
-                btnCn = '立即兑换'
-              }
-              if (res.data.use_type == 'package') {
-                btnCn = '购买增值包'
-              }
-              if (res.data.use_type == 'money') {
-                btnCn = '立即支付'
-              }
-              this.directServiceInfo = {
-                use_type: res.data.use_type,
-                need_points: res.data.need_points,
-                need_expense: res.data.need_expense,
-                discount: res.data.discount,
-                resume: this.query_id,
-                btnCn: btnCn,
-                cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
+              if (res.data.need_upgrade == 1) {
+                this.showUpgradePackage = true
+              } else {
+                this.showDirectService = true
+                var btnCn = ''
+                if (res.data.use_type == 'points') {
+                  btnCn = '立即兑换'
+                }
+                if (res.data.use_type == 'package') {
+                  btnCn = '购买增值包'
+                }
+                if (res.data.use_type == 'money') {
+                  btnCn = '立即支付'
+                }
+                this.directServiceInfo = {
+                  use_type: res.data.use_type,
+                  need_points: res.data.need_points,
+                  need_expense: res.data.need_expense,
+                  discount: res.data.discount,
+                  resume: this.query_id,
+                  btnCn: btnCn,
+                  cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
+                }
               }
               return false
             } else {
@@ -1646,6 +1667,12 @@ export default {
         }
       }
       this.fetchData()
+    },
+    companyServiceDownloadResume () {
+      this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
+    },
+    companyServiceUpgradePackage () {
+      this.$router.push('/member/order/add/common?type=setmeal')
     }
   }
 }
@@ -2576,6 +2603,7 @@ export default {
         border: 1px solid #34ba86;
         padding: 1px 4px;
         border-radius: 5px;
+        margin-right: 8px;
       }
     }
   }
@@ -2825,7 +2853,7 @@ export default {
         .level_ico {
           float: left;
           margin-left: 10px;
-          width: 36px;
+          width: 45px;
           height: 27px;
           background: url("../../assets/images/resumeshow/yz.png") 0 center no-repeat;
           background-size: 45px 18px;

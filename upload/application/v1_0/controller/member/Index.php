@@ -242,6 +242,7 @@ class Index extends \app\v1_0\controller\common\Base
                 $global_config = config('global_config');
                 $resume_info = $download_result['resume_info'];
                 $return_data['done'] = 0;
+                $return_data['need_upgrade'] = $download_result['need_upgrade'];
 
                 // 快捷支付 zdq 2022.07.06
                 if ($global_config['single_resume_download_open'] == 1 && $global_config['single_resume_download_enable_points_deduct'] == 1 ) {

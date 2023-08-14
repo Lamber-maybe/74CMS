@@ -80,6 +80,8 @@ class Company extends \app\common\controller\Backend
             ->join(config('database.prefix').'setmeal s','m.setmeal_id=s.id','LEFT');
         if ($list_type == 'noaudit') {
             $total = $total->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null');
+        }else if($list_type == 'mynoaudit'){
+            $total = $total->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null')->where('c.admin_id',$this->admininfo->id);
         }else if($audit!=''){
             $total = $total->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT');
             if($audit==3){
@@ -96,6 +98,8 @@ class Company extends \app\common\controller\Backend
             ->join(config('database.prefix').'setmeal s','m.setmeal_id=s.id','LEFT');
         if ($list_type == 'noaudit') {
             $list = $list->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null');
+        }else if($list_type == 'mynoaudit'){
+            $list = $list->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT')->where('c.audit',0)->where('a.id','not null')->where('c.admin_id',$this->admininfo->id);
         }else if($audit!=''){
             $list = $list->join(config('database.prefix').'company_auth a','a.uid=c.uid','LEFT');
             if($audit==3){
@@ -514,7 +518,7 @@ class Company extends \app\common\controller\Backend
                 $refreshParams = [
                     'id'  => $jobIdArr,
                 ];
-                $result = $jobModel->refreshJobData($refreshParams);
+                $result = $jobModel->refreshJobMind($refreshParams);
                 if ($result['status'] === false) {
                     continue;
                 }

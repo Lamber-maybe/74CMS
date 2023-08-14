@@ -249,6 +249,16 @@ class Resume extends \app\index\controller\Base
         $options_trade = $category_all['QS_trade'];
         $options_major = model('CategoryMajor')->getCache('');
 
+        /**
+         * 【ID1000405】
+         * 【bug】后台专业分类只增加1级时前台报错
+         * yx - 2022.11.04
+         */
+        foreach ($options_major[0] as $key => $value) {
+            if (!isset($options_major[$key]) || empty($options_major[$key])) {
+                unset($options_major[0][$key]);
+            }
+        }
 
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();

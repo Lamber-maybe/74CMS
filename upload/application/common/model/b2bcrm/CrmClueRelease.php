@@ -152,4 +152,42 @@ class CrmClueRelease extends BaseModel
             'record_num' => $total);
         return $return_data;
     }
+
+
+    /**
+     * 写企业释放/领取记录
+     * @param $ids array 企业ID
+     * @param $operationType integer 操作类型 1-领取 2-释放
+     * @param $operator integer 操作人员 1-系统 2-销售
+     * @return bool|int|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function releaseCompany($ids = [], $operationType = 1, $operator = 1)
+    {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $all_dates = [];
+        foreach ($ids as $id) {
+            $company_info = model('Company')
+                ->field('id,uid,admin_id,clue_id')
+                ->find($id);
+
+            $all_dates[] = [
+                'clue_id' => $company_info['clue_id'],
+                'create_time' => time(),
+                'operation_type' => $operationType,
+                'admin_id' => $company_info['admin_id'],
+                'operator' => $operator,
+                'utype' => 1,
+                'uid' => $company_info['uid']
+            ];
+
+        }
+
+        return $this->insertAll($all_dates);
+    }
 }

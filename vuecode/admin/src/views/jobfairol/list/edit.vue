@@ -121,7 +121,7 @@
               </span>
               <span class="sp">
                 <i class="el-icon-info" />
-               建议尺寸：750*280
+               建议尺寸：1200*330
               </span>
             </div>
             <div class="upload-item">

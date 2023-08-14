@@ -59,9 +59,17 @@ class Notice extends \app\index\controller\Base
                 abort(404,'页面不存在');
             }
         }
-        
+
+        /**
+         * 【ID1000421】
+         * 【bug】公告设置隐藏，触屏端详情下一篇还有入口
+         * yx - 2022.11.11
+         * [新增]:
+         * ->where('is_display', '1')
+         */
         $prev = model('Notice')
             ->where('id', '>', $info['id'])
+            ->where('is_display', '1')
             ->order('id asc')
             ->field('id,title,link_url')
             ->find();
@@ -70,6 +78,7 @@ class Notice extends \app\index\controller\Base
         }
         $next = model('Notice')
             ->where('id', '<', $info['id'])
+            ->where('is_display', '1')
             ->order('id desc')
             ->field('id,title,link_url')
             ->find();

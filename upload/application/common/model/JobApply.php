@@ -160,7 +160,8 @@ class JobApply extends \app\common\model\BaseModel
                 'job_apply',
                 [
                     'fullname' => $resume_info['fullname'],
-                    'jobname' => $job_info['jobname']
+                    'jobname' => $job_info['jobname'],
+		    'resumeurl' => url('index/resume/show', ['id' => $resume_info['id']], '', config('global_config.sitedomain'))
                 ],
                 $resume_info['id']
             );

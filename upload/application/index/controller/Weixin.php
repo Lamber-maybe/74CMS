@@ -864,8 +864,8 @@ class Weixin extends \app\common\controller\Base
      */
     protected function clickBinding($object)
     {
-        $bingInfo = $this->getUserInfo($object->FromUserName);
-        if ($bingInfo !== null) {
+        $memberinfo = $this->getUserInfo($object->FromUserName);
+        if ($memberinfo !== null) {
             $content = "您已绑定过" . config('global_config.sitename') . ($memberinfo['utype'] == 1 ? '企业' : '个人') . "帐号【" . $memberinfo['mobile'] . "】,如需解绑,请回复'解绑'";
         } else {
             $weixin_userinfo = $this->getWeixinUserinfo($object->FromUserName);
@@ -933,11 +933,10 @@ class Weixin extends \app\common\controller\Base
             'id' => $jobIds,
             'uid' => $userInfo['uid'],
             'platform' => 'wechat',
-            'refresh_log' => true
         ];
 
         try {
-            $result = model('Job')->refreshJobData($refreshParams, 3);
+            $result = model('Job')->refreshJobMind($refreshParams, 3);
             if ($result['status'] === false) {
                 $this->outputText($object, $result['msg']);
             }

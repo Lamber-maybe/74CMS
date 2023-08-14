@@ -215,10 +215,22 @@ class ResumeSearchEngine
                     ->select();
                 $total = count($total_list);
             }
-            //当前页码超出总量限制时，重置为最大值
+            //当前页码超出总量限制时，重置为最大值*******有问题
+            // $total_page = $total == 0 ? 0 : ceil($total / $this->pagesize);
+            // if ($this->current_page > $total_page) {
+            //     $this->current_page = $total_page;
+            // }
+
+            //zxr 2022.10.27
+            //当前页码超出总量限制时，返回空数据（给个确保0条数据的where条件）
             $total_page = $total == 0 ? 0 : ceil($total / $this->pagesize);
             if ($this->current_page > $total_page) {
-                $this->current_page = $total_page;
+                $this->where = 'a.id=0';
+            }
+            //zxr 2022.10.27
+            //当数据量很小，小到连一页都不够时，要把查询数量设置为当前的数据量
+            if ($total > 0 && $total < $this->pagesize) {
+                $this->pagesize = $total;
             }
         } else {
             $total = 0;
@@ -287,8 +299,21 @@ class ResumeSearchEngine
             "' IN " .
             $this->fulltext_mode .
             ' MODE) AS score1';
-        $this->orderby =
-            't_year desc,t_month desc,score1 desc,refreshtime desc';
+
+        /**
+         * 【ID1000392】
+         * 【新增】职位、简历搜索页列表展现排序
+         * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
+         * yx - 2022.11.08
+         * [旧]
+         * $this->orderby = 't_year desc,t_month desc,score1 desc,refreshtime desc';
+         */
+        $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
+        if ('1' === $job_search_order) {
+            $this->orderby = 'stick DESC, t_year desc, t_month desc, score1 desc, refreshtime desc, a.id DESC';
+        } else {
+            $this->orderby = 'stick DESC, refreshtime DESC, t_year desc, t_month desc, score1 desc, a.id DESC';
+        }
     }
     /**
      * 设置分页

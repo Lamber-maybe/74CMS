@@ -367,6 +367,7 @@ export default {
     }
   },
   created () {
+    this.setImShowParams(this.$route.query)
     this.alert_warning = this.$store.state.config.im_notice != ''
     this.imChatid = this.$route.params.userid
     this.setimChatid(this.$route.params.userid)

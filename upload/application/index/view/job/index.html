@@ -235,19 +235,24 @@
         <li class="tab tel">提升招聘效果，请致电：{#$global_config.contact_tel#}</li>
       </ul>
       <div class="option clearfix">
+        <!-- 【ID1000392】【新增】职位、简历搜索页列表展现排序
         <div class="option_text">排序方式：</div>
         <div class="option_btn {#if condition="!$Request.param.sort"#}option_btn1{#/if#}"><a
             href="{#:P(['sort'=>null])#}">综合排序</a></div>
         <div class="option_btn {#if condition="$Request.param.sort eq 'rtime'"#}option_btn1{#/if#}"><a
             href="{#:P(['sort'=>'rtime'])#}">更新时间</a></div>
-        <div class="option_right clearfix">
-          <div class="option_opt">
+            -->
+        <div class="option_opt option_left">
+          <div class="array_type_no_border">
+            <div class="t">筛选条件：</div>
             <label onclick="javascript:location.href='{#:P(["famous"=>$Request.param.famous==1?null:1])#}'"><input
-                type="checkbox" {#if condition="$Request.param.famous eq 1"#}checked{#/if#} /> 名企</label>
+                  type="checkbox" {#if condition="$Request.param.famous eq 1"#}checked{#/if#} /> 名企</label>
             <label onclick="javascript:location.href='{#:P(["license"=>$Request.param.license==1?null:1])#}'"><input
-                type="checkbox" {#if condition="$Request.param.license eq 1"#}checked{#/if#} /> 企业已认证</label>
+                  type="checkbox" {#if condition="$Request.param.license eq 1"#}checked{#/if#} /> 企业已认证</label>
             <label onclick="javascript:location.href='{#:P(["filter_apply"=>$Request.param.filter_apply==1?null:1])#}'"><input type="checkbox" {#if condition="$Request.param.filter_apply eq 1"#}checked{#/if#} /> 过滤已投递</label>
           </div>
+        </div>
+        <div class="option_right clearfix">
           <div class="array_type">
             <div class="t">展示方式：</div>
             <div @click="handlerListtype('detail')" :class="displayMethod ? 'img_x active' : 'img_x'"></div>

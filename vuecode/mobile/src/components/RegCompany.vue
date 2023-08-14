@@ -122,6 +122,7 @@ import { handlerHttpError } from '@/utils/error'
 import http from '@/utils/http'
 import api from '@/api'
 import Captcha from '@/components/captcha/index'
+import wxshare from '@/assets/js/share.js'
 export default {
   name: 'RegCompany',
   components: {
@@ -147,6 +148,7 @@ export default {
   created () {
     this.invitation_code = this.$route.query.invitation_code
     this.$store.commit('clearCountDownFun')
+    wxshare({}, 'reg_company', location.href)
   },
   methods: {
     showAgreement (alias) {
@@ -211,7 +213,7 @@ export default {
         code: this.code,
         password: this.password,
         scene_uuid: scene_uuid,
-        invitation_code : this.invitation_code
+        invitation_code: this.invitation_code
       }
       http
         .post(api.reg_company, postData)

@@ -42,7 +42,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/member/personal')"
+                    @click="jumpPath('/user/member/personal')"
                   >
                     <div class="tit1">新增个人会员</div>
                     <div class="num">
@@ -58,7 +58,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/resume/list')"
+                    @click="jumpPath('/user/urmList')"
                   >
                     <div class="tit1">新增简历</div>
                     <div class="num">
@@ -74,7 +74,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/resume/list')"
+                    @click="jumpPath('/user/urmList')"
                   >
                     <div class="tit1">简历刷新数</div>
                     <div class="num">
@@ -90,7 +90,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/job_apply')"
+                    @click="jumpPath('/user/job_apply')"
                   >
                     <div class="tit1">投递数</div>
                     <div class="num">
@@ -106,7 +106,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/business/personal/order')"
+                    @click="jumpPath('/business/personal/order')"
                   >
                     <div class="tit1">个人完成订单</div>
                     <div class="num">
@@ -126,7 +126,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/member/company')"
+                    @click="jumpPath('/user/member/company')"
                   >
                     <div class="tit1">新增企业会员</div>
                     <div class="num">
@@ -142,7 +142,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/job/list')"
+                    @click="jumpPath('/user/job/list')"
                   >
                     <div class="tit1">新增职位</div>
                     <div class="num">
@@ -158,7 +158,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/job/list')"
+                    @click="jumpPath('/user/job/list')"
                   >
                     <div class="tit1">职位刷新数</div>
                     <div class="num">
@@ -174,7 +174,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/user/company_down')"
+                    @click="jumpPath('/user/company_down')"
                   >
                     <div class="tit1">下载数</div>
                     <div class="num">
@@ -190,7 +190,7 @@
                 <el-card shadow="hover" class="no-border">
                   <div
                     class="today-info"
-                    @click="$router.push('/business/company/order')"
+                    @click="jumpPath('/business/company/order')"
                   >
                     <div class="tit1">企业完成订单</div>
                     <div class="num">
@@ -222,44 +222,50 @@
       </el-col>
       <el-col :span="6">
         <el-row>
-          <el-card>
-            <div slot="header" class="clearfix">
-              <span>今日待办</span>
-            </div>
-            <el-table
-              :show-header="false"
-              :data="baseinfo.pending_data"
-              style="width: 100%; cursor: pointer"
-              @row-click="handlerClickPending"
-            >
-              <el-table-column prop="title" label="待办事项" width="180" />
-              <el-table-column prop="num" label="数量" align="right">
-                <template slot-scope="scope">
-                  <span class="num-circle">{{ scope.row.num }}</span>
-                  <i class="el-icon-arrow-right" />
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
+          <div class="stay">
+            <el-card>
+              <div slot="header" class="clearfix">
+                <span>今日待办</span>
+              </div>
+              <div class="stay_table">
+                <el-table
+                  :show-header="false"
+                  :data="baseinfo.pending_data"
+                  style="width: 100%; cursor: pointer;"
+                  @row-click="handlerClickPending"
+                >
+                  <el-table-column prop="title" label="待办事项" width="180" />
+                  <el-table-column prop="num" label="数量" align="right">
+                    <template slot-scope="scope">
+                      <span class="num-circle">{{ scope.row.num }}</span>
+                      <i class="el-icon-arrow-right" />
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-card>
+          </div>
         </el-row>
         <el-row style="margin-top: 20px">
-          <el-card>
-            <div slot="header" class="clearfix">
-              <span>更新日志</span>
-            </div>
-            <el-timeline :reverse="false">
-              <el-timeline-item
-                v-for="(item, index) in upgradeLog"
-                :key="index"
-                :timestamp="item.time"
-              >
-                <el-link target="_blank" :href="item.url">{{
-                  item.title
-                }}
-                </el-link>
-              </el-timeline-item>
-            </el-timeline>
-          </el-card>
+          <div class="log">
+            <el-card>
+              <div slot="header" class="clearfix">
+                <span>更新日志</span>
+              </div>
+              <el-timeline :reverse="false">
+                <el-timeline-item
+                  v-for="(item, index) in upgradeLog"
+                  :key="index"
+                  :timestamp="item.time"
+                >
+                  <el-link target="_blank" :href="item.url">{{
+                    item.title
+                  }}
+                  </el-link>
+                </el-timeline-item>
+              </el-timeline>
+            </el-card>
+          </div>
         </el-row>
       </el-col>
     </el-row>
@@ -418,28 +424,36 @@ export default {
     },
     handlerClickPending(e) {
       switch (e.alias) {
-        case 'company_audit':
-          this.$router.push('/user/company/crm/allClient')
+        case 'all_company_audit':
+          checkRoleAuth('/user/company/crm/allClient')
+          localStorage.setItem('clue_audit', '1')
+          return
+        case 'my_company_audit':
+          checkRoleAuth('/user/company/crm/myClient')
           localStorage.setItem('clue_audit', '1')
           return
         case 'job_audit':
-          this.$router.push('/user/job/list')
+          checkRoleAuth('/user/job/list')
           return
         case 'resume_audit':
-          this.$router.push('/user/resume/noaudit')
+          checkRoleAuth('/user/urmList')
+          localStorage.setItem('resume_audit', '1')
           return
         case 'cancel_apply':
-          this.$router.push('/user/cancel_apply')
+          checkRoleAuth('/user/cancel_apply')
           return
         case 'tipoff':
-          this.$router.push('/content/feedback/tipoff')
+          checkRoleAuth('/content/feedback/tipoff')
           return
         case 'feedback':
-          this.$router.push('/content/feedback/suggest')
+          checkRoleAuth('/content/feedback/suggest')
           return
       }
     },
     jumpPath(routePath, message) {
+      if (routePath == '/user/urmList'){
+        localStorage.setItem('resume_audit', '')
+      }
       checkRoleAuth(routePath, message)
     }
   }
@@ -569,5 +583,35 @@ export default {
 
 .no-border {
   border: 0;
+}
+.log{
+  ::-webkit-scrollbar {
+    width: 10px; // 横向滚动条
+    height: 10px; // 纵向滚动条 必写
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c1c7d0;
+    border-radius: 2px;
+  }
+}
+.stay{
+  ::v-deep .el-table td{
+    padding: 10px 0;
+  }
+  .stay_table{
+    height: 316px;
+    overflow-y: auto;
+  }
+  ::v-deep .el-card__body{
+    padding:10px;
+  }
+  ::-webkit-scrollbar {
+    width: 10px; // 横向滚动条
+    height: 10px; // 纵向滚动条 必写
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c1c7d0;
+    border-radius: 2px;
+  }
 }
 </style>

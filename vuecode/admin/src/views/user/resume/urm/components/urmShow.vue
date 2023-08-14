@@ -349,6 +349,7 @@ export default {
       margin-right: 20px;
       background-color: #ebeef5;
       border: 1px solid #ebeef5;
+      border-radius: 50%;
       img {
         border-radius: 8px;
         width: 100%;

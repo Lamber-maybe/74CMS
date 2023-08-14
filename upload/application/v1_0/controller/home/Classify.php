@@ -66,8 +66,8 @@ class Classify extends \app\v1_0\controller\common\Base
                     $subarr['label'] = $v;
                     $arr['children'][] = $subarr;
                 }
+                $return[] = $arr;
             }
-            $return[] = $arr;
         }
         return $return;
     }

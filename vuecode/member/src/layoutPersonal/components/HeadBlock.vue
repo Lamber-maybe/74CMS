@@ -69,7 +69,22 @@ import api from '@/api'
             url = this.link_url_web.joblist
           }
         }else{
-          url = this.link_url_web.companylist_search_key
+          /**
+           * 【ID1000395】
+           * 【bug】会员中心顶部搜企业报404
+           * yx - 2022.11.03
+           * [旧]：
+           * url = this.link_url_web.companylist_search_key
+           * [新]：
+           * 增加判断'keyword'是否为空
+           */
+          if(this.keyword)
+          {
+            url = this.link_url_web.companylist_search_key
+          }else
+          {
+            url = this.link_url_web.companylist
+          }
         }
         url = url.replace('_key_',this.keyword)
         window.location.href=url

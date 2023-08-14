@@ -554,7 +554,6 @@ class Resume extends Backend
             ->where('r.id',$resume_id)
             ->join('member m','r.uid=m.uid','LEFT')
             ->join('resume_contact c','r.id=c.rid','LEFT')
-            ->join('member_bind bind',"bind.uid = c.uid and bind.type='weixin'",'LEFT')
             ->join('member_points mp','r.uid = mp.uid','LEFT')
             ->field('r.id,
             r.uid,
@@ -578,8 +577,21 @@ class Resume extends Backend
             m.last_login_time,
             r.birthday,
             mp.points,
-            r.photo_img,ifnull(bind.id,0) as weixin_bind')
+            r.photo_img')
             ->find();
+
+        /**
+         * 【ID1000412】【优化】微信状态前后台不一致
+         * yx - 2022.11.08
+         */
+        $weixin_bind = model('MemberBind')
+            ->where([
+                'type' => 'weixin',
+                'uid' => $data['uid'],
+                'is_subscribe' => 1
+            ]) // 【bug】是否绑定微信，与个人中心不一致，新增”'is_subscribe' => 1“ yx - 2022.11.07
+            ->find();
+        $data['weixin_bind'] = empty($weixin_bind) ? 0 : 1;
 
         $data['photo_img_src'] =$data['photo_img'] > 0
                 ? model('Uploadfile')->getFileUrl(
@@ -1186,6 +1198,19 @@ class Resume extends Backend
         if (false === $update_member) {
             throw new \Exception(model('Member')->getError());
         }
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        if (
+            (isset($input_data['password']) && !empty($input_data['password']))
+            ||
+            (!empty($input_data['mobile']) && $input_data['mobile'] != $info['mobile'])
+        ) {
+            model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
+        }
+
         model('AdminLog')->record(
             '编辑会员。会员UID【' . $uid . '】',
             $this->admininfo

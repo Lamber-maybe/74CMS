@@ -40,22 +40,23 @@
               placeholder="请选择意向地区"
               :options="citycategory"
               :props="{ checkStrictly: true }"
-              :clearable=true
+              :clearable="true"
               @change="screenList"
             />
           </span>
           <span class="list-screen">
             <el-cascader
-              :clearable=true
               v-model="jobcategoryScreen"
+              :clearable="true"
               placeholder="请选择意向职位"
               :options="jobcategory"
               :props="{ checkStrictly: true }"
               :show-all-levels="false"
-              @change="screenList" />
+              @change="screenList"
+            />
           </span>
           <span class="list-screen">
-            <el-select :clearable=true  v-model="platformScreen" placeholder="请选择注册来源" @change="screenList">
+            <el-select v-model="platformScreen" :clearable="true" placeholder="请选择注册来源" @change="screenList">
               <el-option
                 v-for="item in platform"
                 :key="item.id"
@@ -243,40 +244,40 @@
                   </div>
                   <!-- 等级-->
                   <!-- 投递数-->
-<!--                  <div v-if="items.field == 'delivery_num'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in deliveryNumData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="deliveryNumScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'delivery_num'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in deliveryNumData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="deliveryNumScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 投递数-->
                   <!-- 被下载-->
-<!--                  <div v-if="items.field == 'downloaded'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in downloadedData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="downloadedScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'downloaded'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in downloadedData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="downloadedScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被下载-->
                   <!-- 被查看-->
-<!--                  <div v-if="items.field == 'viewed'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in viewedData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="viewedScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'viewed'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in viewedData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="viewedScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被查看-->
                   <!-- 被面邀-->
-<!--                  <div v-if="items.field == 'invitation'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in invitationData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="invitationScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'invitation'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in invitationData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="invitationScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被面邀-->
                   <!-- 审核状态-->
                   <div v-if="items.field == 'audit'" class="screen_s">
@@ -385,9 +386,9 @@
                     <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
                   </span>
                   <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
-                    <el-progress  color="#1db75a" :percentage="scope.row.complete_percent" />
+                    <el-progress color="#1db75a" :percentage="scope.row.complete_percent" />
                   </span>
-                  <span  v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
+                  <span v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
                     <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
                   </span>
                 </div>
@@ -434,16 +435,16 @@
                 <span v-else> {{ scope.row.reg_time | timeFilter }} </span>
               </div>
               <div v-if="items.field == 'contact_status'" style="text-align: center">
-                <el-tooltip v-if="scope.row.is_status_phone == 1"  class="item"  effect="dark" content="未电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1.png" @click="setContactStatus('phone',scope.row.id)" alt="">
+                <el-tooltip v-if="scope.row.is_status_phone == 1" class="item" effect="dark" content="未电话联系，点击切换状态" placement="top-start">
+                  <img class="contact_status" src="../../../../assets/images/urm/1.png" alt="" @click="setContactStatus('phone',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_phone == 2"  class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt=""  @click="setContactStatus('phone',scope.row.id)">
+                <el-tooltip v-if="scope.row.is_status_phone == 2" class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
+                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt="" @click="setContactStatus('phone',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 1"   class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
+                <el-tooltip v-if="scope.row.is_status_weixin == 1" class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
                   <img class="contact_status" src="../../../../assets/images/urm/2.png" alt="" @click="setContactStatus('weixin',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 2"  class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
+                <el-tooltip v-if="scope.row.is_status_weixin == 2" class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
                   <img class="contact_status" src="../../../../assets/images/urm/2-1.png" alt="" @click="setContactStatus('weixin',scope.row.id)">
                 </el-tooltip>
               </div>
@@ -503,40 +504,40 @@
                   </div>
                   <!-- 等级-->
                   <!-- 投递数-->
-<!--                  <div v-if="items.field == 'delivery_num'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in deliveryNumData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="deliveryNumScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'delivery_num'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in deliveryNumData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="deliveryNumScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 投递数-->
                   <!-- 被下载-->
-<!--                  <div v-if="items.field == 'downloaded'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in downloadedData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="downloadedScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'downloaded'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in downloadedData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="downloadedScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被下载-->
                   <!-- 被查看-->
-<!--                  <div v-if="items.field == 'viewed'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in viewedData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="viewedScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'viewed'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in viewedData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="viewedScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被查看-->
                   <!-- 被面邀-->
-<!--                  <div v-if="items.field == 'invitation'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in invitationData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="invitationScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'invitation'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in invitationData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="invitationScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 被面邀-->
                   <!-- 审核状态-->
                   <div v-if="items.field == 'audit'" class="screen_s">
@@ -548,13 +549,13 @@
                   </div>
                   <!-- 审核状态-->
                   <!-- 简历作品 -->
-<!--                  <div v-if="items.field == 'works'" class="screen_s">-->
-<!--                    <el-checkbox-group>-->
-<!--                      <div v-for="item in worksData" class="screenStyle">-->
-<!--                        <el-radio :key="item.id" v-model="worksScreen" :label="item.id">{{ item.name }}</el-radio>-->
-<!--                      </div>-->
-<!--                    </el-checkbox-group>-->
-<!--                  </div>-->
+                  <!--                  <div v-if="items.field == 'works'" class="screen_s">-->
+                  <!--                    <el-checkbox-group>-->
+                  <!--                      <div v-for="item in worksData" class="screenStyle">-->
+                  <!--                        <el-radio :key="item.id" v-model="worksScreen" :label="item.id">{{ item.name }}</el-radio>-->
+                  <!--                      </div>-->
+                  <!--                    </el-checkbox-group>-->
+                  <!--                  </div>-->
                   <!-- 简历作品-->
                   <!-- 联系状态 -->
                   <div v-if="items.field == 'contact_status'" class="screen_s">
@@ -650,13 +651,13 @@
                   <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e">
                     <el-progress color="#f51e1e" :percentage="scope.row.complete_percent" />
                   </span>
-                    <span v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45" style="color:#fb3c11">
+                  <span v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45" style="color:#fb3c11">
                     <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
                   </span>
-                    <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
-                    <el-progress  color="#1db75a" :percentage="scope.row.complete_percent" />
+                  <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
+                    <el-progress color="#1db75a" :percentage="scope.row.complete_percent" />
                   </span>
-                    <span  v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
+                  <span v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
                     <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
                   </span>
                 </div>
@@ -703,16 +704,16 @@
                 <span v-else> {{ scope.row.reg_time | timeFilter }} </span>
               </div>
               <div v-if="items.field == 'contact_status'" style="text-align: center">
-                <el-tooltip v-if="scope.row.is_status_phone == 1"  class="item"  effect="dark" content="未电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1.png" @click="setContactStatus('phone',scope.row.id)" alt="">
+                <el-tooltip v-if="scope.row.is_status_phone == 1" class="item" effect="dark" content="未电话联系，点击切换状态" placement="top-start">
+                  <img class="contact_status" src="../../../../assets/images/urm/1.png" alt="" @click="setContactStatus('phone',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_phone == 2"  class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
-                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt=""  @click="setContactStatus('phone',scope.row.id)">
+                <el-tooltip v-if="scope.row.is_status_phone == 2" class="item" effect="dark" content="已电话联系，点击切换状态" placement="top-start">
+                  <img class="contact_status" src="../../../../assets/images/urm/1-1.png" alt="" @click="setContactStatus('phone',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 1"   class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
+                <el-tooltip v-if="scope.row.is_status_weixin == 1" class="item" effect="dark" content="未微信联系，点击切换状态" placement="top-start">
                   <img class="contact_status" src="../../../../assets/images/urm/2.png" alt="" @click="setContactStatus('weixin',scope.row.id)">
                 </el-tooltip>
-                <el-tooltip v-if="scope.row.is_status_weixin == 2"  class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
+                <el-tooltip v-if="scope.row.is_status_weixin == 2" class="item" effect="dark" content="已微信联系，点击切换状态" placement="top-start">
                   <img class="contact_status" src="../../../../assets/images/urm/2-1.png" alt="" @click="setContactStatus('weixin',scope.row.id)">
                 </el-tooltip>
               </div>
@@ -935,7 +936,7 @@
 
 <script>
 import urmShow from '@/views/user/resume/urm/components/urmShow'
-import { resumeAudit, resumeLevel, resumeRefresh } from '@/api/resume'
+import { resumeAudit, resumeLevel, resumeRefresh, resumeImport } from '@/api/resume'
 import { urmList, resumeDel, setContactStatus } from '@/api/resume_urm'
 import { parseTime } from '@/utils'
 import apiArr from '@/api'
@@ -964,17 +965,17 @@ export default {
         { 'name': '照片', 'field': 'photo_img_src', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 80, 'is_sortable': false },
         { 'name': '姓名', 'field': 'fullname', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 120, 'is_sortable': false },
         { 'name': '微信绑定', 'field': 'is_bind', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 100, 'is_sortable': false },
-        { 'name': '简历联系方式', 'field': 'contact_mobile', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 130, 'is_sortable': false },
-        { 'name': '会员联系方式', 'field': 'member_mobile', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 130, 'is_sortable': false },
         { 'name': '学历', 'field': 'education_cn', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '经验', 'field': 'experience_cn', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '简历完整度', 'field': 'complete_percent', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 170, 'is_sortable': false },
+        { 'name': '审核状态', 'field': 'audit', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 120, 'is_sortable': false },
+        { 'name': '简历联系方式', 'field': 'contact_mobile', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 130, 'is_sortable': false },
+        { 'name': '会员联系方式', 'field': 'member_mobile', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 130, 'is_sortable': false },
         { 'name': '等级', 'field': 'high_quality', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '投递数', 'field': 'delivery_num', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '被下载', 'field': 'downloaded', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '被查看', 'field': 'viewed', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
         { 'name': '被面邀', 'field': 'invitation', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 90, 'is_sortable': false },
-        { 'name': '审核状态', 'field': 'audit', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 120, 'is_sortable': false },
         // { 'name': '简历作品', 'field': 'works', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 120, 'is_sortable': false },
         { 'name': '刷新时间', 'field': 'refreshtime', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 160, 'is_sortable': 'custom' },
         { 'name': '登录时间', 'field': 'last_login_time', 'select': true, 'is_locking': false, 'is_lock_display': false, 'width': 160, 'is_sortable': 'custom' },
@@ -1100,8 +1101,8 @@ export default {
       jobcategoryScreen: '',
       platformScreen: '',
       dialPhone: '',
-      dialName: ''
-
+      dialName: '',
+      excelData: []
     }
   },
   computed: {
@@ -1245,6 +1246,11 @@ export default {
     },
     urmList(){
       this.loading = true
+      if (localStorage.getItem('resume_audit') && localStorage.getItem('resume_audit') == '1'){
+        this.auditScreen = '0'
+        this.auditFilter = { 'name': '待审核', 'field': 'audit' }
+        localStorage.setItem('resume_audit', '')
+      }
       urmList({
         'page': this.currentPage,
         'pagesize': this.pagesize,
@@ -1741,6 +1747,112 @@ export default {
       that.importLoading = true
       that.showUpload = false
       that.loopImport(1, pagesize, totalPage)
+    },
+    handleDate(date) {
+      const dateArray = date.split('-')
+      dateArray[0] = dateArray[0].split('/')[0] + '-' + dateArray[0].split('/')[1]
+      dateArray[1] = dateArray[1].split('/')[0] + '-' + dateArray[1].split('/')[1]
+      return dateArray
+    },
+    loopImport(page, pagesize, totalPage) {
+      const that = this
+      const start = (page - 1) * pagesize
+      const end = start + pagesize
+      const newarr = that.excelData.slice(start, end)
+      that.importText = '正在导入第' + start + '-' + end + '条，请稍候'
+      resumeImport(newarr).then(response => {
+        if (page >= totalPage) {
+          that.importLoading = false
+          that.$message({ type: 'success', message: '导入成功' })
+          that.fetchData(true)
+        } else {
+          page++
+          that.loopImport(page, pagesize, totalPage)
+        }
+      })
+    },
+    dateFormat(fmt, date) {
+      let ret
+      const opt = {
+        'Y+': date.getFullYear().toString(), // 年
+        'm+': (date.getMonth() + 1).toString(), // 月
+        'd+': date.getDate().toString(), // 日
+        'H+': date.getHours().toString(), // 时
+        'M+': date.getMinutes().toString(), // 分
+        'S+': date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      }
+      for (const k in opt) {
+        ret = new RegExp('(' + k + ')').exec(fmt)
+        if (ret) {
+          fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')))
+        }
+      }
+      return fmt
+    },
+    // 处理数据
+    handleCellData(data, type) {
+      const that = this
+      const returnArray = []
+      if (type === 'intention') {
+        const valArray = data.split('|')
+        returnArray.push(
+          {
+            'nature': valArray[0],
+            'category': valArray[1],
+            'district': valArray[2],
+            'minwage': valArray[3].split('-')[0],
+            'maxwage': valArray[3].split('-')[1],
+            'trade': valArray[4]
+          }
+        )
+      } else {
+        if (data != '') {
+          const listArray = data.split('【#】')
+          listArray.forEach(function (val, index, arr) {
+            const valArray = val.split('|')
+            if (type === 'education') {
+              returnArray.push(
+                {
+                  'starttime': that.handleDate(valArray[0])[0],
+                  'endtime': that.handleDate(valArray[0])[1],
+                  'school': valArray[1],
+                  'major': valArray[2],
+                  'education': valArray[3]
+                }
+              )
+            }
+            if (type === 'work') {
+              returnArray.push(
+                {
+                  'starttime': that.handleDate(valArray[0])[0],
+                  'endtime': that.handleDate(valArray[0])[1],
+                  'companyname': valArray[1],
+                  'jobname': valArray[2],
+                  'duty': valArray[3]
+                }
+              )
+            }
+            if (type === 'language') {
+              returnArray.push(
+                {
+                  'language': valArray[0],
+                  'level': valArray[1]
+                }
+              )
+            }
+            if (type === 'certificate') {
+              returnArray.push(
+                {
+                  'name': valArray[0],
+                  'obtaintime': valArray[1].split('/')[0] + '-' + valArray[1].split('/')[1]
+                }
+              )
+            }
+          })
+        }
+      }
+      return returnArray
     }
   }
 }

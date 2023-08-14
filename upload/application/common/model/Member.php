@@ -302,8 +302,13 @@ class Member extends \app\common\model\BaseModel
                 $info['setmeal_resume_point'] = 0; // 套餐
 
             }else{
-                $info['download_resume_point'] += $info['purchase_resume_point']; // 简历包购买 + 购买套餐赠送简历点
+                /**
+                 * 【ID1000401】
+                 * 【bug】简历点下载问题，代码顺序错误(L:310和L:311调换顺序即可)
+                 * yx - 2022.11.04
+                 */
                 $info['setmeal_resume_point'] = $info['download_resume_point'];
+                $info['download_resume_point'] += $info['purchase_resume_point']; // 简历包购买 + 购买套餐赠送简历点
             }
             $overtime_config = config('global_config.setmeal_overtime_conf');
             $info['jobs_meanwhile'] = $overtime_config['jobs_meanwhile'];

@@ -11,7 +11,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const env = require('../config/prod.env')
-const version = '3.15.0'
+const version = '3.16.0'
 // const Version = require('../static/version')
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -43,7 +43,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].css'),
+      // 2022.10.27 yx
+      // 每次更新样式丢失，乱码问题
+      // filename: utils.assetsPath('css/[name].css'),
+      filename: utils.assetsPath('css/[name].[chunkhash]_' + version + '.css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
       // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,

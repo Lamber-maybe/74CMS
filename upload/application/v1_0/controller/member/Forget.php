@@ -57,11 +57,19 @@ class Forget extends \app\v1_0\controller\common\Base
                 'utype' => $input_data['utype']
             ])
             ->find();
+        $uid = $model['uid'];
         $model->password = $model->makePassword(
             $input_data['password'],
             $model->pwd_hash
         );
         $model->save();
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
+
         cache('smscode_' . $input_data['mobile'], null);
         $this->ajaxReturn(200, '重置密码成功');
     }
@@ -112,11 +120,19 @@ class Forget extends \app\v1_0\controller\common\Base
                 'utype' => $input_data['utype'],
             ])
             ->find();
+        $uid = $model['uid'];
         $model->password = $model->makePassword(
             $input_data['password'],
             $model->pwd_hash
         );
         $model->save();
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
+
         cache('emailcode_' . $input_data['email'], null);
         $this->ajaxReturn(200, '重置密码成功');
     }

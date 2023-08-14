@@ -34,7 +34,7 @@
           现居住地：{{ form.residence | defaultFilter }}
         </span>
         <span v-if="live_fields.major === true" class="item-row">
-          所学专业：{{ form.major_ }}
+          所学专业：{{ form.major_text | defaultFilter}}
         </span>
         <span v-if="live_fields.height === true" class="item-row">
           身高：{{ form.height | defaultFilter }}
@@ -658,6 +658,11 @@ export default {
           if (this.form.enter_job_time == '') {
             this.enter_job_time_empty = true
           }
+          // 【bug】前台有专业，后台不显示
+          // zdq 2022-11-03
+          // 修改完成后无法回显需要将数组重置为空
+          // 新增  this.form.major_arr = []
+          this.form.major_arr = []
           if (this.form.major1 != 0) {
             this.form.major_arr.push(this.form.major1)
           }

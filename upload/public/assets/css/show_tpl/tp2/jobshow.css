@@ -948,6 +948,15 @@
 	margin-bottom: 14px;
 }
 
+.similar_post_name .similar_left_text {
+	width: 300px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+	float: left;
+}
+
 .similar_right_text {
 	color: #999;
 	font-size: 12px;

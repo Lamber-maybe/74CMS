@@ -115,7 +115,7 @@ const userRouter = {
           import('@/views/user/resume/add'),
         meta: {
           title: '添加简历',
-          access: 'resumeList',
+          access: 'urmList',
           activeMenu: '/user/resume/list'
         },
         hidden: true

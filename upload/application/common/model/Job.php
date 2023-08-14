@@ -893,8 +893,7 @@ class Job extends \app\common\model\BaseModel
         if (isset($params['uid']) && !empty($params['uid'])) {
             $condition['uid'] = $params['uid'];
         }
-        $jobModel = model('Job');
-        $jobList = $jobModel->where($condition)->field('id,uid,jobname,refreshtime')->select();
+        $jobList = model('Job')->where($condition)->field('id,uid,jobname,refreshtime')->select();
         if (empty($jobList) || $jobList === null) {
             return callBack(false, '没有可刷新的职位');
         }
@@ -921,7 +920,7 @@ class Job extends \app\common\model\BaseModel
             'id' => ['in', $jobIdArr]
         ];
         // 更新职位刷新时间
-        $jobModel->where($condition)->setField('refreshtime', $currentTime);
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
         model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
         model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
         // 更新公司刷新时间
@@ -969,6 +968,7 @@ class Job extends \app\common\model\BaseModel
             $refreshTotal = model('RefreshJobLog')
                 ->whereTime('addtime', 'today')
                 ->where('uid', $params['uid'])
+                ->where('source', 'IN', [2, 3])
                 ->count();
             // 校验每天可刷新简历次数
             if ($refreshTotal >= $memberSetmeal['refresh_jobs_free_perday']) {
@@ -1062,6 +1062,7 @@ class Job extends \app\common\model\BaseModel
             $refreshTotal = model('RefreshJobLog')
                 ->whereTime('addtime', 'today')
                 ->where('uid', $params['uid'])
+                ->where('source', 'IN', [2, 3])
                 ->count();
             // 校验每天可刷新简历次数
             if ($refreshTotal >= $memberSetmeal['refresh_jobs_free_perday']) {
@@ -1081,5 +1082,449 @@ class Job extends \app\common\model\BaseModel
         }
 
         return callBack(true, 'SUCCESS');
+    }
+
+
+    /**
+     * 刷新职位大脑方法
+     * @param $params
+     * @param $source [来源:1|后台刷新,2|免费刷新,3|公众号一键刷新,4|智能刷新,5|快捷支付刷新]
+     * @return void
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    public function refreshJobMind($params, $source = 1)
+    {
+        switch ($source) {
+            // 后台刷新
+            case 1:
+                return $this->_adminRefresh($params);
+
+            // 会员手动刷新
+            case 2:
+                return $this->_freeRefresh($params);
+
+            // 公众号一键刷新
+            case 3:
+                return $this->_wechatRefresh($params);
+
+            // 智能刷新
+            case 4:
+                return $this->_incrementRefresh($params);
+
+            // 快捷支付刷新
+            case 5:
+                return $this->_quickRefresh($params);
+
+            default:
+                return callBack(false, '刷新职位-来源参数有误');
+        }
+    }
+
+
+    /**
+     * 后台刷新职位
+     * @param $params
+     * @return array
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    private function _adminRefresh($params)
+    {
+        $currentTime = time();
+
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id' => $params['id'],
+            'audit' => 1,
+            'is_display' => 1,
+        ];
+        if (is_array($params['id'])) {
+            $condition['id'] = ['in', $params['id']];
+        }
+        if (isset($params['uid']) && !empty($params['uid'])) {
+            $condition['uid'] = $params['uid'];
+        }
+        $jobList = model('Job')
+            ->where($condition)
+            ->field('id,uid,jobname,refreshtime')
+            ->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+        $jobList = collection($jobList)->toArray();
+
+        $platform = 'system';
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[] = $jobInfo['uid'];
+            $saveData[] = [
+                'uid' => $jobInfo['uid'],
+                'jobid' => $jobInfo['id'],
+                'addtime' => $currentTime,
+                'platform' => $platform,
+                'source' => 1
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        model('RefreshJobLog')->saveAll($saveData);
+
+        return callBack(true, 'SUCCESS', $jobList);
+    }
+
+    /**
+     * 免费刷新职位
+     * @param $params
+     * @return array
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    private function _freeRefresh($params)
+    {
+        $currentTime = time();
+
+        if (!isset($params['uid']) || empty($params['uid'])) {
+            return callBack(false, '缺少UID');
+        }
+
+        // 校验简历刷新条件
+        $validateParams = [
+            'id' => $params['id'],
+            'uid' => $params['uid'],
+            'id_total' => is_array($params['id']) ? count($params['id']) : 0,
+            'current_time' => $currentTime,
+        ];
+        $validateResult = $this->_validateRefreshJob($validateParams);
+        if ($validateResult['status'] === false) {
+            return callBack(false, $validateResult['msg'], $validateResult['data']);
+        }
+
+
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id' => $params['id'],
+            'audit' => 1,
+            'is_display' => 1,
+        ];
+        if (is_array($params['id'])) {
+            $condition['id'] = ['in', $params['id']];
+        }
+        if (isset($params['uid']) && !empty($params['uid'])) {
+            $condition['uid'] = $params['uid'];
+        }
+        if (is_array($params['uid'])) {
+            $condition['uid'] = ['in', $params['uid']];
+        }
+        $jobList = model('Job')
+            ->where($condition)
+            ->field('id,uid,jobname,refreshtime')
+            ->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+        $jobList = collection($jobList)->toArray();
+
+        $platform = config('platform') ? config('platform') : $params['platform'];
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[] = $jobInfo['uid'];
+            $saveData[] = [
+                'uid' => $jobInfo['uid'],
+                'jobid' => $jobInfo['id'],
+                'addtime' => $currentTime,
+                'platform' => $platform,
+                'source' => 2
+            ];
+            $logData[] = [
+                'uid' => $jobInfo['uid'],
+                'content' => '套餐特权-免费刷新职位【' . $jobInfo['jobname'] . '】',
+                'addtime' => $currentTime
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        model('RefreshJobLog')->saveAll($saveData);
+        model('MemberSetmealLog')->allowField(true)->saveAll($logData);
+
+        return callBack(true, 'SUCCESS', $jobList);
+    }
+
+    /**
+     * 微信公众号一键刷新职位
+     * @param $params
+     * @return array
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    private function _wechatRefresh($params)
+    {
+        $currentTime = time();
+
+        if (!isset($params['uid']) || empty($params['uid'])) {
+            return callBack(false, '缺少UID');
+        }
+
+        // 校验简历刷新条件
+        $validateParams = [
+            'id' => $params['id'],
+            'uid' => $params['uid'],
+            'id_total' => is_array($params['id']) ? count($params['id']) : 0,
+            'current_time' => $currentTime,
+        ];
+        $validateResult = $this->_validateOneRefreshJob($validateParams);
+        if ($validateResult['status'] === false) {
+            return callBack(false, $validateResult['msg'], $validateResult['data']);
+        }
+
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id' => $params['id'],
+            'audit' => 1,
+            'is_display' => 1,
+        ];
+        if (is_array($params['id'])) {
+            $condition['id'] = ['in', $params['id']];
+        }
+        if (isset($params['uid']) && !empty($params['uid'])) {
+            $condition['uid'] = $params['uid'];
+        }
+        if (is_array($params['uid'])) {
+            $condition['uid'] = ['in', $params['uid']];
+        }
+        $jobList = model('Job')
+            ->where($condition)
+            ->field('id,uid,jobname,refreshtime')
+            ->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+        $jobList = collection($jobList)->toArray();
+
+        $platform = config('platform') ? config('platform') : $params['platform'];
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[] = $jobInfo['uid'];
+            $saveData[] = [
+                'uid' => $jobInfo['uid'],
+                'jobid' => $jobInfo['id'],
+                'addtime' => $currentTime,
+                'platform' => $platform,
+                'source' => 3
+            ];
+            $logData[] = [
+                'uid' => $jobInfo['uid'],
+                'content' => '套餐特权-免费刷新职位【' . $jobInfo['jobname'] . '】',
+                'addtime' => $currentTime
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        model('RefreshJobLog')->saveAll($saveData);
+        model('MemberSetmealLog')->allowField(true)->saveAll($logData);
+
+        return callBack(true, 'SUCCESS', $jobList);
+    }
+
+    /**
+     * 智能刷新职位
+     * @param $params
+     * @return array
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    private function _incrementRefresh($params)
+    {
+        $currentTime = time();
+
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+
+        if (is_array($params['id'])) {
+            $params['id'] = ['in', $params['id']];
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id' => $params['id'],
+            'audit' => 1,
+            'is_display' => 1,
+        ];
+        $jobList = model('Job')
+            ->where($condition)
+            ->field('id,uid,jobname,refreshtime')
+            ->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+
+        $jobList = collection($jobList)->toArray();
+
+        $platform = config('platform') ? config('platform') : $params['platform'];
+
+        $ip = get_client_ip();
+        $ip_addr = get_client_ipaddress($ip);
+        $real_ip = $ip . ':' . get_client_port();
+
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[] = $jobInfo['uid'];
+            $saveData[] = [
+                'uid' => $jobInfo['uid'],
+                'jobid' => $jobInfo['id'],
+                'addtime' => $currentTime,
+                'platform' => $platform,
+                'source' => 4
+            ];
+            $actionData[] = [
+                'utype' => 1,
+                'uid' => $jobInfo['uid'],
+                'content' => '增值服务-智能刷新职位【' . $jobInfo['jobname'] . '】',
+                'addtime' => $currentTime,
+                'ip' => $real_ip,
+                'ip_addr' => $ip_addr,
+                'platform' => $platform,
+                'is_login' => 0
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        model('RefreshJobLog')->saveAll($saveData);
+        model('MemberActionLog')->allowField(true)->saveAll($actionData);
+
+        return callBack(true, 'SUCCESS', $jobList);
+    }
+
+    /**
+     * 快捷支付刷新职位
+     * @param $params
+     * @return array
+     * Date Time：2022年11月11日09:50:44
+     * @author yx
+     */
+    private function _quickRefresh($params)
+    {
+        $currentTime = time();
+
+        if (!isset($params['id']) || empty($params['id'])) {
+            return callBack(false, '缺少职位ID');
+        }
+
+        if (is_array($params['id'])) {
+            $params['id'] = ['in', $params['id']];
+        }
+
+        // 获取职位信息
+        $condition = [
+            'id' => $params['id'],
+            'audit' => 1,
+            'is_display' => 1,
+        ];
+        $jobList = model('Job')
+            ->where($condition)
+            ->field('id,uid,jobname,refreshtime')
+            ->select();
+        if (empty($jobList) || $jobList === null) {
+            return callBack(false, '没有可刷新的职位');
+        }
+
+        $jobList = collection($jobList)->toArray();
+
+        $platform = config('platform') ? config('platform') : $params['platform'];
+
+        $ip = get_client_ip();
+        $ip_addr = get_client_ipaddress($ip);
+        $real_ip = $ip . ':' . get_client_port();
+
+        foreach ($jobList as $jobInfo) {
+            $jobIdArr[] = $jobInfo['id'];
+            $uidArr[] = $jobInfo['uid'];
+            $saveData[] = [
+                'uid' => $jobInfo['uid'],
+                'jobid' => $jobInfo['id'],
+                'addtime' => $currentTime,
+                'platform' => $platform,
+                'source' => 5
+            ];
+            $actionData[] = [
+                'utype' => 1,
+                'uid' => $jobInfo['uid'],
+                'content' => '快捷支付-刷新职位【' . $jobInfo['jobname'] . '】',
+                'addtime' => $currentTime,
+                'ip' => $real_ip,
+                'ip_addr' => $ip_addr,
+                'platform' => $platform,
+                'is_login' => 0
+            ];
+        }
+
+        $condition = [
+            'id' => ['in', $jobIdArr]
+        ];
+        // 更新职位刷新时间
+        model('Job')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchKey')->where($condition)->setField('refreshtime', $currentTime);
+        model('JobSearchRtime')->where($condition)->setField('refreshtime', $currentTime);
+        // 更新公司刷新时间
+        $uidArr = array_unique($uidArr);
+        model('Company')->where(['uid' => ['in', $uidArr]])->setField('refreshtime', $currentTime);
+
+        model('RefreshJobLog')->saveAll($saveData);
+        model('MemberActionLog')->allowField(true)->saveAll($actionData);
+
+        return callBack(true, 'SUCCESS', $jobList);
     }
 }

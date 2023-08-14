@@ -227,4 +227,7 @@ export default {
 .el-select {
   width: 300px;
 }
+.el-checkbox {
+  margin-left: 10px;
+}
 </style>

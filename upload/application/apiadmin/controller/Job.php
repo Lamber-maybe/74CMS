@@ -288,7 +288,15 @@ class Job extends \app\common\controller\Backend
         $refreshParams = [
             'id' => $idArr,
         ];
-        $result = model('Job')->refreshJobData($refreshParams);
+        /**
+         * 刷新职位
+         * yx - 2022.11.11
+         * [旧]:
+         * $result = model('Job')->refreshJobData($refreshParams);
+         * [新]:
+         * $result = model('Job')->refreshJobMind($refreshParams);
+         */
+        $result = model('Job')->refreshJobMind($refreshParams);
         if ($result['status'] === false) {
             $this->ajaxReturn(500, $result['msg']);
         }

@@ -99,6 +99,8 @@ class BaseModel extends Model
                         ? str_replace('.', '万', $minwage)
                         : $minwage . '万';
                     }
+                } elseif ($minwage < 1000) {
+                    $minwage = $minwage;
                 } else {
                     if ($minwage % 1000 == 0) {
                         $minwage = $minwage / 1000 . '千';

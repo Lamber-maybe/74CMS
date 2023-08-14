@@ -22,10 +22,14 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.loginCheck === undefined || to.meta.loginCheck === false) {
       next()
     } else {
+      let realPath = to.path
+      if (to.name == 'ImShow') {
+        realPath = encodeURIComponent(to.fullPath)
+      }
       if (to.meta.utype === 1) {
-        next(`/member/login/company?redirect=${to.path}`)
+        next(`/member/login/company?redirect=${realPath}`)
       } else {
-        next(`/member/login?redirect=${to.path}`)
+        next(`/member/login?redirect=${realPath}`)
       }
     }
   }

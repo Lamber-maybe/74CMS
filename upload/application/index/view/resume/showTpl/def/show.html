@@ -521,6 +521,27 @@
     <el-dialog title="选择职位" width="576px" :visible.sync="showSelectJob" @opened="joblistOpened" :close-on-click-modal="false">
       {#include file="public/selectJob" /#}
     </el-dialog>
+    <el-dialog
+            :visible.sync="showUpgradePackage"
+            width='445px'
+            height="256"
+            title="下载简历"
+            center
+            custom-class = 'download'
+            modal = true
+            show-cancel-button
+    >
+        <div class="dialog_tip_wrapper" style="text-align: center;">
+            <div class="tx1" style="line-height: 25px;">
+                很抱歉，您的套餐暂不支持下载简历，
+                <br />
+                请升级套餐。
+            </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-button style="width: 108px; padding: 10px 20px;" @click="companyServiceUpgradePackage" type="primary" >升级套餐</el-button>
+        </div>
+    </el-dialog>
 </div>
 <script>
     var id = parseInt("{#$return.base_info.id#}")
@@ -620,7 +641,8 @@
             showDirectService: false,
             query_id: '',
             payment:'wxpay',
-            isPayment:false
+            isPayment:false,
+            showUpgradePackage: false
         },
         watch: {
             'form.interview_date': function (value) {
@@ -964,24 +986,28 @@
                             }
                             httppost(qscms.apiList.resumeDownload, params).then(function (res) {
                                 if (res.data.done == 0) {
-                                    that.showDirectService = true
-                                    var btnCn = ''
-                                    if(res.data.use_type == 'points'){
-                                        btnCn = '立即兑换'
-                                    }
-                                    if(res.data.use_type == 'package'){
-                                        btnCn = '购买增值包'
-                                    }
-                                    if(res.data.use_type == 'money'){
-                                        btnCn = '立即支付'
-                                    }
-                                    that.directServiceInfo = {
-                                        use_type: res.data.use_type,
-                                        need_points: res.data.need_points,
-                                        need_expense: res.data.need_expense,
-                                        discount: res.data.discount,
-                                        btnCn: btnCn,
-                                        cancel:res.data.use_type == 'package' ? '升级套餐': '取 消'
+                                    if (res.data.need_upgrade == 1){
+                                        that.showUpgradePackage = true
+                                    } else {
+                                        that.showDirectService = true
+                                        var btnCn = ''
+                                        if(res.data.use_type == 'points'){
+                                            btnCn = '立即兑换'
+                                        }
+                                        if(res.data.use_type == 'package'){
+                                            btnCn = '购买增值包'
+                                        }
+                                        if(res.data.use_type == 'money'){
+                                            btnCn = '立即支付'
+                                        }
+                                        that.directServiceInfo = {
+                                            use_type: res.data.use_type,
+                                            need_points: res.data.need_points,
+                                            need_expense: res.data.need_expense,
+                                            discount: res.data.discount,
+                                            btnCn: btnCn,
+                                            cancel:res.data.use_type == 'package' ? '升级套餐': '取 消'
+                                        }
                                     }
                                     return false
                                 } else {
@@ -1136,6 +1162,10 @@
                 this.payment = payment
                 this.$emit('choosePayment',this.payment)
             },
+            companyServiceUpgradePackage(){
+                window.open(qscms.locationList.companySetmealAdd)
+                this.showUpgradePackage = false
+            }
         }
     })
 </script>

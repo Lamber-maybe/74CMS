@@ -1465,6 +1465,7 @@ export default {
       this.loading = true
       if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == '1'){
         this.authenticationScreen = 0
+        this.authenticationFilter = { 'name': '待审核', 'field': 'audit' }
         localStorage.setItem('clue_audit', '')
       }
       crmCompanyList({

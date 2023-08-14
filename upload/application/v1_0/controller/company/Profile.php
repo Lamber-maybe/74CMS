@@ -363,12 +363,15 @@ class Profile extends \app\v1_0\controller\common\Base
                     '',
                     'trim,badword_filter'
                 );
-                /*
-                  * 【优化】企业会员中心网址格式验证
-                  * zch 2022.10.13
-                  * 【新增正则验证】
-                  * */;
-                if(!fieldRegex($input_data['info']['website'],'url')){
+
+                /**
+                 * 【bug】企业资料网址设置非必填，前端一直给验证
+                 * 【ID1000388】
+                 * yx - 2022.10.27
+                 */
+                if (!empty($input_data['info']['website'])
+                    &&
+                    !fieldRegex($input_data['info']['website'], 'url')) {
                     $this->ajaxReturn(500, '请填写正确的网址');
                 }
             } elseif ($company_info === null) {
@@ -452,6 +455,31 @@ class Profile extends \app\v1_0\controller\common\Base
                     $input_data['basic']['cs_id'] = model('Member')->distributionCustomerService();
                     $member_setmeal = model('MemberSetmeal')->where('uid', $this->userinfo->uid)->find();
                     $input_data['basic']['setmeal_id'] = $member_setmeal === null ? 0 : $member_setmeal->setmeal_id;
+
+                    /**
+                     * 【ID1000415】【bug】CRM不自动分配客服
+                     * yx - 2022.11.10
+                     * [新增]
+                     * 自动分配客服逻辑
+                     */
+                    // 1.判断CRM设置是否开启客户分配销售规则
+                    $is_rule = model('b2bcrm.CrmSysConfig')->getConfigByKey('customer_allocation_rule');
+                    if (1 === intval($is_rule)) {
+                        // 2.查询当前轮训的客服admin_id
+                        $crm_auto_assign = model('b2bcrm.CrmAutoAssign')
+                            ->where('type', 2)
+                            ->order('assign_num asc,id asc')
+                            ->value('admin_id');
+                        if (!empty($crm_auto_assign)) {
+                            $input_data['basic']['admin_id'] = $crm_auto_assign; // 添加客服ID
+                            $input_data['basic']['collection_time'] = time(); // 添加领取时间
+                            // 3.分配成功，切换轮训客服
+                            model('b2bcrm.CrmAutoAssign')
+                                ->where('admin_id', $crm_auto_assign)
+                                ->setInc('assign_num');
+                        }
+                    }
+
                     $result = model('Company')
                         ->validate(true)
                         ->allowField(true)

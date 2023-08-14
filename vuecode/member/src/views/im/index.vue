@@ -13,7 +13,7 @@
           <div class="emp_text">与您沟通过的信息都会在左侧列表中显示</div>
         </div>
         <!--右侧聊天记录列表-->
-        <div class="right" v-if="target_userinfo.nickname!=''">
+        <div class="right" v-show="target_userinfo.nickname!=''">
           <div class="r-top">
             <!--企业会员时显示tab标签-->
             <div class="tablist" v-if="$store.state.LoginType==1">

@@ -53,22 +53,31 @@
           <div class="bc_cell" @click="$router.push('/company_list/0')">
             <p class="t1">{{pending_data[0]===undefined?0:pending_data[0].num}}</p><p class="t2">{{pending_data[0]===undefined?'':pending_data[0].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/job_list/0')">
+          <div class="bc_cell" @click="$router.push('/company_list/3')">
             <p class="t1">{{pending_data[1]===undefined?0:pending_data[1].num}}</p><p class="t2">{{pending_data[1]===undefined?'':pending_data[1].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/resume_list/0')">
+          <div class="bc_cell" @click="$router.push('/job_list/0')">
             <p class="t1">{{pending_data[2]===undefined?0:pending_data[2].num}}</p><p class="t2">{{pending_data[2]===undefined?'':pending_data[2].title}}</p>
           </div>
         </div>
         <div class="bc_line">
-          <div class="bc_cell" @click="$router.push('/cancellation')">
+          <div class="bc_cell" @click="$router.push('/resume_list/0')">
             <p class="t1">{{pending_data[3]===undefined?0:pending_data[3].num}}</p><p class="t2">{{pending_data[3]===undefined?'':pending_data[3].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/tipoff')">
+          <div class="bc_cell" @click="$router.push('/cancellation')">
             <p class="t1">{{pending_data[4]===undefined?0:pending_data[4].num}}</p><p class="t2">{{pending_data[4]===undefined?'':pending_data[4].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/feedback')">
+          <div class="bc_cell" @click="$router.push('/tipoff')">
             <p class="t1">{{pending_data[5]===undefined?0:pending_data[5].num}}</p><p class="t2">{{pending_data[5]===undefined?'':pending_data[5].title}}</p>
+          </div>
+        </div>
+        <div class="bc_line">
+          <div class="bc_cell" @click="$router.push('/feedback')">
+            <p class="t1">{{pending_data[6]===undefined?0:pending_data[6].num}}</p><p class="t2">{{pending_data[6]===undefined?'':pending_data[6].title}}</p>
+          </div>
+          <div class="bc_cell no_border">
+          </div>
+          <div class="bc_cell no_border">
           </div>
         </div>
       </div>
@@ -212,7 +221,10 @@
             &.c_3 { color: #333333; }
           }
           .t2 { position: relative;font-size: 28px;color: #333333; }
-          &:nth-of-type(3n) { border-right:0; }
+          &:last-child { border-right:0; }
+        }
+        .no_border {
+          border-right:0;
         }
       }
     }

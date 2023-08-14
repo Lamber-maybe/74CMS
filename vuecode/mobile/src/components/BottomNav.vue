@@ -54,8 +54,8 @@ export default {
   },
   methods: {
     ...mapMutations(['setImToken']),
-    handleImjump(item){
-      if(this.thirdClass == 'im'){
+    handleImjump (item) {
+      if (this.thirdClass == 'im') {
         this.$store.state.imUnreaded = false
         this.$router.push(item)
       } else {
@@ -114,7 +114,7 @@ export default {
     getUserList () {
       http.post(api.chatList, {token: this.imToken}).then((res) => {
         if (res.code == 200) {
-        this.$store.state.imUnreaded = false
+          this.$store.state.imUnreaded = false
           res.data.items.forEach(item => {
             if (item.new > 0) {
               this.$store.state.imUnreaded = true
@@ -123,11 +123,11 @@ export default {
         }
       })
     },
-    //全局检测
+    // 全局检测
     imWindowGlobal () {
       http.post(api.im_window_global).then((res) => {
         if (res.data.next == '') {
-          if(this.imToken == ''){
+          if (this.imToken == '') {
             this.getImToken()
           } else {
             this.getUserList()
@@ -135,35 +135,44 @@ export default {
         }
       })
     },
-    //获取token
+    // 获取token
     getImToken () {
       http.get(api.imToken).then((res) => {
         this.setImToken(res.data)
         this.getUserList()
       })
     },
-  },
-  computed: {
-    ...mapState({
-      imUnreaded: state => state.imUnreaded,
-      imToken: state => state.imToken
-    })
-  },
-  mounted () {
-    // 根据登录会员类型，处理导航显示
-    if (this.$store.state.LoginOrNot) {
+    /**
+     * 【ID1000410】
+     * 【优化】触屏端登录后底部
+     * yx - 2022.11.08
+     */
+    initializeBarItem () {
+      // 根据登录会员类型，处理导航显示
+      if (this.$store.state.LoginOrNot) {
         this.imWindowGlobal()
-      if (parseInt(this.$store.state.LoginType) === 1) {
-        // 企业
-        this.secondClass = 'resume'
-        this.secondText = '找人才'
-        this.secondTo = '/resumelist'
-        this.thirdClass = 'im'
-        this.thirdText = '消息'
-        this.thirdTo = '/im/imList'
-        this.mineTo = '/member/company/index'
+        if (parseInt(this.$store.state.LoginType) === 1) {
+          // 企业
+          this.secondClass = 'resume'
+          this.secondText = '找人才'
+          this.secondTo = '/resumelist'
+          this.thirdClass = 'im'
+          this.thirdText = '消息'
+          this.thirdTo = '/im/imList'
+          this.mineTo = '/member/company/index'
+        } else {
+          // 个人
+          this.plusSignTo = '/member/personal/resume'
+          this.secondClass = 'job'
+          this.secondText = '找工作'
+          this.secondTo = '/joblist'
+          this.thirdClass = 'im'
+          this.thirdText = '消息'
+          this.thirdTo = '/im/imList'
+          this.mineTo = '/member/personal/index'
+        }
       } else {
-        // 个人
+        // 未登录
         this.plusSignTo = '/member/personal/resume'
         this.secondClass = 'job'
         this.secondText = '找工作'
@@ -174,6 +183,18 @@ export default {
         this.mineTo = '/member/personal/index'
       }
     }
+  },
+  computed: {
+    ...mapState({
+      imUnreaded: state => state.imUnreaded,
+      imToken: state => state.imToken
+    })
+  },
+  activated () {
+    this.initializeBarItem()
+  },
+  mounted () {
+    this.initializeBarItem()
   }
 }
 </script>

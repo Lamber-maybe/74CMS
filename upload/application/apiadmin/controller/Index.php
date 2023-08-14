@@ -96,7 +96,7 @@ class Index extends \app\common\controller\Backend
         $return['job_apply_yesterday'] = model('JobApply')->where('addtime','between',[$timestampYesterday,$timestampToday])->count();
         $return['orderpay_personal_today'] = model('Order')->where('utype',2)->where('paytime','egt',$timestampToday)->count();
         $return['orderpay_personal_yesterday'] = model('Order')->where('utype',2)->where('paytime','between',[$timestampYesterday,$timestampToday])->count();
-        
+
         $return['reg_company_today'] = model('Member')->where('utype',1)->where('reg_time','egt',$timestampToday)->count();
         $return['reg_company_yesterday'] = model('Member')->where('utype',1)->where('reg_time','between',[$timestampYesterday,$timestampToday])->count();
         $return['job_add_today'] = model('Job')->where('addtime','egt',$timestampToday)->count();
@@ -113,11 +113,37 @@ class Index extends \app\common\controller\Backend
      * 获取待办信息
      */
     protected function getPendingData(){
-        $return[] = ['title'=>'待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'company_audit'];
+        /**
+         * 【ID1000407】【bug】首页提示举报信息与实际数量不对应
+         * yx - 2022.11.08
+         * [旧]：
+         * $tipoff_num = model('Tipoff')->where('status', 0)->->count();
+         */
+        $job_tip = model('Tipoff')
+            ->alias('t')
+            ->join('member m', 'm.uid = t.uid', 'LEFT')
+            ->join('job_search_rtime j', 'j.id = t.target_id', 'LEFT')
+            ->where('t.type', 1)
+            ->where('t.status', 0)
+            ->where('m.uid', 'NOT NULL')
+            ->where('j.id', 'NOT NULL')
+            ->count('t.id');
+        $resume_tip = model('Tipoff')
+            ->alias('t')
+            ->join('member m', 'm.uid = t.uid', 'LEFT')
+            ->join('resume_search_rtime r', 'r.id = t.target_id', 'LEFT')
+            ->where('t.type', 2)
+            ->where('t.status', 0)
+            ->where('m.uid', 'NOT NULL')
+            ->where('r.id', 'NOT NULL')
+            ->count('t.id');
+        $tipoff_num = $job_tip + $resume_tip;
+        $return[] = ['title'=>'全部待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'all_company_audit'];
+        $return[] = ['title'=>'我的待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('admin_id',$this->admininfo->id)->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'my_company_audit'];
         $return[] = ['title'=>'待审核职位','num'=>model('Job')->where('audit',0)->count(),'alias'=>'job_audit'];
         $return[] = ['title'=>'待审核简历','num'=>model('Resume')->where('audit',0)->count(),'alias'=>'resume_audit'];
         $return[] = ['title'=>'注销账号申请','num'=>model('MemberCancelApply')->where('status',0)->count(),'alias'=>'cancel_apply'];
-        $return[] = ['title'=>'举报信息','num'=>model('Tipoff')->where('status',0)->count(),'alias'=>'tipoff'];
+        $return[] = ['title'=>'举报信息','num'=>$tipoff_num,'alias'=>'tipoff'];
         $return[] = ['title'=>'意见建议','num'=>model('Feedback')->where('status',0)->count(),'alias'=>'feedback'];
         return $return;
     }

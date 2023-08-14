@@ -341,7 +341,6 @@ export default {
     }
   },
   created() {
-    console.log(this.listtype)
     this.fetchData()
     this.fetchPlatformOptions()
   },
@@ -439,7 +438,13 @@ export default {
     funAdd(index, row) {
       this.childId = 0
       this.dialogWidth = '35%'
-      this.dialogTitle = '添加会员'
+      if (this.listtype == 'company') {
+        this.dialogTitle = '添加【企业】会员'
+      } else if (this.listtype == 'personal') {
+        this.dialogTitle = '添加【个人】会员'
+      } else {
+        this.dialogTitle = '添加【无效】会员'
+      }
       this.dialogFormVisible = true
     },
     funDetail(index, row) {

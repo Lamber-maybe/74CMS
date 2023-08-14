@@ -166,6 +166,13 @@ class Account extends \app\v1_0\controller\common\Base
         model('Member')
             ->where('uid', $this->userinfo->uid)
             ->setField('mobile', $input_data['mobile']);
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        model('IdentityToken')->where(['uid' => $this->userinfo->uid])->delete(); //修改密码即删除token,
+
         cache('smscode_' . $input_data['mobile'], null);
         $this->writeMemberActionLog($this->userinfo->uid,'修改手机号【新手机号：'.$input_data['mobile'].'】');
         $this->ajaxReturn(200, '修改成功');
@@ -273,8 +280,68 @@ class Account extends \app\v1_0\controller\common\Base
             $model->pwd_hash
         );
         $model->save();
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        model('IdentityToken')->where(['uid' => $this->userinfo->uid])->delete(); //修改密码即删除token,
+
         $this->writeMemberActionLog($this->userinfo->uid,'修改密码');
         $this->ajaxReturn(200, '修改成功');
+    }
+    /**
+     * 绑定qq
+     */
+    public function bindQq()
+    {
+        $input_data = [
+            'type' => 'qq',
+            'openid' => input('post.openid/s', '', 'trim'),
+            'unionid' => input('post.unionid/s', '', 'trim'),
+            'nickname' => input('post.nickname/s', '', 'trim'),
+            'avatar' => input('post.avatar/s', '', 'trim'),
+            'bindtime' => time(),
+        ];
+        $validate = new \think\Validate([
+            'openid' => 'require',
+            'unionid' => 'require',
+            'nickname' => 'require',
+            'avatar' => 'require',
+        ]);
+        if (!$validate->check($input_data)) {
+            $this->ajaxReturn(500, $validate->getError());
+        }
+
+        $bindinfo = model('MemberBind')->where([
+                'type' => $input_data['type'],
+                'openid' => ['eq', $input_data['openid']],
+                'unionid' => ['eq', $input_data['unionid']],
+            ])->find();
+        if ($bindinfo=== null) {
+            $sqlarr['uid'] = $this->userinfo->uid;
+            $sqlarr['type'] = $input_data['type'];
+            $sqlarr['openid'] = $input_data['openid'];
+            $sqlarr['unionid'] = $input_data['unionid'];
+            $sqlarr['nickname'] = $input_data['nickname'];
+            $sqlarr['avatar'] = $input_data['avatar'];
+            $sqlarr['bindtime'] = $input_data['bindtime'];
+            model('MemberBind')->save($sqlarr);
+            model('Task')->doTask(
+                $this->userinfo->uid,
+                $this->userinfo->utype,
+                'bind_qq'
+            );
+        }else{
+            $sqlarr['uid'] = $this->userinfo->uid;
+            $sqlarr['nickname'] = $input_data['nickname'];
+            $sqlarr['avatar'] = $input_data['avatar'];
+            $sqlarr['bindtime'] = $input_data['bindtime'];
+            model('MemberBind')->save($sqlarr,['id'=>$bindinfo['id']]);
+        }
+        $this->writeMemberActionLog($this->userinfo->uid,'绑定QQ');
+
+        $this->ajaxReturn(200, '绑定成功');
     }
     /**
      * 绑定新浪微博

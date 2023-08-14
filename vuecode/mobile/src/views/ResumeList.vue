@@ -197,7 +197,8 @@ export default {
       selectResumeTag: [],
       // 未登录引导
       showLayer: false,
-      showWarn: true
+      showWarn: true,
+      totalPage: 0
     }
   },
   watch: {
@@ -223,7 +224,7 @@ export default {
     }
   },
   activated () {
-    this.initdata()
+    // this.initdata()
   },
   created () {
     this.initdata()
@@ -637,6 +638,7 @@ export default {
       conditions.pagesize = this.pagesize
       http.get(api.resumelist, conditions)
         .then(res => {
+          this.totalPage = res.data.total_page
           if (init === true) {
             this.dataset = [...res.data.items]
             this.showLayer = parseInt(res.data.show_mask) === 1
@@ -647,20 +649,22 @@ export default {
           this.loading = false
 
           // 数据全部加载完成
-          if (res.data.items.length < this.pagesize) {
+          if (res.data.items.length === 0) {
+            this.show_empty = true
+          } else if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
             this.finished = true
-            if (init === false) {
-              this.finished_text = '没有更多了'
-            } else if (res.data.items.length === 0) {
-              this.show_empty = true
-            }
+            // if (init === false) {
+            this.finished_text = '暂无更多'
+            // }
           }
         })
         .catch(() => {})
     },
     onLoad () {
-      this.page++
-      this.fetchData(false)
+      if (this.page < this.totalPage) {
+        this.page++
+        this.fetchData(false)
+      }
     },
     toDetail (id) {
       /**
@@ -669,7 +673,7 @@ export default {
        * 【新增】列表置空
        * this.dataset = []
        * */
-      this.dataset = []
+      // this.dataset = []
       this.$router.push('/resume/' + id)
     },
     // 搜索通用函数

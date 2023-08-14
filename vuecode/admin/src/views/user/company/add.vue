@@ -193,7 +193,7 @@
           allow-create
           default-first-option
           placeholder="请选择企业福利"
-          :multiple-limit="6"
+          :multiple-limit="10"
           class="tag-input"
         >
           <el-option

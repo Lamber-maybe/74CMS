@@ -234,7 +234,7 @@ class JobSearchEngine
                     ->field($this->field)
                     ->where($this->where)
                     ->order($this->orderby)
-//                    ->limit($this->list_max)
+                    ->limit($this->list_max) // zxr 2022.10.27  放开注释，之前是注释掉的
                     ->select();
                 $tmp_idarr = [];
                 foreach ($total_list as $k=>$v){
@@ -257,10 +257,21 @@ class JobSearchEngine
                     }
                 }
             }
-            //当前页码超出总量限制时，重置为最大值
+            // //当前页码超出总量限制时，重置为最大值
+            // $total_page = $total == 0 ? 0 : ceil($total / $this->pagesize);
+            // if ($this->current_page > $total_page) {
+            //     $this->current_page = $total_page;
+            // }
+            //zxr 2022.10.27
+            //当前页码超出总量限制时，返回空数据（给个确保0条数据的where条件）
             $total_page = $total == 0 ? 0 : ceil($total / $this->pagesize);
             if ($this->current_page > $total_page) {
-                $this->current_page = $total_page;
+                $this->where = 'a.id=0';
+            }
+            //zxr 2022.10.27
+            //当数据量很小，小到连一页都不够时，要把查询数量设置为当前的数据量
+            if ($total > 0 && $total < $this->pagesize) {
+                $this->pagesize = $total;
             }
         } else {
             $total = 0;
@@ -326,7 +337,21 @@ class JobSearchEngine
             "' IN " .
             $this->fulltext_mode .
             ' MODE) AS score3';
-        $this->orderby = 'score1 desc,score2 desc,score3 desc,refreshtime desc';
+
+        /**
+         * 【ID1000392】
+         * 【新增】职位、简历搜索页列表展现排序
+         * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
+         * yx - 2022.11.08
+         * [旧]
+         * $this->orderby = 'score1 desc,score2 desc,score3 desc,refreshtime desc';
+         */
+        $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
+        if ('1' === $job_search_order) {
+            $this->orderby = 'stick DESC, score1 desc, score2 desc, score3 desc, refreshtime desc, a.id DESC';
+        } else {
+            $this->orderby = 'stick DESC, refreshtime DESC, score1 desc, score2 desc, score3 desc, a.id DESC';
+        }
     }
     /**
      * 设置分页

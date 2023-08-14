@@ -826,6 +826,9 @@
 	font-size: 16px;
 	height: 23px;
 	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .right_box1 .job_item span.job_wage_text {

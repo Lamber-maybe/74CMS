@@ -315,10 +315,11 @@ export default {
       margin-right: 20px;
       background-color: #ebeef5;
       border: 1px solid #ebeef5;
-      padding: 20px;
+      border-radius: 3px;
       img {
         width: 100%;
         height: 100%;
+        border-radius: 3px;
       }
     }
     .info {

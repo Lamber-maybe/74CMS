@@ -38,3 +38,5 @@ Route::rule('jobfairol/details/:id$','index/jobfairol/details');//网络招聘�
 Route::rule('jobfairol','index/jobfairol/index');
 //修改路由名称触屏PC保持一致
 Route::rule('shortvideo','index/video_recruitment/index');// 视频招聘
+//IM短链接
+Route::get('ims/:code','v1_0/home.ImShortUrl/index');// IM短链接

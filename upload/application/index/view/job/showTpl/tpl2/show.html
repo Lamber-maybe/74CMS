@@ -418,6 +418,34 @@
                                         </p>
                                     </div>
                                 </div>
+                                <div class="contact_list" v-cloak v-if="contactData.has_apply==0&&contactData.show_contact==1" style="padding-bottom:20px;">
+                                    <div class="contact_item clearfix">
+                                        <p>
+                                            <span class="contact_width">联系人：</span>
+                                            {{contactData.contact_info.contact}}
+                                        </p>
+                                        <p>
+                                            <span class="contact_width">联系手机：</span>
+                                            {{contactData.contact_info.mobile}}
+                                        </p>
+                                        <p v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
+                                            <span class="contact_width">联系座机：</span>
+                                            {{contactData.contact_info.telephone}}
+                                        </p>
+                                        <p v-if="contactData.contact_info.weixin!='' && contactData.field_rule.weixin.is_display==1">
+                                            <span class="contact_width">联系微信：</span>
+                                            {{contactData.contact_info.weixin}}
+                                        </p>
+                                        <p v-if="contactData.contact_info.email!='' && contactData.field_rule.email.is_display==1">
+                                            <span class="contact_width">联系邮箱：</span>
+                                            {{contactData.contact_info.email}}
+                                        </p>
+                                        <p v-if="contactData.contact_info.qq!='' && contactData.field_rule.qq.is_display==1">
+                                            <span class="contact_width">联系QQ：</span>
+                                            {{contactData.contact_info.qq}}
+                                        </p>
+                                    </div>
+                                </div>
                                 {#if condition="$phone_protect_open"#}
                                 <div class="code_pro" @mouseenter.stop="onMouseover" @mouseleave.stop="onMouseout">
                                     <div class="scan_code">
@@ -479,8 +507,8 @@
                             {#volist name="return.similar" id="vo"#}
                             <div onclick="javascript:location.href='{#:url(\'index/job/show\',[\'id\'=>$vo.id])#}'">
                                 <p class="similar_post_name clearfix">
-                                    <a href="{#:url('index/job/show',['id'=>$vo.id])#}"
-                                        target="_blank">{#$vo.jobname#}</a>
+                                    <a class="similar_left_text" href="{#:url('index/job/show',['id'=>$vo.id])#}"
+                                        target="_blank" title="{#$vo.jobname#}">{#$vo.jobname#}</a>
                                     <span class="similar_right_text">{#$vo.refreshtime#}</span>
                                 </p>
                                 <p class="similar_data">

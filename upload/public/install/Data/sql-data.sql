@@ -953,7 +953,9 @@ INSERT INTO `qs_config` VALUES
 (null,'mobile_company_show_tpl',1,'def','触屏企业详情模板',0),
 (NULL,'mobile_resume_show_tpl',1,'def','触屏简历详情模板',0),
 (NULL,'qualification_publicity',1,'{"business_license":"","business_license_id":"0","business_licenses":"","business_licenses_id":"0","service_license_id":"0","service_license":""}','app资质公示',0),
-(NULL,'account_outbound',0,'{"app_id":"","app_secret":""}','外呼配置',0);
+(NULL,'account_outbound',0,'{"app_id":"","app_secret":""}','外呼配置',0),
+(NULL,'job_search_order',0,'2','职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序',0),
+(NULL,'resume_search_order',0,'2','简历搜索结果排序方式 1按信息关联度排序 2按信息时间线排序',0);
 
 
 INSERT INTO `qs_cron` VALUES
@@ -970,19 +972,20 @@ INSERT INTO `qs_cron` VALUES
 (NULL,'清除过期套餐','SetmealClear','-1','-1','-1','1','0','0','0','1','0'),
 (NULL, 'Sitemap', 'Sitemap', -1, -1, 0, '1', 0, 0, 1, 1, 0),
 (NULL, 'CRM线索未跟进自动释放', 'CrmClue', 0, 0, 0, 0, 0, 0, 1, 1, 0),
-(NULL, 'CRM企业未跟进自动释放', 'CrmCompany', 0, 0, 0, 0, 0, 0, 1, 1, 0);
+(NULL, 'CRM企业未跟进自动释放', 'CrmCompany', 0, 0, 0, 0, 0, 0, 1, 1, 0),
+(NULL, 'CRM客户未成交自动释放', 'CrmCustomerUnsettledFallSeas', -1, 1, 0, 0, 0, 0, 1, 1, 0);
 
 
 INSERT INTO `qs_explain` VALUES
-(NULL, '网站介绍', '', 1, '', '', '', 1264332774, 0),
-(NULL, '产品服务', '', 1, '', '', '', 1264332774, 0),
-(NULL, '法律申明', '', 1, '', '', '', 1264332774, 0),
-(NULL, '推广合作', '', 1, '', '', '', 1264332774, 0),
-(NULL, '联系我们', '', 1, '', '', '', 1264332774, 0),
-(NULL, '招贤纳士', '', 1, '', '', '', 1264332774, 0),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0);
+(NULL, '网站介绍', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '产品服务', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '法律申明', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '推广合作', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '联系我们', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '招贤纳士', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, ''),
+(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, '');
 
 INSERT INTO `qs_field_rule` VALUES
 (NULL,'Resume','marriage',0,1,0,'婚姻状况',0),
@@ -1143,7 +1146,7 @@ INSERT INTO `qs_navigation` VALUES
 
 INSERT INTO `qs_notify_rule` VALUES
 (NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}）','',0,1,1,0,0),
-(NUll,'job_apply',1,1,'收到简历','{fullname}投递了您的职位{jobname}，可能是您需要的人才，建议立即查看','resumeshow',1,0,0,1,0),
+(NUll,'job_apply',1,1,'收到简历','{fullname}投递了您的职位{jobname}，可能是您需要的人才，建议立即查看{resumeurl}','resumeshow',1,0,0,1,0),
 (NUll,'job_audit_success',1,2,'职位审核通过','您发布的{jobname}已通过审核，建议开启招聘加速通道，省心快招人','job_manage',1,0,0,0,0),
 (NUll,'job_audit_fail',1,2,'职位审核未通过','您发布的{jobname}未通过审核，未通过原因：{reason}。请修改后再次发布。','job_manage',1,0,0,1,0),
 (NUll,'company_auth_success',1,2,'企业认证通过','您提交的企业认证资料已认证通过，建议开启招聘加速通道，省心快招人','company_index',1,0,0,0,0),
@@ -1309,7 +1312,9 @@ INSERT INTO `qs_wechat_share` VALUES
 (NULL, 'svcomlist', '视频招聘列表', '【视频招聘】求职新体验，刷视频就能找工作-{sitename}', 'logo', '', '你有*个好友看过正在看~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL, 'svperslist', '视频求职列表', '【视频招聘】视频求职简历，看视频找人才-{sitename}', 'logo', '', '更多靠谱好人才等你发现~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL, 'svcomshow', '视频招聘详情', '【视频招聘】{comname}发布了招聘信息，走过路过不要错过-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"企业名称\",\"value\":\"comname\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
-(NULL, 'svpershow', '视频求职详情', '【视频招聘】{resumename}发布了视频简历，快来看看吧-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"姓名\",\"value\":\"resumename\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
+(NULL, 'svpershow', '视频求职详情', '【视频招聘】{resumename}发布了视频简历，快来看看吧-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"姓名\",\"value\":\"resumename\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NULL, 'reg_company', '企业用户注册', '【会员注册】欢迎注册企业招聘会员—{sitename}', 'logo', '', '本地企业都在这里招人，立即注册，高效招人', '[{\"label\":\"网站名称\",\"value\":\"sitename\"}]'),
+(NULL, 'reg_personal', '求职者用户注册', '【会员注册】欢迎注册求职者会员—{sitename}', 'logo', '', '30秒快速注册，海量热门职位等着你', '[{\"label\":\"网站名称\",\"value\":\"sitename\"}]');
 
 
 INSERT INTO `qs_tweets_label` VALUES

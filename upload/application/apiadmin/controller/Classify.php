@@ -147,8 +147,8 @@ class Classify extends \app\common\controller\Backend
                     $subarr['label'] = $v;
                     $arr['children'][] = $subarr;
                 }
+                $return[] = $arr;
             }
-            $return[] = $arr;
         }
         return $return;
     }

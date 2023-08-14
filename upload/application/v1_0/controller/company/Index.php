@@ -173,7 +173,11 @@ class Index extends \app\v1_0\controller\common\Base
                 ->count(),
         ];
         $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        $check_refreshlog = model('RefreshJobLog')->where('uid', $this->userinfo->uid)->where('addtime', '>=', strtotime('today'))->count();
+        $check_refreshlog = model('RefreshJobLog')
+            ->where('uid', $this->userinfo->uid)
+            ->where('source', 'IN', [2,3])
+            ->whereTime('addtime', 'today')
+            ->count();
 
         $message_list = model('Message')
             ->field('content,is_readed')

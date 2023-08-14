@@ -1387,6 +1387,7 @@ CREATE TABLE `qs_refresh_job_log` (
   `jobid` int(10) unsigned NOT NULL,
   `addtime` int(10) unsigned NOT NULL,
   `platform` varchar(30) NOT NULL DEFAULT '',
+  `source` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '刷新类型[1:后台系统刷新;2:免费刷新;3:公众号一键刷新;4:智能刷新;5:快捷支付]',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_refresh_job_log||-_-||
@@ -2389,7 +2390,9 @@ CREATE TABLE `qs_im_unread_remind` (
 `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
 `to_uid` int(10) NOT NULL COMMENT '消息接收方UID',
 `from_uid` int(10) NOT NULL COMMENT '消息发送方UID',
+`job_id` int(10) NOT NULL COMMENT '职位ID',
 `chat_id` varchar(32) NOT NULL COMMENT '聊天ID',
+`stick` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '置顶',
 `message_id` varchar(32) NOT NULL COMMENT '消息ID',
 `message` text COMMENT '消息内容',
 `keyword` varchar(255) NOT NULL COMMENT '留言内容',
@@ -2726,3 +2729,18 @@ CREATE TABLE `qs_urm_recycle_bin`  (
 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = 'Urm回收站表';
 ||-_-||qs_urm_recycle_bin||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_im_short_url`;
+CREATE TABLE `qs_im_short_url`  (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`url` varchar(255) NOT NULL DEFAULT '' COMMENT '原始链接',
+`code` char(13) NOT NULL DEFAULT '' COMMENT '短码',
+`uid` int(10) NOT NULL COMMENT 'uid',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+`pv` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = 'IM聊天页面短链接';
+||-_-||qs_im_short_url||-_-||

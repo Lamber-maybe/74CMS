@@ -357,7 +357,9 @@ select::-ms-expand {
 	font-size:12px ;
 	padding: 5px 0;
 }
-
+.option_left{
+	float: left;
+}
 .option_right{
 	float: right;
 }
@@ -407,6 +409,14 @@ cursor: pointer;
 .array_type{
 	padding: 3px 0 3px 20px;
 	border-left: 1px solid #ccc;
+}
+.array_type_no_border {
+	padding: 3px 0 3px 0;
+}
+.array_type_no_border .t {
+	display: inline-block;
+	line-height: 20px;
+	color: #999;
 }
 .array_type .t {
 	display: inline-block;line-height: 20px;

@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\common\lib\Sms;
 use app\common\lib\Wechat;
 use app\common\model\im\ImUnreadRemind;
+use app\common\model\ImShortUrl;
 
 class UnreadRemind extends Backend
 {
@@ -49,7 +50,11 @@ class UnreadRemind extends Backend
             $this->ajaxReturn(500, '缺少参数【fu_id】');
         }
 
-        $chat_id = input('post.chat_id/s', 0, 'trim');
+        $job_id = input('post.job_id/d', 0, 'intval');
+
+        $stick = input('post.stick/d', 0, 'intval');
+
+        $chat_id = input('post.chat_id/s', '', 'trim');
         if (empty($chat_id)) {
             $this->ajaxReturn(500, '缺少参数【c_id】');
         }
@@ -111,8 +116,52 @@ class UnreadRemind extends Backend
         $unread_reminder = $im_unread_config['unread_reminder'];
         $unread_templateid = $im_unread_config['unread_templateid'];
 
+        /**
+         * 5.拼接跳转地址
+         */
+        // 5.1 jobname
+        $jobName = model('Job')
+            ->where('id', $job_id)
+            ->value('jobname');
+        // 5.2 name
+        $name = $from_member_name;
+        // 5.3 resumeId
+        if ($to_member_info['utype'] === 2) {
+            $resumeId = model('Resume')
+                ->where('uid', $to_uid)
+                ->value('id');
+        } else {
+            $resumeId = model('Resume')
+                ->where('uid', $from_uid)
+                ->value('id');
+        }
+
         // 跳转地址
-        $url = config('global_config.mobile_domain') . 'im/' . $chat_id;
+        $url = config('global_config.mobile_domain') . 'im/' . $chat_id .
+            '?jobname=' . $jobName
+            . '&name=' . $name
+            . '&jobid=' . $job_id
+            . '&resumeid=' . $resumeId;
+
+        try {
+            $m = new ImShortUrl();
+            $short_url = $m->gen($url, $to_uid);
+        } catch (\Exception $e) {
+            $this->ajaxReturn(500, $e->getMessage());
+        }
+
+        $remind_data = [
+            'to_uid' => $to_uid,
+            'from_uid' => $from_uid,
+            'chat_id' => $chat_id,
+            'job_id' => $job_id,
+            'stick' => $stick,
+            'message_id' => $message_id,
+            'message' => $message,
+            'keyword' => $keyword,
+            'type' => $type,
+            'add_time' => $add_time,
+        ];
 
         /**
          * 判断用户是否绑定微信公众号
@@ -161,27 +210,16 @@ class UnreadRemind extends Backend
                         'color' => '#CC6600'
                     ]
                 ],
-                $url
+                $short_url
             );
 
             if (isset($res['errcode']) && 0 === $res['errcode']) {
                 try {
+                    $remind_data['remind_mode'] = 1;
                     $insert_log = model('im.ImUnreadRemind')
                         ->allowField(true)
                         ->isUpdate(false)
-                        ->save(
-                            [
-                                'to_uid' => $to_uid,
-                                'from_uid' => $from_uid,
-                                'chat_id' => $chat_id,
-                                'message_id' => $message_id,
-                                'message' => $message,
-                                'keyword' => $keyword,
-                                'type' => $type,
-                                'add_time' => $add_time,
-                                'remind_mode' => 1
-                            ]
-                        );
+                        ->save($remind_data);
                     if (false === $insert_log) {
                         throw new \Exception(model('im.ImUnreadRemind')->getError());
                     }
@@ -211,7 +249,7 @@ class UnreadRemind extends Backend
                 'SMS_14',
                 [
                     'membername' => $from_member_name,
-                    'url' => $url
+                    'url' => $short_url
                 ]
             );
             if (false === $sms_send_result) {
@@ -219,22 +257,11 @@ class UnreadRemind extends Backend
             }
 
             try {
+                $remind_data['remind_mode'] = 2;
                 $insert_log = model('im.ImUnreadRemind')
                     ->allowField(true)
                     ->isUpdate(false)
-                    ->save(
-                        [
-                            'to_uid' => $to_uid,
-                            'from_uid' => $from_uid,
-                            'chat_id' => $chat_id,
-                            'message_id' => $message_id,
-                            'message' => $message,
-                            'keyword' => $keyword,
-                            'type' => $type,
-                            'add_time' => $add_time,
-                            'remind_mode' => 2
-                        ]
-                    );
+                    ->save($remind_data);
                 if (false === $insert_log) {
                     throw new \Exception(model('im.ImUnreadRemind')->getError());
                 }

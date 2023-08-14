@@ -20,6 +20,34 @@
           未登录会员可以搜索职位条数
         </span>
       </el-form-item>
+      <!--      【ID1000392】【新增】职位、简历搜索页列表展现排序-->
+      <el-form-item label="搜索结果排序方式">
+        <el-radio-group v-model="form.job_search_order">
+          <el-radio label="1">
+            按信息关联度排序
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="从职位类型、描述等多维度的数据匹配，关联度越高信息展现越靠前"
+              placement="top-start"
+            >
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="2">
+            按信息时间线排序
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="搜索结果按职位刷新时间排序，时间越靠近展现越靠前"
+              placement="top-start"
+            >
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <!--      【ID1000392】【新增】职位、简历搜索页列表展现排序-->
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
       </el-form-item>
@@ -36,7 +64,8 @@ export default {
       infoLoading: true,
       form: {
         job_search_login: false,
-        job_search_login_num: 0
+        job_search_login_num: 0,
+        job_search_order: 1
       },
       rules: {
         job_search_login_num: [
@@ -60,11 +89,13 @@ export default {
         .then(response => {
           const {
             job_search_login,
-            job_search_login_num
+            job_search_login_num,
+            job_search_order
           } = { ...response.data }
           this.form = {
             job_search_login: job_search_login == 1,
-            job_search_login_num
+            job_search_login_num,
+            job_search_order
           }
           this.infoLoading = false
         })
@@ -94,5 +125,8 @@ export default {
 .el-input,
 .el-input-group {
   width: 50%;
+}
+::v-deep .el-icon-question {
+  color: #999;
 }
 </style>

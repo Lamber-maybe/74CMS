@@ -25,6 +25,7 @@ class CompanyDownResume extends \app\common\model\BaseModel
             'status' => 1,
             'msg' => '',
             'done' => 1,
+            'need_upgrade' => 0
         ];
         do {
             if (!isset($data['resume_id']) || !$data['resume_id']) {
@@ -117,7 +118,8 @@ class CompanyDownResume extends \app\common\model\BaseModel
             }else{
                 $return_data['status'] = 0;
                 $return_data['msg'] = '您当前的套餐不允许下载简历，请升级套餐';
-                $return_data['done'] = 1;
+                $return_data['done'] = 0;
+                $return_data['need_upgrade'] = 1;
                 break;
             }
             

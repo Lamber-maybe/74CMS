@@ -1979,7 +1979,7 @@ export default {
         display: inline-block;
         width: 10px;
         height: 10px;
-        background: url(/static/img/return.3aac3c5.png) 0 no-repeat;
+        background: url("../../assets/images/jobshow/return.png") 0 no-repeat;
         background-size: 0.32rem;
         position: absolute;
         top: 9px;

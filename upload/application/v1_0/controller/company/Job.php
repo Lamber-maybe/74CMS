@@ -836,7 +836,16 @@ class Job extends \app\v1_0\controller\common\Base
             'uid'         => $this->userinfo->uid,
             'refresh_log' => true
         ];
-        $result = model('Job')->refreshJobData($refreshParams, 2);
+
+        /**
+         * 刷新职位
+         * yx - 2022.11.11
+         * [旧]:
+         * $result = model('Job')->refreshJobData($refreshParams);
+         * [新]:
+         * $result = model('Job')->refreshJobMind($refreshParams,2);
+         */
+        $result = model('Job')->refreshJobMind($refreshParams, 2);
         if ($result['status'] === false) {
             if (!empty($result['data'])) {
                 $this->ajaxReturn(200, $result['msg'], $result['data']);
@@ -872,7 +881,15 @@ class Job extends \app\v1_0\controller\common\Base
             'uid'         => $this->userinfo->uid,
             'refresh_log' => true
         ];
-        $result = model('Job')->refreshJobData($refreshParams, 2);
+        /**
+         * 刷新职位
+         * yx - 2022.11.11
+         * [旧]:
+         * $result = model('Job')->refreshJobData($refreshParams);
+         * [新]:
+         * $result = model('Job')->refreshJobMind($refreshParams,2);
+         */
+        $result = model('Job')->refreshJobMind($refreshParams, 2);
         if ($result['status'] === false) {
             if (!empty($result['data'])) {
                 $this->ajaxReturn(200, $result['msg'], $result['data']);
@@ -880,8 +897,9 @@ class Job extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $result['msg']);
         }
 
-        $jobidArr = array_column($result['data'], 'id');
-        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【职位id：' . implode(",",$jobidArr) . '】');
+//        $jobidArr = array_column($result['data'], 'id');
+        $jobnameArr = array_column($result['data'], 'jobname');
+        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【' . implode(",",$jobnameArr) . '】');
 
         $this->ajaxReturn(200, '刷新成功', ['done' => 1]);
     }

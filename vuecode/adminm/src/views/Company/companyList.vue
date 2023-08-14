@@ -80,7 +80,7 @@
     },
     created () {
       this.type = parseInt(this.$route.params.type)
-      this.title = this.type === 1 ? '企业管理' : '待审核企业'
+      this.title = this.type === 1 ? '企业管理' : this.type === 3 ? '我的待审核企业' :'全部待审核企业'
       this.fetchClassify()
       
     },
@@ -103,7 +103,8 @@
         }
         conditions.page = this.page
         conditions.pagesize = this.pagesize
-        conditions.list_type = this.type==1?'':'noaudit'
+        // conditions.list_type = this.type==1?'':'noaudit'
+        conditions.list_type = this.type==1?'':this.type === 3 ? 'mynoaudit' : 'noaudit'
         if (this.regularMobile.test(conditions.keyword)) {
           conditions.key_type = 3
         }else if(this.regularNumber.test(conditions.keyword)){

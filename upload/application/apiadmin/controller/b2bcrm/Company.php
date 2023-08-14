@@ -31,8 +31,8 @@ class Company extends Backend
         $customer_type = input('get.list_type/d', 0, 'intval'); // 客户类型 0-全部企业 1-企业公海 2-我的客户
         $setmeal_deadline = input('get.setmeal_deadline', 0, 'intval');// 套餐是否过期 1-未过期 2-已过期
         $weixin = input('get.weixin/d', 0, 'intval');// 微信绑定 1-已绑定 2-未绑定
-        $trade = input('get.trade/d',0,'intval'); // 所属行业
-        $district = input('get.district/a',[]); //所在地区
+        $trade = input('get.trade/d', 0, 'intval'); // 所属行业
+        $district = input('get.district/a', []); //所在地区
 
         // 排序规则【ASC|DESC】
         if (!in_array($sort, ['ASC', 'DESC'])) {
@@ -148,22 +148,18 @@ class Company extends Backend
         }
 
         // 查询条件 - 所属行业
-        if (!empty($trade))
-        {
+        if (!empty($trade)) {
             $where['c.trade'] = $trade;
         }
 
         // 查询条件 - 所在地区
-        if (!empty($district[0]))
-        {
+        if (!empty($district[0])) {
             $where['c.district1'] = $district[0];
         }
-        if (!empty($district[1]))
-        {
+        if (!empty($district[1])) {
             $where['c.district2'] = $district[1];
         }
-        if (!empty($district[2]))
-        {
+        if (!empty($district[2])) {
             $where['c.district3'] = $district[2];
         }
 
@@ -522,7 +518,7 @@ class Company extends Backend
              * 【新增】
              * $list[$comId]['last_login_time'] = !empty($comInfo['last_login_time'])  ? date('Y-m-d H:i:s',$comInfo['last_login_time']) : '';
              * */
-            $list[$comId]['last_login_time'] = !empty($comInfo['last_login_time'])  ? date('Y-m-d H:i:s',$comInfo['last_login_time']) : '';
+            $list[$comId]['last_login_time'] = !empty($comInfo['last_login_time']) ? date('Y-m-d H:i:s', $comInfo['last_login_time']) : '';
             $list[$comId]['trade'] = isset($category_data['QS_trade'][$comInfo['trade']])
                 ? $category_data['QS_trade'][$comInfo['trade']]
                 : '';
@@ -541,7 +537,7 @@ class Company extends Backend
             )
                 ? $category_district_data[$comInfo['district3']]
                 : '';
-            $list[$comId]['district'] = $district1.$district2.$district3;
+            $list[$comId]['district'] = $district1 . $district2 . $district3;
             $list[$comId]['link'] = url('index/company/show', ['id' => $comInfo['id']]);
         }
 
@@ -567,10 +563,16 @@ class Company extends Backend
         if (!is_array($uid) || empty($uid)) {
             $this->ajaxReturn(500, '缺少uid参数');
         }
-        $company_count = model('Company')->where(['uid' => ['in', $uid]])->count();
+
+        $company_count = model('Company')
+            ->where([
+                'uid' => ['in', $uid]
+            ])
+            ->count();
         if ($company_count == 0) {
             $this->ajaxReturn(500, '请选择正确的企业');
         }
+
         Db::startTrans();
         try {
             $update = model('Company')
@@ -587,15 +589,16 @@ class Company extends Backend
                 $release[] = [
                     'uid' => $v,
                     'create_time' => time(),
-                    'operation_type' => 1,
+                    'operation_type' => 2,
                     'operator' => 2,
                     'admin_id' => $this->admininfo->id,
                     'utype' => 1
                 ];
             }
             model('b2bcrm.CrmClueRelease')->insertAll($release);
-            $uid = implode(',', $uid);
+
             // 日志
+            $uid = implode(',', $uid);
             $log_result = model('AdminLog')->record(
                 '释放企业所属销售【ID:' . $uid . '】',
                 $this->admininfo
@@ -603,6 +606,7 @@ class Company extends Backend
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
+
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -637,9 +641,9 @@ class Company extends Backend
                 }
             }
             if ($sys_config['customer_receive_limit'] == 0) {
-                $this->ajaxReturn(500, '当前不允许主动领取客户', []);
+                $this->ajaxReturn(500, '当前系统配置不允许主动领取客户', []);
             }
-            if (isset($sys_config['customer_receive_limit'])) // 领取天数限制
+            if (!empty($sys_config['customer_receive_limit'])) // 领取天数限制
             {
                 $today_time = strtotime("today");
                 $where = [
@@ -658,66 +662,61 @@ class Company extends Backend
                     $this->ajaxReturn(500, '当天领取限制' . $sys_config['customer_receive_limit'] . '个，你已领取' . $count . '个！还可领取【' . $can_num . '】个！', []);
                 }
             }
-            if (isset($sys_config['customer_forbidden_sale'])) // 禁止领取期限(销售)
-            {
-                foreach ($uid as $v) {
-                    $where = [
+
+            foreach ($uid as $v) {
+                /**
+                 * CRM客户领取
+                 * yx - 2022.11.10
+                 */
+
+                // 1.查询最后一次释放记录
+                $lastRelease = model('b2bcrm.CrmClueRelease')
+                    ->alias('a')
+                    ->join('company b', 'b.uid=a.uid', 'left')
+                    ->where([
                         'a.uid' => $v,
                         'a.admin_id' => $this->admininfo->id,
-                        'a.operation_type' => 1,
-                        'a.operator' => 2,
-                        'a.utype' => 1,
-                    ];
-                    $CrmClueRelease = model('b2bcrm.CrmClueRelease')
-                        ->alias('a')
-                        ->join('company b', 'b.uid=a.uid', 'left')
-                        ->where($where)
-                        ->order('a.create_time', 'DESC')
-                        ->field('a.create_time,b.companyname')
-                        ->find();
+                        'a.operation_type' => 2,
+                        'a.utype' => 1
+                    ])
+                    ->order('a.create_time', 'DESC')
+                    ->field('a.create_time, a.operator, b.companyname')
+                    ->find();
 
-                    if (!empty($CrmClueRelease)) {
-                        if ($sys_config['customer_forbidden_sale'] == 0) {
-                            $this->ajaxReturn(500, '主动放弃客户不允许领取', []);
-                        }
-                        $CrmClueRelease = $CrmClueRelease->toArray();
-                        $thread_forbidden_sale = $sys_config['customer_forbidden_sale'] * 86400;
+                if (isset($lastRelease) && !empty($lastRelease)) {
+                    $crmClueRelease = $lastRelease->toArray();
 
-                        $timediff = strtotime($CrmClueRelease['create_time']) + $thread_forbidden_sale;
+                    // 操作人员 1-系统 2-销售
+                    switch ($lastRelease['operator']) {
+                        case 1:
+                            if ($sys_config['customer_forbidden_sys'] == 0) {
+                                $this->ajaxReturn(500, '系统配置系统自动释放客户不允许领取', []);
+                            }
+                            $customer_forbidden_sys = $sys_config['customer_forbidden_sys'] * 86400;
 
-                        if (time() <= $timediff) {
-                            $this->ajaxReturn(500, '【' . $CrmClueRelease['companyname'] . '】企业，释放后' . $sys_config['customer_forbidden_sale'] . '天内不能再领取该客户', []);
-                        }
-                    }
-                }
-            }
-            if (isset($sys_config['customer_forbidden_sys'])) // 禁止领取期限(系统)
-            {
-                foreach ($uid as $v) {
-                    $where = [
-                        'uid' => $v,
-                        'admin_id' => $this->admininfo->id,
-                        'operation_type' => 2,
-                        'operator' => 1,
-                        'utype' => 1,
-                    ];
-                    $admin_time = model('b2bcrm.CrmClueRelease')
-                        ->where($where)
-                        ->order('create_time', 'DESC')
-                        ->limit(1)
-                        ->value('create_time');
-                    if (!empty($admin_time)) {
-                        if ($sys_config['customer_forbidden_sys'] == 0) {
-                            $this->ajaxReturn(500, '系统放弃客户不允许领取', []);
-                        }
-                        $CrmClueRelease = $CrmClueRelease->toArray();
-                        $customer_forbidden_sys = $sys_config['customer_forbidden_sys'] * 86400;
+                            $time_diff = strtotime($crmClueRelease['create_time']) + $customer_forbidden_sys;
 
-                        $timediff = strtotime($CrmClueRelease['create_time']) + $customer_forbidden_sys;
+                            if (time() <= $time_diff) {
+                                $this->ajaxReturn(500, '【' . $crmClueRelease['companyname'] . '】企业，系统自动释放后' . $sys_config['customer_forbidden_sys'] . '天内不能再领取该客户', []);
+                            }
+                            break;
 
-                        if (time() <= $timediff) {
-                            $this->ajaxReturn(500, '系统自动释放后' . $sys_config['thread_forbidden_sys'] . '天内不能再领取该客户', []);
-                        }
+                        case 2:
+                            if ($sys_config['customer_forbidden_sale'] == 0) {
+                                $this->ajaxReturn(500, '系统配置主动释放客户不允许领取', []);
+                            }
+                            $customer_forbidden_sale = $sys_config['customer_forbidden_sale'] * 86400;
+
+                            $time_diff = strtotime($crmClueRelease['create_time']) + $customer_forbidden_sale;
+
+                            if (time() <= $time_diff) {
+                                $this->ajaxReturn(500, '【' . $crmClueRelease['companyname'] . '】企业，主动释放后' . $sys_config['customer_forbidden_sale'] . '天内不能再领取该客户', []);
+                            }
+                            break;
+
+                        default:
+                            return $this->ajaxReturn(200, '客户异常释放，领取失败', []);
+
                     }
                 }
             }
@@ -726,7 +725,17 @@ class Company extends Backend
             if ($receive === false) {
                 $this->ajaxReturn(500, '领取失败', []);
             }
-            model('Company')->isUpdate('true')->save(['admin_id' => $this->admininfo->id, 'collection_time' => time()], ['uid' => ['in', $uid]]);
+            model('Company')
+                ->isUpdate('true')
+                ->save(
+                    [
+                        'admin_id' => $this->admininfo->id,
+                        'collection_time' => time()
+                    ],
+                    [
+                        'uid' => ['in', $uid]
+                    ]
+                );
             $this->ajaxReturn(200, '领取成功', []);
         } catch (\Exception $e) {
             Db::rollback();
@@ -851,7 +860,7 @@ class Company extends Backend
         $data['last_login_time'] = empty($data['last_login_time']) ? '' : date('Y-m-d H:i:s', $data['last_login_time']);
         $clueobj = new Clue();
         $adminlist = $clueobj->adminlist();
-        $data['logo_url'] = model('Uploadfile')->getFileUrl($data['logo']);
+        $data['logo_url'] = !empty($data['logo']) ? model('Uploadfile')->getFileUrl($data['logo']) : default_empty('logo');
         $data['last_visit_admin_name'] = isset($adminlist[$data['last_visit_admin']]) ? $adminlist[$data['last_visit_admin']] : '';
         $data['admin_name'] = isset($adminlist[$data['admin_id']]) ? $adminlist[$data['admin_id']] : '';
         $data['follow_count'] = model('b2bcrm.CrmFollowUp')->where(['uid' => $data['uid']])->count();
@@ -860,7 +869,11 @@ class Company extends Backend
         $data['setmeal_name'] = model('Setmeal')->where(['id' => $data['setmeal_id']])->value('name');
         $overtime_setmeal_resource = config('global_config.overtime_setmeal_resource');
         $weixin_bind = model('MemberBind')
-            ->where(['type' => 'weixin', 'uid' => $data['uid']])
+            ->where([
+                'type' => 'weixin',
+                'uid' => $data['uid'],
+                'is_subscribe' => 1
+            ]) // 【bug】是否绑定微信，与个人中心不一致，新增”'is_subscribe' => 1“ yx - 2022.11.07
             ->find();
         $data['weixin_bind'] = empty($weixin_bind) ? 0 : 1;
         /**
@@ -1339,7 +1352,21 @@ class Company extends Backend
             if (!preg_match($preg_phone, $post['mobile'])) {
                 throw new \Exception('手机号格式错误');
             }
-            $member_uid = model('Member')->where(['mobile' => $post['mobile']])->value('mobile');
+            /**
+             * 【ID1000384】
+             * 【bug】个人会员手机号存在，企业会员修改为相同手机号提示已存在
+             * yx - 2022.11.04
+             * [旧]:
+             * ->where(['mobile' => $post['mobile']])
+             * [新]:
+             * ->where(['mobile' => $post['mobile'], 'utype' => 1])
+             */
+            $member_uid = model('Member')
+                ->where([
+                    'mobile' => $post['mobile'],
+                    'utype' => 1
+                ])
+                ->value('mobile');
             if (!empty($member_uid) && $member_uid != $uid) {
                 throw new \Exception('手机号已存在');
             }
@@ -1352,6 +1379,19 @@ class Company extends Backend
         if (false === $update_member) {
             throw new \Exception(model('Member')->getError());
         }
+
+        /**
+         * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
+         * yx - 2022.11.09
+         */
+        if (
+            (isset($input_data['password']) && !empty($input_data['password']))
+            ||
+            (!empty($input_data['mobile']) && $input_data['mobile'] != $info['mobile'])
+        ) {
+            model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
+        }
+
         model('AdminLog')->record(
             '编辑会员。会员UID【' . $uid . '】',
             $this->admininfo

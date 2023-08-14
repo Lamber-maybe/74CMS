@@ -47,8 +47,7 @@
         <div v-for="(item, index) in dataset" :key="index">
           <div class="list">
             <div class="tx1" v-if="item.resume_nolook > 0" >
-              <span v-if="item.resume_nolook==2" @click="$router.push('/job/'+item.id)">{{ item.jobname }}</span>
-              <span v-else>{{ item.jobname }}</span>
+              <span @click="$router.push('/job/'+item.id)">{{ item.jobname }}</span>
               <div class="right_txt" @click="$router.push('/member/company/jobapply')">
                 简历
                 <span :class="item.resume_nolook > 0 ? 'not' : ''">
@@ -58,7 +57,7 @@
               </div>
             </div>
             <div class="tx1" v-else>
-              {{ item.jobname }}
+              <span @click="$router.push('/job/'+item.id)">{{ item.jobname }}</span>
               <div class="right_txt" @click="$router.push('/member/company/jobapply')">
                 简历
                 <span :class="item.resume_nolook > 0 ? 'not' : ''">

@@ -105,8 +105,7 @@
                     {#if condition="$return.base_info.audit eq 1"#}
                     <span class="authenticationIcon"><img src="__ROOT__/assets/images/company/authentication.png" alt=""></span>
                     {#/if#}
-                    <span style="margin-left:10px;">招聘过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请</span>
-                    <span @click="doTipoff" class="report_btn">立即举报</span>
+                    <span style="margin-left:10px;">招聘过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请联系客服</span>
                 </p>
                 <div class="lately_data">
                     <span class="lately_time">最近登录：{{supplementary.last_login_time}}</span>
@@ -310,7 +309,7 @@
                     <ul class="job_list" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
                         <a :href="item.job_link_url_web" target="_blank" v-for="(item,index) in joblist" :key="index">
                             <li class="job_item">
-                                <span class="job_name">{{item.jobname}}</span>
+                                <span class="job_name" :title="item.jobname">{{item.jobname}}</span>
                                 <span class="job_wage_text">{{item.wage_text}}</span>
                                 <span class="job_company_name">{{item.companyname}}</span>
                             </li>

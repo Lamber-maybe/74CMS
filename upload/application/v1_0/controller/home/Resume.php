@@ -123,6 +123,8 @@ class Resume extends \app\v1_0\controller\common\Base
 
         $searchResult = $instance->run();
         $return['items'] = $this->get_datalist($searchResult['items']);
+        $return['total'] = $searchResult['total'];
+        $return['total_page'] = $searchResult['total_page'];
         $return['show_mask'] = $show_mask;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }

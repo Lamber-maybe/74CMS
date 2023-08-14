@@ -1,5 +1,5 @@
 <template>
-  <div class="filter_category_wrapper for_filter_pop">
+  <div class="filter_category_wrapper for_filter_pop" :style="showSecondPop || showLowestPop ? 'overflow-x: hidden;' : ''">
     <div class="filter_item">
       <div :class="item.select ? 'item select' : 'item'" v-for="(item, index) in topList"
             :key="index" @click="makeSecondElement(item)">
@@ -240,13 +240,13 @@ export default {
     background-color: rgba(0,0,0,.2); position: absolute; left: 25%; z-index: 6;
   }
   .filter_category_wrapper {
-    display: flex; position: relative; overflow-x: hidden;
+    display: flex; position: relative;
     .second_wrapper {
       .item {}
       max-height: 100%; overflow-y: auto; background-color: #ffffff; display: flex;
     }
     .filter_item {
-      flex: 1; display: block; height: 100%; overflow-x: hidden; overflow-y: auto;
+      flex: 1; height: 100%;
       .item {
         .arrow {
           position: absolute; right: 15px; top: 21px; width: 7px; height: 7px; border-top: 1px solid #999999;

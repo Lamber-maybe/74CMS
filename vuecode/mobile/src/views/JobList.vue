@@ -192,7 +192,8 @@ export default {
       // 未登录引导
       showLayer: false,
       mobile_company_show_tpl: 'def',
-      showWarn: true
+      showWarn: true,
+      totalPage: 0
     }
   },
   watch: {
@@ -219,7 +220,7 @@ export default {
     }
   },
   activated () {
-    this.initData()
+    // this.initData()
   },
   created () {
     this.initData()
@@ -578,7 +579,8 @@ export default {
       conditions.pagesize = this.pagesize
       http.get(api.joblist, conditions)
         .then(res => {
-          if (init === true) {
+          this.totalPage = res.data.total_page
+          if (init) {
             this.dataset = [...res.data.items]
             this.showLayer = parseInt(res.data.show_mask) === 1
           } else {
@@ -588,20 +590,22 @@ export default {
           this.loading = false
 
           // 数据全部加载完成
-          if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
+          if (res.data.items.length === 0) {
+            this.show_empty = true
+          } else if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
             this.finished = true
-            if (init === false) {
-              this.finished_text = '没有更多了'
-            } else if (res.data.items.length === 0) {
-              this.show_empty = true
-            }
+            // if (init === false) {
+            this.finished_text = '暂无更多'
+            // }
           }
         })
         .catch(() => {})
     },
     onLoad () {
-      this.page++
-      this.fetchData(false)
+      if (this.page < this.totalPage) {
+        this.page++
+        this.fetchData(false)
+      }
     },
     toDetail (id) {
       /**
@@ -610,7 +614,7 @@ export default {
        * 【新增】列表置空
        * this.dataset = []
        * */
-      this.dataset = []
+      // this.dataset = []
       this.$router.push('/job/' + id)
     },
     // 搜索通用函数
