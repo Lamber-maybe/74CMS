@@ -266,42 +266,64 @@
       :visible.sync="dialogAuthinfoVisible"
       :width="dialogAuthinfoWidth"
     >
-      <el-row v-if="auth_info.legal_person_name != ''">
-        <el-col :span="24">
-          负责人姓名：{{ auth_info.legal_person_name }}
-        </el-col>
-      </el-row>
-      <el-row v-if="auth_info.legal_person_idcard_number != ''">
-        <el-col :span="24">
-          负责人身份证号：{{ auth_info.legal_person_idcard_number }}
-        </el-col>
-      </el-row>
-      <el-row v-if="auth_info.legal_person_idcard_front != ''">
-        <el-col :span="12">
-          身份证正面照：
+      <el-row>
+        <el-col class="authdialog" :span="12">
           <el-image
-            style="width: 200px; "
-            :src="auth_info.legal_person_idcard_front"
-            :preview-src-list="[auth_info.legal_person_idcard_front]"
-          />
-        </el-col>
-        <el-col v-if="auth_info.legal_person_idcard_back != ''" :span="12">
-          身份证背面照：
-          <el-image
-            style="width: 200px; "
-            :src="auth_info.legal_person_idcard_back"
-            :preview-src-list="[auth_info.legal_person_idcard_back]"
-          />
-        </el-col>
-      </el-row>
-      <el-row v-if="auth_info.license != ''">
-        <el-col :span="24">
-          营业执照：
-          <el-image
-            style="width: 200px; "
+            v-if="auth_info.license != ''"
+            style="width: 200px;height:150px; "
             :src="auth_info.license"
             :preview-src-list="[auth_info.license]"
           />
+          <el-image v-else>
+            <div slot="error" class="image-error">
+              未上传
+            </div>
+          </el-image>
+          <span class="img-tit">营业执照</span>
+        </el-col>
+        <el-col class="authdialog" :span="12">
+          <el-image
+            v-if="auth_info.proxy != ''"
+            style="width: 200px;height:150px; "
+            :src="auth_info.proxy"
+            :preview-src-list="[auth_info.proxy]"
+          />
+          <el-image v-else>
+            <div slot="error" class="image-error">
+              未上传
+            </div>
+          </el-image>
+          <span class="img-tit">委托书(函)</span>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col class="authdialog" :span="12">
+          <el-image
+            v-if="auth_info.legal_person_idcard_front != ''"
+            style="width: 200px;height:150px; "
+            :src="auth_info.legal_person_idcard_front"
+            :preview-src-list="[auth_info.legal_person_idcard_front]"
+          />
+          <el-image v-else>
+            <div slot="error" class="image-error">
+              未上传
+            </div>
+          </el-image>
+          <span class="img-tit">经办人身份证正面照</span>
+        </el-col>
+        <el-col class="authdialog" :span="12">
+          <el-image
+            v-if="auth_info.legal_person_idcard_back != ''"
+            style="width: 200px;height:150px; "
+            :src="auth_info.legal_person_idcard_back"
+            :preview-src-list="[auth_info.legal_person_idcard_back]"
+          />
+          <el-image v-else>
+            <div slot="error" class="image-error">
+              未上传
+            </div>
+          </el-image>
+          <span class="img-tit">经办人身份证背面照</span>
         </el-col>
       </el-row>
     </el-dialog>
@@ -551,7 +573,7 @@ export default {
       this.auth_info = { ...row }
       this.dialogAuthinfoVisible = true
       if (this.auth_info.license != '') {
-        this.dialogAuthinfoWidth = '20%'
+        this.dialogAuthinfoWidth = '30%'
       } else {
         this.dialogAuthinfoWidth = '40%'
       }
@@ -706,4 +728,28 @@ export default {
     margin-bottom: 0;
   }
 }
+.authdialog{
+  position:relative;
+  margin-bottom:14px;
+  text-align:center;
+}
+.img-tit{
+  position: absolute;
+  left: 0;
+  bottom: -20px;
+  width: 100%;
+  text-align: center;
+}
+.image-error{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: #c0c4cc;
+  vertical-align: middle;
+  background: #f5f7fa;
+  width: 200px;
+  height: 150px;
+}
+
 </style>

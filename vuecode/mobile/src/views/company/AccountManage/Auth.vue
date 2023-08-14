@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <AuthType v-if="authinfo.audit == 0" @reload="fetchData"></AuthType>
+    <AuthForm v-if="authinfo.audit == 0" :authinfo="authinfo" @reload="fetchData"></AuthForm>
     <AuthResult v-else :authinfo="authinfo" @reload="fetchData"></AuthResult>
   </div>
 </template>
 
 <script>
-import AuthType from '@/components/account/company_auth/AuthType'
+import AuthForm from '@/components/account/company_auth/AuthForm'
 import AuthResult from '@/components/account/company_auth/AuthResult'
 import http from '@/utils/http'
 import api from '@/api'
 export default {
   name: 'CompanyAuth',
   components: {
-    AuthType,
+    AuthForm,
     AuthResult
   },
   data () {

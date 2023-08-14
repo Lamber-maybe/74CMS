@@ -263,7 +263,7 @@ export default {
       this.BMap = BMap
     },
     getPosition (mapLat, mapLng) {
-      if (!this.BMap) {
+      if (!this.BMap || this.BMap.Geolocation === undefined) {
         return
       }
       let BMap = this.BMap

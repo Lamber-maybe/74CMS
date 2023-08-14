@@ -225,8 +225,6 @@ export default {
   company_authinfo: '/company/auth/index',
   // 营业执照认证提交
   company_auth_license: '/company/auth/license',
-  // 负责人认证提交
-  company_auth_legal: '/company/auth/legal_personal',
   // 查询可发布职位数
   company_check_jobadd_num: '/company/job/checkJobaddNumber',
   // 发布职位预请求

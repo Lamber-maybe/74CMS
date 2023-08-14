@@ -21,7 +21,7 @@
       ></TopSearch>
     </van-popup>
     <div class="box_2">
-      <van-dropdown-menu class="filter_menu">
+      <van-dropdown-menu class="filter_menu" :lock-scroll="false">
         <van-dropdown-item
           :title="rangeTitle"
           v-model="params.range"
@@ -162,10 +162,10 @@
               <van-tag
                 color="#e9f8ff"
                 text-color="#8096a3"
-                v-for="(tag, key) in item.tag_text_arr"
+                v-for="(t, key) in item.tag"
                 :key="key"
               >
-                {{ tag }}
+                {{ t }}
               </van-tag>
             </div>
             <div class="company">

@@ -46,15 +46,15 @@
           <div
             class="tag_wrapper clearfix"
             v-if="
-              item.tag_text_arr != undefined && item.tag_text_arr.length > 0
+              item.tag != undefined && item.tag.length > 0
             "
           >
             <div
               class="tag_item"
-              v-for="(tag, k) in item.tag_text_arr"
+              v-for="(t, k) in item.tag"
               :key="k"
             >
-              {{ tag }}
+              {{ t }}
             </div>
           </div>
           <div class="company">
@@ -236,8 +236,9 @@ export default {
           border-radius: 3px;
           margin-bottom: 5px;
           &:not(:last-child) {
-            margin-right: 5px;
+            margin-right:5px;
           }
+          margin-bottom:4px;
         }
         width: 100%;
         padding-bottom: 7px;

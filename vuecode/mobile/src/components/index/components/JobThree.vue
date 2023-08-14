@@ -22,15 +22,15 @@
           <div
             class="tag_wrapper"
             v-if="
-              item.tag_text_arr != undefined && item.tag_text_arr.length > 0
+              item.tag != undefined && item.tag.length > 0
             "
           >
             <div
               class="tag_item"
-              v-for="(tag, k) in item.tag_text_arr"
+              v-for="(t, k) in item.tag"
               :key="k"
             >
-              {{ tag }}
+              {{ t }}
             </div>
             <div class="clear"></div>
           </div>
@@ -161,9 +161,10 @@ export default {
           color: #8096a3;
           padding: 3px 5px;
           border-radius: 3px;
-          &:not(:first-child) {
-            margin-left: 5px;
+          &:not(:last-child) {
+            margin-right:5px;
           }
+          margin-bottom:4px;
         }
         width: 100%;
         padding-bottom: 12px;

@@ -157,14 +157,14 @@
               {{ item.district_text }}
               <div class="time">{{ item.refreshtime }}</div>
             </div>
-            <div class="tag_wrapper" v-if="item.tag_text_arr">
+            <div class="tag_wrapper" v-if="item.tag.length>0">
               <van-tag
                 color="#e9f8ff"
                 text-color="#8096a3"
-                v-for="(tag, key) in item.tag_text_arr"
+                v-for="(t, key) in item.tag"
                 :key="key"
               >
-                {{ tag }}
+                {{ t }}
               </van-tag>
             </div>
             <div class="company">
@@ -279,8 +279,6 @@ export default {
     // 请求列表数据
     this.initQuery(this.$route.query)
     this.fetchData(true)
-    this.$store.dispatch('getClassify', 'citycategory')
-    this.$store.dispatch('getClassify', 'jobcategory')
     this.$store.dispatch('getClassify', 'education').then(() => {
       this.optionEducation = this.restructureData(
         this.$store.state.classifyEdu,

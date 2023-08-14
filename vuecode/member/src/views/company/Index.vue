@@ -284,6 +284,20 @@ export default {
                 this.setmeal = setmeal
                 this.mypoints = mypoints
                 this.resumelist_url_web = resumelist_url_web
+
+                if(companyinfo.notice_auth_complete==1){
+                  this.$confirm('根据相关法律法规要求，需要您完善企业认证信息','系统提示',{
+                      confirmButtonText: '去完善',
+                      type: 'warning'
+                  })
+                  .then(() => {
+                    this.$router.push('/company/auth')
+                  })
+                  .catch(() => {
+                      // on cancel
+                  })
+                }
+
                 res = await http.get(api.get_publish_jobs, {})
                 this.published_joblist = [...res.data.items]
                 if (this.published_joblist.length > 0) {

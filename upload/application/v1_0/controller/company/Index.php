@@ -15,7 +15,7 @@ class Index extends \app\v1_0\controller\common\Base
     {
         
         $companyinfo = model('Company')
-            ->field('logo,companyname,scale,nature,trade,audit,district1')
+            ->field('logo,companyname,scale,nature,trade,audit,audit_complete,district1')
             ->where('uid', $this->userinfo->uid)
             ->find();
         $return_companyinfo = [];
@@ -160,6 +160,13 @@ class Index extends \app\v1_0\controller\common\Base
             ->order('id desc')
             ->limit(10)
             ->select();
+
+        //是否提醒完善认证资料
+        if($return_companyinfo['company_audit']==1 && $return_companyinfo['need_audit']==0 && $companyinfo['audit_complete']==0){
+            $return_companyinfo['notice_auth_complete'] = 1;
+        }else{
+            $return_companyinfo['notice_auth_complete'] = 0;
+        }
         $return['companyinfo'] = $return_companyinfo;
         $return['manage'] = $return_manage;
         $return['setmeal'] = $member_setmeal;

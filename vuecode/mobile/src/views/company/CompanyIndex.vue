@@ -384,6 +384,16 @@ export default {
           } else {
             this.empty_info = false
           }
+          if (companyinfo.notice_auth_complete == 1) {
+            this.$dialog
+              .confirm({title: '系统提示', message: '根据相关法律法规要求，需要您完善企业认证信息', confirmButtonText: '去完善', messageAlign: 'left'})
+              .then(() => {
+                this.$router.push('/member/company/auth')
+              })
+              .catch(() => {
+                // on cancel
+              })
+          }
         })
         .catch(() => {})
     },

@@ -41,7 +41,8 @@ export default {
           company: '/companylist',
           nearby: '/jobnearby',
           high_wage: '/joblist?minwage=5000',
-          article: '/newslist'
+          article: '/newslist',
+          online_jobfair: '/jobfairol'
         }
         this.$router.push(menuRoute[params.alias])
       } else {

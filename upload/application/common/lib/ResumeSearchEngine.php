@@ -586,16 +586,16 @@ class ResumeSearchEngine
             ];
         } elseif ($this->category2) {
             $in_category_arr = [$this->category2, $this->category1];
-            $sub_arr = $category_cache[$this->category2];
+            $sub_arr = isset($category_cache[$this->category2])?$category_cache[$this->category2]:[];
             $sub_arr = array_keys($sub_arr);
             $in_category_arr = array_merge($in_category_arr, $sub_arr);
         } elseif ($this->category1) {
             $in_category_arr = [$this->category1];
-            $sub_arr = $category_cache[$this->category1];
+            $sub_arr = isset($category_cache[$this->category1])?$category_cache[$this->category1]:[];
             $sub_arr = array_keys($sub_arr);
             $in_category_arr = array_merge($in_category_arr, $sub_arr);
             foreach ($sub_arr as $key => $value) {
-                $tmp_arr = $category_cache[$value];
+                $tmp_arr = isset($category_cache[$value])?$category_cache[$value]:[];
                 $tmp_arr = array_keys($tmp_arr);
                 $in_category_arr = array_merge($in_category_arr, $tmp_arr);
             }

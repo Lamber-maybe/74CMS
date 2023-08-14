@@ -1,52 +1,46 @@
 <template>
   <div id="app">
-    <Head>
-      企业认证
-    </Head>
-    <div class="form_split_10"></div>
-    <div class="box" v-if="authinfo.audit == 1">
-      <div class="ico success"></div>
-      <div class="text">已通过营业执照认证</div>
-    </div>
-    <div class="box" v-if="authinfo.audit == 3">
-      <div class="ico ing"></div>
-      <div class="text_ing">我们将在1个工作日内审核您的资料信息</div>
-    </div>
-    <div class="box" v-if="authinfo.audit == 2">
-      <div class="ico fail"></div>
-      <div class="text">营业执照认证未通过审核！</div>
-      <div class="text_red">
-        原因：{{ authinfo.audit_reason }}，请重新认证。
-      </div>
-      <div class="btn">
-        <van-button type="info" round block @click="handlerAuthRepeat">
-          重新认证
-        </van-button>
-      </div>
-    </div>
-    <van-popup
-      :lazy-render="false"
-      v-model="showAuth"
-      position="right"
-      :overlay="false"
-      style="width:100%;height:100%"
-    >
-      <AuthType
-        ref="child"
-        @closePopup="showAuth = false"
+      <AuthForm
+        v-if="showAuth"
+        :authinfo="authinfo"
         @reload="reload"
-      ></AuthType>
-    </van-popup>
+      ></AuthForm>
+    <div v-else>
+      <Head>
+        企业认证
+      </Head>
+      <div class="form_split_10"></div>
+      <div class="box" v-if="authinfo.audit == 1">
+        <div class="ico success"></div>
+        <div class="text">已通过营业执照认证</div>
+      </div>
+      <div class="box" v-if="authinfo.audit == 3">
+        <div class="ico ing"></div>
+        <div class="text_ing">我们将在1个工作日内审核您的资料信息</div>
+      </div>
+      <div class="box" v-if="authinfo.audit == 2">
+        <div class="ico fail"></div>
+        <div class="text">营业执照认证未通过审核！</div>
+        <div class="text_red">
+          原因：{{ authinfo.audit_reason }}，请重新认证。
+        </div>
+        <div class="btn">
+          <van-button type="info" round block @click="handlerAuthRepeat">
+            重新认证
+          </van-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import AuthType from '@/components/account/company_auth/AuthType'
+import AuthForm from '@/components/account/company_auth/AuthForm'
 export default {
   name: 'AuthResult',
   props: ['authinfo'],
   components: {
-    AuthType
+    AuthForm
   },
   data () {
     return {
@@ -55,7 +49,6 @@ export default {
   },
   methods: {
     handlerAuthRepeat () {
-      this.$refs.child.initCB()
       this.showAuth = true
     },
     reload () {

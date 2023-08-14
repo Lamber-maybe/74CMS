@@ -102,7 +102,7 @@ class Index extends \app\common\controller\Backend
      * 获取待办信息
      */
     protected function getPendingData(){
-        $return[] = ['title'=>'待认证企业','num'=>model('Company')->where('audit',0)->count(),'alias'=>'company_audit'];
+        $return[] = ['title'=>'待认证企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'company_audit'];
         $return[] = ['title'=>'待审核职位','num'=>model('Job')->where('audit',0)->count(),'alias'=>'job_audit'];
         $return[] = ['title'=>'待审核简历','num'=>model('Resume')->where('audit',0)->count(),'alias'=>'resume_audit'];
         $return[] = ['title'=>'注销账号申请','num'=>model('MemberCancelApply')->where('status',0)->count(),'alias'=>'cancel_apply'];

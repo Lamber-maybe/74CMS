@@ -33,7 +33,7 @@ class ServiceClear
                     \app\common\model\Resume::where(
                         'id',
                         $value['pid']
-                    )->setField('service_tag', 0);
+                    )->setField('service_tag', '');
                 }
             }
             if ($value['utype'] == 1) {

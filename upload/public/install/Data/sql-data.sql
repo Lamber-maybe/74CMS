@@ -1057,7 +1057,8 @@ INSERT INTO `qs_mobile_index_menu` VALUES
 (NUll,'company','搜企业','',0,'',0,1),
 (NUll,'nearby','附近职位','',0,'',0,1),
 (NUll,'high_wage','高薪职位','',0,'',0,1),
-(NUll,'article','新闻资讯','',0,'',0,1);
+(NUll,'article','新闻资讯','',0,'',0,1),
+(NUll,'online_jobfair','网络招聘会','',0,'',0,1);
 
 INSERT INTO `qs_mobile_index_module` VALUES 
 (NUll,'header',1,'1'),

@@ -129,6 +129,7 @@ class Index extends \app\v1_0\controller\common\Base
                 $job_data = model('Job')
                     ->where('company_id', 'in', $comid_arr)
                     ->where('is_display', 1)
+                    ->where('audit', 1)
                     ->column('id,company_id,jobname', 'id');
                 foreach ($job_data as $key => $value) {
                     $job_list[$value['company_id']][] = $value['jobname'];
@@ -201,5 +202,24 @@ class Index extends \app\v1_0\controller\common\Base
             $path = 'index/article/index';
         }
         $this->ajaxReturn(200,'获取数据成功',config('global_config.sitedomain').url($path,$input));
+    }
+    public function downloadproxy(){
+        $file = SYS_UPLOAD_PATH.'resource/proxy.docx';
+        $result = file_get_contents($file);
+        echo "$result"; 
+        ob_start(); 
+        header("Cache-Control: public"); 
+        Header("Content-type: application/octet-stream"); 
+        Header("Accept-Ranges: bytes"); 
+        if (strpos($_SERVER["HTTP_USER_AGENT"],'MSIE')) { 
+            header('Content-Disposition: attachment; filename=招聘委托书.doxc'); 
+        }else if (strpos($_SERVER["HTTP_USER_AGENT"],'Firefox')) { 
+            header('Content-Disposition: attachment; filename=招聘委托书.docx'); 
+        } else { 
+            header('Content-Disposition: attachment; filename=招聘委托书.docx'); 
+        } 
+        header("Pragma:no-cache"); 
+        header("Expires:0"); 
+        ob_end_flush(); 
     }
 }

@@ -57,7 +57,7 @@ class Job extends \app\common\model\BaseModel
             $search_rtime_data['emergency'] = $jobinfo['emergency'];
             $search_rtime_data['license'] = $companyinfo['audit'] == 1 ? 1 : 0;
             $search_rtime_data['stick'] = $jobinfo['stick'];
-            $search_rtime_data['setmeal_id'] = $membersetmeal['id'];
+            $search_rtime_data['setmeal_id'] = $membersetmeal['setmeal_id'];
             $search_rtime_data['nature'] = $jobinfo['nature'];
             $search_rtime_data['category1'] = $jobinfo['category1'];
             $search_rtime_data['category2'] = $jobinfo['category2'];
@@ -192,7 +192,7 @@ class Job extends \app\common\model\BaseModel
             $search_rtime_data['emergency'] = $jobinfo['emergency'];
             $search_rtime_data['license'] = $companyinfo['audit'] == 1 ? 1 : 0;
             $search_rtime_data['stick'] = $jobinfo['stick'];
-            $search_rtime_data['setmeal_id'] = $membersetmeal['id'];
+            $search_rtime_data['setmeal_id'] = $membersetmeal['setmeal_id'];
             $search_rtime_data['nature'] = $jobinfo['nature'];
             $search_rtime_data['category1'] = $jobinfo['category1'];
             $search_rtime_data['category2'] = $jobinfo['category2'];

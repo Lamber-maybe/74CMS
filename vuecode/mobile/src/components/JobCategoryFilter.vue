@@ -7,7 +7,7 @@
       </div>
     </div>
     <van-overlay :show="showSecondPop" @click="handleSecondOverlay" :class-name="second_pop_lay" />
-    <van-popup v-model="showSecondPop" position="right" :style="{ width: '75%', top: `${offTop}px` }"
+    <van-popup :lock-scroll="false" v-model="showSecondPop" position="right" :style="{ width: '75%', top: `${offTop}px` }"
                :overlay="false" ref="filterCategoryPop">
       <div :style="`height:${layHeight}px`" class="second_wrapper">
         <div class="filter_item" v-if="secondList.length">
@@ -18,7 +18,7 @@
       </div>
     </van-popup>
     <van-overlay :show="showLowestPop" @click="showLowestPop = false" :class-name="lowest_pop_lay" :style="{'zIndex': zIndex}" />
-    <van-popup v-model="showLowestPop" position="right" :style="{ width: '55%', top: `${offTop}px` }"
+    <van-popup :lock-scroll="false" v-model="showLowestPop" position="right" :style="{ width: '55%', top: `${offTop}px` }"
                :overlay="false">
       <div :style="`height:${layHeight}px`" class="second_wrapper">
         <div class="filter_item" v-if="lowestList.length">

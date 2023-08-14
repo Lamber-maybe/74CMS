@@ -239,7 +239,7 @@
 					<div class="hotJobs_title float">热门职位</div>
 					<div class="hotJobs_list float">
 						{#volist name="hotword_list" id="vo"#}
-						<span><a href="{#:url('index/job/index',['key'=>$vo.word])#}">{#$vo.word#}</a></span>
+						<span><a href="{#:url('index/job/index',['keyword'=>$vo.word])#}">{#$vo.word#}</a></span>
 						{#/volist#}
 					</div>
 				</div>

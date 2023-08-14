@@ -225,9 +225,15 @@ class Company extends \app\common\model\BaseModel
     public function setAudit($idarr, $audit, $reason = '')
     {
         $timestamp = time();
+        $company_data = [
+            'audit'=>$audit
+        ];
+        if($audit==1){
+            $company_data['audit_complete'] = 1;
+        }
         model('Company')
             ->where(['id' => ['in', $idarr]])
-            ->setField('audit', $audit);
+            ->update($company_data);
         model('JobSearchKey')
             ->where(['company_id' => ['in', $idarr]])
             ->setField('license', $audit);

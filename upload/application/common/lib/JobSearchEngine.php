@@ -622,7 +622,7 @@ class JobSearchEngine
             ];
         } elseif ($this->category2) {
             $in_category_arr = [$this->category2, $this->category1];
-            $sub_arr = $category_cache[$this->category2];
+            $sub_arr = isset($category_cache[$this->category2])?$category_cache[$this->category2]:[];
             $sub_arr = array_keys($sub_arr);
             $in_category_arr = array_merge($in_category_arr, $sub_arr);
         } elseif ($this->category1) {

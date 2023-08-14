@@ -168,6 +168,13 @@ class Member extends \app\common\model\BaseModel
                     'note' => $lognote . $data['note'],
                 ]);
             }
+        }else if($setmeal_info['gift_point']>0){
+            $lognote = '套餐内赠送';
+            $this->setMemberPoints([
+                'uid' => $data['uid'],
+                'points' => $setmeal_info['gift_point'],
+                'note' => $lognote . $data['note'],
+            ]);
         }
         //将企业、职位中的套餐id改为新的
         model('Job')

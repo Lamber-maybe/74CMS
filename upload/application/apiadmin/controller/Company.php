@@ -109,7 +109,7 @@ class Company extends \app\common\controller\Backend
             $auth_list = model('CompanyAuth')
                 ->where('uid', 'in', $uid_arr)
                 ->column(
-                    'uid,legal_person_name,legal_person_idcard_number,legal_person_idcard_front,legal_person_idcard_back,license',
+                    'uid,legal_person_idcard_front,legal_person_idcard_back,license,proxy',
                     'uid'
                 );
             $auth_img_id_arr = $auth_img_url_arr = [];
@@ -120,6 +120,8 @@ class Company extends \app\common\controller\Backend
                     ($auth_img_id_arr[] = $value['legal_person_idcard_back']);
                 $value['license'] > 0 &&
                     ($auth_img_id_arr[] = $value['license']);
+                $value['proxy'] > 0 &&
+                    ($auth_img_id_arr[] = $value['proxy']);
             }
             if (!empty($auth_img_id_arr)) {
                 $auth_img_id_arr = array_unique($auth_img_id_arr);
@@ -143,6 +145,11 @@ class Company extends \app\common\controller\Backend
                 )
                     ? $auth_img_url_arr[$value['license']]
                     : '';
+                $auth_list[$key]['proxy'] = isset(
+                    $auth_img_url_arr[$value['proxy']]
+                )
+                    ? $auth_img_url_arr[$value['proxy']]
+                    : '';
             }
         } else {
             $setmeal_list = [];
@@ -159,22 +166,18 @@ class Company extends \app\common\controller\Backend
             $value['auth_status'] = $value['audit'];
             if (isset($auth_list[$value['uid']])) {
                 $value['has_auth_info'] = 1;
-                $value['legal_person_name'] =
-                    $auth_list[$value['uid']]['legal_person_name'];
-                $value['legal_person_idcard_number'] =
-                    $auth_list[$value['uid']]['legal_person_idcard_number'];
                 $value['legal_person_idcard_front'] =
                     $auth_list[$value['uid']]['legal_person_idcard_front'];
                 $value['legal_person_idcard_back'] =
                     $auth_list[$value['uid']]['legal_person_idcard_back'];
                 $value['license'] = $auth_list[$value['uid']]['license'];
+                $value['proxy'] = $auth_list[$value['uid']]['proxy'];
             } else {
                 $value['has_auth_info'] = 0;
-                $value['legal_person_name'] = '';
-                $value['legal_person_idcard_number'] = '';
                 $value['legal_person_idcard_front'] = '';
                 $value['legal_person_idcard_back'] = '';
                 $value['license'] = '';
+                $value['proxy'] = '';
             }
             if($value['auth_status']==0 && $value['has_auth_info']==0){
                 $value['auth_status'] = 3;
@@ -309,6 +312,9 @@ class Company extends \app\common\controller\Backend
                     'address' => input('post.info.address/s', '', 'trim')
                 ]
             ];
+            if($input_data['audit']==1){
+                $input_data['audit_complete'] = 1;
+            }
 
             if (false === model('Company')->backendEdit($input_data)) {
                 $this->ajaxReturn(500, model('Company')->getError());

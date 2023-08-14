@@ -21,22 +21,17 @@
 			<el-button class="btn" type="primary" @click="handlerAuthRepeat">重新认证</el-button>
 		</div>
 	</el-card>
-	<AuthType
-		v-else
-        ref="child"
-        @closeAuth="showAuth = false"
-        @reload="reload"
-      ></AuthType>
+	<AuthForm v-else :authinfo="authinfo" @reload="reload"></AuthForm>
   </div>
 </template>
 
 <script>
-import AuthType from '@/components/company/auth/AuthType'
+import AuthForm from '@/components/company/auth/AuthForm'
 export default {
   name: 'AuthResult',
   props: ['authinfo'],
   components: {
-    AuthType
+	AuthForm
   },
   data () {
     return {

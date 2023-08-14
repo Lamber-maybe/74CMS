@@ -620,10 +620,14 @@ export default {
   },
   computed: {
     columnsEducation () {
-      return this.$store.state.classifyEdu
+      let arr = [{id: '0', text: '学历不限'}]
+      arr = arr.concat(this.$store.state.classifyEdu)
+      return arr
     },
     columnsExperience () {
-      return this.$store.state.classifyExperience
+      let arr = [{id: '0', text: '经验不限'}]
+      arr = arr.concat(this.$store.state.classifyExperience)
+      return arr
     },
     columnsWage () {
       return [
@@ -660,12 +664,12 @@ export default {
       this.experienceDefaultIndex = this.columnsExperience.findIndex(
         item => parseInt(item.id) === parseInt(this.basic.experience)
       )
-      this.experience_text = restoreBasic.experience_text
+      this.experience_text = restoreBasic.experience_text == '' ? '经验不限' : restoreBasic.experience_text
       // 恢复学历
       this.educationDefaultIndex = this.columnsEducation.findIndex(
         item => parseInt(item.id) === parseInt(this.basic.education)
       )
-      this.education_text = restoreBasic.education_text
+      this.education_text = restoreBasic.education_text == '' ? '学历不限' : restoreBasic.education_text
       // 恢复薪资
       let _this = this
       let pickerWage = this.$store.state.classifyWage
