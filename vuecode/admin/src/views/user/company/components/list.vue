@@ -274,11 +274,7 @@
             :src="auth_info.license"
             :preview-src-list="[auth_info.license]"
           />
-          <el-image v-else>
-            <div slot="error" class="image-error">
-              未上传
-            </div>
-          </el-image>
+          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
           <span class="img-tit">营业执照</span>
         </el-col>
         <el-col class="authdialog" :span="12">
@@ -288,11 +284,7 @@
             :src="auth_info.proxy"
             :preview-src-list="[auth_info.proxy]"
           />
-          <el-image v-else>
-            <div slot="error" class="image-error">
-              未上传
-            </div>
-          </el-image>
+          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
           <span class="img-tit">委托书(函)</span>
         </el-col>
       </el-row>
@@ -304,11 +296,7 @@
             :src="auth_info.legal_person_idcard_front"
             :preview-src-list="[auth_info.legal_person_idcard_front]"
           />
-          <el-image v-else>
-            <div slot="error" class="image-error">
-              未上传
-            </div>
-          </el-image>
+          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
           <span class="img-tit">经办人身份证正面照</span>
         </el-col>
         <el-col class="authdialog" :span="12">
@@ -318,11 +306,7 @@
             :src="auth_info.legal_person_idcard_back"
             :preview-src-list="[auth_info.legal_person_idcard_back]"
           />
-          <el-image v-else>
-            <div slot="error" class="image-error">
-              未上传
-            </div>
-          </el-image>
+          <el-image v-else :src="require('@/assets/images/defult_upload_null.jpg')" />
           <span class="img-tit">经办人身份证背面照</span>
         </el-col>
       </el-row>

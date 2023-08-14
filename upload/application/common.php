@@ -300,10 +300,8 @@ function make_file_url($path, $type = 'default')
                 $path;
             break;
         case 'qiniu':
-            return config('global_account.qiniu_protocol') .
-            config('global_account.qiniu_domain') .
-                '/' .
-                $path;
+            $qiniu_config = config('global_config.account_qiniu');
+            return $qiniu_config['protocol'] . $qiniu_config['domain'] . '/' . $path;
             break;
         case 'original':
             return $path;

@@ -55,12 +55,12 @@ export default {
   mounted() {
     this.editor_agreement = new E('#editor_agreement')
     this.editor_agreement.config.uploadImgShowBase64 = true
-    this.editor_agreement.config.zIndex = 100
+    this.editor_agreement.config.zIndex = 1
     this.editor_agreement.config.pasteFilterStyle = false
     this.editor_agreement.create()
     this.editor_privacy = new E('#editor_privacy')
     this.editor_privacy.config.uploadImgShowBase64 = true
-    this.editor_privacy.config.zIndex = 100
+    this.editor_privacy.config.zIndex = 1
     this.editor_privacy.config.pasteFilterStyle = false
     this.editor_privacy.create()
   },

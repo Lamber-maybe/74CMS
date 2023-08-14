@@ -13,8 +13,15 @@ export default {
     }
   },
   created () {
-    this.jsApiParameters = this.$route.params.jsApiParameters
-    this.successUrl = this.$route.params.successUrl
+    this.jsApiParameters = {
+      appId: this.$route.query.appId,
+      timeStamp: this.$route.query.timeStamp,
+      nonceStr: this.$route.query.nonceStr,
+      package: this.$route.query.package,
+      signType: this.$route.query.signType,
+      paySign: this.$route.query.paySign
+    }
+    this.successUrl = this.$route.query.successUrl
     this.callpay()
   },
   methods: {

@@ -89,7 +89,7 @@ CREATE TABLE `qs_article` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cid` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
-  `content` text NOT NULL,
+  `content` longtext NOT NULL,
   `thumb` int(10) unsigned NOT NULL DEFAULT '0',
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `link_url` varchar(200) NOT NULL DEFAULT '',

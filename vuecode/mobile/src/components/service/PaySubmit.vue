@@ -58,9 +58,8 @@ export default {
     handlerPay (data, callback) {
       if (this.payment == 'wxpay') {
         if (isWeiXin()) {
-          // this.jsApiParameters = data.parameter.jsApiParameters
-          this.$router.push({name: 'JsapiPay', params: {jsApiParameters: data.parameter.jsApiParameters, successUrl: this.successUrl}})
-          // this.callpay()
+          let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + data.parameter.jsApiParameters.appId + '&timeStamp=' + data.parameter.jsApiParameters.timeStamp + '&nonceStr=' + data.parameter.jsApiParameters.nonceStr + '&package=' + data.parameter.jsApiParameters.package + '&signType=' + data.parameter.jsApiParameters.signType + '&paySign=' + data.parameter.jsApiParameters.paySign + '&successUrl=' + this.successUrl
+          window.location.href = locationUrl
         } else {
           window.location.href = data.parameter
         }

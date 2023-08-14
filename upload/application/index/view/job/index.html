@@ -264,7 +264,7 @@
             <div class="job_list2 clearfix">
               <div class="job_text">
                 <input type="checkbox" class="l_chk J_allList" value="{#$vo.id#}" />
-                <div class="job_title">
+                <div class="job_title {#eq name="vo.emergency" value="1" #}emergency{#/eq#}">
                   <a href="{#:url('index/job/show',['id'=>$vo.id])#}" target="_blank">{#$vo.jobname#}</a>
                   <div class="job_list_hover">
                     <span class="triangle"></span>
@@ -332,6 +332,11 @@
                 <p>{#$vo.refreshtime#}</p>
                 <button class="btn" @click="doApply('{#$vo.id#}')">申请职位</button>
               </div>
+              {#eq name="vo.stick" value="1"#}
+              <div class="topping_img">
+                <img src="__ROOT__/assets/images/Topping.png">
+              </div>
+              {#/eq#}
             </div>
             {#/volist#}
           </div>

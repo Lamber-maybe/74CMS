@@ -192,19 +192,19 @@
                                         <span class="contact_width">联系手机：</span>
                                         {{contactData.contact_info.mobile}}
                                     </div>
-                                    <div class="contact_item" v-if="contactData.field_rule.telephone.is_display==1">
+                                    <div class="contact_item" v-if="contactData.contact_info.telephone!='' && contactData.field_rule.telephone.is_display==1">
                                         <span class="contact_width">联系座机：</span>
                                         {{contactData.contact_info.telephone}}
                                     </div>
-                                    <div class="contact_item" v-if="contactData.field_rule.weixin.is_display==1">
+                                    <div class="contact_item" v-if="contactData.contact_info.weixin!='' && contactData.field_rule.weixin.is_display==1">
                                         <span class="contact_width">联系微信：</span>
                                         {{contactData.contact_info.weixin}}
                                     </div>
-                                    <div class="contact_item" v-if="contactData.field_rule.email.is_display==1">
+                                    <div class="contact_item" v-if="contactData.contact_info.email!='' && contactData.field_rule.email.is_display==1">
                                         <span class="contact_width">联系邮箱：</span>
                                         {{contactData.contact_info.email}}
                                     </div>
-                                    <div class="contact_item" v-if="contactData.field_rule.qq.is_display==1">
+                                    <div class="contact_item" v-if="contactData.contact_info.qq!='' && contactData.field_rule.qq.is_display==1">
                                         <span class="contact_width">联系QQ：</span>
                                         {{contactData.contact_info.qq}}
                                     </div>

@@ -35,7 +35,10 @@
 .job_list2:hover { background-color: #f9f9f9; }
 
 .job_list2 .job_title { padding-right: 20px; line-height: 22px; margin-bottom: 13px; }
-
+.job_list2 .job_title.emergency {
+    padding-left: 23px;
+    background: url(../images/job_right_icon.png) 0 1px no-repeat;
+}
 .job_title:hover .job_list_hover { display: block; }
 
 .job_welfare_margin { width: 720px; margin-top: 8px; }
@@ -106,3 +109,8 @@
 .jobslist-login-layer .tip-block .btn_inline { font-size: 14px; padding: 10px 24px; }
 
 /*# sourceMappingURL=joblist.css.map */
+.topping_img {
+    position: absolute;
+    right: 0;
+    top: 0;
+}

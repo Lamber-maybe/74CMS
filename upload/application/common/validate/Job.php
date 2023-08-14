@@ -52,4 +52,12 @@ class Job extends BaseValidate
         'custom_field_3' => 'max:255',
         'department' => 'max:15'
     ];
+    protected $message = [
+        'jobname.require'  =>  '请填写职位名称',
+        'category1.gt' =>  '请选择职位分类',
+        'district1.gt' =>  '请选择工作地区',
+        'tag.require' =>  '请选择岗位福利',
+        'content.require' =>  '请填写职位描述',
+        'minage.require' =>  '请选择年龄要求'
+    ];
 }
