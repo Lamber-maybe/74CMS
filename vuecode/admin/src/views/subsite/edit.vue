@@ -36,6 +36,7 @@
             v-model="form.citycategory_arr"
             filterable
             :props="{ checkStrictly: true }"
+            popper-class="cancelRadio"
             :options="options_citycategory"
             :show-all-levels="false"
           />

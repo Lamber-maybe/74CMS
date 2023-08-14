@@ -16,6 +16,7 @@
           :options="options"
           :show-all-levels="false"
           :props="{ checkStrictly: true }"
+          popper-class="cancelRadio"
           clearable
         />
       </el-form-item>

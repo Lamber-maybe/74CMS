@@ -202,8 +202,8 @@
         </div>
         <div class="distance" v-if="distance != ''">距您{{ distance }}</div>
       </div>
-      <div class="box_5">
-        <div class="put"><span class="title">职位动态</span></div>
+      <div class="box_5" style="padding-top: 0">
+        <div class="put" style="padding-top:0;"><span class="title">职位动态</span></div>
         <div class="content">
           <div class="item">
             <div class="tx1">{{ watch_percent }}</div>
@@ -357,7 +357,7 @@
             class="right_arrow"
             v-if="is_personal_login === true"
             @click="openCompetitive"
-          ></div>
+          >查看匹配度</div>
         </div>
         <div class="doubt">
           <div
@@ -494,7 +494,6 @@
         </div>
       </div>
       <Subscribe></Subscribe>
-      <div class="form_split_10"></div>
       <div class="box_12">
         <div class="bottom_bar">
           <div class="item_call" @click="doTel">电话</div>
@@ -1282,7 +1281,7 @@ export default {
   bottom: 80px;
   background: #e0eeff;
   border-radius: 45px;
-  width: 186px;
+  width: 196px;
   height: 45px;
   transition: width 0.5s;
   -moz-transition: width 0.5s; /* Firefox 4 */
@@ -1290,6 +1289,7 @@ export default {
   -o-transition: width 0.5s; /* Opera */
   line-height: 58px;
   padding-top: 0;
+  padding-left: 10px;
   .poster_item {
     z-index: 2;
     width: 25%;
@@ -1451,7 +1451,7 @@ export default {
     right: 0;
     top: 0;
     left: 0;
-    border-bottom: 0.026667rem solid #f3f3f3;
+    //border-bottom: 0.026667rem solid #f3f3f3;
   }
 }
 
@@ -1727,12 +1727,12 @@ export default {
 
   width: 100%;
   background-color: #ffffff;
-  padding: 0 16px 16px;
+  padding: 0 16px 21.5px;
 }
 
 .box_9 {
   .p_con {
-    padding: 10px 0 40px;
+    padding: 10px 0 21.5px;
   }
 
   .self_content {
@@ -1794,7 +1794,7 @@ export default {
 
     &.level_4 {
       .t3 {
-        color: #fa7445;
+        color: #167eff;
       }
 
       .cir_block {
@@ -1809,7 +1809,7 @@ export default {
 
     &.level_3 {
       .t3 {
-        color: #fa7445;
+        color: #167eff;
       }
 
       .cir_block {
@@ -1839,7 +1839,7 @@ export default {
 
     &.level_1 {
       .t1 {
-        color: #fa7445;
+        color: #167eff;
       }
 
       .cir_block {
@@ -2039,7 +2039,7 @@ export default {
   width: 100%;
   background-color: #ffffff;
   position: relative;
-  padding: 0 16px 15px;
+  padding: 0 16px 0;
 }
 
 .box_7 {
@@ -2106,14 +2106,11 @@ export default {
         color: #666666;
       }
     }
-
-    padding-bottom: 10px;
   }
 
   width: 100%;
   background-color: #ffffff;
   padding: 0 16px;
-  margin-bottom: 9px;
 }
 
 .box_5 {
@@ -2162,7 +2159,7 @@ export default {
     }
 
     // border-bottom: 1px solid #f5f5f5;
-    padding: 6.5px 0 27.5px;
+    padding: 0;
     overflow: hidden;
   }
 
@@ -2184,13 +2181,13 @@ export default {
       background-color: #f1f1f1;
       padding: 3px 8px;
       border-radius: 3px;
-      margin: 0 10px 5px 0;
+      margin: 0 10px 10px 0;
     }
   }
 
   width: 100%;
   background-color: #ffffff;
-  padding: 0 0 15px 16px;
+  padding: 0 0 16.5px 16px;
 }
 
 .box_3 {
@@ -2270,7 +2267,7 @@ export default {
 }
 
 .put {
-  padding: 16.5px 0;
+  padding: 20px 0 21.5px;
   font-size: 18px;
   font-weight: bold;
   color: #333333;
@@ -2300,6 +2297,7 @@ export default {
     font-size: 12px;
     color: #1787fb;
     padding-right: 10px;
+    font-weight: initial;
   }
 }
 
@@ -2493,7 +2491,7 @@ export default {
 .box_13 {
   width: 100%;
   background-color: #ffffff;
-  padding: 20px 16px;
+  padding: 21.5px 16px;
   .boss_all {
     overflow: hidden;
     position: relative;
@@ -2519,10 +2517,10 @@ export default {
     }
     .boss_talk_icon {
       display: inline-block;
-      width: 30px;
-      height: 30px;
+      width: 45px;
+      height: 45px;
       position: absolute;
-      top: 10px;
+      top: 5px;
       right: 20px;
       background: url(../../assets/images/jobshow/lt.png) 0 no-repeat;
       background-size: 100%;

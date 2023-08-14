@@ -17,7 +17,20 @@
         服务有效期至：{{ deadline | timeFilter }}
       </p>
     </div>
-    <el-form ref="form" v-loading="infoLoading" :rules="rules" class="common-form" :model="form" label-width="120px">
+    <div v-if="setting_secrecy === true" class="no-promise">
+      <div class="notice-div">
+        <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+      </div>
+    </div>
+    <el-form
+      v-else
+      ref="form"
+      :v-loading="infoLoading"
+      :rules="rules"
+      class="common-form"
+      :model="form"
+      label-width="120px"
+    >
       <el-form-item label="AppKey" prop="appKey">
         <el-input v-model="form.appKey" class="middle" @change="inputChange" />
       </el-form-item>
@@ -63,11 +76,13 @@ export default {
         }]
       },
       is_check: 0,
-      deadline: 0
+      deadline: 0,
+      setting_secrecy: false
     }
   },
   mounted() {},
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
     this.getDocumentCheck()
   },

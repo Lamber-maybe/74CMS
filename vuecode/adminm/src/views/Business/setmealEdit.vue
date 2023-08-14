@@ -46,6 +46,7 @@
       placeholder="0不改变套餐时间,3延长3天"
       input-align="right"
       :colon="true"
+      type="digit"
       class="reset_after "
     />
     <van-field
@@ -54,6 +55,7 @@
       placeholder="请输入"
       input-align="right"
       :colon="true"
+      type="digit"
       class="reset_after big_left"
     />
     <van-field
@@ -62,6 +64,7 @@
       placeholder="请输入"
       input-align="right"
       :colon="true"
+      type="digit"
       class="reset_after big_left"
     />
     <van-field
@@ -70,6 +73,7 @@
       placeholder="请输入"
       input-align="right"
       :colon="true"
+      type="digit"
       class="reset_after big_left"
     />
     <van-field
@@ -78,7 +82,26 @@
       placeholder="请输入"
       input-align="right"
       :colon="true"
+      type="digit"
       class="reset_after big_left"
+    />
+    <van-field
+      v-model.number="form.im_total"
+      label="职聊次数"
+      placeholder="请输入"
+      input-align="right"
+      :colon="true"
+      type="digit"
+      class="reset_after big_left"
+    />
+    <van-field
+      v-model.number="form.im_max_perday"
+      label="允许发起聊天数(次/天)"
+      placeholder="请输入"
+      input-align="right"
+      :colon="true"
+      type="digit"
+      class="reset_after big_300_left"
     />
     <van-field
       readonly
@@ -216,6 +239,8 @@
               enable_video_interview: res.data.enable_video_interview==1?true:false,
               enable_poster: res.data.enable_poster==1?true:false,
               show_apply_contact:res.data.show_apply_contact,
+              im_total:res.data.im_total,
+              im_max_perday:res.data.im_max_perday,
               explain: "",
               is_charge: 0,
               charge_val: 0

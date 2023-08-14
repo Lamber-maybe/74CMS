@@ -1,9 +1,15 @@
 <template>
   <div class="app-container">
     <div class="spaceline" />
+    <div v-if="setting_secrecy === true" class="no-promise">
+      <div class="notice-div">
+        <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+      </div>
+    </div>
     <el-form
+      v-else
       ref="form"
-      v-loading="infoLoading"
+      :v-loading="infoLoading"
       class="common-form"
       :model="form"
       label-width="150px"
@@ -67,7 +73,8 @@ export default {
         map_lat: '',
         map_zoom: ''
       },
-      rules: {}
+      rules: {},
+      setting_secrecy: false
     }
   },
   computed: {
@@ -77,6 +84,7 @@ export default {
   },
   mounted() {},
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
   },
   methods: {

@@ -1209,7 +1209,7 @@ export default {
   color: #ffffff;
   line-height: 14px;
   text-align: center;
-  padding-top: 7px;
+  padding: 7px 0 0 0 !important;
 }
 
 .my_app {

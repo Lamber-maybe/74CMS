@@ -246,12 +246,11 @@
 	cursor: pointer;
 	margin-right: 10px;
 	border: 1px solid #E5E5E5;
-	padding: 5px 0 5px 14px;
+	padding: 5px 10px;
 	border-radius: 2px;
-	width: 76px;
 	text-align: center;
 	display: inline-block;
-	position: relative;
+	font-size: 14px;
 }
 
 .operate .collect img.share_imgIcon,
@@ -260,9 +259,6 @@
 	display: inline-block;
 	width: 12px;
 	height: 12px;
-	position: absolute;
-	left: 16px;
-	top: 5px;
 }
 
 .operate .collect.has {
@@ -575,21 +571,28 @@
 .codeImg_box {
 	margin-top: 10px;
 	background: #fff;
-	padding: 20px;
+	padding: 17px 20px;
 }
 
 .codeImg_box img {
-	width: 80px;
-	height: 80px;
-	margin: 5px;
+	width: 95px;
+	height: 95px;
+	margin: 0 5px;
 }
 
-.code_text {
-	color: #999;
+.code_text p {
+	float: left;
 	font-size: 12px;
-	margin-top: 23px;
-	line-height: 22px;
-	margin-left: 12px;
+	line-height: 20px;
+	text-align: left;
+	margin: 34px 0 0 12px;
+	color: #808080;
+}
+
+.code_text p span {
+	font-size: 15px;
+	font-weight: bold;
+	color: #222;
 }
 
 .right_sidebar .code_text1{
@@ -630,15 +633,16 @@
 	font-size: 16px;
 	color: #333333;
 	position: relative;
+	font-weight: bold;
 }
 
 .company_title span {
 	width: 3px;
-	height: 18px;
+	height: 14px;
 	background: #FF6600;
 	display: inline-block;
 	position: absolute;
-	top: 17px;
+	top: 18px;
 	left: 12px;
 	border-radius: 3px;
 }
@@ -648,6 +652,7 @@
 	color: #999;
 	font-size: 12px;
 	padding: 2px 0;
+	font-weight: initial;
 }
 
 .post_wrapper {
@@ -670,7 +675,7 @@
 }
 
 .post_title_margin {
-	padding: 40px 0 28px;
+	padding: 30px 0 30px;
 }
 
 .post_box1 {
@@ -925,7 +930,7 @@
 }
 
 .similar_title {
-	padding: 26px 30px 20px;
+	padding: 30px 30px 30px;
 }
 
 .similar_list {
@@ -1010,6 +1015,7 @@
 .employer_wrapper {
 	background: #fff;
 	margin-top: 10px;
+	padding-bottom: 30px;
 }
 
 .employer_title {
@@ -1366,6 +1372,7 @@
 
 .periphery_title {
 	border-top: none;
+	padding: 30px 30px 30px;
 }
 
 .right_box5 {
@@ -1506,7 +1513,7 @@
 .address_title {
 	font-size: 14px;
     color: #333333;
-    margin: 26px 0 15px;
+    margin: 26px 0 0;
 }
 
 .address_title img {
@@ -1549,4 +1556,8 @@
     color: #ff6600;
     padding-top: 8px;
 	padding-bottom: 0;
+}
+
+.right_box2_text {
+	padding: 0 20px 9px;
 }

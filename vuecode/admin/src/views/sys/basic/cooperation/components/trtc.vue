@@ -11,9 +11,15 @@
         为保证视频面试的流畅性和可用性，建议您提前配置https，并引导客户使用谷歌内核浏览器参与视频面试
       </p>
     </div>
+    <div v-if="setting_secrecy === true" class="no-promise">
+      <div class="notice-div">
+        <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+      </div>
+    </div>
     <el-form
+      v-else
       ref="form"
-      v-loading="infoLoading"
+      :v-loading="infoLoading"
       class="common-form"
       :model="form"
       label-width="120px"
@@ -41,11 +47,13 @@ export default {
       form: {
         account_trtc_appid: '',
         account_trtc_secretkey: ''
-      }
+      },
+      setting_secrecy: false
     }
   },
   mounted() {},
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
   },
   methods: {

@@ -45,15 +45,28 @@ class qscms
         $data['client_ip'] = $request->ip();
         if (is_array($mobile)) {
             $url = [];
+            /**
+             * 【ID1000526】
+             * 【优化】设置短信黑名单后，被屏蔽的手机依然会接收通知类短信
+             * zch - 2023.02.14
+             */
+            $smsblacklist = model('SmsBlacklist')->column('mobile');
             foreach ($mobile as $key => $value) {
-                $data['mobile'] = $value;
-                $url[] = $this->_notice_url . http_build_query($data);
+                if (!in_array($value, $smsblacklist)) {
+                    $data['mobile'] = $value;
+                    $url[] = $this->_notice_url . http_build_query($data);
+                }
             }
-            $this->httpsRequestAsyncConcurrency($url);
+            if (!empty($url)) {
+                $this->httpsRequestAsyncConcurrency($url);
+            }
         } else {
-            $data['mobile'] = $mobile;
-            $url = $this->_notice_url . http_build_query($data);
-            $this->httpsRequest($url);
+            $isExist = model('SmsBlacklist')->isExist($mobile);
+            if ($isExist === false) {
+                $data['mobile'] = $mobile;
+                $url = $this->_notice_url . http_build_query($data);
+                $this->httpsRequest($url);
+            }
         }
     }
     public function send($mobile, $templateCode, $params, $type = 'captcha')

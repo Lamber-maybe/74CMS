@@ -193,6 +193,19 @@ class CompanySetmeal extends \app\common\controller\Backend
                     $input_data['deadline'] = strtotime($input_data['deadline']);
                 }
             }
+
+            /**
+             * 【ID1000521】
+             * 【bug】后台业务修改单企业套餐时间时，不影响数据库中的过期标识，清除过期（计划任务）无效
+             * yx - 2023.02.01
+             * 【新增】:
+             * 如果套餐无限期或者修改为未过期时间，则重置`expired`字段为0
+             * 以解决定时任务[清除过期套餐]，`expired=1`造成的影响
+             */
+            if ($input_data['deadline'] == 0 || $input_data['deadline'] > time()) {
+                $input_data['expired'] = 0;
+            }
+
             $result = model('MemberSetmeal')
                 ->allowField(true)
                 ->save($input_data, ['uid' => $input_data['uid']]);

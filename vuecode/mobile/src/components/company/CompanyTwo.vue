@@ -126,13 +126,11 @@
       <div class="box_8" v-if="tag_text_arr.length != 0">
         <div class="put"><span class="title">公司福利</span></div>
         <div class="content">
-          <span v-for="(item, index) in tag_text_arr" v-bind:key="index">{{
-            item
-          }}</span>
+          <div class="label-item" v-for="(item, index) in tag_text_arr" v-bind:key="index">{{item}}</div>
         </div>
       </div>
       <div class="box_4" v-if="base_info.address != ''">
-        <div class="put">
+        <div class="put" style="padding-top: 16.5px;">
           <span class="title">公司地址</span>
         </div>
         <div class="address">
@@ -198,7 +196,6 @@
       </div>
       <div class="form_split_10"></div>
       <Subscribe></Subscribe>
-      <div class="form_split_10"></div>
     </div>
     <div class="box_job_some" v-if="comShow === 'job'">
       <van-empty
@@ -337,28 +334,28 @@
 </template>
 
 <script>
-import VideoList from "../../views/shortvideo/components/VideoListtwo";
-import Vue from "vue";
-import wxshare from "@/assets/js/share.js";
-import Subscribe from "@/components/Subscribe";
-import { countDistance } from "@/utils/index";
-import http from "@/utils/http";
-import api from "@/api";
-import Login from "@/components/Login";
-import Share from "@/components/share/Share";
-import SharePoster from "@/components/share/SharePoster";
-import Report from "@/components/Report";
-import FloatBall from "@/components/floatBall";
+import VideoList from '../../views/shortvideo/components/VideoListtwo'
+import Vue from 'vue'
+import wxshare from '@/assets/js/share.js'
+import Subscribe from '@/components/Subscribe'
+import { countDistance } from '@/utils/index'
+import http from '@/utils/http'
+import api from '@/api'
+import Login from '@/components/Login'
+import Share from '@/components/share/Share'
+import SharePoster from '@/components/share/SharePoster'
+import Report from '@/components/Report'
+import FloatBall from '@/components/floatBall'
 let isSpider = new RegExp(
-  "^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)"
-).test(navigator.userAgent);
-Vue.component("BaiduMap", function (resolve, reject) {
+  '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
+).test(navigator.userAgent)
+Vue.component('BaiduMap', function (resolve, reject) {
   if (!isSpider) {
-    require(["vue-baidu-map/components/map/Map.vue"], resolve);
+    require(['vue-baidu-map/components/map/Map.vue'], resolve)
   }
-});
+})
 export default {
-  name: "CompanyShow",
+  name: 'CompanyShow',
   components: {
     VideoList,
     Login,
@@ -366,16 +363,16 @@ export default {
     Share,
     SharePoster,
     Report,
-    FloatBall,
+    FloatBall
   },
-  data() {
+  data () {
     return {
-      query_id: "",
+      query_id: '',
       loading: false,
       finished: false,
       page: 1,
       pagesize: 10,
-      comShow: "com",
+      comShow: 'com',
       showLogin: false,
       is_personal_login: false,
       base_info: {},
@@ -383,22 +380,22 @@ export default {
       field_rule: { basic: {}, contact: {}, info: {} },
       report: 0,
       fans: 0,
-      watch_percent: "",
+      watch_percent: '',
       has_attention: 0,
       joblist: [],
-      distance: "",
+      distance: '',
       current_lat: 0,
       current_lng: 0,
       BMap: {},
       swiperOption: {
         pagination: {
-          el: ".swiper-pagination",
+          el: '.swiper-pagination'
         },
         autoplay: true,
         freeMode: true,
-        speed: 600,
+        speed: 600
       },
-      swiperClass: "reset_swiper",
+      swiperClass: 'reset_swiper',
       after_login_data: {},
       showContentMore: false,
       isMore: false,
@@ -409,73 +406,73 @@ export default {
       showPoster: false,
       showReport: false,
       reportInfo: {},
-      finished_text: "",
+      finished_text: '',
       jobnum: 0,
       videonum: 0,
       tag_text_arr: [],
       putAway: true,
       companySupplementary: {},
       itemWidth: 50,
-      textAlign: "right",
-    };
+      textAlign: 'right'
+    }
   },
-  created() {
-    this.query_id = this.$route.params.id;
+  created () {
+    this.query_id = this.$route.params.id
     this.is_personal_login = !!(
       this.$store.state.LoginOrNot === true && this.$store.state.LoginType === 2
-    );
+    )
     if (this.$route.query.type) {
-      this.comShow = this.$route.query.type;
+      this.comShow = this.$route.query.type
     }
     // 请求数据
-    this.fetchData();
-    this.getCompanySupplementary();
-    if (this.$store.state.config.shortvideo_enable === "1") {
-      this.fetchVideonum();
+    this.fetchData()
+    this.getCompanySupplementary()
+    if (this.$store.state.config.shortvideo_enable === '1') {
+      this.fetchVideonum()
     }
   },
-  mounted() {},
+  mounted () {},
   watch: {
     // 数据渲染完成之后获取企业介绍的高度
     base_info: function () {
       this.$nextTick(function () {
         if (this.$refs.companyContent) {
-          let textHeight = this.$refs.companyContent.scrollHeight;
-          let styleHeight = this.$refs.companyContent.clientHeight;
-          this.isMore = textHeight > styleHeight;
+          let textHeight = this.$refs.companyContent.scrollHeight
+          let styleHeight = this.$refs.companyContent.clientHeight
+          this.isMore = textHeight > styleHeight
         }
-      });
-    },
+      })
+    }
   },
   methods: {
-    widthAuto() {
-      this.putAway = !this.putAway;
+    widthAuto () {
+      this.putAway = !this.putAway
       // this.itemWidth = 150;
       // this.textAlign = "left";
     },
-    leftWidth(val) {
+    leftWidth (val) {
       if (val == 10) {
-        this.textAlign = "left";
-        this.$refs.generate_posters.style.paddingLeft = 45 + "px";
-        this.$refs.allitem.style.left = 0;
+        this.textAlign = 'left'
+        this.$refs.generate_posters.style.paddingLeft = 45 + 'px'
+        this.$refs.allitem.style.left = 0
       } else {
-        this.textAlign = "right";
-        this.$refs.generate_posters.style.paddingLeft = 0;
-        this.$refs.allitem.style.right = 0;
-        this.$refs.allitem.style.left = "inherit";
+        this.textAlign = 'right'
+        this.$refs.generate_posters.style.paddingLeft = 0
+        this.$refs.allitem.style.right = 0
+        this.$refs.allitem.style.left = 'inherit'
       }
     },
-    gettab(comShow) {
-      this.comShow = comShow;
-      this.page = 1;
+    gettab (comShow) {
+      this.comShow = comShow
+      this.page = 1
     },
-    handlerHomePage() {
-      this.$router.push("/index");
+    handlerHomePage () {
+      this.$router.push('/index')
     },
     // 一键复制
-    async handlerCopy() {
-      let that = this;
-      console.log("复制");
+    async handlerCopy () {
+      let that = this
+      console.log('复制')
       //       let copy = () => {
       //         let copyMessage = `${this.com_info.companyname}
       // 招聘：${this.base_info.jobname}
@@ -502,21 +499,21 @@ export default {
       //         copy()
       //       }
     },
-    handlerMap({ BMap, map }) {
-      this.BMap = BMap;
+    handlerMap ({ BMap, map }) {
+      this.BMap = BMap
     },
-    getPosition(mapLat, mapLng) {
+    getPosition (mapLat, mapLng) {
       if (!this.BMap || this.BMap.Geolocation === undefined) {
-        return;
+        return
       }
-      let BMap = this.BMap;
-      let that = this;
-      var geolocation = new BMap.Geolocation();
+      let BMap = this.BMap
+      let that = this
+      var geolocation = new BMap.Geolocation()
       geolocation.getCurrentPosition(
         function (r) {
           if (this.getStatus() === BMAP_STATUS_SUCCESS) {
-            that.current_lat = r.point.lat;
-            that.current_lng = r.point.lng;
+            that.current_lat = r.point.lat
+            that.current_lng = r.point.lng
             if (
               that.current_lat > 0 &&
               that.current_lng > 0 &&
@@ -528,32 +525,32 @@ export default {
                 that.current_lng,
                 mapLat,
                 mapLng
-              );
+              )
             }
           }
         },
         { enableHighAccuracy: true }
-      );
+      )
     },
-    getJoblist() {
+    getJoblist () {
       http
         .get(api.joblist, {
           company_id: this.query_id,
           pagesize: this.pagesize,
-          count_total: 1,
+          count_total: 1
         })
         .then((res) => {
-          this.page++;
-          this.joblist = [...res.data.items];
-          this.jobnum = res.data.total;
+          this.page++
+          this.joblist = [...res.data.items]
+          this.jobnum = res.data.total
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    async fetchData(next_method = null) {
+    async fetchData (next_method = null) {
       const params = {
-        id: this.query_id,
-      };
-      let res = await http.get(api.companyshow, params);
+        id: this.query_id
+      }
+      let res = await http.get(api.companyshow, params)
       const {
         base_info,
         field_rule,
@@ -561,155 +558,155 @@ export default {
         report,
         fans,
         watch_percent,
-        has_attention,
-      } = { ...res.data };
-      this.field_rule = field_rule;
-      this.base_info = base_info;
+        has_attention
+      } = { ...res.data }
+      this.field_rule = field_rule
+      this.base_info = base_info
       // console.log(this.base_info)
-      this.img_list = img_list;
-      this.report = report;
-      this.fans = fans;
-      this.watch_percent = watch_percent;
-      this.has_attention = has_attention;
-      this.tag_text_arr = base_info.tag_text_arr;
+      this.img_list = img_list
+      this.report = report
+      this.fans = fans
+      this.watch_percent = watch_percent
+      this.has_attention = has_attention
+      this.tag_text_arr = base_info.tag_text_arr
       let wechatShareInfo = {
         companyname: base_info.companyname,
         district: base_info.district_text,
         nature: base_info.nature_text,
         trade: base_info.trade_text,
-        imgUrl: base_info.logo_src,
-      };
-      wxshare(wechatShareInfo, "companyshow", location.href);
-      this.getPosition(this.base_info.map_lat, this.base_info.map_lng);
+        imgUrl: base_info.logo_src
+      }
+      wxshare(wechatShareInfo, 'companyshow', location.href)
+      this.getPosition(this.base_info.map_lat, this.base_info.map_lng)
       if (next_method !== null) {
-        this[next_method]();
+        this[next_method]()
       } else {
-        this.getJoblist();
+        this.getJoblist()
       }
     },
-    getCompanySupplementary() {
+    getCompanySupplementary () {
       http
         .get(api.companySupplementary, { id: this.query_id })
         .then((res) => {
-          let { code, data } = res;
-          this.companySupplementary = data;
+          let { code, data } = res
+          this.companySupplementary = data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    onLoad() {
-      if (this.comShow === "video") {
+    onLoad () {
+      if (this.comShow === 'video') {
       } else {
         http
           .get(api.joblist, {
             company_id: this.query_id,
             page: this.page,
-            pagesize: this.pagesize,
+            pagesize: this.pagesize
           })
           .then((res) => {
             for (let i = 0; i < res.data.items.length; i++) {
-              let item = { ...res.data.items[i] };
+              let item = { ...res.data.items[i] }
               if (this.page != 1) {
-                this.joblist.push(item);
+                this.joblist.push(item)
               }
             }
-            this.page++;
+            this.page++
             // 加载状态结束
-            this.loading = false;
+            this.loading = false
             // 数据全部加载完成
             if (res.data.items.length === 0) {
-              this.finished = true;
+              this.finished = true
             }
-          });
+          })
       }
     },
-    toDetail(id) {
-      this.$router.push("/job/" + id);
+    toDetail (id) {
+      this.$router.push('/job/' + id)
     },
-    doAttention() {
+    doAttention () {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
-            title: "提示",
-            message: "当前操作需要登录求职者账号",
-            confirmButtonText: "去登录",
+            title: '提示',
+            message: '当前操作需要登录求职者账号',
+            confirmButtonText: '去登录'
           })
           .then(() => {
-            this.showLogin = true;
+            this.showLogin = true
             this.after_login_data = {
-              method: "doAttention",
-            };
+              method: 'doAttention'
+            }
           })
-          .catch(() => {});
+          .catch(() => {})
       } else {
         const params = {
-          comid: this.query_id,
-        };
+          comid: this.query_id
+        }
         let _api_url =
           this.has_attention === 1
             ? api.company_attention_cancel
-            : api.company_attention;
+            : api.company_attention
         http
           .post(_api_url, params)
           .then((res) => {
-            this.has_attention = this.has_attention === 1 ? 0 : 1;
-            this.$notify({ type: "success", message: res.message });
+            this.has_attention = this.has_attention === 1 ? 0 : 1
+            this.$notify({ type: 'success', message: res.message })
           })
-          .catch(() => {});
+          .catch(() => {})
       }
     },
-    doShare() {
-      this.showShare = true;
+    doShare () {
+      this.showShare = true
     },
-    cancelShare() {
-      this.showShare = false;
-      this.showWxLayer = false;
-      this.showLayer = false;
+    cancelShare () {
+      this.showShare = false
+      this.showWxLayer = false
+      this.showLayer = false
     },
-    handleForward() {
-      const agent = navigator.userAgent.toLowerCase();
-      if (agent.indexOf("micromessenger") < 0) {
+    handleForward () {
+      const agent = navigator.userAgent.toLowerCase()
+      if (agent.indexOf('micromessenger') < 0) {
         setTimeout(() => {
-          this.showLayer = true;
-        }, 150);
+          this.showLayer = true
+        }, 150)
       } else {
         setTimeout(() => {
-          this.showWxLayer = true;
-        }, 150);
+          this.showWxLayer = true
+        }, 150)
       }
     },
-    handlePoster() {
-      this.shareid = this.query_id;
-      this.showPoster = true;
+    handlePoster () {
+      this.shareid = this.query_id
+      this.showPoster = true
     },
-    closePoster() {
-      this.showPoster = false;
+    closePoster () {
+      this.showPoster = false
     },
-    afterLogin(data) {
-      this.showLogin = false;
-      this.is_personal_login = true;
-      let method = null;
+    afterLogin (data) {
+      this.showLogin = false
+      this.is_personal_login = true
+      let method = null
       if (data.method !== undefined) {
-        method = data.method;
+        method = data.method
       }
-      this.fetchData(method);
+      this.fetchData(method)
     },
-    locationToBdmap() {
+    locationToBdmap () {
       if (!this.base_info.map_lat || !this.base_info.map_lng) {
-        return false;
+        return false
       }
       let url =
-        "http://api.map.baidu.com/marker?location=" +
+        'http://api.map.baidu.com/marker?location=' +
         this.base_info.map_lat +
-        "," +
+        ',' +
         this.base_info.map_lng +
-        "&title=" +
+        '&title=' +
         this.base_info.companyname +
-        "&content=" +
+        '&content=' +
         this.base_info.address +
-        "&output=html";
-      window.location.href = url;
+        '&output=html'
+      window.location.href = url
     },
-    reportDetail() {
+    reportDetail () {
       http
         .get(api.company_report, { id: this.base_info.id })
         .then((res) => {
@@ -717,22 +714,22 @@ export default {
             companyname: this.base_info.companyname,
             evaluation: res.data.evaluation,
             certifier: res.data.certifier,
-            addtime: res.data.addtime,
-          };
-          this.showReport = true;
+            addtime: res.data.addtime
+          }
+          this.showReport = true
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    fetchVideonum() {
+    fetchVideonum () {
       http
         .get(api.shortvideo_total, { comid: this.query_id })
         .then((res) => {
-          this.videonum = res.data;
+          this.videonum = res.data
         })
-        .catch(() => {});
-    },
-  },
-};
+        .catch(() => {})
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -743,7 +740,7 @@ export default {
   bottom: 80px;
   background: #e0eeff;
   border-radius: 45px;
-  width: 144px;
+  width: 154px;
   height: 45px;
   transition: width 0.5s;
   -moz-transition: width 0.5s; /* Firefox 4 */
@@ -751,6 +748,7 @@ export default {
   -o-transition: width 0.5s; /* Opera */
   line-height: 58px;
   padding-top: 0;
+  padding-left: 10px;
   // position: relative;
   // display: inline-block;
   .poster_item {
@@ -1152,7 +1150,6 @@ export default {
       // white-space: pre-line;
       max-height: 240px;
       overflow: hidden;
-      padding-bottom: 10px;
       &.auto {
         max-height: none;
       }
@@ -1201,27 +1198,38 @@ export default {
 .box_9 {
   width: 100%;
   background-color: #ffffff;
-  padding: 0 16px 16px;
+  padding: 0 16px 21.5px;
   .content {
     padding: 0 30px 0;
     .company_status {
-      float: left;
-      width: 40%;
-      font-size: 0.373333rem;
+      position: relative;
+      text-align: center;
       background: #f8f9fa;
+      width: 44%;
       padding: 10px 0;
       border-radius: 5px;
+      float: left;
       span {
         display: block;
-        width: 100%;
-        text-align: center;
-        color: #167eff;
+        font-size: 17px;
         font-weight: bold;
+        color: #167EFF;
+        margin-bottom: 4.5px;
       }
       span:nth-child(2) {
         font-weight: normal;
         font-size: 12px;
         color: #999999;
+      }
+      &:not(:last-child)::after {
+        content: " ";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translate(0, -50%);
+        width: 1px;
+        height: 25px;
+        background-color: #f3f3f3;
       }
     }
 
@@ -1243,18 +1251,20 @@ export default {
   padding: 0 16px;
   .content {
     line-height: 14px;
-    span {
-      background: #f1f1f1;
-      font-size: 12px;
-      padding: 3px 8px;
+    overflow: hidden;
+    .label-item{
+      float: left;
+      font-size: 13px;
+      color: #595959;
+      background-color: #f1f1f1;
+      padding: 5px 8px;
       border-radius: 3px;
-      margin: 0 8px 8px 0;
-      display: inline-block;
+      margin: 0 10px 10px 0;
     }
   }
 }
 .put {
-  padding: 16.5px 0;
+  padding: 21.5px 0;
   font-size: 16px;
   font-weight: bold;
   color: #333333;

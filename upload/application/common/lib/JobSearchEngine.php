@@ -55,10 +55,13 @@ class JobSearchEngine
     protected $fulltext_mode = 'NATURAL LANGUAGE';
     protected $userinfo;
 
+    protected $engine;  // 职位搜索方式 1全文搜索 2模糊搜索
+
     public function __construct($getdata = array())
     {
         $this->global_config = config('global_config');
         $this->tableprefix = config('database.prefix');
+        $this->engine = !empty($this->global_config['job_search_engine']) ? $this->global_config['job_search_engine'] : '1';
         $this->tablename = $this->tableprefix . 'job_search_rtime';
         $this->join = [];
         $this->where = '';
@@ -311,46 +314,61 @@ class JobSearchEngine
         $this->tablename = $this->tableprefix . 'job_search_key';
         $this->keyword = urldecode(urldecode($this->keyword));
         $keyword = trim($this->keyword);
-        if (false !== stripos($keyword, ' ')) {
-            $keyword = merge_spaces($keyword);
-            $this->fulltext_mode = 'BOOLEAN';
-            $tmp_keyword_arr = explode(' ', $keyword);
-            foreach ($tmp_keyword_arr as $key => $value) {
-                $this->against .= '+' . $value . ' ';
-            }
-            $this->against = trim($this->against);
-            $keyword = $this->against;
-        } else {
-            $this->against = $keyword;
-        }
-        $this->field =
-            "a.id,company_id,refreshtime,stick,MATCH (`company_nature`) AGAINST ('" .
-            $keyword .
-            "' IN " .
-            $this->fulltext_mode .
-            " MODE) AS score1,MATCH (`jobname`) AGAINST ('" .
-            $keyword .
-            "' IN " .
-            $this->fulltext_mode .
-            " MODE) AS score2,MATCH (`companyname`) AGAINST ('" .
-            $keyword .
-            "' IN " .
-            $this->fulltext_mode .
-            ' MODE) AS score3';
 
-        /**
-         * 【ID1000392】
-         * 【新增】职位、简历搜索页列表展现排序
-         * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
-         * yx - 2022.11.08
-         * [旧]
-         * $this->orderby = 'score1 desc,score2 desc,score3 desc,refreshtime desc';
-         */
-        $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
-        if ('1' === $job_search_order) {
-            $this->orderby = 'stick DESC, score1 desc, score2 desc, score3 desc, refreshtime desc, a.id DESC';
+        if ('1' === $this->engine) {
+            if (false !== stripos($keyword, ' ')) {
+                $keyword = merge_spaces($keyword);
+                $this->fulltext_mode = 'BOOLEAN';
+                $tmp_keyword_arr = explode(' ', $keyword);
+                foreach ($tmp_keyword_arr as $key => $value) {
+                    $this->against .= '+' . $value . ' ';
+                }
+                $this->against = trim($this->against);
+                $keyword = $this->against;
+            } else {
+                $this->against = $keyword;
+            }
+            $this->field =
+                "a.id,company_id,refreshtime,stick,MATCH (`company_nature`) AGAINST ('" .
+                $keyword .
+                "' IN " .
+                $this->fulltext_mode .
+                " MODE) AS score1,MATCH (`jobname`) AGAINST ('" .
+                $keyword .
+                "' IN " .
+                $this->fulltext_mode .
+                " MODE) AS score2,MATCH (`companyname`) AGAINST ('" .
+                $keyword .
+                "' IN " .
+                $this->fulltext_mode .
+                ' MODE) AS score3';
+
+            /**
+             * 【ID1000392】
+             * 【新增】职位、简历搜索页列表展现排序
+             * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
+             * yx - 2022.11.08
+             * [旧]
+             * $this->orderby = 'score1 desc,score2 desc,score3 desc,refreshtime desc';
+             */
+            $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
+            if ('1' === $job_search_order) {
+                $this->orderby = 'stick DESC, score1 desc, score2 desc, score3 desc, refreshtime desc, a.id DESC';
+            } else {
+                $this->orderby = 'stick DESC, refreshtime DESC, score1 desc, score2 desc, score3 desc, a.id DESC';
+            }
         } else {
-            $this->orderby = 'stick DESC, refreshtime DESC, score1 desc, score2 desc, score3 desc, a.id DESC';
+            /**
+             * 【ID1000546】
+             * 【新增】搜索关键词配置项，全文搜，模糊搜方式可选
+             * yx - 2023.02.17
+             * [新增]:
+             */
+            $like_sql = " (`jobname` like '%" . $this->keyword . "%' OR `companyname` like '%" . $this->keyword . "%' OR `company_nature` like '%" . $this->keyword . "%') ";
+            $this->where .=
+                $this->where == '' ? $like_sql : ' AND ' . $like_sql;
+            $this->field = 'a.id,company_id,refreshtime,stick,jobname,companyname,company_nature';
+            $this->orderby = 'stick DESC, refreshtime DESC, a.id DESC';
         }
     }
     /**

@@ -536,9 +536,15 @@ class Job extends \app\v1_0\controller\common\Base
         if ($jobinfo['tag'] != '') {
             $tag_arr = explode(',', $jobinfo['tag']);
             foreach ($tag_arr as $k => $v) {
-                isset($category_data['QS_jobtag'][$v]) &&
-                    ($base_info['tag_text_arr'][] =
-                    $category_data['QS_jobtag'][$v]);
+                if (
+                    is_numeric($v) &&
+                    isset($category_data['QS_jobtag'][$v])
+                ) {
+                    $base_info['tag_text_arr'][] =
+                        $category_data['QS_jobtag'][$v];
+                } else {
+                    $base_info['tag_text_arr'][] = $v;
+                }
             }
         }
 

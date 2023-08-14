@@ -31,6 +31,7 @@
             placeholder="请选择地区"
             :options="citycategory"
             :props="{ checkStrictly: true }"
+            popper-class="cancelRadio"
             :clearable="true"
             @change="screenList"
           />

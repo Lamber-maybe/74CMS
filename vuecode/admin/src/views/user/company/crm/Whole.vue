@@ -510,7 +510,7 @@
             background
             destroy-on-close
             :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -1195,8 +1195,18 @@ export default {
     exportExcel(list) {
       require.ensure([], () => {
         const { export_json_to_excel } = require('@/excel/Export2Excel')
-        const tHeader = this.export_name// 上面设置Excel的表格第一行的标题
+        const tHeader = this.export_name // 上面设置Excel的表格第一行的标题
+        /**
+         * 【ID1000513】
+         * 【bug】客户/线索列表底部导出后，导出的信息没有名称
+         * yx - 2023.01.31
+         * 【解决-新增】
+         * 缺少表头及对应字段：tHeader.unshift('线索名称')
+         * 缺少数据字段：filterVal.unshift('name')
+         */
+        tHeader.unshift('线索名称')
         const filterVal = this.export_field
+        filterVal.unshift('name')
         const data = this.formatJson(filterVal, list)
         export_json_to_excel(
           tHeader,

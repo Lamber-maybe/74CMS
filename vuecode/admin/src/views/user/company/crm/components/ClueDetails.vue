@@ -166,7 +166,7 @@ export default {
         },
         {
           max: 6,
-          message: '长度在 0 到 6 个字符',
+          message: '长度在 1 到 6 个汉字',
           trigger: 'blur'
         }
         ]

@@ -89,7 +89,7 @@
           <el-pagination
             background
             :current-page="listParams.page"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             layout="total, sizes, prev, pager, next, jumper"
             :page-size="listParams.page_size"
             :total="total"

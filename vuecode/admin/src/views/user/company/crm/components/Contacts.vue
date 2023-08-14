@@ -190,8 +190,8 @@ export default {
       rules: {
         contact: [
           { required: true, message: '请输入联系人', trigger: 'blur' },
-          { max: 6, message: '长度在 0 到 6 个字符', trigger: 'blur' }
-        ],
+          { max: 6, message: '长度在 1 到 6 个汉字', trigger: 'blur' }
+        ]
       },
       type: '',
       isDialog: false,

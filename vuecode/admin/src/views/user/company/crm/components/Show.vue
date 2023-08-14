@@ -68,6 +68,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="跟进记录" name="first">
             <followUpRecord
+              v-if="activeName == 'first'"
               :clue_id="rowId"
               :contacts="details.contacts"
               :mobile="details.mobile"

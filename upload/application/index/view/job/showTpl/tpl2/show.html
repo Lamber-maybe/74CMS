@@ -510,8 +510,8 @@
                         <div class="address_bg">
                             <img class="img_bg" src="__ROOT__/assets/images/company/dtbj.png" alt="">
                             <div class="adress_detail" @click="showMap=true">
-                                <p class="substring">{#$return.com_info.companyname#}</p>
-                                <p class="substring">{#$return.base_info.address#}</p>
+                                <p class="substring" style="font-size: 16px">{#$return.com_info.companyname#}</p>
+                                <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
                             </div>
                             <span class="rt_btn" @click="showMap=true">
                                 <img src="__ROOT__/assets/images/company/jr.png" alt="">
@@ -557,7 +557,7 @@
                     {#/if#}
                     <div class="employer_wrapper"
                         v-if="supplementary.famous_list!==undefined && supplementary.famous_list.length>0">
-                        <div class="similar_title title clearfix">
+                        <div class="similar_title title clearfix" style="padding-bottom: 2px;">
                             <span class="title_item1">明星雇主</span>
                             <a class="right_text" target="_blank" href="{#:url('index/company/index')#}">更多企业&gt;</a>
                         </div>
@@ -567,8 +567,8 @@
                                 <a class="img" target="_blank" :href="item.link_url">
                                     <img :src="item.logo">
                                 </a>
-                                <!-- <a class="c_name substring" target="_blank" :title="item.companyname"
-                                    :href="item.link_url">{{item.companyname}}</a> -->
+                                <a class="c_name substring" target="_blank" :title="item.companyname"
+                                    :href="item.link_url">{{item.companyname}}</a>
                             </div>
                         </div>
                     </div>
@@ -706,8 +706,7 @@
                 <div class=" codeImg_box clearfix">
                     <img class="float" :src="rightQrcode">
                     <div class=" code_text float">
-                        微信扫一扫<br />
-                        职位信息秒传手机
+                        <p> <span>微信扫一扫</span> <br />职位信息秒传手机</p>
                     </div>
                 </div>
                 {#if condition="count($return.hotjob_list) gt 0"#}
@@ -719,7 +718,7 @@
                     </div>
                     {#volist name="return.hotjob_list" id="vo"#}
                     <div class="right_box2_text">
-                        <a class="box2_text1 {#eq name="vo.emergency" value="1" #}emergency{#/eq#}" target="_blank"
+                        <a class="box2_text1 substring {#eq name="vo.emergency" value="1" #}emergency{#/eq#}" target="_blank"
                             href="{#:url('index/job/show',['id'=>$vo.id])#}">{#$vo.jobname#}</a>
                         <p class="box2_text3">{#$vo.wage_text#}{#eq name="vo.negotiable" value="0"#}/月{#/eq#}</p>
                         <p class="box2_text2">{#$vo.companyname#}</p>

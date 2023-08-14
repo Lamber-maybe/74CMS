@@ -2,7 +2,9 @@
   <div id="app">
     <Head>屏蔽企业</Head>
     <div class="box_1">
-      <van-search v-model="key" @search="onSearch" shape="round" placeholder="请输入关键字" />
+      <form action="">
+        <van-search v-model="key" @search="onSearch" shape="round" placeholder="请输入关键字" />
+      </form>
     </div>
     <div class="search_tip" v-if="searchTip">
       <div class="tx1">通过以下方式搜索公司</div>

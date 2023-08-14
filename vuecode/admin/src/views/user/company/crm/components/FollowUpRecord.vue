@@ -121,7 +121,7 @@
           <el-pagination
             background
             :current-page="listParams.page"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             layout="total, sizes, prev, pager, next, jumper"
             :page-size="listParams.page_size"
             :total="total"
@@ -152,24 +152,6 @@ export default {
 
       },
       pickerOptions: {
-        // disabledDate(time) {
-        //   // 选择今天以及今天之后的日期
-        //   return time.getTime() < Date.now() - 8.64e7// 如果没有后面的-8.64e7就是不可以选择
-        // }
-        // disabledDate: (time) => {
-        //   return time.getTime() < Date.now() - 1 * 24 * 3600 * 1000
-        // }
-        // disabledDate(time) {
-        //   return time.getTime() < Date.now() - 1 * 24 * 3600 * 1000
-        // }
-        selectableRange: (() => {
-          // const data = new Date()
-          // const hour = data.getHours()
-          // const minute = data.getMinutes()
-          // const second = data.getSeconds()
-          return `00:00:00 - 23:59:59`
-          // return `${hour}:${minute}:${second} - 23:59:59`
-        })(),
         disabledDate(time){
           return time.getTime() < Date.now() - 8.64e7
         }
@@ -223,10 +205,6 @@ export default {
     },
     mobile(value){
       this.followUp.link_mobile = value
-      if (this.currentNav == 'wholeClue' || this.currentNav == 'wholeMy' || this.currentNav == 'wholeInternationalWaters'){
-        this.followUpList()
-        this.clueContactList()
-      }
     },
     uid(value){
       if (this.currentNav != 'allClient' || this.currentNav != 'myClient' || this.currentNav != 'pubilceClient'){
@@ -237,6 +215,10 @@ export default {
     },
     clue_id(value){
       this.clue_ids = value
+      if (this.currentNav == 'wholeClue' || this.currentNav == 'wholeMy' || this.currentNav == 'wholeInternationalWaters'){
+        this.followUpList()
+        this.clueContactList()
+      }
     }
   },
   created () {
@@ -253,6 +235,32 @@ export default {
     this.upload_url = window.global.RequestBaseUrl + '/upload/index'
     this.headerObj = {
       'admintoken': getToken()
+    }
+  },
+  mounted() {
+    if (this.currentNav == 'wholeClue' || this.currentNav == 'wholeMy' || this.currentNav == 'wholeInternationalWaters'){
+      if (this.clue_id){
+        this.followUpList()
+        this.clueContactList()
+      }
+    }
+    if (this.currentNav != 'allClient' || this.currentNav != 'myClient' || this.currentNav != 'pubilceClient'){
+      if (this.uid){
+        this.contactList(this.uid)
+        this.followUpList(this.uid)
+        /**
+         * 【ID1000548】
+         * 特定情况下，CRM客户跟进记录无法入库
+         * yx - 2023.02.17
+         * [新增]:
+         * if (this.user_id === undefined || this.user_id === 0){
+         *           this.user_id = this.uid
+         * }
+         */
+        if (this.user_id === undefined || this.user_id === 0) {
+          this.user_id = this.uid
+        }
+      }
     }
   },
   methods: {
@@ -283,7 +291,7 @@ export default {
                * if判断，绑定v-model
                */
               if (res.data[i].type == 'company'){
-                this.followUp.contacts = res.data[i].id
+                this.followUp.contacts = res.data[i].auto_id
                 this.followUp.link_man = res.data[i].contact
                 this.followUp.link_mobile = res.data[i].mobile
                 if (res.data[i].mobile == '') {
@@ -295,7 +303,7 @@ export default {
               if (res.data[i].mobile == '') {
                 contactName = res.data[i].contact + ' | ' + res.data[i].telephone
               }
-              this.contactsData.push({ 'name': contactName, 'value': res.data[i].id })
+              this.contactsData.push({ 'name': contactName, 'value': res.data[i].auto_id })
             }
           }
         }).catch(() => {

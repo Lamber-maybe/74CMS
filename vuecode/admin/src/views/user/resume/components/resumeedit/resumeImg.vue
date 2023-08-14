@@ -2,9 +2,10 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span  style="font-weight: 600;color: #333;">照片作品</span>
+        <span style="font-weight: 600;color: #333;">照片作品</span>
       </div>
       <el-upload
+        :class="img_src_arr_len>=6 ? 'upload_hide' : ''"
         :action="apiUpload"
         :headers="headers"
         list-type="picture-card"
@@ -16,7 +17,7 @@
       >
         <i class="el-icon-plus" />
       </el-upload>
-      <el-dialog :visible.sync="dialogVisible"  append-to-body>
+      <el-dialog :visible.sync="dialogVisible" append-to-body>
         <img width="100%" :src="dialogImageUrl" alt="">
       </el-dialog>
     </el-card>
@@ -38,7 +39,8 @@ export default {
       fileupload_size: '',
       fileupload_ext: '',
       apiUpload: window.global.RequestBaseUrl + apiArr.upload,
-      img_src_arr: []
+      img_src_arr: [],
+      img_src_arr_len: 0
     }
   },
   computed: {
@@ -64,19 +66,23 @@ export default {
             name: img_data_arr[index].id,
             url: img_data_arr[index].img_src
           })
+          this.img_src_arr_len = this.img_src_arr.length
         }
         this.$emit('setLoading', 'resumeImg')
       })
     },
     handleRemove(file, fileList) {
-      const param = {
-        id: file.name,
-        rid: this.id
+      if (file && file.status == 'success'){
+        const param = {
+          id: file.name,
+          rid: this.id
+        }
+        resumeImgDelete(param).then(response => {
+          this.$message.success(response.message)
+          this.img_src_arr_len--
+          return true
+        })
       }
-      resumeImgDelete(param).then(response => {
-        this.$message.success(response.message)
-        return true
-      })
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
@@ -91,6 +97,7 @@ export default {
         resumeImgAdd(param).then(response => {
           file.name = response.data
           this.$message.success(response.message)
+          this.img_src_arr_len++
           return true
         })
       } else {
@@ -99,6 +106,10 @@ export default {
       }
     },
     beforePhotoUpload(file) {
+      if (this.img_src_arr_len >= 6){
+        this.$message.error('最多上传6张简历作品')
+        return false
+      }
       const filetypeArr = file.type.split('/')
       const filetype = filetypeArr[1]
       const configFileExtArr = this.fileupload_ext.split(',')
@@ -116,3 +127,12 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+  .box-card {
+    .upload_hide{
+      ::v-deep .el-upload--picture-card{
+        display: none;
+      }
+    }
+  }
+</style>

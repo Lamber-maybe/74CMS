@@ -4,7 +4,12 @@
       <div slot="header" class="clearfix">
         <span>{{ title }}</span>
       </div>
-      <div>
+      <div v-if="setting_secrecy === true" class="no-promise">
+        <div class="notice-div">
+          <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+        </div>
+      </div>
+      <div v-else>
         <el-form ref="form" :model="form" :rules="rules" label-width="120px">
           <el-form-item label="AppKey" prop="app_key">
             <el-input v-model="form.app_key" place-holder="请输入AppKey" style="width:50%" @change="inputChange" />
@@ -47,7 +52,8 @@ export default {
           message: '请输入AppSecret',
           trigger: 'blur'
         }]
-      }
+      },
+      setting_secrecy: false
     }
   },
   computed: {},
@@ -55,7 +61,9 @@ export default {
   mounted() {
     this.initData()
   },
-  created() {},
+  created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
+  },
   methods: {
     initData() {
       getBaseConfig().then(res => {

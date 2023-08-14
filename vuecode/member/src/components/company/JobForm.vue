@@ -410,6 +410,11 @@
                 message: '请填写联系人',
                 trigger: 'blur',
               },
+              {
+                max: 6,
+                message: '长度在 1 到 6 个汉字',
+                trigger: 'blur',
+                },
             ]"
           >
             <el-input

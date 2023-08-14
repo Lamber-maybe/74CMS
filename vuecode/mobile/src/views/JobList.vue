@@ -117,7 +117,8 @@
       <div class="ll_tip_more">微信扫一扫，求职更轻松</div>
       <div class="ll_tip_bth">
         <router-link to="/member/login" class="a_btn">登录</router-link>
-        <router-link to="/member/reg/personal" class="a_btn blue">注册</router-link>
+<!--        <router-link to="/member/reg/personal" class="a_btn blue">注册</router-link>-->
+        <a class="a_btn blue" @click="handlerRegPersonal()">注册</a>
       </div>
       <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}
       </div>
@@ -783,6 +784,14 @@ export default {
       }
       this.selectArrOnload = localStorage.getItem('selectArr') == null || localStorage.getItem('selectArr') ==
       'null' ? [] : JSON.parse(localStorage.getItem('selectArr'))
+    },
+    // 注册个人会员
+    handlerRegPersonal: function () {
+      if (parseInt(this.$store.state.config.closereg) === 1) {
+        this.$notify('网站已关闭会员注册')
+        return false
+      }
+      this.$router.push('/member/reg/personal')
     }
   }
 }

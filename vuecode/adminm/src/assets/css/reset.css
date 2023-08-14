@@ -86,3 +86,4 @@
 .van-cell__title{display: flex;align-items: center;}
 .textarea_box .van-cell__title span{position: relative;}
 .textarea_box .van-cell__title span{position: absolute;left: 35px; top: 50px;}
+.big_300_left .van-field__label { width: 300px; }

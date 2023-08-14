@@ -50,6 +50,16 @@ body {
     background: url(../images/video_recruitment/video_back_icon.png) no-repeat left center;
 }
 
+.video_header_inner .logo .handLe_img {
+    max-width: 170px;
+    max-height: 70px;
+    vertical-align: middle;
+}
+
+.video_header_inner .logo .inner_title {
+    margin-left: 20px;
+}
+
 /* 视频招聘 */
 .video_content {
     width: 100%;

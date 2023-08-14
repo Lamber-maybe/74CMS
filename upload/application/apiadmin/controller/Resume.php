@@ -1527,6 +1527,14 @@ class Resume extends \app\common\controller\Backend
         if (!$imgid) {
             $this->ajaxReturn(500, '请选择');
         }
+
+        $have_img = model('ResumeImg')
+            ->where('rid', $rid)
+            ->count('id');
+        if ($have_img >= 6) {
+            $this->ajaxReturn(500, '最多上传6张简历作品');
+        }
+
         $basic = model('Resume')
             ->where('id', $rid)
             ->find();

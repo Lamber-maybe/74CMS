@@ -75,12 +75,51 @@ class ShortVideo extends \app\v1_0\controller\common\Base
                 exception('参数不正确');
             }
             $WebData = $http->request($url, '', 'GET', '', '');
-            $VideoId = explode("/", $WebData['headers']['Location'][0]);
-            $VideoData =  $http->get3("https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=$VideoId[5]", "", "GET", "", "");
-            $VideoData = json_decode($VideoData, true);
-            $VideoSrc = str_replace("playwm", "play", $VideoData['item_list'][0]['video']['play_addr']['url_list'][0]); //视频去水印未跳转地址
-            $VideoTitle = $VideoData['item_list'][0]['desc']; //视频标题
-            $VideoImg = $VideoData['item_list'][0]['video']['origin_cover']['url_list'][0]; //视频封面
+
+            /**
+             * 【ID1000545】
+             * 【bug】短视频招聘，抖音导入报错
+             * yx - 2023.02.17
+             */
+            if (is_array($WebData['headers']['Location'])){
+                $VideoInfo = explode("/", $WebData['headers']['Location'][0]);
+
+            }elseif (is_string($WebData['headers']['Location'])){
+                $VideoInfo =explode("/", $WebData['headers']['Location']);
+            }else{
+                exception('抖音分享链接错误');
+            }
+
+            if (isset($VideoInfo[5]) && !empty($VideoInfo['5'])) {
+                $VideoId = $VideoInfo[5];
+            } else {
+                exception('抖音分享视频信息异常');
+            }
+
+            /**
+             * 旧接口无法使用
+             * 'api地址'："https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=$VideoId"
+             */
+            $VideoData =  $http->get3("https://www.iesdouyin.com/aweme/v1/web/aweme/detail/?aweme_id=$VideoId");
+
+            /**
+             * 防止返回‘blocked’
+             */
+            if (is_json($VideoData)){
+                $VideoData = json_decode($VideoData, true);
+            }else{
+                exception('抖音视频解析失败，请稍后重新尝试');
+            }
+
+            /**
+             * 旧接口处理数据：
+             * $VideoSrc = str_replace("playwm", "play", $VideoData['item_list'][0]['video']['play_addr']['url_list'][0]); //视频去水印未跳转地址
+             * $VideoTitle = $VideoData['item_list'][0]['desc']; //视频标题
+             * $VideoImg = $VideoData['item_list'][0]['video']['origin_cover']['url_list'][0]; //视频封面
+             */
+            $VideoSrc = $VideoData['aweme_detail']['video']['bit_rate'][0]['play_addr']['url_list'][0];
+            $VideoTitle = $VideoData['aweme_detail']['desc'];
+
             $up = new FileManager();
             $ReturnArr = array(
                 'title' => $VideoTitle,

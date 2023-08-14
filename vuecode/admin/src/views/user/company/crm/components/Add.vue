@@ -168,7 +168,7 @@ export default {
           },
           {
             max: 20,
-            message: '长度在 0 到 20 个字符',
+            message: '长度在 1 到 20 个汉字',
             trigger: 'blur'
           },
           {
@@ -448,7 +448,7 @@ export default {
       if (this.form.contact == '') {
         this.$message.error('请输入联系人姓名！')
       } else if (this.form.contact.length > 6) {
-        this.$message.error('联系人姓名长度在 0 到 6 个字符！')
+        this.$message.error('联系人姓名长度在 1 到 6 个汉字！')
       } else if (this.form.mobile == '' && this.form.telephone == '') {
         this.$message.error('请输入联系人电话或座机二选一！')
       } else if (this.form.mobile != '' && this.form.mobile.length != 11) {

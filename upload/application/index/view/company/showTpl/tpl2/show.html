@@ -112,14 +112,10 @@
                     <span>浏览次数：{{clickNum}}</span>
                 </div> 
             </div>
-            <!-- <div class="list_tab clearfix">
-                <div :class="tab=='introduce'?'tab_active':''" @click="changeTab">公司介绍</div>
-                <div :class="tab=='joblist'?'tab_active':''" @click="changeTab">在招职位</div>
-            </div> -->
         </div>
         <div class="list_box2 clearfix">
             <div class="box2_left">
-                <div class="company" v-show="tab=='introduce'">
+                <div class="company">
                     <div class="introduce">
                         <div class="introduce_title title_margin1 clearfix">
                             <span class="title_item1">公司简介</span>
@@ -135,12 +131,18 @@
                             {#/volist#}
                         </div>
                         {#/if#}
-                        <div ref="companyContent" :class="contentAll ? 'introduce_con' : 'introduce_con all'">
-                            <p>{#$return.base_info.content#}</p>
-                        </div>
-                        <div class="introduce_btn" v-if="contentHeight > 280" @click="contentAll = !contentAll">
-                            {{contentAll ? '查看更多' : '收起'}}
-                        </div>
+                        {#empty name="return.base_info.content"#}
+                            <div class="no_content">
+                                <p class="no_content-p">暂未填写更多简介</p>
+                            </div>
+                        {#else /#}
+                            <div ref="companyContent" :class="contentAll ? 'introduce_con' : 'introduce_con all'">
+                                <p>{#$return.base_info.content#}</p>
+                            </div>
+                            <div class="introduce_btn" v-if="contentHeight > 280" @click="contentAll = !contentAll">
+                                {{contentAll ? '查看更多' : '收起'}}
+                            </div>
+                        {#/empty#}
                     </div>
                     {#if condition="$return.base_info.address!=''"#}
                     <div class="address_con">
@@ -154,14 +156,14 @@
                         <div class="address_bg">
                             <img src="__ROOT__/assets/images/company/dtbj.png" alt="">
                             <div class="adress_detail" @click="showMap=true">
-                                <p class="substring">{#$return.base_info.companyname#}</p>
-                                <p class="substring">{#$return.base_info.address#}</p>
+                                <p class="substring" style="font-size: 16px">{#$return.base_info.companyname#}</p>
+                                <p class="substring" style="font-size: 14px">{#$return.base_info.address#}</p>
                             </div>
                             <span class="rt_btn" @click="showMap=true">
                                 <img src="__ROOT__/assets/images/company/jr.png" alt="">
                             </span>
                         </div>
-                        <div id="address_title" class="address_title" style="margin-top:15px;">
+                        <div id="address_title" class="address_title" style="margin-top:15px;margin-bottom: 0">
                             <img src="__ROOT__/assets/images/company/address.png" />
                             <span id="distance"></span>
                             <span class="address_link" @click="showMap=true">查看路线</span>
@@ -179,13 +181,6 @@
                             <span class="title_item1">企业风采</span>
                         </div>
                         <div class="company_imgList">
-                            <!-- <ul class="company_con clearfix">
-                                <li class="highslide-gallery" v-for="(item,index) in supplementary.img_list"
-                                    :key="index">
-                                    <a :href="item.img_src" class="highslide" onclick="return hs.expand(this)"><img
-                                            :src="item.img_src"></a>
-                                </li>
-                            </ul> -->
                             <el-carousel :loop="false" :autoplay="false" height="204px">
                                 <el-carousel-item class="el-car-item" v-for="(list, index) in imgList" :key="index">
                                    <img v-for="(imgItemList,index2) in list" :key="index2" class="top-img" :src="imgItemList.img_src" :alt="imgItemList.title" />
@@ -194,42 +189,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="job_list_box" v-show="tab=='joblist'">
-                    <div v-if="joblist.length>0">
-                        <div class="job_list njl clearfix" v-for="(item,index) in joblist" :key="index">
-                            <div class="job_text_long">
-                                <a class="job_title" :href="item.job_link_url_web" target="_blank">{{item.jobname}}</a>
-                                <p class="job_salary">
-                                    <strong>{{item.wage_text}}</strong>
-                                    <span>{{item.district_text}}</span>
-                                    <span>{{item.education_text}}</span>
-                                    <span>{{item.experience_text}}</span>
-                                </p>
-                                <p class="job_welfare">
-                                    <span v-for="(tag,i) in item.tag" :key="i">{{tag}}</span>
-                                </p>
-                            </div>
-                            <div class="job_btn">
-                                <p>{{item.refreshtime}}</p>
-                                <button class="btn" @click="doApply(item.id)">申请职位</button>
-                            </div>
-                        </div>
-                        <div class="paging1 clearfix">
-                            <div class="paging_box clearfix">
-                                <button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
-                                <button class="paging_pre" v-if="page==1">上一页</button>
-                                <div class="paging_num" v-for="(item,index) in pagination" :key="index"
-                                    :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</div>
-                                <button v-if="page!=total_page" class="paging_next enable"
-                                    @click="page++,pageClick()">下一页</button>
-                                <button v-if="page==total_page" class="paging_next">下一页</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else>
-                        <div class="empty_text">该企业暂时还没有发布招聘信息~</div>
-                    </div>
-                </div>
+
                 <!-- 可能感兴趣的企业 -->
                 <!-- {#if condition="count($return.similar_company_list) gt 0"#}
                 <div class="interest">
@@ -258,7 +218,6 @@
                     </div>
                 </div>
                 {#/if#} -->
-
                 <!-- 周边招聘 -->
                 <div class="periphery">
                     <div class="periphery_title">
@@ -284,32 +243,14 @@
             </div>
             <div class="box2_right">
                 <div class=" right_box1" v-if="joblist.length>0">
-                    <!-- <div class="information clearfix">
-                        企业资料
-                        <a href="https://aiqicha.baidu.com/s?q={#$return.base_info.companyname#}"
-                            target="_blank">更多工商信息></a>
-                    </div>
-                    <ul class="information_list">
-                        <li><img src="__ROOT__/assets/images/information_icon_1.png">{#$return.base_info.nature_text#}
-                        </li>
-                        <li><img src="__ROOT__/assets/images/information_icon_2.png">{#$return.base_info.trade_text#}
-                        </li>
-                        <li><img src="__ROOT__/assets/images/information_icon_3.png">{#$return.base_info.scale_text#}
-                        </li>
-                        <li title="{#$return.base_info.district_text#}"><img src="__ROOT__/assets/images/information_icon_4.png">{#$return.base_info.district_text#}
-                        </li>
-                    </ul> -->
-                    <!-- <div class="bottom_title clearfix" v-if="supplementary.report!=1">
-                        该企业已通过实地认证<span @click="handlerReport">认证报告&gt;</span>
-                    </div> -->
                     <div class="information clearfix">
                         <span></span>
                         在招职位
                     </div>
-                    <ul class="job_list" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
+                    <ul :class="joblist.length>3?'job_list job_list_scroll':'job_list'" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
                         <a :href="item.job_link_url_web" target="_blank" v-for="(item,index) in joblist" :key="index">
                             <li class="job_item">
-                                <span class="job_name" :title="item.jobname">{{item.jobname}}</span>
+                                <span class="job_name substring" :title="item.jobname">{{item.jobname}}</span>
                                 <span class="job_wage_text">{{item.wage_text}}</span>
                                 <span class="job_company_name">{{item.companyname}}</span>
                             </li>
@@ -357,9 +298,6 @@
                     </div>
                 </div>
                 <div class="right_box3">
-                    <!-- <img :src="rightQrcode" />
-                    <p class="code_text no_pt mar_bt_5">使用微信扫一扫</p>
-                    <p>企业信息秒传到手机</p> -->
                     <div class="right_code_box clearfix">
                         <img class="img_margin" :src="rightQrcode">
                         <p> <span>微信扫一扫</span> <br />企业信息秒传到手机</p>
@@ -667,21 +605,6 @@
                         that.utype = res.data.userinfo.utype
                     }
                 }).catch(function () { })
-            },
-            //分页
-            btnClick: function (data) {//页码点击事件
-                if (data != this.page) {
-                    this.page = data
-                    //根据点击页数请求数据
-                    this.getJoblist();
-                }
-            },
-            pageClick: function () {
-                //根据点击页数请求数据
-                this.getJoblist();
-            },
-            changeTab: function () {
-                this.tab = this.tab == 'introduce' ? 'joblist' : 'introduce'
             },
             getJoblist: function () {
                 var that = this

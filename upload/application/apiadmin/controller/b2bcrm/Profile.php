@@ -31,27 +31,14 @@ class Profile extends Backend
             $img['img'] = $result['file_id'];
             $img['title'] = '';
             $img['addtime'] = time();
-            $img['audit'] = 0;
+            $img['audit'] = 1;
             model('CompanyImg')->save($img);
-            $result['audit'] = 0;
-            $result['audit_text'] = model('CompanyImg')->map_audit[
-            $result['audit']
-            ];
+            $result['audit'] = 1;
+            $result['audit_text'] = model('CompanyImg')->map_audit[$result['audit']];
             $result['id'] = model('CompanyImg')->id;
             $img_list = $this->getCompanyImg($company_id);
             cache('scan_upload_result_company_img_'.$uid,json_encode($img_list));
-            $company = model('Company')
-                ->alias('c')
-                ->join('company_contact b','b.comid=c.id','left')
-                ->where(['c.id'=>$company_id])
-                ->field('c.companyname,b.mobile')->find();
-            model('AdminNotice')->send(
-                9,
-                '企业风采审核通知',
-                '所属企业:【'.$company['companyname'].'】'."\r\n".
-                '联系电话:【'.$company['mobile'].'】',
-                '企业风采审核通知，请及时跟进（后台->用户->企业信息管理->企业风采）'
-            );
+
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());

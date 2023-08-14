@@ -143,8 +143,18 @@ class Job extends \app\index\controller\Base
         if (config('global_config.job_search_login') == 1) {
             if ($this->visitor === null) {
                 $show_mask = 1;
-                if (!empty($params)) {
+                /**
+                 * 【ID1000524】
+                 * 【bug】后台设置未登录搜索限制时，职位/简历列表地区切换为子地区时，不受控制
+                 * yx - 2023.02.02
+                 * 【新增】:
+                 * 1.判断条件if中，新增` || config('global_config.job_search_login_num') == 0`
+                 * 2.$params，新增`$params['district2'] = -1;$params['district3'] = -1;`
+                 */
+                if (!empty($params) || config('global_config.job_search_login_num') == 0) {
                     $params['district1'] = -1;
+                    $params['district2'] = -1;
+                    $params['district3'] = -1;
                 }
                 $params['count_total'] = 0;
                 $params['current_page'] = 1;
@@ -481,9 +491,15 @@ class Job extends \app\index\controller\Base
         if ($jobinfo['tag'] != '') {
             $tag_arr = explode(',', $jobinfo['tag']);
             foreach ($tag_arr as $k => $v) {
-                isset($category_data['QS_jobtag'][$v]) &&
-                ($base_info['tag_text_arr'][] =
-                    $category_data['QS_jobtag'][$v]);
+                if (
+                    is_numeric($v) &&
+                    isset($category_data['QS_jobtag'][$v])
+                ) {
+                    $base_info['tag_text_arr'][] =
+                        $category_data['QS_jobtag'][$v];
+                } else {
+                    $base_info['tag_text_arr'][] = $v;
+                }
             }
         }
 

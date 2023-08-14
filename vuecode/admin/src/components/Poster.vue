@@ -22,6 +22,7 @@
           v-if="posterIndex===undefined"
           type="warning"
           size="small"
+          :disabled="indexlist.length<=1"
           @click="changeTpl"
         >换一个</el-button>
         <el-button
@@ -51,17 +52,19 @@ export default {
     }
   },
   created() {
-    if (this.posterIndex !== undefined){
-      this.currentTplIndex = this.posterIndex
-    }
     this.fetchData()
-    this.funPoster()
   },
   methods: {
     fetchData () {
       this.listLoading = true
       posterTplindexList({ type: this.posterType == 'job' ? 1 : (this.posterType == 'resume' ? 2 : 3) }).then(response => {
         this.indexlist = response.data
+        if (this.posterIndex !== undefined){
+          this.currentTplIndex = this.posterIndex
+        } else {
+          this.currentTplIndex = this.indexlist[0] ? this.indexlist[0] : 1
+        }
+        this.funPoster()
       }).catch(() => {
         this.listLoading = false
       })
@@ -71,6 +74,15 @@ export default {
       let next_index = c_index + 1
       if (this.indexlist[next_index] === undefined){
         next_index = 0
+      } else {
+        if (this.indexlist.length > 1){
+          if (this.indexlist[next_index] === c_index){
+            next_index++
+            if (this.indexlist[next_index] === undefined){
+              next_index = 0
+            }
+          }
+        }
       }
       this.currentTplIndex = this.indexlist[next_index]
       this.funPoster()
@@ -84,7 +96,7 @@ export default {
       }
       makePoster(param).then(response => {
         this.posterImg = response.data + '?_=' + Math.random()
-      })
+      }).catch(() => {})
     },
     downloadIamge() {
       const locationUrl = window.global.RequestBaseUrl + apiArr.downloadPoster + (window.global.RequestBaseUrl.indexOf('?') == -1 ? '?' : '&') + 'admintoken=' + getToken() + '&type=' + this.posterType + '&id=' + (this.posterId === undefined ? 0 : this.posterId) + '&index=' + this.currentTplIndex

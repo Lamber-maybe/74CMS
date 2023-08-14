@@ -197,6 +197,10 @@ export default {
   },
   methods: {
     handlerReg () {
+      if (parseInt(this.$store.state.config.closereg) === 1) {
+        this.$notify('网站已关闭会员注册')
+        return false
+      }
       if (this.$store.state.LoginOrNot) {
         this.$dialog
           .confirm({

@@ -17,7 +17,13 @@
             3. 基础呼叫包使用完后请联系客服单独购买套外呼叫包。
           </p>
         </div>
+        <div v-if="setting_secrecy === true" class="no-promise">
+          <div class="notice-div">
+            <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+          </div>
+        </div>
         <el-form
+          v-else
           ref="form"
           :model="form"
           label-width="160px"
@@ -33,7 +39,6 @@
             <el-button type="primary" @click="onSubmit()">保存</el-button>
           </el-form-item>
         </el-form>
-
       </div>
     </el-card>
   </div>
@@ -51,10 +56,12 @@ export default {
         app_id: '',
         app_secret: ''
       },
-      submit: false
+      submit: false,
+      setting_secrecy: false
     }
   },
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
   },
   methods: {

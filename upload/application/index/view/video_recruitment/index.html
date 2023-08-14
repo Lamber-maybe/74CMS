@@ -11,68 +11,69 @@
 </head>
 
 <body>
-    <div class="video_wrapper">
-        <div class="video_header">
-            <div class="w1200 video_header_inner flex">
-                <div class="flex cursor logo flex flexCenter">
-                    <a href="{#:url('index/index/index')#}">
-                        <img src="{#$global_config.logoUrl#}" alt="">
-                    </a>
-                    视频招聘
-                </div>
+<div class="video_wrapper">
+    <div class="video_header">
+        <div class="w1200 video_header_inner flex">
+            <div class="flex flexCenter cursor logo">
                 <a href="{#:url('index/index/index')#}">
-                <div class="video_back cursor">
+                    <img src="{#$global_config.logoUrl#}" alt="" class="handLe_img">
+                </a>
+                <span class="inner_title">视频招聘</span>
+            </div>
+            <div class="video_back">
+                <a href="{#:url('index/index/index')#}">
                     <span>返回首页</span>
-                </div>
                 </a>
             </div>
         </div>
-        <div class="video_content">
-            <div class="video_left_text">
-                <div class="tab_btn clearfix">
-                    <div class="tab_btn_item">
-                        <img class="btn_img" src="__ROOT__/assets/images/video_recruitment/tab_btn_1_ac.png" alt="">
-                    </div>
-                    <div class="tab_btn_item">
-                        <img class="btn_img" src="__ROOT__/assets/images/video_recruitment/tab_btn_2.png" alt="">
-                    </div>
+    </div>
+    <div class="video_content">
+        <div class="video_left_text">
+            <div class="tab_btn clearfix">
+                <div class="tab_btn_item">
+                    <img class="btn_img" src="__ROOT__/assets/images/video_recruitment/tab_btn_1_ac.png" alt="">
                 </div>
-                <div class="sw_text">
+                <div class="tab_btn_item">
+                    <img class="btn_img" src="__ROOT__/assets/images/video_recruitment/tab_btn_2.png" alt="">
+                </div>
+            </div>
+            <div class="sw_text">
                     <span class="ac">
                         <!-- 招聘 -->
-                        刷视频招人才<br />汇聚海量人才精准推荐
+                        刷视频招人才<br/>汇聚海量人才精准推荐
                     </span>
-                    <span>
+                <span>
                         <!-- 求职 -->
-                        好工作刷出来<br />海量高薪职位任你挑选
+                        好工作刷出来<br/>海量高薪职位任你挑选
                     </span>
-                </div>
-                <div class="video_code">
-                    <div class="code_box">
-                        <div class="code_img_box">
-                            <img src="{#$qrcodeSrc#}"
-                                alt="">
-                        </div>
-                    </div>
-                    <div class="code_text">
-                        微信扫一扫 <br />
-                        开启求职招聘新体验
-                    </div>
-                </div>
             </div>
-            <div class="video_right_img">
-                <img class="bg1" src="__ROOT__/assets/images/video_recruitment/right_bg1.png" alt="">
-                <img class="bg2" src="__ROOT__/assets/images/video_recruitment/right_bg2.png" alt="">
+            <div class="video_code">
+                <div class="code_box">
+                    <div class="code_img_box">
+                        <img src="{#$qrcodeSrc#}"
+                             alt="">
+                    </div>
+                </div>
+                <div class="code_text">
+                    微信扫一扫 <br/>
+                    开启求职招聘新体验
+                </div>
             </div>
         </div>
-        <div class="video_footer">
-<!--            视频招聘PC底部后边的“人才网”字样去除-->
-            <p>找工作，招人才就上{#$global_config.sitename#}</p>
-            <p>联系电话：{#$global_config.contact_tel#}</p>
+        <div class="video_right_img">
+            <img class="bg1" src="__ROOT__/assets/images/video_recruitment/right_bg1.png" alt="">
+            <img class="bg2" src="__ROOT__/assets/images/video_recruitment/right_bg2.png" alt="">
         </div>
     </div>
+    <div class="video_footer">
+        <p>找工作，招人才就上{#$global_config.sitename#}</p>
+        <p>联系电话：{#$global_config.contact_tel#}</p>
+    </div>
+</div>
 </body>
+
 <script src="__ROOT__/assets/js/jquery.min.js"></script>
+
 <script>
     $(function () {
         // 页面加载完成动画

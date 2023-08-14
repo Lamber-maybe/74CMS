@@ -24,7 +24,10 @@
             <div class="clear"></div>
           </div>
           <el-button class="b_btn" type="primary" @click="handleSubmit">立即登录</el-button>
-          <div class="b_reg">没有账号？<router-link :to="'/reg'+(utype==1?'/company':'')">立即注册</router-link></div>
+          <div class="b_reg">没有账号？
+            <a class="pointer" @click="handlerReg()">立即注册</a>
+<!--            <router-link :to="'/reg'+(utype==1?'/company':'')">立即注册</router-link>-->
+          </div>
           <div class="b_coop" v-if="$store.state.config.account_qqlogin_open==1 || $store.state.config.wechat_login_open==1">
             <div class="p_title">合作账号登录</div>
             <div class="p_group">
@@ -333,6 +336,14 @@ import Captcha from '@/components/captcha/index'
       },
       setSubmitFun(){
         this.is_submit = false
+      },
+      // 注册
+      handlerReg: function () {
+        if (parseInt(this.$store.state.config.closereg) === 1) {
+          this.$message.error('网站已关闭会员注册')
+          return false
+        }
+        this.$router.push('/reg')
       }
     }
   }
@@ -478,6 +489,9 @@ import Captcha from '@/components/captcha/index'
         font-size: 12px; text-align: center; color: #999;
         span { color: #1787fb; cursor: pointer; }
       }
+    }
+    .pointer {
+      cursor: pointer;
     }
   }
 

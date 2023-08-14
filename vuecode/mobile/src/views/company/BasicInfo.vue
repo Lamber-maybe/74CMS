@@ -212,7 +212,8 @@
         name="contact"
         label="联系人"
         placeholder="请填写"
-        :rules="[{ required: true, message: '请填写联系人' }]"
+        :rules="[{ required: true, message: '请填写联系人' },
+        { validator: validatorContactLen, message: '长度在 1 到 6 个汉字' }]"
         class="reset_after"
       />
       <van-field
@@ -553,6 +554,9 @@ export default {
   methods: {
     validatorTel (val) {
       return /^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(val)
+    },
+    validatorContactLen (val) {
+      return val.length <= 6
     },
     onConfirmCurrency (value) {
       this.currency_text = value.text

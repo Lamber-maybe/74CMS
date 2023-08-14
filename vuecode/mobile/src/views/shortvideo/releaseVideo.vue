@@ -327,8 +327,10 @@ export default {
           waiting()
         } else {
           this.$notify(res.message)
+          this.updvideo = false
         }
       }).catch(() => {
+        this.updvideo = false
       })
     },
     handlerShowMap () {

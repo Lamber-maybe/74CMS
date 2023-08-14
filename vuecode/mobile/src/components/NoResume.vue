@@ -68,6 +68,12 @@ export default {
   },
   methods: {
     handlerJump (path) {
+      if (path === '/member/reg/personal' || path === '/member/reg/company') {
+        if (parseInt(this.$store.state.config.closereg) === 1) {
+          this.$notify('网站已关闭会员注册')
+          return false
+        }
+      }
       this.$router.push(path)
     },
     close () {

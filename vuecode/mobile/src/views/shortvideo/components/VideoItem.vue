@@ -121,12 +121,15 @@ export default {
     }
   },
   watch: {
-    videoItem (v) {
+    videoInfo (v) {
+      const {videoItem, videoType} = v
       var _this = this
       _this.showInfoSwipe = false
       _this.showInfoSwipe = true
-      v && _this.initWH(v)
-      v && _this.wxshare(v)
+      v && _this.initWH(videoItem)
+      if (videoItem && videoItem.id && videoType) {
+        _this.wxshare(videoItem)
+      }
     },
     progressLoading (loading) {
       if (loading) {
@@ -137,6 +140,12 @@ export default {
     }
   },
   computed: {
+    videoInfo () {
+      return {
+        videoItem: this.videoItem,
+        videoType: this.videoType
+      }
+    },
     intent () {
       if (this.videoType == 2) {
         if (!this.videoItem.intention) return ''

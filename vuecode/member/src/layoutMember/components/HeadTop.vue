@@ -5,7 +5,7 @@
       <a class="item" href="javascript:;" @click="handlerFav">设为收藏</a>
       <a
         class="item"
-        :href="config.sitedomain + config.sitedir + 'index/shortcut'"
+        :href="shortcutUrl"
         >保存桌面</a
       >
       <a class="item" :href="link_url_web.joblist">搜职位</a>
@@ -218,7 +218,8 @@ export default {
       wechatQrcode: '',
       wechatMiniprogramQrcode: '',
       androidQrcode: '',
-      iosQrcode: ''
+      iosQrcode: '',
+      shortcutUrl: ''
     }
   },
   watch: {
@@ -239,6 +240,7 @@ export default {
     if (this.$store.state.config.app_ios_download_url !== undefined && this.$store.state.config.app_ios_download_url != '') {
       this.iosQrcode = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + this.$store.state.config.app_ios_download_url
     }
+    this.shortcutUrl =  this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'index/shortcut'
 
     this.fetchUserinfo()
     this.runCron()
@@ -288,6 +290,10 @@ export default {
       }
     },
     handlerReg(utype) {
+      if (parseInt(this.$store.state.config.closereg) === 1) {
+        this.$message.error('网站已关闭会员注册')
+        return false
+      }
       if (utype == 1) {
         this.$router.push('/reg/company')
       } else {

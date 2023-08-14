@@ -101,7 +101,15 @@ class ServiceClear
         $stick_pids = $model
             ->where('type', 'stick')
             ->column('pid');
-        $resume_stick_ids = $resumeModel->where(['stick' => 1])->column('id');
+        $resume_stick_ids = $resumeModel
+            ->alias('r')
+            ->join('ResumeSearchKey sk', 'sk.id = r.id', 'LEFT')
+            ->join('ResumeSearchRtime sr', 'sr.id = r.id', 'LEFT')
+            ->where('r.stick', 1)
+            ->whereOr('sk.stick', 1)
+            ->whereOr('sr.stick', 1)
+            ->column('r.id');
+
         $error_stick_ids = array_diff($resume_stick_ids, $stick_pids);
         if (!empty($error_stick_ids)) {
             $stickWhere = [
@@ -149,7 +157,14 @@ class ServiceClear
         $jobstick_pids = $model
             ->where('type', 'jobstick')
             ->column('pid');
-        $jobstick_ids = $jobModel->where(['stick' => 1])->column('id');
+        $jobstick_ids = $jobModel
+            ->alias('j')
+            ->join('JobSearchKey jk', 'jk.id = j.id', 'LEFT')
+            ->join('JobSearchRtime jr', 'jr.id = j.id', 'LEFT')
+            ->where('j.stick', 1)
+            ->whereOr('jk.stick', 1)
+            ->whereOr('jr.stick', 1)
+            ->column('j.id');
         $error_jobstick_ids = array_diff($jobstick_ids, $jobstick_pids);
         if (!empty($error_jobstick_ids)) {
             $jobstickWhere = [
@@ -174,7 +189,14 @@ class ServiceClear
         $emergency_pids = $model
             ->where('type', 'emergency')
             ->column('pid');
-        $emergency_ids = $jobModel->where(['emergency' => 1])->column('id');
+        $emergency_ids = $jobModel
+            ->alias('j')
+            ->join('JobSearchKey jk', 'jk.id = j.id', 'LEFT')
+            ->join('JobSearchRtime jr', 'jr.id = j.id', 'LEFT')
+            ->where('j.emergency', 1)
+            ->whereOr('jk.emergency', 1)
+            ->whereOr('jr.emergency', 1)
+            ->column('j.id');
         $error_emergency_ids = array_diff($emergency_ids, $emergency_pids);
         if (!empty($error_emergency_ids)) {
             $emergencyWhere = [

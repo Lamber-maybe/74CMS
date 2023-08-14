@@ -54,11 +54,22 @@ class Job extends \app\common\controller\Backend
         if ($display != '') {
             $where['j.is_display'] = ['eq', $display];
         }
-        if($sort!=''){
-            $order = 'refreshtime desc';
-        }else{
-            $order = 'id desc';
+
+        switch ($sort) {
+            case 'refreshtime':
+                $order = 'j.refreshtime desc';
+                break;
+
+            case 'updatetime':
+                $order = 'j.updatetime desc';
+                break;
+
+            case '':
+            default:
+                $order = 'j.id desc';
+                break;
         }
+
         $total = model('Job')
             ->alias('j')
             ->join(

@@ -360,9 +360,39 @@ class def
                 ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
                 ->where($subsiteCondition)
                 ->where('c.id','not null')
+                ->whereTime('a.refreshtime','-7 days')
                 ->order('b.click desc,a.refreshtime desc')
                 ->limit(10)
                 ->column('b.id,b.jobname,b.district,b.negotiable,b.minwage,b.maxwage,b.company_id,c.companyname');
+
+        /**
+         * 【ID1000516】
+         * 【优化】默认模板首页热门职位区域数据调用
+         * yx - 2023.02.01
+         * 数据来源： 近七天内热门(点击量倒序)
+         * 七天内数据按点击量倒序，第二排序为时间倒序。
+         * 如数据不足，再调用七天外数据点击量倒序补足
+         * 【新增】:
+         * 查询->whereTime('a.refreshtime','-7 days')
+         */
+        if (count($list) < 10){
+            /**
+             * 数据不足，再调用七天外数据点击量倒序补足
+             */
+            $hot_ids = array_column($list,'id');
+            $fill_num = 10 - count($list);
+            $fill_list = model('JobSearchRtime')->alias('a')
+                ->join(config('database.prefix').'job b','a.id=b.id','LEFT')
+                ->join(config('database.prefix').'company c','a.uid=c.uid','LEFT')
+                ->where($subsiteCondition)
+                ->where('c.id','not null')
+                ->where('a.id','not in',$hot_ids)
+                ->order('b.click desc,a.refreshtime desc')
+                ->limit($fill_num)
+                ->column('b.id,b.jobname,b.district,b.negotiable,b.minwage,b.maxwage,b.company_id,c.companyname');
+            $list += $fill_list;
+        }
+
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
             $arr = $value;

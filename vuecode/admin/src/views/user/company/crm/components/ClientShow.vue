@@ -13,12 +13,12 @@
             </div>
 
             <div class="user">
-              (
-              <span>企业ID：
-                {{ details.id }}；
-              </span>
+              <span>(</span>
+              <span>企业ID:{{ details.id }}；</span>
               <span class="logoin" @click="funManagement(details)">一键登录企业会员中心</span>
-              )
+              <span>；</span>
+              <span class="logoin" @click="funPoster(details.id)">生成海报</span>
+              <span>)</span>
             </div>
             <div class="qcc_box">
               <a :href="searchUrl" target="_blank" @click="handleSearchCom">
@@ -57,7 +57,7 @@
               <el-col :span="8">
                 <label class="line_label">到期时间：</label>
                 <span class="text">
-<!--                  【bug】套餐到期时间要写到期时间，不能写剩余天数
+                  <!--                  【bug】套餐到期时间要写到期时间，不能写剩余天数
                       zch 2022.9.21
                       【旧】
                       {{ details.setmeal_deadline_day ? details.setmeal_deadline_day : '-' }}
@@ -106,7 +106,7 @@
       <div class="tab_box">
         <el-tabs v-model="activeName">
           <el-tab-pane label="跟进记录" name="first">
-            <followUpRecord :clue_id="details.clue_id" :uid="details.uid" @companyDetails="companyDetails" />
+            <followUpRecord v-if="activeName == 'first'" :clue_id="details.clue_id" :uid="details.uid" @companyDetails="companyDetails" />
           </el-tab-pane>
           <el-tab-pane label="客户详情" name="details">
             <Clientinfo v-if="activeName == 'details'" :details="details" :uid="details.uid" @companyDetails="companyDetails" @integral="integral" @resume="resume" />
@@ -118,10 +118,10 @@
             <Contacts v-if="activeName == 'contacts'" :uid="details.uid" :comid="rowId" @companyDetails="companyDetails" />
           </el-tab-pane>
           <el-tab-pane :label="jobname" name="recruit">
-            <Job :comid="rowId" v-if="activeName == 'recruit'" />
+            <Job v-if="activeName == 'recruit'" :comid="rowId" />
           </el-tab-pane>
           <el-tab-pane label="招聘动态" name="dynamic">
-            <dynamic v-if="activeName == 'dynamic'"  :comid="rowId" :uid="details.uid" />
+            <dynamic v-if="activeName == 'dynamic'" :comid="rowId" :uid="details.uid" />
           </el-tab-pane>
           <el-tab-pane label="订单记录" name="record">
             <order v-if="activeName == 'record'" :uid="details.uid" />
@@ -149,6 +149,14 @@
         </div>
       </el-dialog>
     </div>
+    <!--    海报-->
+    <Poster
+      v-if="showPoster"
+      :poster-id="posterId"
+      :poster-type="posterType"
+      @closeDialog="showPoster = false"
+    />
+    <!--    海报-->
   </div>
 </template>
 
@@ -165,6 +173,7 @@ import EnterpriseInformation from '@/views/user/company/crm/components/Enterpris
 import { companyDetails, getisWeixinBind, qrcode } from '@/api/company_crm'
 import { management } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils'
+import Poster from '@/components/Poster'
 
 export default {
   name: 'ClientShow',
@@ -182,7 +191,8 @@ export default {
     order,
     integral,
     log,
-    EnterpriseInformation
+    EnterpriseInformation,
+    Poster
   },
   props: {
     rowId: {
@@ -197,7 +207,10 @@ export default {
       activeName: 'first',
       details: '',
       searchUrl: '',
-      dialogBinding: false
+      dialogBinding: false,
+      showPoster: false,
+      posterId: 0,
+      posterType: ''
     }
   },
   created () {
@@ -259,6 +272,11 @@ export default {
         }).catch(() => {
 
         })
+    },
+    funPoster(id) {
+      this.showPoster = true
+      this.posterId = id
+      this.posterType = 'company'
     }
   }
 }

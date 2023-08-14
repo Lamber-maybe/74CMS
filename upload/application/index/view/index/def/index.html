@@ -1012,7 +1012,12 @@
 				}
 			},
 			handlerRegCompany: function () {
-				location.href = qscms.locationList.regCompany
+				if (parseInt("{#$global_config.closereg#}") === 1) {
+					this.$message.error('网站已关闭会员注册')
+					return false
+				} else {
+					location.href = qscms.locationList.regCompany
+				}
 			},
 			handlerForget: function (utype) {
 				var url = qscms.locationList.forget
@@ -1020,8 +1025,13 @@
 				location.href = url
 			},
 			handlerReg: function () {
-				//进入模板首页注册时，先进选身份的注册页
-				location.href = qscms.locationList.reg
+				if (parseInt("{#$global_config.closereg#}") === 1){
+					this.$message.error('网站已关闭会员注册')
+					return false
+				} else {
+					//进入模板首页注册时，先进选身份的注册页
+					location.href = qscms.locationList.reg
+				}
 			},
 			changeImg: function () {
 				var that = this

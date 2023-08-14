@@ -486,9 +486,9 @@
 					{#/if#}
 
 					{#if condition="$return.resume_module.img.is_display==1"#}
-					<div class="certificate_wrapper"
+					<div class="certificate_wrapper myImg" style="padding-bottom: 18px;"
 						v-if="supplementary.img_list!==undefined && supplementary.img_list.length>0">
-						<div class="tag_title img_padding">
+						<div class="tag_title img_padding" style="padding-bottom: 18px;">
 							<span class="title_item1">我的作品</span>
 						</div>
 						<!-- <ul class="img_list clearfix">
@@ -496,7 +496,7 @@
                                 <img :src="item.img_src">
                             </li>
                         </ul> -->
-						<el-carousel :loop="false" :autoplay="false" height="204px">
+						<el-carousel :loop="false" :autoplay="false" height="204px" indicator-position="none">
 							<el-carousel-item class="el-car-item" v-for="(list, index) in imgList" :key="index">
 								<img v-for="(imgItemList,index2) in list" :key="index2" class="top-img"
 									:src="imgItemList.img_src" :alt="imgItemList.title" />
@@ -641,6 +641,12 @@
 					<div class=" float text_wrapper clearfix">
 						<div class="float slide_img">
 							<img src="{#$return.base_info.photo_img_src#}">
+							{#if condition="$return.base_info.sex == 1"#}
+							<img class="sex_icon sex_icon_top" src="__ROOT__/assets/images/resumeshow/sexMM.png" alt="">
+							{#/if#}
+							{#if condition="$return.base_info.sex == 2"#}
+							<img class="sex_icon sex_icon_top" src="__ROOT__/assets/images/resumeshow/sexWW.png" alt="">
+							{#/if#}
 						</div>
 						<div class="float ">
 							<div class="user_wrapper">

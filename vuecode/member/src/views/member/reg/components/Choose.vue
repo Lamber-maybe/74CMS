@@ -2,12 +2,12 @@
     <div class="choose_box">
       <div class="b_title">请选择注册身份</div>
       <div class="b_group">
-        <router-link to="/reg/personal" class="b_item">
+        <div class="b_item" @click="handlerReg(2)">
           <div class="b_ico"></div><div class="b_btn">注册求职者会员</div><div class="b_des">我是求职者，我要找工作</div>
-        </router-link>
-        <router-link to="/reg/company" class="b_item right">
+        </div>
+        <div class="b_item right" @click="handlerReg(1)">
           <div class="b_ico c2"></div><div class="b_btn">注册企业招聘会员</div><div class="b_des">我是企业/个体户，我要招人才</div>
-        </router-link>
+        </div>
         <div class="clear"></div>
       </div>
     </div>
@@ -16,6 +16,20 @@
 <script>
   export default {
     name: 'Choose',
+    methods: {
+      // 注册
+      handlerReg: function (utype) {
+        if (parseInt(this.$store.state.config.closereg) === 1) {
+          this.$message.error('网站已关闭会员注册')
+          return false
+        }
+        if (utype == 1) {
+          this.$router.push('/reg/company')
+        } else {
+          this.$router.push('/reg/personal')
+        }
+      }
+    }
   }
 </script>
 
@@ -28,6 +42,7 @@
       .b_item {
         float: left; width: 450px; height: 350px; background-color: #fcfcfc; border: 1px dashed #c3c3c3; display: block;
         text-align: center;
+        cursor: pointer;
         &:hover { text-decoration: none; }
         &.right { float: right; }
         .b_ico {

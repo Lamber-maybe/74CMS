@@ -366,7 +366,8 @@
           name="contact"
           label="联系人"
           placeholder="请填写"
-          :rules="[{ required: true, message: '请填写联系人' }]"
+          :rules="[{ required: true, message: '请填写联系人' },
+          { validator: validatorContactLen, message: '长度在 1 到 6 个汉字' }]"
           class="reset_after"
         />
         <van-field
@@ -695,6 +696,9 @@ export default {
     }
   },
   methods: {
+    validatorContactLen (val) {
+      return val.length <= 6
+    },
     restoreCondition (data) {
       let restoreBasic = data.basic
       let restoreContact = data.contact

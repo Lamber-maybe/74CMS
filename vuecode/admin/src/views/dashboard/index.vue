@@ -16,7 +16,7 @@
     <div v-if="new_version_notice == 1" class="tip">
       <p>
         系统检测到新版本，为了更好的使用体验，建议您立即升级程序
-        <a style="color: #1e88e5" href="javascript:;" @click="$router.push('/upgrade')">立即升级</a>
+        <a style="color: #1e88e5" href="javascript:" @click="jumpPath('/upgrade', '您的权限不足，请联系超级管理员升级系统。')">立即升级</a>
       </p>
     </div>
     <el-row :gutter="20">

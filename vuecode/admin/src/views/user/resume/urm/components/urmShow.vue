@@ -13,14 +13,12 @@
             </div>
 
             <div class="user">
-              (
-              <span>会员ID:
-                {{ details.uid }}；简历ID:{{ details.id }};
-              </span>
-              <span class="logoin" @click="funManagement(details)">  一键登录个人会员中心</span>
-              ;
+              <span>(</span>
+              <span>会员ID:{{ details.uid }}；简历ID:{{ details.id }}；</span>
+              <span class="logoin" @click="funManagement(details)">一键登录个人会员中心</span>
+              <span>；</span>
               <span class="logoin" @click="funPoster(details.id)">生成海报</span>
-              )
+              <span>)</span>
             </div>
           </div>
           <div class="details">
@@ -377,7 +375,6 @@ export default {
           line-height: 14px;
           color: #777;
           .logoin {
-            margin-left: 6px;
             color: #0078ff;
             cursor: pointer;
           }

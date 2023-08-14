@@ -7,18 +7,18 @@ use think\Validate;
 
 class CompanyContact extends Backend
 {
-    protected $rule =   [
-        'comid'  => 'require|gt:0|max:10',
-        'uid'   => 'require|gt:0|max:10',
+    protected $rule = [
+        'comid' => 'require|gt:0|max:10',
+        'uid' => 'require|gt:0|max:10',
         'contact' => 'require|max:6',
-        'weixin'=>'max:15',
-        'telephone'=>'max:20',
-        'qq'=>'max:15',
-        'email'=>'max:30'
+        'weixin' => 'max:15',
+        'telephone' => 'max:20',
+        'qq' => 'max:15',
+        'email' => 'max:30'
     ];
 
     protected $message = [
-        'comid' =>  '企业id必填，且最多10位数字',
+        'comid' => '企业id必填，且最多10位数字',
         'uid' => 'uid必填，且最多10位数字',
         'contact' => '联系人必填，且最多6个字',
         'weixin' => '微信最多15位',
@@ -26,47 +26,71 @@ class CompanyContact extends Backend
         'qq' => 'QQ最多15位',
         'email' => '邮箱最多30位'
     ];
+
     /*
      * 联系人列表
      * */
     public function index()
     {
-        $uid = input('get.uid/d',0,'intval');
-        if ($uid == 0)
-        {
+        $uid = input('get.uid/d', 0, 'intval');
+        if ($uid == 0) {
             $this->ajaxReturn(500, '缺少uid');
         }
-        $company = model('CompanyContact')->where(['uid'=>$uid])->find();
-        if (!empty($company))
-        {
-            $company['type'] = 'company';
-            $data[] = $company;
+
+        $company_info = model('Company')
+            ->where('uid', $uid)
+            ->find();
+        if (empty($company_info)) {
+            $this->ajaxReturn(500, '该客户企业信息异常');
         }
-        $phone = model('Member')->where(['uid'=>$uid])->value('mobile');
-        $data[] = [
+
+        /**
+         *【ID1000503】
+         * 【bug】线索跟进时选择联系人ID为1导致选择重复
+         * yx - 2023.01.12
+         * [新增]:
+         * `auto_id`自动，重新排序，避免ID重复
+         */
+
+        // 1.企业联系方式
+        $company_contact = model('CompanyContact')->where(['uid' => $uid])->find();
+        $contact_list = [];
+        if (!empty($company_contact)) {
+            $company_contact['type'] = 'company';
+            $company_contact['auto_id'] = 1;
+            $contact_list[] = $company_contact;
+        }
+
+        // 2.会员联系方式
+        $memberContact = model('Member')->where(['uid' => $uid])->value('mobile');
+        $contact_list[] = [
             'id' => $uid,
-            'comid' => isset($company['id']) ? $company['id'] : 0,
+            'comid' => isset($company_info['id']) ? $company_info['id'] : 0,
             'uid' => $uid,
             'contact' => '会员账号',
-            'mobile' => $phone,
+            'mobile' => $memberContact,
             'weixin' => '',
             'telephone' => '',
             'qq' => '',
             'email' => '',
-            'type' => 'member'
+            'type' => 'member',
+            'auto_id' => 2
         ];
+
+        // 3.客户联系人
         $crm_contact = model('b2bcrm.CrmCompanyContact')
-                ->where(['uid'=>$uid])
+            ->where(['uid' => $uid])
             ->field("id,comid,uid,contact,mobile,weixin,telephone,qq,email,sex,'crm_contact' as type")
             ->select();
-        if (!empty($crm_contact))
-        {
-            foreach ($crm_contact as $v)
-            {
-                $data[] = $v;
+        if (!empty($crm_contact)) {
+            $auto_id = 3;
+            foreach ($crm_contact as &$v) {
+                $v['auto_id'] = $auto_id;
+                $auto_id++;
+                $contact_list[] = $v;
             }
         }
-        $this->ajaxReturn(200, '获取数据成功',$data);
+        $this->ajaxReturn(200, '获取数据成功', $contact_list);
     }
 
     /*
@@ -75,58 +99,52 @@ class CompanyContact extends Backend
     public function addContact()
     {
         $data_input = [
-            'comid' => input('post.comid/d',0,'intval'),
-            'uid' => input('post.uid/d',0,'intval'),
-            'contact' => input('post.contact/s','','trim'),
-            'mobile' => input('post.mobile/s','','trim'),
-            'weixin' => input('post.weixin/s','','trim'),
-            'telephone' => input('post.telephone/s','','trim'),
-            'qq' => input('post.qq/s','','trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
-            'email' => input('post.email/s','','trim'),
-            'sex' => input('post.sex/d',0,'intval')
+            'comid' => input('post.comid/d', 0, 'intval'),
+            'uid' => input('post.uid/d', 0, 'intval'),
+            'contact' => input('post.contact/s', '', 'trim'),
+            'mobile' => input('post.mobile/s', '', 'trim'),
+            'weixin' => input('post.weixin/s', '', 'trim'),
+            'telephone' => input('post.telephone/s', '', 'trim'),
+            'qq' => input('post.qq/s', '', 'trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
+            'email' => input('post.email/s', '', 'trim'),
+            'sex' => input('post.sex/d', 0, 'intval')
         ];
 
-        if ($data_input['comid'] == 0 || $data_input['uid'] == 0)
-        {
+        if ($data_input['comid'] == 0 || $data_input['uid'] == 0) {
             $this->ajaxReturn(500, '企业id或uid错误');
         }
         try {
             $validate = new Validate($this->rule, $this->message);
             $result = $validate->check($data_input);
-            if (false === $result)
-            {
+            if (false === $result) {
                 $this->ajaxReturn(500, $validate->getError());
             }
             if (!empty($data_input['mobile']) && !fieldRegex($data_input['mobile'], 'mobile')) {
                 throw new \Exception('手机号格式不正确');
             }
-            if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email'))
-            {
+            if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email')) {
                 throw new \Exception('邮箱格式错误');
             }
-            $count = model('b2bcrm.CrmCompanyContact')->where(['comid'=>$data_input['comid'],'uid'=>$data_input['uid']])->count();
-            if ($count >= 6)
-            {
+            $count = model('b2bcrm.CrmCompanyContact')->where(['comid' => $data_input['comid'], 'uid' => $data_input['uid']])->count();
+            if ($count >= 6) {
                 $this->ajaxReturn(500, '联系人最多8个！');
             }
             $add = model('b2bcrm.CrmCompanyContact')
                 ->isUpdate(false)
                 ->save($data_input);
-            if (false === $add)
-            {
+            if (false === $add) {
                 $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
             }
             // 日志
             $log_result = model('AdminLog')->record(
-                '添加企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【'.$data_input['contact'].'】',
+                '添加企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【' . $data_input['contact'] . '】',
                 $this->admininfo
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
             $this->ajaxReturn(200, '添加成功', []);
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->ajaxReturn(500, $e->getMessage());
         }
     }
@@ -137,55 +155,50 @@ class CompanyContact extends Backend
     public function editContact()
     {
         $data_input = [
-            'id' => input('post.id/d',0,'intval'),
-            'comid' => input('post.comid/d',0,'intval'),
-            'uid' => input('post.uid/d',0,'intval'),
-            'contact' => input('post.contact/s','','trim'),
-            'mobile' => input('post.mobile/s','','trim'),
-            'weixin' => input('post.weixin/s','','trim'),
-            'telephone' => input('post.telephone/s','','trim'),
-            'qq' => input('post.qq/s','','trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
-            'email' => input('post.email/s','','trim'),
-            'sex' => input('post.sex/d',0,'intval')
+            'id' => input('post.id/d', 0, 'intval'),
+            'comid' => input('post.comid/d', 0, 'intval'),
+            'uid' => input('post.uid/d', 0, 'intval'),
+            'contact' => input('post.contact/s', '', 'trim'),
+            'mobile' => input('post.mobile/s', '', 'trim'),
+            'weixin' => input('post.weixin/s', '', 'trim'),
+            'telephone' => input('post.telephone/s', '', 'trim'),
+            'qq' => input('post.qq/s', '', 'trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
+            'email' => input('post.email/s', '', 'trim'),
+            'sex' => input('post.sex/d', 0, 'intval')
         ];
 
-        if ($data_input['id'] == 0)
-        {
+        if ($data_input['id'] == 0) {
             $this->ajaxReturn(500, '联系人id错误');
         }
         try {
             $validate = new Validate($this->rule, $this->message);
             $result = $validate->check($data_input);
-            if (false === $result)
-            {
+            if (false === $result) {
                 $this->ajaxReturn(500, $validate->getError());
             }
 
             if (!empty($data_input['mobile']) && !fieldRegex($data_input['mobile'], 'mobile')) {
                 throw new \Exception('手机号格式不正确');
             }
-            if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email'))
-            {
+            if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email')) {
                 throw new \Exception('邮箱格式错误');
             }
             $edit = model('b2bcrm.CrmCompanyContact')
                 ->isUpdate(true)
-                ->save($data_input,['id'=>$data_input['id']]);
-            if (false === $edit)
-            {
+                ->save($data_input, ['id' => $data_input['id']]);
+            if (false === $edit) {
                 $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
             }
             // 日志
             $log_result = model('AdminLog')->record(
-                '编辑企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【'.$data_input['contact'].'】',
+                '编辑企业联系人【ID:' . model('b2bcrm.CrmCompanyContact')->id . '】,名称【' . $data_input['contact'] . '】',
                 $this->admininfo
             );
             if (false === $log_result) {
                 throw new \Exception(model('AdminLog')->getError());
             }
             $this->ajaxReturn(200, '编辑成功', []);
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->ajaxReturn(500, $e->getMessage());
         }
     }
@@ -193,20 +206,19 @@ class CompanyContact extends Backend
     /*
      * 联系人删除
      * */
-    public function delContact(){
-        $id = input('get.id/d',0,'intval');
-        $CrmCompanyContact = model('b2bcrm.CrmCompanyContact')->where(['id'=>$id])->find();
-        if (empty($CrmCompanyContact))
-        {
+    public function delContact()
+    {
+        $id = input('get.id/d', 0, 'intval');
+        $CrmCompanyContact = model('b2bcrm.CrmCompanyContact')->where(['id' => $id])->find();
+        if (empty($CrmCompanyContact)) {
             $this->ajaxReturn(500, '联系人id错误');
         }
-        $del = model('b2bcrm.CrmCompanyContact')->where(['id'=>$id])->delete();
-        if ($del === false)
-        {
+        $del = model('b2bcrm.CrmCompanyContact')->where(['id' => $id])->delete();
+        if ($del === false) {
             $this->ajaxReturn(500, model('b2bcrm.CrmCompanyContact')->getError());
         }
         $log_result = model('AdminLog')->record(
-            '删除企业联系人【ID:' . $id . '】,名称【'.$CrmCompanyContact['contact'].'】',
+            '删除企业联系人【ID:' . $id . '】,名称【' . $CrmCompanyContact['contact'] . '】',
             $this->admininfo
         );
         if (false === $log_result) {

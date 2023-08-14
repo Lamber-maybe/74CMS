@@ -552,7 +552,9 @@ export default {
     left: 105px;
     top: 50%;
     transform: translate(0, -50%);
-    z-index: 10;
+    //【ID1000515】【优化】触屏端个人会员中心智能匹配图标
+    // yx-2023.02.01
+    // 注释代码：{z-index: 10;}
     width: 20px;
     height: 14px;
     background: url("../../assets/images/personal_index_app_go.png") 0 no-repeat;

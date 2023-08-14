@@ -17,12 +17,19 @@
       <el-form-item label="开启职聊功能">
         <el-switch v-model="im_open" />
       </el-form-item>
-      <el-form-item label="app_key">
-        <el-input v-model="form.app_key" />
-      </el-form-item>
-      <el-form-item label="app_secret">
-        <el-input v-model="form.app_secret" />
-      </el-form-item>
+      <div v-if="setting_secrecy === true" class="no-promise" style="margin-bottom: 22px;">
+        <div class="notice-div">
+          <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+        </div>
+      </div>
+      <div v-else>
+        <el-form-item label="app_key">
+          <el-input v-model="form.app_key" />
+        </el-form-item>
+        <el-form-item label="app_secret">
+          <el-input v-model="form.app_secret" />
+        </el-form-item>
+      </div>
       <!--<el-form-item label="开启未读通知">
         <el-switch v-model="im_unread" />
       </el-form-item>-->
@@ -65,10 +72,12 @@ export default {
       },
       // im_unread: false,
       im_notice_open: false,
-      im_notice: ''
+      im_notice: '',
+      setting_secrecy: false
     }
   },
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchData()
   },
   methods: {

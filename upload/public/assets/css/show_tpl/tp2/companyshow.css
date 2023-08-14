@@ -335,9 +335,7 @@
 }
 
 .introduce {
-	padding: 35px 30px 0;
-	margin-bottom: 20px;
-	padding-bottom: 20px;
+	padding: 30px 30px 0;
 }
 
 .introduce_title {
@@ -347,7 +345,7 @@
 }
 
 .title_margin1 {
-	margin-bottom: 27px;
+	margin-bottom: 30px;
 }
 
 .introduce_con {
@@ -358,6 +356,7 @@
 	max-height: 205px;
 	overflow: hidden;
 	word-break: break-all;
+	padding-bottom: 30px;
 }
 
 .introduce_con.all {
@@ -377,7 +376,7 @@
 	color: #999999;
 	background: #f3f3f3;
 	cursor: pointer;
-	margin-top: 20px;
+	margin: 20px 0 30px 0;
 }
 
 .introduce_btn img {
@@ -386,6 +385,13 @@
 
 .company_img {
 	padding: 0px 30px 60px;
+}
+.company_img .el-carousel__arrow--left{
+	background: rgba(0,0,0,.4);
+}
+
+.company_img .el-carousel__arrow--right{
+	background: rgba(0,0,0,.4);
 }
 
 .company_imgList {
@@ -442,7 +448,7 @@
 	height: 130px;
 }
 .address_con {
-	padding: 30px;
+	padding: 0 30px 30px 30px;
 	background: #ffffff;
 }
 
@@ -619,21 +625,22 @@
 
 .information {
 	color: #333333;
-	font-size: 20px;
+	font-size: 16px;
 	font-weight: bold;
 	position: relative;
-	padding-left: 8px;
-	margin-bottom: 10px;
+	padding-left: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #f3f3f3;
 }
 
 .information span {
 	width: 3px;
-	height: 18px;
+	height: 14px;
 	background: #FF6600;
 	display: inline-block;
 	position: absolute;
 	top: 2px;
-	left: 0;
+	left: 12px;
 	border-radius: 3px;
 }
 
@@ -673,7 +680,7 @@
 }
 
 .right_box1 {
-	padding: 20px;
+	padding: 20px 0;
 	background: #fff;
 	margin-bottom: 10px;
 }
@@ -801,18 +808,22 @@
 }
 
 .right_box1 .job_list {
-	padding: 0 0 0 2px;
+	padding: 0;
 	box-sizing: border-box;
 	border-bottom: none;
 	max-height: 480px;
-    overflow: scroll;
+}
+.job_list_scroll{
+	overflow-y: scroll;
 }
 
 .right_box1 .job_item {
-	padding: 10px 0;
-	border-bottom: 1px solid #f5f5f5;
+	padding: 15px 20px 10px;
+	box-sizing: border-box;
 }
-
+.right_box1 .job_item:hover{
+	background: #fbfbfb;
+}
 .right_box1 .job_item:hover .job_name{
 	color: #157EFF;
 }
@@ -823,9 +834,8 @@
 
 .right_box1 .job_item span.job_name {
 	color: #595959;
-	font-size: 16px;
+	font-size: 14px;
 	height: 23px;
-	font-weight: bold;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -837,8 +847,8 @@
 }
 
 .right_box1 .job_item span.job_company_name {
-	color: #999999;
-	font-size: 14px;
+	font-size: 12px;
+	color: #aeaeae;
 }
 
 .right_box4 {
@@ -882,6 +892,7 @@
 .el-car-item {
 	width: 100%;
 	display: flex;
+	align-items: center;
 }
 
 .el-car-item .top-img {
@@ -891,11 +902,28 @@
 	cursor: pointer;
 	border-radius: 8px;
 }
-
+.periphery_title{
+	padding: 30px 30px 30px;
+}
 .periphery_title span.active {
 	background: url("../../../images/company/border-bg.png") 0 bottom no-repeat;
 	background-size: 100% 3px;
 	padding-bottom: 1px;
+}
+.periphery_list{
+	padding-bottom: 0;
+}
+.periphery_list .list_box{
+	padding-bottom: 20px;
+}
+.periphery_list .list_box a {
+	display: inline-block;
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 10px;
+	 width: auto;
+	cursor: pointer;
+	margin-right: 15px;
 }
 
 .warn_txt{
@@ -1091,4 +1119,95 @@
 	color: #727272;
 	font-size: 14px;
 	line-height: 26px;
+}
+
+.no_content {
+	height: 245px;
+	border-radius: 6px;
+	background: url(../../../images/tpl/show/companyshow/no_content.png) no-repeat center 15px;
+	box-sizing: border-box;
+	padding-top: 118px;
+}
+
+.no_content .no_content-p {
+	width: 100%;
+	height: 25px;
+	font-size: 14px;
+	font-family: Microsoft YaHei;
+	font-weight: 400;
+	color: #878787;
+	line-height: 25px;
+	text-align: center;
+	padding-top: 20px;
+}
+.seeMore{
+	font-size: 14px;
+	color: #878787;
+	float: right;
+	margin-left: 5px;
+	font-weight: initial;
+	cursor: pointer;
+}
+.listsNew{
+	overflow: hidden;
+	margin-top: 25px;
+}
+.listsNew .itemNew{
+	float: left;
+	width: 110px;
+	height: 110px;
+	border-radius: 3px;
+	background: #eee;
+	margin-right: 40px;
+	margin-bottom:20px;
+}
+
+.employer_list {
+	width: 172px;
+	height: 150px;
+}
+
+.employer_list .img {
+	display: block;
+	width: 96px;
+	height: 96px;
+	border: 1px solid #e4e4e4;
+	margin: 25px auto 15px;
+	border-radius: 1px;
+}
+
+.employer_list .img img {
+	width: 94px;
+	height: 94px;
+	border-radius: 1px;
+}
+
+.employer_list {
+	text-align: center;
+}
+
+.employer_list a {
+	font-size: 12px;
+	color: #666666;
+}
+
+.employer_list .c_name {
+	display: block;
+	width: 160px;
+	height: 16px;
+	margin: 0 auto;
+}
+
+.employer_list:last-child {
+	border: none;
+}
+
+.employer_list p {
+	padding: 0 20px 18px 0;
+	font-size: 12px;
+	color: #666666;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: keep-all;
+	white-space: nowrap;
 }

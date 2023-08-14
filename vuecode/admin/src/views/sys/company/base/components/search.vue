@@ -31,7 +31,7 @@
               content="从职位类型、描述等多维度的数据匹配，关联度越高信息展现越靠前"
               placement="top-start"
             >
-              <i class="el-icon-question"/>
+              <i class="el-icon-question" />
             </el-tooltip>
           </el-radio>
           <el-radio label="2">
@@ -42,12 +42,40 @@
               content="搜索结果按职位刷新时间排序，时间越靠近展现越靠前"
               placement="top-start"
             >
-              <i class="el-icon-question"/>
+              <i class="el-icon-question" />
             </el-tooltip>
           </el-radio>
         </el-radio-group>
       </el-form-item>
       <!--      【ID1000392】【新增】职位、简历搜索页列表展现排序-->
+      <!--      【ID1000546】【新增】搜索关键词配置项，全文搜，模糊搜方式可选 yx-2023.02.17-->
+      <el-form-item label="搜索方式">
+        <el-radio-group v-model="form.job_search_engine">
+          <el-radio label="1">
+            全文搜索
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="使用全文搜索可能会导致部分搜索关键词没有结果，影响搜索数量，但系统搜索性能更佳"
+              placement="top-start"
+            >
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="2">
+            模糊搜索
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="使用模糊搜索在网站数据量大的情况下会导致网站搜索卡顿，但对于关键词搜索结果更佳"
+              placement="top-start"
+            >
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <!--      【ID1000546】【新增】搜索关键词配置项，全文搜，模糊搜方式可选 yx-2023.02.17-->
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
       </el-form-item>
@@ -65,7 +93,8 @@ export default {
       form: {
         job_search_login: false,
         job_search_login_num: 0,
-        job_search_order: 1
+        job_search_order: 1,
+        job_search_engine: 1
       },
       rules: {
         job_search_login_num: [
@@ -90,12 +119,14 @@ export default {
           const {
             job_search_login,
             job_search_login_num,
-            job_search_order
+            job_search_order,
+            job_search_engine
           } = { ...response.data }
           this.form = {
             job_search_login: job_search_login == 1,
             job_search_login_num,
-            job_search_order
+            job_search_order,
+            job_search_engine
           }
           this.infoLoading = false
         })

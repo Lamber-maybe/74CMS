@@ -52,10 +52,13 @@ class ResumeSearchEngine
     protected $tableprefix;
     protected $fulltext_mode = 'NATURAL LANGUAGE';
 
+    protected $engine;  // 简历搜索方式 1全文搜索 2模糊搜索
+
     public function __construct($getdata = array())
     {
         $this->global_config = config('global_config');
         $this->tableprefix = config('database.prefix');
+        $this->engine = !empty($this->global_config['resume_search_engine']) ? $this->global_config['resume_search_engine'] : '1';
         $this->tablename = $this->tableprefix . 'resume_search_rtime';
         $this->join = [];
         $this->where = '';
@@ -280,39 +283,54 @@ class ResumeSearchEngine
         $this->tablename = $this->tableprefix . 'resume_search_key';
         $this->keyword = urldecode(urldecode($this->keyword));
         $keyword = trim($this->keyword);
-        if (false !== stripos($keyword, ' ')) {
-            $keyword = merge_spaces($keyword);
-            $this->fulltext_mode = 'BOOLEAN';
-            $tmp_keyword_arr = explode(' ', $keyword);
-            foreach ($tmp_keyword_arr as $key => $value) {
-                $this->against .= '+' . $value . ' ';
+
+        if ('1' === $this->engine) {
+            if (false !== stripos($keyword, ' ')) {
+                $keyword = merge_spaces($keyword);
+                $this->fulltext_mode = 'BOOLEAN';
+                $tmp_keyword_arr = explode(' ', $keyword);
+                foreach ($tmp_keyword_arr as $key => $value) {
+                    $this->against .= '+' . $value . ' ';
+                }
+                $this->against = trim($this->against);
+                $keyword = $this->against;
+            } else {
+                $this->against = $keyword;
             }
-            $this->against = trim($this->against);
-            $keyword = $this->against;
-        } else {
-            $this->against = $keyword;
-        }
 
-        $this->field =
-            "a.id,refreshtime,stick,FROM_UNIXTIME(`refreshtime`, '%Y') AS t_year,FROM_UNIXTIME(`refreshtime`, '%m') AS t_month,MATCH (`intention_jobs`) AGAINST ('" .
-            $keyword .
-            "' IN " .
-            $this->fulltext_mode .
-            ' MODE) AS score1';
+            $this->field =
+                "a.id,refreshtime,stick,FROM_UNIXTIME(`refreshtime`, '%Y') AS t_year,FROM_UNIXTIME(`refreshtime`, '%m') AS t_month,MATCH (`intention_jobs`) AGAINST ('" .
+                $keyword .
+                "' IN " .
+                $this->fulltext_mode .
+                ' MODE) AS score1';
 
-        /**
-         * 【ID1000392】
-         * 【新增】职位、简历搜索页列表展现排序
-         * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
-         * yx - 2022.11.08
-         * [旧]
-         * $this->orderby = 't_year desc,t_month desc,score1 desc,refreshtime desc';
-         */
-        $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
-        if ('1' === $job_search_order) {
-            $this->orderby = 'stick DESC, t_year desc, t_month desc, score1 desc, refreshtime desc, a.id DESC';
+            /**
+             * 【ID1000392】
+             * 【新增】职位、简历搜索页列表展现排序
+             * 职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序
+             * yx - 2022.11.08
+             * [旧]
+             * $this->orderby = 't_year desc,t_month desc,score1 desc,refreshtime desc';
+             */
+            $job_search_order = !empty(config('global_config.job_search_order')) ? config('global_config.job_search_order') : '1';
+            if ('1' === $job_search_order) {
+                $this->orderby = 'stick DESC, t_year desc, t_month desc, score1 desc, refreshtime desc, a.id DESC';
+            } else {
+                $this->orderby = 'stick DESC, refreshtime DESC, t_year desc, t_month desc, score1 desc, a.id DESC';
+            }
         } else {
-            $this->orderby = 'stick DESC, refreshtime DESC, t_year desc, t_month desc, score1 desc, a.id DESC';
+            /**
+             * 【ID1000546】
+             * 【新增】搜索关键词配置项，全文搜，模糊搜方式可选
+             * yx - 2023.02.17
+             * [新增]:
+             */
+            $like_sql = " `fulltext_key` like '%" . $this->keyword . "%' ";
+            $this->where .=
+                $this->where == '' ? $like_sql : ' AND ' . $like_sql;
+            $this->field = "a.id,refreshtime,stick,FROM_UNIXTIME(`refreshtime`, '%Y') AS t_year,FROM_UNIXTIME(`refreshtime`, '%m') AS t_month,fulltext_key";
+            $this->orderby = 'stick DESC, refreshtime DESC, t_year desc, t_month desc, a.id DESC';
         }
     }
     /**

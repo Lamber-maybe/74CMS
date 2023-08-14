@@ -8,9 +8,15 @@
       <p>您可以自主选择使用AxB模式或AxN模式，AxB模式所需号码相对较少(拔号要求高)，AxN模式所需号码较多(体验较好)</p>
       <p>号码隐私保护开启后，全站个人简历联系将以虚拟号码呈现，同时您可以选择是否启用企业的虚拟保护。</p>
     </div>
+    <div v-if="setting_secrecy === true" class="no-promise">
+      <div class="notice-div">
+        <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+      </div>
+    </div>
     <el-form
+      v-else
       ref="form"
-      v-loading="infoLoading"
+      :v-loading="infoLoading"
       class="common-form"
       :model="form"
       label-width="120px"
@@ -63,11 +69,13 @@ export default {
         alicloud_pool_key: '',
         alicloud_pool_key_axn: '',
         alicloud_phone_protect_target: [2]
-      }
+      },
+      setting_secrecy: false
     }
   },
   mounted() {},
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
   },
   methods: {

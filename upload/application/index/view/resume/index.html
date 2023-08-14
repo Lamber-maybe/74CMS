@@ -995,6 +995,10 @@
 				location.href = qscms.locationList.loginCompany
 			},
 			handlerReg: function() {
+				if (parseInt("{#$global_config.closereg#}") === 1){
+					this.$message.error('网站已关闭会员注册')
+					return false
+				}
 				location.href = qscms.locationList.regCompany
 			}
 		},

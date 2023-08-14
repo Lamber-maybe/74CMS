@@ -122,7 +122,7 @@
 			<div class="ll_tip_more">微信扫一扫，招聘更轻松</div>
 			<div class="ll_tip_bth">
 				<router-link to="/member/login" class="a_btn">登录</router-link>
-				<router-link to="/member/reg/company" class="a_btn blue">注册</router-link>
+				<a class="a_btn blue" @click="handlerRegCompany()">注册</a>
 			</div>
 			<div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}
 			</div>
@@ -908,6 +908,14 @@ export default {
           }
         })
       })
+    },
+    // 注册企业会员
+    handlerRegCompany: function () {
+      if (parseInt(this.$store.state.config.closereg) === 1) {
+        this.$notify('网站已关闭会员注册')
+        return false
+      }
+      this.$router.push('/member/reg/company')
     }
   }
 }

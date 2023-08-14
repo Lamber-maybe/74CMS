@@ -28,7 +28,7 @@
         <el-input v-model.number="form.resume_list_max" min="0" max="1000" />
         <span class="smalltip">
           <i class="el-icon-info" />
-          简历列表可展示的职位数量上限，0表示不限制
+          简历列表可展示的简历数量上限，0表示不限制
         </span>
       </el-form-item>
       <el-form-item label="刷新简历时间间隔" prop="refresh_resume_space">

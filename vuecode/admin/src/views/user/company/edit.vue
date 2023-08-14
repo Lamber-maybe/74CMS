@@ -402,8 +402,8 @@ export default {
               trigger: 'blur'
             },
             {
-              max: 30,
-              message: '长度在 1 到 30 个字符',
+              max: 6,
+              message: '长度在 1 到 6 个汉字',
               trigger: 'blur'
             }
           ],
@@ -663,6 +663,7 @@ export default {
               // setTimeout(function() {
               //   that.$router.push('/user/company/list')
               // }, 1500)
+              this.$emit('companyDetails')
               this.submitLoading = false
               return true
             })

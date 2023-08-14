@@ -92,11 +92,11 @@ class Company extends Backend
                     break;
                 case 3: // 7天未跟进
                     $time = strtotime(date("Y-m-d", strtotime("-7 day")));
-                    $where['c.last_visit_time'] = ['gt', $time];
+                    $where['c.last_visit_time'] = ['lt', $time];
                     break;
                 case 4: // 15天未跟进
                     $time = strtotime(date("Y-m-d", strtotime("-15 day")));
-                    $where['c.last_visit_time'] = ['gt', $time];
+                    $where['c.last_visit_time'] = ['lt', $time];
                     break;
                 case 5: // 30天未跟进
                     $time = strtotime(date("Y-m-d", strtotime("-30 day")));

@@ -615,7 +615,7 @@ class Company extends \app\index\controller\Base
         if ($district2 == 0) {
             $level = 1;
             $parentDistrict = 0;
-        } else if ($district3 = 0) {
+        } else if ($district3 == 0) {
             $level = 2;
             $parentDistrict = $district1;
         } else {

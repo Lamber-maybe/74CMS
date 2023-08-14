@@ -4,56 +4,8 @@
       <el-col :span="13">
         <div class="tables">
           <div class="title_t">企业资料</div>
-          <CompayEdit :id="details.id" />
+          <CompayEdit :id="details.id" @companyDetails="companyDetails" />
         </div>
-        <!--        <div class="tables">-->
-        <!--          <div class="title_t">企业资料</div>-->
-        <!--          <el-form ref="form" class="tableForm" :model="form" label-width="120px">-->
-        <!--            <el-form-item label="公司名称：">-->
-        <!--              <el-input v-model="form.companyname" />-->
-        <!--            </el-form-item>-->
-        <!--            <el-form-item label="公司简称：">-->
-        <!--              <el-input v-model="form.short_name" />-->
-        <!--            </el-form-item>-->
-        <!--            <el-form-item label="公司性质：">-->
-        <!--              <el-select v-model="form.nature" placeholder="请选择公司性质" style="width:100%">-->
-        <!--                <el-option v-for="item in companyNature" :label="item.name" :value="item.id" />-->
-        <!--              </el-select>-->
-        <!--            </el-form-item>-->
-        <!--            <el-form-item label="公司规模：">-->
-        <!--              <el-select v-model="form.scale" placeholder="请选择公司规模" style="width:100%">-->
-        <!--                <el-option v-for="item in companyScale" :label="item.name" :value="item.id" />-->
-        <!--              </el-select>-->
-        <!--            </el-form-item>-->
-        <!--            <el-form-item label="所属行业：">-->
-        <!--              <el-select v-model="form.trade" placeholder="请选择所属行业" style="width:100%">-->
-        <!--                <el-option v-for="item in trade" :label="item.name" :value="item.id" />-->
-        <!--              </el-select>-->
-        <!--            </el-form-item>-->
-        <!--                    <el-form-item label="企业Logo：">-->
-        <!--                      <div style="position: relative">-->
-        <!--                        <div v-if="form.logo_url" class="transparent" @click="logoDel">-->
-        <!--                          <i class="el-icon-delete" />-->
-        <!--                          删除-->
-        <!--                        </div>-->
-        <!--                        <el-upload-->
-        <!--                          class="avatar-uploader"-->
-        <!--                          :headers="headerObj"-->
-        <!--                          :action="upload_url"-->
-        <!--                          :show-file-list="false"-->
-        <!--                          :on-success="handleAvatarSuccess"-->
-        <!--                          :before-upload="beforeAvatarUpload"-->
-        <!--                        >-->
-        <!--                          <img v-if="form.logo_url" :src="form.logo_url" class="avatar">-->
-        <!--                          <i v-else class="el-icon-plus avatar-uploader-icon" />-->
-        <!--                        </el-upload>-->
-        <!--                      </div>-->
-        <!--                    </el-form-item>-->
-        <!--            <el-form-item>-->
-        <!--              <el-button type="primary" @click="onSubmit">保存资料</el-button>-->
-        <!--            </el-form-item>-->
-        <!--          </el-form>-->
-        <!--        </div>-->
       </el-col>
       <el-col :span="11">
         <div class="corporateStyle">
@@ -77,6 +29,7 @@
               <!--              <img :src="item.img" alt="">-->
             </div>
             <el-upload
+              :class="company_img.length>=6 ? 'upload_hide' : ''"
               class="avatar-uploader avatar_top"
               :headers="headerObj"
               :data="{'company_id':form.id,'uid':form.uid}"
@@ -261,6 +214,9 @@ export default {
         this.$message.error('上传图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M || isPNG
+    },
+    companyDetails(){
+      this.$emit('companyDetails')
     }
   }
 }
@@ -394,6 +350,11 @@ export default {
     padding:20px 30px 30px 30px;
     .title{
       font-weight: bold;
+    }
+  }
+  .upload_hide{
+    ::v-deep .el-upload--text{
+      display: none;
     }
   }
 </style>

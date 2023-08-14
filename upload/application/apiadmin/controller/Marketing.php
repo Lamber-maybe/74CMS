@@ -436,8 +436,18 @@ class Marketing extends Backend
 
         // 会员套餐
         if (isset($condition['setmeal_id']) && count($condition['setmeal_id']) > 0) {
-            $model = $model
-                ->where('c.setmeal_id', 'in', $condition['setmeal_id']);
+            /**
+             * 【ID1000531】
+             * 【bug】公众号营销，过期套餐的企业还会出来数据
+             * yx - 2023.02.09
+             * [新增]:
+             * 查询加入套餐到期时间过滤
+             * ->join('MemberSetmeal ms', 'ms.uid=c.uid', 'LEFT')
+             * ->where('ms.deadline',['gt', time()], ['eq', 0], 'or');
+             */
+            $model = $model->where('c.setmeal_id', 'in', $condition['setmeal_id'])
+                ->join('MemberSetmeal ms', 'ms.uid=c.uid', 'LEFT')
+                ->where('ms.deadline',['gt', time()], ['eq', 0], 'or');
         }
 
         $filter = isset($condition['content']) ? $condition['content'] : 'all';

@@ -12,23 +12,36 @@
       <p v-if="is_check==1">
         当前解析剩余：{{ total }} 次
         <el-tooltip class="item" effect="dark" placement="bottom">
-      <div slot="content">
-        <p v-for="(item,index) in accountBalanceList" :key="index" class="tooltipItem">{{ item.num }}
-          次查询余额将在 {{ item.deadline | timeFilter }} 到期</p>
-      </div>
-      <i class="el-icon-info" style="color: rgb(86, 82, 83);cursor: pointer;"/>
-      </el-tooltip>
+          <div slot="content">
+            <p v-for="(item,index) in accountBalanceList" :key="index" class="tooltipItem">{{ item.num }}
+              次查询余额将在 {{ item.deadline | timeFilter }} 到期</p>
+          </div>
+          <i class="el-icon-info" style="color: rgb(86, 82, 83);cursor: pointer;" />
+        </el-tooltip>
       </p>
     </div>
-    <el-form ref="form" v-loading="infoLoading" :rules="rules" class="common-form" :model="form" label-width="120px">
+    <div v-if="setting_secrecy === true" class="no-promise">
+      <div class="notice-div">
+        <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+      </div>
+    </div>
+    <el-form
+      v-else
+      ref="form"
+      :v-loading="infoLoading"
+      :rules="rules"
+      class="common-form"
+      :model="form"
+      label-width="120px"
+    >
       <el-form-item label="启用简历解析">
-        <el-switch v-model="form.is_open" @change="switchChangeBtn(form.is_open)"/>
+        <el-switch v-model="form.is_open" @change="switchChangeBtn(form.is_open)" />
       </el-form-item>
       <el-form-item label="AppKey" prop="appKey">
-        <el-input v-model="form.appKey" class="middle"/>
+        <el-input v-model="form.appKey" class="middle" />
       </el-form-item>
       <el-form-item label="AppSecret" prop="appSecret">
-        <el-input v-model="form.appSecret" class="middle"/>
+        <el-input v-model="form.appSecret" class="middle" />
       </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -42,7 +55,7 @@ import {
   resumeConfig,
   resumeCheck
 } from '@/api/configuration'
-import {parseTime} from '@/utils'
+import { parseTime } from '@/utils'
 
 export default {
   filters: {
@@ -72,12 +85,14 @@ export default {
       },
       accountBalanceList: [],
       total: 0,
-      is_check: 0
+      is_check: 0,
+      setting_secrecy: false
     }
   },
   mounted() {
   },
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
     this.getResumeCheck()
   },

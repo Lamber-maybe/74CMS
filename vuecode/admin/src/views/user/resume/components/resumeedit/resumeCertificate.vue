@@ -97,6 +97,15 @@ export default {
       })
     },
     funAdd() {
+      /**
+       * 【ID1000538】
+       * 【优化】各端证书数量最多限制6个
+       * yx - 2023.02.13
+       */
+      if (this.list.length >= 6) {
+        this.$message({ message: '证书最多可填写6份', type: 'warning' })
+        return false
+      }
       this.itemId = 0
       this.dialogTitle = '添加证书'
       this.dialogFormVisible = true

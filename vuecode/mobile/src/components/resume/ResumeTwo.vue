@@ -108,7 +108,7 @@
 									<!-- 薪资 -->
 									{{ base_info.wage_text_unique }}
 								</div>
-								<div class="intent address">
+								<div class="intent address" style="margin-bottom: 0">
 									<!-- 地区 -->
 									{{ base_info.intention_district_text }}
 								</div>
@@ -184,7 +184,7 @@
 					</div>
 					<!--联系方式-->
 					<div class="box_cac">
-						<div class="box_head">
+						<div class="box_head" style="padding-top: 11.5px;">
 							<div class="txt"><span class="title">联系方式</span></div>
 							<span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type == 1">
 								请使用
@@ -311,7 +311,7 @@
 						<div class="box_head">
 							<div class="txt"><span class="title">获得证书</span></div>
 						</div>
-						<div class="box_content">
+						<div class="box_content" style="padding-bottom: 7.5px">
 							<div class="tx1" v-for="(item, index) in certificate_list" :key="index">{{ item.name }}</div>
 							<div class="clear"></div>
 							<!-- <div
@@ -328,7 +328,7 @@
 					</div>
 					<!--语言能力-->
 					<div class="box_11" v-if="resume_module.language !== undefined && resume_module.language.is_display == 1 && language_list.length > 0">
-						<div class="box_head">
+						<div class="box_head" style="padding-top:0;">
 							<div class="txt"><span class="title">语言能力</span></div>
 						</div>
 						<div class="box_content">
@@ -351,7 +351,7 @@
 				<div class="content_wrapper" v-if="resume_module.img !== undefined && resume_module.img.is_display == 1 && img_list.length > 0">
 					<!--我的作品-->
 					<div class="box_12">
-						<div class="box_head">
+						<div class="box_head" style="padding-top: 0">
 							<div class="txt"><span class="title">我的作品</span></div>
 						</div>
 						<!-- <div class="box_content">
@@ -376,7 +376,7 @@
 				<div class="content_wrapper" v-if="enclosure_resume.enclosure">
 					<!--附件简历-->
 					<div class="box_12 box_14">
-						<div class="box_head">
+						<div class="box_head" style="padding-top:0;">
 							<div class="txt"><span class="title">附件简历</span></div>
 						</div>
 						<div class="box_content">
@@ -1342,7 +1342,7 @@ export default {
 	bottom: 80px;
 	background: #e0eeff;
 	border-radius: 45px;
-	width: 144px;
+	width: 154px;
 	height: 45px;
 	transition: width 0.5s;
 	-moz-transition: width 0.5s;
@@ -1353,7 +1353,7 @@ export default {
 	/* Opera */
 	line-height: 58px;
 	padding-top: 0;
-
+  padding-left: 10px;
 	.poster_item {
 		z-index: 2;
 		width: 33%;
@@ -1458,7 +1458,6 @@ export default {
 	background-color: #f8f9fa;
 	position: relative;
 	padding: 12px;
-	margin-top: 20px;
 }
 
 .resume-show-swiper-span {
@@ -1625,7 +1624,7 @@ export default {
 			right: 0;
 			top: 0;
 			left: 0;
-			border-bottom: 0.026667rem solid #f3f3f3;
+			//border-bottom: 0.026667rem solid #f3f3f3;
 		}
 	}
 
@@ -1638,7 +1637,7 @@ export default {
 .box_12 {
 	width: 100%;
   padding-bottom: 17px;
-  border-bottom: 1px solid #f5f5f5;
+  //border-bottom: 1px solid #f5f5f5;
 
   .swiper-pagination {
 		bottom: 0px;
@@ -1707,7 +1706,7 @@ export default {
 
 .box_11 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -1731,13 +1730,13 @@ export default {
 			margin: 0 10px 5px 0;
 		}
 
-		padding-bottom: 17px;
+		padding-bottom: 7px;
 	}
 }
 
 .box_10 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -1747,7 +1746,10 @@ export default {
 			background-color: #f1f1f1;
 			padding: 3px 8px;
 			border-radius: 3px;
-			margin: 0 10px 5px 0;
+			margin: 0 10px 14px 0;
+      &::last-child {
+        margin-bottom:0;
+      }
 
 			.right_txt {
 				position: absolute;
@@ -1757,19 +1759,15 @@ export default {
 				font-size: 14px;
 				color: #666666;
 			}
-
-			&:not(:last-child) {
-				margin-bottom: 14px;
-			}
 		}
 
-		padding-bottom: 17px;
+		padding-bottom: 21.5px;
 	}
 }
 
 .box_9 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -1850,13 +1848,13 @@ export default {
 			position: relative;
 		}
 
-		padding-bottom: 17.5px;
+		padding-bottom: 21.5px;
 	}
 }
 
 .box_8 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -1942,7 +1940,7 @@ export default {
 
 .box_7 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -2023,14 +2021,12 @@ export default {
 			border-bottom: 1px dashed #8abeff;
 			border-left: 1px dashed #8abeff;
 		}
-
-		padding-bottom: 17.5px;
 	}
 }
 
 .box_6 {
 	width: 100%;
-	border-bottom: 1px solid #f5f5f5;
+	//border-bottom: 1px solid #f5f5f5;
 
 	.box_content {
 		.tx1 {
@@ -2096,8 +2092,6 @@ export default {
 			padding: 0 15px 8px;
 			position: relative;
 		}
-
-		padding-bottom: 17.5px;
 	}
 }
 
@@ -2120,13 +2114,12 @@ export default {
 			word-break: break-all;
 			text-align: justify;
 		}
-
-		padding-bottom: 20px;
 	}
 }
 
 .box_cac {
 	padding-right: 16px;
+  width: 100%;
 
 	.phone_tip {
 		display: inline-block;
@@ -2193,7 +2186,7 @@ export default {
 		}
 
 		.tx1 {
-			padding-top: 16px;
+			padding-top: 25px;
 			margin-bottom: 3px;
 		}
 
@@ -2232,16 +2225,10 @@ export default {
 		border-radius: 7px;
 		background: linear-gradient(170deg, #f2f8ff, #cbe8fe, #d0e5ff);
 	}
-
-	width: 100%;
-	padding-bottom: 17px;
-	border-bottom: 1px solid #f5f5f5;
 }
 
 .box_3 {
 	.tx2 {
-		margin-bottom: 10px;
-
 		&:not(:first-child) {
 			margin-top: 13.5px;
 		}
@@ -2339,16 +2326,14 @@ export default {
 .box_2 {
 	.content {
 		.item {
-			float: left;
-			font-size: 13px;
-			color: #595959;
-			background-color: #f1f1f1;
-			padding: 3px 8px;
-			border-radius: 3px;
-			margin: 0 8px 8px 0;
+      float: left;
+      font-size: 13px;
+      color: #595959;
+      background-color: #f1f1f1;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin: 0 10px 10px 0;
 		}
-
-		padding-bottom: 10px;
 	}
 
 	width: 100%;
@@ -2397,7 +2382,7 @@ export default {
 
 	position: relative;
 	width: 100%;
-	padding: 21.5px 0;
+	padding: 20px 0 21.5px;
 }
 
 .box_1 {
@@ -2573,14 +2558,14 @@ export default {
 
 				position: absolute;
 				left: 0;
-				top: 30px;
+				top: 17px;
 				width: 55px;
 				height: 55px;
 				overflow: hidden;
 			}
 
 			position: relative;
-			padding: 31px 0 0 61px;
+			padding: 17px 0 0 70px;
 		}
 
 		position: relative;

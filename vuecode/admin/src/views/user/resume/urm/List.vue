@@ -27,6 +27,7 @@
               placeholder="请选择意向地区"
               :options="citycategory"
               :props="{ checkStrictly: true }"
+              popper-class="cancelRadio"
               :clearable="true"
               @change="screenList"
             />
@@ -38,6 +39,7 @@
               placeholder="请选择意向职位"
               :options="jobcategory"
               :props="{ checkStrictly: true }"
+              popper-class="cancelRadio"
               :show-all-levels="false"
               @change="screenList"
             />
@@ -1075,7 +1077,7 @@
             background
             destroy-on-close
             :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"

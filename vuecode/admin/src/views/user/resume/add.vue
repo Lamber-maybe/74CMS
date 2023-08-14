@@ -200,6 +200,7 @@
           :options="options_citycategory"
           :show-all-levels="false"
           :props="{ checkStrictly: true }"
+          popper-class="cancelRadio"
         />
       </el-form-item>
       <el-form-item label="期望薪资" prop="intention.minwage">

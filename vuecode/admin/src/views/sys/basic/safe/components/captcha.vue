@@ -46,34 +46,41 @@
       >
         <el-input v-model="form.picture.length" />
       </el-form-item>
-      <el-form-item
-        v-if="form.captcha_type == 'vaptcha'"
-        label="vid"
-        prop="captcha_vaptcha_vid"
-      >
-        <el-input v-model="form.captcha_vaptcha_vid" />
-      </el-form-item>
-      <el-form-item
-        v-if="form.captcha_type == 'vaptcha'"
-        label="key"
-        prop="captcha_vaptcha_key"
-      >
-        <el-input v-model="form.captcha_vaptcha_key" />
-      </el-form-item>
-      <el-form-item
-        v-if="form.captcha_type == 'tencent'"
-        label="appid"
-        prop="captcha_tencent_appid"
-      >
-        <el-input v-model="form.captcha_tencent_appid" />
-      </el-form-item>
-      <el-form-item
-        v-if="form.captcha_type == 'tencent'"
-        label="secretkey"
-        prop="captcha_tencent_appsecret"
-      >
-        <el-input v-model="form.captcha_tencent_appsecret" />
-      </el-form-item>
+      <div v-if="setting_secrecy === true && form.captcha_type !== 'picture'" class="no-promise" style="margin-bottom: 22px;">
+        <div class="notice-div">
+          <p class="notice-p">暂无查看权限，请联系网站负责人</p>
+        </div>
+      </div>
+      <div v-else>
+        <el-form-item
+          v-if="form.captcha_type == 'vaptcha'"
+          label="vid"
+          prop="captcha_vaptcha_vid"
+        >
+          <el-input v-model="form.captcha_vaptcha_vid" />
+        </el-form-item>
+        <el-form-item
+          v-if="form.captcha_type == 'vaptcha'"
+          label="key"
+          prop="captcha_vaptcha_key"
+        >
+          <el-input v-model="form.captcha_vaptcha_key" />
+        </el-form-item>
+        <el-form-item
+          v-if="form.captcha_type == 'tencent'"
+          label="appid"
+          prop="captcha_tencent_appid"
+        >
+          <el-input v-model="form.captcha_tencent_appid" />
+        </el-form-item>
+        <el-form-item
+          v-if="form.captcha_type == 'tencent'"
+          label="secretkey"
+          prop="captcha_tencent_appsecret"
+        >
+          <el-input v-model="form.captcha_tencent_appsecret" />
+        </el-form-item>
+      </div>
       <el-form-item
         label="密码登录错误次数"
         prop="length"
@@ -124,10 +131,12 @@ export default {
         captcha_show_by_pwd_error: '',
         captcha_show_by_code_error: ''
       },
-      rules: {}
+      rules: {},
+      setting_secrecy: false
     }
   },
   created() {
+    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
     this.fetchInfo()
   },
   methods: {

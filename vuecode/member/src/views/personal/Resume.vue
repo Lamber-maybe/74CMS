@@ -1617,6 +1617,18 @@
           })
           return false
         }
+        /**
+         * 【ID1000538】
+         * 【优化】各端证书数量最多限制6个
+         * yx - 2023.02.13
+         */
+        if (editName === 'certificate' && !item && this.certificateList.length >= 6) {
+          this.$message({
+            message: '证书最多可填写6份',
+            type: 'warning'
+          })
+          return false
+        }
         if (editName === 'intention' && item) {
           this.intentionItemCategory = [item.category1, item.category2, item.category3]
           this.intentionItemDistrict = []

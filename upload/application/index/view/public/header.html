@@ -535,6 +535,10 @@ function isJSON(str) {
                 }
             },
             handlerReg: function (utype) {
+                if (parseInt("{#$global_config.closereg#}") === 1){
+                    this.$message.error('网站已关闭会员注册')
+                    return false
+                }
                 if (utype == 1) {
                     location.href = qscms.locationList.regCompany
                 } else {

@@ -233,7 +233,7 @@
             background
             destroy-on-close
             :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"

@@ -42,6 +42,7 @@
         >
           <el-option label="按添加时间排序" value="" />
           <el-option label="按刷新时间排序" value="refreshtime" />
+          <el-option label="按修改时间排序" value="updatetime" />
         </el-select>
         <el-input
           v-model="keyword"
@@ -206,7 +207,7 @@
           <el-pagination
             background
             :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             :page-size="pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"

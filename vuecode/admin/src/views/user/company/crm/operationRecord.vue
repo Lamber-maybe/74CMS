@@ -29,7 +29,7 @@
           <el-table-column label="扣除查询余额">1</el-table-column>
         </el-table>
         <div class="pagination-box">
-          <el-pagination background destroy-on-close :current-page="currentPage" :page-sizes="[10, 15, 20, 30, 40]"
+          <el-pagination background destroy-on-close :current-page="currentPage" :page-sizes="[10, 20, 50, 100]"
             :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>

@@ -379,7 +379,7 @@
           <el-pagination
             background
             :current-page="forwardTablePage.page"
-            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-sizes="[10, 20, 50, 100]"
             :page-size="forwardTablePage.pagesize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="forwardTablePage.total"

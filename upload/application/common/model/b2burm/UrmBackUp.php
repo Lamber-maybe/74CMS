@@ -36,167 +36,167 @@ class UrmBackUp extends BaseModel
     protected $operateModel = [
         [
             'model' => 'Company',
-            'db'=>'company',
+            'db' => 'company',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyAuth',
-            'db'=>'company_auth',
+            'db' => 'company_auth',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyAuthLog',
-            'db'=>'company_auth_log',
+            'db' => 'company_auth_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyContact',
-            'db'=>'company_contact',
+            'db' => 'company_contact',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyDownResume',
-            'db'=>'company_down_resume',
+            'db' => 'company_down_resume',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyImg',
-            'db'=>'company_img',
+            'db' => 'company_img',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyInfo',
-            'db'=>'company_info',
+            'db' => 'company_info',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyInterview',
-            'db'=>'company_interview',
+            'db' => 'company_interview',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyInterviewVideo',
-            'db'=>'company_interview_video',
+            'db' => 'company_interview_video',
             'pk' => 'uid'
         ],
         [
             'model' => 'CompanyReport',
-            'db'=>'company_report',
+            'db' => 'company_report',
             'pk' => 'uid'
         ],
         [
             'model' => 'CouponRecord',
-            'db'=>'coupon_record',
+            'db' => 'coupon_record',
             'pk' => 'uid'
         ],
         [
             'model' => 'CustomerServiceComplaint',
-            'db'=>'customer_service_complaint',
+            'db' => 'customer_service_complaint',
             'pk' => 'uid'
         ],
         [
             'model' => 'Entrust',
-            'db'=>'entrust',
+            'db' => 'entrust',
             'pk' => 'uid'
         ],
         [
             'model' => 'FavJob',
-            'db'=>'fav_job',
+            'db' => 'fav_job',
             'pk' => 'company_uid'
         ],
         [
             'model' => 'FavJob',
-            'db'=>'fav_job',
+            'db' => 'fav_job',
             'pk' => 'personal_uid'
         ],
         [
             'model' => 'FavResume',
-            'db'=>'fav_resume',
+            'db' => 'fav_resume',
             'pk' => 'company_uid'
         ],
         [
             'model' => 'FavResume',
-            'db'=>'fav_resume',
+            'db' => 'fav_resume',
             'pk' => 'personal_uid'
         ],
         [
             'model' => 'Feedback',
-            'db'=>'feedback',
+            'db' => 'feedback',
             'pk' => 'uid'
         ],
         [
             'model' => 'JobApply',
-            'db'=>'job_apply',
+            'db' => 'job_apply',
             'pk' => 'company_uid'
         ],
         [
             'model' => 'JobApply',
-            'db'=>'job_apply',
+            'db' => 'job_apply',
             'pk' => 'personal_uid'
         ],
         [
             'model' => 'MarketQueue',
-            'db'=>'market_queue',
+            'db' => 'market_queue',
             'pk' => 'uid'
         ],
         [
             'model' => 'Member',
-            'db'=>'member',
+            'db' => 'member',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberBind',
-            'db'=>'member_bind',
+            'db' => 'member_bind',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberActionLog',
-            'db'=>'member_action_log',
+            'db' => 'member_action_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberSetmeal',
-            'db'=>'member_setmeal',
+            'db' => 'member_setmeal',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberSetmealLog',
-            'db'=>'member_setmeal_log',
+            'db' => 'member_setmeal_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberPoints',
-            'db'=>'member_points',
+            'db' => 'member_points',
             'pk' => 'uid'
         ],
         [
             'model' => 'MemberPointsLog',
-            'db'=>'member_points_log',
+            'db' => 'member_points_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'Message',
-            'db'=>'message',
+            'db' => 'message',
             'pk' => 'uid'
         ],
         [
             'model' => 'RefreshJobLog',
-            'db'=>'refresh_job_log',
+            'db' => 'refresh_job_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'RefreshResumeLog',
-            'db'=>'refresh_resume_log',
+            'db' => 'refresh_resume_log',
             'pk' => 'uid'
         ],
         [
             'model' => 'RefreshjobQueue',
-            'db'=>'refreshjob_queue',
+            'db' => 'refreshjob_queue',
             'pk' => 'uid'
         ],
         [
             'model' => 'Resume',
-            'db'=>'resume',
+            'db' => 'resume',
             'pk' => 'uid'
         ],
         [
@@ -360,6 +360,7 @@ class UrmBackUp extends BaseModel
             'pk' => 'uid'
         ]
     ];
+
     /**
      * 通过会员ID备份会员数据
      * @param $uid
@@ -397,6 +398,7 @@ class UrmBackUp extends BaseModel
             return true;
         }
     }
+
     /**
      * 通过回收站ID清空备份数据
      * @param $recycleBinId
@@ -423,17 +425,22 @@ class UrmBackUp extends BaseModel
 
         if (empty($backup_data)) {
             throw new \Exception('备份数据异常，恢复失败');
-        }else{
+        } else {
             $backup_data = $backup_data->toArray();
         }
-        foreach ($backup_data as $data) {
-            $result = model($data['model'])
-                ->allowField(true)
-                ->isUpdate(false)
-                ->insertAll(json_decode($data['value'], true));
-            if (false === $result) {
-                throw new \Exception('恢复数据错误');
+
+        try {
+            foreach ($backup_data as $data) {
+                $result = model($data['model'])
+                    ->allowField(true)
+                    ->isUpdate(false)
+                    ->insertAll(json_decode($data['value'], true));
+                if (false === $result) {
+                    throw new \Exception('恢复数据错误');
+                }
             }
+        } catch (\Exception $e) {
+            throw new \Exception('恢复数据异常/冲突【' . $data['model'] . '】');
         }
 
         return true;
