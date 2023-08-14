@@ -428,7 +428,8 @@
               </div>
             </div>
             <div class="fill_btn">
-              <el-button type="primary" @click="saveIntention">保存</el-button>
+<!--              重复提交修改 zch 2022/9/16-->
+              <el-button type="primary" @click="saveIntention" :disabled="issubmit">保存</el-button>
               <el-button @click="editIntention = false">取消</el-button>
             </div>
           </div>
@@ -587,7 +588,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveEducation">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveEducation" :disabled="issubmit">保存</el-button>
             <el-button @click="editEducation = false">取消</el-button>
           </div>
         </div>
@@ -676,7 +678,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveWork">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveWork" :disabled="issubmit">保存</el-button>
             <el-button @click="editWork = false">取消</el-button>
           </div>
         </div>
@@ -764,7 +767,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveTrain">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveTrain" :disabled="issubmit">保存</el-button>
             <el-button @click="editTrain = false">取消</el-button>
           </div>
         </div>
@@ -852,7 +856,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveProject">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveProject" :disabled="issubmit">保存</el-button>
             <el-button @click="editProject = false">取消</el-button>
           </div>
         </div>
@@ -907,7 +912,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveCertificate">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveCertificate" :disabled="issubmit">保存</el-button>
             <el-button @click="editCertificate = false">取消</el-button>
           </div>
         </div>
@@ -962,7 +968,8 @@
             </div>
           </div>
           <div class="fill_btn">
-            <el-button type="primary" @click="saveLanguage">保存</el-button>
+<!--            重复提交修改 zch 2022/9/16-->
+            <el-button type="primary" @click="saveLanguage" :disabled="issubmit">保存</el-button>
             <el-button @click="editLanguage = false">取消</el-button>
           </div>
         </div>
@@ -1122,6 +1129,7 @@
         timer: '',
         timerImg: '',
         preview_url:'',
+        issubmit: false  // 重复提交修改 zch 2022/9/16
       }
     },
     mounted () {
@@ -1614,6 +1622,15 @@
       // 编辑信息公用方法
       editItemFun (item, editName) {
         this[`${editName}Item`] = item ? item : {}
+        /**
+         * 【bug】简历求职意向最多应设置三条
+         *  zch 2022.9.20
+         *  【新增】
+         */
+        if (editName === 'intention' && !item && this.intentionList.length >= 3) {
+          this.$message({ message: '求职意向最多可填写三条', type: 'warning' })
+          return false
+        }
         if (editName === 'intention' && item) {
           this.intentionItemCategory = [item.category1, item.category2, item.category3]
           this.intentionItemDistrict = []
@@ -1862,6 +1879,9 @@
         this.intentionItem.category2 = this.intentionItemCategory[1]
         this.intentionItem.category3 = this.intentionItemCategory[2]
         this.intentionItem.wage_text = this.handleWageUnit(this.intentionItem.minwage, this.intentionItem.maxwage)
+
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_intention_save, {
           id: this.intentionItem.id,
           district1: this.intentionItem.district1,
@@ -1883,8 +1903,22 @@
             }
             this.intentionItem.id = res.data.return_id
             this.editIntention = false
+
+            /**
+             * 【bug】修改求职意向添加保存后再次进入添加求职意向七万职位和工作地区未置空问题
+             * zch 2022.9.20
+             * 【新增】
+             * this.intentionItemCategory = []
+             * this.intentionItemDistrict = []
+             */
+            this.intentionItemCategory = []
+            this.intentionItemDistrict = []
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(() => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         })
       },
       // 处理薪资显示
@@ -2008,6 +2042,9 @@
         }
         this.educationItem.education_text = this.optionEducation.filter(
           item => item.id === this.educationItem.education)[0].text
+
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_education_save, {
           id: this.educationItem.id,
           school: this.educationItem.school,
@@ -2026,7 +2063,11 @@
             this.educationItem.id = res.data.return_id
             this.editEducation = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(err => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
       },
@@ -2054,6 +2095,8 @@
           this.$message({ message: '请填写工作职责', type: 'warning' })
           return false
         }
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_work_save, {
           id: this.workItem.id,
           companyname: this.workItem.companyname,
@@ -2072,7 +2115,11 @@
             this.workItem.id = res.data.return_id
             this.editWork = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(err => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
       },
@@ -2100,6 +2147,8 @@
           this.$message({ message: '请填写培训内容', type: 'warning' })
           return false
         }
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_train_save, {
           id: this.trainItem.id,
           agency: this.trainItem.agency,
@@ -2118,7 +2167,11 @@
             this.trainItem.id = res.data.return_id
             this.editTrain = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(err => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
       },
@@ -2146,6 +2199,8 @@
           this.$message({ message: '请填写项目描述', type: 'warning' })
           return false
         }
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_project_save, {
           id: this.projectItem.id,
           projectname: this.projectItem.projectname,
@@ -2164,7 +2219,11 @@
             this.projectItem.id = res.data.return_id
             this.editProject = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(err => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
       },
@@ -2178,6 +2237,8 @@
           this.$message({ message: '请选择获得时间', type: 'warning' })
           return false
         }
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_certificate_save, {
           id: this.certificateItem.id,
           name: this.certificateItem.name,
@@ -2192,7 +2253,11 @@
             this.certificateItem.id = res.data.return_id
             this.editCertificate = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(() => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         })
       },
       // 选择语种
@@ -2220,6 +2285,9 @@
           item => item.id === this.languageItem.language)[0].text
         this.languageItem.level_text = this.optionLanguageLevel.filter(
           item => item.id === this.languageItem.level)[0].text
+
+        // 重复提交修改 zch 2022/9/16
+        this.issubmit = true
         http.post(api.resume_language_save, {
           id: this.languageItem.id,
           language: this.languageItem.language,
@@ -2234,7 +2302,11 @@
             this.languageItem.id = res.data.return_id
             this.editLanguage = false
           }
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         }).catch(() => {
+          // 重复提交修改 zch 2022/9/16
+          this.issubmit = false
         })
       },
       // 删除信息公用方法

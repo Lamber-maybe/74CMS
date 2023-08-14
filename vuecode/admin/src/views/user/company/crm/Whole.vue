@@ -70,6 +70,7 @@
           border
           stripe
           style="width: 100%;"
+          @sort-change="sortTable"
           @selection-change="handleSelectionChange"
         >
           <el-table-column
@@ -81,11 +82,12 @@
             v-for="items in fieldData"
             v-if="items.is_locking == true && items.select == true"
             fixed
+            :sortable="items.is_sortable"
             :prop="items.field"
             :width="items.width"
           >
             <template slot="header" slot-scope="scope">
-              <div @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
                 <span>{{ items.name }}</span>
                 <el-popover
                   placement="bottom"
@@ -141,55 +143,59 @@
             <template slot-scope="scope">
               <div v-if="items.field == 'id'">
                 <span v-if="scope.row.id == ''"> - </span>
-                <span v-else> {{scope.row.id}} </span>
+                <span v-else> {{ scope.row.id }} </span>
               </div>
               <div v-if="items.field == 'name'">
                 <span v-if="scope.row.name == ''"> - </span>
-                <span v-else> {{scope.row.name}} </span>
+                <span v-else> {{ scope.row.name }} </span>
               </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
-                <span v-else> {{scope.row.admin_username}} </span>
+                <span v-else> {{ scope.row.admin_username }} </span>
               </div>
               <div v-if="items.field == 'contacts'">
                 <span v-if="scope.row.contacts == ''"> - </span>
-                <span v-else> {{scope.row.contacts}} </span>
+                <span v-else> {{ scope.row.contacts }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
                 <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{scope.row.mobile}} </span>
+                <span v-else> {{ scope.row.mobile }} </span>
               </div>
               <div v-if="items.field == 'weixin'">
                 <span v-if="scope.row.weixin == ''"> - </span>
-                <span v-else> {{scope.row.weixin}} </span>
+                <span v-else> {{ scope.row.weixin }} </span>
+              </div>
+              <div v-if="items.field == 'collection_time'">
+                <span v-if="scope.row.collection_time == ''"> - </span>
+                <span v-else> {{ scope.row.collection_time }} </span>
               </div>
               <div v-if="items.field == 'trade'">
                 <span v-if="scope.row.trade == ''"> - </span>
-                <span v-else> {{scope.row.trade}} </span>
+                <span v-else> {{ scope.row.trade }} </span>
               </div>
               <div v-if="items.field == 'district'">
                 <span v-if="scope.row.district == ''"> - </span>
-                <span v-else> {{scope.row.district}} </span>
+                <span v-else> {{ scope.row.district }} </span>
               </div>
               <div v-if="items.field == 'address'">
                 <span v-if="scope.row.address == ''"> - </span>
-                <span v-else> {{scope.row.address}} </span>
+                <span v-else> {{ scope.row.address }} </span>
               </div>
               <div v-if="items.field == 'updatetime'">
                 <span v-if="scope.row.updatetime == ''"> - </span>
-                <span v-else> {{scope.row.updatetime}} </span>
+                <span v-else> {{ scope.row.updatetime }} </span>
               </div>
               <div v-if="items.field == 'follow_count'">
                 <span v-if="scope.row.follow_count == ''"> 0 </span>
-                <span v-else> {{scope.row.follow_count}} </span>
+                <span v-else> {{ scope.row.follow_count }} </span>
               </div>
               <div v-if="items.field == 'creat_username'">
                 <span v-if="scope.row.creat_username == ''"> - </span>
-                <span v-else> {{scope.row.creat_username}} </span>
+                <span v-else> {{ scope.row.creat_username }} </span>
               </div>
               <div v-if="items.field == 'remark'">
                 <span v-if="scope.row.remark == ''"> - </span>
-                <span v-else> {{scope.row.remark}} </span>
+                <span v-else> {{ scope.row.remark }} </span>
               </div>
             </template>
           </el-table-column>
@@ -197,10 +203,11 @@
             v-for="items in fieldData"
             v-if="items.is_locking == false && items.select == true"
             :prop="items.field"
+            :sortable="items.is_sortable"
             :width="items.width"
           >
             <template slot="header" slot-scope="scope">
-              <div @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
                 <span>{{ items.name }}</span>
                 <el-popover
                   placement="bottom"
@@ -257,55 +264,59 @@
             <template slot-scope="scope">
               <div v-if="items.field == 'id'">
                 <span v-if="scope.row.id == ''"> - </span>
-                <span v-else> {{scope.row.id}} </span>
+                <span v-else> {{ scope.row.id }} </span>
               </div>
               <div v-if="items.field == 'name'">
                 <span v-if="scope.row.name == ''"> - </span>
-                <span v-else> {{scope.row.name}} </span>
+                <span v-else> {{ scope.row.name }} </span>
               </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
-                <span v-else> {{scope.row.admin_username}} </span>
+                <span v-else> {{ scope.row.admin_username }} </span>
               </div>
               <div v-if="items.field == 'contacts'">
                 <span v-if="scope.row.contacts == ''"> - </span>
-                <span v-else> {{scope.row.contacts}} </span>
+                <span v-else> {{ scope.row.contacts }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
                 <span v-if="scope.row.mobile == ''"> - </span>
-                <span v-else> {{scope.row.mobile}} </span>
+                <span v-else> {{ scope.row.mobile }} </span>
               </div>
               <div v-if="items.field == 'weixin'">
                 <span v-if="scope.row.weixin == ''"> - </span>
-                <span v-else> {{scope.row.weixin}} </span>
+                <span v-else> {{ scope.row.weixin }} </span>
+              </div>
+              <div v-if="items.field == 'collection_time'">
+                <span v-if="scope.row.collection_time == ''"> - </span>
+                <span v-else> {{ scope.row.collection_time }} </span>
               </div>
               <div v-if="items.field == 'trade'">
                 <span v-if="scope.row.trade == ''"> - </span>
-                <span v-else> {{scope.row.trade}} </span>
+                <span v-else> {{ scope.row.trade }} </span>
               </div>
               <div v-if="items.field == 'district'">
                 <span v-if="scope.row.district == ''"> - </span>
-                <span v-else> {{scope.row.district}} </span>
+                <span v-else> {{ scope.row.district }} </span>
               </div>
               <div v-if="items.field == 'address'">
                 <span v-if="scope.row.address == ''"> - </span>
-                <span v-else> {{scope.row.address}} </span>
+                <span v-else> {{ scope.row.address }} </span>
               </div>
               <div v-if="items.field == 'updatetime'">
                 <span v-if="scope.row.updatetime == ''"> - </span>
-                <span v-else> {{scope.row.updatetime}} </span>
+                <span v-else> {{ scope.row.updatetime }} </span>
               </div>
               <div v-if="items.field == 'follow_count'">
                 <span v-if="scope.row.follow_count == ''"> 0 </span>
-                <span v-else> {{scope.row.follow_count}} </span>
+                <span v-else> {{ scope.row.follow_count }} </span>
               </div>
               <div v-if="items.field == 'creat_username'">
                 <span v-if="scope.row.creat_username == ''"> - </span>
-                <span v-else> {{scope.row.creat_username}} </span>
+                <span v-else> {{ scope.row.creat_username }} </span>
               </div>
               <div v-if="items.field == 'remark'">
                 <span v-if="scope.row.remark == ''"> - </span>
-                <span v-else> {{scope.row.remark}} </span>
+                <span v-else> {{ scope.row.remark }} </span>
               </div>
             </template>
           </el-table-column>
@@ -386,7 +397,7 @@ export default {
   data(){
     return {
       key_type: '1',
-      loading: true,
+      loading: false,
       props: { multiple: false, checkStrictly: true },
       visiblepop: false,
       menu_icon: 'menu',
@@ -424,7 +435,9 @@ export default {
         disabled: true
       },
       export_field: [],
-      export_name: []
+      export_name: [],
+      sort_type: '',
+      sort: ''
     }
   },
   computed: {
@@ -473,6 +486,18 @@ export default {
     }
   },
   methods: {
+    sortTable({ column, order }){
+      if (order == 'ascending'){
+        this.sortType = 'asc'
+      } else if (order == 'descending'){
+        this.sortType = 'desc'
+      } else {
+        this.sortType = ''
+      }
+      this.sort_type = column.property
+      this.sort = this.sortType
+      this.clueList()
+    },
     classify(){
       classify({ 'type': 'citycategory,trade,companyScale' }).then(res => {
         this.regionScreenData = res.data.citycategory
@@ -490,6 +515,7 @@ export default {
       })
     },
     clueList(){
+      this.loading = true
       clueList({
         'page': this.currentPage,
         'pagesize': this.pagesize,
@@ -499,7 +525,9 @@ export default {
         'trade': this.industryScreen,
         'district': this.regionScreen,
         'creat_id': this.createdByScreen,
-        'admin_id': this.saleScreen
+        'admin_id': this.saleScreen,
+        'sort_type': this.sort_type,
+        'sort': this.sort
       }
       )
         .then(res => {
@@ -508,7 +536,7 @@ export default {
           this.currentPage = res.data.current_page
           this.loading = false
         }).catch(() => {
-
+          this.loading = false
         })
     },
     setFieldClose(){
@@ -554,6 +582,11 @@ export default {
         .then(res => {
           this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++){
+            if (this.fieldData[i].field == 'collection_time'){
+              this.fieldData[i].is_sortable = 'custom'
+            } else {
+              this.fieldData[i].is_sortable = false
+            }
             this.export_name.push(this.fieldData[i].name)
             this.export_field.push(this.fieldData[i].field)
           }
@@ -770,6 +803,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.sotrTime{
+  display: inline-block;
+  width: 85%;
+}
   ::v-deep .el-popover{
     position: fixed;
   }

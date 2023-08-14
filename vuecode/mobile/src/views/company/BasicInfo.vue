@@ -588,6 +588,8 @@ export default {
           if (basic.companyname === undefined || basic.companyname == '') {
             this.companynameDisabled = false
           }
+          // 修改完善企业资料注册资金单位回显不正确问题 zch 2022/9/16
+          this.currency_text = basic.currency ? '万美元' : '万人民币'
           this.basic = {
             logo: basic.logo,
             companyname: basic.companyname,

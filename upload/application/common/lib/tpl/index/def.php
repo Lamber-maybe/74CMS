@@ -39,7 +39,8 @@ class def
      * 公告列表
      */
     protected function getNoticeList($limit=10){
-        $list = model('Notice')->where('is_display',1)->order('sort_id desc,id desc')->limit($limit)->column('id,title,link_url');
+        // 【优化】公告 发布时间按显示时间出现 zch 2022.9.20
+        $list = model('Notice')->where('is_display',1)->where('addtime','lt',time())->order('sort_id desc,id desc')->limit($limit)->column('id,title,link_url');
         foreach ($list as $key => $value) {
             $list[$key]['link_url'] = $value['link_url']==''?url('index/notice/show',['id'=>$value['id']]):$value['link_url'];
             $list[$key]['target'] = $value['link_url']==''?'_self':'_blank';
@@ -541,6 +542,7 @@ class def
             ->alias('a')
             ->join(config('database.prefix').'article_category b','a.cid=b.id','LEFT')
             ->where('a.is_display', 1)
+            ->where('a.addtime','lt',time()) // 【优化】发布资讯 发布时间按显示时间出现 zch 2022.9.20
             ->limit(16)
             ->order('a.sort_id desc,a.id desc')
             ->column('a.id,a.title,a.link_url,a.addtime,a.cid,b.name as cname');

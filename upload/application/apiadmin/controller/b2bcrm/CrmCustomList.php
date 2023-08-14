@@ -6,13 +6,102 @@ use app\common\controller\Backend;
 
 class CrmCustomList extends Backend
 {
-    protected $customlist = '[{"name":"id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":70,"sort":0},{"name":"线索名称","field":"name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"所属销售","field":"admin_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系人","field":"contacts","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系电话","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系微信","field":"weixin","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"客户行业","field":"trade","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"跟进记录","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
+    private $customlist = '[{"name":"线索id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"sort":0},
+    {"name":"线索名称","field":"name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"所属销售","field":"admin_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
+    {"name":"联系人","field":"contacts","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
+    {"name":"联系电话","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"联系微信","field":"weixin","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"客户行业","field":"trade","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
+    {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 
-    protected $my_customlist = '[{"name":"id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":70,"sort":0},{"name":"线索名称","field":"name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系人","field":"contacts","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系电话","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"联系微信","field":"weixin","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"客户行业","field":"trade","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"跟进记录","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},{"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
+    private $my_customlist = '[{"name":"线索id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"sort":0},
+    {"name":"线索名称","field":"name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"联系人","field":"contacts","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
+    {"name":"联系电话","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"联系微信","field":"weixin","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"领取时间","field":"collection_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"客户行业","field":"trade","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
+    {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 
-    protected $companycustomlist = '[{"name":"企业id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"is_sortable":false,"is_popover":false},{"name":"企业名称","field":"companyname","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"客户等级","field":"life_cycle_txt","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"联系人","field":"contact","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"联系方式","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"在招职位","field":"jobs_num","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"收到简历","field":"job_apply_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"企业套餐","field":"setmeal_name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"刷新时间","field":"refreshtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"注册时间","field":"addtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"所属销售","field":"admin_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"认证状态","field":"audit","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"显示状态","field":"is_display","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"最后跟进","field":"last_visit_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"未跟进时长","field":"not_following_day","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false}]';
+    private $cu_international_waters = '[{"name":"线索id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"sort":0},
+    {"name":"线索名称","field":"name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"联系人","field":"contacts","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
+    {"name":"联系电话","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"联系微信","field":"weixin","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"sort":0},
+    {"name":"客户行业","field":"trade","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
+    {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
+    {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 
-    protected $my_companycustomlist = '[{"name":"企业id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"is_sortable":false,"is_popover":false},{"name":"企业名称","field":"companyname","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"客户等级","field":"life_cycle_txt","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"联系人","field":"contact","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"联系方式","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"在招职位","field":"jobs_num","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"收到简历","field":"job_apply_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"企业套餐","field":"setmeal_name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"刷新时间","field":"refreshtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"注册时间","field":"addtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"认证状态","field":"audit","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"显示状态","field":"is_display","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},{"name":"最后跟进","field":"last_visit_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":"custom","is_popover":false},{"name":"未跟进时长","field":"not_following_day","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false}]';
+    private $companycustomlist = '[{"name":"企业id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"is_sortable":false,"is_popover":false},
+    {"name":"企业名称","field":"companyname","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},
+    {"name":"绑定微信","field":"is_bind","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":false,"is_popover":false},
+    {"name":"客户等级","field":"life_cycle_txt","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"联系人","field":"contact","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"企业联系方式","field":"contact_mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"会员联系方式","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"在招职位","field":"jobs_num","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"收到简历","field":"job_apply_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"企业套餐","field":"setmeal_name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":false,"is_popover":false},
+    {"name":"套餐剩余(天)","field":"deadline","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":"custom","is_popover":false},
+    {"name":"刷新时间","field":"refreshtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"注册时间","field":"addtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"所属销售","field":"admin_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":false,"is_popover":false},
+    {"name":"认证状态","field":"audit","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"显示状态","field":"is_display","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"最后跟进","field":"last_visit_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"未跟进","field":"not_following_day","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false}]';
+
+    private $my_companycustomlist = '[{"name":"企业id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"is_sortable":false,"is_popover":false},
+    {"name":"企业名称","field":"companyname","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},
+    {"name":"绑定微信","field":"is_bind","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":false,"is_popover":false},
+    {"name":"客户等级","field":"life_cycle_txt","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"联系人","field":"contact","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"会员联系方式","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"企业联系方式","field":"contact_mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"在招职位","field":"jobs_num","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"收到简历","field":"job_apply_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"企业套餐","field":"setmeal_name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":false,"is_popover":false},
+    {"name":"套餐剩余(天)","field":"deadline","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":"custom","is_popover":false},
+    {"name":"刷新时间","field":"refreshtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"注册时间","field":"addtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"认证状态","field":"audit","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"显示状态","field":"is_display","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"领取时间","field":"collection_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"最后跟进","field":"last_visit_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"未跟进","field":"not_following_day","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false}]';
+
+    private $co_international_waters = '[{"name":"企业id","field":"id","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":90,"is_sortable":false,"is_popover":false},
+    {"name":"企业名称","field":"companyname","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"is_sortable":false,"is_popover":false},
+    {"name":"绑定微信","field":"is_bind","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":false,"is_popover":false},
+    {"name":"客户等级","field":"life_cycle_txt","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"联系人","field":"contact","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"会员联系方式","field":"mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"企业联系方式","field":"contact_mobile","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"在招职位","field":"jobs_num","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"收到简历","field":"job_apply_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"is_sortable":false,"is_popover":false},
+    {"name":"企业套餐","field":"setmeal_name","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":false,"is_popover":false},
+    {"name":"套餐剩余(天)","field":"deadline","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"is_sortable":"custom","is_popover":false},
+    {"name":"刷新时间","field":"refreshtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"注册时间","field":"addtime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"认证状态","field":"audit","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"显示状态","field":"is_display","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false},
+    {"name":"最后跟进","field":"last_visit_time","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"is_sortable":"custom","is_popover":false},
+    {"name":"未跟进","field":"not_following_day","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":130,"is_sortable":false,"is_popover":false}]';
 
 
     public function index()
@@ -33,20 +122,29 @@ class CrmCustomList extends Backend
                 {
                     if ($type == 1)
                     {
-                        if ($menu > 1)
-                        {
-                            $view = $this->my_customlist;
-                        }else{
-                            $view = $this->customlist;
+                        switch ($menu){
+                            case 1:
+                                $view = $this->customlist;
+                                break;
+                            case 2:
+                                $view = $this->cu_international_waters;
+                                break;
+                            case 3:
+                                $view = $this->my_customlist;
+                                break;
                         }
                     }else
                     {
-                        if ($menu > 1)
-                        {
-                            $view = $this->my_companycustomlist;
-                        }else
-                        {
-                            $view = $this->companycustomlist;
+                        switch ($menu){
+                            case 1:
+                                $view = $this->companycustomlist;
+                                break;
+                            case 2:
+                                $view = $this->co_international_waters;
+                                break;
+                            case 3:
+                                $view = $this->my_companycustomlist;
+                                break;
                         }
                     }
                 }

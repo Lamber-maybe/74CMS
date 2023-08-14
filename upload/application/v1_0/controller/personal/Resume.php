@@ -859,6 +859,20 @@ class Resume extends \app\v1_0\controller\common\Base
             if ($basic_info === null) {
                 $this->ajaxReturn(500, '请先填写基本资料');
             }
+
+            /**
+             * 【bug】简历求职意向最多应设置三条
+             * zch 2022.9.20
+             * 【新增求职意向条数验证】
+             */
+            $intention_count = model('ResumeIntention')
+                ->where(['uid'=>$this->userinfo->uid,'rid'=>$basic_info->id])
+                ->count();
+
+            if ($intention_count >= 3)
+            {
+                $this->ajaxReturn(500, '简历求职意向最多应设置三条');
+            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeIntention')
                 ->validate(true)

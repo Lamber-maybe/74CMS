@@ -301,7 +301,24 @@ class ShortVideo extends \app\v1_0\controller\common\Base
         }
     }
 
-
+    /**
+     * 【优化】视频招聘进入传完才提示套餐不支持
+     *  zch 2022.9.21
+     * 【新增方法】
+     */
+    public function isAllowPublishing()
+    {
+        $setMealId = model('Company')->where(['uid'=>$this->userinfo->uid])->value('setmeal_id');
+        $setMeals = config('global_config.shortvideo_enable_setmeal');
+        $setMeals = array_map('intval', $setMeals);
+        if(empty($setMeals)){
+            $this->ajaxReturn(500, '当前禁止所有企业上传视频');
+        }
+        if(!in_array(intval($setMealId), $setMeals)){
+            $this->ajaxReturn(500, '您的套餐暂不支持使用视频招聘功能，建议您立即升级套餐');
+        }
+        $this->ajaxReturn(200, 'ok');
+    }
 
 
 }

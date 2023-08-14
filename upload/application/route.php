@@ -16,7 +16,7 @@ Route::get('member','index/MemberCenter/index');
 
 Route::rule('/$','index/index/index','GET',['ext'=>'']);
 Route::rule('job/:id$','index/job/show');
-Route::rule('resume/:id$','index/resume/show');
+Route::rule('resume/:id/[:company_uid]/[:job_apply_id]$','index/resume/show');
 Route::rule('company/:id$','index/company/show');
 Route::rule('article/:id$','index/article/show');
 Route::rule('explain/:id$','index/explain/show');

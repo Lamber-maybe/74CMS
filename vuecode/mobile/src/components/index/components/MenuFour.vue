@@ -27,8 +27,9 @@
           :key="index"
         >
           <div class="item item_1" @click="jumpTo(item)">
+            <!--              【bug】图标修改  zch 2022.9.20-->
             <img
-              :src="item.icon == '' ? require('../../../assets/images/index/ap2/' + item.alias + '.png') : item.icon
+              :src="item.icon == '' ? require('../../../assets/images/index/ap4/' + item.alias + '.png') : item.icon
               "
               alt=""
             />

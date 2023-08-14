@@ -1,5 +1,5 @@
 <template>
-  <div class="followup_wrapper">
+  <div class="followup_wrapper" v-loading="loading">
     <el-row>
       <el-col class="write" :span="12">
         <div class="info">
@@ -143,6 +143,7 @@ export default {
   props: ['uid', 'clue_id', 'contacts', 'mobile'],
   data () {
     return {
+      loading: false,
       disabled_state: false,
       listParams: {
         page: 1,
@@ -288,6 +289,7 @@ export default {
       } else {
         data = { 'clue_id': this.clue_id, 'page': this.listParams.page, 'pagesize': this.listParams.page_size }
       }
+      this.loading = true
       followUpList(data)
         .then(res => {
           if (res.data.items.length > 0){
@@ -299,8 +301,9 @@ export default {
             this.listParams.total = res.data.pages.record_num
             this.listParams.page = res.data.pages.now_page
           }
+          this.loading = false
         }).catch(() => {
-
+          this.loading = false
         })
     },
     conserveVisitLog(formName){

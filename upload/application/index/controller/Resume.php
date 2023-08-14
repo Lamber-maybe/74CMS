@@ -175,7 +175,7 @@ class Resume extends \app\index\controller\Base
             $params['current_page'] = $current_page;
             $params['pagesize'] = $pagesize;
         }
-        
+
         $instance = new \app\common\lib\ResumeSearchEngine($params);
 
         $searchResult = $instance->run();
@@ -206,14 +206,14 @@ class Resume extends \app\index\controller\Base
             }else if($district_level==3){
                 $params = ['d1'=>$district1,'d2'=>$district2,'d3'=>$key];
             }
-            
+
             $arr['id'] = $key;
             $arr['url'] = P($params);
             $arr['text'] = $value;
             $options_district[] = $arr;
         }
 
-        
+
         if($category2>0){
             $category_level = 3;
             $category_category = model('CategoryJob')->getCache($category2);
@@ -233,7 +233,7 @@ class Resume extends \app\index\controller\Base
             }else if($category_level==3){
                 $params = ['c1'=>$category1,'c2'=>$category2,'c3'=>$key];
             }
-            
+
             $arr['id'] = $key;
             $arr['url'] = P($params);
             $arr['text'] = $value;
@@ -248,8 +248,8 @@ class Resume extends \app\index\controller\Base
         $options_nature = model('Resume')->map_nature;
         $options_trade = $category_all['QS_trade'];
         $options_major = model('CategoryMajor')->getCache('');
-        
-        
+
+
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
         $seoData['keyword'] = $keyword;
@@ -272,7 +272,7 @@ class Resume extends \app\index\controller\Base
             $seoData['jobcategory'] = '';
         }
         $this->initPageSeo('resumelist',$seoData);
-        
+
         $this->assign('subsite_district_level',$subsite_district_level);
         $this->assign('selectedTagArr',$selectedTagArr);
         $this->assign('currentPage',$current_page);
@@ -368,6 +368,42 @@ class Resume extends \app\index\controller\Base
         $seoData['jobcategory'] = $return['base_info']['intention_jobs_text'];
         $seoData['specialty'] = $return['base_info']['specialty'];
 
+        /**
+         * 【BUG】
+         * 微信通知查看简历，会员中心显示未查看
+         * yx - 2022.09.22
+         */
+        $company_uid = request()->route('company_uid/d', 0, 'intval');
+        $job_apply_id = request()->route('job_apply_id/d', 0, 'intval');
+        if (!empty($company_uid) && !empty($job_apply_id)) {
+            $JobApplyInfo = model('JobApply')
+                ->where('id', $job_apply_id)
+                ->where('company_uid', $company_uid)
+                ->where('resume_id', $id)
+                ->where('is_look', 0)
+                ->find();
+            if (!empty($JobApplyInfo)) {
+                model('JobApply')
+                    ->where('id', $job_apply_id)
+                    ->setField('is_look', 1);
+                model('Resume')->addViewLog(
+                    $return['base_info']['id'],
+                    $company_uid,
+                    $return['base_info']['uid']
+                );
+                $ip = get_client_ip();
+                model('MemberActionLog')->save([
+                    'utype' => 1,
+                    'uid' => $company_uid,
+                    'content' => '收到的简历设为已查看【简历id：' . $id . '】',
+                    'addtime' => time(),
+                    'ip_addr' => get_client_ipaddress($ip),
+                    'ip' => $ip . ':' . get_client_port(),
+                    'platform' => 'web',
+                    'is_login' => 0
+                ]);
+            }
+        }
 
         $this->initPageSeo('resumeshow',$seoData);
 
@@ -517,9 +553,9 @@ class Resume extends \app\index\controller\Base
         }else{
             $return['base_info']['intention_district_text'] = '';
         }
-        
+
         $return['intention_list'] = $intention_list;
-        
+
         //工作经历
         $work_list = model('ResumeWork')
             ->field('id,rid,uid', true)
@@ -595,7 +631,7 @@ class Resume extends \app\index\controller\Base
             $certificate_list = [];
         }
         $return['certificate_list'] = $certificate_list;
-        
+
         $bind_data = model('MemberBind')
             ->where('uid',$basic['uid'])
             ->where('type','weixin')
@@ -608,7 +644,7 @@ class Resume extends \app\index\controller\Base
         }
         return $return;
     }
-    
+
     protected function get_datalist($list)
     {
         $result_data_list = [];

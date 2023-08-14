@@ -861,5 +861,6 @@ export default {
   recycleBinDel: 'b2bcrm/recycle_bin/del',
   toBeFollowedup: 'b2bcrm/follow_up/toBeFollowedup',
   companyCrmAdd: 'b2bcrm/Company/add',
-  crmClueRelease: 'b2bcrm/Crm_Clue_Release/index'
+  crmClueRelease: 'b2bcrm/Crm_Clue_Release/index',
+  isNameRepeat: 'b2bcrm/Clue/isNameRepeat'
 }

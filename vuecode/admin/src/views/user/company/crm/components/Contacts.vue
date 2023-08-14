@@ -1,5 +1,5 @@
 <template>
-  <div class="popup_contacts">
+  <div class="popup_contacts" v-loading="loading">
     <el-row :gutter="20">
       <el-col v-for="(item, index) in linkmanList" :key="index" :span="6">
         <div class="contacts_item">
@@ -135,6 +135,7 @@ export default {
       dialogTitle: '',
       isDialogBTn: false,
       linkmanList: [],
+      loading:false,
       submitLoading: false,
       // 请求参数
       parmas: {
@@ -151,18 +152,18 @@ export default {
       }
     }
   },
-  watch: {
-    uid(value){
-      this.companyContactList(value)
-    }
+  created() {
+    this.companyContactList(this.uid)
   },
   methods: {
     companyContactList(value){
+      this.loading = true
       companyContactList({ 'uid': value })
         .then(res => {
           this.linkmanList = res.data
+          this.loading = false
         }).catch(() => {
-
+          this.loading = true
         })
     },
     resetLinkman(){

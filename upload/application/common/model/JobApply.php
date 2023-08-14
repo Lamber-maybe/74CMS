@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 class JobApply extends \app\common\model\BaseModel
@@ -32,6 +33,7 @@ class JobApply extends \app\common\model\BaseModel
         'is_look' => 'integer',
         'handle_status' => 'integer'
     ];
+
     public function jobApplyAdd($data, $personal_uid)
     {
         if (!isset($data['jobid']) || !$data['jobid']) {
@@ -55,11 +57,11 @@ class JobApply extends \app\common\model\BaseModel
             $this->error = '没有找到职位信息';
             return false;
         }
-        if($job_info['audit']!=1){
+        if ($job_info['audit'] != 1) {
             $this->error = '该职位还没有审核通过，无法继续此操作';
             return false;
         }
-        if($job_info['is_display']!= 1){
+        if ($job_info['is_display'] != 1) {
             $this->error = '该职位已停止招聘，无法继续此操作';
             return false;
         }
@@ -148,6 +150,7 @@ class JobApply extends \app\common\model\BaseModel
         $input_data['source'] = 0;
         $input_data['platform'] = config('platform');
         $result = $this->save($input_data);
+        $job_apply_id = $this->getLastInsID();
         if (false !== $result) {
             model('Task')->doTask($personal_uid, 2, 'apply_job');
             //通知
@@ -167,12 +170,12 @@ class JobApply extends \app\common\model\BaseModel
                 1,
                 'job_apply',
                 [
-                    $resume_info['fullname'].'刚刚投递了您的职位。',
+                    $resume_info['fullname'] . '刚刚投递了您的职位。',
                     $resume_info['fullname'],
                     $job_info['jobname'],
                     '点击立即查看简历详情'
                 ],
-                'resume/'.$resume_info['id']
+                'resume/' . $resume_info['id'] . '/' . $company_info['uid'] . '/' . $job_apply_id
             );
         }
         return $result;

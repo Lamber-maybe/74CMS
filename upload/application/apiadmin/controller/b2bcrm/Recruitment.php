@@ -118,7 +118,8 @@ class Recruitment extends Backend
                 $arr['intention_district'] = '';
             }
             $arr['jobname'] = $value['jobname'];
-            $arr['addtime'] = $value['addtime'];
+            // 【bug】CRM客户详情 投递时间显示为时间戳问题修改  zch 2022.9.20
+            $arr['addtime'] = !empty($value['addtime']) ? date('Y-m-d H:i:s',$value['addtime']) : '';
             $arr['is_look'] = $value['is_look'];
             $arr['handle_status'] = $value['handle_status'];
             $arr['complete_percent'] = isset($complete_list[$value['resume_id']])

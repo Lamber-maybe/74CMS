@@ -9,10 +9,10 @@
               <div class="grade">
                 <div class="grade_box">
                   <div v-for="item in regionData" v-if="item.id != 6 && item.id != 7" :class="form.life_cycle_id == item.id?'grade_item action':'grade_item'" @click="gradeBtn(item.id)">{{ item.name }}</div>
-                  <div class="grade_select">
-                    <el-select v-model="deal" placeholder="完成" @change="gradeSelect">
+                  <div :class="form.life_cycle_id == 6 || form.life_cycle_id == 7 ? 'grade_select  action' : 'grade_select'">
+                    <el-select v-model="deal" style="border-color:red" class="action" placeholder="完成" @change="gradeSelect">
                       <el-option label="流失客户" value="6" />
-                      <el-option label="成交客户" value="7" />
+                      <el-option class="action" label="成交客户" value="7" />
                     </el-select>
                   </div>
                 </div>
@@ -23,8 +23,10 @@
             <!--            </div>-->
           </div>
           <div class="item">
-            <div class="info">
-              <span class="label">客户标签：</span>
+            <div class="info" style="padding: 15px 0px 15px 6px; ">
+              <span class="label" style="width: 108px;">客户标签：</span>
+            </div>
+            <div class="text overflow">
               <span v-if="details.labels != ''">
                 <span v-for="item in details.lables_list" :key="item.id" class="tag">
                   {{ item.name }}
@@ -48,7 +50,7 @@
           </div>
           <div class="item">
             <div class="info">
-              <span class="label">会员手机号：</span>
+              <span class="label">会员手机：</span>
               <span class="text">{{ details.mobile ? details.mobile : '-' }}</span>
               <span class="smalltip">
                 <i class="el-icon-info" />
@@ -61,7 +63,7 @@
           </div>
           <div class="item">
             <div class="info">
-              <span class="label">企业手机号：</span>
+              <span class="label">企业手机：</span>
               <span class="text">{{ details.company_mobile ? details.company_mobile : '-' }}</span>
               <span class="smalltip">
                 <i class="el-icon-info" />
@@ -98,8 +100,8 @@
             </div>
           </div>
           <div class="item">
-            <div class="info" style="padding: 15px 0;">
-              <span class="label" style="width: 112px;">备注信息：</span>
+            <div class="info" style="padding: 15px 0px 15px 6px; ">
+              <span class="label" style="width: 108px;">备注信息：</span>
             </div>
             <div class="text overflow">
               {{ details.remark ? details.remark : '-' }}
@@ -468,34 +470,28 @@ export default {
       return this.$store.state.config
     }
   },
-  watch: {
-    details(value){
-      this.details_list = value
-      this.form.life_cycle_id = value.life_cycle_id
-      if (this.form.life_cycle_id >= 6){
-        this.deal = this.form.life_cycle_id.toString()
-      } else {
-        this.deal = ''
-      }
-      this.form.mobile = value.mobile
-      if (value.labels != ''){
-        this.form.labels = value.labels.split(',')
-        if (this.form.labels.length > 0){
-          for (var i = 0; i <= this.form.labels.length - 1; i++){
-            this.form.labels[i] = parseInt(this.form.labels[i])
-          }
+  created() {
+    this.details_list = this.details
+    this.form.life_cycle_id = this.details.life_cycle_id
+    if (this.form.life_cycle_id >= 6){
+      this.deal = this.form.life_cycle_id.toString()
+    } else {
+      this.deal = ''
+    }
+    this.form.mobile = this.details.mobile
+    if (this.details.labels != ''){
+      this.form.labels = this.details.labels.split(',')
+      if (this.form.labels.length > 0){
+        for (var i = 0; i <= this.form.labels.length - 1; i++){
+          this.form.labels[i] = parseInt(this.form.labels[i])
         }
       }
-      this.form.is_display = value.is_display.toString()
-      this.form.email = value.email
-      this.form.remark = value.remark
-      this.form.company_mobile = value.company_mobile
-    },
-    uid(value){
-      this.forwardTableDataList(value)
     }
-  },
-  created() {
+    this.form.is_display = this.details.is_display.toString()
+    this.form.email = this.details.email
+    this.form.remark = this.details.remark
+    this.form.company_mobile = this.details.company_mobile
+    this.forwardTableDataList(this.uid)
     this.getAllCrmTags()
     this.lifeCycle()
     this.classify()
@@ -791,7 +787,7 @@ export default {
     width: 100px;
     ::v-deep .el-input__inner{
       height: 32px;
-      line-height: 32px;
+      line-height: 33px;
       font-size: 12px;
       border: 1px solid #ededed;
     }
@@ -801,6 +797,10 @@ export default {
     ::v-deep .el-input__icon {
       height: 33px;
       line-height: 32px;
+    }
+    &.action{
+      border-color: #338aff;
+      color: #338aff;
     }
   }
   .grade_item{
@@ -859,6 +859,7 @@ export default {
 .text_width{
     padding: 0;
 }
+
 </style>
 <style lang="scss" scoped>
 .smalltip i {
@@ -939,6 +940,20 @@ export default {
     padding: 0 6px;
     border-bottom: 1px dotted #ebeef5;
   }
+  .tag{
+    margin-top: 5px;
+    background: #ecf5ff;
+    border-color: #b3d8ff;
+    display: inline-block;
+    padding: 0 10px;
+    height: 24px;
+    border-radius: 2px;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+    font-weight: 400;
+    margin-right: 10px;
+  }
   .clientInfo_box{
     padding:  0 30px;
   }
@@ -964,19 +979,6 @@ export default {
       display: flex;
       line-height: 20px;
       padding: 15px 6px;
-      .tag{
-        background: #ecf5ff;
-        border-color: #b3d8ff;
-        display: inline-block;
-        padding: 0 10px;
-        height: 24px;
-        border-radius: 2px;
-        text-align: center;
-        line-height: 24px;
-        font-size: 12px;
-        font-weight: 400;
-        margin-right: 10px;
-      }
       .auth{
         font-size: 14px;
         font-weight: 500;

@@ -41,7 +41,8 @@
       />
     </van-popup>
     <div style="margin: 16px 16px 0;">
-      <van-button round block type="info" @click="handleSubmit">
+<!--      修改语言能力重复保存  zch 2022/9/16-->
+      <van-button round block type="info" @click="handleSubmit" :disabled="issubmit">
         保存
       </van-button>
     </div>
@@ -66,7 +67,8 @@ export default {
       language: '',
       languageName: '',
       level: '',
-      levelName: ''
+      levelName: '',
+      issubmit: false // 修改语言能力重复保存  zch 2022/9/16
     }
   },
   created () {
@@ -132,6 +134,8 @@ export default {
         this.$notify('请选择熟悉程度')
         return false
       }
+      // 修改语言能力重复保存  zch 2022/9/16
+      this.issubmit = true
       http
         .post(api.resume_language_save, {
           id: this.id,
@@ -143,10 +147,14 @@ export default {
             this.$notify({ type: 'success', message: res.message })
             this.$router.push({ path: '/member/personal/resume' })
           } else {
+            // 修改语言能力重复保存  zch 2022/9/16
+            this.issubmit = false
             this.$notify(res.message)
           }
         })
         .catch(err => {
+          // 修改语言能力重复保存  zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
     },

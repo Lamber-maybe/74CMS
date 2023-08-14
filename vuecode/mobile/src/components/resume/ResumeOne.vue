@@ -746,11 +746,14 @@ export default {
       companyId: '',
       selectJobObj: {},
       // 绑定微信二维码
-      scanQrcodeImg: ''
+      scanQrcodeImg: '',
+      company_uid: 0,
+      job_apply_id: 0
     }
   },
   created () {
     this.query_id = this.$route.params.id
+    this.cuid = this.$route.params.cuid
     this.is_company_login =
       !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
     // 请求数据
@@ -782,7 +785,9 @@ export default {
     },
     async fetchData (next_method = null) {
       const params = {
-        id: this.query_id
+        id: this.query_id,
+        company_uid: this.company_uid,
+        job_apply_id: this.job_apply_id
       }
       let res = await http.get(api.resumeshow, params)
       const {

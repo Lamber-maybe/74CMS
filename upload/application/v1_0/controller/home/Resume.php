@@ -661,13 +661,42 @@ class Resume extends \app\v1_0\controller\common\Base
             $info['has_fav'] = 0;
         }
         $info['base_info']['im_userid'] = '';
-        model('Resume')->addViewLog(
-            $info['base_info']['id'],
-            $this->userinfo !== null && $this->userinfo->utype == 1
-                ? $this->userinfo->uid
-                : 0,
-            $info['base_info']['uid']
-        );
+
+        /**
+         * 【BUG】
+         * 微信通知查看简历，会员中心显示未查看
+         * yx - 2022.09.22
+         */
+        $company_uid = input('get.company_uid/d', 0, 'intval');
+        $job_apply_id = input('get.job_apply_id/d', 0, 'intval');
+        if (!empty($company_uid) && !empty($job_apply_id)) {
+            $JobApplyInfo = model('JobApply')
+                ->where('id', $job_apply_id)
+                ->where('company_uid', $company_uid)
+                ->where('resume_id', $id)
+                ->where('is_look', 0)
+                ->find();
+            if (!empty($JobApplyInfo)) {
+                model('JobApply')
+                    ->where('id', $job_apply_id)
+                    ->setField('is_look', 1);
+                model('Resume')->addViewLog(
+                    $info['base_info']['id'],
+                    $company_uid,
+                    $info['base_info']['uid']
+                );
+                $this->writeMemberActionLog($company_uid, '收到的简历设为已查看【简历id：' . $id . '】');
+            }
+        }else{
+            model('Resume')->addViewLog(
+                $info['base_info']['id'],
+                $this->userinfo !== null && $this->userinfo->utype == 1
+                    ? $this->userinfo->uid
+                    : 0,
+                $info['base_info']['uid']
+            );
+        }
+
         unset($info['base_info']['uid']);
         $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['base_info']['id'];
         $info['phone_protect_open'] =  false;

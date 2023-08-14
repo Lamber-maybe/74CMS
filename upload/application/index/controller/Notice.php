@@ -11,7 +11,19 @@ class Notice extends \app\index\controller\Base
         }
         $current_page = request()->get('page/d',1,'intval');
         $pagesize = 10;
-        $list = model('Notice')->order('sort_id desc,id desc')->where('is_display',1)->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
+        /**
+         * 【优化】公告 发布时间按显示时间出现
+         * zch 2022.9.20
+         * 【新增】
+         * $where['addtime'] = ['lt',time()];
+         * ->where($where)
+         */
+        $where['addtime'] = ['lt',time()];
+        $list = model('Notice')
+            ->order('sort_id desc,id desc')
+            ->where('is_display',1)
+            ->where($where)
+            ->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
         
         $pagerHtml = $list->render();
         

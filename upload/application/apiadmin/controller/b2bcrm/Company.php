@@ -27,8 +27,11 @@ class Company extends Backend
         $setmeal_id = input('get.setmeal_id/d', 0, 'intval');// 企业套餐
         $is_display = input('get.is_display/s', '', 'trim');// 显示状态 0-不显示；1-显示
         $sort = input('get.sort/s', 'DESC', 'trim,strtoupper'); // 排序方式 asc dec
-        $sort_type = input('get.sort_type/s', 'id', 'trim');
+        $sort_type = input('get.sort_type/s', '', 'trim');
         $customer_type = input('get.list_type/d', 0, 'intval'); // 客户类型 0-全部企业 1-企业公海 2-我的客户
+        $setmeal_deadline = input('get.setmeal_deadline',0,'intval');// 套餐是否过期 1-未过期 2-已过期
+        $weixin = input('get.weixin/d',0,'intval');// 微信绑定 1-已绑定 2-未绑定
+
 
         // 排序规则【ASC|DESC】
         if (!in_array($sort, ['ASC', 'DESC'])) {
@@ -48,10 +51,18 @@ class Company extends Backend
                 // 添加时间
                 $order = 'c.addtime ' . $sort;
                 break;
-            case 'id':
+            case 'collection_time':
+                // 领取时间
+                $order = 'c.collection_time ' .$sort;
+                break;
             default:
-                // ID
-                $order = 'c.id ' . $sort;
+                if ($customer_type === 2)
+                {
+                    $order = 'c.collection_time DESC,c.id DESC';
+                }else
+                {
+                    $order = 'c.id ' . $sort;
+                }
                 break;
         }
 
@@ -133,6 +144,16 @@ class Company extends Backend
             $where['c.admin_id'] = $admin_id;
         }
 
+        // 查询条件 套餐剩余时间【未过期、已过期】
+        if ($setmeal_deadline > 0)
+        {
+            if ($setmeal_deadline == 1) // 未过期
+            {
+                $where['m.deadline'] = [['gt',time()],['lt',strtotime('+'.config('global_config.meal_min_remind').'day')],'and'];
+            }else{ // 已过期
+                $where['m.deadline'] = [['lt',time()],['gt',0],'and'];
+            }
+        }
         // 数据总条数
         $total = model('Company')
             ->alias('c')
@@ -150,18 +171,56 @@ class Company extends Backend
                         ->where('me.mobile', 'like', "%{$keyword}%");
                     $where['me.mobile'] = ['like', '%' . $keyword . '%'];
                     break;
+                case 3: // 企业手机号
+                    $total = $total->join('company_contact contact', 'c.id=contact.comid', 'LEFT')
+                        ->where('contact.mobile', 'like', "%{$keyword}%");
+                    $where['contact.mobile'] = ['like', '%' . $keyword . '%'];
+                    break;
                 default:
                     break;
+            }
+        }
+
+        // 微信绑定搜索
+        if ($weixin > 0)
+        {
+            if ($weixin == 1) // 已绑定
+            {
+                $total = $total->join('member_bind bind',"bind.uid = c.uid and bind.type='weixin'",'LEFT')
+                    ->where('bind.id','not null');
+                $where['bind.id'] = ['not null',''];
+            }else // 未绑定
+            {
+                $total = $total->join('member_bind bind',"bind.uid = c.uid and bind.type='weixin'",'LEFT')
+                    ->where('bind.id','null');
+                $where['bind.id'] = ['null',''];
             }
         }
 
         // 认证状态 - 【0:待认证;1:已认证;2:未通过;3:未认证;】
         if (in_array($audit, ['0', '1', '2', '3'])) {
             $total = $total->join('company_auth a', 'a.uid=c.uid', 'LEFT');
-            if ('3' === $audit) {
-                $total = $total->where('c.audit', 0)->where('a.id', 'null');
-            } else {
-                $total = $total->where('c.audit', intval($audit))->where('a.id', 'not null');
+            /**
+             * 【bug】后台企业筛选已认证，标为已认证的不出来
+             * 企业未上传资料标记为认证通过 筛选认证通过的企业出不来
+             * 【旧】
+             *  if ('3' === $audit) {
+             *  $total = $total->where('c.audit', 0)->where('a.id', 'null');
+             *  } else {
+             *  $total = $total->where('c.audit', intval($audit))->where('a.id', 'not null');
+             */
+            switch ($audit)
+            {
+                case 0:
+                    $total = $total->where('c.audit', intval($audit))->where('a.id', 'not null');
+                    break;
+                case 1:
+                case 2:
+                $total = $total->where('c.audit', intval($audit));
+                break;
+                case 3:
+                    $total = $total->where('c.audit', 0)->where('a.id', 'null');
+                    break;
             }
         }
 
@@ -206,6 +265,7 @@ class Company extends Backend
             ->join('company_auth a', 'a.uid=c.uid', 'LEFT')
             ->join('job_search_rtime j', 'j.uid=c.uid', 'LEFT')
             ->join('company_contact contact', 'c.id=contact.comid', 'LEFT')
+            ->join('member_bind bind',"bind.uid = c.uid and bind.type='weixin'",'LEFT')
             ->field('c.id,
             c.uid,
             c.companyname,
@@ -221,15 +281,35 @@ class Company extends Backend
             c.is_display,
             c.last_visit_time,
             contact.mobile as contact_mobile,
+            m.deadline,
+            c.collection_time,
+            ifnull(bind.id,0) as is_bind,
 	    a.id as auth_id')
             ->group('c.id');
 
         // 认证状态 - 【0:待认证;1:已认证;2:未通过;3:未认证;】
         if (in_array($audit, ['0', '1', '2', '3'])) {
-            if ('3' === $audit) {
-                $list = $list->where('c.audit', 0)->where('a.id', 'null');
-            } else {
-                $list = $list->where('c.audit', intval($audit))->where('a.id', 'not null');
+            /**
+             * 【bug】后台企业筛选已认证，标为已认证的不出来
+             * 企业未上传资料标记为认证通过 筛选认证通过的企业出不来
+             * 【旧】
+             *  if ('3' === $audit) {
+             *  $list = $list->where('c.audit', 0)->where('a.id', 'null');
+             *  } else {
+             *  $list = $list->where('c.audit', intval($audit))->where('a.id', 'not null');
+             */
+            switch ($audit)
+            {
+                case 0:
+                    $list = $list->where('c.audit', intval($audit))->where('a.id', 'not null');
+                    break;
+                case 1:
+                case 2:
+                    $list = $list->where('c.audit', intval($audit));
+                    break;
+                case 3:
+                    $list = $list->where('c.audit', 0)->where('a.id', 'null');
+                    break;
             }
         }
 
@@ -311,15 +391,19 @@ class Company extends Backend
                 case 0:
                     if (empty($comInfo['auth_id'])) {
                         $list[$comId]['audit'] = '未认证';
+                        $list[$comId]['aduit_id'] = 1;
                     } else {
                         $list[$comId]['audit'] = '待审核';
+                        $list[$comId]['aduit_id'] = 2;
                     }
                     break;
                 case 1:
                     $list[$comId]['audit'] = '已认证';
+                    $list[$comId]['aduit_id'] = 3;
                     break;
                 case 2:
                     $list[$comId]['audit'] = '未通过';
+                    $list[$comId]['aduit_id'] = 4;
                     break;
             }
 
@@ -327,9 +411,11 @@ class Company extends Backend
             switch ($comInfo['is_display']) {
                 case 0:
                     $list[$comId]['is_display'] = '不显示';
+                    $list[$comId]['display'] = 0;
                     break;
                 case 1:
                     $list[$comId]['is_display'] = '显示中';
+                    $list[$comId]['display'] = 1;
                     break;
             }
 
@@ -344,6 +430,47 @@ class Company extends Backend
                 $list[$comId]['last_visit_time'] = '';
                 // 未跟进时长（天）
                 $list[$comId]['not_following_day'] = -1;
+            }
+
+            // 套餐过期时间
+            $list[$comId]['is_expire'] = 1; // 是否过期 0-无限期 1-已过期 2-即将到期 3-正常
+
+            if ($comInfo['deadline'] == 0)
+            {
+                $list[$comId]['deadline'] = '';
+                $list[$comId]['expire'] = 0;
+            }else{
+                if ($comInfo['deadline'] < time())
+                {
+                    $list[$comId]['deadline'] = '0天';
+                    $list[$comId]['expire'] = 1;
+                }else
+                {
+                    $surplus_seconds = $comInfo['deadline'] - time();
+                    $surplus_days = ceil($surplus_seconds/3600/24);
+                    $list[$comId]['deadline'] = $surplus_days.'天';
+                    if($surplus_days<config('global_config.meal_min_remind')){
+                        $list[$comId]['expire'] = 2;
+                    }else{
+                        $list[$comId]['expire'] = 3;
+                    }
+                }
+            }
+
+
+            // 领取时间
+            $list[$comId]['collection_time'] = !empty($comInfo['collection_time']) ? date('Y-m-d H:i:s',$comInfo['collection_time']) : '';
+
+            // 企业联系方式
+            $list[$comId]['contact_mobile'] = $comInfo['contact_mobile'];
+
+            // 微信绑定
+            if ($comInfo['is_bind'] == 0)
+            {
+                $list[$comId]['is_bind'] = '未绑定';
+            }else
+            {
+                $list[$comId]['is_bind'] = '已绑定';
             }
         }
 
@@ -528,7 +655,7 @@ class Company extends Backend
             if ($receive === false) {
                 $this->ajaxReturn(500, '领取失败', []);
             }
-            model('Company')->isUpdate('true')->save(['admin_id' => $this->admininfo->id], ['uid' => ['in', $uid]]);
+            model('Company')->isUpdate('true')->save(['admin_id' => $this->admininfo->id,'collection_time'=>time()], ['uid' => ['in', $uid]]);
             $this->ajaxReturn(200, '领取成功', []);
         } catch (\Exception $e) {
             Db::rollback();
@@ -627,16 +754,24 @@ class Company extends Backend
             ->where(['type' => 'weixin', 'uid' => $data['uid']])
             ->find();
         $data['weixin_bind'] = empty($weixin_bind) ? 0 : 1;
-        if ($data['deadline'] > 0 && ($data['deadline'] - time()) < 0 && $overtime_setmeal_resource == 0) {
-            $data['download_resume_point'] = 0; // 套餐积分
-        }
+        /**
+         * 【优化】套餐到期时间判断逻辑优化，新增到期时间，不能写剩余天数
+         *  zch 2022.9.21
+         * 【新增】
+         *  $data['deadline'] = !empty($data['deadline']) ? date('Y-m-d',$data['deadline']) : '';
+         */
         if ($data['deadline'] > 0) {
+            if (($data['deadline'] - time()) < 0 && $overtime_setmeal_resource == 0){
+                $data['download_resume_point'] = 0; // 套餐积分
+            }
             $data['setmeal_deadline_day'] = intval(($data['deadline'] - time()) / 86400) . '天';
             if ($data['setmeal_deadline_day'] < 0) {
                 $data['setmeal_deadline_day'] = '已过期';
             }
+            $data['deadline'] =  date('Y-m-d',$data['deadline']);
         } else {
             $data['setmeal_deadline_day'] = '无限期';
+            $data['deadline'] =  '无限期';
         }
         if (empty($data)) {
             $this->ajaxReturn(500, '企业id错误');
@@ -727,12 +862,12 @@ class Company extends Backend
             }
             $input_data['last_visit_admin'] = $clue['last_visit_admin'];
             $input_data['last_visit_time'] = $clue['last_visit_time'];
-            $input_data['admin_id'] = $this->admininfo->id;
         }
 
         $sale = input('post.member.sale/d', 0, '');
         if ($sale > 0) {
             $input_data['admin_id'] = $this->admininfo->id;
+            $input_data['collection_time'] = time(); // 添加领取时间
         }
         if (
             false === model('Company')->backendAdd($input_data)

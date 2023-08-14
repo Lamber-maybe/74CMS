@@ -414,3 +414,10 @@ export function crmClueRelease(params) {
     params
   })
 }
+export function isNameRepeat(data) {
+  return request({
+    url: apiArr.isNameRepeat,
+    method: 'post',
+    data
+  })
+}

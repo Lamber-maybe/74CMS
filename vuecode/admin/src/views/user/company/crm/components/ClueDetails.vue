@@ -65,24 +65,51 @@
 </template>
 
 <script>
-import { classify, clueAdd, clueDetails, clueEdit } from '@/api/company_crm'
+import { classify, clueAdd, clueDetails, clueEdit, isNameRepeat } from '@/api/company_crm'
+import { validMobile } from '@/utils/validate'
 
 export default {
   name: 'ClueDetails',
   props: ['clue_id', 'details'],
   data(){
+    var validateContactMobile = (rule, value, callback) => {
+      if (!validMobile(value)) {
+        callback(new Error('请输入正确的手机号'))
+      } else {
+        callback()
+      }
+    }
+    var validatename = (rule, value, callback) => {
+      const param = {
+        name: value,
+        id: this.clue_id
+      }
+      isNameRepeat(param).then(response => {
+        if (response.data.sys_configs == 0){
+          if (response.data.clue_count > 0){
+            callback(new Error('线索名称已重复'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      })
+    }
     return {
       rules: {
         name: [
           { required: true, message: '请输入线索名称', trigger: 'blur' },
-          { max: 20, message: '长度在 0 到 20 个字符', trigger: 'blur' }
+          { max: 20, message: '长度在 0 到 20 个字符', trigger: 'blur' },
+          { validator: validatename, trigger: 'blur' }
         ],
         contacts: [
           { required: true, message: '请输入联系人', trigger: 'blur' },
           { max: 6, message: '长度在 0 到 6 个字符', trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' }
+          { required: true, message: '请输入联系电话', trigger: 'blur' },
+          { validator: validateContactMobile, trigger: 'blur' }
         ]
       },
       form: {
@@ -104,20 +131,16 @@ export default {
       industryScreenData: []
     }
   },
-  watch: {
-    details(value){
-      this.form.name = value.name
-      this.form.contacts = value.contacts
-      this.form.mobile = value.mobile
-      this.form.weixin = value.weixin
-      this.form.scale = value.scale
-      this.form.district = value.citycategory_arr
-      this.form.trade = value.trade
-      this.form.address = value.address
-      this.form.remark = value.remark
-    }
-  },
   created () {
+    this.form.name = this.details.name
+    this.form.contacts = this.details.contacts
+    this.form.mobile = this.details.mobile
+    this.form.weixin = this.details.weixin
+    this.form.scale = this.details.scale
+    this.form.district = this.details.citycategory_arr
+    this.form.trade = this.details.trade
+    this.form.address = this.details.address
+    this.form.remark = this.details.remark
     this.classify()
   },
   methods: {

@@ -604,6 +604,14 @@
             var locationUrl = "{#$return.share_url#}"
             this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
             this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_company&url=' + locationUrl + '&comid=' + id
+
+            /*
+            * 【bug】企业详情模板二地图右上角二维码不出
+            * zch 2022.9.21
+            * 【新增】
+            * this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode_company&comid=' + id
+            * */
+            this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode_company&comid=' + id
         },
         mounted: function () {
             this.contentHeight = this.$refs.companyContent.clientHeight

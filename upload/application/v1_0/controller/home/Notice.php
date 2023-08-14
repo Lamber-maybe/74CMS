@@ -13,6 +13,13 @@ class Notice extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
 
+        /**
+         * 【优化】公告 发布时间按显示时间出现
+         * zch 2022.9.20
+         * 【新增】
+         * $where['addtime'] = ['lt',time()];
+         */
+        $where['addtime'] = ['lt',time()];
         $list = model('Notice')
             ->field('id,title,link_url,click,addtime')
             ->where($where)

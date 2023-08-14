@@ -26,6 +26,7 @@ class Article extends \app\index\controller\Base
             ->alias('a')
             ->join(config('dababase.prefix') . 'article_category b','a.cid=b.id','LEFT')
             ->where('b.id','not null')
+            ->where('a.addtime','lt',time()) // 【优化】发布资讯 发布时间按显示时间出现 zch 2022.9.20
             ->where($where)
             ->order('a.sort_id desc,a.id desc')
             ->field('a.*');

@@ -90,6 +90,7 @@ class Index extends \app\v1_0\controller\common\Base
         $list = model('Notice')
             ->field('id,title,link_url')
             ->where('is_display', 1)
+            ->where('addtime','lt',time()) // 【优化】公告发布时间按显示时间出现 zch 2022.9.20
             ->order('sort_id desc,id desc')
             ->select();
         return $list;
@@ -114,7 +115,16 @@ class Index extends \app\v1_0\controller\common\Base
                 ? []
                 : explode(',', $famous_enterprises_setmeal);
         if (empty($famous_enterprises_setmeal)) {
-            $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
+            /**
+             * 【BUG】
+             * 后台设置名企套餐为空，触屏端首页空白无数据
+             * zch - 2022.09.19
+             * 【旧】
+             * $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
+             * 【新】
+             * return [];
+             */
+            return [];
         }
         //触屏个性化首页名企栏设置数量不对应 zch 2022.07.06
         $limit = 9;
@@ -179,6 +189,7 @@ class Index extends \app\v1_0\controller\common\Base
         $list = model('Article')
             ->field('id,title,thumb,link_url,click,addtime,source')
             ->where('is_display', 1)
+            ->where('addtime','lt',time()) // 【优化】新闻资讯发布时间按显示时间出现 zch 2022.9.20
             ->limit(5)
             ->order('sort_id desc,id desc')
             ->select();

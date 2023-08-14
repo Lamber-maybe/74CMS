@@ -780,6 +780,35 @@ class Weixin extends \app\common\controller\Base
                 }
                 $this->outputText($object,'绑定成功');
                 break;
+            /**
+             * 【bug】企业详情模板二地图右上角二维码不出
+             *  zch 2022.9.21
+             * 【新增公众号发送企业地图】
+             */
+            case 'mapQrcode_company':
+                $comid = intval($event['comid']);
+                if($comid==0){
+                    $this->outputText($object,'企业不存在或已删除');
+                    break;
+                }
+                $companyInfo = model('Company')->where('id',$comid)->field('companyname,map_lat,map_lng')->find();
+                if($companyInfo===null){
+                    $this->outputText($object,'企业不存在或已删除');
+                    break;
+                }
+                $content = $companyInfo['companyname']."<a href='" . config('global_config.mobile_domain').'company/'.$comid . "'>点击详情</a>";
+                $this->outputMessage($object,$content,'text');
+                $url ='http://api.map.baidu.com/marker?location='.$companyInfo['map_lat'].','.$companyInfo['map_lng'].'&title='.$companyInfo['companyname'].'&output=html';
+                $wechat_info_img = model('Uploadfile')->getFileUrl(config('global_config.wechat_info_img'));
+                $wechat_info_img = $wechat_info_img?$wechat_info_img:make_file_url('resource/wechat_info_img.jpg');
+                $content_arr = [
+                    'Title'=>$companyInfo['companyname'],
+                    'Description'=>'点击查看详细地图',
+                    'PicUrl'=>$wechat_info_img,
+                    'Url'=>$url
+                ];
+                $this->outputArticle($object,$content_arr);
+                break;
             default:
                 break;
         }

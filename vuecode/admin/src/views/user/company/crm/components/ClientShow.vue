@@ -57,7 +57,14 @@
               <el-col :span="8">
                 <label class="line_label">到期时间：</label>
                 <span class="text">
-                  {{ details.setmeal_deadline_day ? details.setmeal_deadline_day : '-' }}
+<!--                  【bug】套餐到期时间要写到期时间，不能写剩余天数
+                      zch 2022.9.21
+                      【旧】
+                      {{ details.setmeal_deadline_day ? details.setmeal_deadline_day : '-' }}
+                     【新】
+                     {{ details.deadline ? details.deadline : '-' }}
+                  -->
+                  {{ details.deadline ? details.deadline : '-' }}
                 </span>
               </el-col>
               <el-col :span="8">
@@ -102,28 +109,28 @@
             <followUpRecord :clue_id="details.clue_id" :uid="details.uid" @companyDetails="companyDetails" />
           </el-tab-pane>
           <el-tab-pane label="客户详情" name="details">
-            <Clientinfo :details="details" :uid="details.uid" @companyDetails="companyDetails" @integral="integral" @resume="resume" />
+            <Clientinfo v-if="activeName == 'details'" :details="details" :uid="details.uid" @companyDetails="companyDetails" @integral="integral" @resume="resume" />
           </el-tab-pane>
           <el-tab-pane label="企业资料" name="enterpriseInformation">
-            <enterpriseInformation :details="details" :uid="details.uid" @companyDetails="companyDetails" />
+            <enterpriseInformation v-if="activeName == 'enterpriseInformation'" :details="details" :uid="details.uid" @companyDetails="companyDetails" />
           </el-tab-pane>
           <el-tab-pane label="联系人" name="contacts">
-            <Contacts :uid="details.uid" :comid="rowId" @companyDetails="companyDetails" />
+            <Contacts v-if="activeName == 'contacts'" :uid="details.uid" :comid="rowId" @companyDetails="companyDetails" />
           </el-tab-pane>
           <el-tab-pane :label="jobname" name="recruit">
-            <Job :comid="rowId" />
+            <Job :comid="rowId" v-if="activeName == 'recruit'" />
           </el-tab-pane>
           <el-tab-pane label="招聘动态" name="dynamic">
-            <dynamic :comid="rowId" :uid="details.uid" />
+            <dynamic v-if="activeName == 'dynamic'"  :comid="rowId" :uid="details.uid" />
           </el-tab-pane>
           <el-tab-pane label="订单记录" name="record">
-            <order :uid="details.uid" />
+            <order v-if="activeName == 'record'" :uid="details.uid" />
           </el-tab-pane>
           <el-tab-pane label="积分记录" name="integral">
-            <integral :prop_type="integralType" :uid="details.uid" />
+            <integral v-if="activeName == 'integral'" :prop_type="integralType" :uid="details.uid" />
           </el-tab-pane>
           <el-tab-pane label="操作日志" name="journal">
-            <log :uid="details.uid" />
+            <log v-if="activeName == 'journal'" :uid="details.uid" />
           </el-tab-pane>
         </el-tabs>
       </div>

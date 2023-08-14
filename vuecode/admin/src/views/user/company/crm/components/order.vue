@@ -18,7 +18,7 @@
         />
       </el-select>
     </div>
-    <el-table :data="tableList" :header-cell-style="{background:'#f9f9f9'}" style="width: 100%">
+    <el-table v-loading="loading" :data="tableList" :header-cell-style="{background:'#f9f9f9'}" style="width: 100%">
       <el-table-column width="20" />
       <el-table-column prop="service_name" label="服务内容" />
       <el-table-column prop="service_amount" label="订单金额" />
@@ -85,6 +85,7 @@ export default {
   },
   data(){
     return {
+      loading: false,
       tableList: [],
       params: {
         page: 1,
@@ -96,22 +97,15 @@ export default {
       },
       orderPayment: [],
       orderServiceTypeCompany: [],
-      ownerList: [],
-      d_uid: 0
-    }
-  },
-  watch: {
-    uid(value){
-      this.d_uid = value
-      this.getData(value)
+      ownerList: []
     }
   },
   created () {
+    this.getData(this.uid)
     this.fetchData()
   },
   methods: {
     fetchData() {
-      this.listLoading = true
       getClassify({ type: 'orderServiceTypeCompany,orderPayment' })
         .then(response => {
           this.orderPayment = [...response.data.orderPayment]
@@ -124,11 +118,12 @@ export default {
       if (uid){
         this.params.company_uid = uid
       } else {
-        this.params.company_uid = this.d_uid
+        this.params.company_uid = this.uid
       }
       crmOrderList(this.params).then(res => {
         this.tableList = res.data.items
         this.params.total = res.data.total
+        this.loading = false
       })
     },
     funCopy (oid) {
@@ -144,12 +139,12 @@ export default {
     // 分页每页展示多少条
     handleSizeChange (value) {
       this.params.page_size = value
-      this.getData(this.d_uid)
+      this.getData(this.uid)
     },
     // 分页当前第几页
     handleCurrentChange (value) {
       this.params.page = value
-      this.getData(this.d_uid)
+      this.getData(this.uid)
     },
     handleServiceType(){
       this.getData()

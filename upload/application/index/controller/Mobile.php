@@ -60,9 +60,12 @@ class Mobile extends \think\Controller
                 }
                 $location_href = url('index/job/index',$params,'',$site_domain);
             }else if(strpos($request_url_full,config('global_config.mobile_domain').'resume/')===0) {//简历详情页
-                preg_match('/\d+/',$request_url,$arr);
-                $id = isset($arr[0])?$arr[0]:null;
-                $location_href = url('index/resume/show',['id'=>$id],'',$site_domain);
+                preg_match_all('/\d+/',$request_url,$arr);
+                $arr = $arr[0];
+                $id = !empty($arr[0])?$arr[0]:null;
+                $company_uid = !empty($arr[1])?$arr[1]:null;
+                $job_apply_id = !empty($arr[2])?$arr[2]:null;
+                $location_href = url('index/resume/show',['id'=>$id,'company_uid'=>$company_uid,'job_apply_id'=>$job_apply_id],'',$site_domain);
             }else if(strpos($request_url_full,config('global_config.mobile_domain').'resumelist')===0) {//简历列表页
                 $parse_url = parse_url($request_url);
                 $query_str = isset($parse_url['query'])?$parse_url['query']:'';

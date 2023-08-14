@@ -17,6 +17,7 @@
           v-model="keyword"
           placeholder="请输入搜索内容"
           class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
         >
           <el-select
             slot="prepend"
@@ -25,7 +26,8 @@
             class="input-sel"
           >
             <el-option label="公司名称" value="1" />
-            <el-option label="手机号码" value="2" />
+            <el-option label="会员联系方式" value="2" />
+            <el-option label="企业联系方式" value="3" />
           </el-select>
           <el-button
             slot="append"
@@ -93,6 +95,15 @@
                   placement="bottom"
                   trigger="hover"
                 >
+                  <!-- 微信绑定-->
+                  <div v-if="items.field == 'is_bind'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in weixinData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 微信绑定-->
                   <!-- 等级-->
                   <div v-if="items.field == 'life_cycle_txt'" class="screen_s">
                     <el-checkbox-group>
@@ -156,12 +167,21 @@
                       </div>
                     </el-checkbox-group>
                   </div>
+                  <!-- 销售-->
+                  <!-- 套餐剩余时间-->
+                  <div v-if="items.field == 'deadline'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in setmealDeadlineData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 套餐剩余时间-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
                   </div>
-                  <!-- 销售-->
-                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' " slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
+                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
                 </el-popover>
                 <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
                 <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
@@ -176,6 +196,10 @@
                 <span v-if="scope.row.companyname == ''"> - </span>
                 <span v-else> {{ scope.row.companyname }} </span>
               </div>
+              <div v-if="items.field == 'is_bind'">
+                <span v-if="scope.row.is_bind == ''"> - </span>
+                <span v-else> {{ scope.row.is_bind }} </span>
+              </div>
               <div v-if="items.field == 'life_cycle_txt'">
                 <span v-if="scope.row.life_cycle_txt == ''"> - </span>
                 <span v-else> {{ scope.row.life_cycle_txt }} </span>
@@ -187,6 +211,10 @@
               <div v-if="items.field == 'mobile'">
                 <span v-if="scope.row.mobile == ''"> - </span>
                 <span v-else> {{ scope.row.mobile }} </span>
+              </div>
+              <div v-if="items.field == 'contact_mobile'">
+                <span v-if="scope.row.contact_mobile == ''"> - </span>
+                <span v-else> {{ scope.row.contact_mobile }} </span>
               </div>
               <div v-if="items.field == 'jobs_num'">
                 <span v-if="scope.row.jobs_num == ''"> 0 </span>
@@ -204,6 +232,12 @@
                 <span v-if="scope.row.refreshtime == ''"> - </span>
                 <span v-else> {{ scope.row.refreshtime }} </span>
               </div>
+              <div v-if="items.field == 'deadline'">
+                <span v-if="scope.row.expire == 0"> 无限期 </span>
+                <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
+                <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
+                <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
+              </div>
               <div v-if="items.field == 'addtime'">
                 <span v-if="scope.row.addtime == ''"> - </span>
                 <span v-else> {{ scope.row.addtime }} </span>
@@ -214,15 +248,27 @@
               </div>
               <div v-if="items.field == 'audit'">
                 <span v-if="scope.row.audit == ''"> - </span>
-                <span v-else> {{ scope.row.audit }} </span>
+                <span v-else>
+                  <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }} </span>
+                </span>
               </div>
               <div v-if="items.field == 'is_display'">
                 <span v-if="scope.row.is_display == ''"> - </span>
-                <span v-else> {{ scope.row.is_display }} </span>
+                <span v-else>
+                  <span v-if="scope.row.display == 1" style="color:#67c23a"> {{ scope.row.is_display }}</span>
+                  <span v-if="scope.row.display == 0" style="color:#f56c6c"> {{ scope.row.is_display }}</span>
+                </span>
               </div>
               <div v-if="items.field == 'last_visit_time'">
                 <span v-if="scope.row.last_visit_time == ''"> - </span>
                 <span v-else> {{ scope.row.last_visit_time }} </span>
+              </div>
+              <div v-if="items.field == 'collection_time'">
+                <span v-if="scope.row.collection_time == ''"> - </span>
+                <span v-else> {{ scope.row.collection_time }} </span>
               </div>
               <div v-if="items.field == 'not_following_day'">
                 <span v-if="scope.row.not_following_day == -1"> - </span>
@@ -309,12 +355,30 @@
                       </div>
                     </el-checkbox-group>
                   </div>
+                  <!-- 销售-->
+                  <!-- 套餐剩余时间-->
+                  <div v-if="items.field == 'deadline'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in setmealDeadlineData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="setmealDeadline" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 套餐剩余时间-->
+                  <!-- 微信绑定-->
+                  <div v-if="items.field == 'is_bind'" class="screen_s">
+                    <el-checkbox-group>
+                      <div v-for="item in weixinData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="weixin" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 微信绑定-->
                   <div style="margin-top: 10px">
                     <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm">确认</el-button>
                   </div>
-                  <!-- 销售-->
-                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' " slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
+                  <div v-if="items.field == 'life_cycle_txt' || items.field == 'is_display' || items.field == 'setmeal_name' || items.field == 'not_following_day' || items.field == 'jobs_num' || items.field=='audit' || items.field =='admin_username' || items.field == 'deadline' || items.field == 'is_bind'" slot="reference" class="drop_down" @click.stop="funPopover(items.field)" />
                 </el-popover>
                 <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
                 <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
@@ -329,6 +393,10 @@
                 <span v-if="scope.row.companyname == ''"> 未完善企业资料 </span>
                 <span v-else> {{ scope.row.companyname }} </span>
               </div>
+              <div v-if="items.field == 'is_bind'">
+                <span v-if="scope.row.is_bind == ''"> - </span>
+                <span v-else> {{ scope.row.is_bind }} </span>
+              </div>
               <div v-if="items.field == 'life_cycle_txt'">
                 <span v-if="scope.row.life_cycle_txt == ''"> - </span>
                 <span v-else> {{ scope.row.life_cycle_txt }} </span>
@@ -340,6 +408,10 @@
               <div v-if="items.field == 'mobile'">
                 <span v-if="scope.row.mobile == ''"> - </span>
                 <span v-else> {{ scope.row.mobile }} </span>
+              </div>
+              <div v-if="items.field == 'contact_mobile'">
+                <span v-if="scope.row.contact_mobile == ''"> - </span>
+                <span v-else> {{ scope.row.contact_mobile }} </span>
               </div>
               <div v-if="items.field == 'jobs_num'">
                 <span v-if="scope.row.jobs_num == ''"> 0 </span>
@@ -357,6 +429,12 @@
                 <span v-if="scope.row.refreshtime == ''"> - </span>
                 <span v-else> {{ scope.row.refreshtime }} </span>
               </div>
+              <div v-if="items.field == 'deadline'">
+                <span v-if="scope.row.expire == 0"> 无限期 </span>
+                <span v-if="scope.row.expire == 1" style="color: #f56c6c">{{ scope.row.deadline }}(已过期)</span>
+                <span v-if="scope.row.expire == 2" style="color: #e6a23c">{{ scope.row.deadline }}</span>
+                <span v-if="scope.row.expire == 3">{{ scope.row.deadline }}</span>
+              </div>
               <div v-if="items.field == 'addtime'">
                 <span v-if="scope.row.addtime == ''"> - </span>
                 <span v-else> {{ scope.row.addtime }} </span>
@@ -367,15 +445,27 @@
               </div>
               <div v-if="items.field == 'audit'">
                 <span v-if="scope.row.audit == ''"> - </span>
-                <span v-else> {{ scope.row.audit }} </span>
+                <span v-else>
+                  <span v-if="scope.row.aduit_id == 1">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 2" style="color:#e6a23c;">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 3" style="color:#67c23a;">{{ scope.row.audit }} </span>
+                  <span v-if="scope.row.aduit_id == 4" style="color:#f56c6c;">{{ scope.row.audit }} </span>
+                </span>
               </div>
               <div v-if="items.field == 'is_display'">
                 <span v-if="scope.row.is_display == ''"> - </span>
-                <span v-else> {{ scope.row.is_display }} </span>
+                <span v-else>
+                  <span v-if="scope.row.display == 1" style="color:#67c23a"> {{ scope.row.is_display }}</span>
+                  <span v-if="scope.row.display == 0" style="color:#f56c6c"> {{ scope.row.is_display }}</span>
+                </span>
               </div>
               <div v-if="items.field == 'last_visit_time'">
                 <span v-if="scope.row.last_visit_time == ''"> - </span>
                 <span v-else> {{ scope.row.last_visit_time }} </span>
+              </div>
+              <div v-if="items.field == 'collection_time'">
+                <span v-if="scope.row.collection_time == ''"> - </span>
+                <span v-else> {{ scope.row.collection_time }} </span>
               </div>
               <div v-if="items.field == 'not_following_day'">
                 <span v-if="scope.row.not_following_day == -1"> - </span>
@@ -528,7 +618,7 @@ export default {
   },
   data () {
     return {
-      loading: true,
+      loading: false,
       dialogIsDispay: false,
       visiblepop: false,
       setAuditVal: '',
@@ -568,17 +658,16 @@ export default {
       mealScreenData: [], // 套餐
       gradeScreen: '',
       gradeScreenData: [], // 等级
+      weixin: '',
+      weixinData: [
+        { 'id': 1, 'name': '已绑定' },
+        { 'id': 2, 'name': '未绑定' }
+      ], // 微信绑定
       saleScreen: '',
       saleScreenData: [], // 销售
       pagesize: 10,
       total: 0,
       currentPage: 1,
-      saleKey: [
-        { text: 'aa', value: 'aa' },
-        { text: 'bb', value: 'bb' },
-        { text: 'cc', value: 'cc' },
-        { text: 'dd', value: 'dd' }
-      ],
       tableData: [],
       currentNav: '',
       multipleSelection: [],
@@ -591,7 +680,13 @@ export default {
       sort_type: '',
       sort: '',
       is_display: '1',
-      exportData: []
+      exportData: [],
+      setmealDeadline: '',
+      is_setmeal_deadline: '1',
+      setmealDeadlineData: [
+        { 'id': 1, 'name': '即将到期' },
+        { 'id': 2, 'name': '已到期' }
+      ]
     }
   },
   computed: {
@@ -667,6 +762,17 @@ export default {
     },
     funIsDisplayBtn(){
       companySetDisplay({ 'id': this.multipleSelection, 'is_display': this.is_display }).then(response => {
+        if (response.code == 200){
+          this.$message.success(response.message)
+          this.dialogIsDispay = false
+          this.clueList()
+        } else {
+          this.$message.error(response.message)
+        }
+      })
+    },
+    setmealDeadline(){
+      companySetDisplay({ 'id': this.multipleSelection, 'setmeal_deadline': this.is_setmeal_deadline }).then(response => {
         if (response.code == 200){
           this.$message.success(response.message)
           this.dialogIsDispay = false
@@ -880,6 +986,8 @@ export default {
         this.saleScreen = []
         this.key_type = '1'
         this.keyword = ''
+        this.setmealDeadline = []
+        this.weixin = []
       }
       if (field == 'audit'){
         this.authenticationScreen = []
@@ -896,11 +1004,17 @@ export default {
       if (field == 'setmeal_name'){
         this.mealScreen = []
       }
+      if (field == 'is_bind'){
+        this.weixin = []
+      }
       if (field == 'life_cycle_txt'){
         this.gradeScreen = []
       }
       if (field == 'admin_username'){
         this.saleScreen = []
+      }
+      if (field == 'deadline'){
+        this.setmealDeadline = []
       }
       this.clueList()
     },
@@ -934,7 +1048,8 @@ export default {
       })
     },
     clueList(){
-      if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == 1) {
+      this.loading = true
+      if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == '1'){
         this.authenticationScreen = 0
         localStorage.setItem('clue_audit', '')
       }
@@ -952,7 +1067,9 @@ export default {
         'admin_id': this.saleScreen,
         'sort_type': this.sort_type,
         'sort': this.sort,
-        'search_type': this.followupScreen
+        'search_type': this.followupScreen,
+        'setmeal_deadline': this.setmealDeadline,
+        'weixin': this.weixin
       }
       )
         .then(res => {
@@ -967,7 +1084,7 @@ export default {
           }
           this.loading = false
         }).catch(() => {
-
+          this.loading = false
         })
     },
     clueAdminLists(){
@@ -1026,7 +1143,7 @@ export default {
         .then(res => {
           this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++){
-            if (this.fieldData[i].field == 'addtime' || this.fieldData[i].field == 'refreshtime' || this.fieldData[i].field == 'last_visit_time'){
+            if (this.fieldData[i].field == 'addtime' || this.fieldData[i].field == 'refreshtime' || this.fieldData[i].field == 'last_visit_time' || this.fieldData[i].field == 'collection_time'){
               this.fieldData[i].is_sortable = 'custom'
             } else {
               this.fieldData[i].is_sortable = false

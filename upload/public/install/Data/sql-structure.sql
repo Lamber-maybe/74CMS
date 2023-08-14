@@ -240,6 +240,7 @@ CREATE TABLE `qs_company` (
   `labels` varchar(30) NOT NULL DEFAULT '' COMMENT '客户标签',
   `remark` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `clue_id` int(10) NOT NULL DEFAULT '0' COMMENT '线索id',
+  `collection_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -2421,6 +2422,7 @@ CREATE TABLE `qs_crm_clue` (
 `last_visit_admin` int(10) NOT NULL DEFAULT '0' COMMENT '最后跟进人',
 `is_customer` enum('1','0') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '是否转为客户 0-否 1-是',
 `scale` int(10) NOT NULL DEFAULT '0' COMMENT '公司规模',
+`collection_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm线索表';
 ||-_-||qs_crm_clue||-_-||

@@ -70,7 +70,8 @@
         <div class="context" v-if="resumeShow == 'video'">
           <VideoList class="videolist" :videotype="utype" :gointype="'mycollection'" :id="''"></VideoList>
         </div>
-        <div class="btn" v-if="utype == 2" @click="release">发布视频招聘</div>
+<!--       【优化】视频招聘进入传完才提示套餐不支持  zch 2022.9.21-->
+        <div class="btn" v-if="utype == 2" @click="isAllowPublishing">发布视频招聘</div>
         <div class="btn" v-else @click="release">发布视频简历</div>
     </div>
 </template>
@@ -257,6 +258,19 @@ export default {
             message: '抱歉，暂不支持发布视频'
           })
           .then(() => {
+          })
+          .catch(() => {})
+      }
+    },
+    // 【优化】视频招聘进入传完才提示套餐不支持  zch 2022.9.21
+    isAllowPublishing () {
+      if (parseInt(this.$store.state.LoginType) == 1) {
+        http
+          .get(api.isAllowPublishing)
+          .then((res) => {
+            if (res.code === 200) {
+              this.release()
+            }
           })
           .catch(() => {})
       }

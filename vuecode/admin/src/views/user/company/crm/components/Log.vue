@@ -23,6 +23,7 @@
     </div>
     <div v-if="type== 'operation'">
       <el-table
+        v-loading="loading"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
         style="width: 100%"
@@ -69,6 +70,7 @@
     </div>
     <div v-if="type== 'sign'">
       <el-table
+        v-loading="loading"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
         style="width: 100%"
@@ -134,6 +136,7 @@ export default {
   },
   data(){
     return {
+      loading: false,
       keyword: '',
       tableData: [],
       currentPage: 1,
@@ -143,27 +146,29 @@ export default {
       type: 'operation'
     }
   },
-  watch: {
-    uid(value){
-      this.d_uid = value
-      this.memberActionLog(value)
-    }
+  created() {
+    this.d_uid = this.uid
+    this.memberActionLog(this.uid)
   },
   methods: {
     memberActionLog(uid){
+      this.loading = true
       memberActionLog({ 'uid': uid, 'page': this.currentPage, 'pagesize': this.pagesize, 'keyword': this.keyword }).then(response => {
         this.tableData = response.data.items
         this.total = response.data.total
         this.currentPage = response.data.current_page
         this.pagesize = response.data.pagesize
+        this.loading = false
       })
     },
     loginLog(uid){
+      this.loading = true
       memberLoginLog({ 'uid': uid, 'page': this.currentPage, 'pagesize': this.pagesize }).then(response => {
         this.tableData = response.data.items
         this.total = response.data.total
         this.currentPage = response.data.current_page
         this.pagesize = response.data.pagesize
+        this.loading = false
       })
     },
     switchTemplate(type){

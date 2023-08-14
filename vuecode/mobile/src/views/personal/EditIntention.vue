@@ -118,7 +118,8 @@
       />
     </van-popup>
     <div style="margin: 16px 16px 0;">
-      <van-button round block type="info" @click="handleSubmit">
+<!--      修改求职意向重复保存  zch 2022/9/16    -->
+      <van-button round block type="info" @click="handleSubmit" :disabled="issubmit">
         保存
       </van-button>
     </div>
@@ -168,7 +169,8 @@ export default {
       nature: '',
       natureName: '',
       trade: '',
-      tradeName: ''
+      tradeName: '',
+      issubmit: false // 修改求职意向重复保存  zch 2022/9/16
     }
   },
   created () {
@@ -354,6 +356,8 @@ export default {
           return false
         }
       }
+      // 修改求职意向重复保存  zch 2022/9/16
+      this.issubmit = true
       http
         .post(api.resume_intention_save, {
           id: this.id,
@@ -371,13 +375,16 @@ export default {
         .then(res => {
           if (parseInt(res.code) === 200) {
             this.$notify({ type: 'success', message: res.message })
-            // this.$router.push({ path: '/member/personal/resume' })
             this.$router.go(-1)
           } else {
+            // 修改求职意向重复保存  zch 2022/9/16
+            this.issubmit = false
             this.$notify(res.message)
           }
         })
         .catch(err => {
+          // 修改求职意向重复保存  zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
     },

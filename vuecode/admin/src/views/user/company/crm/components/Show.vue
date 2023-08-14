@@ -70,7 +70,7 @@
             <followUpRecord :clue_id="rowId" :contacts="details.contacts" :mobile="details.mobile" @clueDetails="clueDetails" />
           </el-tab-pane>
           <el-tab-pane label="线索详情" name="second">
-            <clueDetailsEdit :clue_id="rowId" :details="details" @clueDetails="clueDetails" @conversion="conversion" />
+            <clueDetailsEdit v-if="activeName == 'second'" :clue_id="rowId" :details="details" @clueDetails="clueDetails" @conversion="conversion" />
           </el-tab-pane>
         </el-tabs>
       </div>

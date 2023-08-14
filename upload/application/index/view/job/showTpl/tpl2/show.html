@@ -87,7 +87,14 @@
                             <div class="title post_title_margin">
                                 <span class="title_item1">职位详情</span>
                             </div>
+                            <!--
+                            【BUG】- ID1000281
+                            4. PC职位详情页标签丢失问题
+                            【旧】
                             {#if condition="$return.base_info.tag_text_arr.length=0"#}
+                            yx - 2022.09.19
+                            -->
+                            {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
                             <div class="box3_welfare">
                                 {#volist name="return.base_info.tag_text_arr" id="vo"#}
                                 <span>{#$vo#}</span>
@@ -250,7 +257,6 @@
                                     </div>
                                     <div class="contact_details clearfix">
                                         <p class="box_text">职位联系方式仅对求职者会员开放，请登录查看</p>
-                                        <div class="contact_btn" @click="handlerLoginForContact">点击登录</div>
                                     </div>
                                 </div>
                                 <div class="details_wrapper contact_margin"
@@ -710,7 +716,7 @@
     <el-dialog title="系统提示" :visible.sync="showBindWeixin" @opened="bindWeixinOpened" width="450px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
        {#include file="public/bindWeixin" /#}
     </el-dialog>
-    <el-dialog title="" :visible.sync="showSharePoster" width="450px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
+    <el-dialog title="" :visible.sync="showSharePoster" width="300px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
         {#include file="public/sharePoster" /#}
      </el-dialog>
 <!--    平台认证提示-->
@@ -1666,7 +1672,6 @@
                                 let {code,data}=res
                                 if(code==200){
                                     that.tplImg=data + '?_=' + Math.random()
-                                    console.log(that.tplImg)
                                     that.showSharePoster = true
                                 }else{
                                     that.$message({

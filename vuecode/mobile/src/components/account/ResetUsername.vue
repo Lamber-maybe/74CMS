@@ -57,6 +57,15 @@ export default {
         this.$notify('请填写用户名')
         return false
       }
+      /**
+       * 【bug】用户名信息会员中心与后台修改规则不一致
+       *  增加用户名验证
+       *  zch 2022.9.20
+       * */
+      if (this.username.length < 6 || this.username.length > 30) {
+        this.$notify('用户名请输入6-30个字符')
+        return false
+      }
       if (this.username_original == this.username) {
         this.$notify('新用户名与旧用户名相同')
         return false

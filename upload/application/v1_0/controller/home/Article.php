@@ -16,6 +16,13 @@ class Article extends \app\v1_0\controller\common\Base
         if ($cid > 0) {
             $where['cid'] = ['eq', $cid];
         }
+        /**
+         * 【优化】发布资讯 发布时间按显示时间出现
+         * zch 2022.9.20
+         * 【新增】
+         * $where['addtime'] = ['lt',time()];
+         */
+        $where['addtime'] = ['lt',time()];
         $list = model('Article')
             ->field('id,title,thumb,link_url,click,addtime,source')
             ->where($where)

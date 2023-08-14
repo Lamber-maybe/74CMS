@@ -31,7 +31,8 @@
       />
     </van-popup>
     <div style="margin: 16px 16px 0;">
-      <van-button round block type="info" @click="handleSubmit">
+<!--      修改获得证书重复保存  zch 2022/9/16-->
+      <van-button round block type="info" @click="handleSubmit" :disabled="issubmit">
         保存
       </van-button>
     </div>
@@ -58,7 +59,8 @@ export default {
       name: '',
       obtaintime: '',
       minDate: '',
-      maxDate: ''
+      maxDate: '',
+      issubmit: false // 修改获得证书重复保存  zch 2022/9/16
     }
   },
   created () {
@@ -116,6 +118,8 @@ export default {
         this.$notify('请选择获得时间')
         return false
       }
+      // 修改获得证书重复保存  zch 2022/9/16
+      this.issubmit = true
       http
         .post(api.resume_certificate_save, {
           id: this.id,
@@ -127,10 +131,14 @@ export default {
             this.$notify({ type: 'success', message: res.message })
             this.$router.push({ path: '/member/personal/resume' })
           } else {
+            // 修改获得证书重复保存  zch 2022/9/16
+            this.issubmit = false
             this.$notify(res.message)
           }
         })
         .catch(err => {
+          // 修改获得证书重复保存  zch 2022/9/16
+          this.issubmit = false
           console.log(err)
         })
     },

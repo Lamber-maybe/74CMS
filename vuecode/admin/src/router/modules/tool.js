@@ -299,7 +299,8 @@ const toolRouter = {
           title: '公众号营销',
           access: 'marketingWxoffiaccount'
         }
-      }, {
+      },
+      {
         path: '/tool/marketing/scene_qrcode',
         name: 'marketingSceneQrcode',
         component: () =>
@@ -308,7 +309,7 @@ const toolRouter = {
           title: '场景码',
           access: 'marketingSceneQrcode'
         }
-      }, {
+      },{
         path: '/tool/marketing/tweets',
         name: 'marketingTweets',
         component: () =>
@@ -317,7 +318,18 @@ const toolRouter = {
           title: '社群推文营销',
           access: 'marketingTweets'
         }
-      }]
+      },
+      {
+        path: '/tool/marketing/messageList/index',
+        name: 'messageListIndex',
+        component: () =>
+          import ('@/views/tool/marketing/messageList/index'),
+        meta: {
+          title: '短信群发',
+          access: 'messageListIndex'
+        }
+      }
+      ]
     },
     {
       path: '/tool/nologin_remind',

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="tip danger" v-if="baseinfo.warning.rewrite == 1">
+    <div v-if="baseinfo.warning.rewrite == 1" class="tip danger">
       <p>
         系统检测到您的伪静态还没配置完成，将影响系统的正常运行，请先配置 >>
         <a
@@ -12,13 +12,13 @@
         </a>
       </p>
     </div>
-    <div class="tip danger" v-if="baseinfo.warning.install == 1">
+    <div v-if="baseinfo.warning.install == 1" class="tip danger">
       <p>
         您还没有删除 install 文件夹，出于安全的考虑，我们建议您删除 install
         文件夹。install文件夹位于 /public/ 目录下
       </p>
     </div>
-    <div class="tip" v-if="new_version_notice == 1">
+    <div v-if="new_version_notice == 1" class="tip">
       <p>
         系统检测到新版本，为了更好的使用体验，建议您立即升级程序
         <a
@@ -313,16 +313,14 @@
               class="a-link color-link"
               href="https://www.74cms.com"
               target="_blank"
-              >{{ authorize.authorize }}</a
-            >
+            >{{ authorize.authorize }}</a>
           </el-col>
           <el-col :span="8">
             骑士人才系统官网：<a
               class="a-link"
               href="https://www.74cms.com"
               target="_blank"
-              >www.74cms.com</a
-            >
+            >www.74cms.com</a>
           </el-col>
           <el-col :span="8"> 程序开发：74CMS程序开发组 </el-col>
         </el-row>
@@ -347,14 +345,13 @@
             >
               <a class="a-link" :href="item.link" target="_blank">{{
                 item.title
-              }}</a
-              ><span class="time">{{ item.addtime }}</span>
+              }}</a><span class="time">{{ item.addtime }}</span>
             </div>
           </div>
           <div class="clearfix" />
         </el-col>
         <el-col :span="10" style="text-align: center">
-          <img class="qrcode" src="static/wechat.png" />
+          <img class="qrcode" src="static/wechat.png">
         </el-col>
       </el-card>
     </el-row>
@@ -391,7 +388,7 @@ export default {
       upgradeLog: [],
       authorize: {},
       officialNews: [],
-      latest_version:'',
+      latest_version: '',
       chartTabSelected: '0',
       new_version_notice: 0
     }
@@ -417,10 +414,11 @@ export default {
     handlerClickPending(e) {
       switch (e.alias) {
         case 'company_audit':
-          this.$router.push('/user/company/noaudit')
+          this.$router.push('/user/company/crm/allClient')
+          localStorage.setItem('clue_audit', '1')
           return
         case 'job_audit':
-          this.$router.push('/user/job/noaudit')
+          this.$router.push('/user/job/list')
           return
         case 'resume_audit':
           this.$router.push('/user/resume/noaudit')

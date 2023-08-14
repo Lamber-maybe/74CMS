@@ -17,7 +17,7 @@
           <el-input v-model="form.contacts" />
         </el-form-item>
         <el-form-item label="联系电话：" prop="mobile">
-          <el-input oninput="value=value.replace(/[^0-9.]/g,'')" v-model="form.mobile" />
+          <el-input v-model="form.mobile" oninput="value=value.replace(/[^0-9.]/g,'')" />
         </el-form-item>
         <el-form-item label="联系微信：">
           <el-input v-model="form.weixin" />
@@ -79,8 +79,9 @@
 
 <script>
 
-import { classify, clueAdd } from '@/api/company_crm'
-import {validMobile} from "@/utils/validate";
+import { classify, clueAdd, isNameRepeat } from '@/api/company_crm'
+import { validMobile } from '@/utils/validate'
+import { memberCheckUnique } from '@/api/member'
 
 export default {
   name: 'Add',
@@ -92,11 +93,29 @@ export default {
         callback()
       }
     }
+    var validatename = (rule, value, callback) => {
+      const param = {
+        name: value,
+        id: 0
+      }
+      isNameRepeat(param).then(response => {
+        if (response.data.sys_configs == 0){
+          if (response.data.clue_count > 0){
+            callback(new Error('线索名称已重复'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      })
+    }
     return {
       rules: {
         name: [
           { required: true, message: '请输入线索名称', trigger: 'blur' },
-          { max: 20, message: '长度在 0 到 20 个字符', trigger: 'blur' }
+          { max: 20, message: '长度在 0 到 20 个字符', trigger: 'blur' },
+          { validator: validatename, trigger: 'blur' }
         ],
         contacts: [
           { required: true, message: '请输入联系人', trigger: 'blur' },

@@ -253,7 +253,7 @@ export default {
       }
     }
     return {
-      infoLoading: false,
+      infoLoading: true,
       submitLoading: false,
       headers: { admintoken: getToken() },
       fileupload_size: '',

@@ -10,6 +10,7 @@
     </div>
     <div class="tables">
       <el-table
+        v-loading="loading"
         v-if="type == 'receivedDelivered'"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
@@ -82,6 +83,7 @@
         v-if="type == 'activeDownload'"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
+        v-loading="loading"
         style="width: 100%"
       >
         <el-table-column
@@ -128,6 +130,7 @@
         v-if="type == 'recentEnquiries'"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
+        v-loading="loading"
         style="width: 100%"
       >
         <el-table-column
@@ -176,6 +179,7 @@
         v-if="type == 'viewed'"
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
+        v-loading="loading"
         style="width: 100%"
       >
         <el-table-column
@@ -263,6 +267,7 @@ export default {
   },
   data(){
     return {
+      loading:false,
       currentPage: 1,
       pagesize: 10,
       total: 0,
@@ -278,6 +283,7 @@ export default {
       window.open(target)
     },
     jobApply() {
+      this.loading = true
       jobApply(
         {
           'company_id': this.comid,
@@ -287,12 +293,14 @@ export default {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       })
         .then(res => {
-
+          this.loading = false
         })
     },
     downResume(){
+      this.loading = true
       downResume(
         {
           'company_id': this.comid,
@@ -302,12 +310,11 @@ export default {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       })
-        .then(res => {
-
-        })
     },
     viewResume(){
+      this.loading = true
       viewResume(
         {
           'company_uid': this.uid,
@@ -317,12 +324,11 @@ export default {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       })
-        .then(res => {
-
-        })
     },
     viewed(){
+      this.loading = true
       viewed(
         {
           'company_uid': this.uid,
@@ -332,10 +338,8 @@ export default {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       })
-        .then(res => {
-
-        })
     },
     switchTemplate(type){
       this.type = type

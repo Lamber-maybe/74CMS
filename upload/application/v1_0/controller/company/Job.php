@@ -564,8 +564,14 @@ class Job extends \app\v1_0\controller\common\Base
         ) {
             $input_data['basic']['audit'] = 0;
         }
+
+        /**
+         * 【bug】复杂·职位审核逻辑
+         * 未认证企业修改职位后审核状态修改
+         * zch 2022.9.20
+         */
         if (
-            $this->company_profile['audit'] == 0 &&
+            $this->company_profile['audit'] != 1 &&
             config('global_config.audit_unverifycom_editjob') == 1
         ) {
             $input_data['basic']['audit'] = 0;

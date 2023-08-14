@@ -8,6 +8,7 @@
     </div>
     <el-table
       v-if="type=='integral'"
+      v-loading="loading"
       :header-cell-style="{background:'#f9f9f9'}"
       :data="tableData"
       style="width: 100%"
@@ -44,6 +45,7 @@
     </el-table>
     <el-table
       v-if="type=='resume'"
+      v-loading="loading"
       :header-cell-style="{background:'#f9f9f9'}"
       :data="tableData"
       style="width: 100%"
@@ -99,6 +101,7 @@ export default {
   },
   data(){
     return {
+      loading: false,
       type: 'integral',
       tableData: [],
       currentPage: 1,
@@ -107,35 +110,34 @@ export default {
       d_uid: 0
     }
   },
-  watch: {
-    prop_type(value){
-      this.type = value
-      this.switchTemplate(value)
-    },
-    uid(value){
-      this.d_uid = value
-      this.pointsLog(value)
-    }
+  created() {
+    this.d_uid = this.uid
+    this.type = this.prop_type
+    this.switchTemplate(this.prop_type)
   },
   methods: {
     pointsLog(uid){
+      this.loading = true
       pointsLog({ 'page': this.currentPage, 'pagesize': this.pagesize, 'company_uid': uid })
         .then(res => {
           this.tableData = res.data.list
           this.total = res.data.total
           this.currentPage = res.data.current_page
+          this.loading = false
         }).catch(() => {
-
+          this.loading = false
         })
     },
     consumeLog(uid){
+      this.loading = true
       consumeLog({ 'page': this.currentPage, 'page_size': this.pagesize, 'company_uid': uid })
         .then(res => {
           this.tableData = res.data.list
           this.total = res.data.total
           this.currentPage = res.data.current_page
+          this.loading = false
         }).catch(() => {
-
+          this.loading = false
         })
     },
     switchTemplate(type){

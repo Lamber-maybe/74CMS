@@ -13,6 +13,8 @@ use think\Validate;
 
 class Marketing extends Backend
 {
+    private $pageSize = 10;
+
     public function search()
     {
         // 参数1：信息类型
@@ -41,7 +43,7 @@ class Marketing extends Backend
                 break;
         }
 
-        $miniprogram_appid = '';
+        $miniprogram_appid = config('global_config.wechat_miniprogram_appid') ? config('global_config.wechat_miniprogram_appid') : '';
 
         $return = [
             'items' => $items,
@@ -58,38 +60,7 @@ class Marketing extends Backend
 
     protected function _searchJobList($condition = [])
     {
-        $model = $this->_parseJobByCondition($condition);
-
-        $jobid_arr = $model->column('jsr.id');
-
-        if (empty($jobid_arr) || !isset($jobid_arr)) {
-            return array();
-        }
-
-        $job_list = model('Job')
-            ->alias('j')
-            ->join('company c', 'c.id = j.company_id', 'LEFT')
-            ->field('j.id as job_id,
-            j.company_id,
-            c.companyname as company_name,
-            j.jobname as job_name,
-            j.content as job_content,
-            j.address as job_address,
-            j.minwage,
-            j.maxwage,
-            j.negotiable,
-            j.minage,
-            j.maxage,
-            j.age_na,
-            j.amount,
-            j.tag,
-            j.education,
-            j.experience')
-            ->where('j.id', 'in', $jobid_arr)
-            ->where('j.audit', 1)
-            ->where('j.is_display', 1)
-            ->orderRaw('field(j.id,' . implode(",", $jobid_arr) . ')')
-            ->select();
+        $job_list = $this->_parseJobByCondition($condition);
 
         if (empty($job_list) || !isset($job_list)) {
             return array();
@@ -165,8 +136,27 @@ class Marketing extends Backend
         // 公众号营销搜索问题修改 zdq
         $model = model('JobSearchRtime')
             ->alias('jsr')
-            ->join('MemberSetmeal ms','ms.uid=jsr.uid','LEFT')
-            ->where('ms.deadline = 0 OR ms.deadline >'.time());
+            ->join('Job j', 'j.id=jsr.id', 'LEFT')
+            ->join('company c', 'c.id = j.company_id', 'LEFT')
+            ->field('j.id as job_id,
+            j.company_id,
+            c.companyname as company_name,
+            j.jobname as job_name,
+            j.content as job_content,
+            j.address as job_address,
+            j.minwage,
+            j.maxwage,
+            j.negotiable,
+            j.minage,
+            j.maxage,
+            j.age_na,
+            j.amount,
+            j.tag,
+            j.education,
+            j.experience')
+            ->where('j.audit', 1)
+            ->where('j.is_display', 1);
+
         if (isset($condition['refreshtime']) && intval($condition['refreshtime']) > 0) {
             $settr = intval($condition['refreshtime']);
             $model = $model->where(
@@ -252,6 +242,8 @@ class Marketing extends Backend
         }
 
         if (isset($condition['setmeal_id']) && count($condition['setmeal_id']) > 0) {
+            $model = $model->join('MemberSetmeal ms', 'ms.uid=jsr.uid', 'LEFT');
+            $model = $model->where('ms.deadline = 0 OR ms.deadline >' . time());
             $model = $model->where('jsr.setmeal_id', 'in', $condition['setmeal_id']);
         }
 
@@ -273,37 +265,28 @@ class Marketing extends Backend
                 break;
         }
 
-
         $num = (isset($condition['num']) && intval($condition['num']) > 0) ? intval($condition['num']) : 10;
-        $model = $model->distinct('jsr.id')->limit($num);
 
-        return $model;
+        $page_num = (isset($condition['page_num']) && intval($condition['page_num']) > 0) ? intval($condition['page_num']) : 1;
+
+        if (empty($page_num) || $page_num < 1) {
+            $start = 0;
+        } else {
+            $start = $page_num - 1;
+        }
+
+        $limit_start = $start * $this->pageSize;
+        if ($limit_start > $num) {
+            return [];
+        }
+
+        return $model->distinct('jsr.id')->limit($limit_start, $this->pageSize)->select();
+
     }
 
     protected function _searchCompanyList($condition = [])
     {
-        $model = $this->_parseCompanyByCondition($condition);
-
-        $comid_arr = $model->column('c.id');
-
-        if (empty($comid_arr) || !isset($comid_arr)) {
-            return array();
-        }
-
-        $company_list = model('Company')
-            ->alias('c')
-            ->join('company_contact cc', 'cc.uid=c.uid', 'LEFT')
-            ->join('company_info ci', 'ci.uid=c.uid', 'LEFT')
-            ->field('c.id as company_id,
-            c.companyname as company_name,
-            cc.contact as company_contact,
-            cc.mobile as company_mobile,
-            ci.address as company_address,
-            ci.website as company_website,
-            c.tag')
-            ->where('c.id', 'in', $comid_arr)
-            ->orderRaw('field(c.id,' . implode(",", $comid_arr) . ')')
-            ->select();
+        $company_list = $this->_parseCompanyByCondition($condition);
 
         if (empty($company_list) || !isset($company_list)) {
             return array();
@@ -405,7 +388,17 @@ class Marketing extends Backend
 
     protected function _parseCompanyByCondition($condition)
     {
-        $model = model('Company')->alias('c');
+        $model = model('Company')
+            ->alias('c')
+            ->join('company_contact cc', 'cc.uid=c.uid', 'LEFT')
+            ->join('company_info ci', 'ci.uid=c.uid', 'LEFT')
+            ->field('c.id as company_id,
+            c.companyname as company_name,
+            cc.contact as company_contact,
+            cc.mobile as company_mobile,
+            ci.address as company_address,
+            ci.website as company_website,
+            c.tag');
 
         // 企业性质
         if (isset($condition['nature']) && count($condition['nature']) > 0) {
@@ -478,7 +471,20 @@ class Marketing extends Backend
 
         $num = (isset($condition['num']) && intval($condition['num']) > 0) ? intval($condition['num']) : 10;
 
-        return $model->distinct('c.id')->limit($num);
+        $page_num = (isset($condition['page_num']) && intval($condition['page_num']) > 0) ? intval($condition['page_num']) : 1;
+
+        if (empty($page_num) || $page_num < 1) {
+            $start = 0;
+        } else {
+            $start = $page_num - 1;
+        }
+
+        $limit_start = $start * $this->pageSize;
+        if ($limit_start > $num) {
+            return [];
+        }
+
+        return $model->distinct('c.id')->limit($limit_start, $this->pageSize)->select();
     }
 
     protected function _searchCompanyByIds($condition = [])

@@ -175,7 +175,7 @@ const routes = [{
   }
 },
 {
-  path: '/resume/:id(\\d+)',
+  path: '/resume/:id(\\d+)/:company_uid(\\d+)?/:job_apply_id(\\d+)?',
   name: 'resumeShow',
   component: ResumeShow,
   meta: {

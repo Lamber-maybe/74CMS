@@ -9,7 +9,16 @@ class Resume extends \app\common\model\BaseModel
         1 => '已通过',
         2 => '未通过'
     ];
-    public $map_sex = [1 => '男', 2 => '女'];
+
+    /**
+     * 【优化】简历未定义数组下标问题
+     *  zch 2022.9.21
+     * 【旧】
+     *  public $map_sex = [1 => '男', 2 => '女'];
+     * 【新】
+     *  public $map_sex = [0 => '保密',1 => '男', 2 => '女'];
+     */
+    public $map_sex = [0 => '保密',1 => '男', 2 => '女'];
     public $map_marriage = [0 => '保密', 1 => '未婚', 2 => '已婚'];
     public $map_nature = [1 => '全职', 2 => '兼职', 3 => '实习'];
     protected $readonly = ['id', 'uid', 'addtime'];

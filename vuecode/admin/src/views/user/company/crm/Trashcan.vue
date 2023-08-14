@@ -183,7 +183,7 @@ export default {
   },
   data () {
     return {
-      loading: true,
+      loading: false,
       // 请求参数
       params: {
         page_size: 10,
@@ -245,6 +245,7 @@ export default {
       })
     },
     getDataList(){
+      this.loading = true
       recycleBinList(this.params).then(response => {
         if (response.data.length <= 0){
           this.total = 0

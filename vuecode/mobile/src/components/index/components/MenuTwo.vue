@@ -94,7 +94,7 @@ export default {
   .item {
     img {
       display: block;
-      width: 35px;
+      width: 39px;  // 修改触屏首页单行5图标长度 zch 2022.9.20
       height: 39px;
       margin: 0 auto;
     }

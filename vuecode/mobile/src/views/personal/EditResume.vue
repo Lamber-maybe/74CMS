@@ -41,10 +41,21 @@
         <div class="box_head">
           <div class="txt">求职意向</div>
           <div class="required">必填</div>
-          <router-link
+      <!--  【bug】简历求职意向最多应设置三条
+            zch 2022.9.20
+            【旧】
+            <router-link
+              to="/member/personal/resume/intention_edit/0"
+             ></router-link>
+           【新】
+           <div
+            @click="intention_add()"
+          ></div>
+            -->
+          <div
             class="add_ico"
-            to="/member/personal/resume/intention_edit/0"
-          ></router-link>
+            @click="intention_add()"
+          ></div>
           <div class="clear"></div>
         </div>
         <div class="box_content">
@@ -637,6 +648,18 @@ export default {
     //  完善简历跳转
     handleJumpImproveResume () {
       this.$router.push('/member/personal/ImproveResume')
+    },
+    /**
+     * 【bug】简历求职意向最多应设置三条
+     *  zch 2022.9.20
+     *  【新增】
+     */
+    intention_add () {
+      if (this.intentionList.length >= 3) {
+        this.$notify('求职意向最多可填写三条')
+      } else {
+        this.$router.push('/member/personal/resume/intention_edit/0')
+      }
     }
   }
 }

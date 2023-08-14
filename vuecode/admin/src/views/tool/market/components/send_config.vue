@@ -17,9 +17,13 @@
       <el-form-item label="发送渠道" prop="send_type">
         <el-checkbox-group v-model="form.send_type">
           <el-checkbox label="message">站内信</el-checkbox>
-          <el-checkbox label="sms">短信</el-checkbox>
+          <el-checkbox label="sms" disabled>短信</el-checkbox>
           <el-checkbox label="email">Email</el-checkbox>
         </el-checkbox-group>
+        <p class="messageBox">
+          <img src="../../../../assets/images/marketing/warn.png" alt="">
+          根据相关政策要求，群发短信需报备模板，如有群发需求请<span @click="concatClick()">联系官方客服</span>
+        </p>
       </el-form-item>
       <el-form-item label="选择模板">
         <el-dropdown
@@ -89,6 +93,21 @@
           <el-button @click="closeDialog">取 消</el-button>
         </el-form-item>
       </el-form>
+    </el-dialog>
+    <el-dialog
+      v-if="messageDialogVisible"
+      title=""
+      :visible.sync="messageDialogVisible"
+      width="377px"
+      :close-on-click-modal="false"
+      @close="closeDialog"
+    >
+      <p class="messageQrcodeTxt3">咨询客服</p>
+      <p class="messageQrcode">
+        <img src="../../../../assets/images/marketing/qrcode.png">
+      </p>
+      <p class="messageQrcodeTxt1">微信扫码咨询或拨打电话</p>
+      <p class="messageQrcodeTxt2">182-3404-5230</p>
     </el-dialog>
   </div>
 </template>
@@ -165,7 +184,8 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      messageDialogVisible: false
     }
   },
   created() {
@@ -241,11 +261,15 @@ export default {
     },
     closeDialog() {
       this.dialogVisible = false
+      this.messageDialogVisible = false
       this.tplform = {
         id: '',
         name: '',
         content: ''
       }
+    },
+    concatClick(){
+      this.messageDialogVisible = true
     }
   }
 }
@@ -272,5 +296,59 @@ export default {
 }
 .large {
   width: 608px;
+}
+.messageBox{
+  width: 437px;
+  height: 41px;
+  color:#FF9536;
+  font-size: 12px;
+  background: url('../../../../assets/images/marketing/bg.png') 0 0 no-repeat;
+  background-size: 100% 100%;
+  margin: 0;
+  line-height: 49px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding-top: 7px;
+}
+.messageBox img{
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 5px 0 15px;
+}
+.messageBox span{
+  text-decoration-color: #FF9536;
+    text-decoration-line: underline;
+  cursor: pointer;
+}
+.messageQrcode{
+  width:158px;
+  height:158px;
+  margin:0 auto;
+}
+.messageQrcodeTxt1{
+  width: 100%;
+  text-align: center;
+  color: #7E7E7E;
+  font-size: 14px;
+  margin: 21px 0 7px 0;
+}
+.messageQrcodeTxt2{
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  color: #188AFF;
+  margin: 0;
+}
+.messageQrcodeTxt3{
+  color:#474747;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+>>>.el-dialog__wrapper{
+  top: 100px;
 }
 </style>

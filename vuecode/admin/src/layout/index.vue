@@ -89,6 +89,7 @@
       </div>
       <div class="follow_table">
         <el-table
+          v-loading="loading"
           :data="tableData"
           style="width: 100%"
           :header-cell-style="{padding:'20px 0px'}"
@@ -205,6 +206,7 @@ export default {
   mixins: [ResizeMixin],
   data() {
     return {
+      loading: false,
       followData: [{
         value: '0',
         label: '不限类别'
@@ -303,6 +305,7 @@ export default {
       this.toBeFollowedup()
     },
     toBeFollowedup() {
+      this.loading = true
       toBeFollowedup({ 'page': this.currentPage, 'pagesize': this.pagesize, 'type': this.followScreen }).then(response => {
         if (response.data){
           this.tableData = response.data.rows
@@ -315,6 +318,7 @@ export default {
           this.total = 0
           this.currentPage = 1
         }
+        this.loading = false
       })
     },
     handleSizeChange(val){

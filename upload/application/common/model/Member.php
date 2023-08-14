@@ -429,6 +429,7 @@ class Member extends \app\common\model\BaseModel
                         ->value('admin_id');
                     if (!empty($crm_auto_assign)) {
                         $insert_data_company['admin_id'] = $crm_auto_assign;
+                        $insert_data_company['collection_time'] = time(); // 添加领取时间
                         model('b2bcrm.CrmAutoAssign')
                             ->where('admin_id', $crm_auto_assign)
                             ->setInc('assign_num');
@@ -698,7 +699,6 @@ class Member extends \app\common\model\BaseModel
         model('JobApply')
             ->where('personal_uid', 'in', $uid)
             ->delete();
-
         model('MarketQueue')
             ->where('uid', 'in', $uid)
             ->delete();

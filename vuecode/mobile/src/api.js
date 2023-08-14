@@ -498,5 +498,7 @@ export default {
   // 是否绑定微信
   imCheckBind: '/member/im/imCheckBind',
   // 获取优化简历详情
-  defectResumeInfo: '/personal/resume/getNoComplete'
+  defectResumeInfo: '/personal/resume/getNoComplete',
+  // 查看企业套餐是否允许发布视频招聘
+  isAllowPublishing: '/home/short_video/isAllowPublishing'
 }

@@ -854,7 +854,7 @@ export default {
           companyCrmAdd(insertData)
             .then(response => {
               this.$message.success(response.message)
-              if (this.form.sale == '0'){
+              if (this.form.member.sale == '0'){
                 setTimeout(function() {
                   that.$router.push('/user/company/crm/pubilceClient')
                 }, 1500)

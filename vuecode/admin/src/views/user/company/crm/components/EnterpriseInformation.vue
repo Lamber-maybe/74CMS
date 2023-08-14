@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="clientInfo_wrapper">
+  <div class="clientInfo_wrapper">
     <el-row class="main">
       <el-col :span="13">
         <div class="tables">
@@ -127,17 +127,9 @@ export default {
   props: ['details', 'uid'],
   data() {
     return {
-      loading: true,
       form: {
         uid: '',
-        id: '',
-        companyname: '',
-        short_name: '',
-        nature: '',
-        scale: '',
-        trade: '',
-        logo_url: '',
-        logo: 0
+        id: ''
       },
       dialogVisible: false,
       companyNature: [],
@@ -161,24 +153,22 @@ export default {
       for (var i = 0; i <= value.company_video.length - 1; i++){
         this.company_video[i].img_url = value.company_video[i].video_src + '?vframe/jpg/offset/0'
       }
-      this.form.id = value.id
-      this.form.companyname = value.companyname
-      this.form.short_name = value.short_name
-      this.form.nature = value.nature
-      this.form.scale = value.scale
-      this.form.trade = value.trade
-      this.form.logo = value.logo
-      this.form.logo_url = value.logo_url
-      this.loading = false
     }
   },
   created() {
+    this.form.id = this.details.id
+    this.company_img = this.details.company_img
+    this.company_video = this.details.company_video
+    for (var i = 0; i <= this.details.company_video.length - 1; i++){
+      this.company_video[i].img_url = this.details.company_video[i].video_src + '?vframe/jpg/offset/0'
+    }
     this.corporate_style_url = window.global.RequestBaseUrl + '/b2bcrm/Profile/uploadImg'
     this.upload_url = window.global.RequestBaseUrl + '/upload/index'
     this.headerObj = {
       'admintoken': getToken()
     }
     this.classify()
+    this.form.uid = this.uid
   },
   methods: {
     videoPlay(url){

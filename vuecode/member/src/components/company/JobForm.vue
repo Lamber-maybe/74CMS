@@ -28,7 +28,7 @@
               trigger: 'blur',
             },
             {
-              max: 60,
+              max: 30, // 【bug】发布、修改职位职位名称过长，修改后无法保存修改 zch 2022/9/19
               message: '长度在 1 到 30 个字符',
               trigger: 'blur',
             },

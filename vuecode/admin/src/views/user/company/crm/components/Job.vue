@@ -11,6 +11,7 @@
       <el-table
         :header-cell-style="{background:'#f9f9f9'}"
         :data="tableData"
+        v-loading="loading"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -198,6 +199,7 @@ export default {
   },
   data(){
     return {
+      loading: false,
       innerDrawer: false,
       setAuditVal: '',
       setAuditReason: '',
@@ -314,30 +316,36 @@ export default {
       this.$router.push(target)
     },
     recruit(id){
+      this.loading = true
       companyJob({ 'company_id': id, 'type': 1, 'page': this.currentPage, 'pagesize': this.pagesize }).then(res => {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       }).catch(() => {
-
+        this.loading = false
       })
     },
     offline(id){
+      this.loading = true
       companyJob({ 'company_id': id, 'type': 3, 'page': this.currentPage, 'pagesize': this.pagesize }).then(res => {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       }).catch(() => {
-
+        this.loading = false
       })
     },
     examine(id){
+      this.loading = true
       companyJob({ 'company_id': id, 'type': 2, 'page': this.currentPage, 'pagesize': this.pagesize }).then(res => {
         this.tableData = res.data.items
         this.total = res.data.total
         this.currentPage = res.data.current_page
+        this.loading = false
       }).catch(() => {
-
+        this.loading = false
       })
     },
     switchTemplate(type){
@@ -409,7 +417,15 @@ export default {
     },
     handleCloseJob(){
       this.innerDrawer = false
-      this.recruit(this.comid)
+      if (this.type == 'recruit'){
+        this.recruit(this.comid)
+      }
+      if (this.type == 'offline'){
+        this.offline(this.comid)
+      }
+      if (this.type == 'examine'){
+        this.examine(this.comid)
+      }
     },
     // 一键复制
     funCopy(row) {

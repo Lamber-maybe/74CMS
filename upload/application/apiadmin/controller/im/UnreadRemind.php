@@ -15,7 +15,7 @@ class UnreadRemind extends Backend
      * @var array
      */
     private $clientIp = [
-        '139.196.252.172'   // im服务器
+        '47.98.211.99'   // im服务器
     ];
 
     public function timingPush()

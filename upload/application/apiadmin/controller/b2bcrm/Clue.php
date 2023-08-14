@@ -25,6 +25,30 @@ class Clue extends Backend
         $district = input('get.district/a',[]);
         $creat_id = input('get.creat_id/d',0,'intval');
         $admin_id = input('get.admin_id/d',0,'intval');
+        $sort = input('get.sort/s', 'DESC', 'trim,strtoupper'); // 排序方式 asc dec
+        $sort_type = input('get.sort_type/s', '', 'trim');
+
+        // 排序规则【ASC|DESC】
+        if (!in_array($sort, ['ASC', 'DESC'])) {
+            $sort = 'DESC';
+        }
+
+        switch ($sort_type)
+        {
+            case 'collection_time':
+                // 领取时间
+                $order = 'a.collection_time ' .$sort;
+                break;
+            default:
+                if ($list_type === 2)
+                {
+                    $order = 'a.collection_time DESC,a.updatetime DESC';
+                }else
+                {
+                    $order = 'a.updatetime DESC';
+                }
+                break;
+        }
 
         $where = ['is_customer'=>0];
         if ($key_type>0)
@@ -77,9 +101,9 @@ class Clue extends Backend
             default: // 全部线索
                 break;
         }
-        $field = 'a.id,a.`name`,a.admin_id,a.mobile,a.contacts,a.weixin,a.district1,a.district2,a.district3,a.district,a.address,a.updatetime,a.createtime,a.creat_id,a.last_visit_time,a.remark,a.trade,count(b.id) as follow_count';
+        $field = 'a.id,a.`name`,a.admin_id,a.mobile,a.contacts,a.weixin,a.district1,a.district2,a.district3,a.district,a.address,a.updatetime,a.createtime,a.creat_id,a.last_visit_time,a.remark,a.trade,count(b.id) as follow_count,a.collection_time';
 
-        $list = model('b2bcrm.CrmClue')->getList($where,['updatetime DESC'],$current_page,$pagesize,$field);
+        $list = model('b2bcrm.CrmClue')->getList($where,$order,$current_page,$pagesize,$field);
 
         $category_data = model('Category')->getCache('QS_trade');
         $category_district_data = model('CategoryDistrict')->getCache();
@@ -106,6 +130,10 @@ class Clue extends Backend
             {
                 $v['not_following_day'] = '从未跟进';
             }
+
+            // 领取时间
+            $v['collection_time'] = !empty($v['collection_time']) ? date('Y-m-d H:i:s',$v['collection_time']) : '';
+
             unset($v['creat_id'],$v['last_visit_time']);
             $cluelist[] = $v;
         }
@@ -342,7 +370,7 @@ class Clue extends Backend
             }
             model('b2bcrm.CrmClue')
                 ->isUpdate('true')
-                ->save(['admin_id'=>$this->admininfo->id],['id'=>['in',$clue_id]]);
+                ->save(['admin_id'=>$this->admininfo->id,'collection_time'=>time()],['id'=>['in',$clue_id]]);
             Db::commit();
             $this->ajaxReturn(200, '领取成功', []);
         }catch (\Exception $e)
@@ -386,6 +414,7 @@ class Clue extends Backend
         if ($sale > 0)
         {
             $input_data['admin_id'] = $this->admininfo->id;
+            $input_data['collection_time'] = time(); // 添加领取时间
         }
         try {
             $sys_configs = model('b2bcrm.CrmSysConfig')->getDateByCategory('thread');
@@ -397,7 +426,12 @@ class Clue extends Backend
                     $sys_config[$v['key']] = $v['value'];
                 }
             }
-            if (isset($sys_config['thread_duplicate_name']) && $sys_config['thread_duplicate_name'] > 0)
+            /**
+             * 【bug】
+             * 线索名称重复验证修改
+             * zch 2022.9.19
+             */
+            if (isset($sys_config['thread_duplicate_name']) && $sys_config['thread_duplicate_name'] == 0)
             {
                 $count = model('b2bcrm.CrmClue')->getDataNum(['name'=>$input_data['name']]);
                 if ($count > 0)
@@ -450,6 +484,20 @@ class Clue extends Backend
         }
         $input = input('post.',[]);
         try {
+            /**
+             * 【bug】
+             * 线索名称重复验证修改
+             * zch 2022.9.19
+             */
+            $sys_configs = model('b2bcrm.CrmSysConfig')->where(['key'=>'thread_duplicate_name','category'=>'thread'])->value('value');
+            if ($sys_configs == 0)
+            {
+                $clue_find = model('b2bcrm.CrmClue')->where(['name'=>$input['name']])->find();
+                if (!empty($clue_find) && $clue_find['id'] != $clue_id)
+                {
+                    $this->ajaxReturn(500, '线索名称已存在');
+                }
+            }
             if(!fieldRegex($input['mobile'], 'mobile')){
                 $this->ajaxReturn(500, '联系电话格式错误');
             }
@@ -589,5 +637,27 @@ class Clue extends Backend
             ];
         }
         $this->ajaxReturn(200, '获取数据成功',$arr);
+    }
+
+    /**
+     * 查看线索名称是否重复
+     * zch
+     * 2022.9.19
+     */
+    public function isNameRepeat()
+    {
+        $name = input('post.name/s','','trim');
+        $id = input('post.id/d',0,'intval');
+        $return['sys_configs'] = model('b2bcrm.CrmSysConfig')
+            ->where([
+                'key'=>'thread_duplicate_name',
+                'category'=>'thread'
+            ])
+            ->value('value');
+        $return['clue_count'] = model('b2bcrm.CrmClue')
+            ->where('name',$name)
+            ->where('id','<>',$id)
+            ->count();
+        $this->ajaxReturn(200, '获取数据成功',$return);
     }
 }
