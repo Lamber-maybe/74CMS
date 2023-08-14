@@ -9,7 +9,7 @@ const businessRouter = {
   meta: {
     title: '业务',
     icon: 'example',
-    access: 'mobile'
+    access: 'business'
   },
   children: [{
     path: '/business/company',

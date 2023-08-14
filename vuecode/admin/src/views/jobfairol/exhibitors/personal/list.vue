@@ -60,6 +60,7 @@
         <el-table-column label="姓名" show-overflow-tooltip width="100">
           <template slot-scope="scope">
             <el-popover
+              v-if="scope.row.photo_url!=''"
               placement="right"
               trigger="hover"
             >
@@ -71,6 +72,9 @@
                 <i class="el-icon-picture" />
               </span>
             </el-popover>
+            <el-link v-else :href="scope.row.link" target="_blank" type="primary">
+              {{ scope.row.fullname }}
+            </el-link>
           </template>
         </el-table-column>
         <el-table-column label="基本信息" width="200">

@@ -55,7 +55,7 @@
               <div class="list_btn" v-if="item.room_status=='nostart'">房间未开启</div>
               <div class="list_btn" v-if="item.room_status=='overtime'">房间已关闭</div>
               <div class="list_btn orange" @click.stop="handlerNotice(item.id)" v-if="item.room_status=='opened'">提醒上线</div>
-              <div class="list_btn" @click.stop="copyUrl(item.link_url)" v-if="item.room_status=='opened'">复制链接</div>
+              <div class="list_btn" @click.stop="copyUrl(item.id)" v-if="item.room_status=='opened'">复制链接</div>
               <div class="list_btn" @click.stop="$router.push('/video/'+item.id)" v-if="item.room_status=='opened'">进入房间</div>
               <div class="clear"></div>
             </div>
@@ -186,9 +186,9 @@ export default {
           // on cancel
         })
     },
-    copyUrl (url) {
+    copyUrl (id) {
       var oInput = document.createElement('input')
-      oInput.value = url
+      oInput.value = this.$store.state.config.sitedomain + '/video/' + id
       document.body.appendChild(oInput)
       oInput.select() // 选择对象
       document.execCommand('Copy') // 执行浏览器复制命令

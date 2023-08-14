@@ -134,7 +134,6 @@
         <el-input v-model="form.address" />
       </el-form-item>
       <el-form-item
-        v-if="live_fields.content === true"
         label="职位描述"
         prop="content"
       >

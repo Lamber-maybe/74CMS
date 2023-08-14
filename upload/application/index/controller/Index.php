@@ -183,8 +183,9 @@ class Index extends \app\index\controller\Base
                     ->join(config('database.prefix').'job_search_rtime b','a.uid=b.uid','LEFT')
                     ->where('b.id','not null')
                     ->order('a.refreshtime desc')
-                    ->limit(7)
-                    ->column('a.id,a.companyname,a.audit,a.setmeal_id','a.id');
+                    ->limit(8)
+                    ->distinct('a.id')
+                    ->column('a.id,a.companyname,a.audit,a.setmeal_id,a.refreshtime','a.id');
         $company_id_arr = $setmeal_id_arr = $setmeal_list = [];
         foreach ($companyList as $key => $value) {
             $company_id_arr[] = $value['id'];
@@ -544,7 +545,7 @@ class Index extends \app\index\controller\Base
             ->join(config('database.prefix').'article_category b','a.cid=b.id','LEFT')
             ->where('a.is_display', 1)
             ->limit(16)
-            ->order('a.sort_id desc,a.id asc')
+            ->order('a.sort_id desc,a.id desc')
             ->column('a.id,a.title,a.link_url,a.addtime,a.cid,b.name as cname');
         foreach ($list as $key => $value) {
             $arr = $value;

@@ -171,6 +171,7 @@
 </template>
 
 <script>
+import wxshare from '@/assets/js/share.js'
 import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
@@ -257,6 +258,10 @@ export default {
         t.clickNum = r.data.info.click
         t.content = r.data.info.content
         t.pageTitle = r.data.info.title + ' - ' + t.$store.state.config.sitename
+        let wechatShareInfo = {
+          title: t.info.title
+        }
+        wxshare(wechatShareInfo, 'online_jobfairshow', location.href)
       }).catch(() => {})
     },
     // 企业列表

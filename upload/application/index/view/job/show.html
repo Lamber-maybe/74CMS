@@ -37,13 +37,15 @@
                             <div class="title post_title_margin">任职要求</div>
                             <div class="post_box1">
                                 <div class="clearfix">
+                                    {#if condition="$return.base_info.nature_text!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             工作性质
                                         </span>
                                         {#$return.base_info.nature_text#}
                                     </div>
-                                    {#if condition="$return.field_rule.amount.is_display==1"#}
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.amount.is_display==1 && $return.base_info.amount_text!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             招聘人数
@@ -51,19 +53,23 @@
                                         {#$return.base_info.amount_text#}
                                     </div>
                                     {#/if#}
+                                    {#if condition="$return.base_info.education_text!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             学历要求
                                         </span>
                                         {#$return.base_info.education_text#}
                                     </div>
+                                    {#/if#}
+                                    {#if condition="$return.base_info.experience_text!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             工作经验
                                         </span>
                                         {#$return.base_info.experience_text#}
                                     </div>
-                                    {#if condition="$return.field_rule.department.is_display==1"#}
+                                    {#/if#}
+                                    {#if condition="$return.field_rule.department.is_display==1 && $return.base_info.department!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             招聘部门
@@ -84,7 +90,7 @@
                                         {#/if#}
                                     </div>
                                     {#/if#}
-                                    {#if condition="$return.field_rule.custom_field_1.is_display==1"#}
+                                    {#if condition="$return.field_rule.custom_field_1.is_display==1 && $return.base_info.custom_field_1!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             {#$return.field_rule.custom_field_1.field_cn#}
@@ -92,7 +98,7 @@
                                         {#$return.base_info.custom_field_1#}
                                     </div>
                                     {#/if#}
-                                    {#if condition="$return.field_rule.custom_field_2.is_display==1"#}
+                                    {#if condition="$return.field_rule.custom_field_2.is_display==1 && $return.base_info.custom_field_2!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             {#$return.field_rule.custom_field_2.field_cn#}
@@ -100,7 +106,7 @@
                                         {#$return.base_info.custom_field_2#}
                                     </div>
                                     {#/if#}
-                                    {#if condition="$return.field_rule.custom_field_3.is_display==1"#}
+                                    {#if condition="$return.field_rule.custom_field_3.is_display==1 && $return.base_info.custom_field_3!=''"#}
                                     <div class="post_box1_font2 float">
                                         <span class="post_box1_font">
                                             {#$return.field_rule.custom_field_3.field_cn#}

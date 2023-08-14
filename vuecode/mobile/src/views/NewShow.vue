@@ -93,9 +93,10 @@ export default {
           this.pageTitle =
             this.info.title + ' - ' + this.$store.state.config.sitename
           let wechatShareInfo = {
-            title: info.title
+            title: this.info.title,
+            imgUrl: this.info.thumb
           }
-          wxshare(wechatShareInfo, 'newshow', location.href)
+          wxshare(wechatShareInfo, 'newsshow', location.href)
         })
         .catch(() => {})
     }

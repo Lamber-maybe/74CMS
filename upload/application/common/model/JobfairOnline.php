@@ -88,6 +88,10 @@ class JobfairOnline extends \app\common\model\BaseModel
     }
     // 添加参会企业
     public function participateAdd($data){
+        $exhibitors = model('JobfairOnlineParticipate')->where(['jobfair_id'=>$data['jobfair_id'],'uid'=>$data['uid']])->find();
+        if($exhibitors!==null){
+            return ['state'=>false,'msg'=>'已经报名过此招聘会'];
+        } 
         try {
             model('JobfairOnlineParticipate')->insert($data);
         } catch (\Exception $e) {

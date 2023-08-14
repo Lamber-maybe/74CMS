@@ -161,7 +161,7 @@ class Index extends \app\v1_0\controller\common\Base
                 ->field('id,title,thumb,link_url,click,addtime,source')
                 ->where('is_display', 1)
                 ->limit(5)
-                ->order('sort_id desc,id asc')
+                ->order('sort_id desc,id desc')
                 ->select();
             $thumb_id_arr = $thumb_arr = [];
             foreach ($list as $key => $value) {

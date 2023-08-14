@@ -218,6 +218,7 @@ export default {
       color: #333333;
       margin-bottom: 6px;
       height: 48px;
+      overflow:hidden;
     }
     width: 100%;
     position: relative;

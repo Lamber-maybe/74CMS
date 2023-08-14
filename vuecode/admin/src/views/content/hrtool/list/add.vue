@@ -39,7 +39,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="文件">
+        <el-form-item label="文件" prop="fileurl">
           <el-upload
             class="thumb-uploader"
             :action="apiUpload"
@@ -172,10 +172,10 @@ export default {
       }
     },
     beforeFileUpload(file) {
-      const filetypeArr = file.type.split('/')
-      const filetype = filetypeArr[1]
+      const filetypeArr = file.name.split('.')
+      const filetype = filetypeArr[filetypeArr.length - 1]
       const configFileExtArr = this.fileupload_ext.split(',')
-
+      console.log(file)
       if (!configFileExtArr.includes(filetype)) {
         this.$message.error('上传文件格式不允许')
         return false

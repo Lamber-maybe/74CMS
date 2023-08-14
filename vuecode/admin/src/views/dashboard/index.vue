@@ -37,7 +37,7 @@
               </el-col>
               <el-col :span="4-8">
                 <el-card shadow="hover" class="no-border">
-                  <div class="today-info" @click="$router.push('/user/personal_jobapply')">
+                  <div class="today-info" @click="$router.push('/user/job_apply')">
                     <div class="tit1">投递数</div>
                     <div class="num">{{ baseinfo.today_data.job_apply_today }}</div>
                     <div class="tit2">昨日：{{ baseinfo.today_data.job_apply_yesterday }}</div>

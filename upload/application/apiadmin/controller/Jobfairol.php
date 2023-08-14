@@ -289,7 +289,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $value['experience_cn'] = $value['enter_job_time'] == 0 ? '无经验' : format_date($value['enter_job_time']);
             $value['complete'] = isset($complete_list[$value['id']]) ? $complete_list[$value['id']] : 0;
             $value['r_audit'] = $value['audit'];
-            $value['photo_url'] = isset($thumb_arr[$value['photo_img']])?$thumb_arr[$value['photo_img']]:default_empty('jobfair_thumb');
+            $value['photo_url'] = isset($thumb_arr[$value['photo_img']])?$thumb_arr[$value['photo_img']]:'';
             $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }

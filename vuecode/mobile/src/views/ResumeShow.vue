@@ -727,7 +727,8 @@ export default {
         age: base_info.age + '岁',
         education: base_info.education_text,
         experience: base_info.experience_text,
-        intention_jobs: base_info.intention_jobs_text
+        intention_jobs: base_info.intention_jobs_text,
+        imgUrl: base_info.photo_img_src
       }
       wxshare(wechatShareInfo, 'resumeshow', location.href)
       this.mainLoading = false

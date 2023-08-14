@@ -322,6 +322,7 @@ export default {
   companySetmealList: '/company_setmeal/index',
   companySetmealLog: '/company_setmeal/log',
   companySetmealEdit: '/company_setmeal/edit',
+  companySetmealAdd: '/company_setmeal/add',
 
   // 订单列表
   orderList: '/order/index',
@@ -592,9 +593,7 @@ export default {
   // 简历投递记录
   jobApplyList: '/job_apply/index',
 
-
   
-
 
   // 网络招聘会
   jobFairListOl: '/jobfairol/index',
@@ -614,4 +613,5 @@ export default {
   jobFairListOlComBatchAdd: 'jobfairol/companyBatchAdd',
   jobFairListOlPerBatchAdd: 'jobfairol/personalBatchAdd',
 
+  
 }

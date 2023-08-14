@@ -559,8 +559,8 @@ class Export extends \app\common\controller\Backend
                 ? model('Resume')->map_sex[$value['sex']]
                 : '未知';
             $arr['age'] =
-                $value['birthday'] > 0
-                    ? date('Y') - $value['birthday']
+                $value['birthday'] != ''
+                    ? date('Y') - intval($value['birthday'])
                     : '未知';
             $arr['residence'] = $value['residence'];
             $arr['height'] = $value['height'];

@@ -68,7 +68,6 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
                     $value['room_status'] = 'opened';
                 }
             }
-            $value['link_url'] = config('global_config.mobile_domain').'video/'.$value['id'];
             $value['job_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['jobid']]);
             $value['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['comid']]);
 

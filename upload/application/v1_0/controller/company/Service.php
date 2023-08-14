@@ -15,18 +15,9 @@ class Service extends \app\v1_0\controller\common\Base
     }
     public function mysetmeal()
     {
-        $setmeal = model('MemberSetmeal')
-            ->alias('a')
-            ->join(
-                config('database.prefix') . 'setmeal s',
-                's.id=a.setmeal_id',
-                'LEFT'
-            )
-            ->field(
-                's.name,a.deadline,a.download_resume_point,a.jobs_meanwhile,a.refresh_jobs_free_perday,a.download_resume_max_perday,a.service_added_discount,a.enable_video_interview,a.enable_poster,a.show_apply_contact'
-            )
-            ->where('uid', $this->userinfo->uid)
-            ->find();
+        $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
+        $setmeal = model('Setmeal')->where('id',$member_setmeal->setmeal_id)->find();
+        $member_setmeal['name'] = $setmeal['name'];
         $company_info['companyname'] = $this->company_profile['companyname'];
         $company_info['logo_src'] =
         $this->company_profile['logo'] > 0
@@ -35,7 +26,7 @@ class Service extends \app\v1_0\controller\common\Base
         )
         : default_empty('logo');
         $this->ajaxReturn(200, '获取数据成功', [
-            'info' => $setmeal,
+            'info' => $member_setmeal,
             'company_info' => $company_info,
             'points'=>model('Member')->getMemberPoints($this->userinfo->uid)
         ]);

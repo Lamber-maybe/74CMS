@@ -31,8 +31,8 @@
         <template slot-scope="scope">
           <div v-if="scope.row.is_look" >
             <el-button type="primary" size="mini" @click="handlerDetail(scope.row)">详情</el-button>
-            <el-button type="primary" size="mini">进入房间</el-button>
-            <el-button type="primary" size="mini" @click="copyUrl(scope.row.link_url)">复制链接</el-button>
+            <el-button type="primary" size="mini" @click="enterRoom(scope.row.id)">进入房间</el-button>
+            <el-button type="primary" size="mini" @click="copyUrl(scope.row.id)">复制链接</el-button>
             <el-button type="danger" size="mini" @click="handlerNotice(scope.row.id)">提醒上线</el-button>
           </div>
           <div v-else>
@@ -151,9 +151,9 @@
 				// on cancel
 				})
 			},
-			copyUrl (url) {
+			copyUrl (id) {
 				var oInput = document.createElement('input')
-				oInput.value = url
+        oInput.value = this.$store.state.config.sitedomain + '/video/' + id
 				document.body.appendChild(oInput)
 				oInput.select() // 选择对象
 				document.execCommand('Copy') // 执行浏览器复制命令
@@ -161,6 +161,9 @@
 				oInput.style.display = 'none'
 				this.$message({type:'success',message:'复制成功'})
 			},
+      enterRoom (id) {
+        this.$router.push('/video/' + id)
+      }
     }
   }
 </script>

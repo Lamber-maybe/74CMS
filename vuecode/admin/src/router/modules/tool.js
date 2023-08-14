@@ -204,7 +204,7 @@ const toolRouter = {
       redirect: 'noRedirect',
       alwaysShow: true,
       meta: {
-        title: '营销',
+        title: '消息群发',
         access: 'market'
       },
       children: [{

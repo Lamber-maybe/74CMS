@@ -4,7 +4,7 @@ namespace app\common\model;
 
 class Article extends \app\common\model\BaseModel
 {
-    protected $readonly = ['id', 'addtime'];
+    protected $readonly = ['id'];
     protected $type     = [
         'id'        => 'integer',
         'cid'        => 'integer',

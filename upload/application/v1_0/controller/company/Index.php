@@ -150,18 +150,10 @@ class Index extends \app\v1_0\controller\common\Base
                 ->where('b.id','not null')
                 ->count(),
         ];
-
-        $setmeal = model('MemberSetmeal')
-            ->alias('a')
-            ->join(
-                config('database.prefix') . 'setmeal s',
-                's.id=a.setmeal_id',
-                'LEFT'
-            )
-            ->field('s.name,a.deadline,a.jobs_meanwhile,a.download_resume_point,a.refresh_jobs_free_perday,a.enable_poster')
-            ->where('uid', $this->userinfo->uid)
-            ->find();
-
+        
+        $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
+        $setmeal = model('Setmeal')->where('id',$member_setmeal->setmeal_id)->find();
+        $member_setmeal['name'] = $setmeal['name'];
         $message_list = model('Message')
             ->field('content,is_readed')
             ->where('uid', $this->userinfo->uid)
@@ -170,7 +162,7 @@ class Index extends \app\v1_0\controller\common\Base
             ->select();
         $return['companyinfo'] = $return_companyinfo;
         $return['manage'] = $return_manage;
-        $return['setmeal'] = $setmeal;
+        $return['setmeal'] = $member_setmeal;
         $return['message_list'] = $message_list;
         $return['mypoints'] = model('Member')->getMemberPoints($this->userinfo->uid);
         $return['resumelist_url_web'] = config('global_config.sitedomain').url('index/resume/index');

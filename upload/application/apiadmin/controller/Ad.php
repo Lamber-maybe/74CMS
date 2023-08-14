@@ -32,7 +32,7 @@ class Ad extends \app\common\controller\Backend
         if ($platform!='') {
             $where['b.platform'] = ['eq', $platform];
         }
-        if ($cid) {
+        if ($cid>0) {
             $where['a.cid'] = ['eq', $cid];
         }
         if ($settr == '0') {

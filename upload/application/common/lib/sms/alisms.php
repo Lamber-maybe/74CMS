@@ -70,7 +70,7 @@ class alisms
      *
      * @return DefaultAcsClient
      */
-    public static function getAcsClient()
+    public function getAcsClient()
     {
         //产品名称:云通信流量服务API产品,开发者无需替换
         $product = 'Dysmsapi';
@@ -117,6 +117,7 @@ class alisms
      */
     public function send($mobile, $templateCode, $params)
     {
+        unset($params['sitename']);
         $this->mobile = $mobile;
         $this->params = $params;
         $this->sms_tpl = model('SmsTpl')->getCache($templateCode);
@@ -146,7 +147,7 @@ class alisms
         $request->setSmsUpExtendCode('1234567');
 
         // 发起访问请求
-        $acsResponse = static::getAcsClient()->getAcsResponse($request);
+        $acsResponse = $this->getAcsClient()->getAcsResponse($request);
         if ($acsResponse->Code != 'OK') {
             throw new \Exception($acsResponse->Message);
         }

@@ -147,7 +147,7 @@ class ResumeRecommend
             ' + score9 * ' .
             $weight_config['experience'] .
             ' + score10 * ' .
-            $weight_config['birthyear'];
+            $weight_config['birthyear'].' desc';
     }
     private function buildWhere()
     {

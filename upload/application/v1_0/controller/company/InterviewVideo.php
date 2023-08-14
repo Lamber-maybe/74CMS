@@ -104,7 +104,6 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
             )
                 ? $photo_data[$value['photo_img']]
                 : default_empty('photo');
-            $value['link_url'] = config('global_config.sitedomain').url('index/video/main',['id'=>$value['id']]);
             $value['resume_link_url_web'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['resume_id']]);
             $value['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['jobid']]);
             $list[$key] = $value;
@@ -118,7 +117,6 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
 
         $return['items'] = $list;
         $return['option_jobs'] = $option_jobs;
-        $return['test_link'] = config('global_config.sitedomain').url('index/video/test');
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     public function total()

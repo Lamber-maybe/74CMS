@@ -74,7 +74,7 @@ import api from '@/api'
       if (this.$route.name === 'Register' || this.$route.name === 'MemberLogin' || this.$route.name === 'MemberBind'
         || this.$route.name === 'FindPwd' || this.$route.name === 'MemberOauthQq' || this.$route.name ===
         'MemberOauthWeixin'
-        || this.$route.name === 'Wxpay' || this.$route.name === 'ResumeSave') {
+        || this.$route.name === 'Wxpay' || this.$route.name === 'ResumeSave' || this.$route.name === 'Appeal') {
         this.pageType = 2
       }
       this.link_url_web = this.$store.state.config.link_url_web

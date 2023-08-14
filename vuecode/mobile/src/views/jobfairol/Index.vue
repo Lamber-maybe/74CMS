@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import wxshare from '@/assets/js/share.js'
 import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
@@ -63,6 +64,7 @@ export default {
   },
   created () {
     this.getJobfair(!0)
+    wxshare({}, 'online_jobfairlist', location.href)
   },
   methods: {
     getJobfair: function (init) {

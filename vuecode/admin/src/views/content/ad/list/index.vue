@@ -17,7 +17,7 @@
         >
           <el-option
             label="不限平台"
-            value="0"
+            value=""
           />
           <el-option
             v-for="(item, index) in adPlatform"

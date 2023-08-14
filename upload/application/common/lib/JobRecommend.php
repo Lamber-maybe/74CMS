@@ -113,7 +113,7 @@ class JobRecommend
             ' + score6 * ' .
             $weight_config['service_added'] .
             ' + score7 * ' .
-            $weight_config['refreshtime'];
+            $weight_config['refreshtime'].' desc';
     }
     private function buildWhere($outer_where)
     {

@@ -598,7 +598,8 @@ export default {
         jobname: base_info.jobname,
         wage: base_info.wage_text,
         companyname: this.com_info.companyname,
-        district: this.base_info.district_text
+        district: this.base_info.district_text,
+        imgUrl: this.com_info.logo_src
       }
       wxshare(wechatShareInfo, 'jobshow', location.href)
       this.getPosition(this.base_info.map_lat, this.base_info.map_lng)

@@ -178,8 +178,8 @@ export default {
       }
     },
     beforeFileUpload(file) {
-      const filetypeArr = file.type.split('/')
-      const filetype = filetypeArr[1]
+      const filetypeArr = file.name.split('.')
+      const filetype = filetypeArr[filetypeArr.length - 1]
       const configFileExtArr = this.fileupload_ext.split(',')
 
       if (!configFileExtArr.includes(filetype)) {

@@ -2,7 +2,8 @@
 	<el-card>
 		<menuheader>视频面试</menuheader>
 		<div class="warning">
-			<p><img src="../../../assets/images/warning_icon.png"/>为提高视频面试效率，建议您在面试前提前检查您的设备是否能够正常连通  <a :href="test_link" target="_blank">点击立即检测>></a>  </p>
+			<p><img src="../../../assets/images/warning_icon.png"/>为提高视频面试效率，建议您在面试前提前检查您的设备是否能够正常连通
+			</p>
 			<p>视频面试房间仅在面试当天开启，在面试时间15天之后自动关闭</p>
 		</div>
 		<el-table  :data="dataset" :header-cell-style="{background:'#fcfcfc',color:'#b8babd'}" v-loading="listLoading">
@@ -48,8 +49,8 @@
 					</div>
 					<div v-if="scope.row.room_status=='opened'" class="operationBtn">
 						<el-button size="mini" type="primary" @click="handlerDetailShow(scope.row)">查看详情</el-button>
-						<el-button size="mini" type="primary" @click="enterRoom(scope.row.id)">进入房间</el-button>
-						<el-button size="mini" type="primary" @click="copyUrl(scope.row.link_url)">复制链接</el-button>
+						<el-button size="mini" type="primary" @click="enterRoom(scope.row.id)">立即检测</el-button>
+						<el-button size="mini" type="primary" @click="copyUrl(scope.row.id)">复制链接</el-button>
 						<el-button size="mini" type="danger" @click="handlerNotice(scope.row.id)">提醒上线</el-button>
 					</div>
 				</template>
@@ -153,9 +154,9 @@
 				// on cancel
 				})
 			},
-			copyUrl (url) {
+			copyUrl (id) {
 				var oInput = document.createElement('input')
-				oInput.value = url
+				oInput.value = this.$store.state.config.sitedomain + '/video/' + id
 				document.body.appendChild(oInput)
 				oInput.select() // 选择对象
 				document.execCommand('Copy') // 执行浏览器复制命令
@@ -164,7 +165,7 @@
 				this.$message({type:'success',message:'复制成功'})
 			},
       enterRoom (id) {
-        this.$router.push('/video/' + id)
+        this.$router.push('/video_test/' + id)
       }
 		},
 	}
