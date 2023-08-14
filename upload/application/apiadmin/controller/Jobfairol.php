@@ -204,7 +204,7 @@ class Jobfairol extends \app\common\controller\Backend{
         foreach ($list as $key => $val) {
             $val['setmeal_cn'] = model('Setmeal')->where('id', $val['setmeal_id'])->value('name');
             $val['mobile'] = $val['mobile'] ? $val['mobile'] : $val['telephone'];
-            $val['add_status'] = !empty($val['qrcode']) ? 1 : 0;
+            $val['add_status'] = $val['qrcode'] ? 1 : 0;
             $val['audit'] = intval($val['audit']);
             $val['c_audit'] = intval($val['c_audit']);
             if (!empty($val['qrcode'])) {
@@ -215,7 +215,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $val['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $val['company_id']]);
             $list[$key] = $val;
         }
-        $total = model('JobfairOnlineParticipate')
+        $total = model('JobfairOnlineParticipate')->alias('a')
             ->where($where)
             ->count();
         $setmeal = model('Setmeal')->field('id,name')->select();
@@ -243,7 +243,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $where['utype'] = 2;
         $list = model('JobfairOnlineParticipate')
             ->alias('a')
-            ->field('a.id jid,a.uid juid,a.jobfair_id,a.utype,a.audit jaudit,a.qrcode,a.addtime jaddtime,a.source jsource,a.stick jstick,a.note,b.*,c.mobile')
+            ->field('a.id jid,a.uid juid,a.jobfair_id,a.utype,a.audit jaudit,a.qrcode,a.addtime jaddtime,a.source jsource,a.stick jstick,a.note,b.*,c.mobile,b.is_display')
             ->join(config('database.prefix') . 'resume b', 'a.uid=b.uid', 'left')
             ->join(config('database.prefix') . 'resume_contact c', 'a.uid=c.uid', 'left')
             ->where('b.id is not null')
@@ -287,7 +287,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $value['experience_cn'] = $value['enter_job_time'] == 0 ? '无经验' : format_date($value['enter_job_time']);
             $value['complete'] = isset($complete_list[$value['id']]) ? $complete_list[$value['id']] : 0;
             $value['r_audit'] = $value['audit'];
-            $value['photo_url'] = isset($thumb_arr[$value['photo_img']])?$thumb_arr[$value['photo_img']]:'';
+            $value['photo_url'] = isset($thumb_arr[$value['photo_img']])?$thumb_arr[$value['photo_img']]:default_empty('photo');
             $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }

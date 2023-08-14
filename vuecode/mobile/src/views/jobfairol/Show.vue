@@ -266,8 +266,8 @@ export default {
         t.clickNum = r.data.info.click
         t.content = r.data.info.content
         let wechatShareInfo = {
-          title: t.info.title,
-          imgUrl: r.data.thumb_src
+          title: t.title,
+          imgUrl: r.data.info.thumb_src
         }
         wxshare(wechatShareInfo, 'online_jobfairshow', location.href)
       }).catch(() => {})
@@ -296,7 +296,7 @@ export default {
     // 职位列表
     getJobList: function (init) {
       var t = this
-      http.get(api.jobfairol_joblist, {jobfair_id: t.jobfair_id, keyword: t.comJobKey, page: t.page, pagesize: t.pagesize}).then(r => {
+      http.get(api.jobfairol_joblist, {jobfair_id: t.jobfair_id, keyword: t.comJobKey, page: t.pageJob, pagesize: t.pagesize}).then(r => {
         if (init === true) {
           this.jobList = [...r.data.items]
         } else {
@@ -317,7 +317,7 @@ export default {
     // 简历列表
     getResumeList: function (init) {
       var t = this
-      http.get(api.jobfairol_resumelist, {jobfair_id: t.jobfair_id, keyword: t.resKey, page: t.pageJob, pagesize: t.pagesize}).then(r => {
+      http.get(api.jobfairol_resumelist, {jobfair_id: t.jobfair_id, keyword: t.resKey, page: t.pageRes, pagesize: t.pagesize}).then(r => {
         if (init === true) {
           this.resumeList = [...r.data.items]
         } else {

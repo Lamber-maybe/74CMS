@@ -29,15 +29,15 @@
 				<div class="jobfair_search_box float clearfix">
 					<div class="clearfix float">
 						<div class="search_select float">
-							<span>{{ fText }}</span>
+							<span>{{ selectedSearchTypeCn }}</span>
 							<ul class="select_hover_box">
-								<li @click="changeSearchType('com', '企业名称')">企业名称</li>
-								<li @click="changeSearchType('job', '职位名称')">职位名称</li>
-								<li @click="changeSearchType('res', '求职者')">求职者</li>
+								<li @click="changeSelectedSearchType('com', '企业名称')">企业名称</li>
+								<li @click="changeSelectedSearchType('job', '职位名称')">职位名称</li>
+								<li @click="changeSelectedSearchType('res', '求职者')">求职者</li>
 							</ul>
 						</div>
 						<div class="search_input float">
-							<input type="text" v-model="keyword" @keyup.enter="doSearch" placeholder="请输入关键字" />
+							<input type="text" v-model="keyword" placeholder="请输入关键字" />
 						</div>
 						<div class="search_btn float">
 							<button type="button" @click="doSearch">搜索</button>
@@ -54,20 +54,20 @@
 	<div class="content_wrapper">
 		<div class="tab_wrapper">
 			<div class="tab clearfix">
-				<div :class="'float '+(tab === 'com' || tab === 'job' ? 'active' : '')" @click="changeTab('com')">
+				<div :class="'float '+(searchType === 'com' || searchType === 'job' ? 'active' : '')" @click="changeTab('com')">
 					<a>参展企业大厅</a>
 					<span class="bt_border"></span>
 				</div>
-				<div :class="'float '+(tab === 'res' ? 'active' : '')" @click="changeTab('res')">
+				<div :class="'float '+(searchType === 'res' ? 'active' : '')" @click="changeTab('res')">
 					<a>求职者大厅</a>
 					<span class="bt_border"></span>
 				</div>
 			</div>
 		</div>
-		<div class="content ol">
+		<div class="content ol" v-loading="loading">
 			<!-- 企业列表 -->
-			<div class="list_empty" v-if="companyList.length === 0 && tab === 'com'"><div class="emp_text">暂时没有数据哦</div></div>
-			<div class="jobfair_wrapper clearfix" v-show="tab === 'com'">
+			<div class="list_empty" v-if="companyList.length === 0 && searchType === 'com'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="jobfair_wrapper clearfix" v-show="searchType === 'com'">
 				<div class="jobfair_list float" v-for="(item, index) in companyList" :key="index">
 					<div class="base_information clearfix">
 						<div class="img float"><img :src="item.logo_src" alt=""></div>
@@ -87,8 +87,8 @@
 				</div>
 			</div>
 			<!-- 职位列表 -->
-			<div class="list_empty" v-if="jobList.length === 0 && tab === 'job'"><div class="emp_text">暂时没有数据哦</div></div>
-			<div class="post_wrapper clearfix" v-show="tab === 'job'">
+			<div class="list_empty" v-if="jobList.length === 0 && searchType === 'job'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="post_wrapper clearfix" v-show="searchType === 'job'">
 				<div class="post_item float" v-for="(item, index) in jobList" :key="index">
 					<div class="clearfix">
 						<div class="post_img float">
@@ -113,8 +113,8 @@
 				</div>
 			</div>
 			<!-- 求职者列表 -->
-			<div class="list_empty" v-if="resList.length === 0 && tab === 'res'"><div class="emp_text">暂时没有数据哦</div></div>
-			<div class="jobHunter_wrapper clearfix" v-show="tab === 'res'">
+			<div class="list_empty" v-if="resList.length === 0 && searchType === 'res'"><div class="emp_text">暂时没有数据哦</div></div>
+			<div class="jobHunter_wrapper clearfix" v-show="searchType === 'res'">
 				<div class="jobHunter_list float" v-for="(item, index) in resList" :key="index" @click="window.location.href=resumeUrl(item.id)">
 					<div class="p_img">
 						<img class="photo" :src="item.photo_img_src">
@@ -137,7 +137,7 @@
 				<div class="paging_box ol clearfix">
 					<button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
 					<button class="paging_pre" v-if="page==1">上一页</button>
-					<div class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</div>
+					<a href="javascript:;" class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</a>
 					<button v-if="page!=total_page" class="paging_next enable" @click="page++,pageClick()">下一页</button>
 					<button v-if="page==total_page" class="paging_next">下一页</button>
 				</div>
@@ -157,6 +157,7 @@
 	var app = new Vue({
 		el: '#app',
 		data: {
+			loading:false,
 			isLogin:false,
 			utype:0,
 			id:"{#$info.id#}",
@@ -168,8 +169,8 @@
 			total:0,
 			total_page:0,
 			keyword: '',
-			tab: 'com',
-			fText: '企业名称',
+			selectedSearchType:'com',
+			selectedSearchTypeCn:'企业名称',
 			searchType: 'com',
 			dialogVisible:false,
 			dialogQrSrc: '',
@@ -181,8 +182,6 @@
 		},
 		created:function(){
 			this.getCompanyList(true)
-			this.getJobList(false)
-			this.getResList(false)
 		},
 		computed: {
 			//分页
@@ -214,8 +213,10 @@
 		methods:{
 			getCompanyList:function(init){
 				var t = this;
+				t.loading = true
 				httpget(qscms.apiList.jobfairolCompanyList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
 					t.companyList = r.data.items
+					t.loading = false
 					if (init) {
 						t.total = r.data.total
 						t.total_page = r.data.total_page
@@ -224,8 +225,10 @@
 			},
 			getJobList:function(init){
 				var t = this;
+				t.loading = true
 				httpget(qscms.apiList.jobfairolJobList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
 					t.jobList = r.data.items
+					t.loading = false
 					if (init) {
 						t.total = r.data.total
 						t.total_page = r.data.total_page
@@ -234,31 +237,40 @@
 			},
 			getResList:function(init){
 				var t = this;
+				t.loading = true
 				httpget(qscms.apiList.jobfairolResList,{jobfair_id:t.id,page:t.page,pagesize:t.pagesize,keyword:t.keyword}).then(function(r){
 					t.resList = r.data.items
+					t.loading = false
 					if (init) {
 						t.total = r.data.total
 						t.total_page = r.data.total_page
 					}
 				}).catch(function(){})
 			},
-			changeTab:function (tab) {
-				this.tab = tab
-				if (this.tab === 'com') {
+			changeTab:function (searchType) {
+				this.page = 1
+				this.searchType = searchType
+				this.keyword = ''
+				if (this.searchType === 'com') {
 					this.getCompanyList(true)
-				} else if (this.searchType === 'job') {
-					this.getJobList(true)
 				} else {
 					this.getResList(true)
 				}
 			},
 			doSearch:function() {
-				this.publicGetData()
-				this.tab = this.searchType
+				this.page = 1
+				this.searchType = this.selectedSearchType
+				this.publicGetData(true)
 			},
-			changeSearchType:function(type, text) {
-				this.searchType = type
-				this.fText = text
+			changeSelectedSearchType:function(type, text) {
+				this.selectedSearchType = type
+				if (this.selectedSearchType === 'com') {
+					this.selectedSearchTypeCn = '企业名称'
+				} else if (this.selectedSearchType === 'job') {
+					this.selectedSearchTypeCn = '职位名称'
+				} else {
+					this.selectedSearchTypeCn = '简历名称'
+				}
 			},
 			doApply:function(utype) {
 				var that = this
@@ -323,19 +335,19 @@
 				if(data !== this.page){
 					this.page = data
 					//根据点击页数请求数据
-					this.publicGetData()
+					this.publicGetData(false)
 				}
 			},
 			pageClick: function(){
-				this.publicGetData()
+				this.publicGetData(false)
 			},
-			publicGetData:function() {
+			publicGetData:function(init) {
 				if (this.searchType === 'com') {
-					this.getCompanyList(true)
+					this.getCompanyList(init)
 				} else if (this.searchType === 'job') {
-					this.getJobList(true)
+					this.getJobList(init)
 				} else {
-					this.getResList(true)
+					this.getResList(init)
 				}
 			},
 			// 投简历

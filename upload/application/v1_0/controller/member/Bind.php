@@ -230,9 +230,7 @@ class Bind extends \app\v1_0\controller\common\Base
             'code' => 'require|max:4',
             'utype' => 'require|in:1,2',
             'openid' => 'require',
-            'unionid' => 'require',
-            'nickname' => 'require',
-            'avatar' => 'require'
+            'unionid' => 'require'
         ]);
         $validate->extend('checkMobile', function ($value) {
             if (fieldRegex($value, 'mobile')) {

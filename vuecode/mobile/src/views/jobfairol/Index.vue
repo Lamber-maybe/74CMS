@@ -131,6 +131,10 @@ export default {
       .t1 {
         padding-left: 113px;font-size: 15px;color: #333;font-weight: bold;word-break: break-all;line-height: 1.7;
         height: 50px;
+        width: 9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         .st {
           padding: 1px 6px;font-size: 10px;border-radius: 18px;margin-right: 5px;vertical-align: middle;
           &.ing {

@@ -106,9 +106,10 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         }
         $list = model('JobfairOnlineParticipate')
                 ->alias('a')
-                ->field('a.qrcode,a.stick,b.*,c.wx_qrcode')
+                ->field('a.qrcode,a.stick,b.*,d.qrcode,c.wx_qrcode')
                 ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
                 ->join(config('database.prefix') . 'customer_service c', 'b.cs_id=c.id', 'left')
+                ->join(config('database.prefix') . 'jobfair_online d', 'd.id=a.jobfair_id', 'left')
                 ->where('a.jobfair_id',$jobfair_id)
                 ->where('a.utype',1)
                 ->where('a.audit',1)
@@ -117,7 +118,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         if($keyword!=''){
             $list = $list->where('b.companyname','like','%'.$keyword.'%');
         }
-        $list = $list->order('a.stick desc,b.refreshtime desc')->page($current_page, $pagesize)->select();
+        $list = $list->order('a.stick desc,b.refreshtime desc,b.id desc')->page($current_page, $pagesize)->select();
 
         $job_list = $comid_arr = $qrcode_arr = $qrcode_id_arr = $logo_arr = $logo_id_arr = $cs_id_arr = $cs_arr = [];
         foreach ($list as $key => $value) {
@@ -222,7 +223,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         if($keyword!=''){
             $list = $list->where('b.jobname','like','%'.$keyword.'%');
         }
-        $list = $list->order('b.refreshtime desc')->page($current_page, $pagesize)->select();
+        $list = $list->order('b.refreshtime desc,b.id desc')->page($current_page, $pagesize)->select();
 
         $comid_arr = $cominfo_arr = $logo_arr = $logo_id_arr = $icon_id_arr = $icon_arr = $qrcode_arr = $qrcode_id_arr = $cs_id_arr = $cs_arr = [];
 
@@ -341,14 +342,17 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         $return['items'] = $returnlist;
         $total = model('JobfairOnlineParticipate')
             ->alias('a')
-            ->field('b.*')
             ->join(config('database.prefix') . 'job b', 'a.uid=b.uid', 'right')
             ->where('a.jobfair_id',$jobfair_id)
             ->where('a.utype',1)
             ->where('a.audit',1)
             ->where('b.is_display',1)
-            ->where('b.audit',1)
-            ->count();
+            ->where('b.audit',1);
+        if($keyword!=''){
+            $total = $total->where('b.jobname','like','%'.$keyword.'%');
+        }
+        $total = $total->count();
+            
         $return['total'] = $total;
         $return['total_page'] = $total == 0 ? 0 : ceil($total / $pagesize);
         $this->ajaxReturn(200,'获取数据成功',$return);
@@ -369,8 +373,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 ->where('a.jobfair_id',$jobfair_id)
                 ->where('a.utype',2)
                 ->where('a.audit',1);
+        $against = '';
         if($keyword!=''){
-            $against = '';
             if (false !== stripos($keyword, ' ')) {
                 $keyword = merge_spaces($keyword);
                 $tmp_keyword_arr = explode(' ', $keyword);
@@ -385,7 +389,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         }else{
             $list = $list->join(config('database.prefix') . 'resume_search_rtime b', 'a.uid=b.uid', 'right');
         }
-        $resumeid_arr = $list->order('b.refreshtime desc')->page($current_page, $pagesize)->column('b.id');
+        $resumeid_arr = $list->order('b.refreshtime desc,b.id desc')->distinct(true)->page($current_page, $pagesize)->column('b.id');
         $rids = [];
         if(!empty($resumeid_arr)){
             $rids = implode(',', $resumeid_arr);
@@ -546,8 +550,13 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             ->alias('a')
             ->where('a.jobfair_id',$jobfair_id)
             ->where('a.utype',2)
-            ->where('a.audit',1)
-            ->count();
+            ->where('a.audit',1);
+        if($against!=''){
+            $total = $total->join(config('database.prefix') . 'resume_search_key b', 'a.uid=b.uid', 'right')->where("MATCH (`intention_jobs`) AGAINST ('" .$against ."' IN BOOLEAN MODE)");
+        }else{
+            $total = $total->join(config('database.prefix') . 'resume_search_rtime b', 'a.uid=b.uid', 'right');
+        }
+        $total = $total->count('distinct b.id');
         $return['total'] = $total;
         $return['total_page'] = $total == 0 ? 0 : ceil($total / $pagesize);
         $this->ajaxReturn(200,'获取数据成功',$return);

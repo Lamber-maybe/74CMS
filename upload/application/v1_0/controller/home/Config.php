@@ -221,6 +221,7 @@ class Config extends \app\v1_0\controller\common\Base
 
         //============处理替换自定义标签start=============
         $query = input('get.data/s','','trim');
+        $query = htmlspecialchars_decode($query);
         if($query!="{}"){
             $query = json_decode($query,true);
         }else{
@@ -279,6 +280,7 @@ class Config extends \app\v1_0\controller\common\Base
 
         
         $custom_data = input('get.custom_data/s','','trim');
+        $custom_data = htmlspecialchars_decode($custom_data);
         if($custom_data!="{}"){
             $custom_data = json_decode($custom_data,true);
         }else{

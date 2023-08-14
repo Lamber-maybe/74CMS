@@ -743,8 +743,8 @@ class Weixin extends \app\common\controller\Base
                 }else{
                     $openid = $weixin_userinfo['openid'];
                     $unionid = isset($weixin_userinfo['unionid'])?$weixin_userinfo['unionid']:'';
-                    $nickname = $weixin_userinfo['nickname'];
-                    $avatar = $weixin_userinfo['headimgurl'];
+                    $nickname = '';
+                    $avatar = '';
                 }
                 if($unionid!=''){
                     $bindinfo_where['unionid'] = $unionid;
@@ -829,9 +829,7 @@ class Weixin extends \app\common\controller\Base
             }else{
                 $openid = $weixin_userinfo['openid'];
                 $unionid = isset($weixin_userinfo['unionid'])?$weixin_userinfo['unionid']:'';
-                $nickname = $weixin_userinfo['nickname'];
-                $avatar = $weixin_userinfo['headimgurl'];
-                $query = '?bindType=weixin&openid='.$openid.'&unionid='.$unionid.'&nickname='.$nickname.'&avatar='.$avatar;
+                $query = '?bindType=weixin&openid='.$openid.'&unionid='.$unionid;
                 $content = "您还未绑定" . config('global_config.sitename') . "帐号，现在开始绑定：<a href='" . config('global_config.mobile_domain') . "member/bind".$query."'>点击开始注册/绑定帐号</a>";
             }
         }
@@ -954,14 +952,12 @@ class Weixin extends \app\common\controller\Base
         if($weixin_userinfo!==null){
             $openid = $weixin_userinfo['openid'];
             $unionid = isset($weixin_userinfo['unionid'])?$weixin_userinfo['unionid']:'';
-            $nickname = $weixin_userinfo['nickname'];
-            $avatar = $weixin_userinfo['headimgurl'];
         }else{
             $openid = $openid;
             $unionid = '';
-            $nickname = '';
-            $avatar = '';
         }
+        $nickname = '';
+        $avatar = '';
         $content = str_replace("{domain}",config('global_config.mobile_domain'),$content);
         $content = str_replace("{openid}",$openid,$content);
         $content = str_replace("{unionid}",$unionid,$content);

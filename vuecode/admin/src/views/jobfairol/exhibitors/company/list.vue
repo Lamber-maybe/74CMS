@@ -483,7 +483,7 @@ export default {
       const params = {
         jobfair_id: this.jobfair_id,
         uid: this.uIdarr,
-        qrcode: this.qrcode,
+        qrcode: this.qr_mode==1?this.qrcode:0,
         note: this.note
       }
       companyQrcode(params, 'post').then(response => {

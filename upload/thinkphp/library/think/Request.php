@@ -1032,7 +1032,6 @@ class Request
 
         // 解析过滤器
         $filter = $this->getFilter($filter, $default);
-
         if (is_array($data)) {
             array_walk_recursive($data, [$this, 'filterValue'], $filter);
             reset($data);
@@ -1066,7 +1065,15 @@ class Request
         if (is_null($filter)) {
             $filter = [];
         } else {
-            $filter = $filter ?: $this->filter;
+            if(!$filter){
+                $filter = $this->filter;
+            }else{
+                $filter_arr = explode(",",$filter);
+                $def_arr = explode(",",$this->filter);
+                $filter_arr = array_merge($def_arr,$filter_arr);
+                $filter = implode(",",$filter_arr);
+            }
+            
             if (is_string($filter) && false === strpos($filter, '/')) {
                 $filter = explode(',', $filter);
             } else {

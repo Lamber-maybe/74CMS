@@ -77,8 +77,7 @@
 }
 
 .process_text img {
-  width: 23px;
-  height: 19px;
+
 }
 
 .process_text .img1 {
@@ -521,6 +520,11 @@
   cursor: pointer;
   color: #333333;
   font-size: 16px;
+  width: 114px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post_item .post_name span {
@@ -569,6 +573,11 @@
   font-size: 12px;
   line-height: 22px;
   cursor: pointer;
+  width: 156px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post_item .btn_box button {

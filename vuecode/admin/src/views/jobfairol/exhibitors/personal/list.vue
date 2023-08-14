@@ -63,81 +63,97 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="42" />
-        <el-table-column label="姓名" show-overflow-tooltip width="100">
+        <el-table-column label="姓名" min-width="220">
           <template slot-scope="scope">
-            <el-popover
-              v-if="scope.row.photo_url!=''"
-              placement="right"
-              trigger="hover"
-            >
-              <img :src="scope.row.photo_url">
-              <span slot="reference">
-                <el-link :href="scope.row.link" target="_blank" type="primary">
-                  {{ scope.row.fullname }}
-                </el-link>
-                <i class="el-icon-picture" />
+            <div class="namecol">
+              <el-popover placement="right" trigger="hover" width="300">
+                <img :src="scope.row.photo_url" style="max-width: 274px">
+                <span slot="reference">
+                  <span class="avatar">
+                    <el-avatar :src="scope.row.photo_url" />
+                  </span>
+                </span>
+              </el-popover>
+              <span>
+                <div>
+                  <el-link
+                    :href="scope.row.link"
+                    target="_blank"
+                    type="primary"
+                    class="text"
+                    :underline="false"
+                  >
+                    {{ scope.row.fullname }}
+                  </el-link>
+                  <img
+                    v-if="scope.row.bind_weixin == 1"
+                    style="vertical-align: middle; margin-left: 4px"
+                    :src="require('@/assets/images/wx_icon.png')"
+                  >
+                </div>
+                <div>
+                  <span>{{ scope.row.age }}</span>
+                  ·
+                  <span>{{ scope.row.sex_cn }}</span>
+                  ·
+                  <span>{{ scope.row.education_cn }}</span>
+                  ·
+                  <span>{{ scope.row.experience_cn }}</span>
+                </div>
               </span>
-            </el-popover>
-            <el-link v-else :href="scope.row.link" target="_blank" type="primary">
-              {{ scope.row.fullname }}
-            </el-link>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="基本信息" width="200">
-          <template slot-scope="scope">
-            {{ scope.row.age }} / {{ scope.row.sex_cn }} / {{ scope.row.education_cn }} / {{ scope.row.experience_cn }}
-          </template>
-        </el-table-column>
-        <el-table-column label="简历完整度">
+        <el-table-column label="简历完整度" min-width="120">
           <template slot-scope="scope">
             <el-progress
               :text-inside="true"
               :stroke-width="16"
               :percentage="scope.row.complete"
-              style="width:100px"
+              style="width: 100px"
             />
           </template>
         </el-table-column>
-        <el-table-column label="简历状态" align="center">
+        <el-table-column align="center" label="简历状态" min-width="150">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.r_audit === 0" type="warning">待审核</el-tag>
-            <el-tag v-else-if="scope.row.r_audit === 1" type="success">已通过</el-tag>
-            <el-tag v-else-if="scope.row.r_audit === 2" type="danger">未通过</el-tag>
+            <div title="公开状态">
+              <span v-if="scope.row.is_display === 0" >不公开</span>
+              <span v-else-if="scope.row.is_display === 1">公开</span>
+            </div>
+            <div title="审核状态">
+              <span v-if="scope.row.r_audit === 0" >待审核</span>
+              <span v-else-if="scope.row.r_audit === 1">已通过</span>
+              <span v-else-if="scope.row.r_audit === 2">未通过</span>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="刷新时间" width="150">
+        <el-table-column align="center" label="刷新/添加时间" min-width="150">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.refreshtime | timeFilter }}</span>
+            <div title="简历刷新时间">
+              <i class="el-icon-time" />{{ scope.row.refreshtime | timeFilter }}
+            </div>
+            <div title="参会时间">
+              <span v-if="scope.row.jaddtime>0">
+                <i class="el-icon-time" />
+                <span>{{ scope.row.jaddtime | timeFilter }}</span>
+              </span>
+              <span v-else>-</span>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="简历等级">
-          <template slot-scope="scope">
-            {{ scope.row.high_quality === 1 ? '优质' : '普通' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="数据来源" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.jsource === 1 ? '后台添加' : '自主申请' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="参会状态" align="center">
+        <el-table-column label="参会状态" align="center" min-width="150">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.jaudit === 0" type="warning">待审核</el-tag>
             <el-tag v-else-if="scope.row.jaudit === 1" type="success">已通过</el-tag>
             <el-tag v-else-if="scope.row.jaudit === 2" type="danger">未通过</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="添加时间" width="150">
+        <el-table-column label="数据来源" align="center" min-width="150">
           <template slot-scope="scope">
-            <span v-if="scope.row.jaddtime>0">
-              <i class="el-icon-time" />
-              <span>{{ scope.row.jaddtime | timeFilter }}</span>
-            </span>
-            <span v-else>-</span>
+            {{ scope.row.jsource === 1 ? '后台添加' : '自主申请' }}
           </template>
         </el-table-column>
-        <el-table-column align="right" label="操作">
+        <el-table-column align="right" label="操作" min-width="150">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="editPersonal(scope.row)">修改</el-button>
             <el-button size="mini" type="danger" @click="deletePersonal(scope.row)">删除</el-button>
@@ -529,6 +545,21 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style scoped>
   .qrcode{vertical-align:middle}
+.namecol {
+  position: relative;
+  padding-left: 40px;
+}
+.namecol .avatar {
+  width: 42px;
+  height: 42px;
+  padding: 1px;
+  display: inline-block;
+  border: 0;
+  border-radius: 30px;
+  position: absolute;
+  top: 4px;
+  left: -10px;
+}
 </style>

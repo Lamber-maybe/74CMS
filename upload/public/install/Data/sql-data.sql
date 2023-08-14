@@ -1061,10 +1061,6 @@ INSERT INTO `qs_im_quickmsg` VALUES
 
 INSERT INTO `qs_link` VALUES
 (NULL, 1, '骑士cms', 'http://www.74cms.com', 0, '骑士官网'),
-(NULL, 1, '微氏人才系统', 'https://www.weisns.net/Product/job.html', 0, '提供企业招聘，个人求职，让粉丝轻松变现'),
-(NULL, 1, '微氏问答系统', 'https://www.weisns.net/Product/faq.html', 0, '高效的经验分享途径'),
-(NULL, 1, '微氏劳务系统', 'https://www.weisns.net/Product/labour.html', 0, '为人力资源公司、劳务中介打造的运营工具'),
-(NULL, 1, '微氏头条系统', 'https://www.weisns.net/Product/headline.html', 0, '微信头条让你的公众号活跃起来'),
 (NULL, 1, '电销管理系统', 'https://www.xiaohuatong.cn/', 0, '电话外呼+客户管理软件');
 
 INSERT INTO `qs_mail_tpl` VALUES 
