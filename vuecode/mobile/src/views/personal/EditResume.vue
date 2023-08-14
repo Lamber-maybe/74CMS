@@ -1,47 +1,42 @@
 <template>
-  <div id="app">
-    <Head
-      :goback_custom="true"
-      @gobackCustomMethod="$router.push('/member/personal/index')"
-      >我的简历</Head
-    >
-    <div class="box_tip" v-if="showPerfectTip">
-      您的简历完整度较低，严重影响求职质量，建议您立即完善
-    </div>
-    <div class="content_wrapper">
-      <div class="box_1" v-if="parseInt(basic.stick) === 0 && !showPerfectTip" @click="$router.push('/member/order/add/stick')">
-        简历不出众? 快来试试简历置顶，立即提高5倍曝光率!
-      </div>
-      <div class="box_2" v-if="moduleStore.basic!==undefined && moduleStore.basic.is_display == 1">
-        <div class="name_group">
-          <div
-            :class="parseInt(basic.sex) === 1 ? 'avatar_box' : 'avatar_box fe'"
-          >
-            <img :src="basic.photo_img_src" :alt="basic.fullname" />
-          </div>
-          <router-link
-            class="edit"
-            to="/member/personal/resume/basic"
-          ></router-link>
-          <div class="name">{{ basic.fullname }}</div>
-          <div class="info">
-            {{ basic.age }}岁 · {{ basic.experience_text }} ·
-            {{ basic.education_text }}
-          </div>
-        </div>
-        <div class="tx1">{{ contact.mobile }}</div>
-        <div class="tx2" v-if="fieldRule.contact.weixin!==undefined && fieldRule.contact.weixin.is_display == 1">{{ contact.weixin?contact.weixin:'未填写' }}</div>
-        <div class="percent">完整度: {{ basic.complete_percent }}%</div>
-      </div>
-    </div>
-    <div class="form_split_10"></div>
-    <div class="content_wrapper pd">
-      <!--求职意向-->
-      <div class="box_3" v-if="moduleStore.intention!==undefined && moduleStore.intention.is_display == 1">
-        <div class="box_head">
-          <div class="txt">求职意向</div>
-          <div class="required">必填</div>
-      <!--  【bug】简历求职意向最多应设置三条
+	<div id="app">
+		<Head :goback_custom="true" @gobackCustomMethod="$router.push('/member/personal/index')">我的简历</Head>
+		<div class="box_tip" v-if="showPerfectTip">
+			您的简历完整度较低，严重影响求职质量，建议您立即完善
+		</div>
+		<div class="content_wrapper">
+			<div class="box_1" v-if="parseInt(basic.stick) === 0 && !showPerfectTip"
+				@click="$router.push('/member/order/add/stick')">
+				简历不出众? 快来试试简历置顶，立即提高5倍曝光率!
+			</div>
+			<div class="box_2" v-if="moduleStore.basic!==undefined && moduleStore.basic.is_display == 1">
+				<div class="name_group">
+					<div :class="parseInt(basic.sex) === 1 ? 'avatar_box' : 'avatar_box fe'">
+						<img :src="basic.photo_img_src" :alt="basic.fullname" />
+					</div>
+					<router-link class="edit" to="/member/personal/resume/basic"></router-link>
+					<div class="name">{{ basic.fullname }}</div>
+					<div class="info">
+						{{ basic.age }}岁 · {{ basic.experience_text }} ·
+						{{ basic.education_text }}
+					</div>
+				</div>
+				<div class="tx1">{{ contact.mobile }}</div>
+				<div class="tx2"
+					v-if="fieldRule.contact.weixin!==undefined && fieldRule.contact.weixin.is_display == 1">
+					{{ contact.weixin?contact.weixin:'未填写' }}
+				</div>
+				<div class="percent">完整度: {{ basic.complete_percent }}%</div>
+			</div>
+		</div>
+		<div class="form_split_10"></div>
+		<div class="content_wrapper pd">
+			<!--求职意向-->
+			<div class="box_3" v-if="moduleStore.intention!==undefined && moduleStore.intention.is_display == 1">
+				<div class="box_head">
+					<div class="txt">求职意向</div>
+					<div class="required">必填</div>
+					<!--  【bug】简历求职意向最多应设置三条
             zch 2022.9.20
             【旧】
             <router-link
@@ -52,301 +47,253 @@
             @click="intention_add()"
           ></div>
             -->
-          <div
-            class="add_ico"
-            @click="intention_add()"
-          ></div>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <div class="tx1" @click="showPickerCurrent = !showPickerCurrent">
-            求职状态
-            <div class="right_txt">{{ currentName }}</div>
-          </div>
-          <van-popup v-model="showPickerCurrent" position="bottom">
-            <van-picker
-              show-toolbar
-              :columns="columnsCurrent"
-              :default-index="currentDefaultIndex"
-              @confirm="onConfirmCurrent"
-              @cancel="showPickerCurrent = false"
-            />
-          </van-popup>
-          <router-link
-            class="tx2"
-            v-for="(item, index) in intentionList"
-            :key="index"
-            :to="'/member/personal/resume/intention_edit/' + item.id"
-          >
-            <div class="name">
-              [{{ item.district_text }}] {{ item.category_text }}
-            </div>
-            <div class="intent">
-              {{ item.wage_text }}，{{ item.nature_text }}
-              {{ fieldRule.intention.trade.is_display == 1 && item.trade_text !== '' ? `，${item.trade_text}` : '' }}
-            </div>
-          </router-link>
-        </div>
-      </div>
-      <!--特长标签-->
-      <div class="box_4" v-if="moduleStore.tag!==undefined && moduleStore.tag.is_display == 1">
-        <div class="box_head">
-          <div class="txt">特长标签</div>
-          <router-link
-            class="add_ico"
-            to="/member/personal/resume/tag"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <div
-            class="tag-item"
-            v-for="(item, index) in basic.tag_text_arr"
-            :key="index"
-          >
-            {{ item }}
-          </div>
-          <div class="clear"></div>
-        </div>
-      </div>
-      <!--自我描述-->
-      <div class="box_5" v-if="moduleStore.specialty!==undefined && moduleStore.specialty.is_display == 1">
-        <div class="box_head">
-          <div class="txt">自我描述</div>
-          <router-link
-            class="edit_ico"
-            to="/member/personal/resume/specialty"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">{{ basic.specialty }}</div>
-      </div>
-      <!--教育经历-->
-      <div class="box_6" v-if="moduleStore.education!==undefined && moduleStore.education.is_display == 1">
-        <div class="box_head">
-          <div class="txt">教育经历</div>
-          <div class="required">必填</div>
-          <router-link
-            class="add_ico"
-            to="/member/personal/resume/education_edit/0"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in educationList"
-            :key="index"
-            :to="'/member/personal/resume/education_edit/' + item.id"
-          >
-            <div class="t1">{{ item.school }}</div>
-            <div class="t2">
-              {{ dateFormat(item.starttime) }} 至
-              {{
+					<div class="add_ico" @click="intention_add()"></div>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<div class="tx1" @click="showPickerCurrent = !showPickerCurrent">
+						求职状态
+						<div class="right_txt">{{ currentName }}</div>
+					</div>
+					<van-popup v-model="showPickerCurrent" position="bottom">
+						<van-picker show-toolbar :columns="columnsCurrent" :default-index="currentDefaultIndex"
+							@confirm="onConfirmCurrent" @cancel="showPickerCurrent = false" />
+					</van-popup>
+					<router-link class="tx2" v-for="(item, index) in intentionList" :key="index"
+						:to="'/member/personal/resume/intention_edit/' + item.id">
+						<div class="name">
+							[{{ item.district_text }}] {{ item.category_text }}
+						</div>
+						<div class="intent">
+							{{ item.wage_text }}，{{ item.nature_text }}
+							{{ fieldRule.intention.trade.is_display == 1 && item.trade_text !== '' ? `，${item.trade_text}` : '' }}
+						</div>
+					</router-link>
+				</div>
+			</div>
+			<!--特长标签-->
+			<div class="box_4" v-if="moduleStore.tag!==undefined && moduleStore.tag.is_display == 1">
+				<div class="box_head">
+					<div class="txt">特长标签</div>
+					<router-link class="add_ico" to="/member/personal/resume/tag"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<div class="tag-item" v-for="(item, index) in basic.tag_text_arr" :key="index">
+						{{ item }}
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			<!--自我描述-->
+			<div class="box_5" v-if="moduleStore.specialty!==undefined && moduleStore.specialty.is_display == 1">
+				<div class="box_head">
+					<div class="txt">自我描述</div>
+					<router-link class="edit_ico" to="/member/personal/resume/specialty"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">{{ basic.specialty }}</div>
+			</div>
+			<!--教育经历-->
+			<div class="box_6" v-if="moduleStore.education!==undefined && moduleStore.education.is_display == 1">
+				<div class="box_head">
+					<div class="txt">教育经历</div>
+					<div class="required">必填</div>
+					<router-link class="add_ico" to="/member/personal/resume/education_edit/0"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in educationList" :key="index"
+						:to="'/member/personal/resume/education_edit/' + item.id">
+						<div class="t1">{{ item.school }}</div>
+						<div class="t2">
+							{{ dateFormat(item.starttime) }} 至
+							{{
                 parseInt(item.todate) === 0 ? dateFormat(item.endtime) : "至今"
               }}
-            </div>
-            <div class="t3" v-if="fieldRule.education.major.is_display == 1">{{ item.major }}</div>
-          </router-link>
-        </div>
-      </div>
-      <!--工作经历-->
-      <div class="box_7" v-if="moduleStore.work!==undefined && moduleStore.work.is_display == 1">
-        <div class="box_head">
-          <div class="txt">工作经历</div>
-          <div class="required">必填</div>
-          <router-link
-            class="add_ico"
-            to="/member/personal/resume/work_edit/0"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in workList"
-            :key="index"
-            :to="'/member/personal/resume/work_edit/' + item.id"
-          >
-            <div class="t1">{{ item.companyname }}</div>
-            <div class="t2">
-              {{ dateFormat(item.starttime) }} 至
-              {{
+						</div>
+						<div class="t3" v-if="fieldRule.education.major.is_display == 1">{{ item.major }}</div>
+					</router-link>
+				</div>
+			</div>
+			<!--工作经历-->
+			<div class="box_7" v-if="moduleStore.work!==undefined && moduleStore.work.is_display == 1">
+				<div class="box_head">
+					<div class="txt">工作经历</div>
+					<div class="required">必填</div>
+					<router-link class="add_ico" to="/member/personal/resume/work_edit/0"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in workList" :key="index"
+						:to="'/member/personal/resume/work_edit/' + item.id">
+						<div class="t1">{{ item.companyname }}</div>
+						<div class="t2">
+							{{ dateFormat(item.starttime) }} 至
+							{{
                 parseInt(item.todate) === 0 ? dateFormat(item.endtime) : "至今"
               }}
-            </div>
-            <div class="t3">{{ item.jobname }}</div>
-            <div class="t4">{{ item.duty }}</div>
-          </router-link>
-        </div>
-      </div>
-      <!--培训经历-->
-      <div class="box_8" v-if="moduleStore.training!==undefined && moduleStore.training.is_display == 1">
-        <div class="box_head">
-          <div class="txt">培训经历</div>
-          <router-link
-            class="add_ico"
-            to="/member/personal/resume/train_edit/0"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in trainingList"
-            :key="index"
-            :to="'/member/personal/resume/train_edit/' + item.id"
-          >
-            <div class="t1">{{ item.agency }}</div>
-            <div class="t2">
-              {{ dateFormat(item.starttime) }} 至
-              {{
+						</div>
+						<div class="t3">{{ item.jobname }}</div>
+						<div class="t4">{{ item.duty }}</div>
+					</router-link>
+				</div>
+			</div>
+			<!--培训经历-->
+			<div class="box_8" v-if="moduleStore.training!==undefined && moduleStore.training.is_display == 1">
+				<div class="box_head">
+					<div class="txt">培训经历</div>
+					<router-link class="add_ico" to="/member/personal/resume/train_edit/0"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in trainingList" :key="index"
+						:to="'/member/personal/resume/train_edit/' + item.id">
+						<div class="t1">{{ item.agency }}</div>
+						<div class="t2">
+							{{ dateFormat(item.starttime) }} 至
+							{{
                 parseInt(item.todate) === 0 ? dateFormat(item.endtime) : "至今"
               }}
-            </div>
-            <div class="t3">{{ item.course }}</div>
-            <div class="t4">{{ item.description }}</div>
-          </router-link>
-        </div>
-      </div>
-      <!--项目经历-->
-      <div class="box_9" v-if="moduleStore.project!==undefined && moduleStore.project.is_display == 1">
-        <div class="box_head">
-          <div class="txt">项目经历</div>
-          <router-link
-            class="add_ico"
-            to="/member/personal/resume/project_edit/0"
-          ></router-link>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in projectList"
-            :key="index"
-            :to="'/member/personal/resume/project_edit/' + item.id"
-          >
-            <div class="t1">{{ item.projectname }}</div>
-            <div class="t2">
-              {{ dateFormat(item.starttime) }} 至
-              {{
+						</div>
+						<div class="t3">{{ item.course }}</div>
+						<div class="t4">{{ item.description }}</div>
+					</router-link>
+				</div>
+			</div>
+			<!--项目经历-->
+			<div class="box_9" v-if="moduleStore.project!==undefined && moduleStore.project.is_display == 1">
+				<div class="box_head">
+					<div class="txt">项目经历</div>
+					<router-link class="add_ico" to="/member/personal/resume/project_edit/0"></router-link>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in projectList" :key="index"
+						:to="'/member/personal/resume/project_edit/' + item.id">
+						<div class="t1">{{ item.projectname }}</div>
+						<div class="t2">
+							{{ dateFormat(item.starttime) }} 至
+							{{
                 parseInt(item.todate) === 0 ? dateFormat(item.endtime) : "至今"
               }}
-            </div>
-            <div class="t3">{{ item.role }}</div>
-            <div class="t4">{{ item.description }}</div>
-          </router-link>
-        </div>
-      </div>
-      <!--获得证书-->
-      <div class="box_10" v-if="moduleStore.certificate!==undefined && moduleStore.certificate.is_display == 1">
-        <div class="box_head">
-          <div class="txt">获得证书</div>
-          <span class="add_ico" @click="handlerCertificateAdd"></span>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in certificateList"
-            :key="index"
-            :to="'/member/personal/resume/certificate_edit/' + item.id"
-          >
-            {{ item.name }}
-            <div class="right_txt">{{ dateFormat(item.obtaintime) }}</div>
-          </router-link>
-        </div>
-      </div>
-      <!--语言能力-->
-      <div class="box_11" v-if="moduleStore.language!==undefined && moduleStore.language.is_display == 1">
-        <div class="box_head">
-          <div class="txt">语言能力</div>
-          <span class="add_ico" @click="handlerLanguageAdd"></span>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <router-link
-            class="tx1"
-            v-for="(item, index) in languageList"
-            :key="index"
-            :to="'/member/personal/resume/language_edit/' + item.id"
-          >
-            {{ item.language_text }}，{{ item.level_text }}
-          </router-link>
-        </div>
-      </div>
-      <!--我的作品-->
-      <div class="box_12" v-if="moduleStore.img!==undefined && moduleStore.img.is_display == 1">
-        <div class="box_head">
-          <div class="txt">我的作品</div>
-          <div class="clear"></div>
-        </div>
-        <div class="box_content">
-          <div class="img_item" v-for="(item, index) in imgList" :key="index">
-            <img
-              :src="item.img_src"
-              alt="item.title"
-              class="img"
-              @click="previewImg(index)"
-            />
-            <div class="audit_bg" v-if="parseInt(item.audit) !== 1">
-              {{ item.audit_text }}
-            </div>
-            <div class="delete_ico" @click="deleteImg(item.id)"></div>
-          </div>
-          <van-uploader
-            v-if="imgList.length < 6"
-            :preview-image="false"
-            :after-read="uploadImg"
-            :accept="'image/*'"
-          >
-            <div class="img_item for_upload">添加图片</div>
-          </van-uploader>
-        </div>
-      </div>
-      <div class="box_13">
-        <div class="tips" v-if="isTips" @click="handleJumpImproveResume">
-          检测到您的简历有{{defectResumeNum}}个待优化项，请及时处理
-          <van-icon class="arrow_icon" name="arrow" />
-          <van-icon @click.stop="handleTipsClose" class="clear_icon" size="25" color="#000"  name="clear" />
-        </div>
-        <van-button class="btn" round type="info" block @click="$router.push('/member/personal/preview')">预览简历</van-button>
-      </div>
-    </div>
-    <div
-      v-if="!showMoreBar"
-      class="fixed_more"
-      @click="showMoreBar = !showMoreBar"
-    ></div>
-    <div v-if="showMoreBar" class="fixed_more_open">
-      <div class="ic1" @click="refreshResume">刷新</div>
-      <router-link class="ic2" to="/member/personal/service">置顶</router-link>
-      <router-link class="ic3" to="/member/personal/privacy">隐私</router-link>
-      <div class="ic4" @click="showMoreBar = !showMoreBar"></div>
-    </div>
-    <van-dialog v-model="showCloseResume" title="简历设置" show-cancel-button>
-      <div class="box_log_privacy">
-        <div class="self_remind">
-          简历设置为关闭后企业将无法搜索到您的简历哦
-        </div>
-        <div class="check_wrapper">
-          <van-radio-group v-model="radio" direction="horizontal">
-            <van-radio name="1" icon-size="17px">公开</van-radio>
-            <van-radio name="2" icon-size="17px">关闭</van-radio>
-          </van-radio-group>
-        </div>
-      </div>
-    </van-dialog>
-    <van-overlay :show="uploading"><van-loading type="spinner" size="24px">正在上传...</van-loading></van-overlay>
-  </div>
+						</div>
+						<div class="t3">{{ item.role }}</div>
+						<div class="t4">{{ item.description }}</div>
+					</router-link>
+				</div>
+			</div>
+			<!--获得证书-->
+			<div class="box_10" v-if="moduleStore.certificate!==undefined && moduleStore.certificate.is_display == 1">
+				<div class="box_head">
+					<div class="txt">获得证书</div>
+					<span class="add_ico" @click="handlerCertificateAdd"></span>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in certificateList" :key="index"
+						:to="'/member/personal/resume/certificate_edit/' + item.id">
+						{{ item.name }}
+						<div class="right_txt">{{ dateFormat(item.obtaintime) }}</div>
+					</router-link>
+				</div>
+			</div>
+			<!--语言能力-->
+			<div class="box_11" v-if="moduleStore.language!==undefined && moduleStore.language.is_display == 1">
+				<div class="box_head">
+					<div class="txt">语言能力</div>
+					<span class="add_ico" @click="handlerLanguageAdd"></span>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<router-link class="tx1" v-for="(item, index) in languageList" :key="index"
+						:to="'/member/personal/resume/language_edit/' + item.id">
+						{{ item.language_text }}，{{ item.level_text }}
+					</router-link>
+				</div>
+			</div>
+			<!--我的作品-->
+			<div class="box_12" v-if="moduleStore.img!==undefined && moduleStore.img.is_display == 1">
+				<div class="box_head">
+					<div class="txt">我的作品</div>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<div class="img_item" v-for="(item, index) in imgList" :key="index">
+						<img :src="item.img_src" alt="item.title" class="img" @click="previewImg(index)" />
+						<div class="audit_bg" v-if="parseInt(item.audit) !== 1">
+							{{ item.audit_text }}
+						</div>
+						<div class="delete_ico" @click="deleteImg(item.id)"></div>
+					</div>
+					<van-uploader v-if="imgList.length < 6" :preview-image="false" :after-read="uploadImg"
+						:accept="'image/*'">
+						<div class="img_item for_upload">添加图片</div>
+					</van-uploader>
+				</div>
+			</div>
+			<!--附件简历-->
+			<div class="box_12">
+				<div class="box_head">
+					<div class="txt">附件简历</div>
+					<div class="clear"></div>
+				</div>
+				<div class="box_content">
+					<div class="enclosure_resume" v-if="enclosure_resume.title">
+						<a :href="enclosure_resume.enclosure" :download="enclosure_resume.enclosure">{{ enclosure_resume.title }}</a>
+						<span class="del_enclosure" @click="delEnclosure()">删除</span>
+					</div>
+					<van-uploader v-else :after-read="uploadFile" :accept="'file/*'">
+						<div class="img_item for_upload">添加文件</div>
+					</van-uploader>
+				</div>
+			</div>
+			<div class="box_13">
+				<div class="tips" v-if="isTips" @click="handleJumpImproveResume">
+					检测到您的简历有{{defectResumeNum}}个待优化项，请及时处理
+					<van-icon class="arrow_icon" name="arrow" />
+					<van-icon @click.stop="handleTipsClose" class="clear_icon" size="25" color="#000" name="clear" />
+				</div>
+				<van-button class="btn" round type="info" block @click="$router.push('/member/personal/preview')">预览简历
+				</van-button>
+			</div>
+		</div>
+		<div v-if="!showMoreBar" class="fixed_more" @click="showMoreBar = !showMoreBar"></div>
+		<div v-if="showMoreBar" class="fixed_more_open">
+			<div class="ic1" @click="refreshResume">刷新</div>
+			<router-link class="ic2" to="/member/personal/service">置顶</router-link>
+			<router-link class="ic3" to="/member/personal/privacy">隐私</router-link>
+			<div class="ic4" @click="showMoreBar = !showMoreBar"></div>
+		</div>
+		<van-dialog v-model="showCloseResume" title="简历设置" show-cancel-button>
+			<div class="box_log_privacy">
+				<div class="self_remind">
+					简历设置为关闭后企业将无法搜索到您的简历哦
+				</div>
+				<div class="check_wrapper">
+					<van-radio-group v-model="radio" direction="horizontal">
+						<van-radio name="1" icon-size="17px">公开</van-radio>
+						<van-radio name="2" icon-size="17px">关闭</van-radio>
+					</van-radio-group>
+				</div>
+			</div>
+		</van-dialog>
+		<van-overlay :show="uploading">
+			<van-loading type="spinner" size="24px">正在上传...</van-loading>
+		</van-overlay>
+	</div>
 </template>
 
 <script>
-import {handlerHttpError} from '@/utils/error'
+import {
+  handlerHttpError
+} from '@/utils/error'
 import http from '@/utils/http'
 import api from '@/api'
 import Vue from 'vue'
-import { ImagePreview } from 'vant'
+import {
+  ImagePreview
+} from 'vant'
 Vue.use(ImagePreview)
 export default {
   name: 'EditResume',
@@ -356,6 +303,7 @@ export default {
       uploading: false,
       radio: 1,
       imgList: [],
+      enclosure_resume: {},
       previewImgList: [],
       showCloseResume: false,
       showMoreBar: false,
@@ -365,7 +313,7 @@ export default {
       currentDefaultIndex: 0,
       showPerfectTip: true,
       moduleStore: {},
-      defectResumeNum:0
+      defectResumeNum: 0
     }
   },
   computed: {
@@ -435,7 +383,10 @@ export default {
         .then(res => {
           if (parseInt(res.code) === 200) {
             if (res.data === null) {
-              handlerHttpError({code: 50007, message: '请先添加一份简历'})
+              handlerHttpError({
+                code: 50007,
+                message: '请先添加一份简历'
+              })
               return
             }
             // 更新基本资料
@@ -474,12 +425,14 @@ export default {
               this.imgList = this.$store.state.resume.img_list
               this.setPreviewImgList()
             }
+            this.enclosure_resume = res.data.enclosure_resume == '' ? {} : res.data.enclosure_resume
             // 恢复求职状态
             this.currentDefaultIndex = this.columnsCurrent.findIndex(
               item => parseInt(item.id) === parseInt(this.basic.current)
             )
             // 是否出现继续完善简历提示和是否显示引导置顶简历
-            this.showPerfectTip = parseInt(this.basic.complete_percent) < parseInt(this.siteConfig.apply_job_min_percent)
+            this.showPerfectTip = parseInt(this.basic.complete_percent) < parseInt(this.siteConfig
+              .apply_job_min_percent)
           } else {
             this.$notify(res.message)
           }
@@ -499,7 +452,10 @@ export default {
         })
         .then(res => {
           if (parseInt(res.code) === 200) {
-            this.$notify({type: 'success', message: '成功修改求职状态'})
+            this.$notify({
+              type: 'success',
+              message: '成功修改求职状态'
+            })
             let currentBasic = this.$store.state.resume.basic
             currentBasic.current = this.current
             currentBasic.current_text = this.currentName
@@ -538,11 +494,16 @@ export default {
       }
       this.uploading = true
       http
-        .postFormData(api.resume_img_save, { file: file.file })
+        .postFormData(api.resume_img_save, {
+          file: file.file
+        })
         .then(res => {
           this.uploading = false
           if (parseInt(res.code) === 200) {
-            this.$notify({ type: 'success', message: res.message })
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
             this.imgList.push({
               audit: res.data.audit,
               audit_text: res.data.audit_text,
@@ -577,7 +538,10 @@ export default {
             })
             .then(res => {
               if (parseInt(res.code) === 200) {
-                this.$notify({ type: 'success', message: res.message })
+                this.$notify({
+                  type: 'success',
+                  message: res.message
+                })
                 this.imgList.splice(
                   this.imgList.findIndex(
                     item => parseInt(item.id) === parseInt(id)
@@ -622,7 +586,10 @@ export default {
         .post(api.resume_refresh)
         .then(res => {
           if (parseInt(res.code) === 200) {
-            this.$notify({ type: 'success', message: res.message })
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
           } else {
             this.$notify(res.message)
           }
@@ -650,799 +617,993 @@ export default {
       this.$router.push('/member/personal/ImproveResume')
     },
     /**
-     * 【bug】简历求职意向最多应设置三条
-     *  zch 2022.9.20
-     *  【新增】
-     */
+			 * 【bug】简历求职意向最多应设置三条
+			 *  zch 2022.9.20
+			 *  【新增】
+			 */
     intention_add () {
       if (this.intentionList.length >= 3) {
         this.$notify('求职意向最多可填写三条')
       } else {
         this.$router.push('/member/personal/resume/intention_edit/0')
       }
+    },
+    // 上传附件简历
+    uploadFile (file) {
+      let fileArr = file.file.name.split('.')
+      let fileType = fileArr[fileArr.length - 1]
+      let typeArr = ['txt', 'html', 'pdf', 'doc', 'docx']
+      if (typeArr.indexOf(fileType) == -1) {
+        this.$notify('文件类型不支持')
+        return false
+      }
+      const fileSize = file.file.size / 1024 / 1024
+      const size = this.$store.state.config.fileupload_size / 1024
+      const sizeLimit = size.toFixed(1)
+      if (fileSize > sizeLimit) {
+        this.$notify('上传文件大小不能超过' + sizeLimit + 'MB!')
+        return false
+      }
+      this.uploading = true
+      http
+        .postFormData(api.enclosureSave, {
+          file: file.file
+        })
+        .then(res => {
+          this.uploading = false
+          if (parseInt(res.code) === 200) {
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
+            this.initInfo()
+          } else {
+            this.$notify(res.message)
+          }
+        })
+        .catch(err => {
+          this.uploading = false
+          console.log(err)
+        })
+    },
+    // 删除附件简历
+    delEnclosure () {
+      this.$dialog
+        .confirm({
+          title: '提示',
+          message: '确定删除附件简历吗'
+        })
+        .then(() => {
+          // 确定按钮
+          http
+            .post(api.enclosureDelete, {
+              enclosure_id: this.enclosure_resume.id
+            })
+            .then(res => {
+              if (parseInt(res.code) === 200) {
+                this.$notify({
+                  type: 'success',
+                  message: res.message
+                })
+                this.initInfo()
+              } else {
+                this.$notify(res.message)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        })
+        .catch(() => {
+          // 取消按钮
+        })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.box_tip {
-  width: 100%;
-  font-size: 12px;
-  color: #ff6600;
-  position: relative;
-  padding: 10.5px 0 10.5px 33px;
-  background: #fffbeb url("../../assets/images/remind_ico.svg") 13px 11px
-    no-repeat;
-  background-size: 15px;
-}
-.box_log_privacy {
-  padding: 15px 0 30px 0;
-  width: 300px;
-  margin: 0 auto;
-  .check_wrapper {
-    font-size: 16px;
-    color: #666666;
-    text-align: center;
-    width: 190px;
-    margin: 0 auto;
-    padding-top: 30px;
-    .van-radio--horizontal:not(:last-child) {
-      margin-right: 75px;
-    }
-    .van-radio--horizontal:last-child {
-      margin-right: 0;
-    }
-  }
-  .self_remind {
-    width: 100%;
-    color: #ff6600;
-    font-size: 12px;
-    border-radius: 4px;
-    padding: 14px 0 14px 33px;
-    background: #fffbeb url("../../assets/images/remind_ico.svg") 13px center
-      no-repeat;
-    background-size: 16px;
-  }
-}
-.fixed_more_open {
-  .ic4 {
-    width: 45px;
-    padding: 12px 0 25px;
-    border-radius: 45px;
-    position: relative;
-    &::after {
-      position: absolute;
-      left: 19.5px;
-      top: 12px;
-      width: 6px;
-      height: 6px;
-      border-bottom: 1px solid #1787fb;
-      border-right: 1px solid #1787fb;
-      transform: rotate(45deg);
-      content: " ";
-    }
-  }
-  .ic3 {
-    font-size: 11px;
-    padding-top: 23px;
-    margin-bottom: 2px;
-    display: block;
-    background: url("../../assets/images/fixed_more_open_ys.svg") center 0
-      no-repeat;
-    background-size: 20px;
-    color: #1787fb;
-  }
-  .ic2 {
-    font-size: 11px;
-    padding-top: 20px;
-    margin-bottom: 15px;
-    display: block;
-    background: url("../../assets/images/fixed_more_open_top.svg") center 0
-      no-repeat;
-    background-size: 16px;
-    color: #1787fb;
-  }
-  .ic1 {
-    font-size: 11px;
-    padding-top: 20px;
-    margin-bottom: 15px;
-    background: url("../../assets/images/fixed_more_open_refresh.svg") center 0
-      no-repeat;
-    background-size: 16px;
-  }
-  position: fixed;
-  right: 25px;
-  bottom: 150px;
-  z-index: 3;
-  box-shadow: 0 0 5px #c2c2c2;
-  color: #1787fb;
-  width: 45px;
-  border-radius: 45px;
-  padding: 20px 0 0;
-  text-align: center;
-  background-color: #ffffff;
-  overflow: hidden;
-}
-.fixed_more {
-  position: fixed;
-  right: 25px;
-  bottom: 150px;
-  z-index: 2;
-  box-shadow: 0 0 5px #c2c2c2;
-  background: #ffffff url("../../assets/images/resume_fixed_more_ico.svg")
-    center no-repeat;
-  background-size: 23px;
-  width: 37px;
-  height: 37px;
-  border-radius: 100%;
-}
-.box_13 {
-  width: 100%;
-  padding: 25px 0 20px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #fff;
-  z-index: 10;
-  .tips{
-    height: 33px;
-    width: 307px;
-    margin: 0 auto 15px;
-    background: rgba(0,0,0,.8);
-    color: #fff;
-    font-size: 13px;
-    padding: 8px 15px;
-    border-radius: 20px;
-    position: relative;
-    vertical-align: middle;
-    .arrow_icon{
-      vertical-align: -2px;
-      margin-left: 5px;
-    }
-    .clear_icon{
-      position: absolute;
-      right: 0px;
-      top: -25px;
-      z-index: 11;
-    }
-  }
-  .btn{
-    width: 300px;
-    margin: 0 auto;
-  }
-}
-.box_12 {
-  width: 100%;
-  .box_content {
-    .img_item {
-      &.for_upload {
-        margin: 0;
-        padding-top: 67px;
-        text-align: center;
-        font-size: 14px;
-        color: #c0c0c0;
-        background: #f8f8f8 url("../../assets/images/upload_add_ico.svg") center
-          20px no-repeat;
-        background-size: 32px;
-      }
-      .delete_ico {
-        &::before {
-          position: absolute;
-          left: 5px;
-          top: 9.5px;
-          width: 10px;
-          border-top: 1px solid #ffffff;
-          content: " ";
-          transform: rotate(45deg);
-        }
-        &::after {
-          position: absolute;
-          left: 9.5px;
-          top: 5px;
-          height: 10px;
-          border-right: 1px solid #ffffff;
-          content: " ";
-          transform: rotate(45deg);
-        }
-        position: absolute;
-        right: -6px;
-        top: -6px;
-        width: 20px;
-        height: 20px;
-        border-radius: 100%;
-        z-index: 2;
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-      .audit_bg {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100px;
-        height: 100px;
-        border-radius: 4px;
-        text-align: center;
-        line-height: 100px;
-        color: #c0c0c0;
-        font-size: 15px;
-        background-color: rgba(0, 0, 0, 0.75);
-        z-index: 1;
-      }
-      .img {
-        width: 100px;
-        height: 100px;
-        border-radius: 4px;
-        border: 0;
-      }
-      &:nth-of-type(3n) {
-        margin-right: 0;
-      }
-      float: left;
-      position: relative;
-      width: 100px;
-      height: 100px;
-      border-radius: 4px;
-      margin: 0 20px 20px 0;
-    }
-    padding-bottom: 30px;
-  }
-}
-.box_11 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .right_txt {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translate(0, -50%);
-        font-size: 14px;
-        color: #666666;
-      }
-      &:not(:last-child) {
-        margin-bottom: 15px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 7px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      font-size: 15px;
-      color: #333333;
-      position: relative;
-      display: block;
-      padding-right: 30px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_10 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .right_txt {
-        position: absolute;
-        right: 20px;
-        top: 2px;
-        font-size: 13px;
-        color: #666666;
-      }
-      &:not(:last-child) {
-        margin-bottom: 17px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 8px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      font-size: 15px;
-      color: #333333;
-      position: relative;
-      display: block;
-      padding-right: 80px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_9 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .t4 {
-        line-height: 1.8;
-        font-size: 12px;
-        color: #666666;
-        padding-top: 8px;
-      }
-      .t3 {
-        font-size: 12px;
-        color: #666666;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .t2 {
-        font-size: 12px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      .t1 {
-        font-size: 15px;
-        color: #333333;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 47px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      &:not(:last-child) {
-        margin-bottom: 17px;
-      }
-      padding-right: 25px;
-      display: block;
-      position: relative;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_8 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .t4 {
-        line-height: 1.8;
-        font-size: 12px;
-        color: #666666;
-        padding-top: 8px;
-      }
-      .t3 {
-        font-size: 12px;
-        color: #666666;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .t2 {
-        font-size: 12px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      .t1 {
-        font-size: 15px;
-        color: #333333;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 47px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      &:not(:last-child) {
-        margin-bottom: 17px;
-      }
-      padding-right: 25px;
-      display: block;
-      position: relative;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_7 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .t4 {
-        line-height: 1.8;
-        font-size: 12px;
-        color: #666666;
-        padding-top: 8px;
-        word-break: break-all;
-      }
-      .t3 {
-        font-size: 12px;
-        color: #666666;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .t2 {
-        font-size: 12px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      .t1 {
-        font-size: 15px;
-        color: #333333;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 47px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      &:not(:last-child) {
-        margin-bottom: 17px;
-      }
-      padding-right: 25px;
-      display: block;
-      position: relative;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_6 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    .tx1 {
-      .t3 {
-        font-size: 12px;
-        color: #666666;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      .t2 {
-        font-size: 12px;
-        color: #999999;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      .t1 {
-        font-size: 15px;
-        color: #333333;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-bottom: 9px;
-      }
-      &::after {
-        position: absolute;
-        right: 6px;
-        top: 33px;
-        width: 6px;
-        height: 6px;
-        border-top: 1px solid #666666;
-        border-right: 1px solid #666666;
-        transform: rotate(45deg);
-        content: " ";
-      }
-      &:not(:last-child) {
-        margin-bottom: 17px;
-      }
-      padding-right: 25px;
-      display: block;
-      position: relative;
-    }
-    padding-bottom: 17px;
-  }
-}
-.box_5 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    padding-bottom: 15px;
-    line-height: 1.8;
-    font-size: 13px;
-    color: #666666;
-    word-break: break-all;
-  }
-}
-.box_4 {
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-  .box_content {
-    padding-bottom: 2px;
-    .tag-item {
-      float: left;
-      padding: 4.5px 12px;
-      font-size: 12px;
-      color: #1787fb;
-      margin: 0 10px 10px 0;
-      background-color: #f4f9ff;
-      border-radius: 26px;
-    }
-  }
-}
-.box_3 {
-  .tx2 {
-    .intent {
-      font-size: 12px;
-      color: #666666;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .name {
-      font-size: 15px;
-      color: #333333;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      margin-bottom: 9.5px;
-    }
-    &::after {
-      position: absolute;
-      right: 6px;
-      top: 20px;
-      width: 6px;
-      height: 6px;
-      border-top: 1px solid #666666;
-      border-right: 1px solid #666666;
-      transform: rotate(45deg);
-      content: " ";
-    }
-    padding-right: 25px;
-    margin-top: 17.5px;
-    display: block;
-    position: relative;
-  }
-  .tx1 {
-    .right_txt {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform:translate(0,-50%);
-      font-size: 13px;
-      color: #666666;
-    }
-    &::after {
-      position: absolute;
-      right: 6px;
-      top: 7px;
-      width: 6px;
-      height: 6px;
-      border-top: 1px solid #666666;
-      border-right: 1px solid #666666;
-      transform: rotate(45deg);
-      content: " ";
-    }
-    font-size: 15px;
-    color: #333333;
-    font-weight: bold;
-    position: relative;
-  }
-  .box_content {
-    padding-bottom: 15px;
-  }
-  width: 100%;
-  border-bottom: 1px solid #f5f5f5;
-}
-.box_head {
-  .edit_ico {
-    position: absolute;
-    right: -15px;
-    top: 10px;
-    height: 50px;
-    width: 50px;
-    background: url("../../assets/images/resume_edit_ico.svg") center no-repeat;
-    background-size: 16px;
-  }
-  .add_ico {
-    position: absolute;
-    right: -15px;
-    top: 10px;
-    height: 50px;
-    width: 50px;
-    background: url("../../assets/images/resume_add_ico.svg") center no-repeat;
-    background-size: 16px;
-  }
-  .van-tag {
-    padding: 0 0.5em;
-  }
-  .required{float:left;font-size:9px;font-weight:bold;color:#ff5757;border:1PX solid #ff5757;padding:0 3px;margin:6px 0 0 5px;}
-  .txt {
-    float: left;
-    font-size: 18px;
-    color: #333333;
-    font-weight: bold;
-    margin-right: 3px;
-  }
-  position: relative;
-  width: 100%;
-  padding: 22.5px 0;
-}
-.box_2 {
-  .tx2 {
-    font-size: 12px;
-    color: #333333;
-    padding: 2.5px 0 2.5px 23px;
-    background: url("../../assets/images/resume_wx_ico.png") 0 center no-repeat;
-    background-size: 16.5px 16px;
-  }
-  .tx1 {
-    font-size: 12px;
-    color: #333333;
-    padding: 2.5px 0 2.5px 23px;
-    margin-bottom: 5.5px;
-    background: url("../../assets/images/resume_phone_ico.png") 0 center
-      no-repeat;
-    background-size: 16.5px 16px;
-  }
-  .percent {
-    position: absolute;
-    right: -17px;
-    bottom: 16px;
-    color: #ff5d24;
-    font-size: 13px;
-    padding: 7px 9px 7px 16px;
-    background-color: #f3f3f3;
-    border-radius: 18px 0 0 18px;
-  }
-  .name_group {
-    .edit {
-      position: absolute;
-      right: 0;
-      top: 6px;
-      width: 36px;
-      height: 26px;
-      background: url("../../assets/images/resume_edit_ico.svg") center 2.5px
-        no-repeat;
-      background-size: 13px;
-    }
-    .avatar_box {
-      &.fe::after {
-        content: " ";
-        position: absolute;
-        right: -3px;
-        bottom: 3px;
-        width: 13px;
-        height: 13px;
-        border-radius: 100%;
-        background: #ff4d94 url("../../assets/images/female.svg") center
-          no-repeat;
-        background-size: 10px;
-      }
-      &::after {
-        content: " ";
-        position: absolute;
-        right: -3px;
-        bottom: 3px;
-        width: 13px;
-        height: 13px;
-        border-radius: 100%;
-        background: #50a6fa url("../../assets/images/male.svg") center no-repeat;
-        background-size: 10px;
-      }
-      img {
-        width: 48px;
-        height: 48px;
-        border: 0;
-        border-radius: 100%;
-      }
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translate(0, -50%);
-      width: 48px;
-      height: 48px;
-      border-radius: 100%;
-    }
-    .info {
-      font-size: 12px;
-      color: #666666;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .name {
-      font-size: 18px;
-      color: #333333;
-      font-weight: bold;
-      padding: 2.5px 0 10.5px 0;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    position: relative;
-    padding: 0 50px 0 61px;
-    margin-bottom: 15.5px;
-  }
-  padding: 12.5px 0 15.5px;
-  position: relative;
-}
-.box_1 {
-  width: 100%;
-  font-size: 12px;
-  color: #ffffff;
-  border-radius: 5px;
-  padding: 11.5px 20px 11.5px 30px;
-  background: #fb8a78 url("../../assets/images/resume_top_tip_bg.png") 10px
-    center no-repeat;
-  background-size: 13px 14px;
-  position: relative;
-  margin-bottom: 10px;
-  &::after {
-    position: absolute;
-    right: 11px;
-    top: 16px;
-    width: 7px;
-    height: 7px;
-    border-top: 1px solid #ffffff;
-    border-right: 1px solid #ffffff;
-    transform: rotate(45deg);
-    content: " ";
-  }
-}
-.content_wrapper {
-  width: 100%;
-  background-color: #ffffff;
-  padding: 0 17px;
-  &.pd{
-    padding-bottom: 120px;
-  }
-}
-.van-overlay{
-  text-align:center;
-  z-index:2;
-}
-.van-loading{
-  top:36%;
-}
-.van-loading__text{
-  color:#c3c3c3;
-}
+	.box_tip {
+		width: 100%;
+		font-size: 12px;
+		color: #ff6600;
+		position: relative;
+		padding: 10.5px 0 10.5px 33px;
+		background: #fffbeb url("../../assets/images/remind_ico.svg") 13px 11px no-repeat;
+		background-size: 15px;
+	}
+
+	.box_log_privacy {
+		padding: 15px 0 30px 0;
+		width: 300px;
+		margin: 0 auto;
+
+		.check_wrapper {
+			font-size: 16px;
+			color: #666666;
+			text-align: center;
+			width: 190px;
+			margin: 0 auto;
+			padding-top: 30px;
+
+			.van-radio--horizontal:not(:last-child) {
+				margin-right: 75px;
+			}
+
+			.van-radio--horizontal:last-child {
+				margin-right: 0;
+			}
+		}
+
+		.self_remind {
+			width: 100%;
+			color: #ff6600;
+			font-size: 12px;
+			border-radius: 4px;
+			padding: 14px 0 14px 33px;
+			background: #fffbeb url("../../assets/images/remind_ico.svg") 13px center no-repeat;
+			background-size: 16px;
+		}
+	}
+
+	.fixed_more_open {
+		.ic4 {
+			width: 45px;
+			padding: 12px 0 25px;
+			border-radius: 45px;
+			position: relative;
+
+			&::after {
+				position: absolute;
+				left: 19.5px;
+				top: 12px;
+				width: 6px;
+				height: 6px;
+				border-bottom: 1px solid #1787fb;
+				border-right: 1px solid #1787fb;
+				transform: rotate(45deg);
+				content: " ";
+			}
+		}
+
+		.ic3 {
+			font-size: 11px;
+			padding-top: 23px;
+			margin-bottom: 2px;
+			display: block;
+			background: url("../../assets/images/fixed_more_open_ys.svg") center 0 no-repeat;
+			background-size: 20px;
+			color: #1787fb;
+		}
+
+		.ic2 {
+			font-size: 11px;
+			padding-top: 20px;
+			margin-bottom: 15px;
+			display: block;
+			background: url("../../assets/images/fixed_more_open_top.svg") center 0 no-repeat;
+			background-size: 16px;
+			color: #1787fb;
+		}
+
+		.ic1 {
+			font-size: 11px;
+			padding-top: 20px;
+			margin-bottom: 15px;
+			background: url("../../assets/images/fixed_more_open_refresh.svg") center 0 no-repeat;
+			background-size: 16px;
+		}
+
+		position: fixed;
+		right: 25px;
+		bottom: 150px;
+		z-index: 3;
+		box-shadow: 0 0 5px #c2c2c2;
+		color: #1787fb;
+		width: 45px;
+		border-radius: 45px;
+		padding: 20px 0 0;
+		text-align: center;
+		background-color: #ffffff;
+		overflow: hidden;
+	}
+
+	.fixed_more {
+		position: fixed;
+		right: 25px;
+		bottom: 150px;
+		z-index: 2;
+		box-shadow: 0 0 5px #c2c2c2;
+		background: #ffffff url("../../assets/images/resume_fixed_more_ico.svg") center no-repeat;
+		background-size: 23px;
+		width: 37px;
+		height: 37px;
+		border-radius: 100%;
+	}
+
+	.box_13 {
+		width: 100%;
+		padding: 25px 0 20px;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: #fff;
+		z-index: 10;
+
+		.tips {
+			height: 33px;
+			width: 307px;
+			margin: 0 auto 15px;
+			background: rgba(0, 0, 0, .8);
+			color: #fff;
+			font-size: 13px;
+			padding: 8px 15px;
+			border-radius: 20px;
+			position: relative;
+			vertical-align: middle;
+
+			.arrow_icon {
+				vertical-align: -2px;
+				margin-left: 5px;
+			}
+
+			.clear_icon {
+				position: absolute;
+				right: 0px;
+				top: -25px;
+				z-index: 11;
+			}
+		}
+
+		.btn {
+			width: 300px;
+			margin: 0 auto;
+		}
+	}
+
+	.box_12 {
+		width: 100%;
+
+		.box_content {
+			.enclosure_resume {
+				font-size: 14px;
+				color: #1787fb;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				a{
+					color: #1787fb;
+				}
+				.del_enclosure {
+					cursor: pointer;
+				}
+			}
+
+			.img_item {
+				&.for_upload {
+					margin: 0;
+					padding-top: 67px;
+					text-align: center;
+					font-size: 14px;
+					color: #c0c0c0;
+					background: #f8f8f8 url("../../assets/images/upload_add_ico.svg") center 20px no-repeat;
+					background-size: 32px;
+				}
+
+				.delete_ico {
+					&::before {
+						position: absolute;
+						left: 5px;
+						top: 9.5px;
+						width: 10px;
+						border-top: 1px solid #ffffff;
+						content: " ";
+						transform: rotate(45deg);
+					}
+
+					&::after {
+						position: absolute;
+						left: 9.5px;
+						top: 5px;
+						height: 10px;
+						border-right: 1px solid #ffffff;
+						content: " ";
+						transform: rotate(45deg);
+					}
+
+					position: absolute;
+					right: -6px;
+					top: -6px;
+					width: 20px;
+					height: 20px;
+					border-radius: 100%;
+					z-index: 2;
+					background-color: rgba(0, 0, 0, 0.5);
+				}
+
+				.audit_bg {
+					position: absolute;
+					left: 0;
+					top: 0;
+					width: 100px;
+					height: 100px;
+					border-radius: 4px;
+					text-align: center;
+					line-height: 100px;
+					color: #c0c0c0;
+					font-size: 15px;
+					background-color: rgba(0, 0, 0, 0.75);
+					z-index: 1;
+				}
+
+				.img {
+					width: 100px;
+					height: 100px;
+					border-radius: 4px;
+					border: 0;
+				}
+
+				&:nth-of-type(3n) {
+					margin-right: 0;
+				}
+
+				float: left;
+				position: relative;
+				width: 100px;
+				height: 100px;
+				border-radius: 4px;
+				margin: 0 20px 20px 0;
+			}
+
+			padding-bottom: 30px;
+		}
+	}
+
+	.box_11 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.right_txt {
+					position: absolute;
+					right: 20px;
+					top: 50%;
+					transform: translate(0, -50%);
+					font-size: 14px;
+					color: #666666;
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 15px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 7px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				font-size: 15px;
+				color: #333333;
+				position: relative;
+				display: block;
+				padding-right: 30px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_10 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.right_txt {
+					position: absolute;
+					right: 20px;
+					top: 2px;
+					font-size: 13px;
+					color: #666666;
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 17px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 8px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				font-size: 15px;
+				color: #333333;
+				position: relative;
+				display: block;
+				padding-right: 80px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_9 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.t4 {
+					line-height: 1.8;
+					font-size: 12px;
+					color: #666666;
+					padding-top: 8px;
+				}
+
+				.t3 {
+					font-size: 12px;
+					color: #666666;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.t2 {
+					font-size: 12px;
+					color: #999999;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				.t1 {
+					font-size: 15px;
+					color: #333333;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 47px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 17px;
+				}
+
+				padding-right: 25px;
+				display: block;
+				position: relative;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_8 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.t4 {
+					line-height: 1.8;
+					font-size: 12px;
+					color: #666666;
+					padding-top: 8px;
+				}
+
+				.t3 {
+					font-size: 12px;
+					color: #666666;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.t2 {
+					font-size: 12px;
+					color: #999999;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				.t1 {
+					font-size: 15px;
+					color: #333333;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 47px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 17px;
+				}
+
+				padding-right: 25px;
+				display: block;
+				position: relative;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_7 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.t4 {
+					line-height: 1.8;
+					font-size: 12px;
+					color: #666666;
+					padding-top: 8px;
+					word-break: break-all;
+				}
+
+				.t3 {
+					font-size: 12px;
+					color: #666666;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.t2 {
+					font-size: 12px;
+					color: #999999;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				.t1 {
+					font-size: 15px;
+					color: #333333;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 47px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 17px;
+				}
+
+				padding-right: 25px;
+				display: block;
+				position: relative;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_6 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			.tx1 {
+				.t3 {
+					font-size: 12px;
+					color: #666666;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.t2 {
+					font-size: 12px;
+					color: #999999;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				.t1 {
+					font-size: 15px;
+					color: #333333;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					margin-bottom: 9px;
+				}
+
+				&::after {
+					position: absolute;
+					right: 6px;
+					top: 33px;
+					width: 6px;
+					height: 6px;
+					border-top: 1px solid #666666;
+					border-right: 1px solid #666666;
+					transform: rotate(45deg);
+					content: " ";
+				}
+
+				&:not(:last-child) {
+					margin-bottom: 17px;
+				}
+
+				padding-right: 25px;
+				display: block;
+				position: relative;
+			}
+
+			padding-bottom: 17px;
+		}
+	}
+
+	.box_5 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			padding-bottom: 15px;
+			line-height: 1.8;
+			font-size: 13px;
+			color: #666666;
+			word-break: break-all;
+		}
+	}
+
+	.box_4 {
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+
+		.box_content {
+			padding-bottom: 2px;
+
+			.tag-item {
+				float: left;
+				padding: 4.5px 12px;
+				font-size: 12px;
+				color: #1787fb;
+				margin: 0 10px 10px 0;
+				background-color: #f4f9ff;
+				border-radius: 26px;
+			}
+		}
+	}
+
+	.box_3 {
+		.tx2 {
+			.intent {
+				font-size: 12px;
+				color: #666666;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			.name {
+				font-size: 15px;
+				color: #333333;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				margin-bottom: 9.5px;
+			}
+
+			&::after {
+				position: absolute;
+				right: 6px;
+				top: 20px;
+				width: 6px;
+				height: 6px;
+				border-top: 1px solid #666666;
+				border-right: 1px solid #666666;
+				transform: rotate(45deg);
+				content: " ";
+			}
+
+			padding-right: 25px;
+			margin-top: 17.5px;
+			display: block;
+			position: relative;
+		}
+
+		.tx1 {
+			.right_txt {
+				position: absolute;
+				right: 20px;
+				top: 50%;
+				transform: translate(0, -50%);
+				font-size: 13px;
+				color: #666666;
+			}
+
+			&::after {
+				position: absolute;
+				right: 6px;
+				top: 7px;
+				width: 6px;
+				height: 6px;
+				border-top: 1px solid #666666;
+				border-right: 1px solid #666666;
+				transform: rotate(45deg);
+				content: " ";
+			}
+
+			font-size: 15px;
+			color: #333333;
+			font-weight: bold;
+			position: relative;
+		}
+
+		.box_content {
+			padding-bottom: 15px;
+		}
+
+		width: 100%;
+		border-bottom: 1px solid #f5f5f5;
+	}
+
+	.box_head {
+		.edit_ico {
+			position: absolute;
+			right: -15px;
+			top: 10px;
+			height: 50px;
+			width: 50px;
+			background: url("../../assets/images/resume_edit_ico.svg") center no-repeat;
+			background-size: 16px;
+		}
+
+		.add_ico {
+			position: absolute;
+			right: -15px;
+			top: 10px;
+			height: 50px;
+			width: 50px;
+			background: url("../../assets/images/resume_add_ico.svg") center no-repeat;
+			background-size: 16px;
+		}
+
+		.van-tag {
+			padding: 0 0.5em;
+		}
+
+		.required {
+			float: left;
+			font-size: 9px;
+			font-weight: bold;
+			color: #ff5757;
+			border: 1PX solid #ff5757;
+			padding: 0 3px;
+			margin: 6px 0 0 5px;
+		}
+
+		.txt {
+			float: left;
+			font-size: 18px;
+			color: #333333;
+			font-weight: bold;
+			margin-right: 3px;
+		}
+
+		position: relative;
+		width: 100%;
+		padding: 22.5px 0;
+	}
+
+	.box_2 {
+		.tx2 {
+			font-size: 12px;
+			color: #333333;
+			padding: 2.5px 0 2.5px 23px;
+			background: url("../../assets/images/resume_wx_ico.png") 0 center no-repeat;
+			background-size: 16.5px 16px;
+		}
+
+		.tx1 {
+			font-size: 12px;
+			color: #333333;
+			padding: 2.5px 0 2.5px 23px;
+			margin-bottom: 5.5px;
+			background: url("../../assets/images/resume_phone_ico.png") 0 center no-repeat;
+			background-size: 16.5px 16px;
+		}
+
+		.percent {
+			position: absolute;
+			right: -17px;
+			bottom: 16px;
+			color: #ff5d24;
+			font-size: 13px;
+			padding: 7px 9px 7px 16px;
+			background-color: #f3f3f3;
+			border-radius: 18px 0 0 18px;
+		}
+
+		.name_group {
+			.edit {
+				position: absolute;
+				right: 0;
+				top: 6px;
+				width: 36px;
+				height: 26px;
+				background: url("../../assets/images/resume_edit_ico.svg") center 2.5px no-repeat;
+				background-size: 13px;
+			}
+
+			.avatar_box {
+				&.fe::after {
+					content: " ";
+					position: absolute;
+					right: -3px;
+					bottom: 3px;
+					width: 13px;
+					height: 13px;
+					border-radius: 100%;
+					background: #ff4d94 url("../../assets/images/female.svg") center no-repeat;
+					background-size: 10px;
+				}
+
+				&::after {
+					content: " ";
+					position: absolute;
+					right: -3px;
+					bottom: 3px;
+					width: 13px;
+					height: 13px;
+					border-radius: 100%;
+					background: #50a6fa url("../../assets/images/male.svg") center no-repeat;
+					background-size: 10px;
+				}
+
+				img {
+					width: 48px;
+					height: 48px;
+					border: 0;
+					border-radius: 100%;
+				}
+
+				position: absolute;
+				left: 0;
+				top: 50%;
+				transform: translate(0, -50%);
+				width: 48px;
+				height: 48px;
+				border-radius: 100%;
+			}
+
+			.info {
+				font-size: 12px;
+				color: #666666;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			.name {
+				font-size: 18px;
+				color: #333333;
+				font-weight: bold;
+				padding: 2.5px 0 10.5px 0;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			position: relative;
+			padding: 0 50px 0 61px;
+			margin-bottom: 15.5px;
+		}
+
+		padding: 12.5px 0 15.5px;
+		position: relative;
+	}
+
+	.box_1 {
+		width: 100%;
+		font-size: 12px;
+		color: #ffffff;
+		border-radius: 5px;
+		padding: 11.5px 20px 11.5px 30px;
+		background: #fb8a78 url("../../assets/images/resume_top_tip_bg.png") 10px center no-repeat;
+		background-size: 13px 14px;
+		position: relative;
+		margin-bottom: 10px;
+
+		&::after {
+			position: absolute;
+			right: 11px;
+			top: 16px;
+			width: 7px;
+			height: 7px;
+			border-top: 1px solid #ffffff;
+			border-right: 1px solid #ffffff;
+			transform: rotate(45deg);
+			content: " ";
+		}
+	}
+
+	.content_wrapper {
+		width: 100%;
+		background-color: #ffffff;
+		padding: 0 17px;
+
+		&.pd {
+			padding-bottom: 120px;
+		}
+	}
+
+	.van-overlay {
+		text-align: center;
+		z-index: 2;
+	}
+
+	.van-loading {
+		top: 36%;
+	}
+
+	.van-loading__text {
+		color: #c3c3c3;
+	}
 </style>

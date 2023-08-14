@@ -66,48 +66,48 @@ const userRouter = {
       access: 'resume'
     },
     children: [
-    // {
-    //   path: '/user/resume/noaudit',
-    //   name: 'resumeNoaudit',
-    //   component: () =>
-    //     import('@/views/user/resume/noaudit'),
-    //   meta: {
-    //     title: '未审核简历',
-    //     access: 'resumeNoaudit'
-    //   }
-    // },
-    // {
-    //   path: '/user/resume/list',
-    //   name: 'resumeList',
-    //   component: () =>
-    //     import('@/views/user/resume/list'),
-    //   meta: {
-    //     title: '简历管理',
-    //     access: 'resumeList'
-    //   }
-    // },
-    // {
-    //   path: '/user/resume/edit',
-    //   name: 'resumeEdit',
-    //   component: () =>
-    //     import('@/views/user/resume/edit'),
-    //   meta: {
-    //     title: '编辑简历',
-    //     access: 'resumeList',
-    //     activeMenu: '/user/resume/list'
-    //   },
-    //   hidden: true
-    // },
-    // {
-    //   path: '/user/resume_img',
-    //   name: 'resume_img',
-    //   component: () =>
-    //     import('@/views/user/resume_img/index'),
-    //   meta: {
-    //     title: '照片/作品',
-    //     access: 'resume_img'
-    //   }
-    // },
+      // {
+      //   path: '/user/resume/noaudit',
+      //   name: 'resumeNoaudit',
+      //   component: () =>
+      //     import('@/views/user/resume/noaudit'),
+      //   meta: {
+      //     title: '未审核简历',
+      //     access: 'resumeNoaudit'
+      //   }
+      // },
+      // {
+      //   path: '/user/resume/list',
+      //   name: 'resumeList',
+      //   component: () =>
+      //     import('@/views/user/resume/list'),
+      //   meta: {
+      //     title: '简历管理',
+      //     access: 'resumeList'
+      //   }
+      // },
+      // {
+      //   path: '/user/resume/edit',
+      //   name: 'resumeEdit',
+      //   component: () =>
+      //     import('@/views/user/resume/edit'),
+      //   meta: {
+      //     title: '编辑简历',
+      //     access: 'resumeList',
+      //     activeMenu: '/user/resume/list'
+      //   },
+      //   hidden: true
+      // },
+      // {
+      //   path: '/user/resume_img',
+      //   name: 'resume_img',
+      //   component: () =>
+      //     import('@/views/user/resume_img/index'),
+      //   meta: {
+      //     title: '照片/作品',
+      //     access: 'resume_img'
+      //   }
+      // },
       {
         path: '/user/resume/add',
         name: 'resumeAdd',
@@ -153,6 +153,49 @@ const userRouter = {
     ]
   },
   {
+    path: '/user/directory',
+    name: 'company_directory',
+    component: () =>
+      import('@/views/user/company'),
+    redirect: 'noRedirect',
+    alwaysShow: true,
+    meta: {
+      title: '企业名录',
+      access: 'company_directory'
+    },
+    children: [{
+      path: '/user/company/crm/searchCom',
+      name: 'searchCom',
+      component: () =>
+        import('@/views/user/company/crm/searchCom'),
+      meta: {
+        title: '搜索企业',
+        access: 'searchCom'
+      }
+    },
+    {
+      path: '/user/company/crm/operationRecord',
+      name: 'operationRecord',
+      component: () =>
+        import('@/views/user/company/crm/operationRecord'),
+      meta: {
+        title: '资源消耗记录',
+        access: 'operationRecord'
+      }
+    },
+    {
+      path: '/user/company/crm/basicConfig',
+      name: 'basicConfig',
+      component: () =>
+        import('@/views/user/company/crm/basicConfig'),
+      meta: {
+        title: '基础配置',
+        access: 'basicConfig'
+      }
+    }
+    ]
+  },
+  {
     path: '/user/company',
     name: 'company',
     component: () =>
@@ -163,182 +206,200 @@ const userRouter = {
       title: '企业信息管理',
       access: 'company'
     },
-    children: [
-      {
-        path: '/user/company/crm/whole',
-        name: 'wholeClue',
-        component: () =>
-          import('@/views/user/company/crm/Whole'),
-        meta: {
-          title: '全部线索',
-          access: 'wholeClue'
-        }
-      },
-      {
-        path: '/user/company/crm/wholeAdd',
-        name: 'wholeAdd',
-        component: () =>
-          import('@/views/user/company/crm/components/Add'),
-        meta: {
-          title: '新增线索',
-          access: 'wholeMy'
-        },
-        hidden: true
-      },
-      {
-        path: '/user/company/crm/my',
-        name: 'wholeMy',
-        component: () =>
-          import('@/views/user/company/crm/Whole'),
-        meta: {
-          title: '我的线索',
-          access: 'wholeMy'
-        }
-      },
-      {
-        path: '/user/company/crm/internationalWaters',
-        name: 'wholeInternationalWaters',
-        component: () =>
-          import('@/views/user/company/crm/Whole'),
-        meta: {
-          title: '线索公海',
-          access: 'wholeInternationalWaters'
-        }
-      },
-      {
-        path: '/user/company/crm/allClient',
-        name: 'allClient',
-        component: () =>
-          import('@/views/user/company/crm/Client'),
-        meta: {
-          title: '全部客户',
-          access: 'allClient'
-        }
-      },
-      {
-        path: '/user/company/crm/myClient',
-        name: 'myClient',
-        component: () =>
-          import('@/views/user/company/crm/Client'),
-        meta: {
-          title: '我的客户',
-          access: 'myClient'
-        }
-      },
-      {
-        path: '/user/company/crm/pubilceClient',
-        name: 'pubilceClient',
-        component: () =>
-          import('@/views/user/company/crm/Client'),
-        meta: {
-          title: '客户公海',
-          access: 'pubilceClient'
-        }
-      },
-      {
-        path: '/user/company/crm/config',
-        name: 'crmConfig',
-        component: () =>
-          import('@/views/user/company/crm/Config'),
-        meta: {
-          title: 'CRM设置',
-          access: 'crmConfig'
-        }
-      },
-      {
-        path: '/user/company/crm/trashcan',
-        name: 'trashcan',
-        component: () =>
-          import('@/views/user/company/crm/Trashcan'),
-        meta: {
-          title: 'CRM回收站',
-          access: 'trashcan'
-        }
-      },
-      // {
-      //   path: '/user/company/noaudit',
-      //   name: 'companyNoaudit',
-      //   component: () =>
-      //     import('@/views/user/company/noaudit'),
-      //   meta: {
-      //     title: '待审核企业',
-      //     access: 'companyNoaudit'
-      //   }
-      // },
-      // {
-      //   path: '/user/company/list',
-      //   name: 'companyList',
-      //   component: () =>
-      //     import('@/views/user/company/list'),
-      //   meta: {
-      //     title: '企业管理',
-      //     access: 'companyList'
-      //   }
-      // },
-      {
-        path: '/user/company/add',
-        name: 'companyAdd',
-        component: () =>
-          import('@/views/user/company/add'),
-        meta: {
-          title: '添加企业',
-          access: 'myClient'
-        },
-        hidden: true
-      },
-      {
-        path: '/user/company/edit',
-        name: 'companyEdit',
-        component: () =>
-          import('@/views/user/company/edit'),
-        meta: {
-          title: '修改企业',
-          access: 'myClient'
-        },
-        hidden: true
-      },
-      // {
-      //   path: '/user/job/noaudit',
-      //   name: 'jobNoaudit',
-      //   component: () =>
-      //     import('@/views/user/job/noaudit'),
-      //   meta: {
-      //     title: '待审核职位',
-      //     access: 'jobNoaudit'
-      //   }
-      // },
-      // {
-      //   path: '/user/job/list',
-      //   name: 'jobList',
-      //   component: () =>
-      //     import('@/views/user/job/list'),
-      //   meta: {
-      //     title: '职位管理',
-      //     access: 'jobList'
-      //   }
-      // },
-      // {
-      //   path: '/user/job/list/extension',
-      //   name: 'extension',
-      //   component: () =>
-      //     import('@/views/user/job/list/extension'),
-      //   meta: {
-      //     title: '职位推广',
-      //     access: 'jobList'
-      //   },
-      //   hidden: true
-      // },
-      {
-        path: '/user/job/edit',
-        name: 'jobEdit',
-        component: () =>
-          import('@/views/user/job/edit'),
-        meta: {
-          title: '修改职位',
-          access: 'jobList'
-        },
-        hidden: true
+    children: [{
+      path: '/user/company/crm/JobStatistics',
+      name: 'JobStatistics',
+      component: () =>
+        import('@/views/user/company/crm/JobStatistics'),
+      meta: {
+        title: '工作看板',
+        access: 'JobStatistics'
       }
+    },
+    {
+      path: '/user/company/crm/SaleStatistics',
+      name: 'SaleStatistics',
+      component: () =>
+        import('@/views/user/company/crm/SaleStatistics'),
+      meta: {
+        title: '销售看板',
+        access: 'SaleStatistics'
+      }
+    }, {
+      path: '/user/company/crm/whole',
+      name: 'wholeClue',
+      component: () =>
+        import('@/views/user/company/crm/Whole'),
+      meta: {
+        title: '全部线索',
+        access: 'wholeClue'
+      }
+    },
+    {
+      path: '/user/company/crm/wholeAdd',
+      name: 'wholeAdd',
+      component: () =>
+        import('@/views/user/company/crm/components/Add'),
+      meta: {
+        title: '新增线索',
+        access: 'wholeMy'
+      },
+      hidden: true
+    },
+    {
+      path: '/user/company/crm/my',
+      name: 'wholeMy',
+      component: () =>
+        import('@/views/user/company/crm/Whole'),
+      meta: {
+        title: '我的线索',
+        access: 'wholeMy'
+      }
+    },
+    {
+      path: '/user/company/crm/internationalWaters',
+      name: 'wholeInternationalWaters',
+      component: () =>
+        import('@/views/user/company/crm/Whole'),
+      meta: {
+        title: '线索公海',
+        access: 'wholeInternationalWaters'
+      }
+    },
+    {
+      path: '/user/company/crm/allClient',
+      name: 'allClient',
+      component: () =>
+        import('@/views/user/company/crm/Client'),
+      meta: {
+        title: '全部客户',
+        access: 'allClient'
+      }
+    },
+    {
+      path: '/user/company/crm/myClient',
+      name: 'myClient',
+      component: () =>
+        import('@/views/user/company/crm/Client'),
+      meta: {
+        title: '我的客户',
+        access: 'myClient'
+      }
+    },
+    {
+      path: '/user/company/crm/pubilceClient',
+      name: 'pubilceClient',
+      component: () =>
+        import('@/views/user/company/crm/Client'),
+      meta: {
+        title: '客户公海',
+        access: 'pubilceClient'
+      }
+    },
+    {
+      path: '/user/company/crm/config',
+      name: 'crmConfig',
+      component: () =>
+        import('@/views/user/company/crm/Config'),
+      meta: {
+        title: 'CRM设置',
+        access: 'crmConfig'
+      }
+    },
+    {
+      path: '/user/company/crm/trashcan',
+      name: 'trashcan',
+      component: () =>
+        import('@/views/user/company/crm/Trashcan'),
+      meta: {
+        title: 'CRM回收站',
+        access: 'trashcan'
+      }
+    },
+    // {
+    //   path: '/user/company/noaudit',
+    //   name: 'companyNoaudit',
+    //   component: () =>
+    //     import('@/views/user/company/noaudit'),
+    //   meta: {
+    //     title: '待审核企业',
+    //     access: 'companyNoaudit'
+    //   }
+    // },
+    // {
+    //   path: '/user/company/list',
+    //   name: 'companyList',
+    //   component: () =>
+    //     import('@/views/user/company/list'),
+    //   meta: {
+    //     title: '企业管理',
+    //     access: 'companyList'
+    //   }
+    // },
+    {
+      path: '/user/company/add',
+      name: 'companyAdd',
+      component: () =>
+        import('@/views/user/company/add'),
+      meta: {
+        title: '添加企业',
+        access: 'myClient'
+      },
+      hidden: true
+    },
+    {
+      path: '/user/company/edit',
+      name: 'companyEdit',
+      component: () =>
+        import('@/views/user/company/edit'),
+      meta: {
+        title: '修改企业',
+        access: 'myClient'
+      },
+      hidden: true
+    },
+    // {
+    //   path: '/user/job/noaudit',
+    //   name: 'jobNoaudit',
+    //   component: () =>
+    //     import('@/views/user/job/noaudit'),
+    //   meta: {
+    //     title: '待审核职位',
+    //     access: 'jobNoaudit'
+    //   }
+    // },
+    // {
+    //   path: '/user/job/list',
+    //   name: 'jobList',
+    //   component: () =>
+    //     import('@/views/user/job/list'),
+    //   meta: {
+    //     title: '职位管理',
+    //     access: 'jobList'
+    //   }
+    // },
+    // {
+    //   path: '/user/job/list/extension',
+    //   name: 'extension',
+    //   component: () =>
+    //     import('@/views/user/job/list/extension'),
+    //   meta: {
+    //     title: '职位推广',
+    //     access: 'jobList'
+    //   },
+    //   hidden: true
+    // },
+    {
+      path: '/user/job/edit',
+      name: 'jobEdit',
+      component: () =>
+        import('@/views/user/job/edit'),
+      meta: {
+        title: '修改职位',
+        access: 'jobList'
+      },
+      hidden: true
+    }
       // {
       //   path: '/user/company_img',
       //   name: 'company_img',

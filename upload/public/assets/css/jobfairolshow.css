@@ -311,8 +311,9 @@
 
 .right_btns{
   position: fixed;
-  top: 700px;
-  left: 84%;
+  left: 50%;
+  bottom: 150px;
+  margin-left: 610px;
   z-index: 1;
   text-align: center;
 }

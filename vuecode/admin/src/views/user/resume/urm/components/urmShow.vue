@@ -97,7 +97,7 @@
             <followUpRecord :uid="details.uid" @resumeDetails="resumeDetails" />
           </el-tab-pane>
           <el-tab-pane label="简历详情" name="resumeDetails">
-            <resumeDetails v-if="activeName == 'resumeDetails'" :id="details.id" @resumeDetails="resumeDetails" />
+            <resumeDetails v-if="activeName == 'resumeDetails'" :id="details.id" :resumeEnclosure="resumeEnclosure" @resumeDetails="resumeDetails" />
           </el-tab-pane>
           <el-tab-pane label="会员信息" name="memberInformation">
             <memberInformation :id="details.id" ref="memberInformation" :uid="details.uid" />
@@ -183,7 +183,8 @@ export default {
       callDialogVisible: false,
       showPoster: false,
       posterId: 0,
-      posterType: ''
+      posterType: '',
+      resumeEnclosure:''
     }
   },
   created () {
@@ -267,6 +268,7 @@ export default {
       resumeDetailsList({ 'id': this.rowId })
         .then(res => {
           this.details = res.data
+          this.resumeEnclosure = this.details.enclosure_resume
           this.loading = false
         }).catch(() => {
 

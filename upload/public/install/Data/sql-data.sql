@@ -955,7 +955,11 @@ INSERT INTO `qs_config` VALUES
 (NULL,'qualification_publicity',1,'{"business_license":"","business_license_id":"0","business_licenses":"","business_licenses_id":"0","service_license_id":"0","service_license":""}','app资质公示',0),
 (NULL,'account_outbound',0,'{"app_id":"","app_secret":""}','外呼配置',0),
 (NULL,'job_search_order',0,'2','职位搜索结果排序方式 1按信息关联度排序 2按信息时间线排序',0),
-(NULL,'resume_search_order',0,'2','简历搜索结果排序方式 1按信息关联度排序 2按信息时间线排序',0);
+(NULL,'resume_search_order',0,'2','简历搜索结果排序方式 1按信息关联度排序 2按信息时间线排序',0),
+(NULL,'token_expire',0,'10080','指登录状态的有效期，登录状态失效后会自动退出账号，最小10分钟。如：7天为10080分。',0),
+(NULL,'account_zhitoo_resume',0,'{\"is_open\":\"0\",\"appKey\":\"\",\"appSecret\":\"\"}','智兔简历解析配置',0),
+(NULL,'account_zhitoo_document',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','智兔在线文档预览配置',0),
+(NULL,'account_qy_directory',0,'{\"appKey\":\"\",\"appSecret\":\"\"}','企业名录配置',0);
 
 
 INSERT INTO `qs_cron` VALUES
@@ -977,15 +981,15 @@ INSERT INTO `qs_cron` VALUES
 
 
 INSERT INTO `qs_explain` VALUES
-(NULL, '网站介绍', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '产品服务', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '法律申明', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '推广合作', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '联系我们', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '招贤纳士', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, ''),
-(NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0, '');
+(NULL, '网站介绍', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '产品服务', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '法律申明', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '推广合作', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '联系我们', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '招贤纳士', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '自定义链接', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '自定义链接', '', '', 1, '', '', '', 1264332774, 0),
+(NULL, '自定义链接', '', '', 1, '', '', '', 1264332774, 0);
 
 INSERT INTO `qs_field_rule` VALUES
 (NULL,'Resume','marriage',0,1,0,'婚姻状况',0),
@@ -1308,7 +1312,7 @@ INSERT INTO `qs_wechat_share` VALUES
 (NUll,'noticeshow','公告详情','【网站公告】{title}-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'jobnearby','附近职位','【附近职位】{district}-这有一些家门口的工作-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL,'online_jobfairlist','网络招聘会列表','【网络招聘会】{sitename}网络招聘会-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
-(NULL,'online_jobfairshow','网络招聘会详情','【网络招聘会信息】{title}-{sitename}','self','招聘会图片','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
+(NULL,'online_jobfairshow','网络招聘会详情','【网络招聘会信息】{title}-{sitename}','self','招聘会图片','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL, 'svcomlist', '视频招聘列表', '【视频招聘】求职新体验，刷视频就能找工作-{sitename}', 'logo', '', '你有*个好友看过正在看~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL, 'svperslist', '视频求职列表', '【视频招聘】视频求职简历，看视频找人才-{sitename}', 'logo', '', '更多靠谱好人才等你发现~', '[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NULL, 'svcomshow', '视频招聘详情', '【视频招聘】{comname}发布了招聘信息，走过路过不要错过-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"企业名称\",\"value\":\"comname\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),

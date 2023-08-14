@@ -155,6 +155,13 @@ export function contactList(params) {
     params
   })
 }
+export function clueContactList(params) {
+  return request({
+    url: apiArr.clueContactList,
+    method: 'get',
+    params
+  })
+}
 export function updateCompany(data) {
   return request({
     url: apiArr.updateCompany,
@@ -421,3 +428,68 @@ export function isNameRepeat(data) {
     data
   })
 }
+//数据看板接口 start
+export function workData(params) {
+  return request({
+    url: apiArr.workData,
+    method: 'get',
+    params
+  })
+}
+export function salesStatistics(params) {
+  return request({
+    url: apiArr.salesStatistics,
+    method: 'get',
+    params
+  })
+}
+export function newCompanyStatistics(data) {
+  return request({
+    url: apiArr.newCompanyStatistics,
+    method: 'post',
+    data
+  })
+}
+export function newCompanyFollowStatistics(data) {
+  return request({
+    url: apiArr.newCompanyFollowStatistics,
+    method: 'post',
+    data
+  })
+}
+export function newClueStatistics(data) {
+  return request({
+    url: apiArr.newClueStatistics,
+    method: 'post',
+    data
+  })
+}
+export function newClueFollowStatistics(data) {
+  return request({
+    url: apiArr.newClueFollowStatistics,
+    method: 'post',
+    data
+  })
+}
+export function workLifeCycle(data) {
+  return request({
+    url: apiArr.workLifeCycle,
+    method: 'post',
+    data
+  })
+}
+export function salesKanban(data) {
+  return request({
+    url: apiArr.salesKanban,
+    method: 'post',
+    data
+  })
+}
+export function companyCrmClueStatistics(data) {
+  return request({
+    url: apiArr.companyCrmClueStatistics,
+    method: 'post',
+    data
+  })
+}
+//数据看板接口 end

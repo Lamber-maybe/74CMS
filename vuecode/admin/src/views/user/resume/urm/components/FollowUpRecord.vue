@@ -20,7 +20,7 @@
               />
             </el-form-item>
             <el-form-item label="跟进结果：" prop="result">
-              <el-input v-model="followUp.result" :rows="9" type="textarea" :disabled="disabled_state" />
+              <el-input v-model="followUp.result" :rows="11" type="textarea" :disabled="disabled_state" maxlength="250" show-word-limit />
             </el-form-item>
             <el-form-item label="添加图片：">
               <el-upload

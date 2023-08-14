@@ -62,7 +62,18 @@ class Ad extends \app\v1_0\controller\common\Base
             $arr['inner_link'] = $value['inner_link'];
             $arr['inner_link_params'] = $value['inner_link_params'];
             $arr['company_id'] = $value['company_id'];
-            $arr['web_link_url'] = model('Ad')->handlerWebLink($value,config('global_config.sitedomain'));
+            /**
+             * 【ID1000435】
+             * 【bug】企业会员中主通栏绑定企业ID点击无效
+             * yx - 2022.11.24
+             * 说明：
+             * 生成URL多加了一层网站域名。
+             * [旧]:
+             * $arr['web_link_url'] = model('Ad')->handlerWebLink($value,config('global_config.sitedomain'));
+             * [新]:
+             * $arr['web_link_url'] = model('Ad')->handlerWebLink($value));
+             */
+            $arr['web_link_url'] = model('Ad')->handlerWebLink($value);
             $return['items'][$category_arr[$value['cid']]['alias']][] = $arr;
         }
         foreach ($category_arr as $key => $value) {

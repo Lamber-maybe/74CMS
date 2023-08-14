@@ -30,7 +30,16 @@ class MobileIndexMenu extends \app\common\model\BaseModel
             $data = [];
             foreach ($list as $key => $value) {
                 $arr['alias'] = $value['alias'];
-                $arr['url'] = $value['link_url'];
+                /**
+                 * 【ID1000432】
+                 * 【优化】链接带参数跳转后没有筛选状态
+                 * yx - 2022.11.21
+                 * [旧]:
+                 * $arr['url'] = $value['link_url'];
+                 * [新]:
+                 * $arr['url'] = htmlspecialchars_decode($value['link_url']);
+                 */
+                $arr['url'] = htmlspecialchars_decode($value['link_url']);
                 $arr['title'] =
                     $value['custom_title'] == ''
                         ? $value['title']

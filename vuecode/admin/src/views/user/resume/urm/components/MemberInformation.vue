@@ -131,7 +131,7 @@
               </div>
               <div v-if="details.resume_img_arr == ''" class="empty_texts">
                 <img src="../../../../../assets/images/company/crm/zanwei.png" alt="">
-                <div>暂未上传企业风采图片</div>
+                <div>暂未上传简历作品</div>
               </div>
             </div>
           </div>

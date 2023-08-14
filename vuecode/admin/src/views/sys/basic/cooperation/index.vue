@@ -13,6 +13,12 @@
       <el-tab-pane label="号码隐私保护" :lazy="true">
         <alicloudpro />
       </el-tab-pane>
+      <el-tab-pane label="简历解析" :lazy="true">
+        <resumeanalysis />
+      </el-tab-pane>
+      <el-tab-pane label="在线文档预览" :lazy="true">
+        <zhitooview />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -22,12 +28,16 @@ import qq from './components/qq.vue'
 import trtc from './components/trtc.vue'
 import weixinopen from './components/weixinopen.vue'
 import alicloudpro from './components/alicloudpro'
+import resumeanalysis from './components/resumeanalysis.vue'
+import zhitooview from '@/views/sys/basic/cooperation/components/zhitooview'
 export default {
   components: {
     qq,
     trtc,
     weixinopen,
-    alicloudpro
+    alicloudpro,
+    resumeanalysis,
+    zhitooview
   }
 }
 </script>

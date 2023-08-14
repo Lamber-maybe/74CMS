@@ -57,13 +57,13 @@ class FollowUp extends Backend
             $rule = [
                 'uid' => 'number|length:1,10',
                 'mode' => 'require|max:1|number',
-                'result' => 'max:100',
+                'result' => 'max:250',
                 'next_time' => 'number|length:1,10',
             ];
 
             $msg = [
                 'mode' => '请选择跟进方式',
-                'result' => '请输入1~100字内的跟进结果',
+                'result' => '请输入1~250字内的跟进结果',
                 'next_time' => '请选择下次跟进时间',
             ];
             $validate = new Validate($rule, $msg);

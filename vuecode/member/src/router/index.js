@@ -520,6 +520,30 @@ const routes = [{
                     loginCheck: true,
                     utype: 2
                 }
+            },
+            {
+                path: '/personal/resume/one_click_import',
+                name: 'PersonalOneClickImport',
+                component: () =>
+                    import ('../views/personal/OneClickImport'),
+                meta: {
+                    title: '导入简历',
+                    keepAlive: false,
+                    loginCheck: true,
+                    utype: 2
+                }
+            },
+            {
+                path: '/personal/resume/resume_import',
+                name: 'PersonalResumeImport',
+                component: () =>
+                    import ('../views/personal/ResumeImport'),
+                meta: {
+                    title: '导入简历详情',
+                    keepAlive: false,
+                    loginCheck: true,
+                    utype: 2
+                }
             }
         ]
     },

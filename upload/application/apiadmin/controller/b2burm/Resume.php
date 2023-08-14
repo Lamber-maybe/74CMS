@@ -36,6 +36,7 @@ class Resume extends Backend
         $citycategory = input('post.citycategory/a',[]);
         $jobcategory = input('post.jobcategory/a',[]);
         $platform = input('post.platform/s', '', 'trim');
+        $enclosure_resume = input('post.enclosure_resume/d', 0, 'intval');
         if($platform != ''){
             $where['m.platform'] = ['=',$platform];
         }
@@ -48,6 +49,9 @@ class Resume extends Backend
             }
             if($sort_type == 'reg_time'){
                 $order = 'm.reg_time '.$sort;
+            }
+            if($sort_type == 'final_follow'){
+                $order = 'r.last_visit_time '.$sort;
             }
         }
         if($education > 0){//学历
@@ -385,6 +389,25 @@ class Resume extends Backend
                 }
             }
         }
+
+        if (!empty($enclosure_resume)) {
+            switch ($enclosure_resume) {
+                case 1:
+                    $total_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
+                    $list_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
+                    $where['re.id'] = ['not null',''];
+                    break;
+
+                case 2:
+                    $total_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
+                    $list_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
+                    $where['re.id'] = ['null',''];
+                    break;
+
+                default:
+                    break;
+            }
+        }
         $total = model('Resume')->alias('r');
         foreach ($total_join as $k=>$v){
             $total = $total->join($v[0],$v[1],$v[2]);
@@ -530,6 +553,9 @@ class Resume extends Backend
                 $v['final_follow'] = 0;
             }
 
+            // 附件简历
+            $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['uid'=>$v['uid']]);
+            $v['enclosure_resume'] = !empty($enclosure_resume) ? $enclosure_resume['enclosure'] : '';
         }
         $return['items'] = $list;
         $return['total'] = $total;
@@ -706,6 +732,14 @@ class Resume extends Backend
                 $data['tag_text'] = implode(',', $tag_text_arr);
             }
         }
+
+        $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['rid' => $resume_id]);
+        if (isset($enclosure_resume) && !empty($enclosure_resume)) {
+            $data['enclosure_resume'] = $enclosure_resume->toArray();
+        } else {
+            $data['enclosure_resume'] = '';
+        }
+
         $this->ajaxReturn(200, '获取数据成功', $data);
     }
 
@@ -1185,7 +1219,21 @@ class Resume extends Backend
             if (!preg_match($preg_phone, $post['member_mobile'])) {
                 throw new \Exception('手机号格式错误');
             }
-            $member_uid = model('Member')->where(['mobile' => $post['member_mobile']])->value('mobile');
+            /**
+             * 【ID1000439】
+             * 【bug】原个人会员手机号存在，企业客户详情不能修改，会员能修改的问题
+             * 说明：
+             * 修改途中发现，URM中修改手机号查询全部`Member`表，新增只查询个人会员
+             * yx - 2022.11.24
+             * [新增]:
+             * 'utype' => 2
+             */
+            $member_uid = model('Member')
+                ->where([
+                    'mobile' => $post['member_mobile'],
+                    'utype' => 2
+                ])
+                ->value('mobile');
             if (!empty($member_uid) && $member_uid != $uid) {
                 throw new \Exception('手机号已存在');
             }

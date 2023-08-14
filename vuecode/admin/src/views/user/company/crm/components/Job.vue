@@ -67,10 +67,10 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="更新时间"
+          label="刷新时间"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.updatetime | timeFilter }}</span>
+            <span>{{ scope.row.refreshtime | timeFilter }}</span>
           </template>
         </el-table-column>
         <el-table-column

@@ -7,6 +7,7 @@
     >
       <component :is="'resume_'+index" :id="id" @resumeDetails="resumeDetails" @setLoading="setLoading($event)" />
     </div>
+    <resume_enclosure :id="id" :resumeEnclosure="resumeEnclosure" @resumeDetails="resumeDetails"></resume_enclosure>
   </div>
 </template>
 
@@ -23,6 +24,7 @@ import resume_certificate from './components/resumeedit/resumeCertificate.vue'
 import resume_language from './components/resumeedit/resumeLanguage.vue'
 import resume_tag from './components/resumeedit/resumeTag.vue'
 import resume_img from './components/resumeedit/resumeImg.vue'
+import resume_enclosure from './components/resumeedit/resumeEnclosure.vue'
 
 export default {
   components: {
@@ -36,9 +38,10 @@ export default {
     resume_certificate,
     resume_language,
     resume_tag,
-    resume_img
+    resume_img,
+    resume_enclosure
   },
-  props: ['id'],
+  props: ['id','resumeEnclosure'],
   data() {
     return {
       moduleList: {},

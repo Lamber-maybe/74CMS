@@ -143,10 +143,6 @@
           <span v-show="imUnreaded" class="point"></span>
           <div class="right_txt">求职新方式，与企业在线职聊</div>
         </div>
-        <div class="handle_line l7" @click="handlerJump('/member/RedEnvelopes/envelopes')">
-          我的钱包
-          <div class="right_txt">查看钱包余额、随时红包提现</div>
-        </div>
         <router-link class="handle_line l5" to="/member/personal/account">
           账号管理
           <div class="right_txt">用户名密码、第三方绑定设置</div>

@@ -134,6 +134,34 @@ export function mobileIndexMenuEdit(params, method = 'post') {
     })
   }
 }
+export function getAdminList(params) {
+  return request({
+    url: apiArr.getNotificationAdminList,
+    method: 'get',
+    params
+  })
+}
+export function getToDoNotification(params) {
+  return request({
+    url: apiArr.getToDoNotification,
+    method: 'get',
+    params
+  })
+}
+export function setToDoNotification(params) {
+  return request({
+    url: apiArr.setToDoNotification,
+    method: 'post',
+    data: params
+  })
+}
+export function switchButton(params) {
+  return request({
+    url: apiArr.switchButtons,
+    method: 'get',
+    params
+  })
+}
 export function getNotifyRule(params) {
   return request({
     url: apiArr.getNotifyRule,
@@ -177,4 +205,48 @@ export function setWechatNotifyRule(params, method = 'post') {
       params
     })
   }
+}
+export function resumeConfig(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.resumeConfig,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.resumeConfig,
+      method,
+      params
+    })
+  }
+}
+export function resumeCheck(params) {
+  return request({
+    url: apiArr.resumeCheck,
+    method: 'post',
+    data: params
+  })
+}
+export function documentConfig(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.documentConfig,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.documentConfig,
+      method,
+      params
+    })
+  }
+}
+export function documentCheck(params) {
+  return request({
+    url: apiArr.documentCheck,
+    method: 'post',
+    data: params
+  })
 }

@@ -190,8 +190,8 @@ class Jobfairol extends \app\common\controller\Backend{
         if ($audit !== '') $where['a.audit'] = $audit;
         if ($source !== '') $where['a.source'] = $source;
         if ($stick !== '') $where['a.stick'] = $stick;
-        $where['jobfair_id'] = $jobfair_id;
-        $where['utype'] = 1;
+        $where['a.jobfair_id'] = $jobfair_id;
+        $where['a.utype'] = 1;
         $list = model('JobfairOnlineParticipate')
             ->alias('a')
             ->field('a.*,b.companyname,b.setmeal_id,b.audit c_audit,c.contact,c.mobile,c.telephone,b.id as company_id')
@@ -269,8 +269,8 @@ class Jobfairol extends \app\common\controller\Backend{
 
         if ($audit !== '') $where['a.audit'] = $audit;
         if ($source !== '') $where['a.source'] = $source;
-        $where['jobfair_id'] = $jobfair_id;
-        $where['utype'] = 2;
+        $where['a.jobfair_id'] = $jobfair_id;
+        $where['a.utype'] = 2;
         $list = model('JobfairOnlineParticipate')
             ->alias('a')
             ->field('a.id jid,a.uid juid,a.jobfair_id,a.utype,a.audit jaudit,a.qrcode,a.addtime jaddtime,a.source jsource,a.stick jstick,a.note,b.*,c.mobile,b.is_display')
@@ -337,7 +337,18 @@ class Jobfairol extends \app\common\controller\Backend{
             $value['link'] = url('index/resume/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }
-        $total = model('JobfairOnlineParticipate')->alias('a')->where($where)->count();
+        /**
+         * 【BUG】参会个人分页数据统计错误
+         * yx - 2022.11.18
+         * [旧]:
+         * $total = model('JobfairOnlineParticipate')->alias('a')->where($where)->count();
+         */
+        $total = model('JobfairOnlineParticipate')
+            ->alias('a')
+            ->join(config('database.prefix') . 'resume b', 'a.uid=b.uid', 'left')
+            ->where($where)
+            ->where('b.id is not null')
+            ->count();
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -417,8 +428,16 @@ class Jobfairol extends \app\common\controller\Backend{
                 break;
         }
         $list = model('Resume')->field('id,uid,fullname,addtime,refreshtime')->where($where)->limit(30)->select();
-        foreach($list as $key=>$val){
-            $list[$key]['personal_link'] = url('index/personal/show', ['id' => $val['id']]);
+        foreach ($list as $key => $val) {
+            /**
+             * 【BUG】新增参会个人 - 简历链接跳转404
+             * yx - 2022.11.18
+             * [旧]:
+             * $list[$key]['personal_link'] = url('index/personal/show', ['id' => $val['id']]);
+             * [新]:
+             * $list[$key]['personal_link'] = url('index/resume/show', ['id' => $val['id']]);
+             */
+            $list[$key]['personal_link'] = url('index/resume/show', ['id' => $val['id']]);
         }
         $this->ajaxReturn(200, '获取成功',['items'=>$list]);
     }
@@ -441,20 +460,8 @@ class Jobfairol extends \app\common\controller\Backend{
         {
             $this->ajaxReturn(500, '网络招聘会编号错误');
         }
-        $company = [];
-        $member = [];
-        foreach($data as $k=>$v)
-        {
-            if ($v['utype'] == 1)
-            {
-                $company[] = $v['uid'];
-            }else
-            {
-                $member[] = $v['uid'];
-            }
-        }
-        model('JobfairOnline')->setStatus($jobfair_id,$uid,$audit,$this->admininfo);
-        
+
+        model('JobfairOnline')->setStatus($jobfair_id, $uid, $audit);
 
         $this->ajaxReturn(200, '设置成功');
     }

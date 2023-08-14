@@ -278,6 +278,14 @@ class Config extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             $value['iconUrl'] = model('Uploadfile')->getFileUrl($value['icon']);
+            /**
+             * 【ID1000432】
+             * 【优化】链接带参数跳转后没有筛选状态
+             * yx - 2022.11.21
+             * [新增]:
+             * $value['link_url'] = htmlspecialchars_decode($value['link_url']);
+             */
+            $value['link_url'] = htmlspecialchars_decode($value['link_url']);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', ['items' => $list]);

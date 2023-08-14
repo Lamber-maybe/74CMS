@@ -417,6 +417,14 @@ class Resume extends \app\index\controller\Base
 
         $this->initPageSeo('resumeshow',$seoData);
 
+        // 附件简历
+        $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['rid' => $id]);
+        if (isset($enclosure_resume) && !empty($enclosure_resume)) {
+            $return['enclosure_resume'] = $enclosure_resume->toArray();
+        } else {
+            $return['enclosure_resume'] = '';
+        }
+
         $this->assign('return',$return);
         $this->assign('pageHeader',$this->pageHeader);
 

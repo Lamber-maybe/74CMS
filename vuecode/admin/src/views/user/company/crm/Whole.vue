@@ -13,33 +13,18 @@
         </el-button>
       </div>
       <div class="list-search">
-        <el-input
-          v-model="keyword"
-          style="width: 440px;"
-          placeholder="请输入搜索内容"
-          class="input-with-select"
-          @keyup.enter.native="funSearchKeyword"
-        >
-          <el-select
-            slot="prepend"
-            v-model="key_type"
-            placeholder="请选择"
-            class="input-sel"
-          >
+        <el-input v-model="keyword" style="width: 440px;" placeholder="请输入搜索内容" class="input-with-select"
+                  @keyup.enter.native="funSearchKeyword">
+          <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
             <el-option label="线索名称" value="1" />
             <el-option label="手机号码" value="2" />
           </el-select>
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-            @click="funSearchKeyword"
-          />
+          <el-button slot="append" icon="el-icon-search" @click="funSearchKeyword" />
         </el-input>
       </div>
       <div
-        v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' "
-        class="filterCriteria"
-      >
+        v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter!='' || followCountFilter != ''"
+        class="filterCriteria">
         <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
         <div style="float:left;display: inline-block;width: 80%">
           <!--          saleFilter: '',-->
@@ -70,24 +55,35 @@
               <i class="el-icon-close" />
             </div>
           </div>
+          <div v-if="collectionFilter !=''" class="selected">
+            <div class="name">领取时间：{{ collectionFilter.name }}</div>
+            <div class="closes" @click="reset(collectionFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
+          <div v-if="followCountFilter !=''" class="selected">
+            <div class="name">跟进次数：{{ followCountFilter.name }}</div>
+            <div class="closes" @click="reset(followCountFilter.field)">
+              <i class="el-icon-close" />
+            </div>
+          </div>
         </div>
-        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;" @click="reset('all')">
+        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;"
+             @click="reset('all')">
           <i class="el-icon-delete" /> 清空条件
         </div>
         <div style="clear:both;" />
       </div>
       <div style="position: relative;">
-        <div :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' ? 'setField_s' : 'setField'">
-          <el-popover
-            v-model="visiblepop"
-            placement="bottom-start"
-            width="220"
-            trigger="manual"
-          >
+        <div
+          :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'">
+          <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
             <div class="setField_h">
               <div v-for="item in fieldData" class="setFields">
-                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)">
-                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)">
+                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked
+                       @change="select(item.field)">
+                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field"
+                       @change="select(item.field)">
                 <span style="margin-left: 10px;">{{ item.name }}</span>
               </div>
             </div>
@@ -101,38 +97,17 @@
             </div>
           </el-popover>
         </div>
-        <el-table
-          ref="multipleTable"
-          v-loading="loading"
-          :data="tableData"
-          tooltip-effect="dark"
-          :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
-          border
-          stripe
-          style="width: 100%;"
-          @sort-change="sortTable"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column
-            fixed
-            type="selection"
-            width="55"
-          />
-          <el-table-column
-            v-for="items in fieldData"
-            v-if="items.is_locking == true && items.select == true"
-            fixed
-            :sortable="items.is_sortable"
-            :prop="items.field"
-            :width="items.width"
-          >
+        <el-table ref="multipleTable" v-loading="loading" :data="tableData" tooltip-effect="dark"
+                  :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}" border stripe
+                  style="width: 100%;" @sort-change="sortTable" @selection-change="handleSelectionChange">
+          <el-table-column fixed type="selection" width="55" />
+          <el-table-column v-for="items in fieldData" v-if="items.is_locking == true && items.select == true" fixed
+                           :sortable="items.is_sortable" :prop="items.field" :width="items.width">
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)"
+                   @mouseleave="locks(items.field)">
                 <span>{{ items.name }}</span>
-                <el-popover
-                  placement="bottom"
-                  trigger="hover"
-                >
+                <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
                   <div v-if="items.field == 'admin_username'">
                     <el-checkbox-group style="height: 250px;">
@@ -153,14 +128,27 @@
                   <!-- 行业-->
                   <!-- 地区-->
                   <div v-if="items.field == 'district'">
-                    <el-cascader-panel
-                      v-model="regionScreen"
-                      :props="props"
-                      clearable
-                      :options="regionScreenData"
-                    />
+                    <el-cascader-panel v-model="regionScreen" :props="props" clearable :options="regionScreenData" />
                   </div>
                   <!-- 地区-->
+                  <!-- 领取时间-->
+                  <div v-if="items.field == 'collection_time'">
+                    <el-checkbox-group>
+                      <div v-for="item in collectionScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="collectionScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 领取时间-->
+                  <!-- 跟进次数-->
+                  <div v-if="items.field == 'follow_count'">
+                    <el-checkbox-group>
+                      <div v-for="item in followCountScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="followCountScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 跟进次数-->
                   <!-- 创建人-->
                   <div v-if="items.field == 'creat_username'">
                     <el-checkbox-group>
@@ -170,14 +158,19 @@
                     </el-checkbox-group>
                   </div>
                   <div style="margin-top: 10px;">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置
+                    </el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
-                  <div v-if="items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'creat_username'" slot="reference" class="drop_down" />
-                <!-- 创建人-->
+                  <div
+                    v-if="items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'creat_username' || items.field == 'collection_time'  || items.field == 'follow_count'"
+                    slot="reference" class="drop_down" />
+                  <!-- 创建人-->
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display" @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="unlock" @click="locking(items.field)" />
+                <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display"
+                     @click="locking(items.field)" />
+                <div v-if="items.is_lock_display == false" slot="reference" class="unlock"
+                     @click="locking(items.field)" />
               </div>
             </template>
             <template slot-scope="scope">
@@ -188,6 +181,7 @@
               <div v-if="items.field == 'name'">
                 <span v-if="scope.row.name == ''"> - </span>
                 <span v-else> {{ scope.row.name }} </span>
+                <span v-if="scope.row.tripartite_id!=''" class="mlLabel">名录</span>
               </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
@@ -244,20 +238,13 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            v-for="items in fieldData"
-            v-if="items.is_locking == false && items.select == true"
-            :prop="items.field"
-            :sortable="items.is_sortable"
-            :width="items.width"
-          >
+          <el-table-column v-for="items in fieldData" v-if="items.is_locking == false && items.select == true"
+                           :prop="items.field" :sortable="items.is_sortable" :width="items.width">
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)" @mouseleave="locks(items.field)">
+              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)"
+                   @mouseleave="locks(items.field)">
                 <span>{{ items.name }}</span>
-                <el-popover
-                  placement="bottom"
-                  trigger="hover"
-                >
+                <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
                   <div v-if="items.field == 'admin_username'">
                     <el-checkbox-group>
@@ -278,12 +265,7 @@
                   <!-- 行业-->
                   <!-- 地区-->
                   <div v-if="items.field == 'district'">
-                    <el-cascader-panel
-                      v-model="regionScreen"
-                      :props="props"
-                      clearable
-                      :options="regionScreenData"
-                    />
+                    <el-cascader-panel v-model="regionScreen" :props="props" clearable :options="regionScreenData" />
                   </div>
                   <!-- 地区-->
                   <!-- 创建人-->
@@ -294,15 +276,39 @@
                       </div>
                     </el-checkbox-group>
                   </div>
+                  <!-- 创建人-->
+                  <!-- 领取时间-->
+                  <div v-if="items.field == 'collection_time'">
+                    <el-checkbox-group>
+                      <div v-for="item in collectionScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="collectionScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 领取时间-->
+                  <!-- 跟进次数-->
+                  <div v-if="items.field == 'follow_count'">
+                    <el-checkbox-group>
+                      <div v-for="item in followCountScreenData" class="screenStyle">
+                        <el-radio :key="item.id" v-model="followCountScreen" :label="item.id">{{ item.name }}</el-radio>
+                      </div>
+                    </el-checkbox-group>
+                  </div>
+                  <!-- 跟进次数-->
                   <div style="margin-top: 10px;">
-                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置</el-button>
+                    <el-button class="filterOperation" type="text" size="small" @click="reset(items.field)">重置
+                    </el-button>
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
-                  <div v-if="items.field == 'creat_username' || items.field == 'admin_username' || items.field == 'trade' || items.field == 'district'" slot="reference" class="drop_down" />
+                  <div
+                    v-if="items.field == 'creat_username' || items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'collection_time' || items.field == 'follow_count'"
+                    slot="reference" class="drop_down" />
                   <!-- 创建人-->
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="lock_display" @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="lock" @click="locking(items.field)" />
+                <div v-if="items.is_lock_display == true" slot="reference" class="lock_display"
+                     @click="locking(items.field)" />
+                <div v-if="items.is_lock_display == false" slot="reference" class="lock"
+                     @click="locking(items.field)" />
               </div>
 
             </template>
@@ -314,6 +320,7 @@
               <div v-if="items.field == 'name'">
                 <span v-if="scope.row.name == ''"> - </span>
                 <span v-else> {{ scope.row.name }} </span>
+                <span v-if="scope.row.tripartite_id!=''" class="mlLabel">名录</span>
               </div>
               <div v-if="items.field == 'admin_username'">
                 <span v-if="scope.row.admin_username == ''"> - </span>
@@ -370,17 +377,17 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-            width="140"
-            fixed="right"
-          >
+          <el-table-column label="操作" width="140" fixed="right">
             <template slot-scope="scope">
               <el-button class="operation" type="text" size="small" @click="see(scope.row.id)">查看</el-button>
-              <el-button v-if="list_type == 2" class="operation" type="text" size="small" @click="release(scope.row.id)">释放</el-button>
-              <el-button v-if="list_type == 2" class="operation" type="text" size="small" @click="see(scope.row.id)">跟进</el-button>
-              <el-button v-if="list_type == 1" class="operation" type="text" size="small" @click="funAuditBatch('single',scope.row.id)">领取</el-button>
-              <el-button v-if="list_type == 1" class="operation" type="text" size="small" @click="wholeDel('single',scope.row.id)">删除</el-button>
+              <el-button v-if="list_type == 2" class="operation" type="text" size="small"
+                         @click="release(scope.row.id)">释放</el-button>
+              <el-button v-if="list_type == 2" class="operation" type="text" size="small" @click="see(scope.row.id)">跟进
+              </el-button>
+              <el-button v-if="list_type == 1" class="operation" type="text" size="small"
+                         @click="funAuditBatch('single',scope.row.id)">领取</el-button>
+              <el-button v-if="list_type == 1" class="operation" type="text" size="small"
+                         @click="wholeDel('single',scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
 
@@ -402,41 +409,22 @@
           </el-button>
         </el-col>
         <el-col :span="12" style="text-align: right">
-          <el-pagination
-            background
-            destroy-on-close
-            :current-page="currentPage"
-            :page-sizes="[10, 15, 20, 30, 40]"
-            :page-size="pagesize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          <el-pagination background destroy-on-close :current-page="currentPage" :page-sizes="[10, 15, 20, 30, 40]"
+                         :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"
+                         @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </div>
     </el-card>
-    <el-drawer
-      v-if="drawer"
-      size="75%"
-      :show-close="false"
-      :with-header="false"
-      :wrapper-closable="false"
-      :visible.sync="drawer"
-      :before-close="handleClose"
-    >
-      <show :row-id="rowId" />
+    <el-drawer v-if="drawer" size="75%" :show-close="false" :with-header="false" :wrapper-closable="false"
+               :visible.sync="drawer" :before-close="handleClose">
+      <show :row-id="rowId" @hideDetail="hideDetail"/>
       <!-- 关闭按钮 -->
       <div class="close" @click="handleClose">
         <i class="el-icon-close" />
       </div>
     </el-drawer>
     <div class="call">
-      <el-dialog
-        :visible.sync="callDialogVisible"
-        width="30%"
-        :before-close="callHandleClose"
-      >
+      <el-dialog :visible.sync="callDialogVisible" width="30%" :before-close="callHandleClose">
         <div class="box-content">
           <div class="content">
             <div class="title1">您还尚未开通云呼叫服务</div>
@@ -478,11 +466,7 @@
       </el-dialog>
     </div>
     <div class="meet">
-      <el-dialog
-        :visible.sync="meetDialogVisible"
-        width="30%"
-        :before-close="meetHandleClose"
-      >
+      <el-dialog :visible.sync="meetDialogVisible" width="30%" :before-close="meetHandleClose">
         <div class="box-content">
           <div id="animation" class="img">
             <!--            <img src="../../../../assets/images/outbound/meet.png" alt="">-->
@@ -499,20 +483,37 @@
 
 <script>
 import show from '@/views/user/company/crm/components/Show'
-import { clueRelease, clueReceive, clueDelete, crmCustomList, clueList, clueAdminLists, classify, crmCustomListEdit, clueExport } from '@/api/company_crm'
-import { export_json_to_excel } from '@/excel/Export2Excel'
-import { outboundCall } from '@/api/outbound'
+import {
+  clueRelease,
+  clueReceive,
+  clueDelete,
+  crmCustomList,
+  clueList,
+  clueAdminLists,
+  classify,
+  crmCustomListEdit,
+  clueExport
+} from '@/api/company_crm'
+import {
+  export_json_to_excel
+} from '@/excel/Export2Excel'
+import {
+  outboundCall
+} from '@/api/outbound'
 
 export default {
   name: 'Whole',
   components: {
     show
   },
-  data(){
+  data() {
     return {
       key_type: '1',
       loading: false,
-      props: { multiple: false, checkStrictly: true },
+      props: {
+        multiple: false,
+        checkStrictly: true
+      },
       visiblepop: false,
       menu_icon: 'menu',
       keyword: '',
@@ -529,11 +530,22 @@ export default {
       pagesize: 10,
       total: 0,
       currentPage: 1,
-      saleKey: [
-        { text: 'aa', value: 'aa' },
-        { text: 'bb', value: 'bb' },
-        { text: 'cc', value: 'cc' },
-        { text: 'dd', value: 'dd' }
+      saleKey: [{
+        text: 'aa',
+        value: 'aa'
+      },
+        {
+          text: 'bb',
+          value: 'bb'
+        },
+        {
+          text: 'cc',
+          value: 'cc'
+        },
+        {
+          text: 'dd',
+          value: 'dd'
+        }
       ],
       multipleSelection: [],
       exportData: [],
@@ -559,7 +571,41 @@ export default {
       saleFilter: '',
       industryFilter: '',
       regionFilter: '',
-      createdByFilter: ''
+      createdByFilter: '',
+      collectionScreenData: [{
+        'id': 1,
+        'name': '今日新增线索'
+      },
+        {
+          'id': 2,
+          'name': '本周新增线索'
+        },
+        {
+          'id': 3,
+          'name': '本月新增线索'
+        }
+      ],
+      collectionScreen: '',
+      collectionFilter: '',
+      followCountScreenData: [{
+        'id': 1,
+        'name': '跟进0次线索'
+      },
+        {
+          'id': 2,
+          'name': '跟进1次线索'
+        },
+        {
+          'id': 3,
+          'name': '跟进2次线索'
+        },
+        {
+          'id': 4,
+          'name': '跟进3次及以上线索'
+        }
+      ],
+      followCountScreen: '',
+      followCountFilter: ''
     }
   },
   computed: {
@@ -580,9 +626,8 @@ export default {
       }
     }
   },
-  mounted(){
-  },
-  created () {
+  mounted() {},
+  created() {
     this.currentNav = this.$route.name
     if (this.currentNav == 'wholeClue'){
       this.title = '全部线索'
@@ -608,8 +653,11 @@ export default {
     }
   },
   methods: {
-    sortTable({ column, order }){
-      if (order == 'ascending'){
+    sortTable({
+                column,
+                order
+              }) {
+      if (order == 'ascending') {
         this.sortType = 'asc'
       } else if (order == 'descending'){
         this.sortType = 'desc'
@@ -620,8 +668,10 @@ export default {
       this.sort = this.sortType
       this.clueList()
     },
-    classify(){
-      classify({ 'type': 'citycategory,trade,companyScale' }).then(res => {
+    classify() {
+      classify({
+        'type': 'citycategory,trade,companyScale'
+      }).then(res => {
         this.regionScreenData = res.data.citycategory
         this.industryScreenData = res.data.trade
       }).catch(() => {
@@ -638,6 +688,27 @@ export default {
     },
     clueList(){
       this.loading = true
+      //新增线索
+      if (localStorage.getItem('collectionScreen')) {
+        let collectionScreenData = localStorage.getItem('collectionScreen')
+        this.collectionScreen = parseInt(collectionScreenData);
+        this.collectionFilter = {
+          name: collectionScreenData == '1' ? '今日新增线索' : (collectionScreenData == '2' ? '本周新增线索' : '本月新增线索'),
+          field: 'collection_time'
+        };
+        localStorage.setItem('collectionScreen', '');
+      }
+      //线索跟进
+      if (localStorage.getItem('followCountScreen')) {
+        let followCountScreenData = localStorage.getItem('followCountScreen')
+        this.followCountScreen = parseInt(followCountScreenData);
+        this.followCountFilter = {
+          name: followCountScreenData == '1' ? '跟进0次的线索' : (followCountScreenData == '2' ? '跟进1次的线索' : (
+            followCountScreenData == '3' ? '跟进2次的线索' : '跟进3次及以上的线索')),
+          field: 'follow_count'
+        };
+        localStorage.setItem('followCountScreen', '');
+      }
       clueList({
         'page': this.currentPage,
         'pagesize': this.pagesize,
@@ -649,17 +720,18 @@ export default {
         'creat_id': this.createdByScreen,
         'admin_id': this.saleScreen,
         'sort_type': this.sort_type,
-        'sort': this.sort
-      }
-      )
+        'sort': this.sort,
+        'collection': this.collectionScreen,
+        'follow_count': this.followCountScreen
+      })
         .then(res => {
           this.tableData = res.data.items
           this.total = res.data.total
           this.currentPage = res.data.current_page
           this.loading = false
         }).catch(() => {
-          this.loading = false
-        })
+        this.loading = false
+      })
     },
     setFieldClose(){
       this.menu_icon = 'menu'
@@ -677,7 +749,11 @@ export default {
       if (list_type == 2){
         list_type_z = 3
       }
-      crmCustomListEdit({ 'menu': list_type_z, 'type': 1, 'value': JSON.stringify(this.fieldData) }, 'post')
+      crmCustomListEdit({
+        'menu': list_type_z,
+        'type': 1,
+        'value': JSON.stringify(this.fieldData)
+      }, 'post')
         .then(res => {
           if (res.code == 200){
             this.$message.success(res.message)
@@ -686,7 +762,7 @@ export default {
           }
         }).catch(() => {
 
-        })
+      })
     },
     crmCustomList(){
       var list_type = this.list_type
@@ -700,7 +776,10 @@ export default {
       if (list_type == 2){
         list_type_z = 3
       }
-      crmCustomList({ 'menu': list_type_z, 'type': 1 })
+      crmCustomList({
+        'menu': list_type_z,
+        'type': 1
+      })
         .then(res => {
           this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++){
@@ -714,7 +793,7 @@ export default {
           }
         }).catch(() => {
 
-        })
+      })
     },
     locking(field){
       for (var i = 0; i <= this.fieldData.length - 1; i++){
@@ -757,7 +836,8 @@ export default {
         for (var i = 0; i <= this.saleScreenData.length - 1; i++){
           if (this.saleScreen == this.saleScreenData[i].id){
             this.saleFilter = {
-              'field': 'admin_username', 'name': this.saleScreenData[i].name
+              'field': 'admin_username',
+              'name': this.saleScreenData[i].name
             }
           }
         }
@@ -768,7 +848,8 @@ export default {
         for (var i = 0; i <= this.industryScreenData.length - 1; i++){
           if (this.industryScreen == this.industryScreenData[i].id){
             this.industryFilter = {
-              'field': 'trade', 'name': this.industryScreenData[i].name
+              'field': 'trade',
+              'name': this.industryScreenData[i].name
             }
           }
         }
@@ -787,7 +868,8 @@ export default {
           for (var i = 0; i <= this.regionScreenData.length - 1; i++){
             if (this.regionScreen[0] == this.regionScreenData[i].value){
               this.regionFilter = {
-                'field': 'district', 'name': this.regionScreenData[i].label
+                'field': 'district',
+                'name': this.regionScreenData[i].label
               }
             }
           }
@@ -797,7 +879,8 @@ export default {
             for (var a = 0; a <= this.regionScreenData[i].children.length - 1; a++){
               if (this.regionScreen[1] == this.regionScreenData[i].children[a].value){
                 this.regionFilter = {
-                  'field': 'district', 'name': this.regionScreenData[i].children[a].label
+                  'field': 'district',
+                  'name': this.regionScreenData[i].children[a].label
                 }
               }
             }
@@ -809,7 +892,8 @@ export default {
               for (var b = 0; b <= this.regionScreenData[i].children[a].children.length - 1; b++){
                 if (this.regionScreen[2] == this.regionScreenData[i].children[a].children[b].value){
                   this.regionFilter = {
-                    'field': 'district', 'name': this.regionScreenData[i].children[a].children[b].label
+                    'field': 'district',
+                    'name': this.regionScreenData[i].children[a].children[b].label
                   }
                 }
               }
@@ -823,12 +907,37 @@ export default {
         for (var i = 0; i <= this.createdByScreenData.length - 1; i++){
           if (this.createdByScreen == this.createdByScreenData[i].id){
             this.createdByFilter = {
-              'field': 'creat_username', 'name': this.createdByScreenData[i].name
+              'field': 'creat_username',
+              'name': this.createdByScreenData[i].name
             }
           }
         }
       } else {
         this.createdByFilter = ''
+      }
+      if (this.collectionScreen != '') {
+        for (var i = 0; i <= this.collectionScreenData.length - 1; i++) {
+          if (this.collectionScreen == this.collectionScreenData[i].id) {
+            this.collectionFilter = {
+              'field': 'collection_time',
+              'name': this.collectionScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.collectionFilter = ''
+      }
+      if (this.followCountScreen != '') {
+        for (var i = 0; i <= this.followCountScreenData.length - 1; i++) {
+          if (this.followCountScreen == this.followCountScreenData[i].id) {
+            this.followCountFilter = {
+              'field': 'follow_count',
+              'name': this.followCountScreenData[i].name
+            }
+          }
+        }
+      } else {
+        this.followCountFilter = ''
       }
       this.currentPage = 1
       this.clueList()
@@ -839,6 +948,9 @@ export default {
     },
     handleClose(){
       this.clueList()
+      this.drawer = false
+    },
+    hideDetail(){
       this.drawer = false
     },
     handleSizeChange(val){
@@ -855,16 +967,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        clueRelease({ clue_id: id }).then(response => {
-          if (response.code == 200){
+        clueRelease({
+          clue_id: id
+        }).then(response => {
+          if (response.code == 200) {
             this.$message.success(response.message)
           } else {
             this.$message.error(response.message)
           }
           this.clueList()
         })
-      }).catch(() => {
-      })
+      }).catch(() => {})
     },
     funAuditBatch(type, id){
       if (type == 'all'){
@@ -882,16 +995,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        clueReceive({ clue_id: ids }).then(response => {
-          if (response.code == 200){
+        clueReceive({
+          clue_id: ids
+        }).then(response => {
+          if (response.code == 200) {
             this.$message.success(response.message)
           } else {
             this.$message.error(response.message)
           }
           this.clueList()
         })
-      }).catch(() => {
-      })
+      }).catch(() => {})
     },
     wholeDel(type, id){
       if (type == 'all'){
@@ -909,8 +1023,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        clueDelete({ clue_id: ids }).then(response => {
-          if (response.code == 200){
+        clueDelete({
+          clue_id: ids
+        }).then(response => {
+          if (response.code == 200) {
             this.$message.success(response.message)
           } else {
             this.$message.error(response.message)
@@ -923,6 +1039,18 @@ export default {
     },
     funExport() {
       var that = this
+      /**
+       * 【ID1000447】
+       * 【bug】子管理员没有导出权限，客户列表可以导出
+       * yx - 2022.11.30
+       * [新增]:
+       * that.$store.state.user.access_export == 0
+       * 判断
+       */
+      if (that.$store.state.user.access_export == 0) {
+        that.$message.error('当前管理员没有导出权限')
+        return false
+      }
       if (that.multipleSelection.length == 0) {
         that.$message.error('请选择要导出的线索')
         return false
@@ -984,6 +1112,8 @@ export default {
         this.createdByScreen = []
         this.key_type = '1'
         this.keyword = ''
+        this.collectionScreen = ''
+        this.followCountScreen = ''
       }
       if (field == 'admin_username'){
         this.saleScreen = []
@@ -997,6 +1127,12 @@ export default {
       if (field == 'creat_username'){
         this.createdByScreen = []
       }
+      if (field == 'collection_time') {
+        this.collectionScreen = ''
+      }
+      if (field == 'follow_count') {
+        this.followCountScreen = ''
+      }
       this.confirm()
     },
     clickDial(phone, name){
@@ -1005,10 +1141,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        outboundCall(
-          { 'mobile': phone }
-        ).then(res => {
-          if (res.code == 200){
+        outboundCall({
+          'mobile': phone
+        }).then(res => {
+          if (res.code == 200) {
             this.meetDialogVisible = true
             this.dialPhone = phone
             this.dialName = name
@@ -1016,8 +1152,7 @@ export default {
           if (res.code == 4040){
             this.callDialogVisible = true
           }
-        }).catch((res) => {
-        })
+        }).catch((res) => {})
       }).catch(() => {
 
       })
@@ -1184,16 +1319,16 @@ export default {
   }
 }
 .sotrTime {
-    display: inline-block;
-    width: 85%;
+  display: inline-block;
+  width: 85%;
 }
 
 ::v-deep .el-popover {
-    position: fixed;
+  position: fixed;
 }
 
 ::v-deep .el-checkbox-group {
-  height: 250px;
+  max-height: 250px;
   overflow-y: scroll;
 }
 .list-search {
@@ -1202,170 +1337,170 @@ export default {
 }
 
 .filterOperation {
-    float: right;
-    margin-right: 5px;
-    color: #fff;
-    background-color: #409EFF;;
-    padding: 4px 6px;
-    font-size: 12px;
-    border-radius: 3px;
-  }
+  float: right;
+  margin-right: 5px;
+  color: #fff;
+  background-color: #409EFF;
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+}
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-    width: 10px; // 横向滚动条
-    height: 10px; // 纵向滚动条 必写
-  }
+  width: 10px; // 横向滚动条
+  height: 10px; // 纵向滚动条 必写
+}
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    background-color: #c1c7d0;
-    border-radius: 2px;
-  }
+  background-color: #c1c7d0;
+  border-radius: 2px;
+}
 
 .unlock_display {
-    display: inline-block;
-    float: right;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
+  display: inline-block;
+  float: right;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
 
-    &:hover {
-      background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
-    }
+  &:hover {
+    background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
   }
+}
 
 .unlock {
-    display: none;
-    float: right;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
+  display: none;
+  float: right;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: url("../../../../assets/images/company/crm/unlock.png") no-repeat center center;
 
-    &:hover {
-      background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
-    }
+  &:hover {
+    background: url("../../../../assets/images/company/crm/unlock1.png") no-repeat center center;
   }
+}
 
 .lock_display {
-    display: inline-block;
-    float: right;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
+  display: inline-block;
+  float: right;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
 
-    &:hover {
-      background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
-    }
+  &:hover {
+    background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
   }
+}
 
 .lock {
-    display: none;
-    float: right;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
+  display: none;
+  float: right;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: url("../../../../assets/images/company/crm/lock.png") no-repeat center center;
 
-    &:hover {
-      background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
-    }
+  &:hover {
+    background: url("../../../../assets/images/company/crm/lock1.png") no-repeat center center;
   }
+}
 
 .drop_down {
-    display: inline-block;
-    float: right;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: url("../../../../assets/images/company/crm/drop-down.png") no-repeat center center;
+  display: inline-block;
+  float: right;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  background: url("../../../../assets/images/company/crm/drop-down.png") no-repeat center center;
 
-    &:hover {
-      background: url("../../../../assets/images/company/crm/drop-down1.png") no-repeat center center;
-    }
+  &:hover {
+    background: url("../../../../assets/images/company/crm/drop-down1.png") no-repeat center center;
   }
+}
 
 .checkboxBtn {
-    ::v-deep .el_button {
-      padding: 4px 6px;
-      font-size: 14px;
-      border-radius: 3px;
-    }
+  ::v-deep .el_button {
+    padding: 4px 6px;
+    font-size: 14px;
+    border-radius: 3px;
   }
+}
 
 .field_s_select {
-    background-color: #344563;
-    border: 1px solid transparent;
-    padding: 16px 10px;
-  }
+  background-color: #344563;
+  border: 1px solid transparent;
+  padding: 16px 10px;
+}
 
 .field_s {
-    background: #f4f5f7;
-    border: 1px solid transparent;
-    padding: 16px 10px;
-  }
+  background: #f4f5f7;
+  border: 1px solid transparent;
+  padding: 16px 10px;
+}
 
 .operation {
-    font-size: 14px;
-  }
+  font-size: 14px;
+}
 
 ::v-deep .el-drawer {
-    overflow: initial;
-  }
+  overflow: initial;
+}
 
 .close {
-    width: 40px;
-    height: 60px;
-    position: absolute;
-    left: -40px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #f5f5f5;
-    border-radius: 8px 0 0 8px;
-    cursor: pointer;
+  width: 40px;
+  height: 60px;
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f5f5f5;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
 
-    .el-icon-close {
-      font-size: 30px;
-      color: #777;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
+  .el-icon-close {
+    font-size: 30px;
+    color: #777;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
+}
 
 .setField_h {
-    height: 250px;
-    overflow: auto;
-  }
+  height: 250px;
+  overflow: auto;
+}
 
 .setFields {
-    margin: 15px 0px;
-    font-size: 14px;
-  }
+  margin: 15px 0px;
+  font-size: 14px;
+}
 
 .setField {
-    top: 60px;
-    right: 0;
-    position: absolute;
-    z-index: 1000;
-    margin-left: 10px;
-  }
+  top: 60px;
+  right: 0;
+  position: absolute;
+  z-index: 1000;
+  margin-left: 10px;
+}
 
 .screenStyle {
-    margin: 10px 0px;
-  }
+  margin: 10px 0px;
+}
 
 .bortton-page {
-    margin-top: 20px;
-    padding-bottom: 40px;
-  }
+  margin-top: 20px;
+  padding-bottom: 40px;
+}
 
 .input-with-select {
-    float: left;
-    margin-bottom: 20px;
-  }
+  float: left;
+  margin-bottom: 20px;
+}
 .filterCriteria{
   border: 1px dashed #EEEEEE;
   font-size: 13px;
@@ -1400,6 +1535,17 @@ export default {
   position: absolute;
   z-index: 1000;
   margin-left: 10px;
+}
+.mlLabel {
+  color: #409EFF;
+  border: 1px solid #409EFF;
+  display: inline-block;
+  width: 35px;
+  text-align: center;
+  height: 16px;
+  line-height: 14px;
+  font-size: 12px;
+  border-radius: 4px;
 }
 #animation {
   animation:pulse 1s .2s ease both infinite;

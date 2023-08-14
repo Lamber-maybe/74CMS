@@ -386,6 +386,24 @@ abstract class Paginator implements ArrayAccess, Countable, IteratorAggregate, J
     }
 
     /**
+     * 增加新的返回格式（遵循现有系统格式）
+     * @access public
+     * @author edc
+     * @return array
+     * Date Time：2022年11月21日17:43:53
+     */
+    public function toArrays()
+    {
+        return [
+            'total'        => $this->total,
+            'pagesize'     => $this->listRows,
+            'current_page' => $this->currentPage,
+            'total_page'   => $this->lastPage,
+            'items'        => $this->items->toArray(),
+        ];
+    }
+
+    /**
      * Specify data which should be serialized to JSON
      */
     public function jsonSerialize()

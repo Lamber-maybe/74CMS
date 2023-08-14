@@ -5,7 +5,9 @@
     <div class="form_top_border"></div>
     <div class="box_1">
       <div class="content" @click="toggleSearch">
-        <div :class="params.keyword === '' ? 'search_ico' : 'search_ico has'">{{ params.keyword === '' ? '请输入关键字' : params.keyword }}</div>
+        <div :class="params.keyword === '' ? 'search_ico' : 'search_ico has'">
+          {{ params.keyword === '' ? '请输入关键字' : params.keyword }}
+        </div>
       </div>
     </div>
     <van-popup v-model="show" position="top" :overlay="true" :style="{ height: '90%', width: '100%' }">
@@ -13,55 +15,52 @@
     </van-popup>
     <div class="box_2">
       <van-dropdown-menu class="filter_menu">
-        <van-dropdown-item :title="districtTitle" ref="dropDistrict" @opened="openedDistrict" @closed="closedDistrict">
-          <DistrictFilter :districts="[params.district1, params.district2, params.district3]" :type="true" @doSearch="doSearchByDistrict"></DistrictFilter>
+        <van-dropdown-item :title="districtTitle" ref="dropDistrict" @opened="openedDistrict"
+                           @closed="closedDistrict">
+          <DistrictFilter :districts="[params.district1, params.district2, params.district3]" :type="true"
+                          @doSearch="doSearchByDistrict"></DistrictFilter>
         </van-dropdown-item>
-        <van-dropdown-item :title="categoryTitle" ref="dropCategory" @opened="openedCategory" @closed="closedCategory">
-          <JobCategoryFilter :categories="[params.category1, params.category2, params.category3]" :type="true" @doSearch="doSearchByCategory"></JobCategoryFilter>
+        <van-dropdown-item :title="categoryTitle" ref="dropCategory" @opened="openedCategory"
+                           @closed="closedCategory">
+          <JobCategoryFilter :categories="[params.category1, params.category2, params.category3]" :type="true"
+                             @doSearch="doSearchByCategory"></JobCategoryFilter>
         </van-dropdown-item>
-        <van-dropdown-item :title="wageTitle" v-model="optionWage" :options="optionFilterWage" @change="handleWage" />
+        <van-dropdown-item :title="wageTitle" v-model="optionWage" :options="optionFilterWage"
+                           @change="handleWage" />
         <van-dropdown-item :title="otherTitle" ref="dropMore">
           <div class="more_box">
             <div class="item_wrapper">
               <div class="item_title">学历要求</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item selected' : 'item'"
-                  v-for="(item, index) in optionEducation"
-                  :key="index"
-                  @click="optionEducation = restructureData(optionEducation, item.id, 'education')"
-                >
+                <div :class="item.select ? 'item selected' : 'item'"
+                     v-for="(item, index) in optionEducation" :key="index"
+                     @click="optionEducation = restructureData(optionEducation, item.id, 'education')">
                   {{ item.text }}
                 </div>
                 <div class="clear"></div>
               </div>
               <div class="item_title">工作经验</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item selected' : 'item'"
-                  v-for="(item, index) in optionExperience"
-                  :key="index"
-                  @click="optionExperience = restructureData(optionExperience, item.id, 'experience')"
-                >
+                <div :class="item.select ? 'item selected' : 'item'"
+                     v-for="(item, index) in optionExperience" :key="index"
+                     @click="optionExperience = restructureData(optionExperience, item.id, 'experience')">
                   {{ item.text }}
                 </div>
                 <div class="clear"></div>
               </div>
               <div class="item_title">福利待遇</div>
               <div class="item_group">
-                <div :class="item.select ? 'item selected' : 'item'" v-for="(item, index) in optionJobTag" :key="index" @click="handleCheckJobTag(item)">
+                <div :class="item.select ? 'item selected' : 'item'"
+                     v-for="(item, index) in optionJobTag" :key="index" @click="handleCheckJobTag(item)">
                   {{ item.text }}
                 </div>
                 <div class="clear"></div>
               </div>
               <div class="item_title">更新时间</div>
               <div class="item_group">
-                <div
-                  :class="item.select ? 'item selected' : 'item'"
-                  v-for="(item, index) in optionSettr"
-                  :key="index"
-                  @click="optionSettr = restructureData(optionSettr, item.id, 'settr')"
-                >
+                <div :class="item.select ? 'item selected' : 'item'"
+                     v-for="(item, index) in optionSettr" :key="index"
+                     @click="optionSettr = restructureData(optionSettr, item.id, 'settr')">
                   {{ item.text }}
                 </div>
                 <div class="clear"></div>
@@ -76,14 +75,16 @@
       </van-dropdown-menu>
     </div>
     <div class="form_split_10"></div>
-    <van-empty image="search" description="没有找到对应的数据" style="background-color: #fff" v-if="show_empty === true && showLayer === false" />
-    <van-list v-if="dataset.length > 0" v-model="loading" :finished="finished" :finished-text="finished_text" @load="onLoad" :immediate-check="true">
+    <van-empty image="search" description="没有找到对应的数据" style="background-color: #fff"
+               v-if="show_empty === true && showLayer === false" />
+    <van-list v-if="dataset.length > 0" v-model="loading" :finished="finished" :finished-text="finished_text"
+              @load="onLoad" :immediate-check="true">
       <div class="box_3">
         <div v-for="(item, index) in dataset" :key="index" @click="toDetail(item.id)">
           <div class="list">
             <div class="top" v-if="item.stick == 1">置顶</div>
             <div class="tx1">
-              <div class="name">{{ item.jobname }}</div>
+              <div :class="item.clicked?'name clickedColor':'name'">{{ item.jobname }}</div>
               <div class="worry_ico" v-if="item.emergency == 1">急</div>
               <div class="clear"></div>
               <div class="wage">{{ item.wage_text }}</div>
@@ -97,8 +98,10 @@
             </div>
             <div class="company">
               <div class="name">{{ item.companyname }}</div>
-              <div class="auth_ico1" v-if="item.company_audit == 1 && mobile_company_show_tpl == 'def'"></div>
-              <div class="auth_ico" v-if="item.company_audit == 1 && mobile_company_show_tpl == 'tpl2'"></div>
+              <div class="auth_ico1" v-if="item.company_audit == 1 && mobile_company_show_tpl == 'def'">
+              </div>
+              <div class="auth_ico" v-if="item.company_audit == 1 && mobile_company_show_tpl == 'tpl2'">
+              </div>
               <div class="crw_ico" v-if="item.setmeal_icon != ''"><img :src="item.setmeal_icon" /></div>
               <div class="clear"></div>
             </div>
@@ -116,7 +119,8 @@
         <router-link to="/member/login" class="a_btn">登录</router-link>
         <router-link to="/member/reg/personal" class="a_btn blue">注册</router-link>
       </div>
-      <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}</div>
+      <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}
+      </div>
     </div>
     <BottomNav></BottomNav>
     <!-- 没有创建简历时的提示 -->
@@ -126,7 +130,9 @@
 
 <script>
 import wxshare from '@/assets/js/share.js'
-import { obj2Param } from '@/utils/index'
+import {
+  obj2Param
+} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import DistrictFilter from '@/components/DistrictFilter'
@@ -139,9 +145,10 @@ export default {
     JobCategoryFilter,
     NoResume
   },
-  data () {
+  data() {
     return {
       dataset: [],
+      selectArrOnload: [], //用户点击过的数据（记录是否变色）
       loading: false,
       finished: false,
       finished_text: '',
@@ -172,18 +179,74 @@ export default {
       wageTitle: '薪资',
       otherTitle: '其他',
       show: false,
-      optionFilterWage: [
-        { text: '不限', value: 0, min: '', max: '' },
-        { text: '1000元以下', value: 1, min: 0, max: 1000 },
-        { text: '1000-2000元', value: 2, min: 1000, max: 2000 },
-        { text: '2000-3000元', value: 3, min: 2000, max: 3000 },
-        { text: '3000-5000元', value: 4, min: 3000, max: 5000 },
-        { text: '5000-8000元', value: 5, min: 5000, max: 8000 },
-        { text: '8000-12000元', value: 6, min: 8000, max: 12000 },
-        { text: '12000-15000元', value: 7, min: 12000, max: 15000 },
-        { text: '15000元以上', value: 8, min: 15000, max: '' }
+      optionFilterWage: [{
+        text: '不限',
+        value: 0,
+        min: '',
+        max: ''
+      },
+        {
+          text: '1000元以下',
+          value: 1,
+          min: 0,
+          max: 1000
+        },
+        {
+          text: '1000-2000元',
+          value: 2,
+          min: 1000,
+          max: 2000
+        },
+        {
+          text: '2000-3000元',
+          value: 3,
+          min: 2000,
+          max: 3000
+        },
+        {
+          text: '3000-5000元',
+          value: 4,
+          min: 3000,
+          max: 5000
+        },
+        {
+          text: '5000-8000元',
+          value: 5,
+          min: 5000,
+          max: 8000
+        },
+        {
+          text: '8000-12000元',
+          value: 6,
+          min: 8000,
+          max: 12000
+        },
+        {
+          text: '12000-15000元',
+          value: 7,
+          min: 12000,
+          max: 15000
+        },
+        {
+          text: '15000元以上',
+          value: 8,
+          min: 15000,
+          max: ''
+        }
       ],
-      optionSettr: [{ text: '3天内', id: 3 }, { text: '7天内', id: 7 }, { text: '15天内', id: 15 }, { text: '30天内', id: 30 }],
+      optionSettr: [{
+        text: '3天内',
+        id: 3
+      }, {
+        text: '7天内',
+        id: 7
+      }, {
+        text: '15天内',
+        id: 15
+      }, {
+        text: '30天内',
+        id: 30
+      }],
       optionWage: '',
       optionEducation: [],
       optionExperience: [],
@@ -222,8 +285,9 @@ export default {
   activated () {
     // this.initData()
   },
-  created () {
+  created() {
     this.initData()
+    this.getLocalData()
   },
   mounted () {
     // 更新时间
@@ -260,10 +324,18 @@ export default {
         let storeJobTag = JSON.parse(
           JSON.stringify(this.$store.state.classifyJobTag)
         )
-        storeJobTag = storeJobTag.map(function (item) {
-          return { id: item.id, text: item.text, select: false }
+        storeJobTag = storeJobTag.map(function(item) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: false
+          }
         })
-        storeJobTag.unshift({ id: '', text: '全部', select: true })
+        storeJobTag.unshift({
+          id: '',
+          text: '全部',
+          select: true
+        })
         this.optionJobTag = storeJobTag
         this.restoreFilter()
       })
@@ -278,11 +350,19 @@ export default {
       this.handleSelectMore()
       this.optionEducation = this.restructureData(this.$store.state.classifyEdu, '', 'education')
       this.optionExperience = this.restructureData(this.$store.state.classifyExperience, '', 'experience')
-      this.optionJobTag = this.optionJobTag.map(function (item, index) {
-        return { id: item.id, text: item.text, select: index === 0 }
+      this.optionJobTag = this.optionJobTag.map(function(item, index) {
+        return {
+          id: item.id,
+          text: item.text,
+          select: index === 0
+        }
       })
-      this.optionSettr = this.optionSettr.map(function (item, index) {
-        return { id: item.id, text: item.text, select: index === 0 }
+      this.optionSettr = this.optionSettr.map(function(item, index) {
+        return {
+          id: item.id,
+          text: item.text,
+          select: index === 0
+        }
       })
     },
     // 恢复福利待遇
@@ -302,8 +382,12 @@ export default {
           }
         })
       } else {
-        this.optionJobTag = this.optionJobTag.map(function (item, index) {
-          return { id: item.id, text: item.text, select: index === 0 }
+        this.optionJobTag = this.optionJobTag.map(function(item, index) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: index === 0
+          }
         })
       }
     },
@@ -330,8 +414,12 @@ export default {
       } else {
         // 全部
         this.selectJobTag = []
-        this.optionJobTag = this.optionJobTag.map(function (item, index) {
-          return { id: item.id, text: item.text, select: index === 0 }
+        this.optionJobTag = this.optionJobTag.map(function(item, index) {
+          return {
+            id: item.id,
+            text: item.text,
+            select: index === 0
+          }
         })
       }
       this.params.tag = this.selectJobTag.join(',')
@@ -390,11 +478,13 @@ export default {
         selectText.push(topItem.text)
         if (topItem.children.length) {
           if (parseInt(this.params.category2)) {
-            let secondItem = topItem.children.filter(item => parseInt(item.id) === parseInt(this.params.category2))[0]
+            let secondItem = topItem.children.filter(item => parseInt(item.id) === parseInt(this.params
+              .category2))[0]
             selectText.push(secondItem.text)
             if (secondItem.children.length) {
               if (parseInt(this.params.category3)) {
-                let lowestItem = secondItem.children.filter(item => parseInt(item.id) === parseInt(this.params.category3))[0]
+                let lowestItem = secondItem.children.filter(item => parseInt(item.id) === parseInt(this
+                  .params.category3))[0]
                 selectText.push(lowestItem.text)
               } else {
                 selectText.push(`全${selectText[selectText.length - 1]}`)
@@ -418,19 +508,21 @@ export default {
       let queryData = this.$route.query
       if (queryData['district1']) {
         this.params.district1 = queryData['district1']
-        this.params.district2 = queryData['district2']
-        this.params.district3 = queryData['district3']
+        this.params.district2 = queryData['district2'] ? queryData['district2'] : 0
+        this.params.district3 = queryData['district3'] ? queryData['district3'] : 0
         let storeCity = this.$store.state.classifyCityOriginal
         let selectText = []
         let topItem = storeCity.filter(item => parseInt(item.value) === parseInt(this.params.district1))[0]
         selectText.push(topItem.label)
         if (topItem.children.length) {
           if (parseInt(this.params.district2)) {
-            let secondItem = topItem.children.filter(item => parseInt(item.value) === parseInt(this.params.district2))[0]
+            let secondItem = topItem.children.filter(item => parseInt(item.value) === parseInt(this.params
+              .district2))[0]
             selectText.push(secondItem.label)
             if (secondItem.children.length) {
               if (parseInt(this.params.district3)) {
-                let lowestItem = secondItem.children.filter(item => parseInt(item.value) === parseInt(this.params.district3))[0]
+                let lowestItem = secondItem.children.filter(item => parseInt(item.value) === parseInt(
+                  this.params.district3))[0]
                 selectText.push(lowestItem.label)
               } else {
                 selectText.push(`全${selectText[selectText.length - 1]}`)
@@ -514,7 +606,10 @@ export default {
       let existSub = restoreArray.findIndex(v => v.id === '')
       if (existSub === -1) {
         // 防止重复添加
-        restoreArray.unshift({ id: '', text: '全部' })
+        restoreArray.unshift({
+          id: '',
+          text: '全部'
+        })
       }
       if (type === 'education') {
         // 学历要求
@@ -538,7 +633,11 @@ export default {
           // 无选中项，选中全部
           iSelect = index === 0
         }
-        return { id: item.id, text: item.text, select: iSelect }
+        return {
+          id: item.id,
+          text: item.text,
+          select: iSelect
+        }
       })
       return restoreArray
     },
@@ -546,7 +645,8 @@ export default {
     restoreWage () {
       let queryData = this.$route.query
       if (queryData['minwage']) {
-        let thisWage = this.optionFilterWage.filter(item => parseInt(item.min) === parseInt(queryData['minwage']))
+        let thisWage = this.optionFilterWage.filter(item => parseInt(item.min) === parseInt(queryData[
+          'minwage']))
         this.optionWage = thisWage[0].value
         this.wageTitle = thisWage[0].text
       } else {
@@ -569,7 +669,9 @@ export default {
     fetchData (init) {
       this.show_empty = false
 
-      let conditions = { ...this.params }
+      let conditions = {
+        ...this.params
+      }
       if (init === true) {
         this.page = 1
         this.finished_text = ''
@@ -585,6 +687,22 @@ export default {
             this.showLayer = parseInt(res.data.show_mask) === 1
           } else {
             this.dataset = this.dataset.concat(res.data.items)
+          }
+          //判断用户是否点击查看过某些数据
+          if (this.selectArrOnload.length > 0) {
+            for (let j in this.selectArrOnload) {
+              for (let i in this.dataset) {
+                if (this.dataset[i].id == this.selectArrOnload[j]) {
+                  this.dataset[i].clicked = true
+                }else{
+                  this.dataset[i].clicked = false
+                }
+              }
+            }
+          } else {
+            for (let i in this.dataset) {
+              this.dataset[i].clicked = false
+            }
           }
           // 加载状态结束
           this.loading = false
@@ -607,7 +725,20 @@ export default {
         this.fetchData(false)
       }
     },
-    toDetail (id) {
+    toDetail(id) {
+      let selectArr = localStorage.getItem('selectArr') == 'null' || localStorage.getItem('selectArr') == null ?
+        [] : JSON.parse(localStorage.getItem(
+          'selectArr'))
+      if (selectArr.indexOf(id) == -1 || selectArr.length == 0) {
+        selectArr.push(id)
+      }
+      this.selectArrOnload = selectArr
+      localStorage.setItem('selectArr', JSON.stringify(selectArr))
+      for (let i in this.dataset) {
+        if (this.dataset[i].id == id) {
+          this.dataset[i].clicked = true
+        }
+      }
       /**
        * 【bug】触屏职位列表进入详情右下角通过多功能侧边栏按钮返回首页，再次进入简历列表页时，会出现重复数据
        *  zch 2022.10.9
@@ -640,6 +771,18 @@ export default {
     },
     showChange (e) {
       this.showWarn = e
+    },
+    getLocalData() {
+      let LoginOrNotStorage = localStorage.getItem('LoginOrNot') == 'true' ? true : false
+      let LoginOrNot = this.$store.state.LoginOrNot
+      localStorage.setItem('LoginOrNot', LoginOrNot)
+      if (!LoginOrNotStorage == LoginOrNot) {
+        localStorage.setItem('selectArr', null); //清空职位
+        localStorage.setItem('selectResumeArr', null); //清空简历
+        localStorage.setItem('selectComArr', null); //清空企业
+      }
+      this.selectArrOnload = localStorage.getItem('selectArr') == null || localStorage.getItem('selectArr') ==
+      'null' ? [] : JSON.parse(localStorage.getItem('selectArr'))
     }
   }
 }
@@ -866,6 +1009,10 @@ export default {
         text-overflow: ellipsis;
         float: left;
         margin-right: 6px;
+
+        &.clickedColor {
+          color: #909090;
+        }
       }
       position: relative;
       padding-top: 17.5px;

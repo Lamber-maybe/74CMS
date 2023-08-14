@@ -284,7 +284,6 @@ class Company extends Backend
                 ->group('c.id')
                 ->having($having_where);
         }
-
         // 统计数据总条数
         $total = $total->where($where)->count();
         if ($total <= 0) {
@@ -371,7 +370,6 @@ class Company extends Backend
 
             $list = $list->having($having_where);
         }
-
         $list = $list->where($where)
             ->field('')
             ->group('c.id')
@@ -1006,6 +1004,71 @@ class Company extends Backend
                 model('b2bcrm.CrmFollowUp')
                     ->isUpdate(true)
                     ->save(['uid' => $uid], ['clue_id' => $input_data['clue_id'], 'type' => 1]);
+
+                $companyInfo = [
+                    'id'  => model('Company')->id,
+                    'uid' => model('Member')->uid
+                ];
+                // 查询线索的所有联系人
+                $currentTime = time();
+                $contactField = [
+                    "$companyInfo[id] as comid",
+                    "$companyInfo[uid] as uid",
+                    'contact',
+                    'mobile',
+                    '"" as weixin',
+                    'telephone',
+                    'qq',
+                    'email',
+                    'sex',
+                    "$currentTime as addtime",
+                    "$currentTime as updatetime"
+                ];
+                $contactWhere = [
+                    'clue_id' => $input_data['clue_id'],
+                    'is_main' => 0
+                ];
+                $contactList = db('crm_clue_contact')->field($contactField)->where($contactWhere)->select();
+                if (!empty($contactList)) {
+                    // 将线索联系人添加到客户联系人中
+                    db('crm_company_contact')->insertAll($contactList);
+                }
+                // 查询线索的跟进记录
+                $followField = [
+                    '2 as type',
+                    "$companyInfo[uid] as uid",
+                    'admin_id',
+                    '1 as utype',
+                    'mode',
+                    'next_time',
+                    'result',
+                    'enclosure',
+                    'create_time',
+                    'link_man',
+                    'link_mobile',
+                    'linkman_id',
+                ];
+                $followWhere = [
+                    'type'    => 1,
+                    'clue_id' => $input_data['clue_id'],
+                ];
+                $followModel = db('crm_follow_up');
+                $followList = $followModel->field($followField)->where($followWhere)->select();
+                if (!empty($followList)) {
+                    // 将线索跟进记录添加到客户跟进记录中
+                    $followModel->insertAll($followList);
+                }
+                // 判断线索中最后跟进记录就同步过去
+                if ((!empty($clueInfo['last_visit_time']) || !empty($clueInfo['last_visit_admin']))) {
+                    $updateWhere = [
+                        'id' => $companyInfo['id']
+                    ];
+                    $updateData = [
+                        'last_visit_time'  => $clueInfo['last_visit_time'],
+                        'last_visit_admin' => $clueInfo['last_visit_admin'],
+                    ];
+                    db('company')->where($updateWhere)->update($updateData);
+                }
             }
             model('AdminLog')->record(
                 '添加企业。企业ID【' .

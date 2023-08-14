@@ -26,4 +26,8 @@ public/member/static/config.js
 application/database.php
 application/.htaccess
 public/tpl/member/static/config.js
-/application/database.php
+public/tpl/mobile/static/config.js
+public/sitemap.xml
+public/sitemap
+public/.htaccess
+public/nginx.htaccess

@@ -267,6 +267,9 @@ export default {
   resumeComment: '/resume/setComment',
   resumeDelete: '/resume/delete',
   resumeRefresh: '/resume/refresh',
+  // 附件简历
+  enclosureSave: '/resume/enclosureSave',
+  enclosureDelete: '/resume/enclosureDelete',
 
   // 照片/作品
   resumeImgList: '/resume_img/index',
@@ -827,6 +830,7 @@ export default {
   exportCrmCompanyById: '/export/companyById',
   companyDetails: 'b2bcrm/Company/companyDetail',
   contactList: 'b2bcrm/Company_Contact/index',
+  clueContactList: 'b2bcrm/Clue/getContactList',
   updateCompany: 'b2bcrm/Company/updateCompany',
   getAllCrmTags: 'b2bcrm/Setting/getAllCrmTags',
   companyCrmEdit: 'b2bcrm/Company/edit',
@@ -893,5 +897,43 @@ export default {
   urmRecycleBinDel: 'b2burm/recycle_bin/del',
   urmRecycleBinReturn: 'b2burm/recycle_bin/recover',
   resumeDel: 'b2burm/recycle_bin/put',
-  setContactStatus: 'b2burm/resume/setContactStatus'
+  setContactStatus: 'b2burm/resume/setContactStatus',
+  //企业名录
+  baseConfig: 'b2bcrm/company_directory/baseConfig',
+  getCompanyClueList: 'b2bcrm/company_directory/getCompanyClueList',
+  getConsumeRecordList: 'b2bcrm/company_directory/getConsumeRecordList',
+  importClue: 'b2bcrm/company_directory/importClue',
+  getAccountBalance: 'b2bcrm/company_directory/getAccountBalance',
+  getContactList: 'b2bcrm/Clue/getContactList',
+  setAsMainContact: 'b2bcrm/Clue/setAsMainContact',
+  clueAddContact: 'b2bcrm/Clue/addContact',
+  clueEditContact: 'b2bcrm/Clue/editContact',
+  deleteContact: 'b2bcrm/Clue/deleteContact',
+  verifyRepeatClueName: 'b2bcrm/Clue/verifyRepeatClueName',
+  verifyRepeatMobile: 'b2bcrm/Clue/verifyRepeatMobile',
+  verifyRepeatCompany: 'b2bcrm/Clue/verifyRepeatCompany',
+  mergeClueToCompany: 'b2bcrm/Clue/mergeClueToCompany',
+  queryCacheIsExists: 'b2bcrm/company_directory/queryCacheIsExists',
+  // 简历解析
+  resumeConfig: 'zhitoo/resume/config',
+  resumeCheck: 'zhitoo/resume/check',
+  documentConfig: 'zhitoo/document/config',
+  documentCheck: 'zhitoo/document/check',
+  //工作看板
+  workData: 'b2bcrm/work_statistics/work',
+  salesStatistics: 'b2bcrm/work_statistics/salesStatistics',
+  newCompanyStatistics: 'b2bcrm/work_statistics/newCompanyStatistics',
+  newClueStatistics: 'b2bcrm/work_statistics/newClueStatistics',
+  newCompanyFollowStatistics: 'b2bcrm/work_statistics/newCompanyFollowStatistics',
+  newClueFollowStatistics: 'b2bcrm/work_statistics/newClueFollowStatistics',
+  workLifeCycle: 'b2bcrm/work_statistics/lifeCycle',
+  //销售看板
+  salesKanban: '/b2bcrm/sale_statistics/salesKanban',
+  companyCrmClueStatistics: '/b2bcrm/sale_statistics/companyCrmClueStatistics',
+  //首页新增接口
+  newDataStatisticsIndex: 'new_data_statistics/index',
+  newDataStatisticsChart: 'new_data_statistics/chart',
+  newRealTimeData: 'new_data_statistics/realTimeData',
+  newGeneralstatistics: 'new_data_statistics/generalstatistics',
+  newOfficialData: 'new_data_statistics/officialData'
 }

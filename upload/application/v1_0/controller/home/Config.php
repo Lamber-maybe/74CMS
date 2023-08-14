@@ -74,6 +74,7 @@ class Config extends \app\v1_0\controller\common\Base
 
         $config_payment = config('global_config.account_alipay');
         $list['account_alipay_appid'] = $config_payment['appid'];
+        $list['account_zhitoo_resume'] = config('global_config.account_zhitoo_resume');
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
     /**
@@ -151,7 +152,7 @@ class Config extends \app\v1_0\controller\common\Base
                 $info = [
                     'error'=>$error,
                     'room_status'=>$room_status,
-                    'appid' => $config['account_trtc_appid'],
+                    'appid' => intval($config['account_trtc_appid']),
                     'userid' => $userid,
                     'roomid' => $interview_id,
                     'sig' => $sig,
@@ -180,7 +181,7 @@ class Config extends \app\v1_0\controller\common\Base
             $sig = $tencent->genSig($userid);
             $info = [
                 'error'=>0,
-                'appid' => $config['account_trtc_appid'],
+                'appid' => intval($config['account_trtc_appid']),
                 'userid'=>$userid,
                 'sig'=>$sig
             ];
@@ -227,76 +228,26 @@ class Config extends \app\v1_0\controller\common\Base
 //        }else{
 //            $query = [];
 //        }
-
-        $seoData = [];
-
-
-        if(isset($query['article_cid']) && intval($query['article_cid'])>0){
-            $categoryinfo = model('ArticleCategory')->where('id',intval($query['article_cid']))->find();
-            if($categoryinfo!==null){
-                $seoData['cname'] = $categoryinfo['name'];
-                $seoData['seo_keywords'] = $categoryinfo['seo_keywords'];
-                $seoData['seo_description'] = $categoryinfo['seo_description'];
-            }
-        }else{
-            $seoData['cname'] = '最新资讯';
+        /**
+         * 【ID1000434】
+         * 【bug】移动端页面管理SEO工作类别无效
+         * yx - 2022.11.21
+         * 【优化】
+         */
+        if (isset($query) && !empty($query)) {
+            $return = $this->queryDataReplace($query, $return);
+            $this->ajaxReturn(200, '获取数据成功', $return);
         }
-
-
-        $category_district_data = model('CategoryDistrict')->getCache();
-        $category_job_data = model('CategoryJob')->getCache();
-
-        if(isset($query['keyword']) && $query['keyword']!=''){
-            $seoData['keyword'] = $query['keyword'];
-        }else{
-            $seoData['keyword'] = '';
-        }
-
-        if(isset($query['district3'])>0 && intval($query['district3'])>0){
-            $seoData['citycategory'] = isset($category_district_data[intval($query['district3'])]) ? $category_district_data[intval($query['district3'])] : '';
-        }else if(isset($query['district2'])>0 && intval($query['district2'])>0){
-            $seoData['citycategory'] = isset($category_district_data[intval($query['district2'])]) ? $category_district_data[intval($query['district2'])] : '';
-        }else if(isset($query['district1'])>0 && intval($query['district1'])>0){
-            $seoData['citycategory'] = isset($category_district_data[intval($query['district1'])]) ? $category_district_data[intval($query['district1'])] : '';
-        }else{
-            $seoData['citycategory'] = '';
-        }
-
-        if(isset($query['category3'])>0 && intval($query['category3'])>0){
-            $seoData['jobcategory'] = isset($category_job_data[intval($query['category3'])]) ? $category_job_data[intval($query['category3'])] : '';
-        }else if(isset($query['category2'])>0 && intval($query['category2'])>0){
-            $seoData['jobcategory'] = isset($category_job_data[intval($query['category2'])]) ? $category_job_data[intval($query['category2'])] : '';
-        }else if(isset($query['category1'])>0 && intval($query['category1'])>0){
-            $seoData['jobcategory'] = isset($category_job_data[intval($query['category1'])]) ? $category_job_data[intval($query['category1'])] : '';
-        }else{
-            $seoData['jobcategory'] = '';
-        }
-
-        foreach ($seoData as $key => $value) {
-            $return['seo_title'] = str_replace("{".$key."}",$value,$return['seo_title']);
-            $return['seo_keywords'] = str_replace("{".$key."}",$value,$return['seo_keywords']);
-            $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
-        }
-
 
         $custom_data = input('post.custom_data/a');
-        $custom_data = json_encode($custom_data);
-        $custom_data = htmlspecialchars_decode($custom_data,ENT_QUOTES);
-        if($custom_data!="{}"){
-            $custom_data = json_decode($custom_data,true);
-        }else{
-            $custom_data = [];
+        if (isset($custom_data) && !empty($custom_data)){
+            $return = $this->customDataReplace($custom_data, $return);
+            $this->ajaxReturn(200, '获取数据成功', $return);
         }
-        foreach ($custom_data as $key => $value) {
-            $return['seo_title'] = str_replace("{".$key."}",$value,$return['seo_title']);
-            $return['seo_keywords'] = str_replace("{".$key."}",$value,$return['seo_keywords']);
-            $return['seo_description'] = str_replace("{".$key."}",$value,$return['seo_description']);
-        }
-
-
         //============处理替换自定义标签end=============
 
-
+        $return = $this->queryDataReplace($query, $return);
+        $return = $this->customDataReplace($custom_data, $return);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
 
@@ -337,5 +288,96 @@ class Config extends \app\v1_0\controller\common\Base
         }
 
         $this->ajaxReturn(200, '获取数据成功', $list);
+    }
+
+
+    private function queryDataReplace($query, $return)
+    {
+        $seoData = [];
+
+
+        if (isset($query['article_cid']) && intval($query['article_cid']) > 0) {
+            $categoryinfo = model('ArticleCategory')->where('id', intval($query['article_cid']))->find();
+            if ($categoryinfo !== null) {
+                $seoData['cname'] = $categoryinfo['name'];
+                $seoData['seo_keywords'] = $categoryinfo['seo_keywords'];
+                $seoData['seo_description'] = $categoryinfo['seo_description'];
+            }
+        } else {
+            $seoData['cname'] = '最新资讯';
+        }
+        if (isset($query['cityinfo_cid']) && intval($query['cityinfo_cid']) > 0) {
+            $categoryinfo = model('CityinfoType')->where('id', intval($query['cityinfo_cid']))->find();
+            if ($categoryinfo !== null) {
+                $seoData['cname'] = $categoryinfo['title'];
+            }
+        } else {
+            $seoData['cname'] = '';
+        }
+        if (isset($query['cityinfo_telbook_cid']) && intval($query['cityinfo_telbook_cid']) > 0) {
+            $categoryinfo = model('CityinfoPhoneBookType')->where('id', intval($query['cityinfo_telbook_cid']))->find();
+            if ($categoryinfo !== null) {
+                $seoData['cname'] = $categoryinfo['title'];
+            }
+        } else {
+            $seoData['cname'] = '';
+        }
+
+
+        $category_district_data = model('CategoryDistrict')->getCache();
+        $category_job_data = model('CategoryJob')->getCache();
+
+        if (isset($query['keyword']) && $query['keyword'] != '') {
+            $seoData['keyword'] = $query['keyword'];
+        } else {
+            $seoData['keyword'] = '';
+        }
+
+        if (isset($query['district3']) > 0 && intval($query['district3']) > 0) {
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district3'])]) ? $category_district_data[intval($query['district3'])] : '';
+        } else if (isset($query['district2']) > 0 && intval($query['district2']) > 0) {
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district2'])]) ? $category_district_data[intval($query['district2'])] : '';
+        } else if (isset($query['district1']) > 0 && intval($query['district1']) > 0) {
+            $seoData['citycategory'] = isset($category_district_data[intval($query['district1'])]) ? $category_district_data[intval($query['district1'])] : '';
+        } else {
+            $seoData['citycategory'] = '';
+        }
+
+        if (isset($query['category3']) > 0 && intval($query['category3']) > 0) {
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category3'])]) ? $category_job_data[intval($query['category3'])] : '';
+        } else if (isset($query['category2']) > 0 && intval($query['category2']) > 0) {
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category2'])]) ? $category_job_data[intval($query['category2'])] : '';
+        } else if (isset($query['category1']) > 0 && intval($query['category1']) > 0) {
+            $seoData['jobcategory'] = isset($category_job_data[intval($query['category1'])]) ? $category_job_data[intval($query['category1'])] : '';
+        } else {
+            $seoData['jobcategory'] = '';
+        }
+
+        foreach ($seoData as $key => $value) {
+            $return['seo_title'] = str_replace("{" . $key . "}", $value, $return['seo_title']);
+            $return['seo_keywords'] = str_replace("{" . $key . "}", $value, $return['seo_keywords']);
+            $return['seo_description'] = str_replace("{" . $key . "}", $value, $return['seo_description']);
+        }
+
+        return $return;
+    }
+
+
+    private function customDataReplace($customData, $return)
+    {
+        $custom_data = json_encode($customData);
+        $custom_data = htmlspecialchars_decode($custom_data, ENT_QUOTES);
+        if ($custom_data != "{}") {
+            $custom_data = json_decode($custom_data, true);
+        } else {
+            $custom_data = [];
+        }
+        foreach ($custom_data as $key => $value) {
+            $return['seo_title'] = str_replace("{" . $key . "}", $value, $return['seo_title']);
+            $return['seo_keywords'] = str_replace("{" . $key . "}", $value, $return['seo_keywords']);
+            $return['seo_description'] = str_replace("{" . $key . "}", $value, $return['seo_description']);
+        }
+
+        return $return;
     }
 }

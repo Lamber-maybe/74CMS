@@ -623,6 +623,10 @@ class Resume extends \app\v1_0\controller\common\Base
         $return['show_contact'] = $getResumeContact['show_contact'];
         $return['show_contact_note'] = $getResumeContact['show_contact_note'];
         $return['contact_info'] = $getResumeContact['contact_info'];
+
+        // 附件简历
+        $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['rid' => $id]);
+        $return['enclosure_resume'] = $enclosure_resume;
         return $return;
     }
     /**

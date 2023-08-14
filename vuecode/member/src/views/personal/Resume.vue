@@ -12,9 +12,9 @@
         <div class="a_scan" v-if="!editBasic" @mouseover="startScan(1)">
           微信扫码上传
           <div class="codeImg">
-            <img :src="scanQrcode" alt=""/>
+            <img :src="scanQrcode" alt="" />
             <p>
-              微信扫描二维码<br/>
+              微信扫描二维码<br />
               快速上传手机相册图片
             </p>
             <em>&#9670;</em>
@@ -23,11 +23,7 @@
         </div>
         <div class="con" v-if="!editBasic">
           <div class="ava_box">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              :show-file-list="false"
-              :http-request="handlerUpload"
+            <el-upload class="avatar-uploader" action="#" :show-file-list="false" :http-request="handlerUpload"
               :before-upload="beforeUpload">
               <img class="img" v-if="basic.photo_img_src" :src="basic.photo_img_src" alt="">
               <div class="up" v-if="!basic.photo_img_src"></div>
@@ -50,7 +46,7 @@
           <div class="ct">
             <div class="ct_item phone">{{contact.mobile}}</div>
             <div class="ct_item wx"
-                 v-if="fieldStore.contact.weixin!==undefined && fieldStore.contact.weixin.is_display == 1">
+              v-if="fieldStore.contact.weixin!==undefined && fieldStore.contact.weixin.is_display == 1">
               {{contact.weixin || '微信未填写'}}
             </div>
             <div class="clear"></div>
@@ -79,14 +75,8 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>出生日期</div>
                 <div class="i_input">
-                  <el-date-picker
-                    v-model="basic.birthday"
-                    type="month"
-                    format="yyyy-MM"
-                    value-format="yyyy-MM"
-                    :picker-options="DateRanges"
-                    :default-value="defaultValue"
-                    placeholder="请选择出生日期">
+                  <el-date-picker v-model="basic.birthday" type="month" format="yyyy-MM" value-format="yyyy-MM"
+                    :picker-options="DateRanges" :default-value="defaultValue" placeholder="请选择出生日期">
                   </el-date-picker>
                 </div>
                 <div class="clear"></div>
@@ -95,10 +85,8 @@
                 <div class="i_label"><span class="req">* </span>最高学历</div>
                 <div class="i_input">
                   <el-select :style="{'width':'196px'}" v-model="basic.education" placeholder="请选择最高学历">
-                    <el-option v-for="(item, index) in optionEducation"
-                               :key="index"
-                               :label="item.text"
-                               :value="item.id"></el-option>
+                    <el-option v-for="(item, index) in optionEducation" :key="index" :label="item.text"
+                      :value="item.id"></el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
@@ -106,17 +94,10 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>开始工作时间</div>
                 <div class="i_input">
-                  <el-date-picker
-                    v-model="basic.enter_job_time"
-                    :disabled="isNoJobTime"
-                    type="month"
-                    format="yyyy-MM"
-                    value-format="yyyy-MM"
-                    :picker-options="datePickerRange"
-                    placeholder="请选择开始工作时间">
+                  <el-date-picker v-model="basic.enter_job_time" :disabled="isNoJobTime" type="month" format="yyyy-MM"
+                    value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择开始工作时间">
                   </el-date-picker>
-                  <el-checkbox
-                    :style="{'font-size': '12px'}" class="for_after" v-model="isNoJobTime">应届生/无经验
+                  <el-checkbox :style="{'font-size': '12px'}" class="for_after" v-model="isNoJobTime">应届生/无经验
                   </el-checkbox>
                 </div>
                 <div class="clear"></div>
@@ -134,11 +115,10 @@
                   {{fieldStore.contact.weixin.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="contact.weixin"
-                            :placeholder="`请填写${fieldStore.contact.weixin.field_cn}`"></el-input>
-                  <el-checkbox
-                    :style="{'font-size': '12px'}"
-                    class="for_after" v-model="checkedEditPhone" @change="syncWxMobile">同手机
+                  <el-input v-model="contact.weixin" :placeholder="`请填写${fieldStore.contact.weixin.field_cn}`">
+                  </el-input>
+                  <el-checkbox :style="{'font-size': '12px'}" class="for_after" v-model="checkedEditPhone"
+                    @change="syncWxMobile">同手机
                   </el-checkbox>
                 </div>
                 <div class="clear"></div>
@@ -154,8 +134,8 @@
                   {{fieldStore.basic.residence.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="basic.residence"
-                            :placeholder="`请填写${fieldStore.basic.residence.field_cn}`"></el-input>
+                  <el-input v-model="basic.residence" :placeholder="`请填写${fieldStore.basic.residence.field_cn}`">
+                  </el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -166,11 +146,9 @@
                 </div>
                 <div class="i_input">
                   <el-select :style="{'width':'196px'}" v-model="basic.marriage"
-                             :placeholder="`请选择${fieldStore.basic.marriage.field_cn}`">
-                    <el-option v-for="(item, index) in optionMarriage"
-                               :key="index"
-                               :label="item.text"
-                               :value="item.id"></el-option>
+                    :placeholder="`请选择${fieldStore.basic.marriage.field_cn}`">
+                    <el-option v-for="(item, index) in optionMarriage" :key="index" :label="item.text" :value="item.id">
+                    </el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
@@ -181,13 +159,8 @@
                   {{fieldStore.basic.major.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-cascader
-                    ref="intMajor"
-                    :style="{'width':'196px'}"
-                    v-model="basicMajor"
-                    :placeholder="`请选择${fieldStore.basic.major.field_cn}`"
-                    :options="optionMajor"
-                    filterable
+                  <el-cascader ref="intMajor" :style="{'width':'196px'}" v-model="basicMajor"
+                    :placeholder="`请选择${fieldStore.basic.major.field_cn}`" :options="optionMajor" filterable
                     @change="handleValues([...arguments, 'major', 'basic'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -198,8 +171,7 @@
                   {{fieldStore.basic.height.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="basic.height"
-                            :placeholder="`请填写${fieldStore.basic.height.field_cn}`"></el-input>
+                  <el-input v-model="basic.height" :placeholder="`请填写${fieldStore.basic.height.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -210,7 +182,7 @@
                 </div>
                 <div class="i_input">
                   <el-input v-model="basic.householdaddress"
-                            :placeholder="`请填写${fieldStore.basic.householdaddress.field_cn}`"></el-input>
+                    :placeholder="`请填写${fieldStore.basic.householdaddress.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -220,8 +192,7 @@
                   {{fieldStore.contact.email.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="contact.email"
-                            :placeholder="`请填写${fieldStore.contact.email.field_cn}`"></el-input>
+                  <el-input v-model="contact.email" :placeholder="`请填写${fieldStore.contact.email.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -231,8 +202,7 @@
                   {{fieldStore.contact.qq.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="contact.qq"
-                            :placeholder="`请填写${fieldStore.contact.qq.field_cn}`"></el-input>
+                  <el-input v-model="contact.qq" :placeholder="`请填写${fieldStore.contact.qq.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -243,7 +213,7 @@
                 </div>
                 <div class="i_input">
                   <el-input v-model="basic.custom_field_1"
-                            :placeholder="`请填写${fieldStore.basic.custom_field_1.field_cn}`"></el-input>
+                    :placeholder="`请填写${fieldStore.basic.custom_field_1.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -254,7 +224,7 @@
                 </div>
                 <div class="i_input">
                   <el-input v-model="basic.custom_field_2"
-                            :placeholder="`请填写${fieldStore.basic.custom_field_2.field_cn}`"></el-input>
+                    :placeholder="`请填写${fieldStore.basic.custom_field_2.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -265,7 +235,7 @@
                 </div>
                 <div class="i_input">
                   <el-input v-model="basic.custom_field_3"
-                            :placeholder="`请填写${fieldStore.basic.custom_field_3.field_cn}`"></el-input>
+                    :placeholder="`请填写${fieldStore.basic.custom_field_3.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -275,8 +245,7 @@
                   {{fieldStore.basic.idcard.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-input v-model="basic.idcard"
-                            :placeholder="`请填写${fieldStore.basic.idcard.field_cn}`"></el-input>
+                  <el-input v-model="basic.idcard" :placeholder="`请填写${fieldStore.basic.idcard.field_cn}`"></el-input>
                 </div>
                 <div class="clear"></div>
               </div>
@@ -306,12 +275,9 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>求职状态</div>
                 <div class="i_input">
-                  <el-select class="w250" v-model="basic.current" placeholder="请选择求职状态"
-                             @change="changeCurrent">
-                    <el-option v-for="(item, index) in optionCurrent"
-                               :key="index"
-                               :label="item.text"
-                               :value="item.id"></el-option>
+                  <el-select class="w250" v-model="basic.current" placeholder="请选择求职状态" @change="changeCurrent">
+                    <el-option v-for="(item, index) in optionCurrent" :key="index" :label="item.text" :value="item.id">
+                    </el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
@@ -324,9 +290,7 @@
           </div>
         </div>
         <div v-if="!editIntention">
-          <div class="bit bit_hand"
-               v-for="(item, index) in intentionList"
-               :key="index">
+          <div class="bit bit_hand" v-for="(item, index) in intentionList" :key="index">
             <div class="ed" @click="editItemFun(item, 'intention')">编辑</div>
             <div class="del" @click="delItemFun('resume_intention_delete', item.id, intentionList)">删除</div>
             <div class="j_name">{{item.category_text}}</div>
@@ -346,12 +310,9 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>工作性质</div>
                 <div class="i_input">
-                  <el-select v-model="intentionItem.nature" placeholder="请选择工作性质"
-                             @change="changeNature">
-                    <el-option v-for="(item, index) in optionNature"
-                               :key="index"
-                               :label="item.text"
-                               :value="item.id"></el-option>
+                  <el-select v-model="intentionItem.nature" placeholder="请选择工作性质" @change="changeNature">
+                    <el-option v-for="(item, index) in optionNature" :key="index" :label="item.text" :value="item.id">
+                    </el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
@@ -359,12 +320,8 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>期望职位</div>
                 <div class="i_input">
-                  <el-cascader
-                    ref="intCategory"
-                    v-model="intentionItemCategory"
-                    placeholder="请选择期望职位"
-                    :options="optionCategory"
-                    filterable
+                  <el-cascader ref="intCategory" v-model="intentionItemCategory" placeholder="请选择期望职位"
+                    :options="optionCategory" filterable
                     @change="handleValues([...arguments, 'category', 'intention'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -374,13 +331,8 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>工作地区</div>
                 <div class="i_input">
-                  <el-cascader
-                    ref="intDistrict"
-                    v-model="intentionItemDistrict"
-                    placeholder="请选择期望地区"
-                    :options="optionDistrict"
-                    :props="{ checkStrictly: true }"
-                    filterable
+                  <el-cascader ref="intDistrict" v-model="intentionItemDistrict" placeholder="请选择期望地区"
+                    :options="optionDistrict" :props="{ checkStrictly: true }" filterable
                     @change="handleValues([...arguments, 'district', 'intention'])"></el-cascader>
                 </div>
                 <div class="clear"></div>
@@ -388,21 +340,15 @@
               <div class="f_item">
                 <div class="i_label"><span class="req">* </span>期望薪资</div>
                 <div class="i_input">
-                  <el-select class="w118"
-                             placeholder="请选择"
-                             v-model="intentionItem.minwage"
-                             @change="changeMinWage(intentionItem.minwage)">
-                    <el-option v-for="(item, index) in optionMinWage"
-                               :key="index"
-                               :label="`${item}元/月`"
-                               :value="item"></el-option>
+                  <el-select class="w118" placeholder="请选择" v-model="intentionItem.minwage"
+                    @change="changeMinWage(intentionItem.minwage)">
+                    <el-option v-for="(item, index) in optionMinWage" :key="index" :label="`${item}元/月`" :value="item">
+                    </el-option>
                   </el-select>
                   -
                   <el-select class="w118" v-model="intentionItem.maxwage" placeholder="请选择">
-                    <el-option v-for="(item, index) in optionMaxWage"
-                               :key="index"
-                               :label="`${item}元/月`"
-                               :value="item"></el-option>
+                    <el-option v-for="(item, index) in optionMaxWage" :key="index" :label="`${item}元/月`" :value="item">
+                    </el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
@@ -415,20 +361,17 @@
                   {{fieldStore.intention.trade.field_cn}}
                 </div>
                 <div class="i_input">
-                  <el-select v-model="intentionItem.trade"
-                             :placeholder="`请选择${fieldStore.intention.trade.field_cn}`"
-                             @change="changeTrade">
-                    <el-option v-for="(item, index) in optionTrade"
-                               :key="index"
-                               :label="item.text"
-                               :value="item.id"></el-option>
+                  <el-select v-model="intentionItem.trade" :placeholder="`请选择${fieldStore.intention.trade.field_cn}`"
+                    @change="changeTrade">
+                    <el-option v-for="(item, index) in optionTrade" :key="index" :label="item.text" :value="item.id">
+                    </el-option>
                   </el-select>
                 </div>
                 <div class="clear"></div>
               </div>
             </div>
             <div class="fill_btn">
-<!--              重复提交修改 zch 2022/9/16-->
+              <!--              重复提交修改 zch 2022/9/16-->
               <el-button type="primary" @click="saveIntention" :disabled="issubmit">保存</el-button>
               <el-button @click="editIntention = false">取消</el-button>
             </div>
@@ -443,30 +386,21 @@
           <div class="clear"></div>
         </div>
         <div class="tg" v-if="!editTags">
-          <div class="gi active"
-               v-for="(item, index) in selectedTags"
-               :key="index">{{item.text}}
+          <div class="gi active" v-for="(item, index) in selectedTags" :key="index">{{item.text}}
           </div>
           <div class="clear"></div>
         </div>
         <div class="fill_group fill_al" v-if="editTags">
           <div class="tg">
-            <div :class="item.active ? 'gi active' : 'gi'"
-                 v-for="(item, index) in loopTags"
-                 :key="index"
-                 @click="tagClick(item)">{{item.text}}
+            <div :class="item.active ? 'gi active' : 'gi'" v-for="(item, index) in loopTags" :key="index"
+              @click="tagClick(item)">{{item.text}}
             </div>
             <div class="clear"></div>
           </div>
           <div class="tg_add">
-            <el-input class="w156"
-                      v-model="customTagText"
-                      :disabled="selectedTags.length >= 10"
-                      placeholder="请输入自定义标签"></el-input>
-            <el-button type="info"
-                       plain
-                       :disabled="selectedTags.length >= 10"
-                       @click="addCusTag">添加
+            <el-input class="w156" v-model="customTagText" :disabled="selectedTags.length >= 10" placeholder="请输入自定义标签">
+            </el-input>
+            <el-button type="info" plain :disabled="selectedTags.length >= 10" @click="addCusTag">添加
             </el-button>
           </div>
           <div class="fill_btn">
@@ -488,12 +422,7 @@
         </div>
         <div class="b_con" v-if="!editSpecialty">{{basic.specialty}}</div>
         <div class="fill_group" v-if="editSpecialty">
-          <el-input
-            class="area_box"
-            type="textarea"
-            :rows="7"
-            placeholder="请输入内容"
-            v-model="basic.specialty">
+          <el-input class="area_box" type="textarea" :rows="7" placeholder="请输入内容" v-model="basic.specialty">
           </el-input>
           <div class="fill_btn">
             <el-button type="primary" @click="saveSpecialty">保存</el-button>
@@ -545,13 +474,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>入学时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="educationItem.starttime"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择入学时间">
+                <el-date-picker v-model="educationItem.starttime" type="month" format="yyyy-MM" value-format="yyyy-MM"
+                  :picker-options="datePickerRange" placeholder="请选择入学时间">
                 </el-date-picker>
               </div>
               <div class="clear"></div>
@@ -559,14 +483,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>毕业时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="educationItem.endtime"
-                  :disabled="educationItem.todate"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择毕业时间">
+                <el-date-picker v-model="educationItem.endtime" :disabled="educationItem.todate" type="month"
+                  format="yyyy-MM" value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择毕业时间">
                 </el-date-picker>
                 <el-checkbox class="for_after" v-model="educationItem.todate">至今</el-checkbox>
               </div>
@@ -578,17 +496,15 @@
               <div class="i_label"><span class="req">* </span>取得学历</div>
               <div class="i_input">
                 <el-select :style="{'width':'196px'}" v-model="educationItem.education" placeholder="请选择取得学历">
-                  <el-option v-for="(item, index) in optionEducation"
-                             :key="index"
-                             :label="item.text"
-                             :value="item.id"></el-option>
+                  <el-option v-for="(item, index) in optionEducation" :key="index" :label="item.text" :value="item.id">
+                  </el-option>
                 </el-select>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveEducation" :disabled="issubmit">保存</el-button>
             <el-button @click="editEducation = false">取消</el-button>
           </div>
@@ -639,13 +555,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>入职时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="workItem.starttime"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择入职时间">
+                <el-date-picker v-model="workItem.starttime" type="month" format="yyyy-MM" value-format="yyyy-MM"
+                  :picker-options="datePickerRange" placeholder="请选择入职时间">
                 </el-date-picker>
               </div>
               <div class="clear"></div>
@@ -653,14 +564,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>离职时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="workItem.endtime"
-                  :disabled="workItem.todate"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择离职时间">
+                <el-date-picker v-model="workItem.endtime" :disabled="workItem.todate" type="month" format="yyyy-MM"
+                  value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择离职时间">
                 </el-date-picker>
                 <el-checkbox class="for_after" v-model="workItem.todate">至今</el-checkbox>
               </div>
@@ -671,14 +576,14 @@
             <div class="f_item al">
               <div class="i_label"><span class="req">* </span>工作职责</div>
               <div class="i_input">
-                <el-input class="w618 h190" type="textarea" v-model="workItem.duty"
-                          placeholder="请简要描述您此段工作期间的工作职责"></el-input>
+                <el-input class="w618 h190" type="textarea" v-model="workItem.duty" placeholder="请简要描述您此段工作期间的工作职责">
+                </el-input>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveWork" :disabled="issubmit">保存</el-button>
             <el-button @click="editWork = false">取消</el-button>
           </div>
@@ -728,13 +633,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>开始时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="trainItem.starttime"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择开始时间">
+                <el-date-picker v-model="trainItem.starttime" type="month" format="yyyy-MM" value-format="yyyy-MM"
+                  :picker-options="datePickerRange" placeholder="请选择开始时间">
                 </el-date-picker>
               </div>
               <div class="clear"></div>
@@ -742,14 +642,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>结束时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="trainItem.endtime"
-                  :disabled="trainItem.todate"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择结束时间">
+                <el-date-picker v-model="trainItem.endtime" :disabled="trainItem.todate" type="month" format="yyyy-MM"
+                  value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择结束时间">
                 </el-date-picker>
                 <el-checkbox class="for_after" v-model="trainItem.todate">至今</el-checkbox>
               </div>
@@ -760,14 +654,14 @@
             <div class="f_item al">
               <div class="i_label"><span class="req">* </span>培训内容</div>
               <div class="i_input">
-                <el-input class="w618 h190" type="textarea" v-model="trainItem.description"
-                          placeholder="请填写培训内容"></el-input>
+                <el-input class="w618 h190" type="textarea" v-model="trainItem.description" placeholder="请填写培训内容">
+                </el-input>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveTrain" :disabled="issubmit">保存</el-button>
             <el-button @click="editTrain = false">取消</el-button>
           </div>
@@ -817,13 +711,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>开始时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="projectItem.starttime"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择开始时间">
+                <el-date-picker v-model="projectItem.starttime" type="month" format="yyyy-MM" value-format="yyyy-MM"
+                  :picker-options="datePickerRange" placeholder="请选择开始时间">
                 </el-date-picker>
               </div>
               <div class="clear"></div>
@@ -831,14 +720,8 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>结束时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="projectItem.endtime"
-                  :disabled="projectItem.todate"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择结束时间">
+                <el-date-picker v-model="projectItem.endtime" :disabled="projectItem.todate" type="month"
+                  format="yyyy-MM" value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择结束时间">
                 </el-date-picker>
                 <el-checkbox class="for_after" v-model="projectItem.todate">至今</el-checkbox>
               </div>
@@ -849,14 +732,14 @@
             <div class="f_item al">
               <div class="i_label"><span class="req">* </span>项目描述</div>
               <div class="i_input">
-                <el-input class="w618 h190" type="textarea" v-model="projectItem.description"
-                          placeholder="请填写项目描述"></el-input>
+                <el-input class="w618 h190" type="textarea" v-model="projectItem.description" placeholder="请填写项目描述">
+                </el-input>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveProject" :disabled="issubmit">保存</el-button>
             <el-button @click="editProject = false">取消</el-button>
           </div>
@@ -889,30 +772,22 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>证书名称</div>
               <div class="i_input">
-                <el-input
-                  :style="{'width': '250px'}"
-                  v-model="certificateItem.name"
-                  placeholder="请填写证书名称"></el-input>
+                <el-input :style="{'width': '250px'}" v-model="certificateItem.name" placeholder="请填写证书名称"></el-input>
               </div>
               <div class="clear"></div>
             </div>
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>获得时间</div>
               <div class="i_input">
-                <el-date-picker
-                  v-model="certificateItem.obtaintime"
-                  type="month"
-                  format="yyyy-MM"
-                  value-format="yyyy-MM"
-                  :picker-options="datePickerRange"
-                  placeholder="请选择获得时间">
+                <el-date-picker v-model="certificateItem.obtaintime" type="month" format="yyyy-MM"
+                  value-format="yyyy-MM" :picker-options="datePickerRange" placeholder="请选择获得时间">
                 </el-date-picker>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveCertificate" :disabled="issubmit">保存</el-button>
             <el-button @click="editCertificate = false">取消</el-button>
           </div>
@@ -943,13 +818,9 @@
             <div class="f_item">
               <div class="i_label"><span class="req">* </span>语种</div>
               <div class="i_input">
-                <el-select v-model="languageItem.language"
-                           placeholder="请选择语种"
-                           @visible-change="choiceLanguage">
-                  <el-option v-for="(item, index) in optionLanguage"
-                             :key="index"
-                             :label="item.text"
-                             :value="item.id"></el-option>
+                <el-select v-model="languageItem.language" placeholder="请选择语种" @visible-change="choiceLanguage">
+                  <el-option v-for="(item, index) in optionLanguage" :key="index" :label="item.text" :value="item.id">
+                  </el-option>
                 </el-select>
               </div>
               <div class="clear"></div>
@@ -958,17 +829,15 @@
               <div class="i_label"><span class="req">* </span>熟悉程度</div>
               <div class="i_input">
                 <el-select v-model="languageItem.level" placeholder="请选择熟悉程度">
-                  <el-option v-for="(item, index) in optionLanguageLevel"
-                             :key="index"
-                             :label="item.text"
-                             :value="item.id"></el-option>
+                  <el-option v-for="(item, index) in optionLanguageLevel" :key="index" :label="item.text"
+                    :value="item.id"></el-option>
                 </el-select>
               </div>
               <div class="clear"></div>
             </div>
           </div>
           <div class="fill_btn">
-<!--            重复提交修改 zch 2022/9/16-->
+            <!--            重复提交修改 zch 2022/9/16-->
             <el-button type="primary" @click="saveLanguage" :disabled="issubmit">保存</el-button>
             <el-button @click="editLanguage = false">取消</el-button>
           </div>
@@ -982,9 +851,9 @@
           <div class="t_scan" @mouseover="startScan(2)">
             手机传图更方便，使用微信扫码上传
             <div class="codeImg">
-              <img :src="scanQrcodeImg" alt=""/>
+              <img :src="scanQrcodeImg" alt="" />
               <p>
-                微信扫描二维码<br/>
+                微信扫描二维码<br />
                 快速上传手机相册图片
               </p>
               <em>&#9670;</em>
@@ -998,16 +867,32 @@
             <img :src="item.img_src" :alt="item.title">
             <div class="i_del" @click="delItemFun('resume_img_delete', item.id, imgList)"></div>
           </div>
-          <el-upload
-            class="avatar-uploader"
-            action="#"
-            v-if="imgList.length < 6"
-            :show-file-list="false"
-            :http-request="handlerUploadImg"
-            :before-upload="beforeUpload">
+          <el-upload class="avatar-uploader" action="#" v-if="imgList.length < 6" :show-file-list="false"
+            :http-request="handlerUploadImg" :before-upload="beforeUpload">
             <div class="i_t up"></div>
           </el-upload>
           <div class="clear"></div>
+        </div>
+      </div>
+      <!-- 附件简历 -->
+      <div class="b6" ref="enclosureResume" id="enclosureGroup">
+        <div class="l_title">
+          <div class="t_name">附件简历</div>
+          <div class="clear"></div>
+        </div>
+        <div class="enclosureResume" v-if="enclosure_resume.title">{{enclosure_resume.title}}
+          <span class="delEnclosure" @click="delEnclosure()">删除</span>
+        </div>
+        <div class="l_add" v-if="!enclosure_resume.title&&!editEnclosure">
+          <div v-if="fileLoading" class="loadingImg">
+            <img class="loadingIcon" src="../../assets/images/personal/resume/loading.gif" alt="" />
+            <div>文件上传中，请稍后</div>
+          </div>
+          <el-upload v-else class="avatar-uploader" action="#" :show-file-list="false" :http-request="handlerUploadResume"
+            :before-upload="beforeUploadFile">
+            <div class="la_title">上传附件</div>
+            <div class="la_des">附件简历支持的格式：txt、html、pdf、doc、docx，文件不超过{{sizeLimit}}M</div>
+          </el-upload>
         </div>
       </div>
     </div>
@@ -1019,20 +904,14 @@
         </div>
       </div>
       <div class="t2">
-        <a v-for="(item, index) in rightMenu"
-           :href="`#${item.key}Group`"
-           :key="index"
-           :class="item.roll ? 's_item scr' : 's_item'">
+        <a v-for="(item, index) in rightMenu" :href="`#${item.key}Group`" :key="index"
+          :class="item.roll ? 's_item scr' : 's_item'">
           {{item.text}}
           <div class="r_txt" v-if="!item.finish">待完善</div>
           <div class="r_finish" v-else></div>
         </a>
         <div class="s_item">简历公开状态
-          <el-switch
-            v-model="resumePublic"
-            active-color="#409eff"
-            inactive-color="#bec3d1"
-            @change="handleStatus">
+          <el-switch v-model="resumePublic" active-color="#409eff" inactive-color="#bec3d1" @change="handleStatus">
           </el-switch>
         </div>
         <div class="s_btn_g btn1">
@@ -1049,19 +928,23 @@
 </template>
 
 <script>
-  import { parseTime } from '@/utils/index'
-  import {handlerHttpError} from '@/utils/error'
+  import {
+    parseTime
+  } from '@/utils/index'
+  import {
+    handlerHttpError
+  } from '@/utils/error'
   import http from '@/utils/http'
   import api from '@/api'
 
   export default {
     name: 'Resume',
     filters: {
-      timeFilter (timestamp) {
+      timeFilter(timestamp) {
         return timestamp ? parseTime(timestamp, '{y}-{m}-{d}') : ''
       },
     },
-    data () {
+    data() {
       return {
         DateRanges: this.birthdayDateRange(),
         datePickerRange: this.dateRange(),
@@ -1087,6 +970,7 @@
         editLanguage: false,
         isNoJobTime: false,
         checkedEditPhone: false,
+        editEnclosure: false,
         optionTrade: [],
         optionEducation: [],
         optionCurrent: [],
@@ -1122,17 +1006,24 @@
         languageOldList: [],
         languageItem: {},
         imgList: [],
+        enclosure_resume: {},
         rightMenu: [],
         moduleList: [],
         scanQrcode: '',
         scanQrcodeImg: '',
         timer: '',
         timerImg: '',
-        preview_url:'',
-        issubmit: false  // 重复提交修改 zch 2022/9/16
+        preview_url: '',
+        issubmit: false, // 重复提交修改 zch 2022/9/16
+        sizeLimit: 0,
+        fileLoading: false
       }
     },
-    mounted () {
+    created() {
+      let size = this.$store.state.config.fileupload_size / 1024;
+      this.sizeLimit = size.toFixed(1);
+    },
+    mounted() {
       if (!this.$store.state.LoginOrNot) {
         document.body.scrollHeight
         return false
@@ -1197,50 +1088,51 @@
       this.scanQrcodeImg = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + locationUrlImg
       this.initInfo()
       var url = location.href
-      if(url.split('#')[1]){
-        this.$nextTick(()=>{
+      if (url.split('#')[1]) {
+        this.$nextTick(() => {
           location.href = url
         })
       }
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.timer)
       clearInterval(this.timerImg)
     },
     watch: {
-      'contact.weixin': function () {
-        this.$nextTick(function () {
+      'contact.weixin': function() {
+        this.$nextTick(function() {
           this.checkedEditPhone = this.contact.mobile === this.contact.weixin
         })
       },
-      'imgList': function () {
-        this.$nextTick(function () {
+      'imgList': function() {
+        this.$nextTick(function() {
           this.syncRightMenu()
         })
       }
     },
     computed: {
-      fieldStore () {
+      fieldStore() {
         return this.$store.state.resume.field_rule
       },
-      moduleStore () {
+      moduleStore() {
         return this.$store.state.resume.module_list
       },
     },
     methods: {
-      dateRange(){
+      dateRange() {
         return {
-          disabledDate(time){
-              return time.getTime() > new Date().getTime();
+          disabledDate(time) {
+            return time.getTime() > new Date().getTime();
           }
         }
       },
       //PC端创建简历日期选择往前推到16岁 zdq
-      birthdayDateRange(){
+      birthdayDateRange() {
         return {
-          disabledDate(time){
+          disabledDate(time) {
             var myDate = new Date();
-            return time.getTime() > new Date(new Date(myDate.getFullYear(),11).getTime() - 16 * 365 * 24 * 3600 * 1000);
+            return time.getTime() > new Date(new Date(myDate.getFullYear(), 11).getTime() - 16 * 365 * 24 * 3600 *
+              1000);
           }
         }
       },
@@ -1251,10 +1143,10 @@
         const minBirthdayYear = nowYear - 16
         return new Date(minBirthdayYear, 11)
       },
-      handlerPreview(){
+      handlerPreview() {
         window.open(this.preview_url)
       },
-      startScan (type) {
+      startScan(type) {
         if (type === 1) {
           // 头像
           clearInterval(this.timer)
@@ -1266,16 +1158,20 @@
         }
       },
       // 扫描上传简历作品
-      scanUploadImgResult () {
-        http.post(api.scan_upload_result, { type: 'resume_img' }).then(res => {
+      scanUploadImgResult() {
+        http.post(api.scan_upload_result, {
+          type: 'resume_img'
+        }).then(res => {
           if (res.data !== 0) {
             this.imgList = res.data
           }
         }).catch(() => {})
       },
       // 扫描上传简历头像
-      scanUploadResult () {
-        http.post(api.scan_upload_result, { type: 'resume_photo' }).then(res => {
+      scanUploadResult() {
+        http.post(api.scan_upload_result, {
+          type: 'resume_photo'
+        }).then(res => {
           if (res.data !== 0) {
             this.basic.photo_img = res.data.file_id
             this.basic.photo_img_src = res.data.file_url
@@ -1283,7 +1179,7 @@
         }).catch(() => {})
       },
       // 上传头像之前验证格式及大小
-      beforeUpload (file) {
+      beforeUpload(file) {
         let fileRaw = file
         let fileTypeArr = (fileRaw.type || '').split('/')
         let fileType = fileTypeArr[1]
@@ -1300,10 +1196,14 @@
         }
       },
       // 上传作品
-      handlerUploadImg (file) {
-        http.postFormData(api.uploadFile, { file: file.file }).then(res => {
+      handlerUploadImg(file) {
+        http.postFormData(api.uploadFile, {
+          file: file.file
+        }).then(res => {
           if (parseInt(res.code) === 200) {
-            http.postFormData(api.resume_img_save, { file: file.file }).then(data => {
+            http.postFormData(api.resume_img_save, {
+              file: file.file
+            }).then(data => {
               if (data.data !== 0) {
                 this.imgList.push({
                   audit: data.data.audit,
@@ -1312,7 +1212,10 @@
                   img: data.data.file_id,
                   img_src: data.data.file_url,
                 })
-                this.$message({ type: 'success', message: res.message })
+                this.$message({
+                  type: 'success',
+                  message: res.message
+                })
               }
             }).catch(() => {})
           }
@@ -1321,14 +1224,21 @@
         })
       },
       // 上传头像
-      handlerUpload (file) {
-        http.postFormData(api.uploadFile, { file: file.file }).then(res => {
+      handlerUpload(file) {
+        http.postFormData(api.uploadFile, {
+          file: file.file
+        }).then(res => {
           if (parseInt(res.code) === 200) {
-            http.postFormData(api.resume_upload_photo, { file: file.file }).then(data => {
+            http.postFormData(api.resume_upload_photo, {
+              file: file.file
+            }).then(data => {
               if (data.data !== 0) {
                 this.basic.photo_img = data.data.file_id
                 this.basic.photo_img_src = data.data.file_url
-                this.$message({ type: 'success', message: res.message })
+                this.$message({
+                  type: 'success',
+                  message: res.message
+                })
               }
             }).catch(() => {})
           }
@@ -1337,11 +1247,14 @@
         })
       },
       // 获取简历信息
-      initInfo () {
+      initInfo() {
         http.get(api.editResume).then(res => {
           if (parseInt(res.code) === 200) {
-            if(res.data===null){
-              handlerHttpError({code: 50007, message: '请先添加一份简历'})
+            if (res.data === null) {
+              handlerHttpError({
+                code: 50007,
+                message: '请先添加一份简历'
+              })
               return
             }
             // 更新基本资料
@@ -1431,7 +1344,11 @@
             this.$store.dispatch('setCertificateList', res.data.certificate_list)
             this.certificateList = res.data.certificate_list
             this.certificateList = this.certificateList.map((item) => {
-              return { id: item.id, name: item.name, obtaintime: this.dateFormat(item.obtaintime) }
+              return {
+                id: item.id,
+                name: item.name,
+                obtaintime: this.dateFormat(item.obtaintime)
+              }
             })
             // 更新简历作品
             this.$store.dispatch('setResumeImgList', res.data.img_list)
@@ -1440,26 +1357,98 @@
             if (this.$store.state.resume.img_list.length) {
               this.imgList = this.$store.state.resume.img_list
             }
+            //附件简历
+            this.enclosure_resume = res.data.enclosure_resume == '' ? {} : res.data.enclosure_resume
             this.syncRightMenu()
           }
-        }).catch(() => {
-        })
+        }).catch(() => {})
       },
       // 更新右侧导航状态
-      syncRightMenu () {
-        this.rightMenu = [
-          { text: '基本信息', key: 'basic', roll: false, finish: true, show: this.moduleStore.basic.is_display },
-          { text: '求职状态', key: 'intention', roll: false, finish: this.basic.current > 0, show: this.moduleStore.intention.is_display },
-          { text: '求职意向', key: 'intention', roll: false, finish: this.intentionList.length > 0, show: this.moduleStore.intention.is_display },
-          { text: '特长标签', key: 'tag', roll: false, finish: this.selectedTags.length > 0, show: this.moduleStore.tag.is_display },
-          { text: '自我描述', key: 'specialty', roll: false, finish: this.basic.specialty !== '', show: this.moduleStore.specialty.is_display },
-          { text: '教育经历', key: 'education', roll: false, finish: this.educationList.length > 0, show: this.moduleStore.education.is_display },
-          { text: '工作经历', key: 'work', roll: false, finish: this.workList.length > 0, show: this.moduleStore.work.is_display },
-          { text: '培训经历', key: 'train', roll: false, finish: this.trainList.length > 0, show: this.moduleStore.training.is_display },
-          { text: '项目经历', key: 'project', roll: false, finish: this.projectList.length > 0, show: this.moduleStore.project.is_display },
-          { text: '获得证书', key: 'certificate', roll: false, finish: this.certificateList.length > 0, show: this.moduleStore.certificate.is_display },
-          { text: '语言能力', key: 'language', roll: false, finish: this.languageList.length > 0, show: this.moduleStore.language.is_display },
-          { text: '我的作品', key: 'img', roll: false, finish: this.imgList.length > 0, show: this.moduleStore.img.is_display },
+      syncRightMenu() {
+        this.rightMenu = [{
+            text: '基本信息',
+            key: 'basic',
+            roll: false,
+            finish: true,
+            show: this.moduleStore.basic.is_display
+          },
+          {
+            text: '求职状态',
+            key: 'intention',
+            roll: false,
+            finish: this.basic.current > 0,
+            show: this.moduleStore.intention.is_display
+          },
+          {
+            text: '求职意向',
+            key: 'intention',
+            roll: false,
+            finish: this.intentionList.length > 0,
+            show: this.moduleStore.intention.is_display
+          },
+          {
+            text: '特长标签',
+            key: 'tag',
+            roll: false,
+            finish: this.selectedTags.length > 0,
+            show: this.moduleStore.tag.is_display
+          },
+          {
+            text: '自我描述',
+            key: 'specialty',
+            roll: false,
+            finish: this.basic.specialty !== '',
+            show: this.moduleStore.specialty.is_display
+          },
+          {
+            text: '教育经历',
+            key: 'education',
+            roll: false,
+            finish: this.educationList.length > 0,
+            show: this.moduleStore.education.is_display
+          },
+          {
+            text: '工作经历',
+            key: 'work',
+            roll: false,
+            finish: this.workList.length > 0,
+            show: this.moduleStore.work.is_display
+          },
+          {
+            text: '培训经历',
+            key: 'train',
+            roll: false,
+            finish: this.trainList.length > 0,
+            show: this.moduleStore.training.is_display
+          },
+          {
+            text: '项目经历',
+            key: 'project',
+            roll: false,
+            finish: this.projectList.length > 0,
+            show: this.moduleStore.project.is_display
+          },
+          {
+            text: '获得证书',
+            key: 'certificate',
+            roll: false,
+            finish: this.certificateList.length > 0,
+            show: this.moduleStore.certificate.is_display
+          },
+          {
+            text: '语言能力',
+            key: 'language',
+            roll: false,
+            finish: this.languageList.length > 0,
+            show: this.moduleStore.language.is_display
+          },
+          {
+            text: '我的作品',
+            key: 'img',
+            roll: false,
+            finish: this.imgList.length > 0,
+            show: this.moduleStore.img.is_display
+          },
         ]
         this.rightMenu = this.rightMenu.filter((item) => {
           return item.show
@@ -1467,11 +1456,11 @@
         /**
          * 【bug】简历完整度不一致问题修改
          * zch 2022.10.9
-         * 【删除前段计算完整度代码（后台接口字段已经处理）】
+         * 【删除前段计算完整度代码�����后台接口字段已经处理）】
          * */
       },
       // 简历公开状态
-      handleStatus (value) {
+      handleStatus(value) {
         if (!value) {
           this.$confirm('简历关闭后企业将无法搜索到您的简历，是否设为关闭?', '提示', {
             confirmButtonText: '确定',
@@ -1482,7 +1471,10 @@
               display: value ? 1 : 0,
             }).then(res => {
               if (parseInt(res.code) === 200) {
-                this.$message({ message: res.message, type: 'success' })
+                this.$message({
+                  message: res.message,
+                  type: 'success'
+                })
               } else {
                 this.resumePublic = !value
               }
@@ -1497,7 +1489,10 @@
             display: value ? 1 : 0,
           }).then(res => {
             if (parseInt(res.code) === 200) {
-              this.$message({ message: res.message, type: 'success' })
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
             } else {
               this.resumePublic = !value
             }
@@ -1507,78 +1502,107 @@
         }
       },
       // 选择当前求职状态
-      changeCurrent (value) {
+      changeCurrent(value) {
         this.basic.current_text = this.optionCurrent.filter(item => item.id === value)[0].text
       },
       // 选择工作性质
-      changeNature (value) {
+      changeNature(value) {
         this.intention.nature_text = this.optionNature.filter(item => item.id === value)[0].text
       },
       // 选择期望行业
-      changeTrade (value) {
+      changeTrade(value) {
         this.basic.trade_text = this.optionTrade.filter(item => item.id === value)[0].text
       },
       // 选择标签
-      tagClick (data) {
+      tagClick(data) {
         // 判断选中特长标签的数量
         if (!data.active && this.selectedTags.length >= 10) {
-          this.$message({ message: '您最多可以选择10个特长标签', type: 'warning' })
+          this.$message({
+            message: '您最多可以选择10个特长标签',
+            type: 'warning'
+          })
           return false
         }
-        this.loopTags = this.loopTags.map(function (item) {
+        this.loopTags = this.loopTags.map(function(item) {
           let isSelect = false
           if (data.id) {
             isSelect = parseInt(item.id) === parseInt(data.id) ? !item.active : item.active
           } else {
             isSelect = item.text === data.text ? !item.active : item.active
           }
-          return { id: item.id, text: item.text, active: isSelect }
+          return {
+            id: item.id,
+            text: item.text,
+            active: isSelect
+          }
         })
         this.syncSelectedTag()
       },
       // 特长标签数据重构
-      cusTags () {
+      cusTags() {
         this.loopTags = this.tagList
         let interfaceTags = this.basic.tag
-        this.loopTags = this.loopTags.map(function (item) {
-          return { id: item.id, text: item.text, active: false }
+        this.loopTags = this.loopTags.map(function(item) {
+          return {
+            id: item.id,
+            text: item.text,
+            active: false
+          }
         })
         if (interfaceTags.length) {
           this.loopTags = this.loopTags.map((item) => {
             let thisIndex = interfaceTags.findIndex(val => parseInt(item.id) === parseInt(val))
-            return { id: item.id, text: item.text, active: thisIndex > -1 }
+            return {
+              id: item.id,
+              text: item.text,
+              active: thisIndex > -1
+            }
           })
           // 恢复自定义标签
           interfaceTags.forEach((item) => {
             // 自定义标签无id
             if (!parseInt(item)) {
-              this.loopTags.push({ id: '', text: item, active: true })
+              this.loopTags.push({
+                id: '',
+                text: item,
+                active: true
+              })
             }
           })
         }
         this.syncSelectedTag()
       },
       // 添加自定义标签
-      addCusTag () {
+      addCusTag() {
         if (this.selectedTags.length >= 10) {
-          this.$message({ message: '您最多可以选择10个特长标签', type: 'warning' })
+          this.$message({
+            message: '您最多可以选择10个特长标签',
+            type: 'warning'
+          })
           return false
         } else {
           if (!this.customTagText) {
-            this.$message({ message: '请输入自定义标签', type: 'warning' })
+            this.$message({
+              message: '请输入自定义标签',
+              type: 'warning'
+            })
           } else {
-            this.loopTags.push({ id: '', text: this.customTagText, active: true })
+            this.loopTags.push({
+              id: '',
+              text: this.customTagText,
+              active: true
+            })
             this.syncSelectedTag()
             this.customTagText = ''
           }
         }
       },
       // 同步已选中标签
-      syncSelectedTag () {
+      syncSelectedTag() {
         this.selectedTags = this.loopTags.filter(item => item.active)
       },
       // 编辑信息公用方法
-      editItemFun (item, editName) {
+      editItemFun(item, editName) {
         this[`${editName}Item`] = item ? item : {}
         /**
          * 【bug】简历求职意向最多应设置三条
@@ -1586,19 +1610,22 @@
          *  【新增】
          */
         if (editName === 'intention' && !item && this.intentionList.length >= 3) {
-          this.$message({ message: '求职意向最多可填写三条', type: 'warning' })
+          this.$message({
+            message: '求职意向最多可填写三条',
+            type: 'warning'
+          })
           return false
         }
         if (editName === 'intention' && item) {
           this.intentionItemCategory = [item.category1, item.category2, item.category3]
           this.intentionItemDistrict = []
-          if(item.district1>0){
+          if (item.district1 > 0) {
             this.intentionItemDistrict.push(item.district1)
           }
-          if(item.district2>0){
+          if (item.district2 > 0) {
             this.intentionItemDistrict.push(item.district2)
           }
-          if(item.district3>0){
+          if (item.district3 > 0) {
             this.intentionItemDistrict.push(item.district3)
           }
           // this.intentionItemDistrict = [item.district1, item.district2, item.district3]
@@ -1622,102 +1649,160 @@
         this[`edit${editUpName}`] = true
       },
       // 保存基本资料
-      saveBasic () {
+      saveBasic() {
         if (!this.basic.fullname) {
-          this.$message({ message: '请填写姓名', type: 'warning' })
+          this.$message({
+            message: '请填写姓名',
+            type: 'warning'
+          })
           return false
         }
         if (!this.basic.sex) {
-          this.$message({ message: '请选择性别', type: 'warning' })
+          this.$message({
+            message: '请选择性别',
+            type: 'warning'
+          })
           return false
         }
         if (!this.basic.birthday) {
-          this.$message({ message: '请选择出生日期', type: 'warning' })
+          this.$message({
+            message: '请选择出生日期',
+            type: 'warning'
+          })
           return false
         }
         if (!this.isNoJobTime) {
           if (!this.basic.enter_job_time) {
-            this.$message({ message: '请选择开始工作时间', type: 'warning' })
+            this.$message({
+              message: '请选择开始工作时间',
+              type: 'warning'
+            })
             return false
           }
         }
         if (!this.basic.education) {
-          this.$message({ message: '请选择学历', type: 'warning' })
+          this.$message({
+            message: '请选择学历',
+            type: 'warning'
+          })
           return false
         }
         if (!this.contact.mobile) {
-          this.$message({ message: '请填写联系电话', type: 'warning' })
+          this.$message({
+            message: '请填写联系电话',
+            type: 'warning'
+          })
           return false
         }
-        if (this.fieldStore.contact.weixin.is_display==1 && this.fieldStore.contact.weixin.is_require==1) {
+        if (this.fieldStore.contact.weixin.is_display == 1 && this.fieldStore.contact.weixin.is_require == 1) {
           if (!this.contact.weixin) {
-            this.$message({ message: `请填写${this.fieldStore.contact.weixin.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.contact.weixin.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.residence.is_display==1 && this.fieldStore.basic.residence.is_require==1) {
+        if (this.fieldStore.basic.residence.is_display == 1 && this.fieldStore.basic.residence.is_require == 1) {
           if (!this.basic.residence) {
-            this.$message({ message: `请填写${this.fieldStore.basic.residence.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.residence.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.marriage.is_display==1 && this.fieldStore.basic.marriage.is_require==1) {
+        if (this.fieldStore.basic.marriage.is_display == 1 && this.fieldStore.basic.marriage.is_require == 1) {
           if (this.basic.marriage === '') {
-            this.$message({ message: `请填写${this.fieldStore.basic.marriage.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.marriage.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.major.is_display==1 && this.fieldStore.basic.major.is_require==1) {
+        if (this.fieldStore.basic.major.is_display == 1 && this.fieldStore.basic.major.is_require == 1) {
           if (!this.basic.major1) {
-            this.$message({ message: `请填写${this.fieldStore.basic.major.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.major.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.height.is_display==1 && this.fieldStore.basic.height.is_require==1) {
+        if (this.fieldStore.basic.height.is_display == 1 && this.fieldStore.basic.height.is_require == 1) {
           if (!this.basic.height) {
-            this.$message({ message: `请填写${this.fieldStore.basic.height.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.height.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.householdaddress.is_display==1 && this.fieldStore.basic.householdaddress.is_require==1) {
+        if (this.fieldStore.basic.householdaddress.is_display == 1 && this.fieldStore.basic.householdaddress
+          .is_require == 1) {
           if (!this.basic.householdaddress) {
-            this.$message({ message: `请填写${this.fieldStore.basic.householdaddress.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.householdaddress.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.contact.email.is_display==1 && this.fieldStore.contact.email.is_require==1) {
+        if (this.fieldStore.contact.email.is_display == 1 && this.fieldStore.contact.email.is_require == 1) {
           if (!this.contact.email) {
-            this.$message({ message: `请填写${this.fieldStore.contact.email.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.contact.email.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.contact.qq.is_display==1 && this.fieldStore.contact.qq.is_require==1) {
+        if (this.fieldStore.contact.qq.is_display == 1 && this.fieldStore.contact.qq.is_require == 1) {
           if (!this.contact.qq) {
-            this.$message({ message: `请填写${this.fieldStore.contact.qq.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.contact.qq.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_1.is_display==1 && this.fieldStore.basic.custom_field_1.is_require==1) {
+        if (this.fieldStore.basic.custom_field_1.is_display == 1 && this.fieldStore.basic.custom_field_1.is_require ==
+          1) {
           if (!this.basic.custom_field_1) {
-            this.$message({ message: `请填写${this.fieldStore.basic.custom_field_1.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.custom_field_1.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_2.is_display==1 && this.fieldStore.basic.custom_field_2.is_require==1) {
+        if (this.fieldStore.basic.custom_field_2.is_display == 1 && this.fieldStore.basic.custom_field_2.is_require ==
+          1) {
           if (!this.basic.custom_field_2) {
-            this.$message({ message: `请填写${this.fieldStore.basic.custom_field_2.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.custom_field_2.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.custom_field_3.is_display==1 && this.fieldStore.basic.custom_field_3.is_require==1) {
+        if (this.fieldStore.basic.custom_field_3.is_display == 1 && this.fieldStore.basic.custom_field_3.is_require ==
+          1) {
           if (!this.basic.custom_field_3) {
-            this.$message({ message: `请填写${this.fieldStore.basic.custom_field_3.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.custom_field_3.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
-        if (this.fieldStore.basic.idcard.is_display==1 && this.fieldStore.basic.idcard.is_require==1) {
+        if (this.fieldStore.basic.idcard.is_display == 1 && this.fieldStore.basic.idcard.is_require == 1) {
           if (!this.basic.idcard) {
-            this.$message({ message: `请填写${this.fieldStore.basic.idcard.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请填写${this.fieldStore.basic.idcard.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
@@ -1776,60 +1861,82 @@
         }).then(res => {
           if (parseInt(res.code) === 200) {
             console.log(res)
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             this.editBasic = false
             this.syncRightMenu()
           }
-        }).catch(() => {
-        })
+        }).catch(() => {})
       },
       // 保存当前求职状态
-      saveCurrent () {
+      saveCurrent() {
         if (!this.basic.current) {
-          this.$message({ message: '请选择求职意向', type: 'warning' })
+          this.$message({
+            message: '请选择求职意向',
+            type: 'warning'
+          })
           return false
         }
         http.post(api.resume_current_save, {
           current: this.basic.current,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: '修改成功', type: 'success' })
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
             this.editCurrent = false
             this.syncRightMenu()
           }
-        }).catch(() => {
-        })
+        }).catch(() => {})
       },
       // 保存求职意向
-      saveIntention () {
+      saveIntention() {
         if (!this.intentionItem.nature) {
-          this.$message({ message: '请选择工作性质', type: 'warning' })
+          this.$message({
+            message: '请选择工作性质',
+            type: 'warning'
+          })
           return false
         }
         if (!this.intentionItem.category1) {
-          this.$message({ message: '请选择期望职位', type: 'warning' })
+          this.$message({
+            message: '请选择期望职位',
+            type: 'warning'
+          })
           return false
         }
         if (!this.intentionItem.district1) {
-          this.$message({ message: '请选择期望地区', type: 'warning' })
+          this.$message({
+            message: '请选择期望地区',
+            type: 'warning'
+          })
           return false
         }
         if (!this.intentionItem.minwage || !this.intentionItem.maxwage) {
-          this.$message({ message: '请选择薪资', type: 'warning' })
+          this.$message({
+            message: '请选择薪资',
+            type: 'warning'
+          })
           return false
         }
         if (this.fieldStore.intention.trade.is_require) {
           if (!this.intentionItem.trade) {
-            this.$message({ message: `请选择${this.fieldStore.intention.trade.field_cn}`, type: 'warning' })
+            this.$message({
+              message: `请选择${this.fieldStore.intention.trade.field_cn}`,
+              type: 'warning'
+            })
             return false
           }
         }
         this.intentionItem.nature_text = this.optionNature.filter(
-          item => item.id === this.intentionItem.nature)[0]!==undefined?this.optionNature.filter(
-          item => item.id === this.intentionItem.nature)[0].text:''
+          item => item.id === this.intentionItem.nature)[0] !== undefined ? this.optionNature.filter(
+          item => item.id === this.intentionItem.nature)[0].text : ''
         this.intentionItem.trade_text = this.optionTrade.filter(
-          item => item.id === this.intentionItem.trade)[0]!==undefined?this.optionTrade.filter(
-          item => item.id === this.intentionItem.trade)[0].text:''
+          item => item.id === this.intentionItem.trade)[0] !== undefined ? this.optionTrade.filter(
+          item => item.id === this.intentionItem.trade)[0].text : ''
         this.intentionItem.district1 = this.intentionItemDistrict[0]
         this.intentionItem.district2 = this.intentionItemDistrict[1]
         this.intentionItem.district3 = this.intentionItemDistrict[2]
@@ -1854,7 +1961,10 @@
           trade: this.intentionItem.trade,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.intentionItem.id) {
               this.intentionList.push(this.intentionItem)
               this.syncRightMenu()
@@ -1880,7 +1990,7 @@
         })
       },
       // 处理薪资显示
-      handleWageUnit (minWage, maxWage, negotiable = 0) {
+      handleWageUnit(minWage, maxWage, negotiable = 0) {
         let wageText = ''
         let wageUnit = parseInt(this.$store.state.config.wage_unit) // 薪资显示类型
         if (negotiable === 0) {
@@ -1936,7 +2046,7 @@
         return wageText
       },
       // 保存特长标签
-      saveTags () {
+      saveTags() {
         let submitTag = []
         this.selectedTags.forEach((item) => {
           if (item.id) {
@@ -1949,24 +2059,32 @@
           tag: submitTag,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ type: 'success', message: res.message })
+            this.$message({
+              type: 'success',
+              message: res.message
+            })
             this.editTags = false
             this.syncRightMenu()
           }
-        }).catch(() => {
-        })
+        }).catch(() => {})
       },
       // 保存自我描述
-      saveSpecialty () {
+      saveSpecialty() {
         if (!this.basic.specialty) {
-          this.$message({ message: '请填写自我描述', type: 'warning' })
+          this.$message({
+            message: '请填写自我描述',
+            type: 'warning'
+          })
           return false
         }
         http.post(api.resume_specialty_save, {
           specialty: this.basic.specialty,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ type: 'success', message: res.message })
+            this.$message({
+              type: 'success',
+              message: res.message
+            })
             this.editSpecialty = false
             this.syncRightMenu()
           }
@@ -1975,27 +2093,42 @@
         })
       },
       // 保存教育经历
-      saveEducation () {
+      saveEducation() {
         if (!this.educationItem.school) {
-          this.$message({ message: '请填写学校名称', type: 'warning' })
+          this.$message({
+            message: '请填写学校名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.educationItem.major) {
-          this.$message({ message: '请填写专业名称', type: 'warning' })
+          this.$message({
+            message: '请填写专业名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.educationItem.starttime) {
-          this.$message({ message: '请选择入学时间', type: 'warning' })
+          this.$message({
+            message: '请选择入学时间',
+            type: 'warning'
+          })
           return false
         }
         if (!this.educationItem.todate) {
           if (!this.educationItem.endtime) {
-            this.$message({ message: '请选择毕业时间', type: 'warning' })
+            this.$message({
+              message: '请选择毕业时间',
+              type: 'warning'
+            })
             return false
           }
         }
         if (!this.educationItem.education) {
-          this.$message({ message: '请选择学历', type: 'warning' })
+          this.$message({
+            message: '请选择学历',
+            type: 'warning'
+          })
           return false
         }
         this.educationItem.education_text = this.optionEducation.filter(
@@ -2013,7 +2146,10 @@
           todate: this.educationItem.todate === true ? 1 : 0,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.educationItem.id) {
               this.educationList.push(this.educationItem)
               this.syncRightMenu()
@@ -2030,27 +2166,42 @@
         })
       },
       // 保存工作经历
-      saveWork () {
+      saveWork() {
         if (!this.workItem.companyname) {
-          this.$message({ message: '请填写公司名称', type: 'warning' })
+          this.$message({
+            message: '请填写公司名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.workItem.jobname) {
-          this.$message({ message: '请填写职位名称', type: 'warning' })
+          this.$message({
+            message: '请填写职位名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.workItem.starttime) {
-          this.$message({ message: '请选择入职时间', type: 'warning' })
+          this.$message({
+            message: '请选择入职时间',
+            type: 'warning'
+          })
           return false
         }
         if (!this.workItem.todate) {
           if (!this.workItem.endtime) {
-            this.$message({ message: '请选择离职时间', type: 'warning' })
+            this.$message({
+              message: '请选择离职时间',
+              type: 'warning'
+            })
             return false
           }
         }
         if (!this.workItem.duty) {
-          this.$message({ message: '请填写工作职责', type: 'warning' })
+          this.$message({
+            message: '请填写工作职责',
+            type: 'warning'
+          })
           return false
         }
         // 重复提交修改 zch 2022/9/16
@@ -2065,7 +2216,10 @@
           todate: this.workItem.todate === true ? 1 : 0,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.workItem.id) {
               this.workList.push(this.workItem)
               this.syncRightMenu()
@@ -2082,27 +2236,42 @@
         })
       },
       // 保存培训经历
-      saveTrain () {
+      saveTrain() {
         if (!this.trainItem.agency) {
-          this.$message({ message: '请填写培训机构', type: 'warning' })
+          this.$message({
+            message: '请填写培训机构',
+            type: 'warning'
+          })
           return false
         }
         if (!this.trainItem.course) {
-          this.$message({ message: '请填写培训课程', type: 'warning' })
+          this.$message({
+            message: '请填写培训课程',
+            type: 'warning'
+          })
           return false
         }
         if (!this.trainItem.starttime) {
-          this.$message({ message: '请选择开始时间', type: 'warning' })
+          this.$message({
+            message: '请选择开始时间',
+            type: 'warning'
+          })
           return false
         }
         if (!this.trainItem.todate) {
           if (!this.trainItem.endtime) {
-            this.$message({ message: '请选择结束时间', type: 'warning' })
+            this.$message({
+              message: '请选择结束时间',
+              type: 'warning'
+            })
             return false
           }
         }
         if (!this.trainItem.description) {
-          this.$message({ message: '请填写培训内容', type: 'warning' })
+          this.$message({
+            message: '请填写培训内容',
+            type: 'warning'
+          })
           return false
         }
         // 重复提交修改 zch 2022/9/16
@@ -2117,7 +2286,10 @@
           todate: this.trainItem.todate === true ? 1 : 0,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.trainItem.id) {
               this.trainList.push(this.trainItem)
               this.syncRightMenu()
@@ -2134,27 +2306,42 @@
         })
       },
       // 保存项目经历
-      saveProject () {
+      saveProject() {
         if (!this.projectItem.projectname) {
-          this.$message({ message: '请填写项目名称', type: 'warning' })
+          this.$message({
+            message: '请填写项目名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.projectItem.role) {
-          this.$message({ message: '请填写担任角色', type: 'warning' })
+          this.$message({
+            message: '请填写担任角色',
+            type: 'warning'
+          })
           return false
         }
         if (!this.projectItem.starttime) {
-          this.$message({ message: '请选择开始时间', type: 'warning' })
+          this.$message({
+            message: '请选择开始时间',
+            type: 'warning'
+          })
           return false
         }
         if (!this.projectItem.todate) {
           if (!this.projectItem.endtime) {
-            this.$message({ message: '请选择结束时间', type: 'warning' })
+            this.$message({
+              message: '请选择结束时间',
+              type: 'warning'
+            })
             return false
           }
         }
         if (!this.projectItem.description) {
-          this.$message({ message: '请填写项目描述', type: 'warning' })
+          this.$message({
+            message: '请填写项目描述',
+            type: 'warning'
+          })
           return false
         }
         // 重复提交修改 zch 2022/9/16
@@ -2169,7 +2356,10 @@
           todate: this.projectItem.todate === true ? 1 : 0,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.projectItem.id) {
               this.projectList.push(this.projectItem)
               this.syncRightMenu()
@@ -2186,13 +2376,19 @@
         })
       },
       // 保存获得证书
-      saveCertificate () {
+      saveCertificate() {
         if (!this.certificateItem.name) {
-          this.$message({ message: '请填写证书名称', type: 'warning' })
+          this.$message({
+            message: '请填写证书名称',
+            type: 'warning'
+          })
           return false
         }
         if (!this.certificateItem.obtaintime) {
-          this.$message({ message: '请选择获得时间', type: 'warning' })
+          this.$message({
+            message: '请选择获得时间',
+            type: 'warning'
+          })
           return false
         }
         // 重复提交修改 zch 2022/9/16
@@ -2203,7 +2399,10 @@
           obtaintime: this.certificateItem.obtaintime,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.certificateItem.id) {
               this.certificateList.push(this.certificateItem)
               this.syncRightMenu()
@@ -2219,24 +2418,33 @@
         })
       },
       // 选择语种
-      choiceLanguage (visible) {
+      choiceLanguage(visible) {
         if (visible) {
           this.languageOldList = JSON.parse(JSON.stringify(this.languageList))
         }
       },
       // 保存语言能力
-      saveLanguage () {
+      saveLanguage() {
         if (!this.languageItem.language) {
-          this.$message({ message: '请选择语种', type: 'warning' })
+          this.$message({
+            message: '请选择语种',
+            type: 'warning'
+          })
           return false
         }
         if (this.languageOldList.some(
-          item => item.language === this.languageItem.language && item.id !== this.languageItem.id)) {
-          this.$message({ message: '已有该语种', type: 'warning' })
+            item => item.language === this.languageItem.language && item.id !== this.languageItem.id)) {
+          this.$message({
+            message: '已有该语种',
+            type: 'warning'
+          })
           return false
         }
         if (!this.languageItem.level) {
-          this.$message({ message: '请选择熟悉程度', type: 'warning' })
+          this.$message({
+            message: '请选择熟悉程度',
+            type: 'warning'
+          })
           return false
         }
         this.languageItem.language_text = this.optionLanguage.filter(
@@ -2252,7 +2460,10 @@
           level: this.languageItem.level,
         }).then(res => {
           if (parseInt(res.code) === 200) {
-            this.$message({ message: res.message, type: 'success' })
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
             if (!this.languageItem.id) {
               this.languageList.push(this.languageItem)
               this.syncRightMenu()
@@ -2268,7 +2479,7 @@
         })
       },
       // 删除信息公用方法
-      delItemFun (url, id, list) {
+      delItemFun(url, id, list) {
         this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2278,22 +2489,24 @@
             id: id,
           }).then(res => {
             if (parseInt(res.code) === 200) {
-              this.$message({ message: res.message, type: 'success' })
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
               list.splice(list.findIndex(item => item.id === id), 1)
               this.syncRightMenu()
             }
-          }).catch(() => {
-          })
+          }).catch(() => {})
         }).catch((err) => {
           console.log(err)
         })
       },
       // 格式化日期
-      dateFormat (time) {
+      dateFormat(time) {
         return time ? parseTime(time, '{y}-{m}') : ''
       },
       // 监听页面滚动
-      getScrollTop () {
+      getScrollTop() {
         let scrollTop = 0
         if (document.documentElement && document.documentElement.scrollTop) {
           scrollTop = document.documentElement.scrollTop
@@ -2303,7 +2516,7 @@
         this.isRoll = scrollTop >= 114
       },
       // 微信号同手机号
-      syncWxMobile () {
+      syncWxMobile() {
         if (this.checkedEditPhone) {
           this.contact.weixin = this.contact.mobile
         }
@@ -2314,12 +2527,12 @@
        * @param minValue
        * @returns {[]}
        */
-      makeWageOption (type, minValue) {
+      makeWageOption(type, minValue) {
         let max
         if (type === 'min') {
           this.optionMinWage = []
           max = this.$store.state.maxWage - 5000
-        }else{
+        } else {
           this.optionMaxWage = []
           max = this.$store.state.maxWage
         }
@@ -2328,29 +2541,29 @@
         let current = minValue
         let unit1 = 500
         let unit2 = 5000
-        while(current <= max){
+        while (current <= max) {
           if (type === 'min') {
             this.optionMinWage.push(current)
-          }else{
+          } else {
             this.optionMaxWage.push(current)
           }
-          if(current<15000){
+          if (current < 15000) {
             current += unit1
-          }else{
+          } else {
             current += unit2
           }
         }
-        if(type==='max'){
+        if (type === 'max') {
           this.intentionItem.maxwage = this.optionMaxWage[0]
         }
         return wageArray
       },
       // 薪资级联
-      changeMinWage (minWage) {
-        this.makeWageOption('max', minWage>=15000?(minWage+5000):(minWage + 500))
+      changeMinWage(minWage) {
+        this.makeWageOption('max', minWage >= 15000 ? (minWage + 5000) : (minWage + 500))
       },
       // 选择职位和地区分类
-      handleValues (value) {
+      handleValues(value) {
         this.makeUpValue(2, JSON.parse(JSON.stringify(value[0]))).forEach((item, index) => {
           if (value[2] === 'basic') {
             this.basic[`${value[1]}${(index + 1)}`] = item
@@ -2361,11 +2574,11 @@
         this.handleLabels(value[1])
       },
       // 选择地区或职位分类之后处理选中值
-      makeUpValue (length, value) {
+      makeUpValue(length, value) {
         return [...Array(length)].map((e, i) => value[i] > 0 ? value[i] : 0)
       },
       // 处理选中节点
-      handleLabels (type) {
+      handleLabels(type) {
         if (type === 'district') {
           setTimeout(() => {
             this.intentionItem.district_text = this.$refs['intDistrict'].inputValue
@@ -2382,6 +2595,63 @@
           }, 300)
         }
       },
+      // 上传附件简历文件之前验证格式及大小
+      beforeUploadFile(file) {
+        // let fileRaw = file;
+        // let fileTypeArr = (fileRaw.type || '').split('/');
+        let fileArr = file?.name.split(".");
+        let fileType = fileArr[fileArr.length-1]
+        let typeArr = ['txt', 'html', 'pdf', 'doc', 'docx'];
+        if (-1 === typeArr.indexOf(fileType)) {
+          this.$message.error('文件类型不支持');
+          return false;
+        }
+        const sizeLimit = file.size / 1024 / 1024 > 10;
+        if (sizeLimit) {
+          this.$message.warning('上传文件大小不能超过 10MB!');
+          return false;
+        }
+      },
+      handlerUploadResume(file) {
+        this.fileLoading = true
+        http
+          .postFormData(api.enclosureSave, {
+            file: file.file
+          })
+          .then(res => {
+            if (parseInt(res.code) === 200) {
+              this.initInfo()
+              this.editEnclosure = true
+              this.fileLoading = false
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            this.fileLoading = false
+          });
+      },
+      delEnclosure() {
+        this.$confirm('确定删除附件简历吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(() => {
+          http.post(api.enclosureDelete, {
+            enclosure_id: this.enclosure_resume.id,
+          }).then(res => {
+            if (parseInt(res.code) === 200) {
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
+              this.initInfo()
+              this.editEnclosure = false
+            }
+          }).catch(() => {})
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
     },
   }
 </script>
@@ -2488,7 +2758,8 @@
               margin: 19px 0 10px 0;
             }
 
-            em, span {
+            em,
+            span {
               font-style: normal;
               font-size: 30px;
               position: absolute;
@@ -2556,7 +2827,9 @@
         }
 
         &:hover {
-          .ed, .del {
+
+          .ed,
+          .del {
             display: block;
           }
         }
@@ -2613,7 +2886,8 @@
               margin: 19px 0 10px 0;
             }
 
-            em, span {
+            em,
+            span {
               font-style: normal;
               font-size: 30px;
               position: absolute;
@@ -2815,6 +3089,7 @@
 
         .fill_group {
           padding: 0 15px;
+
           .gi {
             cursor: pointer;
           }
@@ -2833,7 +3108,8 @@
             padding: 6px 13px;
             background-color: #fff;
 
-            &.active, &:hover {
+            &.active,
+            &:hover {
               background-color: #fdf6ec;
               border: 1px solid #faecd8;
               color: #e6a75d;
@@ -2934,6 +3210,21 @@
         padding: 37px 30px 30px 35px;
         border-top: 1px solid #f3f3f3;
 
+        .enclosureResume {
+          width: 100%;
+          color: #1787fb;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .delEnclosure {
+            font-size: 14px;
+            color: #1787fb;
+            cursor: pointer;
+          }
+        }
+
         .bit {
           &:not(:last-child) {
             margin-bottom: 15px;
@@ -2964,8 +3255,19 @@
             }
           }
 
-          .ed, .del {
+          .ed,
+          .del {
             top: 7px;
+          }
+        }
+        .l_add{
+          .loadingImg{
+            .loadingIcon{
+              display: block;
+              width: 40px;
+              height: 40px;
+              margin: 0 auto 5px;
+            }
           }
         }
       }
@@ -3205,8 +3507,7 @@
           color: #1787fb;
         }
 
-        .p_per {
-        }
+        .p_per {}
       }
 
       .t2 {
@@ -3243,7 +3544,8 @@
             background: url("../../assets/images/personal/resume/10.png") 0 0 no-repeat;
           }
 
-          &.scr, &:hover {
+          &.scr,
+          &:hover {
             background-color: #f6fafe;
             color: #0a79eb;
           }
@@ -3263,12 +3565,15 @@
 
           display: flex;
           justify-content: space-between;
-          &.btn1{
+
+          &.btn1 {
             padding: 16px 0;
           }
-          &.btn2{
+
+          &.btn2 {
             padding: 0 0 40px;
           }
+
           .s_btn {
             flex: 1;
             height: 40px;
@@ -3280,12 +3585,14 @@
             cursor: pointer;
 
             &.view {
-              background:#e6a23c;
+              background: #e6a23c;
+
               &:hover {
                 background: #d89838;
               }
             }
-            &.index{
+
+            &.index {
               background: #1787fb;
 
               &:hover {
@@ -3301,7 +3608,7 @@
         background: url("../../assets/images/personal/resume/13.png") 0 0 no-repeat;
         width: 100%;
         height: 190px;
-        cursor:pointer;
+        cursor: pointer;
       }
     }
   }

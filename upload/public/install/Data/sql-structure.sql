@@ -2444,7 +2444,9 @@ CREATE TABLE `qs_crm_clue` (
 `is_customer` enum('1','0') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '是否转为客户 0-否 1-是',
 `scale` int(10) NOT NULL DEFAULT '0' COMMENT '公司规模',
 `collection_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间',
-PRIMARY KEY (`id`)
+`tripartite_id` varchar(50) NOT NULL DEFAULT '' COMMENT '三方ID',
+PRIMARY KEY (`id`),
+KEY `index_mobile` (`mobile`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm线索表';
 ||-_-||qs_crm_clue||-_-||
 
@@ -2744,3 +2746,98 @@ CREATE TABLE `qs_im_short_url`  (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = 'IM聊天页面短链接';
 ||-_-||qs_im_short_url||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_resume_enclosure`;
+CREATE TABLE `qs_resume_enclosure`  (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+`rid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '简历ID',
+`uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
+`enclosure` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '附件简历ID',
+`title` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+`addtime` int(10) unsigned NOT NULL DEFAULT '0',
+`audit` tinyint(1) unsigned NOT NULL DEFAULT '1',
+PRIMARY KEY (`id`),
+KEY `index_rid_uid` (`rid`,`uid`),
+KEY `index_uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '简历-附件简历';
+||-_-||qs_resume_enclosure||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_resume_analysis_log`;
+CREATE TABLE `qs_resume_analysis_log`  (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员UID',
+`file_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '附件简历ID',
+`request_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '简历解析任务ID',
+`code` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '解析结果CODE',
+`result` text NOT NULL COMMENT '解析结果MESSAGE',
+`addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+`notify` text COMMENT '回调结果',
+PRIMARY KEY (`id`) USING BTREE,
+KEY `index_uid` (`uid`) USING BTREE,
+KEY `index_fid` (`file_id`) USING BTREE,
+KEY `index_rid` (`request_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '简历解析日志';
+||-_-||qs_resume_analysis_log||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_crm_clue_contact`;
+CREATE TABLE `qs_crm_clue_contact`  (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`clue_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '线索ID',
+`contact` varchar(30) NOT NULL DEFAULT '' COMMENT '联系人',
+`mobile` char(11) NOT NULL DEFAULT '' COMMENT '手机号',
+`telephone` varchar(20) NOT NULL DEFAULT '' COMMENT '固话',
+`qq` varchar(15) NOT NULL DEFAULT '' COMMENT 'QQ',
+`email` varchar(30) NOT NULL DEFAULT '' COMMENT '邮箱',
+`sex` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '性别：0|男，1|女',
+`addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+`is_main` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否设为主要：0|否，1|是',
+PRIMARY KEY (`id`) USING BTREE,
+KEY index_cid_ism (`clue_id`,`is_main`) USING BTREE,
+KEY index_mobile (`mobile`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '线索联系人表';
+||-_-||qs_crm_clue_contact||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_company_directory_record`;
+CREATE TABLE `qs_company_directory_record`  (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
+`keyword` varchar(100) NOT NULL DEFAULT '' COMMENT '关键词',
+`query` text NOT NULL COMMENT '查询条件',
+`current_page` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '当前页',
+`current_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '当前页数量',
+`total_page` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '总页数',
+`total_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '总数量',
+`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+PRIMARY KEY (`id`),
+KEY index_adminid (`admin_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '企业名录记录表';
+||-_-||qs_company_directory_record||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_company_directory_cache`;
+CREATE TABLE `qs_company_directory_cache`  (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`mark` char(32) NOT NULL DEFAULT '' COMMENT '记号',
+`query` varchar(500) NOT NULL DEFAULT '' COMMENT '查询条件',
+`result` text NOT NULL COMMENT '查询结果',
+`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+`expire_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '到期时间',
+PRIMARY KEY (`id`),
+KEY index_mark (`mark`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '企业名录缓存表';
+||-_-||qs_company_directory_cache||-_-||

@@ -22,3 +22,38 @@ export function dashboardChart(params) {
     params
   })
 }
+export function newDataStatisticsIndex(params) {
+  return request({
+    url: apiArr.newDataStatisticsIndex,
+    method: 'get',
+    params
+  })
+}
+export function newRealTimeData(params) {
+  return request({
+    url: apiArr.newRealTimeData,
+    method: 'get',
+    params
+  })
+}
+export function newGeneralstatistics(params) {
+  return request({
+    url: apiArr.newGeneralstatistics,
+    method: 'get',
+    params
+  })
+}
+export function newOfficialData(params) {
+  return request({
+    url: apiArr.newOfficialData,
+    method: 'get',
+    params
+  })
+}
+export function newDataStatisticsChart(data) {
+  return request({
+    url: apiArr.newDataStatisticsChart,
+    method: 'post',
+    data
+  })
+}

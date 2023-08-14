@@ -502,5 +502,9 @@ export default {
   // 查看企业套餐是否允许发布视频招聘
   isAllowPublishing: '/home/short_video/isAllowPublishing',
   // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
-  im_keyword_replace: '/member/im/keywordReplace'
+  im_keyword_replace: '/member/im/keywordReplace',
+  //简历解析 -上传附件简历
+  enclosureSave: '/personal/resume/enclosureSave',
+  //简历解析 -附件简历删除
+  enclosureDelete: '/personal/resume/enclosureDelete'
 }

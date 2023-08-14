@@ -55,7 +55,7 @@
         <el-form-item label="操作权限">
           <el-checkbox v-model="form.access_export">导出数据</el-checkbox>
           <el-checkbox v-model="form.access_delete">删除数据</el-checkbox>
-          <el-checkbox v-model="form.access_set_service">分配客服</el-checkbox>
+<!--          <el-checkbox v-model="form.access_set_service">分配客服</el-checkbox>-->
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>

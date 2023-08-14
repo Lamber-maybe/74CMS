@@ -930,6 +930,69 @@ function get_subsite_condition($table_alias=''){
     }
     return $list;
 }
+function curl_file_get_contents($durl, $header = []){
+    $curl = curl_init();
+    // 设置url路径
+    curl_setopt($curl, CURLOPT_URL, $durl);
+    // 将 curl_exec()获取的信息以文件流的形式返回，而不是直接输出。
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true) ;
+    // 在启用 CURLOPT_RETURNTRANSFER 时候将获取数据返回
+    curl_setopt($curl, CURLOPT_BINARYTRANSFER, true) ;
+    // 添加头信息
+    if (!empty($header)) {
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        // CURLINFO_HEADER_OUT选项可以拿到请求头信息
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+    }
+    // 不验证SSL
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    // 执行
+    $data = curl_exec($curl);
+    // 打印请求头信息
+    // echo curl_getinfo($curl, CURLINFO_HEADER_OUT);
+    // 关闭连接
+    curl_close($curl);
+    // 返回数据
+    return $data;
+}
+/*
+*   php访问url路径，post请求
+*
+*   durl   路径url
+*   post_data   array()   post参数数据
+*   $header array [header头信息]
+*/
+function curl_file_post_contents($durl, $post_data, $header = []){
+    $curl = curl_init();
+    //设置抓取的url
+    curl_setopt($curl, CURLOPT_URL, $durl);
+    //设置头文件的信息作为数据流输出
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    //设置获取的信息以文件流的形式返回，而不是直接输出。
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    //设置post方式提交
+    curl_setopt($curl, CURLOPT_POST, true);
+    // 设置post请求参数
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+    // 添加头信息
+    if (!empty($header)) {
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        // CURLINFO_HEADER_OUT选项可以拿到请求头信息
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+    }
+    // 不验证SSL
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    //执行命令
+    $data = curl_exec($curl);
+    // 打印请求头信息
+    // echo curl_getinfo($curl, CURLINFO_HEADER_OUT);
+    //关闭URL请求
+    curl_close($curl);
+    //显示获得的数据
+    return $data;
+}
 
 
 /**
@@ -945,4 +1008,46 @@ function srtAsteriskReplace($string, $asterisk = 4)
     }
     $firstStr = mb_substr($string, 0, 1, 'UTF-8');
     return $firstStr . str_repeat("*", $asterisk);
+}
+
+if (!function_exists('getMsecToDate')) {
+    /**
+     * 获取毫秒转日期
+     * @author edc
+     * @param  string $msecDate [毫秒日期]
+     * @param  string $format   [格式]
+     * @return int
+     * Date Time：2022年11月21日15:26:37
+     */
+    function getMsecToDate($msecTime = 0, $format = 'Y-m-d H:i:s.x'){
+        $msecTime = empty($msecTime) ? getMsecTime() : $msecTime;
+        $msecTime = $msecTime * 0.001;
+        if(strstr($msecTime, '.')){
+            list($usec, $sec) = explode('.', $msecTime);
+            $sec = str_pad($sec, 3, '0', STR_PAD_RIGHT);
+        }else{
+            $usec = $msecTime;
+            $sec = '000';
+        }
+        $date = date($format, $usec);
+        return str_replace('x', $sec, $date);
+    }
+}
+
+/**
+ * 获取指定日期所在月的开始日期与结束日期
+ * @param $date
+ * @param $returnFirstDay
+ * @return false|string
+ */
+function getMonthRange( $date, $returnFirstDay = true ) {
+    $timestamp = strtotime( $date );
+    if ( $returnFirstDay ) {
+        $monthFirstDay = date( 'Y-m-1 00:00:00', $timestamp );
+        return $monthFirstDay;
+    } else {
+        $mdays = date( 't', $timestamp );
+        $monthLastDay = date( 'Y-m-' . $mdays . ' 23:59:59', $timestamp );
+        return $monthLastDay;
+    }
 }

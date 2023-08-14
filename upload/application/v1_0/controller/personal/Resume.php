@@ -1,6 +1,10 @@
 <?php
 namespace app\v1_0\controller\personal;
 
+use app\common\lib\FileManager;
+use phpDocumentor\Reflection\File;
+use think\Db;
+
 class Resume extends \app\v1_0\controller\common\Base
 {
     public function _initialize()
@@ -305,6 +309,9 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $img_list = [];
         }
+
+        // 附件简历
+        $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['uid'=>$uid]);
         
         return [
             'module_list' => $resume_module,
@@ -318,7 +325,8 @@ class Resume extends \app\v1_0\controller\common\Base
             'training_list' => $training_list,
             'language_list' => $language_list,
             'certificate_list' => $certificate_list,
-            'img_list' => $img_list
+            'img_list' => $img_list,
+            'enclosure_resume' => $enclosure_resume
         ];
     }
     /**
@@ -1579,5 +1587,132 @@ class Resume extends \app\v1_0\controller\common\Base
             'is_display' => $is_display
         ];
         $this->ajaxReturn(200, '获取成功', $info);
+    }
+
+    /**
+     * @Purpose: 上传附件简历
+     *
+     * @Method enclosureSave()
+     *
+     * @param File $file 附件简历文件
+     *
+     * @return Jsonp
+     *
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     *
+     * @link /v1_0/personal/resume/enclosureSave
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2022/12/2 0002
+     */
+    public function enclosureSave()
+    {
+        // 1.接收附件简历
+        $file = input('file.file');
+        if (!$file) {
+            $this->ajaxReturn(500, '请选择附件简历');
+        }
+
+        // 2.判断是否已经上传附件简历
+        $isUpload = model('ResumeEnclosure')
+            ->field('id')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (isset($isUpload) && !empty($isUpload)) {
+            $this->ajaxReturn(500, '已上传过附件简历');
+        }
+
+        // 3.未上传时，上传附件简历
+        $fileManager = new FileManager();
+        $result = $fileManager->upload($file, false);
+        if (false === $result) {
+            $this->ajaxReturn(500, $fileManager->getError());
+        }
+
+        Db::startTrans();
+        try {
+            $fileInfo = $file->getInfo();
+            $resume = model('Resume')
+                ->where('uid', $this->userinfo->uid)
+                ->find();
+            $data = [
+                'rid' => $resume['id'],
+                'uid' => $resume['uid'],
+                'enclosure' => $result['file_id'],
+                'title' => !empty($fileInfo['name']) ? $fileInfo['name'] : '',
+                'addtime' => time(),
+                'audit' => 1
+            ];
+            model('ResumeEnclosure')->save($data);
+
+            $this->writeMemberActionLog($this->userinfo->uid, '上传附件简历');
+
+            Db::commit();
+            $this->ajaxReturn(200, '上传成功', $result);
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, $e->getMessage());
+        }
+
+    }
+
+    /**
+     * @Purpose: 删除附件简历
+     *
+     * @Method enclosureDelete()
+     *
+     * @param integer $enclosure_id 附件简历ID
+     *
+     * @return Jsonp
+     *
+     * @throws \think\Exception
+     *
+     * @link /v1_0/personal/resume/enclosureDelete
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2022/12/2 0002
+     */
+    public function enclosureDelete()
+    {
+        // 1.接收参数 -
+        $enclosure_id = input('post.enclosure_id/d', 0, 'intval');
+        if ($enclosure_id <= 0) {
+            $this->ajaxReturn(500, '参数错误');
+        }
+
+        // 2.判断是否已经上传附件简历
+        $isUpload = model('ResumeEnclosure')
+            ->field('id')
+            ->where('id', $enclosure_id)
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (null === $isUpload) {
+            $this->ajaxReturn(500, '要删除的附加简历状态异常');
+        }
+
+        Db::startTrans();
+        try {
+            $delete_result = model('ResumeEnclosure')
+                ->destroy([
+                    'id' => $enclosure_id,
+                    'uid' => $this->userinfo->uid
+                ]);
+            if (false === $delete_result) {
+                throw new \Exception(model('ResumeEnclosure')->getError());
+            }
+
+            $this->writeMemberActionLog($this->userinfo->uid, '删除附件简历');
+
+            Db::commit();
+            $this->ajaxReturn(200, '删除成功');
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, $e->getMessage());
+        }
     }
 }

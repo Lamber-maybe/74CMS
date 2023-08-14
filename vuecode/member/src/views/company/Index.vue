@@ -310,8 +310,8 @@ export default {
           window.open(url)
         },
         handleClickBanner(item){
-            if(item.link_url !== ''){
-                window.open(item.link_url)
+            if(item.web_link_url !== ''){
+                window.open(item.web_link_url)
             }
         },
         fetchDataPublishedJoblist () {

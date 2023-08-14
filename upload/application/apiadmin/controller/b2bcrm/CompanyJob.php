@@ -88,6 +88,7 @@ class CompanyJob extends Backend
             $arr['amount'] = $value['amount'];
             $arr['click'] = $value['click'];
             $arr['updatetime'] = $value['updatetime'];
+            $arr['refreshtime'] = $value['refreshtime'];
             $arr['audit'] = $value['audit'];
             $arr['is_display'] = $value['is_display'];
             $arr['job_apply_count'] = isset($job_apply_list[$value['id']])

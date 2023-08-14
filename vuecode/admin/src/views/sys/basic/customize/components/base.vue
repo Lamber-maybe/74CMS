@@ -76,6 +76,16 @@
           浏览量在“1~设置值”之间随机增加，0为不干预
         </span>
       </el-form-item>
+<!--      【ID1000446】【新增】后台控制登录时效，默认7天-->
+      <el-form-item label="登录时效" prop="rand_click_article">
+        <el-input v-model="form.token_expire" class="small" type="number" min="10" :controls="false" @blur="format_number(10, 'token_expire')">
+          <template slot="append">分</template>
+        </el-input>
+        <span class="smalltip">
+          <i class="el-icon-info" />
+          指登录状态的有效期，登录状态失效后会自动退出账号，最小10分钟。如：7天为10080分。
+        </span>
+      </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>
       </el-form-item>
@@ -99,7 +109,8 @@ export default {
         rand_click_job: 0,
         rand_click_company: 0,
         rand_click_resume: 0,
-        rand_click_article: 0
+        rand_click_article: 0,
+        token_expire: 0
       },
       rules: {
         points_byname: [
@@ -145,7 +156,8 @@ export default {
             rand_click_job,
             rand_click_company,
             rand_click_resume,
-            rand_click_article
+            rand_click_article,
+            token_expire
           } = { ...response.data }
           this.form = {
             points_byname,
@@ -156,7 +168,8 @@ export default {
             rand_click_job,
             rand_click_company,
             rand_click_resume,
-            rand_click_article
+            rand_click_article,
+            token_expire
           }
           this.infoLoading = false
         })
@@ -191,7 +204,22 @@ export default {
       if (this.rand_click_article == ''){
         this.rand_click_article = 0
       }
+    },
+    format_number(default_val, field) {
+      if (this.form[field] == '' || parseInt(this.form[field]) < default_val) {
+        this.form[field] = default_val
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+/deep/ input::-webkit-outer-spin-button,
+/deep/ input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+/deep/ input[type='number'] {
+  -moz-appearance: textfield !important;
+}
+</style>

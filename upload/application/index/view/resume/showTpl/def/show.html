@@ -377,6 +377,15 @@
                         </ul>
                     </div>
                     {#/if#}
+                    <!-- 附件简历 -->
+                    {#if condition="$return.enclosure_resume!=''"#}
+                    <div class="certificate_wrapper">
+                        <div class="tag_title img_padding">附件简历</div>
+                        <div v-if="contactData.show_contact===0" style="cursor: pointer;color: #1787fb" @click="doEnclosureDowenload()">{#$return.enclosure_resume.title#}</div>
+                        <div v-else><a style="cursor: pointer;color: #1787fb" href="{#$return.enclosure_resume.enclosure#}" download="{#$return.enclosure_resume.enclosure#}">{#$return.enclosure_resume.title#}</a></div>
+                    </div>
+                    {#/if#}
+                    <!-- 附件简历 -->
                 </div>
                 {#if condition="$return.base_info.comment!=''"#}
                 <div class="comment">
@@ -662,6 +671,7 @@
             }
         },
         created: function () {
+
             this.getUserInfo()
             this.getSupplementary()
             this.getContact()
@@ -1165,6 +1175,28 @@
             companyServiceUpgradePackage(){
                 window.open(qscms.locationList.companySetmealAdd)
                 this.showUpgradePackage = false
+            },
+            doEnclosureDowenload: function () {
+                var that = this
+                if (that.utype != 1) {
+                    this.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                            .then(function () {
+                                location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                            })
+                            .catch(function () { })
+                } else {
+                    if ("{#$return.base_info.audit#}" != 1) {
+                        this.$message.error('该简历还未审核通过，不能继续此操作')
+                        return false
+                    }
+                    if (that.contactData.show_contact===0){
+                        this.$message.error('您尚未下载该简历，不能继续此操作')
+                        return false
+                    }
+                }
             }
         }
     })

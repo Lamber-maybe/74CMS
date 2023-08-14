@@ -1,5 +1,5 @@
 <template>
-  <div class="followup_wrapper" v-loading="loading">
+  <div v-loading="loading" class="followup_wrapper">
     <el-row>
       <el-col class="write" :span="12">
         <div class="info">
@@ -10,7 +10,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="联系人：">
-              <el-select v-if="currentNav == 'allClient' || currentNav == 'myClient' || currentNav == 'pubilceClient'" v-model="followUp.contacts" placeholder="请选择" :disabled="disabled_state">
+              <el-select v-if="currentNav == 'allClient' || currentNav == 'myClient' || currentNav == 'pubilceClient' || currentNav == 'wholeClue' || currentNav == 'wholeMy' || currentNav == 'wholeInternationalWaters'" v-model="followUp.contacts" placeholder="请选择" :disabled="disabled_state">
                 <el-option
                   v-for="item in contactsData"
                   :key="item.value"
@@ -37,7 +37,7 @@
               />
             </el-form-item>
             <el-form-item label="跟进结果：" prop="result">
-              <el-input v-model="followUp.result" :rows="9" type="textarea" :disabled="disabled_state" />
+              <el-input v-model="followUp.result" :rows="11" type="textarea" :disabled="disabled_state" maxlength="250" show-word-limit />
             </el-form-item>
             <el-form-item label="添加图片：">
               <el-upload
@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { addVisit, followUpList, contactList } from '@/api/company_crm'
+import { addVisit, followUpList, contactList, clueContactList } from '@/api/company_crm'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -223,6 +223,10 @@ export default {
     },
     mobile(value){
       this.followUp.link_mobile = value
+      if (this.currentNav == 'wholeClue' || this.currentNav == 'wholeMy' || this.currentNav == 'wholeInternationalWaters'){
+        this.followUpList()
+        this.clueContactList()
+      }
     },
     uid(value){
       if (this.currentNav != 'allClient' || this.currentNav != 'myClient' || this.currentNav != 'pubilceClient'){
@@ -241,7 +245,6 @@ export default {
       this.disabled_state = true
     }
     if (this.currentNav == 'wholeClue' || this.currentNav == 'wholeMy' || this.currentNav == 'wholeInternationalWaters'){
-      this.followUpList()
       this.followUp.type = 1
     } else {
       this.followUp.type = 2
@@ -270,8 +273,54 @@ export default {
       contactList({ 'uid': uid })
         .then(res => {
           if (res.data.length > 0){
+            var contactName = ''
             for (var i = 0; i <= res.data.length - 1; i++){
-              this.contactsData.push({ 'name': res.data[i].contact + ' | ' + res.data[i].mobile, 'value': res.data[i].id })
+              /**
+               * 【ID1000430】
+               * 【优化】客户跟进，联系人默认调出-企业联系方式
+               * yx - 2022.11.21
+               * [新增]：
+               * if判断，绑定v-model
+               */
+              if (res.data[i].type == 'company'){
+                this.followUp.contacts = res.data[i].id
+                this.followUp.link_man = res.data[i].contact
+                this.followUp.link_mobile = res.data[i].mobile
+                if (res.data[i].mobile == '') {
+                  this.followUp.link_mobile = res.data[i].telephone
+                }
+              }
+              // 手机号为空时用固话 edc 2022-12-7
+              contactName = res.data[i].contact + ' | ' + res.data[i].mobile
+              if (res.data[i].mobile == '') {
+                contactName = res.data[i].contact + ' | ' + res.data[i].telephone
+              }
+              this.contactsData.push({ 'name': contactName, 'value': res.data[i].id })
+            }
+          }
+        }).catch(() => {
+
+        })
+    },
+    clueContactList(){
+      this.contactsData = []
+      clueContactList({ 'clue_id': this.clue_id })
+        .then(res => {
+          if (res.data.length > 0){
+            var contactName = ''
+            for (var i = 0; i <= res.data.length - 1; i++){
+              // 手机号为空时用固话 edc 2022-12-7
+              contactName = res.data[i].contact + ' | ' + res.data[i].mobile
+              if (res.data[i].mobile == '') {
+                contactName = res.data[i].contact + ' | ' + res.data[i].telephone
+              }
+              this.contactsData.push({ 'name': contactName, 'value': res.data[i].contact_id })
+            }
+            this.followUp.contacts = res.data[0].contact_id
+            this.followUp.link_man = res.data[0].contact
+            this.followUp.link_mobile = res.data[0].mobile
+            if (res.data[0].mobile == '') {
+              this.followUp.link_mobile = res.data[0].telephone
             }
           }
         }).catch(() => {
@@ -579,4 +628,3 @@ p{
   text-align: left;
 }
 </style>
-

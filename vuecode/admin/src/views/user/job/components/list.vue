@@ -386,6 +386,10 @@ export default {
     }
   },
   created() {
+    if (localStorage.getItem('job_audit') && localStorage.getItem('job_audit') == '0') {
+      this.audit = 0;
+      localStorage.setItem('job_audit', '');
+    }
     this.fetchData()
   },
   methods: {

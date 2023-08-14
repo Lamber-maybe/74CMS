@@ -72,10 +72,9 @@ class FollowUp extends Backend
                 'relation_id' => 'number|length:1,10',
                 'utype' => 'number|max:1',
                 'mode' => 'require|max:1|number',
-                'result' => 'max:100',
+                'result' => 'max:250',
                 'next_time' => 'number|length:1,10',
                 'link_man' => 'require|length:1,30',
-                'link_mobile' => 'require|number|max:11',
                 'linkman_id' => 'require|number|length:1,10'
             ];
 
@@ -83,16 +82,20 @@ class FollowUp extends Backend
                 'type' => '跟进类型参数错误',
                 'clue_id' => '请传正确的线索id',
                 'mode' => '请选择跟进方式',
-                'result' => '请输入1~100字内的跟进结果',
+                'result' => '请输入1~250字内的跟进结果',
                 'next_time' => '请选择下次跟进时间',
                 'link_man' => '请输入1-10字内的联系人',
-                'link_mobile' => '联系人手机号必须为11个数字',
                 'linkman_id' => '联系人id必须为1-10位的数字'
             ];
             $validate = new Validate($rule, $msg);
             if (!$validate->check($data)) {
                 $this->ajaxReturn(500, $validate->getError());
             }
+
+            if (!fieldRegex($data['link_mobile'], 'mobile')) {
+                $data['link_mobile'] = '';
+            }
+
             Db::startTrans();
             if ($data['uid'] > 0) {
                 model('Company')

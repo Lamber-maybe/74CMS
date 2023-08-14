@@ -16,7 +16,7 @@ class CrmCustomList extends Backend
     {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
     {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
     {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
-    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
     {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
     {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 
@@ -30,7 +30,7 @@ class CrmCustomList extends Backend
     {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
     {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
     {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
-    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
     {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
     {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 
@@ -43,7 +43,7 @@ class CrmCustomList extends Backend
     {"name":"所在地区","field":"district","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
     {"name":"详细地址","field":"address","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0},
     {"name":"更新时间","field":"updatetime","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":180,"sort":0},
-    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":100,"sort":0},
+    {"name":"跟进(次)","field":"follow_count","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":120,"sort":0},
     {"name":"创建人","field":"creat_username","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":150,"sort":0},
     {"name":"备注","field":"remark","select":true,"icon":"el-icon-lock","is_locking":false,"is_lock_display":false,"width":200,"sort":0}]';
 

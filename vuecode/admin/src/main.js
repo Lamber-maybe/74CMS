@@ -17,6 +17,10 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import VueClipboard from 'vue-clipboard2'
 
+import {Base64} from 'js-base64'
+Vue.prototype.$Base64 = Base64;
+
+
 // set ElementUI lang to EN
 // Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明

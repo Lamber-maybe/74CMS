@@ -14,11 +14,29 @@ class Base extends \think\Controller
         'app' => 604800, //7天有效期
         'mobile' => 604800, //7天有效期
         'wechat' => 604800, //7天有效期
-        'web' => 3600 //60分钟有效期
+        'web' => 604800 //7天有效期
     ];
     public function _initialize()
     {
         parent::_initialize();
+        /**
+         * 【ID1000446】
+         * 【新增】后台控制登录时效，默认7天
+         * yx - 2022.11.29
+         * 登录状态有效期，登录状态失效后会自动退出账号，最小10分钟。单位分钟。
+         */
+        $token_expire = config('global_config.token_expire');
+        if (intval($token_expire) >= 10) {
+            $token_expire = $token_expire * 60;
+            $this->expire_platform = [
+                'app' => $token_expire,
+                'mobile' => $token_expire,
+                'wechat' => $token_expire,
+                'miniprogram' => $token_expire,
+                'tiktok' => $token_expire,
+                'web' => $token_expire
+            ];
+        }
         $this->request = \think\Request::instance();
         $this->module_name = strtolower($this->request->module());
         $this->controller_name = strtolower($this->request->controller());

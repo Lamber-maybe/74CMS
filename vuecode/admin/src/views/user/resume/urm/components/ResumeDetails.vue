@@ -1,6 +1,6 @@
 <template>
   <div class="clientInfo_wrapper">
-    <resumeEdit :id="id" @resumeDetails="resumeDetails" />
+    <resumeEdit :id="id" :resumeEnclosure="resumeEnclosure" @resumeDetails="resumeDetails" />
   </div>
 </template>
 
@@ -14,6 +14,9 @@ export default {
   props: {
     id: {
       default: ''
+    },
+    resumeEnclosure:{
+      default: {}
     }
   },
   methods: {

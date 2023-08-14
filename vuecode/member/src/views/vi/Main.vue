@@ -166,7 +166,7 @@ export default {
       const userSig = this.config.sig
       const userId = this.userId
       this.client = TRTC.createClient({
-        mode: 'videoCall',
+        mode: 'rtc',
         sdkAppId,
         userId,
         userSig

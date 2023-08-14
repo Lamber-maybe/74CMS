@@ -369,3 +369,17 @@ export function resumeImport(data) {
     data
   })
 }
+export function enclosureSave(data) {
+  return request({
+    url: apiArr.enclosureSave,
+    method: 'post',
+    data
+  })
+}
+export function enclosureDelete(data) {
+  return request({
+    url: apiArr.enclosureDelete,
+    method: 'post',
+    data
+  })
+}

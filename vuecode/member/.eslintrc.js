@@ -9,7 +9,8 @@ module.exports = {
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'vue/no-parsing-error':[2,{ 'x-invalid-end-tag':false }]
   },
   globals: {
     BMAP_STATUS_SUCCESS: null

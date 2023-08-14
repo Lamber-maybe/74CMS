@@ -659,9 +659,9 @@ if (!function_exists('saveLog')) {
             $module = 'default';
         }
 
-        $catalog = LOG_PATH.date('Ymd').DS.$module;
+        $catalog = LOG_PATH. date('Ym') . DS . date('d') . DS . $module;
 
-        $logFilePath = $catalog.DS.$destination.'.log';
+        $logFilePath = $catalog . DS . $destination . '.log';
 
         // 检测文件是否存在，不存在则创建，无法创建则终止执行
         if (!file_exists($logFilePath)) {

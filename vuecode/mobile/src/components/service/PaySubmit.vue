@@ -53,7 +53,16 @@ export default {
       localStorage.setItem('payPayment',payType)
       localStorage.setItem('paySuccessUrl',this.successUrl)
       localStorage.setItem('payData',JSON.stringify(data))
-      this.$router.push('/member/order/addpay')
+      /**
+       * 【ID1000329】
+       * 【bug】触屏订单支付时，点击取消，返回上一页，系统一直重复下订单
+       * yx - 2022.11.23
+       * [旧]:
+       * this.$router.push('/member/order/addpay')
+       * [新]:
+       * this.$router.replace('/member/order/addpay')
+       */
+      this.$router.replace('/member/order/addpay')
     }
   }
 }

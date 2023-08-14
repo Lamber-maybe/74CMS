@@ -3,6 +3,7 @@
 namespace app\common\model\b2bcrm;
 
 use app\common\model\BaseModel;
+use think\Db;
 
 class CrmClue extends BaseModel
 {
@@ -45,13 +46,21 @@ class CrmClue extends BaseModel
         if (!is_array($map)) {
             return false;
         }
-        $total = $this->getDataNum($map);
+        $having = '';
+        if(isset($map['a.follow_count']) && $map['a.follow_count'] != ''){
+            $having = 'follow_count'.$map['a.follow_count'][0].' '.$map['a.follow_count'][1];
+        }
+        $total = $this->getDataNum($map,'count(b.id) as follow_count,a.*');
+        unset($map['a.follow_count']);
         $data = $this->field($field)
             ->alias('a')
             ->join('CrmFollowUp b','a.id=b.clue_id and b.type=1','left')
             ->where($map)
             ->group('a.id')
             ->order($order);
+        if($having != ''){
+            $data = $data->having($having);
+        }
         if (is_numeric($page_size))
         {
             if (empty($total)) {
@@ -116,14 +125,22 @@ class CrmClue extends BaseModel
      * @version 1.1
      * @since   2022/8/22
      */
-    public function getDataNum($map)
+    public function getDataNum($map,$field = 'id')
     {
         if (!is_array($map)) {
             return false;
         }
-        $total = $this->alias('a')->field($this->pk)
-            ->where($map)
-            ->count($this->pk);
+        $having = '';
+        if(isset($map['a.follow_count']) && $map['a.follow_count'] != ''){
+            $having = 'follow_count'.$map['a.follow_count'][0].' '.$map['a.follow_count'][1];
+        }
+        unset($map['a.follow_count']);
+        $total = $this->alias('a')->field($field)
+            ->where($map);
+        if($having != ''){
+            $total = $total->join('CrmFollowUp b','a.id=b.clue_id and b.type=1','left')->group('a.id')->having($having);
+        }
+        $total = $total->count();
         return $total;
     }
 

@@ -271,7 +271,7 @@
             <div class="job_list2 clearfix">
               <div class="job_text">
                 <input type="checkbox" class="l_chk J_allList" value="{#$vo.id#}" />
-                <div class="job_title {#eq name="vo.emergency" value="1" #}emergency{#/eq#}">
+                <div class="job_title {#eq name="vo.emergency" value="1" #}emergency{#/eq#}" data-id="{#$vo.id#}">
                   <a href="{#:url('index/job/show',['id'=>$vo.id])#}" target="_blank">{#$vo.jobname#}</a>
                   <div class="job_list_hover">
                     <span class="triangle"></span>
@@ -622,6 +622,45 @@
         }
         window.location.href = tagUrl;
       });
+
+      // 职位点击标题变色 start
+      var isLoginLocal = localStorage.getItem('isLogin');
+      var isLogin = window.qscms.isLogin;
+      if (!isLogin == isLoginLocal) { //登录状态改变时清空缓存数据
+        localStorage.setItem('selectArr', []); //职位
+        localStorage.setItem('selectArr', []); //简历
+        localStorage.setItem('selectComArr', []); //企业
+      }
+      var selectArrOnload = localStorage.getItem('selectArr') == null || 
+	  localStorage.getItem('selectArr') == 'null' || 
+	  localStorage.getItem('selectArr') == '' || 
+	  localStorage.getItem('selectArr') == undefined ? [] : JSON.parse(
+              localStorage.getItem('selectArr'))
+      preResumelist()
+
+      function preResumelist() {
+        for (let j of selectArrOnload) {
+          $(".job_title").each(function() {
+            if ($(this).context.dataset.id == j) {
+              $(this).addClass('job_title_active')
+            }
+          });
+        }
+      }
+      var selectArr = selectArrOnload
+      $('.job_title').click(function(e) {
+        if (!$(this).hasClass('job_title_active')) {
+          var select_id = e.currentTarget.dataset.id
+
+          selectArr.push(select_id)
+          var selectArrStr = JSON.stringify(selectArr)
+          localStorage.setItem('selectArr', selectArrStr)
+          if (!$(this).hasClass('job_title_active')) {
+            $(this).addClass('job_title_active')
+          }
+        }
+      });
+      // 职位点击标题变色 end
     });
   });
 

@@ -481,4 +481,18 @@ export default {
     defectResumeInfo: '/personal/resume/getNoComplete',
     // 【新增】职聊关键字屏蔽功能 zch 2022.10.18
     im_keyword_replace: '/member/im/keywordReplace',
+  //简历解析 -上传附件简历
+  enclosureSave: '/personal/resume/enclosureSave',
+  //简历解析 -附件简历删除
+  enclosureDelete: '/personal/resume/enclosureDelete',
+  //简历解析 -附件简历详情
+  enclosureResumeDetail: '/personal/resume/detail',
+  //创建简历解析
+  analysisCreate: '/personal/analysis/create',
+  //获取简历解析回调状态
+  analysisIsNotify: '/personal/analysis/isNotify',
+  //导入创建简历
+  importResumeCreate: '/personal/resume_reg_by_analysis/importCreate',
+  // 校验简历解析配置
+  documentCheck: '/home/zhitoo/documentCheck'
 }

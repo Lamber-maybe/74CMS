@@ -2,6 +2,9 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\lib\FileManager;
+use phpDocumentor\Reflection\File;
+
 class Resume extends \app\common\controller\Backend
 {
     public function _initialize()
@@ -1925,5 +1928,146 @@ class Resume extends \app\common\controller\Backend
         header("Pragma:no-cache"); 
         header("Expires:0"); 
         ob_end_flush(); 
+    }
+
+    /**
+     * @Purpose: 上传附件简历
+     *
+     * @Method enclosureSave()
+     *
+     * @param File $file 附件简历文件
+     *
+     * @return Jsonp
+     *
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     *
+     * @link /v1_0/personal/resume/enclosureSave
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2022/12/2 0002
+     */
+    public function enclosureSave()
+    {
+        $resume_id = input('post.rid/d', 0, 'intval');
+        if (!$resume_id) {
+            $this->ajaxReturn(500, '请选择');
+        }
+        // 1.接收附件简历
+        $file = input('file.file');
+        if (!$file) {
+            $this->ajaxReturn(500, '请选择附件简历');
+        }
+
+        // 2.判断是否已经上传附件简历
+        $isUpload = model('ResumeEnclosure')
+            ->field('id')
+            ->where('rid', $resume_id)
+            ->find();
+        if (isset($isUpload) && !empty($isUpload)) {
+            $this->ajaxReturn(500, '已上传过附件简历');
+        }
+
+        // 3.未上传时，上传附件简历
+        $fileManager = new FileManager();
+        $result = $fileManager->upload($file,false);
+        if (false === $result) {
+            $this->ajaxReturn(500, $fileManager->getError());
+        }
+
+        \think\Db::startTrans();
+        try {
+            $fileInfo = $file->getInfo();
+            $resume = model('Resume')
+                ->where('id', $resume_id)
+                ->find();
+            $data = [
+                'rid' => $resume_id,
+                'uid' => $resume['uid'],
+                'enclosure' => $result['file_id'],
+                'title' => !empty($fileInfo['name']) ? $fileInfo['name'] : '',
+                'addtime' => time(),
+                'audit' => 1
+            ];
+            model('ResumeEnclosure')->save($data);
+
+            model('AdminLog')->record(
+                '添加简历附件简历。简历ID【' . $resume_id . '】',
+                $this->admininfo
+            );
+
+            \think\Db::commit();
+            $this->ajaxReturn(200, '上传成功', $result);
+        } catch (\Exception $e) {
+            \think\Db::rollback();
+            $this->ajaxReturn(500, $e->getMessage());
+        }
+
+    }
+
+    /**
+     * @Purpose: 删除附件简历
+     *
+     * @Method enclosureDelete()
+     *
+     * @param integer $enclosure_id 附件简历ID
+     *
+     * @return Jsonp
+     *
+     * @throws \think\Exception
+     *
+     * @link /v1_0/personal/resume/enclosureDelete
+     *
+     * @author  Mr.yx
+     * @version 1.1
+     * @since   2022/12/2 0002
+     */
+    public function enclosureDelete()
+    {
+        $resume_id = input('post.rid/d', 0, 'intval');
+        if (!$resume_id) {
+            $this->ajaxReturn(500, '请选择');
+        }
+        // 1.接收参数 -
+        $enclosure_id = input('post.enclosure_id/d', 0, 'intval');
+        if ($enclosure_id <= 0) {
+            $this->ajaxReturn(500, '参数错误');
+        }
+
+        // 2.判断是否已经上传附件简历
+        $isUpload = model('ResumeEnclosure')
+            ->field('id')
+            ->where('id', $enclosure_id)
+            ->where('rid', $resume_id)
+            ->find();
+        if (null === $isUpload) {
+            $this->ajaxReturn(500, '要删除的附加简历状态异常');
+        }
+
+        \think\Db::startTrans();
+        try {
+            $delete_result = model('ResumeEnclosure')
+                ->destroy([
+                    'id' => $enclosure_id,
+                    'rid' => $resume_id
+                ]);
+            if (false === $delete_result) {
+                throw new \Exception(model('ResumeEnclosure')->getError());
+            }
+
+            model('AdminLog')->record(
+                '删除简历附件简历。简历ID【' . $resume_id . '】',
+                $this->admininfo
+            );
+
+            \think\Db::commit();
+            $this->ajaxReturn(200, '删除成功');
+        } catch (\Exception $e) {
+            \think\Db::rollback();
+            $this->ajaxReturn(500, $e->getMessage());
+        }
     }
 }

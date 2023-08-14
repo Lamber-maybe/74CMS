@@ -19,7 +19,7 @@ class Upload extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '请选择文件');
         }
         $filemanager = new \app\common\lib\FileManager();
-        $result = $filemanager->upload($file);
+        $result = $filemanager->upload($file, false);
         if (false !== $result) {
             if($extra=='company_logo'){
                 cache('scan_upload_result_company_logo_'.$this->userinfo->uid,json_encode($result));

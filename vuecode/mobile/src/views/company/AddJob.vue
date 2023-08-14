@@ -105,7 +105,9 @@ export default {
           this.result_service_list = [...res.data.service_stick_list]
           this.showResult = true
         })
-        .catch(() => {})
+        .catch(() => {
+          this.$refs.child.resetSubmit()
+        })
     }
   }
 }

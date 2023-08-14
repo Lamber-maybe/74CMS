@@ -486,7 +486,7 @@
       </div>
       <div class="form_split_10"></div>
       <div style="margin: 16px;">
-        <van-button round block type="info" native-type="submit">
+        <van-button round block type="info" native-type="submit" :disabled="is_submit">
           {{ btnText }}
         </van-button>
       </div>
@@ -622,7 +622,8 @@ export default {
       experienceDefaultIndex: 0,
       educationDefaultIndex: 0,
       tpllist: [],
-      nature_text: '全职'
+      nature_text: '全职',
+      is_submit: false
     }
   },
   created () {
@@ -775,7 +776,6 @@ export default {
       this.basic.category2 = data[1]
       this.basic.category3 = data[2]
       this.basic.categoryName = data[3]
-      console.log(this.basic.category1, this.basic.category2, this.basic.category3)
       this.showPickerJobCategory = !this.showPickerJobCategory
       let pid = this.basic.category3 != 0 ? this.basic.category3 : (this.basic.category2 != 0 ? this.basic.category2 : (this.basic.category1 != 0 ? this.basic.category1 : 0))
       http
@@ -847,12 +847,14 @@ export default {
       this.showPickerEducation = !this.showPickerEducation
     },
     onConfirmAge (values) {
+      this.basic.age_na = 0
       this.basic.minage = parseInt(values[0])
       this.basic.maxage = parseInt(values[1])
       this.age_text = `${parseInt(values[0])}-${parseInt(values[1])}岁`
       this.showPickerAge = !this.showPickerAge
     },
     onConfirmWage (values) {
+      this.basic.negotiable = 0
       this.basic.minwage = parseInt(values[0])
       this.basic.maxwage = parseInt(values[1])
       this.wage_text = `${parseInt(values[0])}-${parseInt(values[1])}元`
@@ -904,6 +906,7 @@ export default {
       picker.setColumnValues(1, this.$store.state.classifyAge[values[0]])
     },
     onSubmit (values) {
+      this.is_submit = true
       this.contact.is_display = this.contactHidden === 1 ? 0 : 1
       this.$emit('submit', {
         basic: this.basic,
@@ -924,6 +927,9 @@ export default {
       // this.$refs.mapset.initCB()
       this.showMap = true
       // this.$router.push('/member/company/mapset')
+    },
+    resetSubmit () {
+      this.is_submit = false
     }
   }
 }
