@@ -43,7 +43,7 @@ class Coupon extends \app\common\model\BaseModel
             return false;
         }
         $setmeal_id = $data['setmeal_id'];
-        $uid_arr = $data['uid'];
+        $uid_arr = is_array($data['uid'])?$data['uid']:[$data['uid']];
         if ($setmeal_id < 0 && empty($uid_arr)) {
             //如果自定义并且没有选择接收会员
             $this->error = '请选择接收会员';
@@ -74,7 +74,7 @@ class Coupon extends \app\common\model\BaseModel
                 throw new \Exception(model('CouponLog')->getError());
             }
             $coupon_info_list = model('Coupon')
-                ->where(['id' => ['in', $coupon_id_arr]])
+                ->where('id','in',$coupon_id_arr)
                 ->select();
             $insert_data = [];
             foreach ($coupon_info_list as $key => $coupon) {

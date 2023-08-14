@@ -16,8 +16,8 @@ class Reg extends \app\v1_0\controller\common\Base
     public function company()
     {
         $input_data = [
-            'companyname' => input('post.companyname/s', '', 'trim'),
-            'contact' => input('post.contact/s', '', 'trim'),
+            'companyname' => input('post.companyname/s', '', 'trim,badword_filter'),
+            'contact' => input('post.contact/s', '', 'trim,badword_filter'),
             'mobile' => input('post.mobile/s', '', 'trim'),
             'code' => input('post.code/s', '', 'trim'),
             'password' => input('post.password/s', '', 'trim'),

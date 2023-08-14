@@ -21,7 +21,7 @@ class Job extends \app\v1_0\controller\common\Base
         $this->ajaxReturn(200, '获取数据成功', [
             'enable_addjob_num_total' => $member_setmeal_info['jobs_meanwhile'],
             'enable_addjob_num' => $enable_num,
-            'setmeal_name' => $setmeal_info['name'],
+            'setmeal_name' => ($setmeal_info===null?'':$setmeal_info['name']),
         ]);
     }
     /**
@@ -57,7 +57,7 @@ class Job extends \app\v1_0\controller\common\Base
         $input_data = [
             'basic' => [
                 'uid' => $this->userinfo->uid,
-                'jobname' => input('post.basic.jobname/s', '', 'trim'),
+                'jobname' => input('post.basic.jobname/s', '', 'trim,badword_filter'),
                 'nature' => 1,
                 'category1' => input('post.basic.category1/d', 0, 'intval'),
                 'category2' => input('post.basic.category2/d', 0, 'intval'),
@@ -70,8 +70,8 @@ class Job extends \app\v1_0\controller\common\Base
                 'district1' => input('post.basic.district1/d', 0, 'intval'),
                 'district2' => input('post.basic.district2/d', 0, 'intval'),
                 'district3' => input('post.basic.district3/d', 0, 'intval'),
-                'content' => input('post.basic.content/s', '', 'trim'),
-                'address' => input('post.basic.address/s', '', 'trim'),
+                'content' => input('post.basic.content/s', '', 'trim,badword_filter'),
+                'address' => input('post.basic.address/s', '', 'trim,badword_filter'),
                 'map_lat' => input('post.basic.map_lat/s', '', 'trim'),
                 'map_lng' => input('post.basic.map_lng/s', '', 'trim'),
                 'map_zoom' => input('post.basic.map_zoom/d', 12, 'intval'),
@@ -84,8 +84,8 @@ class Job extends \app\v1_0\controller\common\Base
                     0,
                     'intval'
                 ),
-                'contact' => input('post.contact.contact/s', '', 'trim'),
-                'mobile' => input('post.contact.mobile/s', '', 'trim'),
+                'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
+                'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 'is_display' => input('post.contact.is_display/d', 1, 'intval'),
             ],
         ];
@@ -93,7 +93,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['department'] = input(
                 'post.basic.department/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['basic']['department'] = '';
@@ -141,7 +141,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['custom_field_1'] = input(
                 'post.basic.custom_field_1/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['basic']['custom_field_1'] = '';
@@ -150,7 +150,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['custom_field_2'] = input(
                 'post.basic.custom_field_2/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['basic']['custom_field_2'] = '';
@@ -159,7 +159,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['custom_field_3'] = input(
                 'post.basic.custom_field_3/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['basic']['custom_field_3'] = '';
@@ -199,7 +199,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['contact']['weixin'] = input(
                 'post.contact.weixin/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['contact']['weixin'] = '';
@@ -208,7 +208,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['contact']['telephone'] = input(
                 'post.contact.telephone/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['contact']['telephone'] = '';
@@ -217,7 +217,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['contact']['qq'] = input(
                 'post.contact.qq/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['contact']['qq'] = '';
@@ -226,7 +226,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['contact']['email'] = input(
                 'post.contact.email/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         } else {
             $input_data['contact']['email'] = '';
@@ -277,6 +277,7 @@ class Job extends \app\v1_0\controller\common\Base
         } else {
             $service_stick_list = [];
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'发布职位【职位id：'.$jobid.'，职位名称：'.$input_data['basic']['jobname'].'】');
         $this->ajaxReturn(200, '保存成功', [
             'id' => $jobid,
             'audit' => $input_data['basic']['audit'],
@@ -405,7 +406,7 @@ class Job extends \app\v1_0\controller\common\Base
             'basic' => [
                 'id' => input('post.basic.id/d', 0, 'intval'),
                 'uid' => $this->userinfo->uid,
-                'jobname' => input('post.basic.jobname/s', '', 'trim'),
+                'jobname' => input('post.basic.jobname/s', '', 'trim,badword_filter'),
                 'nature' => 1,
                 'category1' => input('post.basic.category1/d', 0, 'intval'),
                 'category2' => input('post.basic.category2/d', 0, 'intval'),
@@ -418,8 +419,8 @@ class Job extends \app\v1_0\controller\common\Base
                 'district1' => input('post.basic.district1/d', 0, 'intval'),
                 'district2' => input('post.basic.district2/d', 0, 'intval'),
                 'district3' => input('post.basic.district3/d', 0, 'intval'),
-                'content' => input('post.basic.content/s', '', 'trim'),
-                'address' => input('post.basic.address/s', '', 'trim'),
+                'content' => input('post.basic.content/s', '', 'trim,badword_filter'),
+                'address' => input('post.basic.address/s', '', 'trim,badword_filter'),
                 'map_lat' => input('post.basic.map_lat/s', '', 'trim'),
                 'map_lng' => input('post.basic.map_lng/s', '', 'trim'),
                 'map_zoom' => input('post.basic.map_zoom/d', 12, 'intval'),
@@ -431,8 +432,8 @@ class Job extends \app\v1_0\controller\common\Base
                     0,
                     'intval'
                 ),
-                'contact' => input('post.contact.contact/s', '', 'trim'),
-                'mobile' => input('post.contact.mobile/s', '', 'trim'),
+                'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
+                'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 'is_display' => input('post.contact.is_display/d', 1, 'intval'),
             ],
         ];
@@ -444,7 +445,7 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['department'] = input(
                 'post.basic.department/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (
@@ -485,21 +486,21 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['basic']['custom_field_1'] = input(
                 'post.basic.custom_field_1/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.custom_field_2')) {
             $input_data['basic']['custom_field_2'] = input(
                 'post.basic.custom_field_2/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.custom_field_3')) {
             $input_data['basic']['custom_field_3'] = input(
                 'post.basic.custom_field_3/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         $input_data['basic']['category'] =
@@ -533,28 +534,28 @@ class Job extends \app\v1_0\controller\common\Base
             $input_data['contact']['weixin'] = input(
                 'post.contact.weixin/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.contact.telephone')) {
             $input_data['contact']['telephone'] = input(
                 'post.contact.telephone/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.contact.qq')) {
             $input_data['contact']['qq'] = input(
                 'post.contact.qq/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.contact.email')) {
             $input_data['contact']['email'] = input(
                 'post.contact.email/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
 
@@ -596,6 +597,7 @@ class Job extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $e->getMessage());
         }
         model('Job')->refreshSearch($jobid);
+        $this->writeMemberActionLog($this->userinfo->uid,'修改职位【职位id：'.$jobid.'，职位名称：'.$input_data['basic']['jobname'].'】');
         $this->ajaxReturn(200, '保存成功');
     }
     public function index()
@@ -806,6 +808,7 @@ class Job extends \app\v1_0\controller\common\Base
         model('MemberSetmealLog')
             ->allowField(true)
             ->save($log);
+        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【' . $job_info['jobname'] . '】');
 
         $this->ajaxReturn(200, '刷新成功', ['done' => 1]);
     }
@@ -881,6 +884,7 @@ class Job extends \app\v1_0\controller\common\Base
                 ->allowField(true)
                 ->saveAll($log_arr);
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'套餐特权-免费刷新职位【职位id：' . implode(",",$refresh_jobid_arr) . '】');
 
         $this->ajaxReturn(200, '刷新成功', ['done' => 1]);
     }
@@ -908,6 +912,7 @@ class Job extends \app\v1_0\controller\common\Base
         $jobinfo->is_display = $is_display;
         $jobinfo->save();
         model('Job')->refreshSearch($id);
+        $this->writeMemberActionLog($this->userinfo->uid,'设置职位招聘状态【' . ($is_display==1?'招聘中':'暂停招聘') . '】');
         $this->ajaxReturn(200, '设置成功');
     }
     public function setCloseBatch()
@@ -918,6 +923,7 @@ class Job extends \app\v1_0\controller\common\Base
         }
         model('Job')->whereIn('id',$id)->where('uid',$this->userinfo->uid)->setField('is_display',0);
         model('Job')->refreshSearchBatch($id);
+        $this->writeMemberActionLog($this->userinfo->uid,'批量关闭职位【职位id：' . implode(",",$id) . '】');
         $this->ajaxReturn(200, '设置成功');
     }
     public function del()
@@ -933,21 +939,27 @@ class Job extends \app\v1_0\controller\common\Base
         if (false === model('Job')->deleteJobByIds([$id])) {
             $this->ajaxReturn(500, model('Job')->getError());
         };
+        $this->writeMemberActionLog($this->userinfo->uid,'删除职位【职位id：' . $jobinfo->id . '，职位名称：'.$jobinfo->jobname.'】');
         $this->ajaxReturn(200, '删除成功');
     }
     public function delBatch()
     {
         $id = input('post.id/a',[]);
-        $jobinfo = model('Job')
+        $list = model('Job')
             ->whereIn('id', $id)
             ->where('uid', $this->userinfo->uid)
             ->select();
-        if (!$jobinfo) {
+        if (!$list) {
             $this->ajaxReturn(500, '没有找到职位信息');
         }
         if (false === model('Job')->deleteJobByIds($id)) {
             $this->ajaxReturn(500, model('Job')->getError());
         };
+        $namearr = [];
+        foreach ($list as $key => $value) {
+            $namearr[] = $value['jobname'];
+        }
+        $this->writeMemberActionLog($this->userinfo->uid,'批量删除职位【职位名称：' . implode(",",$namearr) . '】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

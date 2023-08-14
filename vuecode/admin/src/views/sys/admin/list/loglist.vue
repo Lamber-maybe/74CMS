@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div v-if="is_login == 0" class="list-search">
+    <div v-if="isLogin == 0" class="list-search">
       <el-input
         v-model="keyword"
         placeholder="请输入搜索内容"
@@ -24,17 +24,14 @@
       highlight-current-row
       stripe
     >
-      <el-table-column align="center" label="操作时间" width="200">
+      <el-table-column label="时间">
         <template slot-scope="scope">
           <span>{{ scope.row.addtime | timeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作ip" width="300">
-        <template slot-scope="scope">
-          <span>{{ scope.row.ip }}【{{ scope.row.ip_addr }}】</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="内容" prop="content" />
+      <el-table-column label="操作" prop="content" />
+      <el-table-column label="IP" prop="ip" />
+      <el-table-column label="IP归属地" prop="ip_addr" />
     </el-table>
     <div class="spaceline" />
     <el-row style="text-align: right;">

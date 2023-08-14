@@ -28,9 +28,13 @@ class AdminRole extends \app\common\controller\Backend
     {
         $input_data = [
             'name' => input('post.name/s', '', 'trim'),
-            'access' => input('post.access/a')
+            'access' => input('post.access/a'),
+            'access_mobile' => input('post.access_mobile/a'),
+            'access_export' => input('post.access_export/d',0,'intval'),
+            'access_delete' => input('post.access_delete/d',0,'intval')
         ];
         $input_data['access'] = serialize($input_data['access']);
+        $input_data['access_mobile'] = serialize($input_data['access_mobile']);
         $result = model('AdminRole')
             ->validate(true)
             ->allowField(true)
@@ -59,19 +63,28 @@ class AdminRole extends \app\common\controller\Backend
             if ($info['access'] != 'all') {
                 $info['access'] = unserialize($info['access']);
             }
+            if ($info['access_mobile'] != 'all') {
+                $info['access_mobile'] = unserialize($info['access_mobile']);
+            }
+            $info['access_export'] = $info['access_export']==1?true:false;
+            $info['access_delete'] = $info['access_delete']==1?true:false;
 
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
             $input_data = [
                 'id' => input('post.id/d', 0, 'intval'),
                 'name' => input('post.name/s', '', 'trim'),
-                'access' => input('post.access/a')
+                'access' => input('post.access/a'),
+                'access_mobile' => input('post.access_mobile/a'),
+                'access_export' => input('post.access_export/d',0,'intval'),
+                'access_delete' => input('post.access_delete/d',0,'intval')
             ];
             $id = intval($input_data['id']);
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
             $input_data['access'] = serialize($input_data['access']);
+            $input_data['access_mobile'] = serialize($input_data['access_mobile']);
             $result = model('AdminRole')
                 ->validate(true)
                 ->allowField(true)

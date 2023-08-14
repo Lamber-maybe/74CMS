@@ -33,9 +33,7 @@
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/service/increment">增值服务</el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/service/order">我的订单</el-menu-item>
         <el-menu-item :style="{'padding-left':'84px'}" index="/company/service/coupon">优惠券</el-menu-item>
-        <el-menu-item :style="{'padding-left':'84px'}"
-                      index="/company/service/point">我的{{$store.state.config.points_byname}}
-        </el-menu-item>
+        <el-menu-item :style="{'padding-left':'84px'}" index="/company/service/point">我的{{$store.state.config.points_byname}}</el-menu-item>
       </el-submenu>
       <el-submenu class="i5" index="/company/manage">
         <template slot="title">

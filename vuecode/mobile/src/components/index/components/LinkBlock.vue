@@ -16,6 +16,11 @@
         v-if="nearby == 1"
         @click="$router.push('/jobnearby')"
       ></div>
+      <div
+        class="link_block l4"
+        v-if="jobfair == 1"
+        @click="$router.push('/jobfairol')"
+      ></div>
     </div>
   </div>
 </template>
@@ -26,6 +31,7 @@ export default {
   props: ['plan_id'],
   data () {
     return {
+      jobfair: 0,
       company: 0,
       nearby: 0,
       high_wage: 0
@@ -33,6 +39,9 @@ export default {
   },
   created () {
     let arr = this.plan_id.split(',')
+    if (arr.includes('online_jobfair') === true) {
+      this.jobfair = 1
+    }
     if (arr.includes('company') === true) {
       this.company = 1
     }

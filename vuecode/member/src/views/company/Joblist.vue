@@ -204,8 +204,7 @@ import api from '@/api'
 			'$route':function(newVal){
 				this.params.type = newVal.query.type===undefined?'0':newVal.query.type
 				this.dataset = []
-				this.fetchData()
-				this.fetchTotal()
+				this.fetchData(true)
 			}
 		},
 		created () {

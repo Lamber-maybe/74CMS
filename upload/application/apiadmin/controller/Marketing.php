@@ -49,7 +49,6 @@ class Marketing extends \app\common\controller\Backend
             $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('id','in',$jobid_arr)->select();
         }
         $class = new \app\common\lib\Wechat;
-        $miniprogram_appid = config('global_config.wechat_miniprogram_appid');
         $return = [];
         $category_data = model('Category')->getCache();
         foreach ($list as $key => $value) {
@@ -87,8 +86,6 @@ class Marketing extends \app\common\controller\Backend
                 }
             }
             $item['tag'] = implode(",",$item['tag']);
-            $item['miniprogram_appid'] = $miniprogram_appid;
-            $item['miniprogram_path'] = '/pages/jobs/jobs_show/jobs_show?id='.$value['id'];
             $item['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
             $qrcode = $class->makeQrcode(['alias'=>'subscribe_job','jobid'=>$value['id']]);
             $item['wxqrcode'] = $qrcode?$qrcode:'';
@@ -104,7 +101,6 @@ class Marketing extends \app\common\controller\Backend
             $list = model('Resume')->field('id,display_name,fullname,sex,birthday,education,enter_job_time,current,specialty')->where('id','in',$resumeid_arr)->select();
         }
         $class = new \app\common\lib\Wechat;
-        $miniprogram_appid = config('global_config.wechat_miniprogram_appid');
         $return = [];
         $category_data = model('Category')->getCache();
         $category_job_data = model('CategoryJob')->getCache();
@@ -199,8 +195,6 @@ class Marketing extends \app\common\controller\Backend
             } else {
                 $item['intention_district'] = '';
             }
-            $item['miniprogram_appid'] = $miniprogram_appid;
-            $item['miniprogram_path'] = '/pages/resume/show/show?id='.$value['id'];
             $item['resumeshow_link'] = config('global_config.mobile_domain').'resume/'.$value['id'];
             $qrcode = $class->makeQrcode(['alias'=>'subscribe_resume','resumeid'=>$value['id']]);
             $item['wxqrcode'] = $qrcode?$qrcode:'';
@@ -214,7 +208,6 @@ class Marketing extends \app\common\controller\Backend
         $comid_arr = $model->column('a.id');
         $list = $joblist = $jobname_arr = [];
         $class = new \app\common\lib\Wechat;
-        $miniprogram_appid = config('global_config.wechat_miniprogram_appid');
         if(!empty($comid_arr)){
             $list = model('Company')
                 ->alias('a')
@@ -245,8 +238,6 @@ class Marketing extends \app\common\controller\Backend
                 ? model('BaseModel')->map_experience[$value['experience']]
                 : '经验不限';
                 $arr['amount'] = ($value['amount'] == 0 ? '若干' : $value['amount']) . '人';
-                $arr['miniprogram_appid'] = $miniprogram_appid;
-                $arr['miniprogram_path'] = '/pages/jobs/jobs_show/jobs_show?id='.$value['id'];
                 $arr['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
                 $joblist[$value['company_id']][] = $arr;
                 $jobname_arr[$value['company_id']][] = $value['jobname'];
@@ -276,8 +267,6 @@ class Marketing extends \app\common\controller\Backend
             $item['tag'] = implode(",",$item['tag']);
             $item['joblist'] = isset($joblist[$value['id']])?$joblist[$value['id']]:[];
             $item['job_text'] = isset($jobname_arr[$value['id']])?implode(",",$jobname_arr[$value['id']]):'';
-            $item['miniprogram_appid'] = $miniprogram_appid;
-            $item['miniprogram_path'] = '/pages/jobs/company_show/company_show?id='.$value['id'];
             $item['companyshow_link'] = config('global_config.mobile_domain').'company/'.$value['id'];
             $qrcode = $class->makeQrcode(['alias'=>'subscribe_company','comid'=>$value['id']]);
             $item['wxqrcode'] = $qrcode?$qrcode:'';
@@ -290,7 +279,6 @@ class Marketing extends \app\common\controller\Backend
         $company_id = intval($condition['company_id']);
         $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('audit',1)->where('is_display',1)->where('company_id','eq',$company_id)->select();
         $class = new \app\common\lib\Wechat;
-        $miniprogram_appid = config('global_config.wechat_miniprogram_appid');
         $return = [];
         $category_data = model('Category')->getCache();
         foreach ($list as $key => $value) {
@@ -328,8 +316,6 @@ class Marketing extends \app\common\controller\Backend
                 }
             }
             $item['tag'] = implode(",",$item['tag']);
-            $item['miniprogram_appid'] = $miniprogram_appid;
-            $item['miniprogram_path'] = '/pages/jobs/jobs_show/jobs_show?id='.$value['id'];
             $item['jobshow_link'] = config('global_config.mobile_domain').'job/'.$value['id'];
             $qrcode = $class->makeQrcode(['alias'=>'subscribe_job','jobid'=>$value['id']]);
             $item['wxqrcode'] = $qrcode?$qrcode:'';
@@ -462,7 +448,7 @@ class Marketing extends \app\common\controller\Backend
                 break;
         }
         $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->limit($num);
+        $model = $model->distinct('a.id')->limit($num);
 
         return $model;
     }
@@ -588,7 +574,7 @@ class Marketing extends \app\common\controller\Backend
                 break;
         }
         $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->limit($num);
+        $model = $model->distinct('a.id')->limit($num);
         return $model;
     }
     protected function _parseConditionOfCompany($condition)
@@ -656,7 +642,7 @@ class Marketing extends \app\common\controller\Backend
                 break;
         }
         $num = (isset($condition['num']) && intval($condition['num'])>0) ? intval($condition['num']):10;
-        $model = $model->limit($num);
+        $model = $model->distinct('a.id')->limit($num);
         return $model;
     }
 }

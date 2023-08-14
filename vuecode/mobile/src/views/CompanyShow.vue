@@ -106,7 +106,9 @@
       <div class="form_split_10"></div>
     </div>
     <div class="box_job_some" v-if="!comShow">
+      <van-empty description="该企业还没有发布职位" v-if="joblist.length==0" />
       <van-list
+        v-else
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
@@ -171,6 +173,7 @@
       style="width:100%;height:100%">
       <Report @closePopout="showReport=false" :report-info="reportInfo"></Report>
     </van-popup>
+    <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
   </div>
 </template>
 
@@ -475,6 +478,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .generate_posters {
+    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
+    right: 15px;bottom: 100px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
+  }
 .box_7 {
   .list {
     &:not(:last-child) {

@@ -17,7 +17,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         $input_data = [
             'basic' => [
                 'uid' => $this->userinfo->uid,
-                'fullname' => input('post.basic.fullname/s', '', 'trim'),
+                'fullname' => input('post.basic.fullname/s', '', 'trim,badword_filter'),
                 'sex' => input('post.basic.sex/d', 0, 'intval'),
                 'birthday' => input('post.basic.birthday/s', '', 'trim'),
                 'education' => input('post.basic.education/d', 0, 'intval'),
@@ -33,8 +33,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,
-                'mobile' => input('post.contact.mobile/s', '', 'trim'),
-                'weixin' => input('post.contact.weixin/s', '', 'trim')
+                'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
+                'weixin' => input('post.contact.weixin/s', '', 'trim,badword_filter')
             ],
             'intention' => [
                 'uid' => $this->userinfo->uid,
@@ -67,8 +67,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         if (input('?post.work')) {
             $input_data['work'] = [
                 'uid' => $this->userinfo->uid,
-                'companyname' => input('post.work.companyname/s', '', 'trim'),
-                'jobname' => input('post.work.jobname/s', '', 'trim'),
+                'companyname' => input('post.work.companyname/s', '', 'trim,badword_filter'),
+                'jobname' => input('post.work.jobname/s', '', 'trim,badword_filter'),
                 'starttime' => input('post.work.starttime/s', '', 'trim'),
                 'endtime' => input('post.work.endtime/s', '', 'trim'),
                 'todate' => input('post.work.todate/d', 0, 'intval'),
@@ -204,6 +204,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         }
 
         model('Resume')->refreshSearch($resume_id);
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历基本信息');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -215,14 +216,14 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         $input_data = [
             'education' => [
                 'uid' => $this->userinfo->uid,
-                'school' => input('post.education.school/s', '', 'trim'),
-                'major' => input('post.education.major/s', '', 'trim'),
+                'school' => input('post.education.school/s', '', 'trim,badword_filter'),
+                'major' => input('post.education.major/s', '', 'trim,badword_filter'),
                 'education' => input('post.education.education/d', 0, 'intval'),
                 'starttime' => input('post.education.starttime/s', '', 'trim'),
                 'endtime' => input('post.education.endtime/s', '', 'trim'),
                 'todate' => input('post.education.todate/d', 0, 'intval')
             ],
-            'specialty' => input('post.specialty/s', '', 'trim')
+            'specialty' => input('post.specialty/s', '', 'trim,badword_filter')
         ];
 
         $input_data['education']['starttime'] = strtotime(
@@ -238,8 +239,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         if (input('?post.work')) {
             $input_data['work'] = [
                 'uid' => $this->userinfo->uid,
-                'companyname' => input('post.work.companyname/s', '', 'trim'),
-                'jobname' => input('post.work.jobname/s', '', 'trim'),
+                'companyname' => input('post.work.companyname/s', '', 'trim,badword_filter'),
+                'jobname' => input('post.work.jobname/s', '', 'trim,badword_filter'),
                 'starttime' => input('post.work.starttime/s', '', 'trim'),
                 'endtime' => input('post.work.endtime/s', '', 'trim'),
                 'todate' => input('post.work.todate/d', 0, 'intval'),
@@ -342,6 +343,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历');
         $this->ajaxReturn(200, '保存成功');
     }
     
@@ -353,8 +355,8 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
         $input_data = [
             'education' => [
                 'uid' => $this->userinfo->uid,
-                'school' => input('post.education.school/s', '', 'trim'),
-                'major' => input('post.education.major/s', '', 'trim'),
+                'school' => input('post.education.school/s', '', 'trim,badword_filter'),
+                'major' => input('post.education.major/s', '', 'trim,badword_filter'),
                 'education' => input('post.education.education/d', 0, 'intval'),
                 'starttime' => input('post.education.starttime/s', '', 'trim'),
                 'endtime' => input('post.education.endtime/s', '', 'trim'),
@@ -362,14 +364,14 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             ],
             'work'=>[
                 'uid' => $this->userinfo->uid,
-                'companyname' => input('post.work.companyname/s', '', 'trim'),
-                'jobname' => input('post.work.jobname/s', '', 'trim'),
+                'companyname' => input('post.work.companyname/s', '', 'trim,badword_filter'),
+                'jobname' => input('post.work.jobname/s', '', 'trim,badword_filter'),
                 'starttime' => input('post.work.starttime/s', '', 'trim'),
                 'endtime' => input('post.work.endtime/s', '', 'trim'),
                 'todate' => input('post.work.todate/d', 0, 'intval'),
                 'duty' => input('post.work.duty/s', '', 'trim')
             ],
-            'specialty' => input('post.specialty/s', '', 'trim')
+            'specialty' => input('post.specialty/s', '', 'trim,badword_filter')
         ];
 
         $input_data['work']['starttime'] = strtotime(
@@ -488,6 +490,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历、工作经历、自我描述');
         $this->ajaxReturn(200, '保存成功');
     }
 }

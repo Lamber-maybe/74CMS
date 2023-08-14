@@ -209,12 +209,14 @@ class DownResume extends \app\v1_0\controller\common\Base
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
+        $info = model('CompanyDownResume')->where(['id' => ['eq', $id],'uid' => $this->userinfo->uid])->find();
         model('CompanyDownResume')
             ->where([
                 'id' => ['eq', $id],
                 'uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除已下载简历【简历id：'.$info->resume_id.'】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

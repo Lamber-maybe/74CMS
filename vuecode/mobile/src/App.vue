@@ -19,6 +19,8 @@ export default {
     // 刷新页面时把config置空，保证系统配置信息的时效性
     window.addEventListener('beforeunload', () => {
       this.$store.state.config = ''
+      this.$store.state.sendSmsBtnText = '获取验证码'
+      this.$store.state.sendSmsInterval = 60
       localStorage.setItem('vuex', JSON.stringify(this.$store.state))
     })
     this.$store.commit('setPlatform', isWeiXin() === true ? 'wechat' : 'mobile')

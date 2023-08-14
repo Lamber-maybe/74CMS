@@ -88,12 +88,19 @@ class FavJob extends \app\v1_0\controller\common\Base
     public function cancel()
     {
         $id = input('post.id/d', 0, 'intval');
+        $info = model('FavJob')
+            ->where([
+                'id' => ['eq', $id],
+                'personal_uid' => $this->userinfo->uid
+            ])
+            ->find();
         model('FavJob')
             ->where([
                 'id' => ['eq', $id],
                 'personal_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏职位【职位ID：'.$info->jobid.'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
     public function cancelBatch()
@@ -102,10 +109,16 @@ class FavJob extends \app\v1_0\controller\common\Base
         if(empty($id)){
             $this->ajaxReturn(500,'请选择职位');
         }
+        $list = model('FavJob')
+            ->whereIn('id',$id)
+            ->where('personal_uid',$this->userinfo->uid)
+            ->column('jobid');
         model('FavJob')
             ->whereIn('id',$id)
             ->where('personal_uid',$this->userinfo->uid)
             ->delete();
+        $list = is_array($list)?$list:[$list];
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏职位【职位ID：'.implode(",",$list).'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
 }

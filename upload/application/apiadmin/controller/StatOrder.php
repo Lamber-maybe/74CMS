@@ -362,6 +362,11 @@ class StatOrder extends \app\common\controller\Backend
     {
         $platform = input('get.platform/s', '', 'trim');
         $daterange = input('get.daterange/a', []);
+        $return = $this->_paySetmeal($platform,$daterange);
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    public function _paySetmeal($platform='',$daterange=[])
+    {
         $return = [
             'legend' => [],
             'xAxis' => [],
@@ -402,6 +407,6 @@ class StatOrder extends \app\common\controller\Backend
                 : 0;
             }
         }
-        $this->ajaxReturn(200, '获取数据成功', $return);
+        return $return;
     }
 }

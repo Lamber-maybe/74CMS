@@ -19,6 +19,7 @@ class JobApply extends \app\v1_0\controller\common\Base
         $jobid = input('get.jobid/d', 0, 'intval');
         $status = input('get.status/s', '', 'trim');
         $source = input('get.source/s', '', 'trim');
+        $is_look = input('get.is_look/s', '', 'trim');
         $settr = input('get.settr/d', 0, 'intval');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 5, 'intval');
@@ -27,6 +28,9 @@ class JobApply extends \app\v1_0\controller\common\Base
         }
         if ($source != '') {
             $where['a.source'] = intval($source);
+        }
+        if ($is_look != '') {
+            $where['a.is_look'] = intval($is_look);
         }
         if ($settr > 0) {
             $where['a.addtime'] = [
@@ -211,7 +215,7 @@ class JobApply extends \app\v1_0\controller\common\Base
             )
                 ? $photo_data[$value['photo_img']]
                 : default_empty('photo');
-            
+
             $value['resume_link_url_web'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['resume_id']]);
             $value['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['jobid']]);
             $list[$key] = $value;
@@ -323,6 +327,7 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'处理收到的简历【处理状态：拒绝，简历id：'.$apply_info->resume_id.'】');
         $this->ajaxReturn(200, '设置成功');
     }
     /**
@@ -336,9 +341,9 @@ class JobApply extends \app\v1_0\controller\common\Base
         }else{
             $this->_interviewVideoAdd();
         }
-        
+
     }
-    
+
     protected function _interviewCommonAdd(){
         $input_data = [
             'apply_id' => input('post.apply_id/d', 0, 'intval'),
@@ -392,6 +397,7 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'面试邀请【简历id：'.$apply_info->resume_id.'】');
         $this->ajaxReturn(200, '邀请面试成功');
     }
     protected function _interviewVideoAdd(){
@@ -445,6 +451,7 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'视频面试邀请【简历id：'.$apply_info->resume_id.'】');
         $this->ajaxReturn(200, '邀请面试成功');
     }
     /**
@@ -507,25 +514,30 @@ class JobApply extends \app\v1_0\controller\common\Base
                 'jobname' => $apply_info->jobname
             ]
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'同意面试【简历id：'.$apply_info->resume_id.'】');
         $this->ajaxReturn(200, '设置成功', ['finish' => 1]);
     }
     public function setLook()
     {
         $id = input('post.id/d', 0, 'intval');
+        $info = model('JobApply')->where(['id' => ['eq', $id]])->find();
         model('JobApply')
             ->where(['id' => ['eq', $id]])
             ->setField('is_look', 1);
+        $this->writeMemberActionLog($this->userinfo->uid,'收到的简历设为已查看【简历id：'.$info->resume_id.'】');
         $this->ajaxReturn(200, '设置成功');
     }
     public function delete()
     {
         $id = input('post.id/d', 0, 'intval');
+        $info = model('JobApply')->where(['id' => ['eq', $id]])->find();
         model('JobApply')
             ->where([
                 'id' => ['eq', $id],
                 'company_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除收到的简历【简历id：'.$info->resume_id.'】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

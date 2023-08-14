@@ -9,6 +9,8 @@ class Sendsms extends \app\v1_0\controller\common\Base
     }
     protected function _verify($post_data)
     {
+        // $this->ajaxReturn(500, '',htmlspecialchars_decode($post_data['captcha']));
+        // $this->ajaxReturn(500, '',json_decode($_POST['captcha'],1));
         if (config('global_config.captcha_open') == 1) {
             $engine = '';
             $captcha = new \app\common\lib\Captcha($engine);

@@ -1,27 +1,21 @@
 <template>
   <div>
-    <div class="b1">
+    <div class="b1" v-if="dataset.length > 4">
       <swiper :options="swiperOption" @click-slide="beforeJump">
-        <swiper-slide
-          v-for="(item,index) in dataset"
-          :key="index"
-        >
+        <swiper-slide v-for="(item,index) in dataset" :key="index">
           <div class="item">
-            <img
-              :src="
-                item.icon == ''
-                  ? require('../../../assets/images/index/ap3/' +
-                      item.alias +
-                      '.png')
-                  : item.icon
-              "
-              alt=""
-            />
+            <img :src="item.icon == '' ? require('../../../assets/images/index/ap3/' + item.alias + '.png') : item.icon" alt="" />
             <div class="des">{{ item.title }}</div>
           </div>
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
       </swiper>
+    </div>
+    <div class="b2 clearfix" v-else>
+      <div class="item" v-for="(item,index) in dataset" :key="index">
+        <img :src="item.icon == '' ? require('../../../assets/images/index/ap3/' + item.alias + '.png') : item.icon" alt="" />
+        <div class="des">{{ item.title }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -80,6 +74,14 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+  .b2 {
+    width: 100%;padding: 10px 0 0;background-color: #ffffff;
+    .item {
+      img { display: block;width: 60px;height: 60px;margin: 0 auto; }
+      .des { font-size: 11px;color: #333333;padding: 3px 0 20px; }
+      text-align: center;float: left;width: 25%;
+    }
+  }
 .b1 {
   .swiper-pagination {
     bottom: 5px;

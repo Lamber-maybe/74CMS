@@ -148,7 +148,7 @@ const userRouter = {
       component: () =>
         import ('@/views/user/company/noaudit'),
       meta: {
-        title: '待认证企业',
+        title: '待审核企业',
         access: 'companyNoaudit'
       }
     },

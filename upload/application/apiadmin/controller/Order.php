@@ -207,7 +207,12 @@ class Order extends \app\common\controller\Backend
                 'a.uid=m.uid',
                 'LEFT'
             )
-            ->field('a.*,m.mobile as member_mobile')
+            ->join(
+                config('database.prefix') . 'resume r',
+                'a.uid=r.uid',
+                'LEFT'
+            )
+            ->field('a.*,m.mobile as member_mobile,r.fullname')
             ->where($where)
             ->order($order)
             ->page($current_page . ',' . $pagesize)
@@ -293,5 +298,30 @@ class Order extends \app\common\controller\Backend
             $this->admininfo
         );
         $this->ajaxReturn(200, '关闭订单成功');
+    }
+    public function detail(){
+        $id = input('get.id/d', 0, 'intval');
+        $order = model('Order')->find($id);
+        if ($order === null) {
+            $this->ajaxReturn(500, '没有找到订单信息');
+        }
+        $order['amount_detail'] = '';
+        if (
+            $order['service_amount_after_discount'] !=
+            $order['service_amount']
+        ) {
+            $order['amount_detail'] .=
+                '折扣价' . $order['service_amount_after_discount'] . '元';
+        }
+        if ($order['deduct_amount'] > 0 && $order['deduct_points'] == 0) {
+            $order['amount_detail'] =
+                ($order['amount_detail'] == ''
+                    ? '原价' . $order['service_amount']
+                    : $order['amount_detail']) .
+                ' - 优惠券抵扣' .
+                $order['deduct_amount'] .
+                '元';
+        }
+        $this->ajaxReturn(200, '获取数据成功',$order);
     }
 }

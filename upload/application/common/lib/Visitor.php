@@ -9,6 +9,11 @@ namespace app\common\lib;
 
 class Visitor
 {
+    public function refreshLogin($expire)
+    {
+        $visitor = cookie('visitor');
+        cookie('visitor', $visitor, $expire);
+    }
     public function setLogin($visitor,$expire)
     {
         cookie('visitor', json_encode($visitor), $expire);

@@ -596,6 +596,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             'uid'=>$this->userinfo->uid,
             'audit'=>0,
             'qrcode'=>0,
+            'source'=>0,
+            'stick'=>0,
             'addtime'=>time()
         ];
         if (

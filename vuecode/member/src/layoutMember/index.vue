@@ -1,5 +1,5 @@
 <template>
-  <el-container class="my_container">
+  <el-container :class="[isAuto ? 'my_container auto' : 'my_container']">
     <el-header height="128px">
       <head-block />
     </el-header>
@@ -25,17 +25,21 @@
     },
     data () {
       return {
-        show: false
+        show: false,
+        isAuto: false
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .my_container { background-color: #f3f3f3; }
+  .my_container { 
+    background-color: #f3f3f3; 
+  }
   .my_member {
     width: 1200px; margin: 0 auto;
     .my_main { background-color: #f3f3f3; padding: 0; }
     .el-aside { background-color: #f3f3f3; }
   }
+  
 </style>

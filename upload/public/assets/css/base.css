@@ -25,6 +25,8 @@ u { text-decoration: none; }
 
 .substring { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
+.substring2 { overflow: hidden; text-overflow: ellipsis;  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+
 .nowrap { white-space: nowrap; }
 
 .clear { clear: both; height: 0; font-size: 0; line-height: 0; }
@@ -83,5 +85,11 @@ u { text-decoration: none; }
 	display: inline;
 	margin-right: 18px;
 	padding: 6px 15px;
+}
+.left{
+  float: left;
+}
+.right{
+  float: right;
 }
 /*# sourceMappingURL=base.css.map */

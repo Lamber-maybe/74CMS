@@ -136,6 +136,7 @@
                   :max="2"
                   @change="fun_change_section_selected"
                 >
+                  <el-checkbox label="online_jobfair">网络招聘会</el-checkbox>
                   <el-checkbox label="company">知名企业</el-checkbox>
                   <el-checkbox label="nearby">附近职位</el-checkbox>
                   <el-checkbox label="high_wage">高薪职位</el-checkbox>

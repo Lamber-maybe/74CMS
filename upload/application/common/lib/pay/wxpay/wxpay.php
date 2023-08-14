@@ -41,6 +41,7 @@ class wxpay
             case 'wechat':
                 $return = $this->_pay_from_mobile($option);
                 break;
+                break;
         }
         return $return;
     }

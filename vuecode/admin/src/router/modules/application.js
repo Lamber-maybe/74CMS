@@ -50,7 +50,7 @@ const applicationRouter = {
           component: () => import ('@/views/jobfairol/exhibitors/company/list'),
           meta: {
             title: '参会企业',
-            access: 'jobfairolExhibitors',
+            access: 'jobfairolList',
             activeMenu: '/jobfairol/list'
           },
           hidden: true
@@ -61,7 +61,7 @@ const applicationRouter = {
           component: () => import ('@/views/jobfairol/exhibitors/company/add'),
           meta: {
             title: '新增参会企业',
-            access: 'jobfairolExhibitors',
+            access: 'jobfairolList',
             activeMenu: '/jobfairol/list'
           },
           hidden: true
@@ -72,7 +72,7 @@ const applicationRouter = {
           component: () => import ('@/views/jobfairol/exhibitors/personal/list'),
           meta: {
             title: '参会个人',
-            access: 'jobfairolExhibitors',
+            access: 'jobfairolList',
             activeMenu: '/jobfairol/list'
           },
           hidden: true
@@ -83,7 +83,7 @@ const applicationRouter = {
           component: () => import ('@/views/jobfairol/exhibitors/personal/add'),
           meta: {
             title: '新增参会个人',
-            access: 'jobfairolExhibitors',
+            access: 'jobfairolList',
             activeMenu: '/jobfairol/list'
           },
           hidden: true

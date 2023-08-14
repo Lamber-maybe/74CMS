@@ -40,11 +40,13 @@ class Entrust extends \app\v1_0\controller\common\Base
         if($result===false){
             $this->ajaxReturn(500,model('Entrust')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'设置委托投递');
         $this->ajaxReturn(200,'委托成功');
     }
     public function cancel()
     {
         model('Entrust')->where('uid',$this->userinfo->uid)->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消委托投递');
         $this->ajaxReturn(200, '取消委托成功');
     }
 }

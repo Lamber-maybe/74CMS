@@ -22,14 +22,14 @@
         ref="form"
         class="common-form"
         :model="form"
-        label-width="100px"
+        label-width="120px"
         :rules="rules"
         :inline-message="true"
       >
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="form.name" class="middle" />
         </el-form-item>
-        <el-form-item label="权限">
+        <el-form-item label="pc后台权限">
           <el-tree
             ref="tree"
             node-key="name"
@@ -39,6 +39,21 @@
             :default-checked-keys="checkKeys"
             @check-change="handleCheckChange"
           />
+        </el-form-item>
+        <el-form-item label="移动端后台权限">
+          <el-tree
+            ref="treeMobile"
+            node-key="alias"
+            :data="accessDataMobile"
+            :props="propsMobile"
+            show-checkbox
+            :default-checked-keys="checkKeysMobile"
+            @check-change="handleCheckChangeMobile"
+          />
+        </el-form-item>
+        <el-form-item label="操作权限">
+          <el-checkbox v-model="form.access_export">导出数据</el-checkbox>
+          <el-checkbox v-model="form.access_delete">删除数据</el-checkbox>
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -64,15 +79,50 @@ export default {
   data() {
     return {
       checkKeys: [],
+      checkKeysMobile: [],
       form: {
         name: '',
-        access: []
+        access: [],
+        access_mobile: [],
+        access_export: false,
+        access_delete: false
       },
       accessData: [],
+      accessDataMobile: [
+        { label: '会员管理', alias: 'member', children: [
+          { label: '企业会员', alias: 'member_company' },
+          { label: '个人会员', alias: 'member_personal' },
+          { label: '无效会员', alias: 'member_invalid' },
+          { label: '简历管理', alias: 'resume_manage' },
+          { label: '照片/作品', alias: 'resume_img' },
+          { label: '企业管理', alias: 'company_manage' },
+          { label: '职位管理', alias: 'job_manage' },
+          { label: '企业风采', alias: 'company_img' },
+          { label: '账号注销申请', alias: 'cancel_apply' }
+        ] },
+        { label: '业务管理', alias: 'business', children: [
+          { label: '(企业)套餐管理', alias: 'setmeal' },
+          { label: '(企业)订单管理', alias: 'order_company' },
+          { label: '(企业)开通套餐', alias: 'setmeal_add' },
+          { label: '(企业)新增推广', alias: 'promotion_job_add' },
+          { label: '(企业)积分增减', alias: 'points_company' },
+          { label: '(个人)订单管理', alias: 'order_personal' },
+          { label: '(个人)新增推广', alias: 'promotion_resume_add' }
+        ] },
+        { label: '系统工具', alias: 'system', children: [
+          { label: '更新缓存', alias: 'clearcache' },
+          { label: '网站启停', alias: 'site_status' },
+          { label: '暂停注册', alias: 'reg_status' }
+        ] }
+      ],
       props: {
         label: function(data, node) {
           return data.meta.title
         },
+        children: 'children'
+      },
+      propsMobile: {
+        label: 'label',
         children: 'children'
       },
       count: 1,
@@ -126,9 +176,19 @@ export default {
         checkedKeys: checkedKeys
       }
     },
+    handleCheckChangeMobile(data, checked, indeterminate) {
+      const harfCheckedKeys = [...this.$refs.treeMobile.getHalfCheckedKeys()]
+      const checkedKeys = [...this.$refs.treeMobile.getCheckedKeys()]
+      this.form.access_mobile = {
+        harfCheckedKeys: harfCheckedKeys,
+        checkedKeys: checkedKeys
+      }
+    },
     onSubmit(formName) {
       const that = this
       const insertData = { ...this.form }
+      insertData.access_export = insertData.access_export === true ? 1 : 0
+      insertData.access_delete = insertData.access_delete === true ? 1 : 0
       this.$refs[formName].validate(valid => {
         if (valid) {
           apiAdd(insertData)

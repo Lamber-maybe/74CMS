@@ -162,6 +162,7 @@ class Export extends \app\common\controller\Backend
      */
     public function jobById()
     {
+        $this->checkExportAccess();
         $id = input('post.id/a');
         if(empty($id)){
             $this->ajaxReturn(500, '请选择要导出的职位');
@@ -413,6 +414,7 @@ class Export extends \app\common\controller\Backend
      */
     public function companyById()
     {
+        $this->checkExportAccess();
         $id = input('post.id/a');
         if(empty($id)){
             $this->ajaxReturn(500, '请选择要导出的企业');

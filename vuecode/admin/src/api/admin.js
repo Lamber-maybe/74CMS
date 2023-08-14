@@ -51,3 +51,24 @@ export function adminLogList(params) {
     params
   })
 }
+export function adminAllList(params) {
+  return request({
+    url: apiArr.adminAllList,
+    method: 'get',
+    params
+  })
+}
+export function adminBindQrcode(params) {
+  return request({
+    url: apiArr.adminBindQrcode,
+    method: 'get',
+    params
+  })
+}
+export function adminBindQrcodeCancel(data) {
+  return request({
+    url: apiArr.adminBindQrcodeCancel,
+    method: 'post',
+    data
+  })
+}

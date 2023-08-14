@@ -234,7 +234,8 @@ class StatCompanyOverview extends \app\common\controller\Backend
         }
         $daterange = [$starttime, $endtime + 86400 - 1];
 
-        $member_login_data = model('MemberLoginLog')
+        $member_login_data = model('MemberActionLog')
+            ->where('is_login', 1)
             ->where('utype', 1)
             ->where('addtime', 'between time', $daterange);
         if ($platform != '') {

@@ -1,0 +1,88 @@
+.van-cell { padding: 35px 35px; }
+.van-button { height: 88px;border-radius: 4px;font-size: 32px; }
+.van-button--normal { padding: 0 30px;font-size: 28px; }
+.van-button--round { border-radius: 999px; }
+.van-field__control, .van-field__label { font-size: 28px; }
+.van-dialog { width: 640px;font-size: 28px; }
+.van-dialog__header { font-size: 34px;padding-top: 52px;line-height: 48px; }
+.van-dialog__message { padding: 52px 48px 32px 48px;line-height: 40px;font-size: 28px; }
+.van-dialog__message--has-title { padding-top: 16px;font-size: 28px; }
+.van-field__word-limit { margin-top: 8px;font-size: 24px;line-height: 32px; }
+.van-cell:not(:last-child).reset_after::after {
+    left: 0; border-bottom: 1PX solid #ebebeb;
+}
+.form_choose .van-cell__value::after {
+    position: absolute; right: -22px; top: 50%; transform: translate(0, -50%); content: ' '; display: block;
+    height: 100%; background: url("../images/form_choose_arrow.svg") center no-repeat; background-size: 32px;
+    border: 0; width: 32px;
+}
+
+.form_choose.reset_ac_after .van-cell__value::after {
+    position: absolute; right: -13px; top: 50%; transform: translate(0, -50%); content: ' '; display: block;
+    height: 100%; background: url("../images/form_choose_arrow.svg") center no-repeat; background-size: 32px;
+    border: 0; width: 32px;
+}
+.van-field__control { padding-right: 15px;line-height: 1.8; }
+.for_btn {
+    position: relative;width: 100%;height: 0;
+}
+.van-cell:not(:last-child).no_border::after {
+    border-bottom: 0;
+}
+.van-picker__cancel, .van-picker__confirm {
+    padding: 0 32px;font-size: 28px;
+}
+.van-picker__toolbar {
+    height: 88px;
+}
+.van-ellipsis {
+    font-size: 28px;
+}
+.big_left .van-field__label {
+    width: 280px;
+}
+.photo .van-uploader__upload-icon { display: none; }
+.photo .van-uploader__upload,.photo .van-uploader__wrapper {
+    width: 100%;height: 100%;
+}
+.van-toast {
+    width: 176px;min-height: 176px;font-size: 28px;line-height: 40px;border-radius: 16px;
+}
+.van-icon { font-size: 28px; }
+.van-toast__loading { padding: 8px; }
+.van-toast__icon { font-size: 72px; }
+.head_box .van-icon { font-size: 46px; }
+.van-toast--text, .van-toast--html { min-width: 192px;padding: 16px 24px; }
+.van-notify { padding: 16px 32px;font-size: 28px;line-height: 40px; }
+.van-list__loading, .van-list__finished-text, .van-list__error-text { font-size: 28px;line-height: 100px; }
+.van-empty{ padding: 64px 0; }
+.van-empty__image { width: 320px;height: 320px; }
+.van-empty__description { padding: 0 120px;font-size: 28px;line-height: 40px; }
+.van-doc-demo-block__title { padding: 64px 32px 32px;font-size: 28px;line-height: 32px; }
+.van-skeleton { padding: 32px 32px 0; }
+.van-skeleton__avatar { width: 64px;height: 64px;margin-right: 32px; }
+.van-skeleton__avatar + .van-skeleton__content { padding-top: 16px; }
+.van-skeleton__row, .van-skeleton__title { height: 32px; }
+.van-skeleton__title + .van-skeleton__row { margin-top: 40px; }
+.van-skeleton__row:not(:first-child) { margin-top: 24px; }
+.demo-skeleton .van-switch { margin: 0 32px 16px; }
+.van-button--large { height: 100px; }
+.van-loading__spinner { width: 60px;height: 60px; }
+.van-loading__text { font-size: 28px; }
+.van-action-sheet__item, .van-action-sheet__cancel {
+    padding: 28px 32px;font-size: 32px;
+}
+.van-action-sheet__item { line-height: 44px; }
+.van-action-sheet__gap { height: 16px; }
+.van-action-sheet__description { padding: 40px 32px;font-size: 28px;line-height: 40px; }
+.van-action-sheet__subname { margin-top: 16px;font-size: 24px;line-height: 36px; }
+.van-action-sheet__loading-icon .van-loading__spinner { width: 44px;height: 44px; }
+.van-action-sheet__header { font-size: 32px;line-height: 96px; }
+.van-radio__icon { width: 30px;height: 30px; }
+.van-radio__icon .van-icon { width: 30px;height: 30px;line-height: 30px;border: 1PX solid #c8c9cc; }
+.van-radio__icon--checked .van-icon { border:0; }
+.van-button--default { border: 1PX solid #ebedf0; }
+.form_choose .van-field__label span { display: block;line-height: 50px; }
+.van-cell__title{display: flex;align-items: center;}
+.textarea_box .van-cell__title span{position: relative;}
+.textarea_box .van-cell__title span{position: absolute;left: 35px; top: 50px;}

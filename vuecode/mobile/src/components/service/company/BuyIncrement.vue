@@ -609,6 +609,7 @@ export default {
       color: #999999;
       border: 1px solid #f5f5f5;
       border-radius: 26px;
+      &:nth-of-type(1) { margin-left: 0; }
     }
     padding: 16px 0 16px;
   }

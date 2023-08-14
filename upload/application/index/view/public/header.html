@@ -21,7 +21,7 @@
                             class="header_color2" @click="handlerLogout">退出</span></span>
                 </span>
                 <el-dropdown class="drop" @command="handleManageClick" v-if="isLogin===true">
-                    <a class="right_item header_login" href="javascript:;">管理中心<i
+                    <a class="right_item header_login" href="javascript:;" @click="handlerMemberCenter">管理中心<i
                             class="el-icon-arrow-down el-icon--right"></i></a>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-if="utype==2" command="handlerRefreshResume">刷新简历</el-dropdown-item>
@@ -102,6 +102,7 @@
                         <div class="dr_g">
                             <div class="g_t">信息专栏</div>
                             <div class="g_teg">
+                                <a href="{#:url('index/jobfairol/index')#}" class="g_it">网络招聘会</a>
                                 <a href="{#:url('index/notice/index')#}" class="g_it">网站公告</a>
                                 <a href="{#:url('index/hrtool/index')#}" class="g_it">HR工具箱</a>
                                 <a href="{#:url('index/article/index')#}" class="g_it">职场资讯</a>
@@ -162,7 +163,7 @@
             </div>
         </div>
     </div>
-    <?php 
+    <?php
         $navlist = model('Navigation')->getList();
         foreach($navlist as $key=>$value){
             switch($value['page']){
@@ -199,8 +200,9 @@
     ?>
     <div class="nav_wrapper">
         <ul class="nav clearfix">
-            <li class="nav_item {#if condition="$navSelTag eq 'index'"#}active{#/if#}">
-                <a class="item" href="{#:url('index/index/index')#}">网站首页</a></li>
+            <li class="nav_item {#if condition=" $navSelTag eq 'index'"#}active{#/if#}">
+                <a class="item" href="{#:url('index/index/index')#}">网站首页</a>
+            </li>
             <?php
                 foreach($navlist1 as $key=>$value){
             ?>
@@ -278,6 +280,8 @@
             this.getUserInfo()
             this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
             this.wechatQrcode = "{#$global_config.wechat_qrcode#}"
+
+
             this.cronRun()
             // 头部搜索默认选中
             var locationArr = location.pathname.split('/');

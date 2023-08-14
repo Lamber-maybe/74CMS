@@ -103,6 +103,7 @@ class Bind extends \app\v1_0\controller\common\Base
             model('MemberBind')->save($sqlarr,['id'=>$bindinfo['id']]);
         }
         cache('smscode_' . $input_data['mobile'], null);
+        $this->writeMemberActionLog($member['uid'],'绑定QQ');
 
         $this->ajaxReturn(
             200,
@@ -200,6 +201,7 @@ class Bind extends \app\v1_0\controller\common\Base
             );
         }
         cache('smscode_' . $input_data['mobile'], null);
+        $this->writeMemberActionLog($member['uid'],'绑定新浪微博');
         $this->ajaxReturn(
             200,
             '绑定并登录成功',
@@ -340,6 +342,7 @@ class Bind extends \app\v1_0\controller\common\Base
         }
 
         cache('smscode_' . $input_data['mobile'], null);
+        $this->writeMemberActionLog($member['uid'],'绑定微信');
         $this->ajaxReturn(
             200,
             '绑定并登录成功',

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="viewport"
+        content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <title>禁止访问</title>
+    <meta name="author" content="骑士CMS" />
+    <meta name="copyright" content="74cms.com" />
+    <link rel="shortcut icon" href="__ROOT__/favicon.ico" />
+    {#load href="__ROOT__/assets/js/polyfill.7.11.5.min.js" /#}
+    {#load href="__ROOT__/assets/js/vue.js" /#}
+    {#load href="__ROOT__/assets/css/element-ui.css" /#}
+    {#load href="__ROOT__/assets/js/element-ui.js" /#}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .img {
+            color: #F56C6C;
+            font-size: 110px;
+        }
+
+        .main {
+            text-align: center;
+            width: 350px;
+            height: 300px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -175px;
+            margin-top: -150px;
+        }
+
+        .lg {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .sm {
+            color: #999;
+        }
+
+        .item {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="item"><i class="el-icon-warning img"></i></div>
+        <div class="item lg">禁止访问当前网站！</div>
+        <div class="item sm">您的IP已经被禁止访问，请联系网站管理员</div>
+    </div>
+</body>
+
+</html>

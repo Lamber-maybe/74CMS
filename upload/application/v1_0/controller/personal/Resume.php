@@ -325,6 +325,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->userinfo->utype,
             'refresh_resume'
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'刷新简历');
         $this->ajaxReturn(200, '刷新成功',time());
     }
 
@@ -336,7 +337,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'basic' => [
                 'uid' => $this->userinfo->uid,
-                'fullname' => input('post.basic.fullname/s', '', 'trim'),
+                'fullname' => input('post.basic.fullname/s', '', 'trim,badword_filter'),
                 'sex' => input('post.basic.sex/d', 0, 'intval'),
                 'birthday' => input('post.basic.birthday/s', '', 'trim'),
                 'education' => input('post.basic.education/d', 0, 'intval'),
@@ -348,7 +349,7 @@ class Resume extends \app\v1_0\controller\common\Base
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,
-                'mobile' => input('post.contact.mobile/s', '', 'trim')
+                'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter')
             ]
         ];
         if (input('?post.basic.photo_img')) {
@@ -369,7 +370,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $input_data['basic']['residence'] = input(
                 'post.basic.residence/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.major2') || input('?post.basic.major1')) {
@@ -401,35 +402,35 @@ class Resume extends \app\v1_0\controller\common\Base
             $input_data['basic']['householdaddress'] = input(
                 'post.basic.householdaddress/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.idcard')) {
             $input_data['basic']['idcard'] = input(
                 'post.basic.idcard/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.custom_field_1')) {
             $input_data['basic']['custom_field_1'] = input(
                 'post.basic.custom_field_1/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.custom_field_2')) {
             $input_data['basic']['custom_field_2'] = input(
                 'post.basic.custom_field_2/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.basic.custom_field_3')) {
             $input_data['basic']['custom_field_3'] = input(
                 'post.basic.custom_field_3/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         $input_data['basic']['enter_job_time'] =
@@ -445,21 +446,21 @@ class Resume extends \app\v1_0\controller\common\Base
             $input_data['contact']['email'] = input(
                 'post.contact.email/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.contact.weixin')) {
             $input_data['contact']['weixin'] = input(
                 'post.contact.weixin/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         if (input('?post.contact.qq')) {
             $input_data['contact']['qq'] = input(
                 'post.contact.qq/s',
                 '',
-                'trim'
+                'trim,badword_filter'
             );
         }
         \think\Db::startTrans();
@@ -509,6 +510,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $e->getMessage());
         }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历基本信息');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -519,14 +521,14 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'id' => input('post.id/d', 0, 'intval'),
             'uid' => $this->userinfo->uid,
-            'school' => input('post.school/s', '', 'trim'),
+            'school' => input('post.school/s', '', 'trim,badword_filter'),
             'education' => input('post.education/d', 0, 'intval'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
             'todate' => input('post.todate/d', 0, 'intval')
         ];
         if (input('?post.major')) {
-            $input_data['major'] = input('post.major/s', '', 'trim');
+            $input_data['major'] = input('post.major/s', '', 'trim,badword_filter');
         }
         $id = intval($input_data['id']);
         $input_data['starttime'] = strtotime($input_data['starttime']);
@@ -576,6 +578,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->userinfo->uid
         );
 
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历教育经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -607,6 +610,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->uid
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历教育经历');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -617,8 +621,8 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'id' => input('post.id/d', 0, 'intval'),
             'uid' => $this->userinfo->uid,
-            'companyname' => input('post.companyname/s', '', 'trim'),
-            'jobname' => input('post.jobname/s', '', 'trim'),
+            'companyname' => input('post.companyname/s', '', 'trim,badword_filter'),
+            'jobname' => input('post.jobname/s', '', 'trim,badword_filter'),
             'duty' => input('post.duty/s', '', 'trim'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
@@ -668,6 +672,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         model('Resume')->updateComplete(['work' => 1], 0, $this->userinfo->uid);
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历工作经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -698,6 +703,7 @@ class Resume extends \app\v1_0\controller\common\Base
             );
         }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历工作经历');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -771,6 +777,7 @@ class Resume extends \app\v1_0\controller\common\Base
             ->allowField(true)
             ->save(['current' => $current], ['uid' => $this->userinfo->uid]);
 
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历求职状态');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -852,6 +859,7 @@ class Resume extends \app\v1_0\controller\common\Base
         );
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
 
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历求职意向');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -883,6 +891,7 @@ class Resume extends \app\v1_0\controller\common\Base
             );
         }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历求职意向');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -893,9 +902,9 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'id' => input('post.id/d', 0, 'intval'),
             'uid' => $this->userinfo->uid,
-            'agency' => input('post.agency/s', '', 'trim'),
-            'course' => input('post.course/s', '', 'trim'),
-            'description' => input('post.description/s', '', 'trim'),
+            'agency' => input('post.agency/s', '', 'trim,badword_filter'),
+            'course' => input('post.course/s', '', 'trim,badword_filter'),
+            'description' => input('post.description/s', '', 'trim,badword_filter'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
             'todate' => input('post.todate/d', 0, 'intval')
@@ -947,6 +956,7 @@ class Resume extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历培训经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -977,6 +987,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->uid
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历培训经历');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -987,9 +998,9 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'id' => input('post.id/d', 0, 'intval'),
             'uid' => $this->userinfo->uid,
-            'projectname' => input('post.projectname/s', '', 'trim'),
-            'role' => input('post.role/s', '', 'trim'),
-            'description' => input('post.description/s', '', 'trim'),
+            'projectname' => input('post.projectname/s', '', 'trim,badword_filter'),
+            'role' => input('post.role/s', '', 'trim,badword_filter'),
+            'description' => input('post.description/s', '', 'trim,badword_filter'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
             'todate' => input('post.todate/d', 0, 'intval')
@@ -1041,6 +1052,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->userinfo->uid
         );
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历项目经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -1071,6 +1083,7 @@ class Resume extends \app\v1_0\controller\common\Base
             );
         }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历项目经历');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -1081,7 +1094,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $input_data = [
             'id' => input('post.id/d', 0, 'intval'),
             'uid' => $this->userinfo->uid,
-            'name' => input('post.name/s', '', 'trim'),
+            'name' => input('post.name/s', '', 'trim,badword_filter'),
             'obtaintime' => input('post.obtaintime/s', '', 'trim')
         ];
 
@@ -1130,6 +1143,7 @@ class Resume extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历证书');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -1160,6 +1174,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->uid
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历证书');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -1218,6 +1233,7 @@ class Resume extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历语言能力');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
     /**
@@ -1248,6 +1264,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->uid
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历语言能力');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -1279,6 +1296,7 @@ class Resume extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历标签');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -1286,7 +1304,7 @@ class Resume extends \app\v1_0\controller\common\Base
      */
     public function specialty()
     {
-        $specialty = input('post.specialty/s', '', 'trim');
+        $specialty = input('post.specialty/s', '', 'trim,badword_filter');
         $save_data['specialty'] = $specialty;
         if (config('global_config.audit_edit_resume') == 1) {
             $save_data['audit'] = 0;
@@ -1303,6 +1321,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->userinfo->uid
         );
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'保存简历自我描述');
         $this->ajaxReturn(200, '保存成功');
     }
     //上传头像照片
@@ -1329,6 +1348,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->utype,
                 'upload_photo'
             );
+            $this->writeMemberActionLog($this->userinfo->uid,'上传简历照片');
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());
@@ -1376,6 +1396,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $img_list = model('ResumeImg')->getList(['uid'=>$this->userinfo->uid]);
                 cache('scan_upload_result_resume_img_'.$this->userinfo->uid,json_encode($img_list));
             }
+            $this->writeMemberActionLog($this->userinfo->uid,'上传简历作品');
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());
@@ -1406,6 +1427,7 @@ class Resume extends \app\v1_0\controller\common\Base
             $img_list = model('ResumeImg')->getList(['uid'=>$this->userinfo->uid]);
             cache('scan_upload_result_resume_img_'.$this->userinfo->uid,json_encode($img_list));
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除简历作品');
         $this->ajaxReturn(200, '删除成功');
     }
 }

@@ -146,6 +146,7 @@ export default {
         )
       }
     }
+    console.log(this.columnsEdu)
   },
   computed: {
     columnsEdu () {

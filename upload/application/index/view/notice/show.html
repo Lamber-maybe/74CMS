@@ -36,7 +36,7 @@
                     {#volist name="newNoticeList" id="vo"#}
                     <div class="notice_list">
                         <a href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
-                        <span>{#:date('Y-m-d H:i')#}</span>
+                        <span>{#:date('Y-m-d H:i',$vo['addtime'])#}</span>
                     </div>
                     {#/volist#}
                 </div>

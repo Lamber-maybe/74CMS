@@ -23,7 +23,7 @@
         <el-input v-model="form.name" class="middle" />
       </el-form-item>
       <el-form-item label="排序" prop="sort_id">
-        <el-input v-model="form.sort_id" class="mini" />
+        <el-input v-model.number="form.sort_id" class="mini" />
       </el-form-item>
       <el-form-item label="">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>

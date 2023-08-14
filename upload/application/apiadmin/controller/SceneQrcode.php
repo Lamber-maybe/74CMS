@@ -206,7 +206,6 @@ class SceneQrcode extends \app\common\controller\Backend
             case 'notice':
                 $this->searchNotice($keyword);
                 break;
-                break;
             case 'jobfairol':
                 $this->searchJobfairol($keyword);
                 break;

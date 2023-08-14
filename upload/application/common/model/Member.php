@@ -567,7 +567,6 @@ class Member extends \app\common\model\BaseModel
         model('JobApply')
             ->where('personal_uid', 'in', $uid)
             ->delete();
-        
         model('MarketQueue')
             ->where('uid', 'in', $uid)
             ->delete();
@@ -575,7 +574,7 @@ class Member extends \app\common\model\BaseModel
         model('MemberBind')
             ->where('uid', 'in', $uid)
             ->delete();
-        model('MemberLoginLog')
+        model('MemberActionLog')
             ->where('uid', 'in', $uid)
             ->delete();
         model('MemberSetmeal')

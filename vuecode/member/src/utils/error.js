@@ -101,6 +101,9 @@ export function handlerHttpError (res) {
       })
       router.push('/login/company')
       break
+    case 60001: // 禁止访问
+      router.push('/ipdeny')
+      break
     default:
       if (res.message) {
         message.error(res.message)

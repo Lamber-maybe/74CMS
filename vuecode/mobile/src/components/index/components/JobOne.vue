@@ -130,8 +130,7 @@ export default {
         .catch(() => {})
     },
     fetchDataRecommend () {
-      const { category_text, id, ...params } = this.currentIntentionItem
-      console.log(params)
+      const { category_text, id } = this.currentIntentionItem
       this.firstIntentionText = category_text
       http
         .get(api.recommend_joblist, { id, page: 1, pagesize: 5 })

@@ -56,7 +56,6 @@ class Help extends \app\index\controller\Base
             return false;
         }
         $info = $info->toArray();
-        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         if($pageCache['expire']>0){
             model('Page')->writeCacheByAlias('helpshow',$info,$pageCache['expire'],$id);
         }

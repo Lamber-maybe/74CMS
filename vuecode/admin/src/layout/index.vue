@@ -123,6 +123,19 @@ export default {
     select(e) {
       if (e !== null) {
         this.selectedModulePath = e
+        this.$store.state.permission.routers.forEach(element => {
+          if (element.path === e){
+            if (element.children !== undefined){
+              if (element.children[0].children !== undefined){
+                this.$router.push(element.children[0].children[0].path)
+              } else {
+                this.$router.push(element.children[0].path)
+              }
+            } else {
+              this.$router.push(element.path)
+            }
+          }
+        })
       }
     },
     clearCache() {

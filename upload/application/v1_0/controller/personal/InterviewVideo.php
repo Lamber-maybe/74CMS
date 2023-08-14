@@ -104,6 +104,7 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
         model('CompanyInterviewVideo')
             ->where(['id' => ['eq', $id]])
             ->setField('is_look', 1);
+        $this->writeMemberActionLog($this->userinfo->uid,'视频面试邀请设为已查看【记录ID：'.$id.'】');
         $this->ajaxReturn(200, '设置成功');
     }
     public function notice(){
@@ -117,6 +118,7 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
         model('NotifyRule')->notify($interview['uid'], 1, 'cron_interview_video', []);
         $interview->personal_donotice_time = time();
         $interview->save();
+        $this->writeMemberActionLog($this->userinfo->uid,'提醒视频面试【简历ID：'.$interview->resume_id.'】');
         $this->ajaxReturn(200, '提醒成功');
     }
 }

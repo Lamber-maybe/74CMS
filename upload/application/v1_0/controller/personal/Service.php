@@ -132,6 +132,7 @@ class Service extends \app\v1_0\controller\common\Base
         if (false === $result) {
             $this->ajaxReturn(500, model('Order')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'下订单【订单号：'.$result['order_oid'].'】');
 
         $this->ajaxReturn(200, '下单成功', $result);
     }
@@ -272,6 +273,7 @@ class Service extends \app\v1_0\controller\common\Base
         if (false === model('Order')->orderClose($id, $this->userinfo->uid)) {
             $this->ajaxReturn(500, model('Order')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'取消订单【订单ID：'.$id.'】');
 
         $this->ajaxReturn(200, '取消订单成功');
     }
@@ -292,6 +294,7 @@ class Service extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '只能删除已取消的订单');
         }
         $order->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除订单【订单ID：'.$id.'】');
         $this->ajaxReturn(200, '删除订单成功');
     }
 }

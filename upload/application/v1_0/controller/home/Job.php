@@ -1351,6 +1351,9 @@ class Job extends \app\v1_0\controller\common\Base
             $return['watch_percent'] = '100%';
             $return['apply_num'] = 0;
         }
+        $return['job_apply_num'] = model('JobApply')
+            ->where('jobid',$jobinfo['id'])
+            ->count();
         $this->ajaxReturn(200,'获取数据成功',$return);
     }
     

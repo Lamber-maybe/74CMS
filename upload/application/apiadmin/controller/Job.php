@@ -87,25 +87,36 @@ class Job extends \app\common\controller\Backend
             ->order($order)
             ->page($current_page . ',' . $pagesize)
             ->select();
-        $jobid_arr = [];
+        $jobid_arr = $comid_arr = [];
         foreach ($list as $key => $value) {
             $jobid_arr[] = $value['id'];
+            $comid_arr[] = $value['company_id'];
         }
 
         if (!empty($jobid_arr)) {
             $contact_list = model('JobContact')
                 ->where('jid', 'in', $jobid_arr)
-                ->column('jid,contact,mobile', 'jid');
+                ->column('jid,contact,mobile,use_company_contact', 'jid');
+            $contact_company_list = model('CompanyContact')
+                ->where('comid', 'in', $comid_arr)
+                ->column('comid,contact,mobile', 'comid');
         } else {
             $contact_list = [];
+            $contact_company_list = [];
         }
         foreach ($list as $key => $value) {
-            $value['contact'] = isset($contact_list[$value['id']])
-                ? $contact_list[$value['id']]['contact']
-                : '';
-            $value['mobile'] = isset($contact_list[$value['id']])
-                ? $contact_list[$value['id']]['mobile']
-                : '';
+            if(isset($contact_list[$value['id']])){
+                if($contact_list[$value['id']]['use_company_contact']==1){
+                    $value['contact'] = isset($contact_company_list[$value['company_id']])?$contact_company_list[$value['company_id']]['contact']:'';
+                    $value['mobile'] = isset($contact_company_list[$value['company_id']])?$contact_company_list[$value['company_id']]['mobile']:'';
+                }else{
+                    $value['contact'] = isset($contact_list[$value['id']])?$contact_list[$value['id']]['contact']:'';
+                    $value['mobile'] = isset($contact_list[$value['id']])?$contact_list[$value['id']]['mobile']:'';
+                }
+            }else{
+                $value['contact'] = '';
+                $value['mobile'] = '';
+            }
             $value['job_link'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
             $value['company_link'] = config('global_config.sitedomain').url('index/company/show', [
                 'id' => $value['company_id']

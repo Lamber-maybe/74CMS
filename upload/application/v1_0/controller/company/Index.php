@@ -201,6 +201,7 @@ class Index extends \app\v1_0\controller\common\Base
         model('Resume')
             ->allowField(true)
             ->save(['remark' => $remark], ['id' => $resume_id]);
+        $this->writeMemberActionLog($this->userinfo->uid,'备注简历【简历id：'.$resume_id.'，备注内容：'.$remark.'】');
         $this->ajaxReturn(200, '备注成功');
     }
     /**

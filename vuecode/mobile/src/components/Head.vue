@@ -26,10 +26,10 @@
             </div>
           </router-link>
         </div>
-        <div class="item_wrapper">
+        <div class="item_wrapper " v-if="itemList.length == 1">
           <div
-            class="item_block"
-            v-for="(item, index) in itemList"
+            class="item_block item_block_pad"
+            v-for="(item, index) in itemList[0]"
             :key="index"
             @click="handleHeadClick(item)"
           >
@@ -37,6 +37,17 @@
             <div class="ico_txt">{{ item.name }}</div>
           </div>
           <div class="clear"></div>
+        </div>
+        <div class="item_wrapper" v-else>
+          <swiper :options="swiperOption" class="item_wrapper_pd">
+            <swiper-slide v-for="(item,index) in itemList" :key="index" >
+              <div v-for="(item2,index2) in item" :key="index2" class="item_block"  @click="handleHeadClick(item2)">
+                <img :src="item2.src" :alt="item2.name" class="ico" />
+                <div class="ico_txt">{{ item2.name }}</div>
+              </div>
+            </swiper-slide>
+            <div class="swiper-pagination" slot="pagination"></div>
+          </swiper>
         </div>
       </div>
     </van-popup>
@@ -95,7 +106,22 @@ export default {
         { name: '我的', src: `company`, url: '/member/login', imgName: 'user' }
       ],
       itemList: [],
-      classname: 'head_content'
+      classname: 'head_content',
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination',
+          renderBullet: function (index, className) {
+            return (
+              '<span class="' +
+              className +
+              ' index-app-four-swiper-span"></span>'
+            )
+          },
+          bulletActiveClass: 'index-app-four-swiper-bullet-active'
+        },
+        initialSlide: 0,
+        speed: 800
+      }
     }
   },
   mounted () {
@@ -113,25 +139,27 @@ export default {
       if (parseInt(this.loginType) === 1) {
         // 企业
         this.user_link = '/member/company/index'
-        this.itemList = this.companyMoreList
+        this.itemList = this.group(this.companyMoreList, 12)
       } else {
         // 个人
         this.user_link = '/member/personal/index'
-        this.itemList = this.personalMoreList
+        this.itemList = this.group(this.personalMoreList, 12)
       }
     } else {
       // 未登录
       this.user_link = '/member/login'
-      this.itemList = this.memberMoreList
+      this.itemList = this.group(this.memberMoreList, 12)
     }
     // 更多
     this.itemList = this.itemList.map(function (item, index) {
-      let imgUrl = `${item.src}/${item.imgName}`
-      return {
-        name: item.name,
-        src: require('../assets/images/head_more/' + imgUrl + '.png'),
-        url: item.url
-      }
+      return item.map(function (item2, index) {
+        let imgUrl = `${item2.src}/${item2.imgName}`
+        return {
+          name: item2.name,
+          src: require('../assets/images/head_more/' + imgUrl + '.png'),
+          url: item2.url
+        }
+      })
     })
   },
   computed: {
@@ -146,6 +174,14 @@ export default {
     }
   },
   methods: {
+    group (array, subGroupLength) {
+      let index = 0
+      let newArray = []
+      while (index < array.length) {
+        newArray.push(array.slice(index, index += subGroupLength))
+      }
+      return newArray
+    },
     handleHeadClick (item) {
       if (item.name === '刷新简历') {
         this.refreshResume()
@@ -233,7 +269,13 @@ export default {
 
 <style lang="scss" scoped>
 .more_wrapper {
+  .item_wrapper_pd{
+    padding-bottom: 15px;
+  }
   .item_wrapper {
+    .swiper-pagination{
+      bottom: 0px;
+    }
     .item_block {
       .ico {
         display: block;
@@ -252,6 +294,9 @@ export default {
       width: 25%;
       text-align: center;
       padding: 15px 0 13px;
+    }
+    .item_block_width{
+      width: 100% !important;
     }
     width: 100%;
   }

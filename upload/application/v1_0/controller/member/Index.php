@@ -20,6 +20,14 @@ class Index extends \app\v1_0\controller\common\Base
                                 ->where('a.company_uid',$this->userinfo->uid)
                                 ->where('b.id','not null')
                                 ->count();
+                $companyinfo = model('Company')
+                    ->field('logo')
+                    ->where('uid', $this->userinfo->uid)
+                    ->find();
+                $data['photo'] =
+                    $companyinfo['logo'] > 0
+                    ? model('Uploadfile')->getFileUrl($companyinfo['logo'])
+                    : default_empty('logo');
             }
             if($this->userinfo->utype==2){
                 $data['jobapply'] = model('JobApply')->where('personal_uid',$this->userinfo->uid)->count();
@@ -31,6 +39,14 @@ class Index extends \app\v1_0\controller\common\Base
                             ->where('b.companyname','not null')
                             ->where('c.jobname','not null')
                             ->count();
+                $basic = model('Resume')
+                    ->field('photo_img')
+                    ->where('uid', $this->userinfo->uid)
+                    ->find();
+                $data['photo'] =
+                    $basic['photo_img'] > 0
+                        ? model('Uploadfile')->getFileUrl($basic['photo_img'])
+                        : default_empty('photo');
             }
         }
         
@@ -49,6 +65,7 @@ class Index extends \app\v1_0\controller\common\Base
         ) {
             $this->ajaxReturn(500, model('FavJob')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'收藏职位【职位ID：'.input('post.jobid').'】');
         $this->ajaxReturn(200, '收藏成功');
     }
     /**
@@ -65,6 +82,7 @@ class Index extends \app\v1_0\controller\common\Base
                 'personal_uid' => $this->userinfo->uid,
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏职位【职位ID：'.$jobid.'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
     /**
@@ -80,6 +98,7 @@ class Index extends \app\v1_0\controller\common\Base
         ) {
             $this->ajaxReturn(500, model('JobApply')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'投递简历【职位ID：'.input('post.jobid').'】');
         $this->ajaxReturn(200, '投递简历成功');
     }
     /**
@@ -98,6 +117,7 @@ class Index extends \app\v1_0\controller\common\Base
         ) {
             $this->ajaxReturn(500, model('AttentionCompany')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'关注企业【企业ID：'.input('post.comid').'】');
         $this->ajaxReturn(200, '关注成功');
     }
     /**
@@ -114,6 +134,7 @@ class Index extends \app\v1_0\controller\common\Base
                 'personal_uid' => $this->userinfo->uid,
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消关注企业【企业ID：'.$comid.'】');
         $this->ajaxReturn(200, '取消关注成功');
     }
     /**
@@ -133,6 +154,7 @@ class Index extends \app\v1_0\controller\common\Base
         ) {
             $this->ajaxReturn(500, model('FavResume')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'收藏简历【简历ID：'.input('post.resume_id').'】');
         $this->ajaxReturn(200, '收藏成功');
     }
     /**
@@ -150,6 +172,7 @@ class Index extends \app\v1_0\controller\common\Base
                 'company_uid' => $this->userinfo->uid,
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏简历【简历ID：'.$resume_id.'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
     /**
@@ -229,6 +252,7 @@ class Index extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(200, $download_result['msg'], $return_data);
             }
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'下载简历【简历ID：'.input('post.resume_id').'】');
         $this->ajaxReturn(200, '下载成功');
     }
     /**
@@ -252,10 +276,10 @@ class Index extends \app\v1_0\controller\common\Base
             'jobid' => input('post.jobid/d', 0, 'intval'),
             'interview_date' => input('post.interview_date/s', '', 'trim'),
             'interview_time' => input('post.interview_time/s', '', 'trim'),
-            'address' => input('post.address/s', '', 'trim'),
-            'contact' => input('post.contact/s', '', 'trim'),
-            'tel' => input('post.tel/s', '', 'trim'),
-            'note' => input('post.note/s', '', 'trim'),
+            'address' => input('post.address/s', '', 'trim,badword_filter'),
+            'contact' => input('post.contact/s', '', 'trim,badword_filter'),
+            'tel' => input('post.tel/s', '', 'trim,badword_filter'),
+            'note' => input('post.note/s', '', 'trim,badword_filter'),
         ];
         $validate = new \think\Validate([
             'resume_id' => 'require|number|gt:0',
@@ -296,6 +320,7 @@ class Index extends \app\v1_0\controller\common\Base
                 model('Task')->doTask($this->userinfo->uid, 1, 'handle_resume');
             }
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'面试邀请【简历ID：'.$input_data['resume_id'].'】');
 
         $this->ajaxReturn(200, '邀请面试成功');
     }
@@ -306,9 +331,9 @@ class Index extends \app\v1_0\controller\common\Base
             'jobid' => input('post.jobid/d', 0, 'intval'),
             'interview_date' => input('post.interview_date/s', '', 'trim'),
             'interview_time' => input('post.interview_time/s', '', 'trim'),
-            'contact' => input('post.contact/s', '', 'trim'),
-            'tel' => input('post.tel/s', '', 'trim'),
-            'note' => input('post.note/s', '', 'trim'),
+            'contact' => input('post.contact/s', '', 'trim,badword_filter'),
+            'tel' => input('post.tel/s', '', 'trim,badword_filter'),
+            'note' => input('post.note/s', '', 'trim,badword_filter'),
         ];
         $validate = new \think\Validate([
             'resume_id' => 'require|number|gt:0',
@@ -348,6 +373,7 @@ class Index extends \app\v1_0\controller\common\Base
                 model('Task')->doTask($this->userinfo->uid, 1, 'handle_resume');
             }
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'视频面试邀请【简历ID：'.$input_data['resume_id'].'】');
 
         $this->ajaxReturn(200, '邀请面试成功');
     }

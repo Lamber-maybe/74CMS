@@ -56,6 +56,9 @@ export function handlerHttpError (res) {
     case 50008: // 暂时关闭网站
       router.push('/error?message=' + res.data)
       break
+    case 60001: // 禁止访问
+      router.push('/ipdeny')
+      break
     default:
       if (res.message) {
         Notify(res.message)

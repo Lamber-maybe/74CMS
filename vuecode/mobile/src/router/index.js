@@ -95,6 +95,7 @@ import JobfairolIndex from '../views/jobfairol/Index'
 import JobfairolShow from '../views/jobfairol/Show'
 import JobfairolReserve from '../views/jobfairol/Seserve'
 import JsapiPay from '../views/service/JsapiPay'
+
 Vue.use(VueRouter)
 
 /**
@@ -1136,6 +1137,11 @@ const routes = [
       loginCheck: true,
       utype: 0
     }
+  },
+  {
+    path: '/ipdeny',
+    component: () => import('@/views/ipdeny'),
+    meta: { title: '禁止访问' }
   },
   {
     path: '/error',

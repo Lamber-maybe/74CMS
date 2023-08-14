@@ -20,7 +20,7 @@ INSERT INTO `qs_ad_category` VALUES
 (29,'QS_index_a12@web','首页A12通栏广告位',1200,80,3,1,'web');
 
 INSERT INTO `qs_admin_role` VALUES
-(1, '超级管理员', 'all');
+(1, '超级管理员', 'all','all',1,1);
 
 INSERT INTO `qs_article_category` VALUES
 (1, '招聘动态', 0, '', '', 1),
@@ -904,7 +904,8 @@ INSERT INTO `qs_config` VALUES
 (NULL,'alicloud_app_key', '0', '', '阿里云appkey', '1'),
 (NULL,'alicloud_pool_key_axn', '0', '', 'axn号池key', '1'),
 (NULL,'alicloud_appsecret', '0', '', '阿里云appsecret', '1'),
-(NULL,'alicloud_pool_key', '0', '', '号池key', '1');
+(NULL,'alicloud_pool_key', '0', '', '号池key', '1'),
+(NULL,'filter_ip', '1', '', '禁止IP', '0');
 
 
 INSERT INTO `qs_cron` VALUES
@@ -1144,6 +1145,8 @@ INSERT INTO `qs_page` VALUES
 (NULL, '网络招聘会列表', 'jobfairollist', '0', '0', '网络招聘会 - {sitename}', '', '', '[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NULL, '网络招聘会详情', 'jobfairolshow', '0', '0', '{title} - {sitename}', '{title}', '{title}', '[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');
 
+
+
 INSERT INTO `qs_personal_service_stick` VALUES 
 (NUll,'简历置顶3天',1,3,'10.00',1,'10.00',1,0),
 (NUll,'简历置顶7天',0,7,'20.00',0,'1.00',1,0),
@@ -1244,3 +1247,31 @@ INSERT INTO `qs_wechat_share` VALUES
 (NUll,'newsshow','资讯详情','【招聘资讯】{title}-{sitename}','self','资讯缩略图','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'noticeshow','公告详情','【网站公告】{title}-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'jobnearby','附近职位','【附近职位】{district}-这有一些家门口的工作-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
+
+
+INSERT INTO `qs_tweets_label` VALUES 
+(NULL, '序号', 'id', '2'),
+(NULL, '公司名称', 'company', '2'),
+(NULL, '职位名称', 'job', '2'),
+(NULL, '职位性质', 'nature', '2'),
+(NULL, '学历要求', 'education', '2'),
+(NULL, '经验要求', 'experience', '2'),
+(NULL, '薪资待遇', 'wage', '2'),
+(NULL, '岗位福利', 'jobtag', '2'),
+(NULL, '招聘人数', 'amount', '2'),
+(NULL, '工作地区', 'district_cn', '2'),
+(NULL, '工作地址', 'address', '2'),
+(NULL, '职位描述', 'content', '2'),
+(NULL, '职位链接', 'joburl', '2'),
+(NULL, '企业链接', 'companyurl', '2'),
+(NULL, '日期', 'nowtime', '1'),
+(NULL, '网站名称', 'sitename', '1'),
+(NULL, '网站域名', 'sitedir', '1'),
+(NULL, '登录链接', 'login', '1'),
+(NULL, '注册链接', 'register', '1'),
+(NULL, '联系人', 'contact', '2'),
+(NULL, '联系电话', 'telephone', '2');
+
+
+INSERT INTO `qs_tweets_template` VALUES (NULL, '默认模板【系统】', '#nowtime# \n#sitename#', '公司： #company# \n职位： #job# \n薪资： #wage# \n工作地点： #district_cn# | #address# \n联系方式：【 #contact# 】 #telephone#\n点击链接查看详情 #joburl#', '#sitename#  #sitedir#', '1619406876', '1');
+

@@ -159,17 +159,34 @@ class Admin extends \app\common\controller\Backend
 
         if ($is_login > 0) {
             $where['is_login'] = $is_login;
+            $wherefulltext = '';
         } else {
-            if ($keyword != '') {
-                $where['content'] = ['like', '%' . $keyword . '%'];
+            if ($keyword!='') {
+                $against = '';
+                $keyword = trim($keyword);
+                if (false !== stripos($keyword, ' ')) {
+                    $keyword = merge_spaces($keyword);
+                    $tmp_keyword_arr = explode(' ', $keyword);
+                    foreach ($tmp_keyword_arr as $key => $value) {
+                        $against .= '+' . $value . ' ';
+                    }
+                    $against = trim($against);
+                } else {
+                    $against = $keyword;
+                }
+                $wherefulltext = " MATCH (`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
+            }else{
+                $wherefulltext = '';
             }
         }
 
         $total = model('AdminLog')
             ->where($where)
+            ->where($wherefulltext)
             ->count();
         $list = model('AdminLog')
             ->where($where)
+            ->where($wherefulltext)
             ->order('id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
@@ -179,5 +196,46 @@ class Admin extends \app\common\controller\Backend
         $return['pagesize'] = $pagesize;
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    public function alladmin()
+    {
+        $list = model('Admin')
+            ->order('id asc')
+            ->select();
+        $this->ajaxReturn(200, '获取数据成功', $list);
+    }
+    public function getBindQrcode(){
+        $id = input('get.id/d',0,'intval');
+        $info = model('Admin')->where('id',$id)->find();
+        if($info===null){
+            $this->ajaxReturn(500, '没有找到管理员信息');
+        }
+        if(config('global_config.wechat_open')==0){
+            $this->ajaxReturn(500, '微信公众号功能未开启，请先开启');
+        }
+        if(config('global_config.wechat_appid')=='' || config('global_config.wechat_appsecret')==''){
+            $this->ajaxReturn(500, '微信公众号功能未正确配置，请先配置');
+        }
+        $params = [
+            'alias'=>'admin_bind',
+            'admin_id'=>$id
+        ];
+        $class = new \app\common\lib\Wechat;
+        $qrcode = $class->makeQrcode($params);
+        if($qrcode){
+            $this->ajaxReturn(200, '', $qrcode);
+        }else{
+            $this->ajaxReturn(500, '生成二维码失败');
+        }
+    }
+    public function bindQrcodeCancel(){
+        $id = input('post.id/d',0,'intval');
+        $info = model('Admin')->where('id',$id)->find();
+        if($info===null){
+            $this->ajaxReturn(500, '没有找到管理员信息');
+        }
+        $info->openid = '';
+        $info->save();
+        $this->ajaxReturn(200, '解绑成功');
     }
 }

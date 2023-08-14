@@ -61,7 +61,7 @@ export default {
   props: ['type'],
   data () {
     return {
-      placeholder: '请输入职位名称/企业名称',
+      placeholder: '请输入关键字',
       history_key: '',
       keyword: '',
       history: [],

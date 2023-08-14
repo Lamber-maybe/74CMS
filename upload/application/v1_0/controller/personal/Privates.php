@@ -102,6 +102,7 @@ class Privates extends \app\v1_0\controller\common\Base
         if (!empty($insert_arr)) {
             model('Shield')->saveAll($insert_arr);
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'添加屏蔽企业【企业ID：'.implode(",",$company_id_arr).'】');
         $this->ajaxReturn(200, '添加成功');
     }
     /**
@@ -123,6 +124,7 @@ class Privates extends \app\v1_0\controller\common\Base
             ->where('company_uid', $company_info['uid'])
             ->where('personal_uid', $this->userinfo->uid)
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除屏蔽企业【企业ID：'.$company_id.'】');
         $this->ajaxReturn(200, '删除成功');
     }
     /**
@@ -132,6 +134,7 @@ class Privates extends \app\v1_0\controller\common\Base
     {
         $display = input('post.display/d', 0, 'intval');
         model('Resume')->setDisplay(0, $this->userinfo->uid, $display);
+        $this->writeMemberActionLog($this->userinfo->uid,'设置简历显示状态【'.($display==1?'显示':'隐藏').'】');
         $this->ajaxReturn(200, '设置成功');
     }
     /**
@@ -143,6 +146,7 @@ class Privates extends \app\v1_0\controller\common\Base
         model('Resume')
             ->where('uid', $this->userinfo->uid)
             ->setField('display_name', $display);
+        $this->writeMemberActionLog($this->userinfo->uid,'设置简历姓名显示状态');
         $this->ajaxReturn(200, '设置成功');
     }
 }

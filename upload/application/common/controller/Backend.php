@@ -9,7 +9,7 @@ class Backend extends \app\common\controller\Base
     {
         parent::_initialize();
         $header_info = \think\Request::instance()->header();
-        $white_list = ['login-index', 'login-config', 'login-captcha'];
+        $white_list = ['login-index', 'login-config', 'login-captcha','login-weixin'];
         if (
             !in_array(
                 $this->controller_name . '-' . $this->action_name,
@@ -31,5 +31,16 @@ class Backend extends \app\common\controller\Base
             $this->admininfo = $auth_result['info'];
         }
         \think\Config::set('platform', 'system');
+        $this->checkDeleteAccess();
+    }
+    protected function checkDeleteAccess(){
+        if(in_array($this->action_name,['del','delete']) && $this->admininfo->access_delete==0){
+            $this->ajaxReturn(500, '当前管理员没有删除数据权限');
+        }
+    }
+    protected function checkExportAccess(){
+        if($this->admininfo->access_export==0){
+            $this->ajaxReturn(500, '当前管理员没有导出数据权限');
+        }
     }
 }

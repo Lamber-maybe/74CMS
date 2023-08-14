@@ -9,7 +9,13 @@ import {
   removeToken,
   getAccess,
   setAccess,
-  removeAccess
+  getAccessExport,
+  setAccessExport,
+  getAccessDelete,
+  setAccessDelete,
+  removeAccess,
+  removeAccessExport,
+  removeAccessDelete
 } from '@/utils/auth'
 import {
   resetRouter
@@ -21,7 +27,9 @@ const getDefaultState = () => {
     username: '',
     rolename: '',
     avatar: '',
-    access: getAccess()
+    access: getAccess(),
+    access_export: getAccessExport(),
+    access_delete: getAccessDelete()
   }
 }
 
@@ -42,6 +50,12 @@ const mutations = {
   },
   SET_ACCESS: (state, access) => {
     state.access = access
+  },
+  SET_ACCESS_EXPORT: (state, access) => {
+    state.access_export = access
+  },
+  SET_ACCESS_DELETE: (state, access) => {
+    state.access_delete = access
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -71,8 +85,12 @@ const actions = {
         } = response
         commit('SET_TOKEN', data.token)
         commit('SET_ACCESS', data.access)
+        commit('SET_ACCESS_EXPORT', data.access_export)
+        commit('SET_ACCESS_DELETE', data.access_delete)
         setToken(data.token)
         setAccess(data.access)
+        setAccessExport(data.access_export)
+        setAccessDelete(data.access_delete)
         resolve()
       }).catch(error => {
         reject(error)
@@ -99,13 +117,17 @@ const actions = {
           username,
           rolename,
           avatar,
-          access
+          access,
+          access_export,
+          access_delete
         } = data
 
         commit('SET_USERNAME', username)
         commit('SET_ROLENAME', rolename)
         commit('SET_AVATAR', avatar)
         commit('SET_ACCESS', access)
+        commit('SET_ACCESS_EXPORT', access_export)
+        commit('SET_ACCESS_DELETE', access_delete)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -122,6 +144,8 @@ const actions = {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
         removeAccess()
+        removeAccessExport()
+        removeAccessDelete()
         resetRouter()
         commit('RESET_STATE')
         resolve()

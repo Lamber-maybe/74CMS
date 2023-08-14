@@ -18,10 +18,10 @@
         </el-table-column>
         <el-table-column label="登录名" prop="username" />
         <el-table-column label="角色" prop="role_name" />
-        <el-table-column align="center" prop="created_at" label="创建时间">
+        <el-table-column align="center" prop="openid" label="微信绑定">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.addtime | timeFilter }}</span>
+            <span v-if="scope.row.openid==''"><el-button type="text" @click="funBind(scope.row.id)">[点击绑定]</el-button></span>
+            <span v-else>已绑定<el-button type="text" @click="funBindCancel(scope.row.id)">[解绑]</el-button></span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="created_at" label="最后登录时间">
@@ -94,12 +94,23 @@
         />
       </el-dialog>
     </el-card>
+    <el-dialog
+      v-if="showQrcode"
+      title="扫码绑定"
+      :visible.sync="showQrcode"
+      width="15%"
+      :close-on-click-modal="false"
+      style="text-align:center;"
+      @close="showQrcode=false"
+    >
+      <div style="margin-bottom:10px;"><img :src="qrcodeSrc" width="200" height="200"></div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import dialist from './loglist.vue'
-import { apiList, apiDelete } from '@/api/admin'
+import { apiList, apiDelete, adminBindQrcode, adminBindQrcodeCancel } from '@/api/admin'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -121,7 +132,9 @@ export default {
       listLoading: true,
       total: 0,
       currentPage: 1,
-      pagesize: 10
+      pagesize: 10,
+      qrcodeSrc: '',
+      showQrcode: false
     }
   },
   created() {
@@ -193,6 +206,29 @@ export default {
     },
     closeDialog() {
       this.dialogVisible = false
+    },
+    funBind(id){
+      const that = this
+      adminBindQrcode({ id: id }).then(response => {
+        that.qrcodeSrc = response.data
+        that.showQrcode = true
+      })
+    },
+    funBindCancel(id){
+      const that = this
+      that
+        .$confirm('确定解绑吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          adminBindQrcodeCancel({ id: id }).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+          })
+        })
+        .catch(() => {})
     }
   }
 }

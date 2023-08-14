@@ -149,6 +149,7 @@ class InterviewVideo extends \app\v1_0\controller\common\Base
         model('NotifyRule')->notify($interview['personal_uid'], 2, 'cron_interview_video', []);
         $interview->company_donotice_time = time();
         $interview->save();
+        $this->writeMemberActionLog($this->userinfo->uid,'提醒视频面试【简历id：'.$interview->resume_id.'】');
         $this->ajaxReturn(200, '提醒成功');
     }
 }

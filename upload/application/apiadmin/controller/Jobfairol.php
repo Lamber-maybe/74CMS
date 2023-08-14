@@ -214,12 +214,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $list[$key] = $val;
         }
         $total = model('JobfairOnlineParticipate')
-            ->alias('a')
-            ->field('a.*,b.companyname,b.setmeal_id,c.contact,c.mobile,c.telephone')
-            ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
-            ->join(config('database.prefix') . 'company_contact c', 'a.uid=c.uid', 'left')
             ->where($where)
-            ->page($current_page, $pagesize)
             ->count();
         $setmeal = model('Setmeal')->field('id,name')->select();
         $return['items'] = $list;

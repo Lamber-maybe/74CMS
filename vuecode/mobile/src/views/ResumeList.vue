@@ -871,14 +871,14 @@ export default {
         .time {
           position: absolute;
           right: 0;
-          top: 15px;
+          top: 7px;
           font-size: 13px;
           color: #999999;
         }
         position: relative;
         font-size: 15px;
         color: #666666;
-        padding: 12.5px 0 17.5px;
+        padding: 5px 0 17.5px;
       }
       .tx1 {
         .wage {

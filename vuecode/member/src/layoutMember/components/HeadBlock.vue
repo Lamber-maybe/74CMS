@@ -107,6 +107,9 @@ import api from '@/api'
 </script>
 
 <style lang="scss" scoped>
+  >>>.el-header{
+    min-height: 128px !important;
+  }
   .header_personal_wrapper {
     position: relative;
     background-color: #fff;
@@ -275,5 +278,10 @@ import api from '@/api'
         }
       }
     }
+  }
+@-webkit-keyframes supervise_animation {
+  0%{background-position:0% 0%;}
+  50%{background-position:50% 100%;}
+  100%{background-position:100% 0%;}
   }
 </style>

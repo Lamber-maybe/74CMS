@@ -88,7 +88,7 @@ const systemRouter = {
       component: () =>
         import('@/views/sys/basic/safe'),
       meta: {
-        title: '安全验证配置',
+        title: '安全配置',
         access: 'sysBasicSafe'
       }
     },
@@ -509,6 +509,38 @@ const systemRouter = {
         activeMenu: '/sys/admin/role'
       },
       hidden: true
+    }
+    ]
+  },
+  {
+    path: '/sys/log',
+    name: 'log',
+    component: () =>
+      import('@/views/sys/log'),
+    redirect: 'noRedirect',
+    alwaysShow: true,
+    meta: {
+      title: '系统日志',
+      access: 'log'
+    },
+    children: [{
+      path: '/sys/log/member',
+      name: 'logMember',
+      component: () =>
+        import('@/views/sys/log/member'),
+      meta: {
+        title: '会员日志',
+        access: 'logMember'
+      }
+    }, {
+      path: '/sys/log/admin',
+      name: 'logAdmin',
+      component: () =>
+        import('@/views/sys/log/admin'),
+      meta: {
+        title: '管理员日志',
+        access: 'logAdmin'
+      }
     }
     ]
   }

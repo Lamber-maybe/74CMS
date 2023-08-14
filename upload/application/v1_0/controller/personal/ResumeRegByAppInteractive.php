@@ -17,7 +17,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
         $input_data = [
             'basic' => [
                 'uid' => $this->userinfo->uid,
-                'fullname' => input('post.basic.fullname/s', '', 'trim'),
+                'fullname' => input('post.basic.fullname/s', '', 'trim,badword_filter'),
                 'sex' => input('post.basic.sex/d', 0, 'intval'),
                 'birthday' => input('post.basic.birthday/s', '', 'trim'),
                 'education' => input('post.basic.education/d', 0, 'intval'),
@@ -33,8 +33,8 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             ],
             'contact' => [
                 'uid' => $this->userinfo->uid,
-                'mobile' => input('post.contact.mobile/s', '', 'trim'),
-                'weixin' => input('post.contact.weixin/s', '', 'trim')
+                'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
+                'weixin' => input('post.contact.weixin/s', '', 'trim,badword_filter')
             ]
         ];
         $resume_id = 0;
@@ -107,6 +107,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
         }
 
         model('Resume')->refreshSearch($resume_id);
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历基本信息');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -172,6 +173,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             $this->userinfo->uid
         );
 
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历求职意向');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -197,6 +199,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
         if (false === $result) {
             $this->ajaxReturn(500, model('Resume')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历求职状态和开始工作时间');
 
         $this->ajaxReturn(200, '保存成功');
     }
@@ -208,8 +211,8 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
         $input_data = [
             'work' => [
                 'uid' => $this->userinfo->uid,
-                'companyname' => input('post.work.companyname/s', '', 'trim'),
-                'jobname' => input('post.work.jobname/s', '', 'trim'),
+                'companyname' => input('post.work.companyname/s', '', 'trim,badword_filter'),
+                'jobname' => input('post.work.jobname/s', '', 'trim,badword_filter'),
                 'starttime' => input('post.work.starttime/s', '', 'trim'),
                 'endtime' => input('post.work.endtime/s', '', 'trim'),
                 'todate' => input('post.work.todate/d', 0, 'intval'),
@@ -229,8 +232,8 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
         if (input('?post.education')) {
             $input_data['education'] = [
                 'uid' => $this->userinfo->uid,
-                'school' => input('post.education.school/s', '', 'trim'),
-                'major' => input('post.education.major/s', '', 'trim'),
+                'school' => input('post.education.school/s', '', 'trim,badword_filter'),
+                'major' => input('post.education.major/s', '', 'trim,badword_filter'),
                 'education' => input('post.education.education/d', 0, 'intval'),
                 'starttime' => input('post.education.starttime/s', '', 'trim'),
                 'endtime' => input('post.education.endtime/s', '', 'trim'),
@@ -326,6 +329,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $e->getMessage());
         }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历工作经历+教育经历');
         $this->ajaxReturn(200, '保存成功');
     }
     /**
@@ -335,8 +339,8 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
     {
         $input_data = [
             'uid' => $this->userinfo->uid,
-            'school' => input('post.school/s', '', 'trim'),
-            'major' => input('post.major/s', '', 'trim'),
+            'school' => input('post.school/s', '', 'trim,badword_filter'),
+            'major' => input('post.major/s', '', 'trim,badword_filter'),
             'education' => input('post.education/d', 0, 'intval'),
             'starttime' => input('post.starttime/s', '', 'trim'),
             'endtime' => input('post.endtime/s', '', 'trim'),
@@ -386,6 +390,7 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历');
 
         $this->ajaxReturn(200, '保存成功');
     }

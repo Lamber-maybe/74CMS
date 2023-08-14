@@ -180,6 +180,9 @@ export default {
   adminDelete: '/admin/delete',
   adminRoleOptions: '/admin/roleoptions',
   adminLogList: '/admin/loglist',
+  adminAllList: '/admin/alladmin',
+  adminBindQrcode: '/admin/getBindQrcode',
+  adminBindQrcodeCancel: '/admin/bindQrcodeCancel',
 
   // 管理员角色
   adminRoleList: '/admin_role/index',
@@ -202,6 +205,7 @@ export default {
   memberLock: '/member/lock',
   memberDetail: '/member/detail',
   memberLoginLog: '/member/loginlog',
+  memberActionLog: '/member/actionlog',
   management: '/member/management',
 
   // 简历管理
@@ -593,7 +597,6 @@ export default {
   // 简历投递记录
   jobApplyList: '/job_apply/index',
 
-  
 
   // 网络招聘会
   jobFairListOl: '/jobfairol/index',
@@ -613,7 +616,6 @@ export default {
   jobFairListOlComBatchAdd: 'jobfairol/companyBatchAdd',
   jobFairListOlPerBatchAdd: 'jobfairol/personalBatchAdd',
 
-
   // 同步im数据
   syncImTokenBatch: '/config/syncImTokenBatch',
   // 微信公众号营销
@@ -628,5 +630,25 @@ export default {
   sceneQrcodePlatformList: '/scene_qrcode/platformList',
   sceneQrcodeTypeList: '/scene_qrcode/typeList',
   sceneQrcodeDownload: '/scene_qrcode/download',
-  sceneSearchList: '/scene_qrcode/searchList'
+  sceneSearchList: '/scene_qrcode/searchList',
+
+
+  // 敏感词
+  badwordList: '/badword/index',
+  badwordAdd: '/badword/add',
+  badwordEdit: '/badword/edit',
+  badwordDelete: '/badword/delete',
+  badwordImport: '/badword/import',
+
+  // 社群推文营销
+  tweetslabelList: '/tweets_label/index',
+  tweetsTemplateList: '/tweets_template/index',
+  tweetsTemplateEdit: '/tweets_template/edit',
+  tweetsTemplateAdd: '/tweets_template/add',
+  tweetsTemplateDel: '/tweets_template/del',
+  tweetsJoblist: '/tweets_template/joblist',
+  tweetsSearchJob: '/tweets_template/jobSearch',
+  tweetsSearchCompany: '/tweets_template/companySearch',
+  tweetsTitleFooter: '/tweets_template/title_footer',
+
 }

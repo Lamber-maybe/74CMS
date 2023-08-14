@@ -48,27 +48,40 @@ export default {
   data(){
     return {
       timer:'',
-      qrcode:''
+      qrcode:'',
+      custom_location: 0,
+      success_url: ''
     }
   },
   created(){
     clearInterval(this.timer);
     this.qrcode = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + this.$route.query.parameter
+    this.custom_location = this.$route.query.custom_location
+    this.success_url = this.$route.query.success_url
   },
   mounted() {
     this.timer = setInterval(this.scan, 3000);
   },
   methods:{
     scan () {
+      var that = this
       http
         .post(api.scan_wxpay_result, {oid:this.$route.query.oid})
         .then(res => {
-          if(res.data==1){
-            if (this.$store.state.LoginType == 1) {
+          if(parseInt(res.data) === 1){
+            if(parseInt(that.custom_location)) {
+              if (that.success_url.startsWith('http')) {
+                location.href = that.success_url
+              } else {
+                that.$router.push(this.success_url)
+              }
+            } else {
+              if (parseInt(this.$store.state.LoginType) === 1) {
                 this.$router.push('/company/service/order')
               } else {
                 this.$router.push('/personal/service/order')
               }
+            }
           }
         })
         .catch(() => {})

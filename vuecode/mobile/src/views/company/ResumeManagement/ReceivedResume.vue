@@ -15,6 +15,11 @@
           @change="doSearch"
         />
         <van-dropdown-item
+          v-model="params.is_look"
+          :options="options_look"
+          @change="doSearch"
+        />
+        <van-dropdown-item
           v-model="params.source"
           :options="options_source"
           @change="doSearch"
@@ -44,8 +49,8 @@
         >
           <div class="list">
             <div class="tx1">
-              <div class="new" v-if="item.is_look == 0"></div>
-              <div class="avatar_box">
+              <!--<div class="new" v-if="item.is_look == 0"></div>-->
+              <div :class="[parseInt(item.is_look) === 0 ? 'avatar_box no_look' : 'avatar_box']">
                 <img :src="item.photo_img_src" alt="照片" />
               </div>
               <div class="name">
@@ -186,12 +191,13 @@ export default {
         jobid: 0,
         status: '',
         source: '',
+        is_look: '',
         page: 1,
         pagesize: 15
       },
       options_job: [{ text: '全部职位', value: 0 }],
       options_status: [
-        { text: '全部状态', value: '' },
+        { text: '处理状态', value: '' },
         { text: '待处理', value: 0 },
         { text: '已同意', value: 1 },
         { text: '已拒绝', value: 2 }
@@ -200,6 +206,11 @@ export default {
         { text: '全部来源', value: '' },
         { text: '自主投递', value: 0 },
         { text: '委托投递', value: 1 }
+      ],
+      options_look: [
+        { text: '查看状态', value: '' },
+        { text: '未查看', value: 0 },
+        { text: '已查看', value: 1 }
       ],
       navList: [
         { text: '收到投递', href: '/member/company/jobapply', active: true },
@@ -437,10 +448,10 @@ export default {
         position: absolute;
         right: -15px;
         top: 0;
-        width: 24px;
-        height: 24px;
+        width: 30px;
+        height: 30px;
         background: url('../../../assets/images/arrow_new_ico.svg') 0 no-repeat;
-        background-size: 24px;
+        background-size: 30px;
       }
       .avatar_box {
         img {
@@ -454,6 +465,12 @@ export default {
         top: 18px;
         width: 49px;
         height: 49px;
+        &.no_look {
+          &::after {
+            content: '';position: absolute;right: 1px;top: 2px;width: 9px;height: 9px;background-color: #ff5200;
+            border-radius: 999px;border: 1PX solid #ffffff;
+          }
+        }
       }
       .some {
         .van-tag {

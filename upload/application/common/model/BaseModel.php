@@ -6,12 +6,14 @@ use think\Model;
 class BaseModel extends Model
 {
     public $map_platform = [
+        'app' => 'APP',
         'mobile' => '手机浏览器',
         'wechat' => '微信浏览器',
         'web' => '电脑浏览器',
         'system' => '系统',
     ];
     public $map_ad_platform = [
+        'app' => 'APP',
         'mobile' => '触屏端',
         'web' => 'pc端',
     ];

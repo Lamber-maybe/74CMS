@@ -447,6 +447,10 @@ export default {
     },
     funExport(){
       var that = this
+      if (that.$store.state.user.access_export == 0){
+        that.$message.error('当前管理员没有导出权限')
+        return false
+      }
       if (that.tableIdarr.length == 0){
         that.$message.error('请选择要导出的职位')
         return false

@@ -111,12 +111,19 @@ class AttentionCompany extends \app\v1_0\controller\common\Base
     public function cancel()
     {
         $id = input('post.id/d', 0, 'intval');
+        $info = model('AttentionCompany')
+            ->where([
+                'id' => ['eq', $id],
+                'personal_uid' => $this->userinfo->uid
+            ])
+            ->find();
         model('AttentionCompany')
             ->where([
                 'id' => ['eq', $id],
                 'personal_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消关注企业【企业ID：'.$info->comid.'】');
         $this->ajaxReturn(200, '取消关注成功');
     }
     public function cancelBatch()
@@ -125,10 +132,18 @@ class AttentionCompany extends \app\v1_0\controller\common\Base
         if(empty($id)){
             $this->ajaxReturn(500,'请选择企业');
         }
+        $list = model('AttentionCompany')
+            ->where([
+                'id' => ['eq', $id],
+                'personal_uid' => $this->userinfo->uid
+            ])
+            ->column('comid');
         model('AttentionCompany')
             ->whereIn('id',$id)
             ->where('personal_uid',$this->userinfo->uid)
             ->delete();
+        $list = is_array($list)?$list:[$list];
+        $this->writeMemberActionLog($this->userinfo->uid,'取消关注企业【企业ID：'.implode(",",$list).'】');
         $this->ajaxReturn(200, '取消关注成功');
     }
 }

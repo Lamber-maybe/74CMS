@@ -229,5 +229,6 @@ class Index extends \app\v1_0\controller\common\Base
         if($sceneQrcodeInfo!==null){
             model('SceneQrcodeScanLog')->save(['pid'=>$sceneQrcodeInfo['id'],'addtime'=>time()]);
         }
+        $this->ajaxReturn(200,'记录成功');
     }
 }

@@ -103,6 +103,7 @@ class Account extends \app\v1_0\controller\common\Base
         model('Member')
             ->where('uid', $this->userinfo->uid)
             ->setField('username', $input_data['username']);
+        $this->writeMemberActionLog($this->userinfo->uid,'修改用户名【新用户名：'.$input_data['username'].'】');
         $this->ajaxReturn(200, '修改成功');
     }
     /**
@@ -160,6 +161,7 @@ class Account extends \app\v1_0\controller\common\Base
             ->where('uid', $this->userinfo->uid)
             ->setField('mobile', $input_data['mobile']);
         cache('smscode_' . $input_data['mobile'], null);
+        $this->writeMemberActionLog($this->userinfo->uid,'修改手机号【新手机号：'.$input_data['mobile'].'】');
         $this->ajaxReturn(200, '修改成功');
     }
 
@@ -218,6 +220,7 @@ class Account extends \app\v1_0\controller\common\Base
             ->where('uid', $this->userinfo->uid)
             ->setField('email', $input_data['email']);
         cache('emailcode_' . $input_data['email'], null);
+        $this->writeMemberActionLog($this->userinfo->uid,'修改邮箱【新邮箱：'.$input_data['email'].'】');
         $this->ajaxReturn(200, '修改成功');
     }
     /**
@@ -264,6 +267,7 @@ class Account extends \app\v1_0\controller\common\Base
             $model->pwd_hash
         );
         $model->save();
+        $this->writeMemberActionLog($this->userinfo->uid,'修改密码');
         $this->ajaxReturn(200, '修改成功');
     }
     /**
@@ -315,6 +319,7 @@ class Account extends \app\v1_0\controller\common\Base
             $sqlarr['bindtime'] = $input_data['bindtime'];
             model('MemberBind')->save($sqlarr,['id'=>$bindinfo['id']]);
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'绑定QQ');
 
         $this->ajaxReturn(200, '绑定成功');
     }
@@ -354,6 +359,7 @@ class Account extends \app\v1_0\controller\common\Base
                 'bind_sina'
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'绑定新浪微博');
         $this->ajaxReturn(200, '绑定成功');
     }
     /**
@@ -399,6 +405,7 @@ class Account extends \app\v1_0\controller\common\Base
                 'bind_weixin'
             );
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'绑定微信');
         $this->ajaxReturn(200, '绑定成功');
     }
     public function unbind(){
@@ -407,6 +414,8 @@ class Account extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500,'请选择解绑类型');
         }
         model('MemberBind')->where('type',$type)->where('uid',$this->userinfo->uid)->delete();
+        $unbindtype = $type=='qq'?'QQ':($type=='weixin'?'微信':'');
+        $this->writeMemberActionLog($this->userinfo->uid,'解绑'.$unbindtype);
         $this->ajaxReturn(200,'解绑成功');
     }
     public function msgunread()
@@ -450,8 +459,9 @@ class Account extends \app\v1_0\controller\common\Base
         $where['uid'] = $this->userinfo->uid;
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
-        $list = model('MemberLoginLog')
+        $list = model('MemberActionLog')
             ->field('id,uid,utype', true)
+            ->where('is_login',1)
             ->where($where)
             ->order('id desc')
             ->page($current_page . ',' . $pagesize)
@@ -464,7 +474,8 @@ class Account extends \app\v1_0\controller\common\Base
     public function loginlogTotal()
     {
         $where['uid'] = $this->userinfo->uid;
-        $total = model('MemberLoginLog')
+        $total = model('MemberActionLog')
+            ->where('is_login',1)
             ->where($where)
             ->count();
         $this->ajaxReturn(200, '获取数据成功', $total);
@@ -492,6 +503,7 @@ class Account extends \app\v1_0\controller\common\Base
             }
         }
         model('MemberCancelApply')->save($data);
+        $this->writeMemberActionLog($this->userinfo->uid,'提交账号注销申请');
         $this->ajaxReturn(200, '申请成功');
     }
 }

@@ -17,7 +17,7 @@
               :value="item.value"
             ></el-option>
           </el-select>
-          <span class="resume_header_font resume_header_margin">操作状态：</span>
+          <span class="resume_header_font resume_header_margin">处理状态：</span>
           <el-select
             v-model="params.status"
             placeholder="全部"
@@ -32,10 +32,20 @@
           </el-select>
         </div>
         <div>
-
-          <span class="resume_header_font"
-            >简历来源：</span
+          <span class="resume_header_font">查看状态：</span>
+          <el-select
+            v-model="params.is_look"
+            placeholder="全部"
+            @change="doSearch(1,true)"
           >
+            <el-option
+              v-for="(item,index) in options_look"
+              :key="index"
+              :label="item.text"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <span class="resume_header_font resume_header_margin">简历来源：</span>
           <el-select
             v-model="params.source"
             placeholder="全部"
@@ -84,6 +94,7 @@
               <div class="fn_bar">
                 <div class="name a-link" @click="handlerLook(scope.row)">{{scope.row.fullname}}</div>
                 <div class="hq" v-if="scope.row.high_quality > 0"></div>
+                <div class="no_look" v-if="parseInt(scope.row.is_look) === 0"></div>
                 <div class="clear"></div>
               </div>
               <p class="information">
@@ -238,6 +249,7 @@ export default {
         jobid: 0,
         status: '',
         source: '',
+        is_look: '',
         page: 1,
         pagesize: 10,
       },
@@ -253,6 +265,11 @@ export default {
         { text: '已同意', value: 1 },
         { text: '已拒绝', value: 2 },
       ],
+      options_look: [
+        { text: '全部', value: '' },
+        { text: '未查看', value: 0 },
+        { text: '已查看', value: 1 }
+      ],
       options_source: [
         { text: '全部', value: '' },
         { text: '自主投递', value: 0 },
@@ -262,7 +279,6 @@ export default {
   },
   created() {
     this.fetchData(true)
-
   },
   methods: {
     fetchData(init) {
@@ -532,6 +548,9 @@ export default {
 	width: 45px;
 	height: 20px;
   background: url("../../../assets/images/great.png") 0 center no-repeat;
+}
+.information_list .fn_bar .no_look {
+  float: left;margin-left: 10px;width: 33px;height: 20px;background: url("../../../assets/images/no_look.png") 0 center no-repeat;
 }
 .information {
   color: #999;

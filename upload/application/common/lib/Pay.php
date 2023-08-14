@@ -10,10 +10,12 @@ class Pay
     const PAY_TYPE_ALIPAY = 1;
     const PAY_TYPE_ALIPAY_WEB = 11;
     const PAY_TYPE_ALIPAY_MOBILE = 12;
+    const PAY_TYPE_ALIPAY_APP = 13;
     const PAY_TYPE_WXPAY = 2;
     const PAY_TYPE_WXPAY_NATIVE = 21;
     const PAY_TYPE_WXPAY_JSAPI = 22;
     const PAY_TYPE_WXPAY_H5 = 23;
+    const PAY_TYPE_WXPAY_APP = 24;
 
     protected $_error;
     protected $_setting = array();
@@ -31,6 +33,9 @@ class Pay
                 case 'mobile':
                     $order_prefix = self::PAY_TYPE_ALIPAY_MOBILE;
                     break;
+                case 'app':
+                    $order_prefix = self::PAY_TYPE_ALIPAY_APP;
+                    break;
                 default:
                     $order_prefix = self::PAY_TYPE_ALIPAY_WEB;
                     break;
@@ -42,8 +47,11 @@ class Pay
                     $order_prefix = self::PAY_TYPE_WXPAY_NATIVE;
                     break;
                 case 'wechat':
+                    $order_prefix = self::PAY_TYPE_WXPAY_JSAPI;
+                    break;
                 case 'mobile':
                     $order_prefix = self::PAY_TYPE_WXPAY_H5;
+                    break;
                     break;
                 default:
                     $order_prefix = self::PAY_TYPE_WXPAY_NATIVE;

@@ -198,6 +198,18 @@ export default {
           this.paramLabel = '标题/ID'
           break
       }
+      // 如果类型选择招聘会或者网络招聘会，同时平台选择了小程序，则把平台重置为默认，因为小程序目前没有招聘会和网络招聘会
+      if (item.alias == 'jobfairol'){
+        if (this.form.platform == 2){
+          this.form.platform = 0
+        }
+        const index = this.options_platform.findIndex(i => i.value === 2)
+        if (index >= 0){
+          this.options_platform.splice(index, 1)
+        }
+      } else {
+        this.fetchData()
+      }
     },
     searchList(e){
       const type = this.form.type

@@ -1,5 +1,6 @@
 <?php
 namespace app\common\lib\pay\alipay;
+
 class alipay
 {
     protected $order_prefix;
@@ -25,7 +26,6 @@ class alipay
             case 'mobile':
             case 'wechat':
                 $return = $this->_pay_from_mobile($data);
-                break;
                 break;
         }
         return $return;
@@ -157,6 +157,7 @@ class alipay
                 //退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
                 //付款完成后，支付宝系统发送该交易状态通知
                 $out_trade_no = substr($out_trade_no, 4);
+                
                 $order = model('Order')
                     ->where([
                         'oid' => $out_trade_no,

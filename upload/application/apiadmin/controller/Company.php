@@ -86,7 +86,7 @@ class Company extends \app\common\controller\Backend
                 $list = $list->where('c.audit',intval($audit))->where('a.id','not null');
             }
         }
-        $list = $list->field('c.*')->where($where)->order('c.uid desc')->page($current_page . ',' . $pagesize)->select();
+        $list = $list->join(config('database.prefix').'company_contact contact','c.id=contact.comid','LEFT')->field('c.*,contact.contact,contact.mobile')->where($where)->order('c.uid desc')->page($current_page . ',' . $pagesize)->select();
         $uid_arr = [];
         foreach ($list as $key => $value) {
             $uid_arr[] = $value['uid'];

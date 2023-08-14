@@ -288,8 +288,16 @@ const toolRouter = {
           title: '场景码',
           access: 'marketingSceneQrcode'
         }
-      }
-      ]
+      }, {
+        path: '/tool/marketing/tweets',
+        name: 'marketingTweets',
+        component: () =>
+          import ('@/views/tool/marketing/tweets'),
+        meta: {
+          title: '社群推文营销',
+          access: 'marketingTweets'
+        }
+      }]
     },
     {
       path: '/tool/nologin_remind',

@@ -182,7 +182,7 @@ class StatResumeHot extends \app\common\controller\Backend
         $return = [
             'dataset' => []
         ];
-        $datalist = model('MemberLoginLog')
+        $datalist = model('MemberActionLog')
             ->alias('a')
             ->join(
                 config('database.prefix') . 'resume b',
@@ -190,6 +190,7 @@ class StatResumeHot extends \app\common\controller\Backend
                 'LEFT'
             )
             ->where($where)
+            ->where('a.is_login', 1)
             ->where('a.utype', 2)
             ->where('b.id', 'NEQ', '')
             ->group('a.uid')

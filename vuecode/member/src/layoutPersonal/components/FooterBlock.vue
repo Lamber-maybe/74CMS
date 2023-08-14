@@ -4,7 +4,6 @@
       <div class="content">
           <a :href="link_url_web.joblist" target="_blank" class="link_item">找工作</a>
           <a :href="link_url_web.resumelist" target="_blank" class="link_item">找人才</a>
-          
           <a :href="link_url_web.articlelist" target="_blank" class="link_item">职场资讯</a>
           <a :href="link_url_web.helplist" target="_blank" class="link_item">帮助中心</a>
         <div class="clear"></div>

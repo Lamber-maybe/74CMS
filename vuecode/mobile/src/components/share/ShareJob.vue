@@ -41,7 +41,7 @@ export default {
   },
   mounted () {
     this.makePic()
-    this.qrcode = window.global.RequestBaseUrl + api.get_qrcode + '?alias=subscribe_job&url=' + location.href + '&jobid=' + this.info.id
+    this.qrcode = window.global.RequestBaseUrl + api.get_qrcode + '?alias=subscribe_job&url=' + location.href
   },
   methods: {
     makePic () {

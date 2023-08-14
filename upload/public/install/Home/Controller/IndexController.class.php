@@ -203,6 +203,7 @@ class IndexController extends Controller {
         $this->ajaxReturn(200,'连接成功');
     }
     public function step3(){
+        ini_set('max_execution_time','0');
     	$php_self = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
         $location = strstr($php_self,'install.php');
         $site_dir = str_replace($location, "", $php_self);
@@ -319,6 +320,22 @@ class IndexController extends Controller {
                 throw new \Exception('写入配置文件失败');
             }
             @fclose($fp);
+
+            $adminm_config_js = file_get_contents(MAIN_PROJECT_PATH . 'public/adminm/static/config.js');
+			if(!$adminm_config_js){
+                throw new \Exception('打开配置文件失败');
+			}
+			$adminm_config_js = str_replace("{RequestBaseUrl}",$site_domain.$site_dir,$adminm_config_js);
+            $fp = @fopen(MAIN_PROJECT_PATH . 'public/adminm/static/config.js', 'wb+');
+            if (!$fp)
+            {
+                throw new \Exception('打开配置文件失败');
+            }
+            if (!@fwrite($fp, $adminm_config_js))
+            {
+                throw new \Exception('写入配置文件失败');
+            }
+			@fclose($fp);
 			
 
 
@@ -541,7 +558,7 @@ class IndexController extends Controller {
             $admin_md5pwd=md5(md5($admin_pwd).$pwd_hash.$safecode);
             $timestamp = time();
             $admin_email = '';
-            mysqli_query($conn,"INSERT INTO `{$pre}admin` (id,username,password,pwd_hash, role_id,addtime, last_login_time, last_login_ip,last_login_ipaddress) VALUES (1, '$admin_name', '$admin_md5pwd', '$pwd_hash', 1, '$timestamp', '$timestamp', '','')");
+            mysqli_query($conn,"INSERT INTO `{$pre}admin` (id,username,password,pwd_hash, role_id,addtime, last_login_time, last_login_ip,last_login_ipaddress,openid) VALUES (1, '$admin_name', '$admin_md5pwd', '$pwd_hash', 1, '$timestamp', '$timestamp', '','','')");
             unset($dbhost,$dbuser,$dbpass,$dbname);
             rmdirs(MAIN_PROJECT_PATH . 'runtime/cache/');
             rmdirs(MAIN_PROJECT_PATH . 'runtime/log/');

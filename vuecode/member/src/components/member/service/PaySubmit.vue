@@ -14,14 +14,14 @@
 import http from '@/utils/http'
   export default {
     name: 'PaySubmit',
-    props:['payment','showWaiting','successUrl','failUrl'],
+    props:['payment','showWaiting','successUrl','failUrl','customLocation'],
     data(){
       return{
           showWaitingPay:false
       }
     },
     created(){
-      
+
     },
     methods:{
         handlerSubmit (url,data,callback) {
@@ -68,7 +68,9 @@ import http from '@/utils/http'
                     query: {
                         parameter: data.parameter,
                         oid: data.order_oid,
-                        amount: data.order_amount
+                        amount: data.order_amount,
+                        custom_location: this.customLocation === undefined ? 0 : 1,
+                        success_url: this.successUrl
                     }
                 });
                 window.open(href);

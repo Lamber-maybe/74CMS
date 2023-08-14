@@ -442,6 +442,8 @@
       <div class="line18 font12">(电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)</div>
       <div v-if="phone_protect_type==1" class="m-btm line18 font12 color-gray">仅支持使用<span v-text="codePro.a"></span>的手机卡拔号</div>
     </van-dialog>
+    <div class="click_copy" @click="handlerCopy">一键<br />复制</div>
+    <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
   </div>
 </template>
 
@@ -477,6 +479,7 @@ export default {
         a: '',
         btnCn: '立即拔打'
       },
+      isRetrunBtn: null,
       showTipoff: false,
       pageTitle: '',
       mainLoading: true,
@@ -515,6 +518,7 @@ export default {
   },
   created () {
     this.query_id = this.$route.params.id
+    this.isRetrunBtn = this.$route.query.isRetrunBtn
     this.is_personal_login =
       this.$store.state.LoginOrNot === true && this.$store.state.LoginType === 2
     // 请求数据
@@ -530,6 +534,21 @@ export default {
   },
   mounted () {},
   methods: {
+    // 一键复制
+    handlerCopy () {
+      let that = this
+      let copyMessage = `${this.com_info.companyname}
+招聘：${this.base_info.jobname}
+要求：工作经验${this.base_info.experience_text}、学历要求${this.base_info.education_text}
+工资：${this.base_info.wage_text}
+查看联系方式：${location.href}
+-招聘求职就上${this.$store.state.config.sitename}-`
+      this.$copyText(copyMessage).then(function (e) {
+        that.$notify({ type: 'success', message: '内容已复制到剪切板！' })
+      }, function (e) {
+        that.$notify({ type: 'error', message: '抱歉，复制失败！' })
+      })
+    },
     toDetail (id) {
       this.$router.push('/job/' + id)
     },
@@ -885,6 +904,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .click_copy {
+    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
+    right: 15px;bottom: 150px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
+  }
+  .generate_posters {
+    position: fixed;z-index: 1;width: 41px;height: 41px;border-radius: 999px;background-color: rgba(0,0,0,0.7);
+    right: 15px;bottom: 100px;font-size: 12px;color: #ffffff;line-height: 14px;text-align: center;padding-top: 7px;
+  }
 .my_app {
   padding-bottom: 16px;
 }
@@ -1639,7 +1666,6 @@ export default {
   background-color: #eef9ff;
   overflow: hidden;
   padding-left: 50px;
-  margin-bottom: 9px;
 }
 .box_1 {
   .chat_bar {
@@ -1772,4 +1798,18 @@ export default {
 .m-top{margin-top:25px;}
 .m-btm{margin-bottom:20px;}
 .bold{font-weight:bold;}
+.return_list{
+  width: 80px;
+  height: 30px;
+  line-height: 30px;
+  background: rgba(0,0,0, .5);
+  border-radius: 30px 0 0 30px;
+  color: #fff;
+  text-align: center;
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
 </style>

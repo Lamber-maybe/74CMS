@@ -34,15 +34,8 @@ class Resume extends \app\common\controller\Backend
                     $where['r.uid'] = ['eq', intval($keyword)];
                     break;
                 case 4:
-                    $map_userinfo = model('Member')
-                        ->where(['mobile' => ['eq', $keyword]])
-                        ->where(['utype' => ['eq', 2]])
-                        ->find();
-                    if ($map_userinfo === null) {
-                        $where['r.id'] = 0;
-                    } else {
-                        $where['r.uid'] = ['eq', $map_userinfo['uid']];
-                    }
+                    $where['m.mobile'] = ['eq', $keyword];
+                    $where['m.utype'] = ['eq', 2];
                     break;
                 default:
                     break;
@@ -67,22 +60,32 @@ class Resume extends \app\common\controller\Backend
         }
         $total = model('Resume')
             ->alias('r')
+            ->join(config('database.prefix').'member m','r.uid=m.uid','LEFT')
             // ->force($force_index_name)
             ->where($where)
             ->count();
         $list = model('Resume')
             ->alias('r')
-            ->field('r.*')
+            ->join(config('database.prefix').'member m','r.uid=m.uid','LEFT')
+            ->field('r.id,r.uid,r.is_display,r.high_quality,r.display_name,r.audit,r.stick,r.service_tag,r.fullname,r.sex,r.birthday,r.residence,r.height,r.marriage,r.education,r.enter_job_time,r.householdaddress,r.major1,r.major2,r.major,r.tag,r.idcard,r.specialty,r.photo_img,r.addtime,r.refreshtime,r.current,r.click,r.tpl,r.custom_field_1,r.custom_field_2,r.custom_field_3,r.platform,r.remark,r.comment,m.mobile')
             ->where($where)
             ->order($order)
             ->page($current_page . ',' . $pagesize)
             ->select();
+            
         $ridarr = [];
         $uidarr = [];
         $complete_list = [];
+        $photo_arr = $photo_id_arr = [];
         foreach ($list as $key => $value) {
             $ridarr[] = $value['id'];
             $uidarr[] = $value['uid'];
+            $value['photo_img'] > 0 && ($photo_id_arr[] = $value['photo_img']);
+        }
+        if (!empty($photo_id_arr)) {
+            $photo_arr = model('Uploadfile')->getFileUrlBatch(
+                $photo_id_arr
+            );
         }
         if (!empty($ridarr)) {
             $complete_list = model('Resume')->countCompletePercentBatch(
@@ -96,6 +99,9 @@ class Resume extends \app\common\controller\Backend
         }
 
         foreach ($list as $key => $value) {
+            $value['photo_img_src'] = isset($photo_arr[$value['photo_img']])
+                ? $photo_arr[$value['photo_img']]
+                : default_empty('photo');
             $value['age'] =
                 intval($value['birthday']) == 0
                     ? '年龄未知'
@@ -117,7 +123,9 @@ class Resume extends \app\common\controller\Backend
                 ? $complete_list[$value['id']]
                 : 0;
             $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
-            $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;
+            $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;     
+            $value['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
+        
             $list[$key] = $value;
         }
         $return['items'] = $list;
@@ -1567,7 +1575,7 @@ class Resume extends \app\common\controller\Backend
             $this->ajaxReturn(500, '请选择');
         }
         model('Resume')->save(['comment'=>$comment],['id'=>$id]);
-        model('AdminLog')->record('将简历点评内容变更为“' .$comment.'”】。简历ID【'.$id.'】',$this->admininfo);
+        model('AdminLog')->record('将简历点评内容变更为“' .$comment.'”。简历ID【'.$id.'】',$this->admininfo);
         $this->ajaxReturn(200, '操作成功');
     }
     /**

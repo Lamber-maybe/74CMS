@@ -29,6 +29,8 @@ u {text-decoration: none;}
 
 .substring {overflow: hidden; white-space: nowrap; text-overflow: ellipsis;}
 
+.substring2 {display: -webkit-box; overflow: hidden; text-overflow: ellipsis;-webkit-box-orient:vertical;-webkit-line-clamp:2; }
+
 .nowrap {white-space: nowrap;}
 
 .clear {clear: both;height: 0;font-size: 0;line-height: 0;}
@@ -45,4 +47,14 @@ u {text-decoration: none;}
 
 .clearfix {
   *zoom: 1;
+}
+.left{
+  float: left;
+}
+.right{
+  float: right;
+}
+
+[v-cloak] {
+  display: none;
 }

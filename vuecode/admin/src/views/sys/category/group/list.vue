@@ -70,7 +70,7 @@
         </el-form-item>
         <el-form-item label="排序" prop="sort_id">
           <el-input
-            v-model="form.sort_id"
+            v-model.number="form.sort_id"
             autocomplete="off"
             style="width:100px"
           />

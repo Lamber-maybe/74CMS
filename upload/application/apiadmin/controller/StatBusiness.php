@@ -8,6 +8,11 @@ class StatBusiness extends \app\common\controller\Backend
      */
     public function setmeal()
     {
+        $return = $this->_setmeal();
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    public function _setmeal()
+    {
         $return = [
             'dimensions' => ['套餐类型', '企业数', '过期数'],
             'source' => []
@@ -17,6 +22,7 @@ class StatBusiness extends \app\common\controller\Backend
             ->column('setmeal_id,count(*) as total');
         $datalist_overtime = model('MemberSetmeal')
             ->where('deadline', 'BETWEEN', [0, time()])
+            ->where('deadline', 'neq',0)
             ->group('setmeal_id')
             ->column('setmeal_id,count(*) as total');
         $setmeal_list = model('Setmeal')->select();
@@ -30,7 +36,7 @@ class StatBusiness extends \app\common\controller\Backend
                 : 0;
             $return['source'][] = $arr;
         }
-        $this->ajaxReturn(200, '获取数据成功', $return);
+        return $return;
     }
     /**
      * 职位增值服务分析

@@ -199,19 +199,19 @@
     </el-dialog>
     <el-dialog
       v-if="dialogListVisible"
-      title="登录日志"
+      title="会员日志"
       :visible.sync="dialogListVisible"
       width="50%"
       :close-on-click-modal="false"
       @close="closeListDialog"
     >
-      <dialist :uid="listUid" @setDialogFormVisible="closeListDialog" />
+      <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import dialist from './loglist.vue'
+import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import diaform from './form.vue'
 import detail from './detail.vue'
@@ -222,7 +222,7 @@ export default {
   components: {
     diaform,
     detail,
-    dialist
+    MemberLog
   },
   filters: {
     timeFilter(timestamp) {

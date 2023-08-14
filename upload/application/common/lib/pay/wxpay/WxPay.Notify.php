@@ -1,6 +1,7 @@
 <?php
 namespace app\common\lib\pay\wxpay;
 
+
 /**
  *
  * 回调基础类
@@ -55,6 +56,8 @@ class WxPayNotify extends \app\common\lib\pay\wxpay\WxPayNotifyReply
         }
         $data['out_trade_no'] = substr($data['out_trade_no'], 4);
         $data['total_fee'] = $data['total_fee'] / 100;
+        
+
         $order = model('Order')
             ->where('oid', $data['out_trade_no'])
             ->find();

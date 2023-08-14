@@ -20,13 +20,13 @@ class Index extends \app\common\controller\Backend
     public function chart(){
         $type = input('get.type/d', 0, 'intval');
         if($type==1){
-            $data = $this->chartDownResume();
+            $data = $this->chartDownResume(30);
         }else if($type==2){
-            $data = $this->chartJobApply();
+            $data = $this->chartJobApply(30);
         }else if($type==3){
-            $data = $this->chartIncome();
+            $data = $this->chartIncome(30);
         }else{
-            $data = $this->chartReg();
+            $data = $this->chartReg(15);
         }
         $this->ajaxReturn(200, '获取数据成功', $data);
     }
@@ -102,7 +102,7 @@ class Index extends \app\common\controller\Backend
      * 获取待办信息
      */
     protected function getPendingData(){
-        $return[] = ['title'=>'待认证企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'company_audit'];
+        $return[] = ['title'=>'待审核企业','num'=>model('Company')->alias('a')->join(config('database.prefix').'company_auth b','b.uid=a.uid','LEFT')->where('a.audit',0)->where('b.id','not null')->count(),'alias'=>'company_audit'];
         $return[] = ['title'=>'待审核职位','num'=>model('Job')->where('audit',0)->count(),'alias'=>'job_audit'];
         $return[] = ['title'=>'待审核简历','num'=>model('Resume')->where('audit',0)->count(),'alias'=>'resume_audit'];
         $return[] = ['title'=>'注销账号申请','num'=>model('MemberCancelApply')->where('status',0)->count(),'alias'=>'cancel_apply'];
@@ -129,14 +129,15 @@ class Index extends \app\common\controller\Backend
     /**
      * 注册量趋势
      */
-    protected function chartReg()
+    protected function chartReg($days)
     {
         $return = [
+            'legend' => ['个人','企业'],
             'xAxis' => [],
             'series' => []
         ];
         $endtime = strtotime('today');
-        $starttime = $endtime - 86400 * 15;
+        $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
 
         $resume_data = model('Resume')
@@ -163,14 +164,14 @@ class Index extends \app\common\controller\Backend
     /**
      * 下载简历趋势
      */
-    protected function chartDownResume()
+    protected function chartDownResume($days)
     {
         $return = [
             'xAxis' => [],
             'series' => []
         ];
         $endtime = strtotime('today');
-        $starttime = $endtime - 86400 * 30;
+        $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
 
         $down_resume_data = model('CompanyDownResume')
@@ -189,14 +190,14 @@ class Index extends \app\common\controller\Backend
     /**
      * 投递职位趋势
      */
-    protected function chartJobApply()
+    protected function chartJobApply($days)
     {
         $return = [
             'xAxis' => [],
             'series' => []
         ];
         $endtime = strtotime('today');
-        $starttime = $endtime - 86400 * 30;
+        $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
 
         $job_apply_data = model('JobApply')
@@ -215,14 +216,14 @@ class Index extends \app\common\controller\Backend
     /**
      * 收入趋势
      */
-    protected function chartIncome()
+    protected function chartIncome($days)
     {
         $return = [
             'xAxis' => [],
             'series' => []
         ];
         $endtime = strtotime('today');
-        $starttime = $endtime - 86400 * 30;
+        $starttime = $endtime - 86400 * $days;
         $daterange = [$starttime, $endtime + 86400 - 1];
 
         $payment_data = model('Order')
@@ -234,6 +235,54 @@ class Index extends \app\common\controller\Backend
             $return['xAxis'][] = date('m/d', $i);
             $return['series'][] = isset($payment_data[$i])
                 ? $payment_data[$i]
+                : 0;
+        }
+        return $return;
+    }
+    /**
+     * 今日收入
+     */
+    protected function todayIncomeTotal(){
+        $timestampToday = strtotime('today');
+        $return['personalTodayNewOrderNum'] = model('Order')->where('utype',2)->where('addtime','egt',$timestampToday)->count();
+        $return['personalTodayPayOrderNum'] = model('Order')->where('utype',2)->where('paytime','egt',$timestampToday)->count();
+        $return['personalTodayPayOrderAmount'] = model('Order')->where('utype',2)->where('paytime','egt',$timestampToday)->sum('amount');
+        $return['companyTodayNewOrderNum'] = model('Order')->where('utype',1)->where('addtime','egt',$timestampToday)->count();
+        $return['companyTodayPayOrderNum'] = model('Order')->where('utype',1)->where('paytime','egt',$timestampToday)->count();
+        $return['companyTodayPayOrderAmount'] = model('Order')->where('utype',1)->where('paytime','egt',$timestampToday)->sum('amount');
+        return $return;
+    }
+    /**
+     * 下载和投递趋势(合并显示)
+     */
+    protected function chartDownAndApply($days)
+    {
+        $return = [
+            'legend' => ['下载量','投递量'],
+            'xAxis' => [],
+            'series' => []
+        ];
+        $endtime = strtotime('today');
+        $starttime = $endtime - 86400 * $days;
+        $daterange = [$starttime, $endtime + 86400 - 1];
+
+        $down_resume_data = model('CompanyDownResume')
+            ->where('addtime','between time',$daterange)
+            ->group('time')
+            ->column('UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num');
+
+        $job_apply_data = model('JobApply')
+            ->where('addtime','between time',$daterange)
+            ->group('time')
+            ->column('UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num');
+
+        for ($i = $starttime; $i <= $endtime; $i += 86400) {
+            $return['xAxis'][] = date('m/d', $i);
+            $return['series'][0][] = isset($down_resume_data[$i])
+                ? $down_resume_data[$i]
+                : 0;
+            $return['series'][1][] = isset($job_apply_data[$i])
+                ? $job_apply_data[$i]
                 : 0;
         }
         return $return;

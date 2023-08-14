@@ -40,9 +40,7 @@ class Article extends \app\index\controller\Base
             $list = $list->where('a.cid','eq',$cid);
         }
         $list = $list->where('a.is_display',1)->paginate(['list_rows'=>$pagesize,'page'=>$current_page,'type'=>'\\app\\common\\lib\\Pager']);
-        
         $pagerHtml = $list->render();
-
         $thumb_id_arr = $thumb_arr = [];
         foreach ($list as $key => $value) {
             $value['thumb'] > 0 && ($thumb_id_arr[] = $value['thumb']);
@@ -97,7 +95,6 @@ class Article extends \app\index\controller\Base
                 abort(404,'页面不存在');
             }
         }
-        
         $prev = model('Article')
             ->where('id', '>', $info['id'])
             ->order('id asc')
@@ -153,7 +150,6 @@ class Article extends \app\index\controller\Base
                 ? model('Uploadfile')->getFileUrl($info['thumb'])
                 : default_empty('thumb');
         $info['source_text'] = $info['source'] == 1 ? '转载' : '原创';
-        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         if($pageCache['expire']>0){
             model('Page')->writeCacheByAlias('articleshow',$info,$pageCache['expire'],$id);
         }

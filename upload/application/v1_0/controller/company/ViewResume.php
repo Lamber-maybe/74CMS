@@ -211,6 +211,7 @@ class ViewResume extends \app\v1_0\controller\common\Base
                 'company_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除已查看简历【数据ID：'.$id.'】');
         $this->ajaxReturn(200, '删除成功');
     }
     public function deleteBatch()
@@ -220,6 +221,7 @@ class ViewResume extends \app\v1_0\controller\common\Base
             ->whereIn('id',$id)
             ->where('company_uid',$this->userinfo->uid)
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除已查看简历【数据ID：'.implode(",",$id).'】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

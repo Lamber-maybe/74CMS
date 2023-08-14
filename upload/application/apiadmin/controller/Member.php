@@ -69,16 +69,22 @@ class Member extends \app\common\controller\Backend
         $total = model('Member')->alias('a')
             ->where($where)
             ->count();
-        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot';
+        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform';
         $list = model('Member')->alias('a');
         if($list_type=='company'){
             $field .= ',b.companyname';
             $list = $list->join(config('database.prefix').'company b','a.uid=b.uid','LEFT');
+        }else if($list_type=='personal'){
+            $field .= ',b.fullname';
+            $list = $list->join(config('database.prefix').'resume b','a.uid=b.uid','LEFT');
         }
         $list = $list->field($field)->where($where)
                 ->order($order)
                 ->page($current_page . ',' . $pagesize)
                 ->select();
+        foreach ($list as $key => $value) {
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
+        }
         
         $return['items'] = $list;
         $return['total'] = $total;
@@ -283,18 +289,32 @@ class Member extends \app\common\controller\Backend
 
         $info = model('Member')
             ->field(
-                'uid,utype,username,mobile,last_login_time,last_login_ip,last_login_address,reg_time,reg_ip,reg_address'
+                'uid,utype,username,mobile,last_login_time,last_login_ip,last_login_address,reg_time,reg_ip,reg_address,platform,status'
             )
             ->find($uid);
         if (!$info) {
             $this->ajaxReturn(500, '数据获取失败');
         }
+        $info->platform_cn = isset(model('BaseModel')->map_platform[$info->platform])?model('BaseModel')->map_platform[$info->platform]:'未知平台';
         $resume = model('Resume')
             ->where('uid', $uid)
             ->find();
+        if($resume!==null){
+            $resume->complete_percent = model('Resume')->countCompletePercent(0,$uid);
+            $resume->web_link = config('global_config.sitedomain').url('index/resume/show',['id'=>$resume->id]);
+            $resume->mobile_link = config('global_config.mobile_domain').'resume/'.$resume->id;
+        }
+        $company = model('Company')
+                ->where('uid', $uid)
+                ->find();
+        if($company!==null){
+            $company->web_link = config('global_config.sitedomain').url('index/company/show',['id'=>$company->id]);
+            $company->mobile_link = config('global_config.mobile_domain').'company/'.$company->id;
+        }
         $this->ajaxReturn(200, '获取数据成功', [
             'info' => $info,
             'resume' => $resume,
+            'company'=>$company
         ]);
     }
     //积分管理
@@ -458,7 +478,7 @@ class Member extends \app\common\controller\Backend
         $points_val = input('post.points_val/d', 0, 'intval');
         $explain = input('post.explain/s', '', 'trim');
         $is_charge = input('post.is_charge/d', 0, 'intval');
-        $charge_val = input('post.charge_val/d', 0, 'floatval');
+        $charge_val = input('post.charge_val/f', 0, 'floatval');
         if ($uid == 0) {
             $this->ajaxReturn(500, '请选择会员');
         }
@@ -517,15 +537,63 @@ class Member extends \app\common\controller\Backend
         $uid = input('get.uid/d', 0, 'intval');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
+        $where['is_login'] = 1;
         if ($uid > 0) {
             $where['uid'] = $uid;
         }
 
-        $total = model('MemberLoginLog')
+        $total = model('MemberActionLog')
             ->where($where)
             ->count();
-        $list = model('MemberLoginLog')
+        $list = model('MemberActionLog')
             ->where($where)
+            ->order('id desc')
+            ->page($current_page . ',' . $pagesize)
+            ->select();
+        foreach ($list as $key => $value) {
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'-';
+        }
+        $return['items'] = $list;
+        $return['total'] = $total;
+        $return['current_page'] = $current_page;
+        $return['pagesize'] = $pagesize;
+        $return['total_page'] = ceil($total / $pagesize);
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    public function actionlog()
+    {
+        $where = [];
+        $keyword = input('get.keyword/s', '', 'trim');
+        $uid = input('get.uid/d', 0, 'intval');
+        $current_page = input('get.page/d', 1, 'intval');
+        $pagesize = input('get.pagesize/d', 10, 'intval');
+        if ($uid > 0) {
+            $where['uid'] = $uid;
+        }
+        if ($keyword!='') {
+            $against = '';
+            $keyword = trim($keyword);
+            if (false !== stripos($keyword, ' ')) {
+                $keyword = merge_spaces($keyword);
+                $tmp_keyword_arr = explode(' ', $keyword);
+                foreach ($tmp_keyword_arr as $key => $value) {
+                    $against .= '+' . $value . ' ';
+                }
+                $against = trim($against);
+            } else {
+                $against = $keyword;
+            }
+            $wherefulltext = " MATCH (`content`) AGAINST ('" . $against . "' IN BOOLEAN MODE) ";
+        }else{
+            $wherefulltext = '';
+        }
+        $total = model('MemberActionLog')
+            ->where($where)
+            ->where($wherefulltext)
+            ->count();
+        $list = model('MemberActionLog')
+            ->where($where)
+            ->where($wherefulltext)
             ->order('id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
@@ -562,15 +630,8 @@ class Member extends \app\common\controller\Backend
             ]
         );
         $user_token = $JwtAuth->getString();
-        //把token存入本地缓存，并设置有效期
-        $filecache_instance = new \think\cache\driver\File([
-            'path' => TOKEN_PATH
-        ]);
-        $filecache_instance->set(
-            $user_token,
-            '',
-            $this->expire_platform['web']
-        );
+        //把token存入数据表，并设置有效期
+        model('IdentityToken')->makeToken($user_token,$this->expire_platform['web']);
         $next_code = 200;
         if ($userinfo['utype'] == 1) {
             $company_profile = model('Company')

@@ -9,7 +9,7 @@
                     <li><a href="{#:url('index/job/index')#}">最新职位</a></li>
                     <li><a href="{#:url('index/company/index')#}">企业信息</a></li>
                 </ul>
-
+                
                 <ul class="footer_list float">
                     <li class="fc">企业</li>
                     <li><a href="javascript:;" @click="handlerCompanyIndex">企业入驻</a></li>
@@ -17,7 +17,7 @@
                     <li><a href="javascript:;" @click="handlerCompanyService">会员服务</a></li>
                     <li><a href="javascript:;" @click="handlerCompanyJobApplyList">招聘管理</a></li>
                 </ul>
-
+                
                 <?php 
                     $explain_data1 = model('Explain')->where('is_display',1)->order('sort_id desc,id asc')->limit(4)->column('id,title,link_url'); 
                     $explain_list1 = [];
@@ -38,7 +38,7 @@
                     <li><a target="{#$vo.target#}" href="{#$vo.link_url#}">{#$vo.title#}</a></li>
                     {#/volist#}
                 </ul>
-
+                
                 <?php 
                     $help_list = model('Help')->where('is_display',1)->order('sort_id desc')->limit(4)->column('id,title,cid'); 
                 ?>
@@ -67,16 +67,14 @@
         <div class="footer_contactType">
             <p class="contact_title">联系电话</p>
             <div class="contact_tel">
-                <img src="__ROOT__/assets/images/contact_icon.png">
+                <img src="__ROOT__/assets/images/contact_icon.png" >
                 <span>{#$global_config.contact_tel#}</span>
             </div>
             <p class="job_time">服务时间：{#$global_config.service_time#}</p>
-            <p class="job_QQ">客服QQ：<a target="_blank"
-                    href="http://wpa.qq.com/msgrd?v=3&uin={#$global_config.service_qq#}&site=在线客服&menu=yes">{#$global_config.service_qq#}</a>
-            </p>
+            <p class="job_QQ">客服QQ：<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={#$global_config.service_qq#}&site=在线客服&menu=yes">{#$global_config.service_qq#}</a></p>
         </div>
     </div>
-
+    
     <div class="indexFooter_nav_con">
         <ul class="indexFooter_nav clearfix">
             <li><a>网站首页</a></li>
@@ -100,8 +98,7 @@
         </ul>
     </div>
     <div class="footer_text1">
-        <span>{#$global_config.bottom_other#}</span> <span
-            class="address">联系地址：{#$global_config.contact_address#}</span>
+        <span>{#$global_config.bottom_other#}</span>	<span class="address">联系地址：{#$global_config.contact_address#}</span>
     </div>
     <div class="footer_text2">
         {#if condition="$global_config.service_license!=''"#}
@@ -109,8 +106,7 @@
         {#/if#}
         <span><a target="_blank" href="https://beian.miit.gov.cn/">网站备案:{#$global_config.icp#}</a></span>
         {#if condition="$global_config.network_security!=''"#}
-        <span class="security"><a target="_blank"
-                href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={#:findNumByStr($global_config.network_security)#}">公网安备:{#$global_config.network_security#}</a></span>
+		<span class="security"><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={#:findNumByStr($global_config.network_security)#}">公网安备:{#$global_config.network_security#}</a></span>     
         {#/if#}
         {#if condition="$global_config.statistics!=''"#}
         {#:htmlspecialchars_decode($global_config.statistics)#}
@@ -118,51 +114,50 @@
     </div>
 </div>
 
-<script>
-    let version = "<?php echo config('version.version')?>";
-    console.log('\n' + ' %c 74cmsSE v' + version + '  %c https://www.74cms.com ' + '\n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
-
+<script> 
+let version = "<?php echo config('version.version')?>";
+console.log('\n' + ' %c 74cmsSE v'+version+'  %c https://www.74cms.com ' + '\n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     var app = new Vue({
         el: '#footerContent',
-        data: {
-            mobileQrcode: ''
+        data:{
+            mobileQrcode:''
         },
-        created: function () {
-            this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}"
+        created:function(){
+            this.mobileQrcode = qscms.apiUrl + qscms.apiList.qrcode + "?type=normal&url={#$global_config.mobile_domain#}" 
         },
-        methods: {
-            handlerResumeIndex: function () {
+        methods:{
+            handlerResumeIndex:function(){
                 location.href = qscms.locationList.personalResume
             },
-            handlerPersonalJobApplyList: function () {
+            handlerPersonalJobApplyList:function(){
                 location.href = qscms.locationList.personalJobApplyList
             },
-            handlerCompanyIndex: function () {
+            handlerCompanyIndex:function(){
                 location.href = qscms.locationList.indexCompany
             },
-            handlerAddJob: function () {
-                httpget(qscms.apiList.companyCheckJobaddNum, {}).then(function (res) {
+            handlerAddJob:function(){
+                httpget(qscms.apiList.companyCheckJobaddNum, {}).then(function(res){
                     if (res.data.enable_addjob_num <= 0) {
                         this.$confirm('您当前是' +
                             res.data.setmeal_name +
-                            '，当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！', '系统提示', {
+                            '，当前可发布职位数为0，建议您立即升级套餐或将暂时不招聘的职位设为关闭！','系统提示',{
                             confirmButtonText: '升级套餐',
                             type: 'warning'
                         })
-                            .then(function () {
-                                location.href = qscms.locationList.companySetmealAdd
-                            })
-                            .catch(function () { })
+                        .then(function(){
+                            location.href = qscms.locationList.companySetmealAdd
+                        })
+                        .catch(function(){})
                         return false
                     } else {
                         location.href = qscms.locationList.companyJobAdd
                     }
-                }).catch(function () { })
+                }).catch(function(){})
             },
-            handlerCompanyService: function () {
+            handlerCompanyService:function(){
                 location.href = qscms.locationList.companyService
             },
-            handlerCompanyJobApplyList: function () {
+            handlerCompanyJobApplyList:function(){
                 location.href = qscms.locationList.companyJobApplyList
             },
         }

@@ -27,10 +27,11 @@ class Qrcode extends \app\v1_0\controller\common\Base
         if($url = input('get.url/s','','trim')){
             ob_clean();
             $url = htmlspecialchars_decode($url,ENT_QUOTES);
-            vendor('phpqrcode.phpqrcode');   
+            vendor('phpqrcode.phpqrcode');
             $qrcode = new \QRcode();
             ob_clean();
             $qrcode::png($url,false, 'H', 8, 2);
+            exit;
         }
     }
     /**

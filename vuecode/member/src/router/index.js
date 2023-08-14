@@ -557,8 +557,6 @@ const routes = [
               }
             ]
           },
-
-
         ]
       },
       {
@@ -689,6 +687,18 @@ const routes = [
           utype: 1
         }
       },
+      // {
+      //   path:'/company/manage/ComAuth', //企业认证
+      //   name: 'CompanyManageComAuth',
+      //   component: () => import('../views/company/manage/ComAuth'),
+      //   meta: {
+      //     title: '企业风采 - 企业管理 - 企业会员中心',
+      //     keepAlive: false,
+      //     loginCheck: true,
+      //     utype: 1,
+      //     activeMenu: '/company/manage/ComAuth'
+      //   }
+      // },
       {
         path: '/company/account', //账号管理
         name: 'CompanyAccount',
@@ -894,11 +904,6 @@ const routes = [
     ]
   },
   {
-    path: '/error',
-    component: () => import('@/views/Error'),
-    meta: { title: '系统提示' }
-  },
-  {
     path: '/video_test/:interview_id', //视频面试测试
     name: 'Video',
     component: () => import('../views/vi/Test'),
@@ -919,6 +924,16 @@ const routes = [
       loginCheck: true,
       utype: 0
     }
+  },
+  {
+    path: '/ipdeny',
+    component: () => import('@/views/ipdeny'),
+    meta: { title: '禁止访问' }
+  },
+  {
+    path: '/error',
+    component: () => import('@/views/Error'),
+    meta: { title: '系统提示' }
   },
   {
     path: '*',

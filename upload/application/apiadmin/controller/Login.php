@@ -39,10 +39,10 @@ class Login extends \app\common\controller\Backend
                 ->where('id', $admininfo['id'])
                 ->update($login_update_info);
             $roleinfo = model('AdminRole')->find($admininfo['role_id']);
-            $admininfo['access'] =
-                $roleinfo['access'] == 'all'
-                    ? $roleinfo['access']
-                    : unserialize($roleinfo['access']);
+            $admininfo['access'] = $roleinfo['access'] == 'all' ? $roleinfo['access'] : unserialize($roleinfo['access']);
+            $admininfo['access_mobile'] = $roleinfo['access_mobile'] == 'all' ? $roleinfo['access_mobile'] : unserialize($roleinfo['access_mobile']);
+            $admininfo['access_export'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_export'];
+            $admininfo['access_delete'] = $roleinfo['access'] == 'all' ? 1 : $roleinfo['access_delete'];
             $admininfo['rolename'] = $roleinfo['name'];
             $JwtAuth = \app\common\lib\JwtAuth::mkToken(
                 config('sys.safecode'),
@@ -53,7 +53,9 @@ class Login extends \app\common\controller\Backend
             model('AdminLog')->record('登录成功', $admininfo, 1);
             $this->ajaxReturn(200, '登录成功', [
                 'token' => $admin_token,
-                'access' => $admininfo['access']
+                'access' => $admininfo['access'],
+                'access_export' => $admininfo['access_export'],
+                'access_delete' => $admininfo['access_delete']
             ]);
         }
     }

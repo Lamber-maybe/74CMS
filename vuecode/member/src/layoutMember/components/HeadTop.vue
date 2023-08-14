@@ -93,7 +93,7 @@
           <div class="dr_g">
             <div class="g_t">信息专栏</div>
             <div class="g_teg">
-              
+              <a :href="link_url_web.jobfairollist" class="g_it">网络招聘会</a>
               <a :href="link_url_web.noticelist" class="g_it">网站公告</a>
               <a :href="link_url_web.hrtoollist" class="g_it">HR工具箱</a>
               <a :href="link_url_web.articlelist" class="g_it">职场资讯</a>

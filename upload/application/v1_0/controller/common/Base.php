@@ -1,6 +1,8 @@
 <?php
 namespace app\v1_0\controller\common;
 
+use think\Request;
+
 class Base extends \app\common\controller\Base
 {
     protected $userinfo = null;
@@ -10,6 +12,9 @@ class Base extends \app\common\controller\Base
 
     public function _initialize()
     {
+        if(Request::instance()->method() == 'OPTIONS'){
+            exit;
+        }
         parent::_initialize();
         $this->platform = input('param.platform/s','','trim');
         if($this->platform==''){
@@ -45,7 +50,7 @@ class Base extends \app\common\controller\Base
             $this->userinfo === null ||
             ($need_utype > 0 && $this->userinfo->utype != $need_utype)
         ) {
-            
+
             $this->ajaxReturn($code, $tip);
         }
         if($this->userinfo !== null){
@@ -57,7 +62,7 @@ class Base extends \app\common\controller\Base
                 $this->ajaxReturn(50002, '请先登录');
             }else{
                 if($member['last_login_time']==0 || strtotime(date('Y-m-d',$member['last_login_time']))!=strtotime('today')){
-                    $this->writeLoginLog($member['uid']);
+                    $this->writeMemberActionLog($member['uid'],'登录成功',true);
                 }
             }
         }
@@ -80,47 +85,45 @@ class Base extends \app\common\controller\Base
                 }
             } catch (\Exception $e) {
             }
-            //判断本地缓存中的token是否过期，如果没有过期，更新token有效期
-            $filecache_instance = new \think\cache\driver\File([
-                'path' => TOKEN_PATH
-            ]);
-            if (false === $filecache_instance->get($user_token)) {
-                $this->userinfo = null;
-            } else {
-                $filecache_instance->set(
-                    $user_token,
-                    '',
-                    $this->expire_platform[config('platform')]
-                );
+            //判断token是否过期，如果没有过期，更新token有效期
+            if($this->userinfo!==null){
+                $refresh_result = model('IdentityToken')->refreshToken($user_token);
+                if($refresh_result===false){
+                    $this->userinfo = null;
+                }
             }
         }
     }
-    protected function writeLoginLog($uid)
+    protected function writeMemberActionLog($uid,$content,$isLogin=false)
     {
         $memberinfo = model('Member')
             ->where('uid', $uid)
             ->find();
-        $memberinfo->last_login_time = time();
-        $memberinfo->last_login_ip = get_client_ip();
-        $memberinfo->last_login_address = get_client_ipaddress(
-            $memberinfo->last_login_ip
-        );
-        $memberinfo->last_login_ip =
-            $memberinfo->last_login_ip . ':' . get_client_port();
-        $memberinfo->nologin_notice_counter = 0;
-        $memberinfo->save();
-
-        $login_log_data['utype'] = $memberinfo->utype;
-        $login_log_data['uid'] = $uid;
-        $login_log_data['addtime'] = $memberinfo->last_login_time;
-        $login_log_data['ip'] = $memberinfo->last_login_ip;
-        $login_log_data['ip_addr'] = $memberinfo->last_login_address;
-        $login_log_data['platform'] = config('platform');
-        model('MemberLoginLog')->save($login_log_data);
+        if($isLogin===true){
+            $memberinfo->last_login_time = time();
+            $memberinfo->last_login_ip = get_client_ip();
+            $memberinfo->last_login_address = get_client_ipaddress(
+                $memberinfo->last_login_ip
+            );
+            $memberinfo->last_login_ip =
+                $memberinfo->last_login_ip . ':' . get_client_port();
+            $memberinfo->nologin_notice_counter = 0;
+            $memberinfo->save();
+        }
+        $action_log_data['utype'] = $memberinfo->utype;
+        $action_log_data['uid'] = $uid;
+        $action_log_data['content'] = $content;
+        $action_log_data['addtime'] = time();
+        $action_log_data['ip'] = get_client_ip();
+        $action_log_data['ip_addr'] = get_client_ipaddress($action_log_data['ip']);
+        $action_log_data['ip'] = $action_log_data['ip'] . ':' . get_client_port();
+        $action_log_data['platform'] = config('platform');
+        $action_log_data['is_login'] = $isLogin?1:0;
+        model('MemberActionLog')->save($action_log_data);
     }
     public function loginExtra($uid, $utype, $mobile)
     {
-        $this->writeLoginLog($uid);
+        $this->writeMemberActionLog($uid,'登录成功',true);
         $JwtAuth = \app\common\lib\JwtAuth::mkToken(
             config('sys.safecode'),
             31212000, //360天有效期
@@ -133,15 +136,9 @@ class Base extends \app\common\controller\Base
             ]
         );
         $user_token = $JwtAuth->getString();
-        //把token存入本地缓存，并设置有效期
-        $filecache_instance = new \think\cache\driver\File([
-            'path' => TOKEN_PATH
-        ]);
-        $filecache_instance->set(
-            $user_token,
-            '',
-            $this->expire_platform[config('platform')]
-        );
+        //把token存入数据表，并设置有效期
+        model('IdentityToken')->makeToken($user_token,$this->expire_platform[config('platform')]);
+        
         if ($utype == 1) {
             $next_code = $this->interceptCompanyProfile(true, $uid);
             if ($next_code == 200) {

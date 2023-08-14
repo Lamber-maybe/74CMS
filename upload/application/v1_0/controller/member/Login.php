@@ -390,7 +390,6 @@ class Login extends \app\v1_0\controller\common\Base
         );
     }
     
-    
     public function logout(){
         $visitor = new \app\common\lib\Visitor;
         $visitor->setLogout();

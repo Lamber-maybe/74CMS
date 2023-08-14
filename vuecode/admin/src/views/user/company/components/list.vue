@@ -313,19 +313,19 @@
     </el-dialog>
     <el-dialog
       v-if="dialogListVisible"
-      title="登录日志"
+      title="会员日志"
       :visible.sync="dialogListVisible"
       width="50%"
       :close-on-click-modal="false"
       @close="closeListDialog"
     >
-      <dialist :uid="listUid" @setDialogFormVisible="closeListDialog" />
+      <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import dialist from './loglist.vue'
+import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import { companyList, companyAudit, companyDelete, companySetService } from '@/api/company'
 import { management } from '@/api/member'
@@ -334,7 +334,7 @@ import { exportCompanyById } from '@/api/export'
 
 export default {
   components: {
-    dialist
+    MemberLog
   },
   filters: {
     timeFilter(timestamp) {
@@ -630,6 +630,10 @@ export default {
     },
     funExport(){
       var that = this
+      if (that.$store.state.user.access_export == 0){
+        that.$message.error('当前管理员没有导出权限')
+        return false
+      }
       if (that.tableIdarr.length == 0){
         that.$message.error('请选择要导出的企业')
         return false

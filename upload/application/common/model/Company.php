@@ -4,7 +4,7 @@ namespace app\common\model;
 class Company extends \app\common\model\BaseModel
 {
     public $map_audit = [
-        0 => '待认证',
+        0 => '待审核',
         1 => '已认证',
         2 => '未通过'
     ];

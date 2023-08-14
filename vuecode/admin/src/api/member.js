@@ -86,6 +86,13 @@ export function memberLoginLog(params) {
     params
   })
 }
+export function memberActionLog(params) {
+  return request({
+    url: apiArr.memberActionLog,
+    method: 'get',
+    params
+  })
+}
 export function management(params) {
   return request({
     url: apiArr.management,

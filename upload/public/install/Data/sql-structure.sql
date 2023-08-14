@@ -45,6 +45,7 @@ CREATE TABLE `qs_admin` (
   `last_login_time` int(10) unsigned NOT NULL,
   `last_login_ip` varchar(30) NOT NULL,
   `last_login_ipaddress` varchar(30) NOT NULL,
+  `openid` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin||-_-||
@@ -59,7 +60,8 @@ CREATE TABLE `qs_admin_log` (
   `addtime` int(10) unsigned NOT NULL,
   `ip` varchar(30) NOT NULL,
   `ip_addr` varchar(30) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `index_fulltext_index` (`content`) /*!50100 WITH PARSER `ngram` */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin_log||-_-||
 
@@ -68,9 +70,13 @@ CREATE TABLE `qs_admin_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(15) NOT NULL,
   `access` text NOT NULL,
+  `access_mobile` text NOT NULL,
+  `access_export` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `access_delete` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_admin_role||-_-||
+
 
 DROP TABLE IF EXISTS `qs_ali_axb`;
 CREATE TABLE `qs_ali_axb` (
@@ -83,6 +89,7 @@ CREATE TABLE `qs_ali_axb` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_ali_axb||-_-||
+
 
 DROP TABLE IF EXISTS `qs_article`;
 CREATE TABLE `qs_article` (
@@ -590,7 +597,7 @@ DROP TABLE IF EXISTS `qs_explain`;
 CREATE TABLE `qs_explain` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `content` text NOT NULL,
+  `content` longtext NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `link_url` varchar(200) NOT NULL DEFAULT '',
   `seo_keywords` varchar(100) NOT NULL DEFAULT '',
@@ -661,7 +668,7 @@ CREATE TABLE `qs_help` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cid` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
-  `content` text NOT NULL,
+  `content` longtext NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `seo_keywords` varchar(100) NOT NULL DEFAULT '',
   `seo_description` varchar(200) NOT NULL DEFAULT '',
@@ -918,6 +925,7 @@ CREATE TABLE `qs_job_search_rtime` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_job_search_rtime||-_-||
 
+
 DROP TABLE IF EXISTS `qs_link`;
 CREATE TABLE `qs_link` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1051,19 +1059,6 @@ CREATE TABLE `qs_member_cancel_apply` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_member_cancel_apply||-_-||
 
-DROP TABLE IF EXISTS `qs_member_login_log`;
-CREATE TABLE `qs_member_login_log` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `utype` tinyint(1) unsigned NOT NULL,
-  `uid` int(10) unsigned NOT NULL,
-  `addtime` int(10) unsigned NOT NULL,
-  `ip` varchar(30) NOT NULL,
-  `ip_addr` varchar(30) NOT NULL,
-  `platform` varchar(30) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-||-_-||qs_member_login_log||-_-||
-
 DROP TABLE IF EXISTS `qs_member_points`;
 CREATE TABLE `qs_member_points` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1185,7 +1180,7 @@ DROP TABLE IF EXISTS `qs_notice`;
 CREATE TABLE `qs_notice` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `content` text NOT NULL,
+  `content` longtext NOT NULL,
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `link_url` varchar(200) NOT NULL DEFAULT '',
   `seo_keywords` varchar(100) NOT NULL DEFAULT '',
@@ -1896,7 +1891,7 @@ CREATE TABLE `qs_jobfair_online` (
   `thumb` int(10) unsigned NOT NULL,
   `starttime` int(10) unsigned NOT NULL,
   `endtime` int(10) unsigned NOT NULL,
-  `content` text NOT NULL,
+  `content` longtext NOT NULL,
   `enable_setmeal_id` varchar(100) NOT NULL,
   `must_company_audit` tinyint(1) unsigned NOT NULL,
   `min_complete_percent` int(10) unsigned NOT NULL,
@@ -1968,3 +1963,60 @@ CREATE TABLE `qs_scene_qrcode_subscribe_log` (
   KEY `pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_scene_qrcode_subscribe_log||-_-||
+
+DROP TABLE IF EXISTS `qs_badword`;
+CREATE TABLE `qs_badword` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL,
+  `replace_text` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_badword||-_-||
+
+DROP TABLE IF EXISTS `qs_tweets_label`;
+CREATE TABLE `qs_tweets_label` (
+  `id` int(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `value` text NOT NULL,
+  `type` tinyint(3) NOT NULL DEFAULT '2' COMMENT '1-头部底部；2-主体'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_tweets_label||-_-||
+
+DROP TABLE IF EXISTS `qs_tweets_template`;
+CREATE TABLE `qs_tweets_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `temname` varchar(255) NOT NULL,
+  `title` text NOT NULL,
+  `content` text NOT NULL,
+  `footer` text NOT NULL,
+  `addtime` int(10) DEFAULT NULL,
+  `is_sys` tinyint(3) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_tweets_template||-_-||
+
+DROP TABLE IF EXISTS `qs_identity_token`;
+CREATE TABLE `qs_identity_token` (
+  `mdtoken` varchar(32) NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL,
+  `expire` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`mdtoken`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_identity_token||-_-||
+
+DROP TABLE IF EXISTS `qs_member_action_log`;
+CREATE TABLE `qs_member_action_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `utype` tinyint(1) unsigned NOT NULL,
+  `uid` int(10) unsigned NOT NULL,
+  `content` varchar(100) NOT NULL,
+  `addtime` int(10) unsigned NOT NULL,
+  `ip` varchar(30) NOT NULL,
+  `ip_addr` varchar(30) NOT NULL,
+  `platform` varchar(30) NOT NULL DEFAULT '',
+  `is_login` tinyint(1) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  FULLTEXT KEY `index_content` (`content`) /*!50100 WITH PARSER `ngram` */ 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_member_action_log||-_-||

@@ -1,5 +1,10 @@
 <template>
   <div class="app-container">
+    <div class="tip">
+      <p>
+        骑士人才系统已集成多种渠道安全验证，使用验证需正确配置相关渠道信息。
+      </p>
+    </div>
     <el-form
       ref="form"
       v-loading="infoLoading"

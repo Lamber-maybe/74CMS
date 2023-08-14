@@ -90,6 +90,7 @@ class Interview extends \app\v1_0\controller\common\Base
         model('CompanyInterview')
             ->where('id',$id)
             ->setField('is_look', 1);
+        $this->writeMemberActionLog($this->userinfo->uid,'面试邀请设为已查看【记录ID：'.$id.'】');
         $this->ajaxReturn(200, '设置成功');
     }
 }

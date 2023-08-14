@@ -71,7 +71,7 @@
           忘记密码?
         </router-link>
       </div>
-      <div class="btn_group" v-show="hidshow">
+      <div class="btn_group">
         <van-button
           class="btn_mb"
           type="info"
@@ -93,7 +93,7 @@
           {{ layout.utype_other_text }}用户登录
         </van-button>
       </div>
-      <div class="bottom_other_login" v-show="hidshow">
+      <div class="bottom_other_login">
         <div class="other_cell c_qq" @click="qqLogin">QQ登录</div>
         <div class="other_cell c_wx" @click="wxLogin" v-if="inWeixin">
           微信登录
@@ -177,11 +177,7 @@ export default {
       way: 'pwd',
       showPwd: false,
       checked: true,
-      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
-      docmHeight: 0,
-      showHeight: 0,
-      hidshow: true,
-      isResize: false
+      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/
     }
   },
   created () {
@@ -194,24 +190,6 @@ export default {
       handler (val) {
         this.initLayout()
       }
-    },
-    showHeight: function () {
-      this.$nextTick(function () {
-        this.hidshow = this.docmHeight <= this.showHeight
-      })
-    }
-  },
-  mounted () {
-    window.onresize = () => {
-      return (() => {
-        if (!this.isResize) {
-          // 默认屏幕高度
-          this.docmHeight = document.documentElement.clientHeight
-          this.isResize = true
-        }
-        // 实时屏幕高度
-        this.showHeight = document.body.clientHeight
-      })()
     }
   },
   methods: {

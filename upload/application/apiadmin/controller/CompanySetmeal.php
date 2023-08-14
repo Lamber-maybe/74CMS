@@ -67,7 +67,7 @@ class CompanySetmeal extends \app\common\controller\Backend
             ->join(config('database.prefix').'company_contact b','a.uid=b.uid','LEFT')
             ->join(config('database.prefix').'member_setmeal c','a.uid=c.uid','LEFT')
             ->join(config('database.prefix').'setmeal d','d.id=c.setmeal_id','LEFT')
-            ->field('a.id,a.uid,a.companyname,b.contact,b.mobile,c.setmeal_id,c.deadline,d.name as setmeal_name')
+            ->field('a.id,a.uid,a.companyname,b.contact,b.mobile,c.setmeal_id,c.deadline,c.download_resume_point,d.name as setmeal_name')
             ->where($where)
             ->order('a.id desc')
             ->page($current_page . ',' . $pagesize)

@@ -8,11 +8,18 @@ class StatOverview extends \app\common\controller\Backend
      */
     public function total()
     {
+        $return = $this->numTotal();
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    /**
+     * 数字统计
+     */
+    protected function numTotal(){
         $return['company'] = model('Company')->count();
         $return['job'] = model('Job')->count();
         $return['job_amount'] = model('Job')->sum('amount');
         $return['resume'] = model('Resume')->count();
-        $this->ajaxReturn(200, '获取数据成功', $return);
+        return $return;
     }
     /**
      * 总览-已完成订单
@@ -60,7 +67,12 @@ class StatOverview extends \app\common\controller\Backend
     {
         $platform = input('get.platform/s', '', 'trim');
         $daterange = input('get.daterange/a', []);
+        $return = $this->_reg($platform,$daterange);
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    protected function _reg($platform='',$daterange=[]){
         $return = [
+            'legend' => ['个人数','简历数','企业数','职位数'],
             'xAxis' => [],
             'series' => []
         ];
@@ -137,7 +149,7 @@ class StatOverview extends \app\common\controller\Backend
                 : 0;
             $return['series'][3][] = isset($job_data[$i]) ? $job_data[$i] : 0;
         }
-        $this->ajaxReturn(200, '获取数据成功', $return);
+        return $return;
     }
     /**
      * 活跃度分析
@@ -146,7 +158,13 @@ class StatOverview extends \app\common\controller\Backend
     {
         $platform = input('get.platform/s', '', 'trim');
         $daterange = input('get.daterange/a', []);
+        $return = $this->_active($platform,$daterange);
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
+    protected function _active($platform='',$daterange=[])
+    {
         $return = [
+            'legend' => ['刷新简历','发布职位','刷新职位','投递简历','下载简历','会员登录'],
             'xAxis' => [],
             'series' => []
         ];
@@ -231,7 +249,7 @@ class StatOverview extends \app\common\controller\Backend
                 'UNIX_TIMESTAMP(FROM_UNIXTIME(`addtime`, "%Y%m%d")) as time,count(*) as num'
             );
 
-        $member_login_data = model('MemberLoginLog')->where(
+        $member_login_data = model('MemberActionLog')->where('is_login',1)->where(
             'addtime',
             'between time',
             $daterange
@@ -268,6 +286,6 @@ class StatOverview extends \app\common\controller\Backend
                 ? $member_login_data[$i]
                 : 0;
         }
-        $this->ajaxReturn(200, '获取数据成功', $return);
+        return $return;
     }
 }

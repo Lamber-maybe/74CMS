@@ -209,12 +209,14 @@ class FavResume extends \app\v1_0\controller\common\Base
         if(!$id){
             $this->ajaxReturn(500,'请选择简历');
         }
+        $info = model('FavResume')->where(['id' => ['eq', $id],'company_uid' => $this->userinfo->uid])->find();
         model('FavResume')
             ->where([
                 'id' => ['eq', $id],
                 'company_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏简历【简历id：'.$info->resume_id.'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
     public function cancelBatch()
@@ -223,10 +225,16 @@ class FavResume extends \app\v1_0\controller\common\Base
         if(empty($id)){
             $this->ajaxReturn(500,'请选择简历');
         }
+        $list = model('FavResume')
+            ->whereIn('id',$id)
+            ->where('company_uid',$this->userinfo->uid)
+            ->column('resume_id');
+        $list = is_array($list)?$list:[$list];
         model('FavResume')
             ->whereIn('id',$id)
             ->where('company_uid',$this->userinfo->uid)
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消收藏简历【简历id：'.implode(",",$list).'】');
         $this->ajaxReturn(200, '取消收藏成功');
     }
 }

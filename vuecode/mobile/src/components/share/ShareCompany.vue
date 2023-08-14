@@ -41,7 +41,7 @@ export default {
   },
   mounted () {
     this.makePic()
-    this.qrcode = window.global.RequestBaseUrl + api.get_qrcode + '?alias=subscribe_company&url=' + location.href + '&comid=' + this.info.id
+    this.qrcode = window.global.RequestBaseUrl + api.get_qrcode + '?alias=subscribe_company&url=' + location.href
   },
   methods: {
     makePic () {

@@ -226,7 +226,7 @@ class Profile extends \app\v1_0\controller\common\Base
                     'companyname' => input(
                         'post.basic.companyname/s',
                         '',
-                        'trim'
+                        'trim,badword_filter'
                     ),
                     'nature' => input('post.basic.nature/d', 0, 'intval'),
                     'trade' => input('post.basic.trade/d', 0, 'intval'),
@@ -241,12 +241,12 @@ class Profile extends \app\v1_0\controller\common\Base
                 ],
                 'info' => [
                     'uid' => $this->userinfo->uid,
-                    'address' => input('post.info.address/s', '', 'trim'),
+                    'address' => input('post.info.address/s', '', 'trim,badword_filter'),
                 ],
                 'contact' => [
                     'uid' => $this->userinfo->uid,
-                    'contact' => input('post.contact.contact/s', '', 'trim'),
-                    'mobile' => input('post.contact.mobile/s', '', 'trim'),
+                    'contact' => input('post.contact.contact/s', '', 'trim,badword_filter'),
+                    'mobile' => input('post.contact.mobile/s', '', 'trim,badword_filter'),
                 ],
             ];
             if(!empty($input_data['basic']['citycategory_arr'])){
@@ -277,7 +277,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['basic']['short_name'] = input(
                     'post.basic.short_name/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_profile === null) {
                 $input_data['basic']['short_name'] = '';
@@ -316,7 +316,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['info']['website'] = input(
                     'post.info.website/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_info === null) {
                 $input_data['info']['website'] = '';
@@ -325,7 +325,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['info']['short_desc'] = input(
                     'post.info.short_desc/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_info === null) {
                 $input_data['info']['short_desc'] = '';
@@ -334,7 +334,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['info']['content'] = input(
                     'post.info.content/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_info === null) {
                 $input_data['info']['content'] = '';
@@ -343,7 +343,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['contact']['weixin'] = input(
                     'post.contact.weixin/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_contact === null) {
                 $input_data['contact']['weixin'] = '';
@@ -352,7 +352,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['contact']['telephone'] = input(
                     'post.contact.telephone/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_contact === null) {
                 $input_data['contact']['telephone'] = '';
@@ -361,7 +361,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['contact']['qq'] = input(
                     'post.contact.qq/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_contact === null) {
                 $input_data['contact']['qq'] = '';
@@ -370,7 +370,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $input_data['contact']['email'] = input(
                     'post.contact.email/s',
                     '',
-                    'trim'
+                    'trim,badword_filter'
                 );
             } elseif ($company_contact === null) {
                 $input_data['contact']['email'] = '';
@@ -392,6 +392,8 @@ class Profile extends \app\v1_0\controller\common\Base
                     $input_data['basic']['robot'] = 0;
                     $input_data['basic']['platform'] = config('platform');
                     $input_data['basic']['cs_id'] = model('Member')->distributionCustomerService();
+                    $member_setmeal = model('MemberSetmeal')->where('uid',$this->userinfo->uid)->find();
+                    $input_data['basic']['setmeal_id'] = $member_setmeal===null?0:$member_setmeal->setmeal_id;
                     $result = model('Company')
                         ->validate(true)
                         ->allowField(true)
@@ -491,6 +493,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 \think\Db::rollBack();
                 $this->ajaxReturn(500, $e->getMessage());
             }
+            $this->writeMemberActionLog($this->userinfo->uid,'修改企业基本资料');
             $this->ajaxReturn(200, '保存成功');
         }
     }
@@ -531,6 +534,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $img_list = $this->getCompanyImg($this->userinfo->uid);
                 cache('scan_upload_result_company_img_'.$this->userinfo->uid,json_encode($img_list));
             }
+            $this->writeMemberActionLog($this->userinfo->uid,'上传企业风采');
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());
@@ -553,6 +557,7 @@ class Profile extends \app\v1_0\controller\common\Base
             $img_list = $this->getCompanyImg($this->userinfo->uid);
             cache('scan_upload_result_company_img_'.$this->userinfo->uid,json_encode($img_list));
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'删除企业风采【风采id：'.$id.'】');
 
         $this->ajaxReturn(200, '删除成功');
     }

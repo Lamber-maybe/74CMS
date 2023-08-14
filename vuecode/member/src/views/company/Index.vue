@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="recommend_list">
-                    <div v-for="(item,index) in recommend_list" :key="index" class="recommend_item_con">
+                    <div v-for="(item,index) in recommend_list" :key="index" class="recommend_item_con" @click="funDetail(item.resume_link_url_web)">
                         <div class="recommend_item_title">
                          <div class="recommend_item_img">
                             <div class="item_img">
@@ -238,6 +238,9 @@ export default {
     this.fetchData()
   },
   methods:{
+        funDetail(url){
+          window.open(url)
+        },
         handleClickBanner(item){
             if(item.link_url !== ''){
                 window.open(item.link_url)
@@ -740,6 +743,9 @@ export default {
 }
 .recommend_item_con>div{
     margin: 0 20px;
+}
+.recommend_item_con:hover{
+  cursor:pointer;
 }
 .recommend_item_con .fn_bar .fullname{
   display: block;float: left;height: 22px;line-height: 22px;

@@ -74,10 +74,24 @@
         <el-table-column type="selection" width="42" />
         <el-table-column label="姓名" width="150">
           <template slot-scope="scope">
-            <el-link :href="scope.row.link" target="_blank" type="primary">
-              {{ scope.row.fullname }}
-            </el-link>
-            <img v-if="scope.row.bind_weixin==1" style="vertical-align:middle;margin-left:4px;" :src="require('@/assets/images/wx_icon.png')">
+            <div class="namecol">
+              <el-popover
+                placement="right"
+                trigger="hover"
+                width="300"
+              >
+                <img :src="scope.row.photo_img_src" style="max-width:274px;">
+                <span slot="reference">
+                  <span class="avatar">
+                    <el-avatar :src="scope.row.photo_img_src" />
+                  </span>
+                </span>
+              </el-popover>
+              <el-link :href="scope.row.link" target="_blank" type="primary" class="text" :underline="false">
+                {{ scope.row.fullname }}
+              </el-link>
+              <img v-if="scope.row.bind_weixin==1" style="vertical-align:middle;margin-left:4px;" :src="require('@/assets/images/wx_icon.png')">
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="基本信息" width="300">
@@ -256,13 +270,13 @@
     </el-dialog>
     <el-dialog
       v-if="dialogListVisible"
-      title="登录日志"
+      title="会员日志"
       :visible.sync="dialogListVisible"
       width="50%"
       :close-on-click-modal="false"
       @close="closeListDialog"
     >
-      <dialist :uid="listUid" @setDialogFormVisible="closeListDialog" />
+      <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
     <el-dialog
       title="简历点评"
@@ -285,7 +299,7 @@
 </template>
 
 <script>
-import dialist from './loglist.vue'
+import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import { resumeList, resumeAudit, resumeLevel, resumeComment, resumeDelete, resumeRefresh } from '@/api/resume'
 import { management } from '@/api/member'
@@ -293,7 +307,7 @@ import { parseTime, setMemberLogin } from '@/utils/index'
 
 export default {
   components: {
-    dialist
+    MemberLog
   },
   filters: {
     timeFilter(timestamp) {
@@ -613,4 +627,23 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+.namecol{
+  position:relative;
+  padding-left:40px;
+}
+.namecol .avatar{
+  width:42px;
+  height:42px;
+  padding:1px;
+  display: inline-block;
+  border: 0;
+  border-radius: 30px;
+  position: absolute;
+  top: 4px;
+  left: -10px;
+}
+.namecol .text{
+  height:50px;
+}
+</style>

@@ -1,0 +1,216 @@
+<template>
+  <div>
+    <Head>举报信息</Head>
+    <van-overlay z-index="10" :show="fetchDataFinish===false"><van-loading color="#1989fa" class="loading" >数据加载中...</van-loading></van-overlay>
+    <van-empty
+      image="search"
+      description="没有找到对应的数据"
+      style="background-color:#fff"
+      v-if="show_empty === true"
+    />
+    <van-list
+      v-if="dataset.length > 0"
+      v-model="loading"
+      :finished="finished"
+      :finished-text="finished_text"
+      @load="onLoad"
+      :immediate-check="true"
+    >
+    <div class="b1">
+      <div class="b_item" v-for="(item,index) in dataset" :key="index">
+        <p class="t1 substring">{{item.reason_cn}}</p>
+        <div class="i_tag" :class="item.status | statusFilter">{{ options_status[item.status] }}</div>
+        <div class="t_line">
+          <div class="tl_cell"><span class="l_title">举报信息：</span><span class="l_con">{{item.target}}</span></div>
+          <div class="tl_cell"><span class="l_title">举报时间：</span><span class="l_con">{{item.addtime|timeFilter}}</span></div>
+        </div>
+        <div class="t_line">
+          <div class="tl_cell"><span class="l_title">联系手机：</span><span class="l_con">{{item.mobile}}</span></div>
+          <div class="tl_cell"><span class="l_title">举报人UID：</span><span class="l_con">{{item.uid}}</span></div>
+        </div>
+        <div class="t_line last">
+          <div class="tl_cell lh">
+            <span class="l_title">举报内容：</span>
+            <span class="l_con">{{item.content}}</span>
+          </div>
+        </div>
+        <div class="i_btn b1 blue" @click="funHandler(item)">核实</div><div class="i_btn b2" @click="funDel(item)">删除</div>
+      </div>
+    </div>
+    </van-list>
+    <van-action-sheet
+      v-model="showHandler"
+      :actions="handlerActions"
+      cancel-text="取消"
+      close-on-click-action
+      @cancel="showHandler=false"
+      @select="doHandler"
+    />
+  </div>
+</template>
+
+<script>
+  import http from '@/utils/http'
+  import api from '@/api'
+  import { formatTime } from '@/utils/index'
+  export default {
+    name: "Tipoff",
+    filters: {
+      timeFilter (timestamp) {
+        return formatTime(timestamp, '{y}-{m}-{d} {h}:{i}')
+      },
+      statusFilter(status) {
+        switch (status) {
+          case 0:
+            return 'wait'
+          case 1:
+            return 'passed'
+          case 2:
+            return 'not'
+        }
+      }
+    },
+    data () {
+      return {
+        showHandler:false,
+        fetchDataFinish:false,
+        dataset: [],
+        loading: false,
+        finished: false,
+        finished_text: '',
+        show_empty: false,
+        page: 1,
+        pagesize: 15,
+        options_status:['未核实','属实','不属实'],
+        handlerActions:[{name:'属实',id:1},{name:'不属实',id:2},{name:'未核实',id:0}],
+        handlerRow:{}
+      }
+    },
+    created () {
+      this.fetchData(true)
+    },
+    methods: {
+      buildCondition(){
+        let conditions = {}
+        conditions.page = this.page
+        conditions.pagesize = this.pagesize
+        return conditions
+      },
+      fetchData (init) {
+        this.show_empty = false
+        if (init === true) {
+          this.page = 1
+          this.finished_text = ''
+          this.finished = false
+        }
+        let conditions = this.buildCondition()
+        http
+          .get(api.tipoffList, conditions)
+          .then(res => {
+            if (init === true) {
+              this.dataset = [...res.data.items]
+            } else {
+              this.dataset = this.dataset.concat(res.data.items)
+            }
+            // 加载状态结束
+            this.loading = false
+            this.fetchDataFinish = true
+
+            // 数据全部加载完成
+            if (res.data.items.length < this.pagesize) {
+              this.finished = true
+              if (init === false) {
+                this.finished_text = '没有更多了'
+              } else if (res.data.items.length === 0) {
+                this.show_empty = true
+              }
+            }
+          })
+          .catch(() => {})
+      },
+      onLoad () {
+        this.page++
+        this.fetchData(false)
+      },
+      funDel(row){
+        this.$dialog
+          .confirm({
+            title: '系统提示',
+            message: '确定删除吗?'
+          })
+          .then(() => {
+            http
+            .post(api.tipoffDelete, {id:[row.id]})
+            .then(res => {
+              this.$toast.success(res.message)
+              this.fetchData(true)
+            })
+            .catch(() => {})
+          })
+          .catch(() => {
+            // on cancel
+          })
+      },
+      funHandler(row){
+        this.handlerRow = row
+        this.showHandler= true
+      },
+      doHandler(action){
+        http
+          .post(api.tipoffHandler, {id:[this.handlerRow.id],status:action.id})
+          .then(res => {
+            this.$toast.success(res.message)
+            this.fetchData(true)
+            this.handlerRow = false
+            this.handlerRow = {}
+          })
+          .catch(() => {})
+      }
+    }
+  }
+</script>
+<style lang="scss" scoped>
+.loading{
+  text-align: center;
+  top: 50%;
+}
+.van-overlay{
+  background-color:rgba(255, 255, 255, 0.9)
+}
+  .b1 {
+    .b_item {
+      width: 100%;background-color: #ffffff;margin-top: 10px;position: relative;padding: 30px 30px 130px 30px;
+      &:nth-of-type(1) { margin-top: 0; }
+      .arrow { position: absolute;right: 20px;top: 30px;font-size: 42px; }
+      .t1 { font-size: 30px;font-weight: bold;color: #333333;max-width: 510px;margin-bottom: 30px; }
+      .t_line {
+        display: flex;margin-bottom: 18px;
+        &.last { margin-bottom: 0; }
+        .tl_cell {
+          flex: 1;font-size: 24px;
+          &.lh { line-height: 1.7; }
+          .l_title { color: #999999; }
+          .l_con {
+            color: #333333;
+            &.mr { margin-left: 23px; }
+          }
+        }
+      }
+      .i_btn {
+        position: absolute;bottom: 43px;right: 30px;font-size: 24px;color: #333333;padding: 8px 34px;
+        border: 1PX solid #cccccc;border-radius: 999px;
+        &.b1 { right: 30px; }
+        &.b2 { right: 170px; }
+        &.blue { color: #248efb;border-color: #248efb; }
+      }
+      .i_tag {
+        position: absolute;right: 62px;top: 33px;width: 104px;text-align: center;padding: 6px 0;
+        font-size: 20px;border-radius: 999px;
+        &.wait { background-color: #fdf6ec;color: #ff8e50; }
+        &.passed { background-color: #f0f9eb;color: #67c23a; }
+        &.failed { background-color: #fef0f0;color: #f56c6c; }
+        &.not { background-color: #f4f4f5;color: #909399; }
+      }
+    }
+  }
+</style>

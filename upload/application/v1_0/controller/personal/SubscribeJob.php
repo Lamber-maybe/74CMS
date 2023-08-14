@@ -56,10 +56,12 @@ class SubscribeJob extends \app\v1_0\controller\common\Base
         if($result===false){
             $this->ajaxReturn(500,model('SubscribeJob')->getError());
         }
+        $this->writeMemberActionLog($this->userinfo->uid,'订阅职位');
         $this->ajaxReturn(200,'订阅成功');
     }
     public function cancel(){
         model('SubscribeJob')->where('uid',$this->userinfo->uid)->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'取消订阅职位');
         $this->ajaxReturn(200,'取消订阅成功');
     }
 }

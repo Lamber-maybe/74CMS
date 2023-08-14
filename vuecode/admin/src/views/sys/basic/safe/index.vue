@@ -1,13 +1,14 @@
 <template>
   <div class="app-container">
-    <div class="tip">
-      <p>
-        骑士人才系统已集成多种渠道安全验证，使用验证需正确配置相关渠道信息。
-      </p>
-    </div>
     <el-tabs type="border-card">
       <el-tab-pane label="验证码" :lazy="true">
         <captcha />
+      </el-tab-pane>
+      <el-tab-pane label="IP黑名单" :lazy="true">
+        <ip />
+      </el-tab-pane>
+      <el-tab-pane label="敏感词过滤" :lazy="true">
+        <badword />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -15,9 +16,13 @@
 
 <script>
 import captcha from './components/captcha.vue'
+import ip from './components/ip.vue'
+import badword from './components/badword.vue'
 export default {
   components: {
-    captcha
+    captcha,
+    ip,
+    badword
   }
 }
 </script>

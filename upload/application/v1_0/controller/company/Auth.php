@@ -138,6 +138,8 @@ class Auth extends \app\v1_0\controller\common\Base
         model('Company')
             ->where('uid', $this->userinfo->uid)
             ->setField('audit', 0);
+
+        $this->writeMemberActionLog($this->userinfo->uid,'提交营业执照认证信息');
         $this->ajaxReturn(200, '提交成功');
     }
 }

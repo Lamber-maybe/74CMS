@@ -33,6 +33,7 @@ class SignIn extends \app\v1_0\controller\common\Base
             $this->userinfo->utype,
             'sign_in'
         );
+        $this->writeMemberActionLog($this->userinfo->uid,'签到');
         $this->ajaxReturn(200, '签到成功',['points'=>model('Member')->getMemberPoints($this->userinfo->uid)]);
     }
 }

@@ -410,5 +410,5 @@ export default {
   // rtc配置
   rtc_config: '/home/config/webrtc',
   //委托书下载
-  downloadproxy:'/home/index/downloadproxy',
+  downloadproxy: '/home/index/downloadproxy',
 }

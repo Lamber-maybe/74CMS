@@ -19,6 +19,9 @@
 .my_container {
   height: 100%;
 }
+.my_container.auto {
+  height: auto;
+}
 
 /*重置Tabs 标签页样式*/
 .my_tabs .el-tabs__header {

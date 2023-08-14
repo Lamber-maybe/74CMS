@@ -49,6 +49,7 @@ import BottomNav from './components/BottomNav'
 import TopSearch from './components/TopSearch'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/css/swiper.min.css'
+import VueClipboard from 'vue-clipboard2'
 
 // 重写表单样式
 import './assets/css/resetForm.css'
@@ -57,6 +58,7 @@ import '@/permission' // permission control
 // title插件
 import VueWechatTitle from 'vue-wechat-title'
 Vue.use(VueWechatTitle)
+Vue.use(VueClipboard)
 
 Vue.config.productionTip = false
 Vue.config.devtools = true

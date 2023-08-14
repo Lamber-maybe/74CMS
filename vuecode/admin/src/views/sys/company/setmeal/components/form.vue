@@ -243,22 +243,13 @@
       </el-row>
       <el-row>
         <el-col :span="11">
-          <el-form-item label="排序" prop="sort_id" style="display: block">
+          <el-form-item label="其他说明" prop="note">
             <el-input
-              v-model.number="form.sort_id"
-              type="number"
-              class="mini"
-              min="0"
-              @blur="format_number(0, 'sort_id')"
+              v-model="form.note"
+              class="small"
+              type="textarea"
+              rows="3"
             />
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="数字越大越靠前"
-              placement="top-start"
-            >
-              <i class="el-icon-info" />
-            </el-tooltip>
           </el-form-item>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
@@ -285,6 +276,31 @@
             </el-tooltip>
             <el-button type="text" @click="delIcon">[删除]</el-button>
           </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="排序" prop="sort_id" style="display: block">
+            <el-input
+              v-model.number="form.sort_id"
+              type="number"
+              class="mini"
+              min="0"
+              @blur="format_number(0, 'sort_id')"
+            />
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="数字越大越靠前"
+              placement="top-start"
+            >
+              <i class="el-icon-info" />
+            </el-tooltip>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+        <el-col :span="11">
+          &nbsp;
         </el-col>
       </el-row>
       <el-row>
@@ -342,7 +358,8 @@ export default {
         sort_id: 0,
         preferential_expense_start: '',
         preferential_expense_end: '',
-        icon: 0
+        icon: 0,
+        note: ''
       },
       iconUrl: '',
       rules: {
@@ -569,6 +586,7 @@ export default {
 }
 </script>
 <style scoped>
+.el-textarea,
 .el-date-editor,
 .el-input,
 .el-input-group {

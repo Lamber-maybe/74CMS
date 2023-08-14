@@ -34,7 +34,8 @@ class Config extends \app\v1_0\controller\common\Base
             'joblist_search_key'=>config('global_config.sitedomain').url('index/job/index',['keyword'=>'_key_']),
             'companylist_search_key'=>config('global_config.sitedomain').url('index/company/index',['keyword'=>'_key_']),
             'resumeshow'=>config('global_config.sitedomain').url('index/resume/show',['id'=>'_id_']),
-            'companyshow'=>config('global_config.sitedomain').url('index/company/show',['id'=>'_id_'])
+            'companyshow'=>config('global_config.sitedomain').url('index/company/show',['id'=>'_id_']),
+            'jobfairollist'=>config('global_config.sitedomain').url('index/jobfairol/index')
         ];
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
@@ -147,7 +148,7 @@ class Config extends \app\v1_0\controller\common\Base
                 'sig'=>$sig
             ];
         }
-        
+
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
 }

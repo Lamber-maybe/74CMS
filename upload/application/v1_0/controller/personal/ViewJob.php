@@ -99,6 +99,7 @@ class ViewJob extends \app\v1_0\controller\common\Base
                 'personal_uid' => $this->userinfo->uid
             ])
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除已查看职位记录【记录ID：'.$id.'】');
         $this->ajaxReturn(200, '删除成功');
     }
     public function deleteBatch()
@@ -111,6 +112,7 @@ class ViewJob extends \app\v1_0\controller\common\Base
             ->whereIn('id',$id)
             ->where('personal_uid',$this->userinfo->uid)
             ->delete();
+        $this->writeMemberActionLog($this->userinfo->uid,'删除已查看职位记录【记录ID：'.implode(",",$id).'】');
         $this->ajaxReturn(200, '删除成功');
     }
 }

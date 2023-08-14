@@ -73,6 +73,7 @@
       >
         立即登录
       </el-button>
+      <p class="bt_link"><a :href="mobileUrl" class="">使用移动端管理后台</a></p>
     </el-form>
     <div class="login_copyright">{{ $store.state.config.bottom_other }}</div>
   </div>
@@ -120,7 +121,8 @@ export default {
         backgroundRepeat: 'no-repeat',
         backgroundSize: '100% 100%',
         backgroundPosition: 'center center'
-      }
+      },
+      mobileUrl: ''
     }
   },
   watch: {
@@ -133,7 +135,7 @@ export default {
   },
   created() {
     this.refreshCaptcha()
-    console.warn(this.$store.state.config)
+    this.mobileUrl = this.$store.state.config.sitedomain + this.$store.state.config.sitedir + 'adminm'
   },
   methods: {
     getRandomInt(min, max) {
@@ -255,6 +257,13 @@ $color_white: #ffffff;
   min-height: 100%;
   width: 100%;
   overflow: hidden;
+  .bt_link {
+    text-align: center;padding-top: 5px;
+    a {
+      color: rgb(102,177,255);font-size: 15px;
+      &:hover { color: #469ffc; }
+    }
+  }
 
   .login-form {
     position: absolute;
@@ -262,7 +271,7 @@ $color_white: #ffffff;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 540px;
-    height: 460px;
+    height: 465px;
     max-width: 100%;
     padding: 40px 70px 0;
     overflow: hidden;
