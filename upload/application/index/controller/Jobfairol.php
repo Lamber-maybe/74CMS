@@ -626,16 +626,17 @@ class Jobfairol extends \app\index\controller\Base{
     public function getLog()
     {
         $time = strtotime(date('Y-m-d'));
+        $prefix = config('database.prefix');
+        $field = 'a.*,
+            case when a.type = 1 then (select companyname from '.$prefix.'company where id=a.content_id)
+             when a.type = 2 then (select jobname from '.$prefix.'job where id = a.content_id)
+             when a.type = 3 then (select fullname from '.$prefix.'resume where id = a.content_id) end as content_name,
+             case when b.utype = 1 then (select companyname from '.$prefix.'company where uid = a.uid)
+              when b.utype = 2 then (select fullname from '.$prefix.'resume where uid = a.uid) end as member_name';
         $data = model('JobfairOnlineViewLog')->alias('a')
-            ->join('qs_member b','b.uid=a.uid','left')
+            ->join($prefix.'member b','b.uid=a.uid','left')
             ->where('a.addtime','gt',$time)
-            ->field("a.*,
-            case when a.type = 1 then (select companyname from qs_company where id=a.content_id)
-             when a.type = 2 then (select jobname from qs_job where id = a.content_id)
-             when a.type = 3 then (select fullname from qs_resume where id = a.content_id) end as content_name,
-             case when b.utype = 1 then (select companyname from qs_company where uid = a.uid)
-              when b.utype = 2 then (select fullname from qs_resume where uid = a.uid) end as member_name
-             ")->order('a.addtime','desc')
+            ->field($field)->order('a.addtime','desc')
             ->select();
         $res = [];
         foreach($data as $k=>$v)
@@ -716,7 +717,7 @@ class Jobfairol extends \app\index\controller\Base{
 
             if ($dur < 60) {
 
-                return $dur . '秒前';
+                return '刚刚';
 
             } else {
 

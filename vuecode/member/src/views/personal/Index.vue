@@ -80,6 +80,21 @@
                 </div>
             </div>
             <div class="clear"></div>
+            <div class="resume_tips" v-if="resumeisDisplay == 1 && defectResumeAry.length != 0">
+              <div class="tips_text">您的简历缺少{{defectResumeAry[0].remarks}} ，可能错过面试机会哦！ 赶快去补充，让HR看到你过往的工作能力</div>
+              <div class="tips_icon" @click="handlerJumpEditResume(defectResumeAry[0])">
+                去完善
+                <i class="el-icon-arrow-right"></i>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <div class="resume_tips bg2" v-if="resumeisDisplay == 0">
+              <div class="tips_text">您的简历已隐藏，企业无法搜到到您的简历哦！</div>
+              <div class="tips_icon" @click="handleResumeStatus(true)">
+                立即开启
+              </div>
+              <div class="clear"></div>
+            </div>
         </div>
         <div class="box_2" v-if="ad_dataset_banner.items.length > 0">
             <el-carousel :height="70 + 'px'">
@@ -171,7 +186,9 @@ import api from '@/api'
         joblistUrl:'',
         ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] },
         contact:{},
-        intentionList:[]
+        intentionList:[],
+        defectResumeAry:[],
+        resumeisDisplay:''
       }
     },
     computed: {
@@ -210,9 +227,27 @@ import api from '@/api'
         }
     },
     created () {
-        this.initInfo()
+      this.initInfo()
+      this.getDefectResumeInfo()
     },
     methods:{
+      // 获取优化简历项
+      getDefectResumeInfo () {
+        http.get(api.defectResumeInfo).then((res) => {
+          if (res.code == 200) {
+            this.defectResumeAry = res.data.no_complete_array
+            this.resumeisDisplay = res.data.is_display
+            this.resumePublic = res.data.is_display == 1 ? true : false
+          }
+        })
+      },
+      //简历优化跳转
+      handlerJumpEditResume(item){
+        if( item.field == 'training'){
+          item.field = 'train'
+        }
+        this.$router.push('/personal/resume' + `#${item.field}Group`)
+      },
         handleClickBanner(item){
             if(item.link_url !== ''){
               window.open(item.link_url)
@@ -260,6 +295,8 @@ import api from '@/api'
           }).then(res => {
             if (parseInt(res.code) === 200) {
                 this.$message({ message: res.message, type: 'success' })
+                this.getDefectResumeInfo()
+
             } else {
                 this.$message.error(res.message)
                 this.resumePublic = !value
@@ -430,7 +467,8 @@ import api from '@/api'
         }
     }
     .box_1 {
-        position: relative; width: 956px; height: 287px; margin-bottom: 15px;
+        position: relative; width: 956px; margin-bottom: 15px;
+        padding-bottom: 25px;
         background: #fff url("../../assets/images/personal/bg_1.jpg") right bottom no-repeat; background-size: 455px 115px;
         .b_left {
             position: relative; float: left; width: 285px;
@@ -494,6 +532,30 @@ import api from '@/api'
                 }
             }
         }
+      .resume_tips{
+        margin: 28px 22px 0;
+        padding: 12px 15px 12px 39px;
+        border-radius: 5px;
+        background: #edfaff url("../../assets/images/personal/personal_resume_tips_icon.png") no-repeat 13px center / 14px 14px;
+        &.bg2{
+          background: #edfaff url("../../assets/images/personal/personal_resume_isdisplay_icon.png") no-repeat 13px center / 14px 14px;
+        }
+        .tips_text{
+          width: 750px;
+          float: left;
+          overflow: hidden;
+          font-size:13px;
+          color:#525a64;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .tips_icon{
+          float:right;
+          color:#2691ff;
+          font-size: 13px;
+          cursor: pointer;
+        }
+      }
     }
     .box_2 {
         margin-bottom: 15px;

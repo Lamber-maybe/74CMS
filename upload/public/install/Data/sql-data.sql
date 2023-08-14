@@ -1127,7 +1127,8 @@ INSERT INTO `qs_navigation` VALUES
 (NUll,1,'HR工具箱',1,'hrtool','','_self',0),
 (NUll,1,'地图找工作',1,'map','','_self',0),
 (NUll,1,'帮助中心',1,'help','','_self',0),
-(NULL,1,'网络招聘会',1,'jobfairol','','_self',0);
+(NULL,1,'网络招聘会',1,'jobfairol','','_self',0),
+(null, 1, '视频招聘', 1, 'videoRecruitment', '', '_self', 0);
 
 INSERT INTO `qs_notify_rule` VALUES 
 (NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}，联系微信：{weixin}）','',0,1,1,0,0),

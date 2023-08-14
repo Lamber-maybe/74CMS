@@ -291,7 +291,23 @@
 
 			</div>
 			<div class="paging ol clearfix">
-				<div class="paging_box ol clearfix">
+				<div class="paging_box ol clearfix" v-if="resList.length > 0 && searchType === 'res'">
+					<button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
+					<button class="paging_pre" v-if="page==1">上一页</button>
+					<a href="javascript:;" class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</a>
+					<button v-if="page!=total_page" class="paging_next enable" @click="page++,pageClick()">下一页</button>
+					<button v-if="page==total_page" class="paging_next">下一页</button>
+				</div>
+
+				<div class="paging_box ol clearfix" v-if="companyList.length > 0 && searchType === 'com'">
+					<button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
+					<button class="paging_pre" v-if="page==1">上一页</button>
+					<a href="javascript:;" class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</a>
+					<button v-if="page!=total_page" class="paging_next enable" @click="page++,pageClick()">下一页</button>
+					<button v-if="page==total_page" class="paging_next">下一页</button>
+				</div>
+
+				<div class="paging_box ol clearfix" v-if="jobList.length > 0 && searchType === 'job'">
 					<button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
 					<button class="paging_pre" v-if="page==1">上一页</button>
 					<a href="javascript:;" class="paging_num" v-for="(item,index) in pagination" :key="index" :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</a>
@@ -559,7 +575,7 @@
 					if (that.thisType === 2)
 					{
 						logintype = qscms.locationList.loginPersonal
-					}else {thisType
+					}else {
 						logintype = qscms.locationList.loginCompany
 					}
 

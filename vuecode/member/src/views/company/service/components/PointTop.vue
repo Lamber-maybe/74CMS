@@ -58,6 +58,7 @@ import api from '@/api'
     created () {
       document.title = document.title.replace('积分', this.$store.state.config.points_byname)
       this.fetchData()
+      this.userSignin()
     },
     computed: {
       hasSign(){
@@ -146,6 +147,21 @@ import api from '@/api'
 			handlerPayFail(){
 				this.showWaitingPay = false
 			},
+      userSignin()
+      {
+        http.get(api.member_user_ignin).then(res => {
+          if (res.data > 0)
+          {
+            this.$store.commit('setUserSignin', {
+              signin: true
+            })
+          }else {
+            this.$store.commit('setUserSignin', {
+              signin: false
+            })
+          }
+        }).catch(() => {})
+      }
     }
   }
 </script>

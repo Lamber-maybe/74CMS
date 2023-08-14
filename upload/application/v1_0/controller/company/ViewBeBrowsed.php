@@ -17,8 +17,9 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $list = model('ViewJob')
             ->alias('a')
-            ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.id', 'left')
-            ->field('a.id,a.jobid,a.personal_uid,a.addtime,b.fullname,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.refreshtime')
+            ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.uid', 'left')
+            ->field('a.id,a.jobid,a.personal_uid,a.addtime,b.fullname,b.display_name,b.high_quality,
+            b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current,b.refreshtime,b.id as resume_id')
             ->where($where)
             ->where('b.id','not null')
             ->order('a.id desc')
@@ -31,7 +32,7 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
         $work_list = [];
         $fullname_arr = [];
         foreach ($list as $key => $value) {
-            $resumeid_arr[] = $value['personal_uid'];
+            $resumeid_arr[] = $value['resume_id'];
             $value['photo_img'] > 0 && ($photo_id_arr[] = $value['photo_img']);
         }
         if (!empty($photo_id_arr)) {
@@ -65,7 +66,7 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
         $category_job_data = model('CategoryJob')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
-            $value['fullname'] = $fullname_arr[$value['personal_uid']];
+            $value['fullname'] = $fullname_arr[$value['resume_id']];
             $value['high_quality'] = $value['high_quality'];
             $value['sex_text'] = model('Resume')->map_sex[
             $value['sex']
@@ -86,16 +87,16 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
             )
                 ? $category_data['QS_current'][$value['current']]
                 : '';
-            if (isset($work_list[$value['personal_uid']])) {
+            if (isset($work_list[$value['resume_id']])) {
                 $value['recent_work'] =
-                    $work_list[$value['personal_uid']]['jobname'];
+                    $work_list[$value['resume_id']]['jobname'];
             } else {
                 $value['recent_work'] = '';
             }
             $value['age'] = date('Y') - intval($value['birthday']);
             $district_arr = $category_arr = [];
-            if (isset($intention_arr[$value['personal_uid']])) {
-                foreach ($intention_arr[$value['personal_uid']] as $k => $v) {
+            if (isset($intention_arr[$value['resume_id']])) {
+                foreach ($intention_arr[$value['resume_id']] as $k => $v) {
                     if ($v['trade']) {
                         $trade_arr[] =
                             $category_data['QS_trade'][$v['trade']];
@@ -158,7 +159,7 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
                 ? $photo_data[$value['photo_img']]
                 : default_empty('photo');
 
-            $value['resume_link_url_web'] = url('index/resume/show',['id'=>$value['personal_uid']]);
+            $value['resume_link_url_web'] = url('index/resume/show',['id'=>$value['resume_id']]);
             $value['jobname'] = model('job')->where('id',$value['jobid'])->value('jobname');
             $list[$key] = $value;
         }
@@ -169,7 +170,7 @@ class ViewBeBrowsed extends \app\v1_0\controller\common\Base
         $where['a.company_uid'] = $this->userinfo->uid;
         $total = model('ViewJob')
             ->alias('a')
-            ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.id', 'left')
+            ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.uid', 'left')
             ->where($where)
             ->where('b.id','not null')
             ->count();

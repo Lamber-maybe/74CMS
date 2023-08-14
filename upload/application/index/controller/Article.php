@@ -104,9 +104,11 @@ class Article extends \app\index\controller\Base
                 abort(404,'页面不存在');
             }
         }
+
         $prev = model('Article')
             ->where('id', '>', $info['id'])
-            ->order('id asc')
+            ->where('is_display',1)//解决在资讯设置为隐藏后，列表中不显示，但详情上一条下一条依然会有入口问题
+           ->order('id asc')
             ->field('id,title,link_url')
             ->find();
         if($prev!==null){
@@ -115,6 +117,7 @@ class Article extends \app\index\controller\Base
         
         $next = model('Article')
             ->where('id', '<', $info['id'])
+            ->where('is_display',1)//解决在资讯设置为隐藏后，列表中不显示，但详情上一条下一条依然会有入口问题
             ->order('id desc')
             ->field('id,title,link_url')
             ->find();

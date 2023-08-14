@@ -1447,4 +1447,115 @@ class Resume extends \app\v1_0\controller\common\Base
         $this->writeMemberActionLog($this->userinfo->uid,'删除简历作品');
         $this->ajaxReturn(200, '删除成功');
     }
+
+    //查看简历待优化个数和待优化数据
+    public function getNoComplete()
+    {
+        $uid = $this->userinfo->uid;
+        if(!$uid){
+            $this->ajaxReturn(200, '获取数据成功', null);
+        }
+        $is_display = model('Resume')->where(['uid'=>$uid])->value('is_display');
+        $configlist = model('ResumeModule')->column('module_name,is_display', 'module_name');
+        $resume_complete = model('ResumeComplete')->where(['uid'=>$uid])->find();
+        $no_complete = 0;
+        $no_complete_array = [];
+        if (!empty($resume_complete))
+        {
+            if ($resume_complete['basic'] == 0 && $configlist['basic'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'basic',
+                    'remarks'=>'基础信息'
+                ];
+            }
+            if ($resume_complete['intention'] == 0 && $configlist['intention'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'intention',
+                    'remarks'=>'求职意向'
+                ];
+            }
+            if ($resume_complete['specialty'] == 0 && $configlist['specialty'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'specialty',
+                    'remarks'=>'自我描述'
+                ];
+            }
+            if ($resume_complete['education'] == 0 && $configlist['education'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'education',
+                    'remarks'=>'教育经历'
+                ];
+            }
+            if ($resume_complete['work'] == 0 && $configlist['work'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'work',
+                    'remarks'=>'工作经历'
+                ];
+            }
+            if ($resume_complete['training'] == 0 && $configlist['training'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'training',
+                    'remarks'=>'培训经历'
+                ];
+            }
+            if ($resume_complete['project'] == 0 && $configlist['project'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'project',
+                    'remarks'=>'项目经历'
+                ];
+            }
+            if ($resume_complete['certificate'] == 0 && $configlist['certificate'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'certificate',
+                    'remarks'=>'获得证书'
+                ];
+            }
+            if ($resume_complete['language'] == 0 && $configlist['language'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'language',
+                    'remarks'=>'语言能力'
+                ];
+            }
+            if ($resume_complete['tag'] == 0 && $configlist['tag'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'tag',
+                    'remarks'=>'特长标签'
+                ];
+            }
+            if ($resume_complete['img'] == 0 && $configlist['img'] == 1)
+            {
+                $no_complete++;
+                $no_complete_array[] = [
+                    'field'=>'img',
+                    'remarks'=>'我的作品'
+                ];
+            }
+        }
+        $info = [
+            'no_complete_count' => $no_complete,
+            'no_complete_array' => $no_complete_array,
+            'is_display' => $is_display
+        ];
+        $this->ajaxReturn(200, '获取成功', $info);
+    }
 }

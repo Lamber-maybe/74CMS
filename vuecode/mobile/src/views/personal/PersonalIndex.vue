@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="my_app">
-    <Head :bg="'tran'">会员中心</Head>
+    <Head >会员中心</Head>
     <van-pull-refresh v-model="pullLoading" @refresh="handlerPullRefresh">
       <template #pulling="props">
         <span :style="{'color':'#FFFFFF'}">下拉即可刷新...</span>
@@ -13,151 +13,150 @@
       <template #loading>
         <van-loading type="spinner" color="#FFFFFF" size="24px"><span :style="{'color':'#FFFFFF'}">加载中...</span></van-loading>
       </template>
-    <div class="top_box">
-      <div class="avatar_wrapper">
-        <img :src="(basic && basic.photo_img_src)?basic.photo_img_src:require('@/assets/images/empty_photo.png')" />
-      </div>
-      <div class="user_name">
-        {{ (basic && basic.fullname)?basic.fullname:'未注册' }}
-        <div class="percent">{{ (basic && basic.complete_percent)?basic.complete_percent:0 }}%</div>
-      </div>
-      <div class="current_txt">{{ basic ? basic.current_text : '' }}</div>
-    </div>
-    <div class="box_1">
-      <div class="box_item" @click="refreshResume">
-        <div class="item t1">刷新简历</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/preview')">
-        <div class="item t2">预览简历</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/resume')">
-        <div class="item t3">编辑简历</div>
-      </div>
-    </div>
-    <div class="form_split_10"></div>
-    <div class="box_2" v-if="basic && parseInt(basic.is_display) === 0">
-      您的简历当前不公开，企业无法搜到到您的简历哦！
-      <router-link class="right_txt" to="/member/personal/privacy">
-        去开启
-      </router-link>
-    </div>
-    <div class="form_split_10" v-if="basic && parseInt(basic.is_display) === 0"></div>
-    <div class="box_3" @click="$router.push('/member/personal/msglist')">
-      <div class="title">通知</div>
-      <ul :class="{ 'animate-up': animateUp }">
-        <li v-for="(item, index) in message_list" :key="index">
-          {{ item.content }}
-        </li>
-      </ul>
-    </div>
-    <div class="form_split_10"></div>
-    <div class="box_title">
-      求职管理
-      <div class="right_txt">完整度高的简历更容易获得企业青睐</div>
-    </div>
-    <div class="box_4">
-      <div class="box_item" @click="handlerJump('/member/personal/resume')">
-        <div class="ico_box b1"></div>
-        <div>我的简历</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/jobapply')">
-        <div class="ico_box b2"></div>
-        <div>已申请</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/attention_me')">
-        <div class="ico_box b3"></div>
-        <div>被关注</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/interview')">
-        <div class="ico_box b4"></div>
-        <div>面试邀请</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/interview_video')">
-        <div class="ico_box b5"></div>
-        <div>视频面试</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/favjob')">
-        <div class="ico_box b6"></div>
-        <div>我的收藏</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/viewjob')">
-        <div class="ico_box b7"></div>
-        <div>浏览足迹</div>
-      </div>
-      <div class="box_item" @click="handlerJump('/member/personal/attention_company')">
-        <div class="ico_box b8"></div>
-        <div>关注公司</div>
-      </div>
-      <div class="clear"></div>
-    </div>
-    <div class="video" @click="$router.push('/shortvideo/videoManage')" v-if="$store.state.config.shortvideo_enable === '1'">
-      <div class="title">{{$store.state.config.sitename}}现已支持发布视频简历了！</div>
-      <div class="tisp">点击去发布，<span>求职期望、工作经验、个人特长</span>都可以哦~</div>
-    </div>
-    <Ad
-      v-if="ad_dataset_banner.items.length > 0"
-      :dataset="ad_dataset_banner"
-    ></Ad>
-    <div class="form_split_10"></div>
-    <div class="box_title">
-      增值服务
-      <div class="right_txt">求职好法宝，我就是不一样的烟火</div>
-    </div>
-    <div class="box_6">
-      <div
-        class="box_item t1"
-         @click="handlerJumpService('/member/order/add/stick','stick')"
-      >
-        <div class="tx1">简历置顶</div>
-        <div class="tx2">锁定C位，提高5倍曝光量</div>
-      </div>
-      <div
-        class="box_item t2"
-         @click="handlerJumpService('/member/order/add/tag','tag')"
-      >
-        <div class="tx1">醒目标签</div>
-        <div class="tx2">即刻脱颖而出，秀出自我</div>
-      </div>
-      <div class="clear"></div>
-    </div>
-    <div class="form_split_10"></div>
-    <div class="box_7">
-      <div
-        class="handle_line l1"
-         @click="handlerJump('/member/personal/service')"
-      >
-        会员服务
-        <div class="right_txt">
-          免费获取{{ $store.state.config.points_byname }}、兑换增值服务
+      <div class="personal_index_wrapper">
+      <div class="top_box clearfix">
+        <div class="avatar_wrapper">
+          <img :src="(basic && basic.photo_img_src)?basic.photo_img_src:require('@/assets/images/empty_photo.png')" />
+        </div>
+        <div class="user_info">
+          <div class="user_name">
+            {{ (basic && basic.fullname)?basic.fullname:'未注册' }}
+          </div>
+          <div class="current_txt" @click="handlerJump('/member/personal/resume')">
+            编辑我的简历
+          </div>
+          <div class="refresh_resume" @click="refreshResume">
+            刷新简历
+          </div>
         </div>
       </div>
-      <div class="handle_line l2" @click="handlerJump('/member/personal/recommend')">
-        智能匹配
-        <div class="tip_go"></div>
-        <div class="right_txt">精准推荐职位、订阅最新职位</div>
+      <div class="personal_menu">
+        <div class="lack_resume" v-if="resumeisDisplay == 1 && defectResumeAry.length != 0">
+          <div class="lack_text" >您的简历缺少 {{defectResumeAry[0].remarks}}，可能错过高薪工作哦~</div>
+          <div class="lack_btn" @click="handleDefectResumeJump(defectResumeAry[0])">去完善</div>
+        </div>
+        <div class="lack_resume bg" v-if="resumeisDisplay == 0">
+          <div class="lack_text" >您的简历已隐藏，企业无法搜到到您的简历哦！</div>
+          <div class="lack_btn" @click="HandleOpenResume">
+            立即开启
+          </div>
+        </div>
+        <div class="box_3" @click="$router.push('/member/personal/msglist')">
+          <ul :class="{ 'animate-up': animateUp }">
+            <li v-for="(item, index) in message_list" :key="index">
+              {{ item.content }}
+            </li>
+          </ul>
+        </div>
+        <div class="box_title">
+          求职管理
+          <div class="right_txt">完整度高的简历更容易获得企业青睐</div>
+        </div>
+        <div class="box_4">
+          <div class="box_item" @click="handlerJump('/member/personal/resume')">
+            <div class="ico_box b1"></div>
+            <div>我的简历</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/jobapply')">
+            <div class="ico_box b2"></div>
+            <div>已申请</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/attention_me')">
+            <div class="ico_box b3"></div>
+            <div>被关注</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/interview')">
+            <div class="ico_box b4"></div>
+            <div>面试邀请</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/interview_video')">
+            <div class="ico_box b5"></div>
+            <div>视频面试</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/favjob')">
+            <div class="ico_box b6"></div>
+            <div>我的收藏</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/viewjob')">
+            <div class="ico_box b7"></div>
+            <div>浏览足迹</div>
+          </div>
+          <div class="box_item" @click="handlerJump('/member/personal/attention_company')">
+            <div class="ico_box b8"></div>
+            <div>关注公司</div>
+          </div>
+          <div class="clear"></div>
+        </div>
       </div>
-      <div class="handle_line l3" @click="handlerJump('/member/personal/privacy')">
-        隐私设置
-        <div class="right_txt">简历隐私开关、屏蔽企业设置</div>
+      <div class="video" @click="$router.push('/shortvideo/videoManage')" v-if="$store.state.config.shortvideo_enable === '1'">
+        <div class="title">一份<span>简历视频</span> 让你更胜一筹</div>
+        <div class="tisp">快来发布求职期望、工作经验、个人特长</div>
       </div>
-      <div class="handle_line l4" @click="handlerJump('/im/imlist')">
-        我的职聊
-        <span v-show="imUnreaded" class="point"></span>
-        <div class="right_txt">求职新方式，与企业在线职聊</div>
+      <Ad
+        img_border_radius="15px"
+        :no_top_border="true"
+        v-if="ad_dataset_banner.items.length > 0"
+        :dataset="ad_dataset_banner"
+      ></Ad>
+      <div class="box_6">
+        <div class="box_title">
+          增值服务
+          <div class="right_txt">求职好法宝，我就是不一样的烟火</div>
+        </div>
+        <div
+          class="box_item t1"
+           @click="handlerJumpService('/member/order/add/stick','stick')"
+        >
+          <div class="tx1">简历置顶</div>
+          <div class="tx2">提高5倍曝光量</div>
+        </div>
+        <div
+          class="box_item t2"
+           @click="handlerJumpService('/member/order/add/tag','tag')"
+        >
+          <div class="tx1">醒目标签</div>
+          <div class="tx2">即刻脱颖而出</div>
+        </div>
+        <div class="clear"></div>
       </div>
-      <router-link class="handle_line l5" to="/member/personal/account">
-        账号管理
-        <div class="right_txt">用户名密码、第三方绑定设置</div>
-      </router-link>
-    </div>
-    <div class="form_split_10"></div>
-    <div class="box_7 no_mb">
-      <div class="handle_line l6" @click="showSwitchType = true">
-        我要招聘
-        <div class="right_txt">我是企业/个体户，我要招人才</div>
+      <div class="box_7">
+        <div
+          class="handle_line l1"
+           @click="handlerJump('/member/personal/service')"
+        >
+          会员服务
+          <div class="right_txt">
+            免费获取{{ $store.state.config.points_byname }}、兑换增值服务
+          </div>
+        </div>
+        <div class="handle_line l2" @click="handlerJump('/member/personal/recommend')">
+          智能匹配
+          <div class="tip_go"></div>
+          <div class="right_txt">精准推荐职位、订阅最新职位</div>
+        </div>
+        <div class="handle_line l3" @click="handlerJump('/member/personal/privacy')">
+          隐私设置
+          <div class="right_txt">简历隐私开关、屏蔽企业设置</div>
+        </div>
+        <div class="handle_line l4" @click="handlerJump('/im/imlist')">
+          我的职聊
+          <span v-show="imUnreaded" class="point"></span>
+          <div class="right_txt">求职新方式，与企业在线职聊</div>
+        </div>
+        <div class="handle_line l7" @click="handlerJump('/member/RedEnvelopes/envelopes')">
+          我的钱包
+          <div class="right_txt">查看钱包余额、随时红包提现</div>
+        </div>
+        <router-link class="handle_line l5" to="/member/personal/account">
+          账号管理
+          <div class="right_txt">用户名密码、第三方绑定设置</div>
+        </router-link>
+        <div class="handle_line l6" @click="showSwitchType = true">
+          我要招聘
+          <div class="right_txt">我是企业/个体户，我要招人才</div>
+        </div>
       </div>
-    </div>
-    <div class="form_split_18"></div>
+      </div>
     </van-pull-refresh>
     <!--简历完整度过低，弹窗提示-->
     <van-popup v-model="showLowPop">
@@ -220,7 +219,9 @@ export default {
       animateUp: false,
       timer: null,
       ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] },
-      chatList: []
+      chatList: [],
+      defectResumeAry: [],
+      resumeisDisplay:''
     }
   },
   computed: {
@@ -282,11 +283,56 @@ export default {
     this.getMessageList()
     this.initInfo()
     this.fetchAd()
+    this.getDefectResumeInfo()
     // if (this.imToken != '') {
     //   this.imWindowGlobal()
     // }
   },
   methods: {
+    //关闭简历隐藏
+    HandleOpenResume(){
+      http
+        .post(api.resume_privates_set_display, {
+          display: 1
+        })
+        .then(res => {
+          if (parseInt(res.code) === 200) {
+            this.$notify({ type: 'success', message: res.message })
+            this.getDefectResumeInfo()
+          } else {
+            this.$notify(res.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    // 获取优化简历项
+    getDefectResumeInfo () {
+      http.get(api.defectResumeInfo).then((res) => {
+        if (res.code == 200) {
+          this.defectResumeAry = res.data.no_complete_array
+          this.resumeisDisplay = res.data.is_display
+        }
+      })
+    },
+    // 优化简历跳转
+    handleDefectResumeJump (item) {
+      let routerObj = {
+        basic: '/member/personal/resume/basic',
+        intention: '/member/personal/resume/intention_edit/0',
+        specialty: '/member/personal/resume/specialty',
+        education: '/member/personal/resume/education_edit/0',
+        work: '/member/personal/resume/work_edit/0',
+        training: '/member/personal/resume/train_edit/0',
+        project: '/member/personal/resume/project_edit/0',
+        certificate: '/member/personal/resume/certificate_edit/0',
+        language: '/member/personal/resume/language_edit/0',
+        tag: '/member/personal/resume/tag',
+        img: '/member/personal/resume'
+      }
+      this.$router.push(routerObj[item.field])
+    },
     getChatList () {
       http.post(api.chatList, {token: this.imToken}).then((res) => {
         this.chatList = res.data.items
@@ -409,6 +455,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .personal_index_wrapper{
+    background: transparent;
+    padding: 0 15px;
+  }
   .van-popup--center {
     background: transparent;
   }
@@ -490,7 +540,7 @@ export default {
 .handle_line {
   font-size: 16px;
   color: #333333;
-  padding: 16.5px 0 16.5px 52px;
+  padding: 16.5px 0 16.5px 40px;
   position: relative;
   display: block;
   .right_txt {
@@ -503,13 +553,14 @@ export default {
   }
   .tip_go {
     position: absolute;
-    left: 124px;
+    left: 105px;
     top: 50%;
     transform: translate(0, -50%);
-    width: 21.5px;
+    z-index: 10;
+    width: 20px;
     height: 14px;
     background: url("../../assets/images/personal_index_app_go.png") 0 no-repeat;
-    background-size: 21.5px 14px;
+    background-size: 100% 100%;
   }
   &::before {
     position: absolute;
@@ -532,33 +583,38 @@ export default {
     border-bottom: 1px solid #f3f3f3;
   }
   &.l1 {
-    background: #ffffff url("../../assets/images/personal_index_l1.png") 19px
+    background: url("../../assets/images/personal_index_l1.png") 13px
       center no-repeat;
     background-size: 18.5px 16px;
   }
   &.l2 {
-    background: #ffffff url("../../assets/images/personal_index_l2.png") 23px
+    background: url("../../assets/images/personal_index_l2.png") 15px
       center no-repeat;
     background-size: 10px 16px;
   }
   &.l3 {
-    background: #ffffff url("../../assets/images/personal_index_l3.png") 20px
+    background: url("../../assets/images/personal_index_l3.png") 15px
       center no-repeat;
     background-size: 14px 15.5px;
   }
   &.l4 {
-    background: #ffffff url("../../assets/images/personal_index_l4.png") 18px
+    background: url("../../assets/images/personal_index_l4.png") 15px
       center no-repeat;
     background-size: 17.5px 17.5px;
   }
   &.l5 {
-    background: #ffffff url("../../assets/images/personal_index_l5.png") 18px
+    background: url("../../assets/images/personal_index_l5.png") 15px
       center no-repeat;
     background-size: 17px 17px;
   }
   &.l6 {
-    background: #ffffff url("../../assets/images/personal_index_l6.png") 18px
+    background: url("../../assets/images/personal_index_l6.png") 15px
       center no-repeat;
+    background-size: 18.5px 18px;
+  }
+  &.l7 {
+    background: url("../../assets/images/money.png") 15px
+    center no-repeat;
     background-size: 18.5px 18px;
   }
   .point{
@@ -575,6 +631,8 @@ export default {
 .box_7 {
   width: 100%;
   background-color: #ffffff;
+  border-radius: 15px;
+  margin-top: 20px;
   &.no_mb {
     margin-bottom: 0;
   }
@@ -582,41 +640,39 @@ export default {
 .box_6 {
   width: 100%;
   background-color: #ffffff;
-  padding: 0 16px 25px 16px;
+  padding: 0 15px 21px 15px;
+  margin-top: 15px;
+  border-radius: 15px;
   .box_item {
     float: left;
-    width: 166px;
-    height: 75px;
-    padding-left: 9px;
+    width: 150px;
+    height: 72px;
+    padding-left: 15px;
     border-radius: 6px;
+    margin-top: 7px;
     &.t1 {
-      background: #fff9f5 url("../../assets/images/personal_index_top.png")
-        125px center no-repeat;
+      background: #f4ebff url("../../assets/images/personal_index_top.png") right top no-repeat;
+      color: #9b41ff;
       background-size: 35px;
     }
     &.t2 {
-      background: #f7fbff url("../../assets/images/personal_index_tag.png")
-        125px center no-repeat;
+      background: #ffedeb url("../../assets/images/personal_index_tag.png") right top no-repeat;
       background-size: 35px;
       float: right;
-      .tx1 {
-        color: #218ffc;
-      }
+      color: #f05949;
     }
     .tx1 {
-      padding: 16.5px 0 8.5px;
-      font-size: 16px;
-      color: #ff8a4a;
+      padding: 14px 0 10px;
+      font-size: 14px;
+      font-weight: bold;
     }
     .tx2 {
-      font-size: 10px;
-      color: #999999;
+      font-size: 11px;
     }
   }
 }
 .box_4 {
   width: 100%;
-  background-color: #ffffff;
   .box_item {
     display: block;
     width: 25%;
@@ -685,35 +741,31 @@ export default {
   }
 }
 .video {
-  background: url("../../assets/images/video.png") 0 center no-repeat #f5f5f5;
-  background-size: 37px 19px;
-  border-radius: 50px;
-  margin-left: 16px;
-  margin-right: 16px;
-  margin-top: 11px;
-  margin-bottom: 11px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 42px;
+  background:#fff url("../../assets/images/video.png") right center no-repeat;
+  background-size: 93px 53px;
+  margin-top: 17px;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  padding: 24px 13px;
   box-sizing: border-box;
   .title {
-    color: #1f1f1f;
-    font-size: 13px;
+    color: #2d2d2d;
+    font-size: 16px;
+    font-weight: bold;
+    span {
+      color: #ff661b;
+    }
   }
   .tisp {
-    margin-top: 4px;
+    margin-top: 10px;
     color: #666666;
-    font-size: 11px;
-    span {
-      color: #ff7f3a;
-    }
+    font-size: 12px;
   }
 }
 .box_title {
   width: 100%;
-  background-color: #ffffff;
   position: relative;
-  padding: 17.5px 0 17.5px 18px;
+  padding: 23px 0 23px 18px;
   font-size: 18px;
   font-weight: bold;
   color: #333333;
@@ -727,21 +779,23 @@ export default {
   }
 }
 .box_3 {
-  width: 100%;
-  background-color: #ffffff;
-  position: relative;
-  padding-left: 75px;
-  height: 50px;
+  width: 324px;
+  margin: 15px auto 0;
+  position:  relative;
+  padding-left: 43px;
+  height: 32px;
   overflow: hidden;
+  background: #fbfbfb url("../../assets/images/personal_notice.png") no-repeat 9px center / 22.5px 22.5px;
+  border-radius: 15px;
   &::after {
     position: absolute;
     right: 17px;
-    top: 21px;
+    top: 50%;
     width: 7px;
     height: 7px;
     border-top: 1px solid #999999;
     border-right: 1px solid #999999;
-    transform: rotate(45deg);
+    transform: translateY(-50%) rotate(45deg);
     content: " ";
   }
   .title {
@@ -759,8 +813,8 @@ export default {
   li {
     font-size: 13px;
     color: #333333;
-    padding: 13.5px 22px 13.5px 0;
-    width: 290px;
+    padding: 4px 22px 4px 0;
+    width: 265px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -776,8 +830,7 @@ export default {
   color: #ff6600;
   position: relative;
   padding: 11.5px 0 11.5px 33px;
-  background: #fffbeb url("../../assets/images/remind_ico.svg") 13px center
-    no-repeat;
+  background: #fffbeb url("../../assets/images/remind_ico.svg") 13px center no-repeat;
   background-size: 15px;
   .right_txt {
     position: absolute;
@@ -788,10 +841,43 @@ export default {
     padding: 11.5px 17px;
   }
 }
+.personal_menu{
+  background: #fff;
+  border-radius: 15px;
+}
+.lack_resume{
+  background: linear-gradient(to right, #3c5083, #253165);
+  height: 43px;
+  color: #dbe8f7;
+  font-size: 12px;
+  position: relative;
+  padding: 15px 13px;
+  border-radius: 15px 15px 0 0;
+  &.bg{
+    background: #4a7dff;
+  }
+  .lack_text{
+    width: 260px;
+  }
+  .lack_btn{
+    padding: 4px 10px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 15px;
+    color: #253165;
+    font-size: 12px;
+    background: #fce6c6;
+    a{
+      color: #253165;
+      font-size: 12px;
+    }
+  }
+}
 .box_1 {
   width: 100%;
   display: flex;
-  background-color: #f7fbff;
   .box_item {
     flex: 1;
     text-align: center;
@@ -830,59 +916,54 @@ export default {
   position: relative;
   width: 100%;
   padding-top: 4.5px;
-  text-align: center;
+  padding: 20px 0 30px;
   .avatar_wrapper {
-    width: 70px;
-    height: 70px;
-    border-radius: 70px;
-    margin: 0 auto 10px;
+    width: 63px;
+    height: 63px;
+    border-radius: 63px;
     box-shadow: 0 1px 5px #c2c2c2;
     background-color: #ffffff;
+    float: left;
     img {
-      width: 70px;
-      height: 70px;
-      border-radius: 70px;
+      width: 63px;
+      height: 63px;
+      border-radius: 63px;
       border: 0;
     }
   }
+  .user_info{
+    float: left;
+    width: 260px;
+    margin-left: 20px;
+  }
   .user_name {
     position: relative;
-    font-size: 18px;
+    font-size: 23px;
     color: #333333;
     font-weight: bold;
-    width: 72px;
-    text-align: center;
-    margin: 0 auto;
-    .percent {
-      position: absolute;
-      right: -40px;
-      bottom: 15px;
-      font-size: 10px;
-      color: #ffffff;
-      background-color: #ff9053;
-      border-radius: 5px;
-      padding: 2px 4px;
-      &::after {
-        content: " ";
-        position: absolute;
-        left: -7px;
-        top: 50%;
-        width: 0;
-        height: 0;
-        border-bottom: 8px solid #ff9053;
-        border-left: 8px solid transparent;
-        transform: translate(0, -50%);
-      }
-    }
+    width: 172px;
   }
   .current_txt {
-    padding: 10px 0;
+    background: url("../../assets/images/personal_edit_resume.png") no-repeat left center / 12px 10px;
+    padding: 10px 0 10px 15px;
     font-size: 12px;
-    color: #999999;
+    color: #333333;
+    position: relative;
+  }
+  .refresh_resume{
+    position: absolute;
+    right: 0;
+    top: 40px;
+    color: #666666;
+    font-size: 12px;
+    padding: 6px 10px 4px 23px;
+    border-radius: 15px;
+    background: #fff url("../../assets/images/refresh.png") no-repeat 8px center / 12px 12px;
   }
 }
 .my_app {
-  background: #ffffff url("../../assets/images/personal_index_top_bg.png")
+  /*#fbfbfb*/
+  background: #fbfbfb url("../../assets/images/personal_index_top_bg.png")
     center 0 no-repeat;
   background-size: 375px 113.5px;
 }

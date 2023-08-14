@@ -341,6 +341,14 @@ class Bind extends \app\v1_0\controller\common\Base
 
         cache('smscode_' . $input_data['mobile'], null);
         $this->writeMemberActionLog($member['uid'],'绑定微信');
+        model('MemberBalance')->moneyRecord(
+            $member['uid'],
+            'binding_red_envelopes',
+            '绑定微信',
+            0,
+            0,
+            $input_data['openid']
+        );
         $this->ajaxReturn(
             200,
             '绑定并登录成功',

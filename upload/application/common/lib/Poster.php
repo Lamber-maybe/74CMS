@@ -86,6 +86,7 @@ class Poster
                 imagecopymerge($imageRes,$canvas, $val['left'],$val['top'],$val['right'],$val['bottom'],$val['width'],$val['height'],$val['opacity']);//左，上，右，下，宽度，高度，透明度
             }
         }
+
         //处理文字
         if(!empty($config['text'])){
             foreach ($config['text'] as $key => $val) {
@@ -419,11 +420,11 @@ class Poster
                 'background'=>SYS_UPLOAD_PATH.'resource/poster/job/'.$index.'.jpg' //背景图
             ];
         }
-        
-        
-        
-        
-        
+
+
+
+
+
 
         $result = $this->create($config,$save_path);
         if($result===false){
@@ -778,7 +779,7 @@ class Poster
                 'background'=>SYS_UPLOAD_PATH.'resource/poster/resume/'.$index.'.jpg' //背景图
             ];
         }
-        
+
         $result = $this->create($config,$save_path);
         if($result===false){
             $this->error = '生成海报失败';
@@ -924,6 +925,7 @@ class Poster
                     ->where('company_id', 'eq', $info['id'])
                     ->where('is_display', 1)
                     ->where('audit', 1)
+                    ->order('refreshtime','desc')
                     ->limit(3) //最多展示3条职位信息
                     ->select();
             foreach ($job_list as $key => $value) {
@@ -942,7 +944,7 @@ class Poster
 
             $locationUrl = config('global_config.mobile_domain').'company/'.$info['id'];
             $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_company&url='.$locationUrl.'&comid='.$info['id'];
-            
+
             $config = [
                 'image'=>[
                     [
@@ -1033,8 +1035,8 @@ class Poster
                 $job_index++;
             }
         }
-        
-        
+
+
         $result = $this->create($config,$save_path);
         if($result===false){
             $this->error = '生成海报失败';

@@ -36,4 +36,18 @@ class SignIn extends \app\v1_0\controller\common\Base
         $this->writeMemberActionLog($this->userinfo->uid,'签到');
         $this->ajaxReturn(200, '签到成功',['points'=>model('Member')->getMemberPoints($this->userinfo->uid)]);
     }
+
+    //查询登录账号是否签到
+    public function userSignin()
+    {
+        $uid = $this->userinfo->uid;
+        $time = strtotime(date('Y-m-d'));
+        $where = [
+            'uid' => $uid,
+            'alias' => 'sign_in',
+            'addtime' => ['egt',$time]
+        ];
+        $count = model('TaskRecord')->where($where)->count();
+        $this->ajaxReturn(200,'获取成功',$count);
+    }
 }

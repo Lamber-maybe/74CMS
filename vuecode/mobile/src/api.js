@@ -494,5 +494,7 @@ export default {
   // 常用语拖拽排序
   phraseSortAll: '/member/im/phraseSortAll',
   // 是否绑定微信
-  imCheckBind: '/member/im/imCheckBind'
+  imCheckBind: '/member/im/imCheckBind',
+  // 获取优化简历详情
+  defectResumeInfo: '/personal/resume/getNoComplete'
 }

@@ -144,6 +144,8 @@ class Mobile extends \think\Controller
                 preg_match('/\d+/',$request_url,$arr);
                 $id = isset($arr[0])?$arr[0]:null;
                 $location_href = url('index/notice/show',['id'=>$id],'',$site_domain);
+            }else if(strpos($request_url_full,config('global_config.mobile_domain').'shortvideo/videoplay')===0 || strpos($request_url_full,config('global_config.mobile_domain').'shortvideo/personalList')===0 || strpos($request_url_full,config('global_config.mobile_domain').'shortvideo/companylist')===0) {//视频详情
+                $location_href = url('index/video_recruitment/index','','',$site_domain);
             }else{
                 $location_href = url('index/index/index','','',$site_domain);
             }

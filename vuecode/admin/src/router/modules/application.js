@@ -209,24 +209,6 @@ const applicationRouter = {
           meta: { title: '企业海报', access: 'posterCompany' }
         }
       ]
-    },
-    {
-      path: '/corpwechat',
-      name: 'corpwechat',
-      component: () => import('@/views/corpwechat'),
-      redirect: 'noRedirect',
-      alwaysShow: true,
-      meta: { title: '企微管理', access: 'poster' },
-      children: [
-        {
-          path: '/poster/personal',
-          name: 'corpwechatPersonal',
-          hidden:true,
-          component: () => import('@/views/corpwechat/personal'),
-          meta: { title: '个人设置', access: 'corpwechatPersonal' }
-        }
-
-      ]
     }
   ]
 }

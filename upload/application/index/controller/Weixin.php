@@ -139,6 +139,11 @@ class Weixin extends \app\common\controller\Base
             if($member!==null){
                 model('Task')->doTask($member['uid'], $member['utype'], 'bind_weixin');
             }
+//            model('MemberBalance')->moneyRecord(
+//                $member['uid'],
+//                'follow_red_envelopes',
+//                '关注公众号'
+//            );
         }
     }
     /**
@@ -769,9 +774,9 @@ class Weixin extends \app\common\controller\Base
                     $sqlarr['bindtime'] = time();
                     $sqlarr['is_subscribe'] = 1;
                     model('MemberBind')->save($sqlarr);
-                    if($is_subscribe==1){
+//                    if($is_subscribe==1){
                         model('Task')->doTask($uid, $utype, 'bind_weixin');
-                    }
+//                    }
                 }
                 $this->outputText($object,'绑定成功');
                 break;

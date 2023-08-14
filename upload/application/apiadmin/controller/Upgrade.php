@@ -43,7 +43,22 @@ class Upgrade extends \app\common\controller\Backend
                 $result['data'][$key]['enable'] = 0;
             }
             $result['data'][$key]['size_show'] = $this->getsize($value['size']);
-            $result['data'][$key]['version_text'] = ltrim($value['version_int_1'],'0').'.'.ltrim($value['version_int_2'],'0').'.'.ltrim(ltrim($value['version_int_3'],'0'),'0');
+            $result['data'][$key]['version_text'] = '';
+            if(ltrim($value['version_int_1'],'0') != ''){
+                $result['data'][$key]['version_text'] .= ltrim($value['version_int_1'],'0').'.';
+            }else{
+                $result['data'][$key]['version_text'] .= '0.';
+            }
+            if(ltrim($value['version_int_2'],'0') != ''){
+                $result['data'][$key]['version_text'] .= ltrim($value['version_int_2'],'0').'.';
+            }else{
+                $result['data'][$key]['version_text'] .= '0.';
+            }
+            if(ltrim($value['version_int_3'],'0') != ''){
+                $result['data'][$key]['version_text'] .= ltrim($value['version_int_3'],'0');
+            }else{
+                $result['data'][$key]['version_text'] .= '0';
+            }
             $latest_version = $result['data'][$key]['version_text'];
         }
 

@@ -257,6 +257,8 @@ export default {
     member_points: '/member/info/myPoints',
     // 签到
     member_signin: '/member/sign_in/index',
+    // 查看当日是否签到
+    member_user_ignin: '/member/sign_in/userSignin',
     // 积分收支记录
     member_pointslog: '/member/info/pointsLog',
     // 积分收支记录统计
@@ -475,4 +477,6 @@ export default {
     im_window_global: '/member/im/imWindowGlobal',
     //即时通讯检查绑定状态
     im_check_bind:'/member/im/imCheckBind',
+    // 获取优化简历详情
+    defectResumeInfo: '/personal/resume/getNoComplete'
 }

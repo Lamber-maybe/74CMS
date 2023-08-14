@@ -89,7 +89,7 @@
                 </div>
               </div>
 
-              <div class="j_name substring" v-for="(item1, index1) in item.joblist" :key="index1" @click.stop="jobdetails(item.id)">
+              <div class="j_name substring" v-for="(item1, index1) in item.joblist" :key="index1" @click.stop="jobdetails(item1.id)">
                 <div class="name">
                   <span class="name-text substring">{{ item1.jobname }}</span>
                   <span class="j_salary">{{ item1.wage_text }}</span>
@@ -342,6 +342,7 @@ export default {
       jobNum: 0,
       clickNum: 0,
       mobile_header_logo: '',
+      thumb: '',
       content: '',
       jobList: [],
       companyList: [],
@@ -410,14 +411,16 @@ export default {
     getJob (istype, id, name, company_id = 0, companyname = '') {
       let loginType = this.$store.state.LoginType
       let confirmText = ''
-      if (this.$store.state.LoginType === false) {
+      if (this.$store.state.LoginType === 0) {
         if (istype === 'compan') {
           this.thisType = 2
+          console.log(this.thisType)
           confirmText = '当前操作需要登录个人账号'
         } else if (istype === 'job') {
           this.thisType = 2
           confirmText = '当前操作需要登录个人账号'
         } else {
+          this.thisType = 1
           confirmText = '当前操作需要登录企业账号'
         }
       } else {
@@ -428,12 +431,12 @@ export default {
           this.thisType = 2
           confirmText = '当前操作需要登录个人账号'
         } else if (istype === 'resume' && loginType === 2) {
+          this.thisType = 1
           confirmText = '当前操作需要登录企业账号'
         } else {
           confirmText = ''
         }
       }
-
       if (confirmText != '') {
         // 未登录
         this.$dialog
@@ -569,6 +572,7 @@ export default {
       var t = this
       http.get(api.jobfairol_show, {id: t.jobfair_id}).then(r => {
         t.title = r.data.info.title
+        t.thumb = r.data.info.thumb
         t.companyNum = r.data.info.total_company
         t.jobNum = r.data.info.total_job
         t.clickNum = r.data.info.click
@@ -592,8 +596,8 @@ export default {
         }
 
         let wechatShareInfo = {
-          title: t.title
-          // imgUrl: r.data.info.thumb_src
+          title: t.title,
+          imgUrl: t.thumb
         }
         wxshare(wechatShareInfo, 'online_jobfairshow', location.href)
       }).catch(() => {})

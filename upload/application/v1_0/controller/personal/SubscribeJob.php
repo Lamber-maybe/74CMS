@@ -28,7 +28,8 @@ class SubscribeJob extends \app\v1_0\controller\common\Base
             'category2' => input('post.category2/d', 0, 'intval'),
             'category3' => input('post.category3/d', 0, 'intval'),
             'minwage' => input('post.minwage/d', 0, 'intval'),
-            'maxwage' => input('post.maxwage/d', 0, 'intval')
+            'maxwage' => input('post.maxwage/d', 0, 'intval'),
+            'pushtime' => input('post.pushtime/d',0,'intval')
         ];
         $input_data['category'] =
             $input_data['category3'] > 0

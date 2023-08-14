@@ -79,6 +79,9 @@
     mounted(){
       this.fetchUserData()
     },
+    created() {
+      this.userSignin()
+    },
     computed: {
       hasSign(){
         return this.$store.state.userSignin
@@ -94,7 +97,7 @@
           return meta.activeMenu
         }
         return path
-      }
+      },
     },
     methods: {
       fetchUserData () {
@@ -125,6 +128,21 @@
         }).catch(() => {})
       },
     },
+    userSignin()
+    {
+      http.get(api.member_user_ignin).then(res => {
+        if (res.data > 0)
+        {
+          this.$store.commit('setUserSignin', {
+            signin: true
+          })
+        }else {
+          this.$store.commit('setUserSignin', {
+            signin: false
+          })
+        }
+      }).catch(() => {})
+    }
   }
 </script>
 

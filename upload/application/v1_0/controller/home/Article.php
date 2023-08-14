@@ -72,11 +72,13 @@ class Article extends \app\v1_0\controller\common\Base
         $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $prev = model('Article')
             ->where('id', '>', $info['id'])
+            ->where('is_display',1)
             ->order('id asc')
             ->field('id,title')
             ->find();
         $next = model('Article')
             ->where('id', '<', $info['id'])
+            ->where('is_display',1)
             ->order('id desc')
             ->field('id,title')
             ->find();

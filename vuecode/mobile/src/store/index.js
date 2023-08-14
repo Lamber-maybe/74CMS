@@ -737,7 +737,6 @@ const store = new Vuex.Store({
       }
       state.ws.onmessage = function (e) {
         // commit('WEBSOCKET_REIVE', e)
-        console.log(e.data)
         commit('setChatList', e)
       }
       state.ws.onerror = function (error) {

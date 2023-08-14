@@ -258,6 +258,7 @@ export default {
   },
   created() {
     this.fetchData()
+    this.userSignin()
   },
   mounted () {
     window.addEventListener('resize', ()=>{
@@ -483,6 +484,21 @@ export default {
         toSearchResume(){
             window.open(this.resumelist_url_web)
         },
+        userSignin()
+        {
+          http.get(api.member_user_ignin).then(res => {
+            if (res.data > 0)
+            {
+              this.$store.commit('setUserSignin', {
+                signin: true
+              })
+            }else {
+              this.$store.commit('setUserSignin', {
+                signin: false
+              })
+            }
+          }).catch(() => {})
+        }
   }
 }
 </script>

@@ -20,6 +20,7 @@ import PersonalAccount from '../views/personal/AccountManage/Account'
 import PersonalJobApply from '../views/personal/JobManagement/JobApply'
 import PersonalIndex from '../views/personal/PersonalIndex'
 import EditResume from '../views/personal/EditResume'
+import ImproveResume from '../views/personal/ImproveResume'
 import EditBasic from '../views/personal/EditBasic'
 import EditIntention from '../views/personal/EditIntention'
 import EditCertificate from '../views/personal/EditCertificate'
@@ -329,6 +330,28 @@ const routes = [{
   component: PersonalIndex,
   meta: {
     title: '会员中心',
+    keepAlive: false,
+    loginCheck: true,
+    utype: 2
+  }
+},
+{
+  path: '/member/personal/resume',
+  name: 'EditResume',
+  component: EditResume,
+  meta: {
+    title: '我的简历',
+    keepAlive: false,
+    loginCheck: true,
+    utype: 2
+  }
+},
+{
+  path: '/member/personal/ImproveResume',
+  name: 'ImproveResume',
+  component: ImproveResume,
+  meta: {
+    title: '完善简历',
     keepAlive: false,
     loginCheck: true,
     utype: 2
@@ -852,28 +875,28 @@ const routes = [{
     utype: 1
   }
 },
-  {
-    path: '/member/company/view_resume',
-    name: 'CompanyViewResume',
-    component: CompanyViewResume,
-    meta: {
-      title: '我看过',
-      keepAlive: false,
-      loginCheck: true,
-      utype: 1
-    }
-  },
-  {
-    path: '/member/company/be_browsed',
-    name: 'CompanyBeBrowsed',
-    component: CompanyBeBrowsed,
-    meta: {
-      title: '看过我',
-      keepAlive: false,
-      loginCheck: true,
-      utype: 1
-    }
-  },
+{
+  path: '/member/company/view_resume',
+  name: 'CompanyViewResume',
+  component: CompanyViewResume,
+  meta: {
+    title: '我看过',
+    keepAlive: false,
+    loginCheck: true,
+    utype: 1
+  }
+},
+{
+  path: '/member/company/be_browsed',
+  name: 'CompanyBeBrowsed',
+  component: CompanyBeBrowsed,
+  meta: {
+    title: '看过我',
+    keepAlive: false,
+    loginCheck: true,
+    utype: 1
+  }
+},
 {
   path: '/member/company/auth',
   name: 'CompanyAuthIndex',

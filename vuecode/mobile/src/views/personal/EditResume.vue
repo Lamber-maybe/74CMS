@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="form_split_10"></div>
-    <div class="content_wrapper">
+    <div class="content_wrapper pd">
       <!--求职意向-->
       <div class="box_3" v-if="moduleStore.intention!==undefined && moduleStore.intention.is_display == 1">
         <div class="box_head">
@@ -294,7 +294,12 @@
         </div>
       </div>
       <div class="box_13">
-        <van-button round type="info" block @click="$router.push('/member/personal/preview')">预览简历</van-button>
+        <div class="tips" v-if="isTips" @click="handleJumpImproveResume">
+          检测到您的简历有{{defectResumeNum}}个待优化项，请及时处理
+          <van-icon class="arrow_icon" name="arrow" />
+          <van-icon @click.stop="handleTipsClose" class="clear_icon" size="25" color="#000"  name="clear" />
+        </div>
+        <van-button class="btn" round type="info" block @click="$router.push('/member/personal/preview')">预览简历</van-button>
       </div>
     </div>
     <div
@@ -336,6 +341,7 @@ export default {
   name: 'EditResume',
   data () {
     return {
+      isTips: true,
       uploading: false,
       radio: 1,
       imgList: [],
@@ -347,7 +353,8 @@ export default {
       showPickerCurrent: false,
       currentDefaultIndex: 0,
       showPerfectTip: true,
-      moduleStore: {}
+      moduleStore: {},
+      defectResumeNum:0
     }
   },
   computed: {
@@ -391,8 +398,25 @@ export default {
   created () {
     this.$store.dispatch('getClassify', 'current')
     this.initInfo()
+    this.getDefectResumeInfo()
   },
   methods: {
+    // 获取优化简历项
+    getDefectResumeInfo () {
+      http.get(api.defectResumeInfo).then((res) => {
+        if (res.code == 200) {
+          this.defectResumeNum = res.data.no_complete_count
+          if (res.data.no_complete_count > 0) {
+            this.isTips = true
+          } else {
+            this.isTips = false
+          }
+        }
+      })
+    },
+    handleTipsClose () {
+      this.isTips = false
+    },
     // 初始化数据
     initInfo () {
       http
@@ -609,6 +633,10 @@ export default {
       } else {
         this.$router.push('/member/personal/resume/language_edit/0')
       }
+    },
+    //  完善简历跳转
+    handleJumpImproveResume () {
+      this.$router.push('/member/personal/ImproveResume')
     }
   }
 }
@@ -727,9 +755,40 @@ export default {
   border-radius: 100%;
 }
 .box_13 {
-  width: 300px;
-  margin: 0 auto;
-  padding-bottom: 45px;
+  width: 100%;
+  padding: 25px 0 20px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  z-index: 10;
+  .tips{
+    height: 33px;
+    width: 307px;
+    margin: 0 auto 15px;
+    background: rgba(0,0,0,.8);
+    color: #fff;
+    font-size: 13px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    position: relative;
+    vertical-align: middle;
+    .arrow_icon{
+      vertical-align: -2px;
+      margin-left: 5px;
+    }
+    .clear_icon{
+      position: absolute;
+      right: 0px;
+      top: -25px;
+      z-index: 11;
+    }
+  }
+  .btn{
+    width: 300px;
+    margin: 0 auto;
+  }
 }
 .box_12 {
   width: 100%;
@@ -1349,6 +1408,9 @@ export default {
   width: 100%;
   background-color: #ffffff;
   padding: 0 17px;
+  &.pd{
+    padding-bottom: 120px;
+  }
 }
 .van-overlay{
   text-align:center;

@@ -80,6 +80,11 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $info['mobile_header_logo'] > 0
                 ? model('Uploadfile')->getFileUrl($info['mobile_header_logo'])
                 : default_empty('jobfair_banner');
+        $info['thumb'] =
+            $info['thumb'] > 0
+                ? model('Uploadfile')->getFileUrl($info['thumb'])
+                : default_empty('thumb');
+
         $info = $info->toArray();
         $info['total_company'] = model('JobfairOnlineParticipate')->where('jobfair_id',$id)->where('utype',1)->where('audit',1)->count();
         $info['total_job'] = model('Job')
@@ -104,7 +109,6 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         }
         $return['info'] = $info;
         $return['log'] = $this->getLog();
-
         $this->ajaxReturn(200,'获取数据成功',$return);
     }
     /**
@@ -181,8 +185,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                     $job_tmp_arr['district_name'].=' '.$job_tmp_arr['district3_name'];
                 }
                 $basemodel = new BaseModel();
-                $job_tmp_arr['education'] = empty($value['education'])?'不限学历':$basemodel->map_education[$value['education']];
-                $job_tmp_arr['experience'] = empty($value['experience'])?'无经验':$basemodel->map_experience[$value['experience']];
+                $job_tmp_arr['education'] = isset($basemodel->map_education[$value['education']]) ? $basemodel->map_education[$value['education']] : '不限学历';
+                $job_tmp_arr['experience'] = isset($basemodel->map_experience[$value['experience']]) ? $basemodel->map_experience[$value['experience']] : '无经验';
                 $job_tmp_arr['wage_text'] = model('BaseModel')->handle_wage(
                     $value['minwage'],
                     $value['maxwage'],
@@ -442,7 +446,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
 
             if ($dur < 60) {
 
-                return $dur . '秒前';
+                return '刚刚';
 
             } else {
 
@@ -781,16 +785,18 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
     public function getLog()
     {
         $time = strtotime(date('Y-m-d'));
+        $time = strtotime(date('Y-m-d'));
+        $prefix = config('database.prefix');
+        $field = 'a.*,
+            case when a.type = 1 then (select companyname from '.$prefix.'company where id=a.content_id)
+             when a.type = 2 then (select jobname from '.$prefix.'job where id = a.content_id)
+             when a.type = 3 then (select fullname from '.$prefix.'resume where id = a.content_id) end as content_name,
+             case when b.utype = 1 then (select companyname from '.$prefix.'company where uid = a.uid)
+              when b.utype = 2 then (select fullname from '.$prefix.'resume where uid = a.uid) end as member_name';
         $data = model('JobfairOnlineViewLog')->alias('a')
-            ->join('qs_member b','b.uid=a.uid','left')
+            ->join($prefix.'member b','b.uid=a.uid','left')
             ->where('a.addtime','gt',$time)
-            ->field("a.*,
-            case when a.type = 1 then (select companyname from qs_company where id=a.content_id)
-             when a.type = 2 then (select jobname from qs_job where id = a.content_id)
-             when a.type = 3 then (select fullname from qs_resume where id = a.content_id) end as content_name,
-             case when b.utype = 1 then (select companyname from qs_company where uid = a.uid)
-              when b.utype = 2 then (select fullname from qs_resume where uid = a.uid) end as member_name
-             ")->order('a.addtime','desc')
+            ->field($field)->order('a.addtime','desc')
             ->select();
         $res = [];
         foreach($data as $k=>$v)

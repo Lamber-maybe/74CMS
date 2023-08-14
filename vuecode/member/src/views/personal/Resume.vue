@@ -1185,6 +1185,12 @@
       this.scanQrcode = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + locationUrl
       this.scanQrcodeImg = window.global.RequestBaseUrl + api.get_qrcode + '?type=normal&url=' + locationUrlImg
       this.initInfo()
+      var url = location.href
+      if(url.split('#')[1]){
+        this.$nextTick(()=>{
+          location.href = url
+        })
+      }
     },
     beforeDestroy () {
       clearInterval(this.timer)
@@ -2267,7 +2273,7 @@
           this.optionMaxWage = []
           max = this.$store.state.maxWage
         }
-        
+
         let wageArray = []
         let current = minValue
         let unit1 = 500
