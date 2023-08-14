@@ -279,6 +279,33 @@ class Company extends \app\index\controller\Base
                 abort(404,'页面不存在');
             }
         }
+
+        //获取企业登录信息
+        $company  = model('Company')->where(['id'=>$id])->field('uid,audit')->find();
+        $uid = !empty($company)?$company['uid']:0;
+        $logo = model('member')->where(['uid'=>$uid])->field('last_login_ip,last_login_time,last_login_address')->find();
+        $logo['audit'] = $company['audit'];
+
+        /**
+         * 【优化】PC风险提示显示形式
+         * IP最后一位以*加密
+         * zch 2022/7/22
+         */
+        if (!empty($logo['last_login_ip'])){
+            $dot = strripos($logo['last_login_ip'],"."); //查找“.”最后出现的位置
+            $logo['last_login_ip'] = substr($logo['last_login_ip'],0,$dot).".*"; //输出“.”最后出现位置之前的字符串并加上*号
+        }else{
+            $logo['last_login_ip'] = '';
+        }
+
+        $last_login_time = '';
+        if (!empty($logo) && $logo['last_login_time'] > 0)
+        {
+            $last_login_time = date('Y/m/d H:i:s',$logo['last_login_time']);
+        }
+        $logo['last_time'] = $last_login_time;
+        $this->assign('logo',$logo);
+	
         $return['field_rule'] = $field_rule;
         $return['share_url'] = config('global_config.mobile_domain').'company/'.$return['base_info']['id'];
         $seoData['companyname'] = $return['base_info']['companyname'];
@@ -286,7 +313,9 @@ class Company extends \app\index\controller\Base
         $this->initPageSeo('companyshow',$seoData);
         $this->assign('return',$return);
         $this->assign('pageHeader',$this->pageHeader);
-        return $this->fetch('show');
+
+        $company_show_tpl = !empty(config('global_config.company_show_tpl')) ? config('global_config.company_show_tpl') : 'def';
+        return $this->fetch('company/showTpl/'.$company_show_tpl.'/show');
     }
     protected function writeShowCache($id,$pageCache){
         $cominfo = model('Company')

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\apiadmin\controller;
 
 class Badword extends \app\common\controller\Backend
@@ -29,14 +30,15 @@ class Badword extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
             'name' => input('post.name/s', '', 'trim'),
             'replace_text' => input('post.replace_text/s', '', 'trim')
         ];
-        $check = model('Badword')->where('name',$input_data['name'])->find();
-        if($check!==null){
+        $check = model('Badword')->where('name', $input_data['name'])->find();
+        if ($check !== null) {
             $this->ajaxReturn(500, '敏感词已存在');
         }
         if (
@@ -50,14 +52,15 @@ class Badword extends \app\common\controller\Backend
         }
         model('AdminLog')->record(
             '添加敏感词。敏感词ID【' .
-                model('Badword')->id .
-                '】;敏感词【' .
-                $input_data['name'] .
-                '】',
+            model('Badword')->id .
+            '】;敏感词【' .
+            $input_data['name'] .
+            '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -80,8 +83,11 @@ class Badword extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
-            $check = model('Badword')->where('name',$input_data['name'])->where('id','<>',$id)->find();
-            if($check!==null){
+            $check = model('Badword')
+                ->where('name', $input_data['name'])
+                ->where('id', '<>', $id)
+                ->find();
+            if ($check !== null) {
                 $this->ajaxReturn(500, '敏感词已存在');
             }
             unset($input_data['id']);
@@ -96,15 +102,16 @@ class Badword extends \app\common\controller\Backend
             }
             model('AdminLog')->record(
                 '编辑敏感词。敏感词ID【' .
-                    $id .
-                    '】;敏感词【' .
-                    $input_data['name'] .
-                    '】',
+                $id .
+                '】;敏感词【' .
+                $input_data['name'] .
+                '】',
                 $this->admininfo
             );
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
@@ -117,31 +124,38 @@ class Badword extends \app\common\controller\Backend
         model('Badword')->destroy($id);
         model('AdminLog')->record(
             '删除敏感词。敏感词ID【' .
-                implode(',', $id) .
-                '】;敏感词【' .
-                implode(',', $list) .
-                '】',
+            implode(',', $id) .
+            '】;敏感词【' .
+            implode(',', $list) .
+            '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '删除成功');
     }
+
     public function import()
     {
         $input_data = input('post.');
-        if(empty($input_data)){
+        // 安全敏感词导入乱码 zdq
+        foreach ($input_data as $k => $v) {
+            if (trim($v['name']) == '') {
+                unset($input_data[$k]);
+            }
+        }
+        if (empty($input_data)) {
             $this->ajaxReturn(500, '请上传txt文档');
         }
         $name_arr = [];
         foreach ($input_data as $key => $value) {
-            if(isset($value['name'])){
+            if (isset($value['name'])) {
                 $name_arr[] = $value['name'];
             }
-            
-            $input_data[$key]['name'] = isset($value['name'])?cut_str($value['name'],15):'';
-            $input_data[$key]['replace_text'] = isset($value['replace_text'])?cut_str($value['replace_text'],15):'';
+
+            $input_data[$key]['name'] = isset($value['name']) ? cut_str($value['name'], 15) : '';
+            $input_data[$key]['replace_text'] = isset($value['replace_text']) ? cut_str($value['replace_text'], 15) : '';
         }
-        if(!empty($name_arr)){
-            model('Badword')->where('name','in',$name_arr)->delete();
+        if (!empty($name_arr)) {
+            model('Badword')->where('name', 'in', $name_arr)->delete();
         }
         if (
             false ===
@@ -150,7 +164,7 @@ class Badword extends \app\common\controller\Backend
             $this->ajaxReturn(500, model('Badword')->getError());
         }
         model('AdminLog')->record(
-            '导入敏感词'.count($input_data).'条',
+            '导入敏感词' . count($input_data) . '条',
             $this->admininfo
         );
         $this->ajaxReturn(200, '导入成功');

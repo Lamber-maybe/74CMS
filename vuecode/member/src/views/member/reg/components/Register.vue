@@ -54,7 +54,8 @@ import Captcha from '@/components/captcha/index'
         password: '',
         repeatPassword: '',
         title: '求职者',
-        regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/
+        regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+        sendSmsLimit: false
       }
     },
     mounted () {
@@ -169,6 +170,7 @@ import Captcha from '@/components/captcha/index'
           })
           .catch(() => {})
       },
+      //zdq 短信验证码重复发送修改
       // 发送验证码
       sendSms () {
         let _this = this
@@ -183,6 +185,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if(this.sendSmsLimit){
+          return false
+        }
+        this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store
             .dispatch('sendSmsFun', {
@@ -193,8 +199,10 @@ import Captcha from '@/components/captcha/index'
             })
             .then(response => {
               if (response.code === 200) {
+                this.sendSmsLimit = false
                 _this.$message({type: 'success', message: _this.$store.state.sendSmsMessage})
               } else {
+                this.sendSmsLimit = false
                 _this.$message.error(_this.$store.state.sendSmsMessage)
               }
             })

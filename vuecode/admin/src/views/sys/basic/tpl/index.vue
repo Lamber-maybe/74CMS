@@ -1,18 +1,24 @@
 <template>
   <div class="app-container">
     <el-tabs type="border-card">
-      <el-tab-pane label="首页模板" :lazy="true">
-        <tplindex />
+      <!--职位企业简历详情模板 zch 2022/8/4 -->
+      <el-tab-pane label="PC端模板" :lazy="true">
+        <pctpl />
+      </el-tab-pane>
+      <el-tab-pane label="触屏H5模板" :lazy="true">
+        <mobiletpl />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-import tplindex from './components/index.vue'
+import pctpl from './pc'
+import mobiletpl from './mobile'
 export default {
   components: {
-    tplindex
+    pctpl,
+    mobiletpl
   }
 }
 </script>

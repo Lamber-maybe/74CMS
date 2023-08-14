@@ -51,9 +51,16 @@ class NotifyRule extends \app\common\model\BaseModel
         if(empty($uid)){
             return;
         }
+        $notifyLog = [];
         foreach ($uid as $key => $value) {
-            model('NotifyLog')->save(['uid'=>$value,'alias'=>$alias,'addtime'=>$timestampToday]);
+            $notifyLog[] = [
+                'uid'=>$value,
+                'alias'=>$alias,
+                'addtime'=>$timestampToday
+            ];
         }
+        model('NotifyLog')->insertAll($notifyLog);
+
         $message_to_arr = $sms_to_arr = $mail_to_arr = [];
         if ($ruleOne['open_message'] == 1) {
             $message_to_arr = $uid;
@@ -77,14 +84,29 @@ class NotifyRule extends \app\common\model\BaseModel
 
         if (!empty($message_to_arr)) {
             $message_to_arr = array_unique($message_to_arr);
-            model('Message')->sendMessage(
-                $message_to_arr,
-                $content,
-                $ruleOne['type'],
-                $ruleOne['inner_link'],
-                $link_param,
-                $urlParams
-            );
+            if (is_array($content)){
+                foreach($content as $k=>$v)
+                {
+                    model('Message')->sendMessage(
+                        $message_to_arr,
+                        $v,
+                        $ruleOne['type'],
+                        $ruleOne['inner_link'],
+                        $link_param,
+                        $urlParams
+                    );
+                }
+            }
+            else{
+                model('Message')->sendMessage(
+                    $message_to_arr,
+                    $content,
+                    $ruleOne['type'],
+                    $ruleOne['inner_link'],
+                    $link_param,
+                    $urlParams
+                );
+            }
         }
         if (!empty($sms_to_arr)) {
             $sms_to_arr = array_unique($sms_to_arr);
@@ -103,9 +125,27 @@ class NotifyRule extends \app\common\model\BaseModel
     }
     protected function replaceContent($content, $replace_arr)
     {
+        $arr = [];
         foreach ($replace_arr as $key => $value) {
-            $content = str_replace('{' . $key . '}', $value, $content);
+            $contents = '';
+            if (is_array($value))
+            {
+                $contents = $content;
+                foreach($value as $k=> $v)
+                {
+                    $contents = str_replace('{' . $k . '}', $v, $contents);
+                }
+
+                $arr[] = $contents;
+            }else
+            {
+                $content = str_replace('{' . $key . '}', $value, $content);
+            }
         }
-        return $content;
+        if (empty($arr))
+        {
+            return $content;
+        }
+        return $arr;
     }
 }

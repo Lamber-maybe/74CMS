@@ -786,5 +786,11 @@ export default {
   // 网络招聘会信息导出
   jobfairOlListAll: '/jobfairOl/getJobfairOnAll',
   isExhibitors: '/jobfair_ol_export/isExhibitors',
-  jobfairOlCompanyJobsList: '/jobfair_ol_export/exhibitors'
+  jobfairOlCompanyJobsList: '/jobfair_ol_export/exhibitors',
+
+  // 场景码批量删除 zch 2022/8/1
+  sceneQrcodeDeleteAll: '/scene_qrcode/deleteAll',
+
+  // 详情模板
+  showTpl: '/tpl/showTpl'
 }

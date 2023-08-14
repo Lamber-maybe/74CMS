@@ -63,7 +63,8 @@ import Captcha from '@/components/captcha/index'
         openid:'',
         unionid:'',
         nickname:'',
-        avatar:''
+        avatar:'',
+        sendSmsLimit: false
       }
     },
     created(){
@@ -148,6 +149,7 @@ import Captcha from '@/components/captcha/index'
           })
           .catch(() => {})
       },
+      //zdq 短信验证码重复发送修改
       // 发送验证码
       sendSms () {
         let _this = this
@@ -162,6 +164,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if (this.sendSmsLimit) {
+          return false
+        }
+        this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store
             .dispatch('sendSmsFun', {
@@ -171,6 +177,7 @@ import Captcha from '@/components/captcha/index'
               captcha: res
             })
             .then(response => {
+              this.sendSmsLimit = false
               if (response.code === 200) {
                 _this.$message({type: 'success', message: _this.$store.state.sendSmsMessage})
               } else {

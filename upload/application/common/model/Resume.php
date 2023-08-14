@@ -972,7 +972,21 @@ class Resume extends \app\common\model\BaseModel
         if ($return['show_contact'] == 1) {
             $return['contact_info'] = $contact_info;
         } else {
-            $return['contact_info'] = [];
+            /**
+             * 隐藏联系方式，使用*号代替
+             * 【旧】：
+             *  $return['contact_info'] = [];
+             */
+            $tmp = $contact_info->toArray();
+            $contact_return = [];
+            foreach ($tmp as $contact_key => $contact_value) {
+                if (!empty($contact_value)) {
+                    $contact_return[$contact_key] = srtAsteriskReplace($contact_value, 4);
+                } else {
+                    $contact_return[$contact_key] = '*';
+                }
+            }
+            $return['contact_info'] = $contact_return;
         }
         return $return;
     }

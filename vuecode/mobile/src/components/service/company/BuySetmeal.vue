@@ -163,6 +163,8 @@ import PaySubmit from '@/components/service/PaySubmit'
 import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
+import { Toast } from 'vant'
+
 export default {
   name: 'BuySetmeal',
   components: {
@@ -175,6 +177,7 @@ export default {
   },
   data () {
     return {
+      is_apply: 0,
       showCouponPicker: false,
       active_index: 0,
       dataset: [],
@@ -245,6 +248,7 @@ export default {
             this.dataset.push(iterator)
           }
           if (list.length > 0) {
+            this.is_apply = list[0].is_apply
             this.submitData.service_id = list[0].id
             this.old_amount = list[0].expense
             this.amount = list[0].expense
@@ -262,6 +266,7 @@ export default {
         .catch(() => {})
     },
     changeItem (item, index) {
+      this.is_apply = item.is_apply
       this.active_index = index
       this.submitData.service_id = item.id
       this.old_amount = item.expense
@@ -280,8 +285,13 @@ export default {
       }
     },
     submit () {
-      this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'
-      this.$refs.paySubmit.handlerSubmit(api.company_pay, this.submitData)
+      // 【bug】后台设置不允许申请套餐，触屏端依然可以对套餐进行购买 zch 2022/7/28
+      if (this.is_apply === 0) {
+        Toast('此套餐暂不允许购买')
+      } else {
+        this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'
+        this.$refs.paySubmit.handlerSubmit(api.company_pay, this.submitData)
+      }
     },
     handlerCouponPicker () {
       if (this.couponList.length <= 1) {

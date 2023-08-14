@@ -11,6 +11,26 @@ class ImRule extends \app\common\controller\Backend
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
             $inputdata = input('post.');
+            if (isset($inputdata['unread_reminder']) && $inputdata['unread_reminder'] == 1)
+            {
+                if (config('global_config.sendsms_type') == 'qscms')
+                {
+                    $account_sms = config('global_config.account_sms');
+                    if (empty($account_sms) || !isset($account_sms['app_key']) || !isset($account_sms['secret_key']) || empty($account_sms['app_key']) || empty($account_sms['secret_key']))
+                    {
+                        $this->ajaxReturn(200, '未设置短信配置', ['sms_setting' => 0]);
+                    }
+                }else
+                {
+                    $account_alisms = config('global_config.account_alisms');
+
+                    if (empty($account_alisms) || !isset($account_alisms['signature']) || empty($account_alisms['signature']) || !isset($account_alisms['accesskey_id']) || empty($account_alisms['accesskey_id']) || !isset($account_alisms['accesskey_secret']) || empty($account_alisms['accesskey_secret']))
+                    {
+                        $this->ajaxReturn(200, '未设置短信配置', ['sms_setting' => 0]);
+                    }
+                }
+
+            }
 			$utype = input('post.utype');
             $configlist = model('ImRule')->where(array('utype'=>$utype))->column('name,id');
             $sqldata = [];

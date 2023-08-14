@@ -77,6 +77,7 @@ class Coupon extends \app\common\model\BaseModel
                 ->where('id','in',$coupon_id_arr)
                 ->select();
             $insert_data = [];
+            $coupon_arr = [];
             foreach ($coupon_info_list as $key => $coupon) {
                 $record_info['log_id'] = model('CouponLog')->id;
                 $record_info['coupon_name'] = $coupon['name'];
@@ -91,12 +92,13 @@ class Coupon extends \app\common\model\BaseModel
                     $record_info['uid'] = $value;
                     $insert_data[] = $record_info;
                 }
-                //通知
-                model('NotifyRule')->notify($uid_arr, 1, 'new_coupon', [
+                $coupon_arr[] = [
                     'coupon_name' => $coupon['name'],
                     'overtime' => date('Y-m-d', $record_info['deadline'])
-                ]);
+                ];
             }
+            //通知
+            model('NotifyRule')->notify($uid_arr, 1, 'new_coupon', $coupon_arr);
             if (!empty($insert_data)) {
                 model('CouponRecord')
                     ->isUpdate(false)

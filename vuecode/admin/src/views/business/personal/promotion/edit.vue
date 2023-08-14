@@ -22,10 +22,10 @@
         {{ itemInfo.deadline | timeFilter }}
       </el-form-item>
       <el-form-item label="延长推广天数" prop="days">
-        <el-input v-model.number="form.days" type="number" />
+        <el-input v-model.number="form.days" type="number" :min="0"/>
       </el-form-item>
       <el-form-item label=" ">
-        <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+        <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
         <el-button @click="closeDialog">取 消</el-button>
       </el-form-item>
     </el-form>
@@ -45,6 +45,7 @@ export default {
   props: ['itemInfo'],
   data() {
     return {
+      issubmit: false,
       form: {
         days: ''
       },
@@ -63,6 +64,7 @@ export default {
   methods: {
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       that.$refs[formName].validate(valid => {
         if (valid) {
           const insertData = {
@@ -76,8 +78,12 @@ export default {
               that.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           return false
         }
       })

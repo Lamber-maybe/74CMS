@@ -161,9 +161,15 @@
       @click="showPickerDistrict = !showPickerDistrict"
       class="form_choose reset_after"
     />
+    <!--    【优化】 求职登录地区样式问题-->
+    <!--    zdq 2022.08.11-->
+    <!--    【变更前】-->
+    <!--    :style="{ 'max-height': '70%' }"-->
+    <!--    【变更后】-->
+    <!--    :style="{ 'height':'70%'}"-->
     <van-popup v-model="showPickerDistrict"
                position="bottom"
-               :style="{ 'max-height': '70%' }"
+               :style="{ 'height': '70%'  }"
                :lock-scroll="false"
                ref="dropDistrict"
                @click-overlay="handleDistrictOverlay"

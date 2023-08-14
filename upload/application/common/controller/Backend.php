@@ -16,7 +16,9 @@ class Backend extends \app\common\controller\Base
             'login-weixin',
             'login-scan',
             // UEditor
-            'ueditor.controller-index'
+            'ueditor.controller-index',
+            // im
+            'im.unreadremind-timingpush' // 未读消息提醒，推送接收
         ];
         if (
             !in_array(

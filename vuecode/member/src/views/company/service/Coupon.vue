@@ -2,25 +2,29 @@
 	<div class="coupon">
 		<el-card>
 			<company-title>优惠券</company-title>
+<!--      【bug】PC会员中心优惠券列表分页显示问题修改 zch 2022/7/29-->
 			<div class="coupon_wrapper" v-if="dataset.length>0">
-				<div class="coupon_list" v-for="(item, index) in dataset" :key="index">
-					<div class="coupon_text">
-						<a class="coupon_text_1" :title="item.coupon_name">{{item.coupon_name}}</a>
-						<span>仅限{{item.setmeal_name}}</span>
-						<div class="time_warpper">
-							<p>券编号：{{item.number}}</p>
-							<p>有效期：{{ item.addtime | timeFilter }}-{{item.deadline | timeFilter}}</p>
-						</div>
-					</div>
-					<div class="coupon_price">
-						<div><span>￥</span>{{item.coupon_face_value}}</div>
-						<el-button @click="$router.push('/company/service/setmeal/add?setmeal_id=' +item.coupon_bind_setmeal_id +'&coupon_id=' +item.id)">立即使用</el-button>
-					</div>
-					<p>
-						<span></span>
-						<span></span>
-					</p>
-				</div>
+        <div class="coupon_wrapper_inner">
+          <div class="coupon_list" v-for="(item, index) in dataset" :key="index">
+            <div class="coupon_text">
+              <a class="coupon_text_1" :title="item.coupon_name">{{item.coupon_name}}</a>
+              <span>仅限{{item.setmeal_name}}</span>
+              <div class="time_warpper">
+                <p>券编号：{{item.number}}</p>
+                <p>有效期：{{ item.addtime | timeFilter }}-{{item.deadline | timeFilter}}</p>
+              </div>
+            </div>
+            <div class="coupon_price">
+              <div><span>￥</span>{{item.coupon_face_value}}</div>
+              <el-button @click="$router.push('/company/service/setmeal/add?setmeal_id=' +item.coupon_bind_setmeal_id +'&coupon_id=' +item.id)">立即使用</el-button>
+            </div>
+            <p>
+              <span></span>
+              <span></span>
+            </p>
+          </div>
+
+        </div>
 			</div>
           <div class="list_empty" v-else>
             <div class="emp_text">没有可用的优惠券~</div>
@@ -65,10 +69,15 @@ import api from '@/api'
 	.coupon .el-card{
 		height: 786px;
 	}
+  //bug】PC会员中心优惠券列表分页显示问题修改 zch 2022/7/29
 	.coupon_wrapper{
-		display: flex;
-		flex-wrap: wrap;
-    margin-left: 15px;
+    height: 690px;
+    overflow-y: auto;
+    .coupon_wrapper_inner{
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: 15px;
+    }
 	}
 	.coupon_list{
 		width:340px ;

@@ -108,8 +108,19 @@ class Job extends \app\index\controller\Base
             $params['experience'] = $experience;
         }
         if ($tag != '') {
+            /**
+             * SQL注入
+             * yx - 2022.07.26 10:17
+             * 【旧】
+             * $params['tag'] = $tag;
+             * $selectedTagArr = explode("_",$tag);
+             */
             $params['tag'] = $tag;
-            $selectedTagArr = explode("_",$tag);
+            $params_tags = explode("_", $tag);
+            foreach ($params_tags as $key => $value) {
+                $selectedTagArr[] = intval($value);
+            }
+            $params['tag'] = implode($selectedTagArr, '_');
         }
         if ($settr > 0) {
             $params['settr'] = $settr;
@@ -322,10 +333,41 @@ class Job extends \app\index\controller\Base
                 $this->assign('phone_protect_open', true);
             }
         }
+
+        //获取企业登录信息
+        $company  = model('Company')->where(['id'=>$return['com_info']['id']])->field('uid,audit')->find();
+        $uid = !empty($company)?$company['uid']:0;
+        $logo = model('member')->where(['uid'=>$uid])->field('last_login_ip,last_login_time,last_login_address')->find();
+        $logo['audit'] = $company['audit'];
+
+        /**
+         * 【优化】PC风险提示显示形式
+         * IP最后一位以*加密
+         * zch 2022/7/22
+         */
+        if (!empty($logo['last_login_ip'])){
+            $dot = strripos($logo['last_login_ip'],"."); //查找“.”最后出现的位置
+            $logo['last_login_ip'] = substr($logo['last_login_ip'],0,$dot).".*"; //输出“.”最后出现位置之前的字符串并加上*号
+        }else{
+            $logo['last_login_ip'] = '';
+        }
+
+        $last_login_time = '';
+        if (!empty($logo) && $logo['last_login_time'] > 0)
+        {
+            $last_login_time = date('Y/m/d H:i:s',$logo['last_login_time']);
+        }
+        $logo['last_time'] = $last_login_time;
+        $this->assign('logo',$logo);
+	
         $this->initPageSeo('jobshow',$seoData);
         $this->assign('return',$return);
         $this->assign('pageHeader',$this->pageHeader);
-        return $this->fetch('show');
+        /**
+         * 模板切换
+         */
+        $job_show_tpl = !empty(config('global_config.job_show_tpl')) ? config('global_config.job_show_tpl') : 'def';
+        return $this->fetch('job/showTpl/'.$job_show_tpl.'/show');
     }
     protected function writeShowCache($id,$pageCache){
         $jobinfo = model('Job')

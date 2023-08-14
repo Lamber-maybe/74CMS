@@ -92,6 +92,8 @@
             :clearable="false"
             placeholder="选择出生日期"
             value-format="yyyy-MM"
+            :picker-options="DateRanges"
+            :default-value="defaultValue"
           />
         </el-form-item>
         <el-form-item label="最高学历" prop="education">
@@ -242,7 +244,7 @@
             :on-success="handlePhotoSuccess"
             :before-upload="beforePhotoUpload"
           >
-            <img v-if="form.photo_img" :src="photoUrl" class="photo" />
+            <img v-if="form.photo_img" :src="photoUrl" class="photo">
             <i v-else class="el-icon-plus photo-uploader-icon" />
           </el-upload>
           <span class="smalltip">
@@ -307,6 +309,8 @@ export default {
       }
     }
     return {
+      DateRanges: this.birthdayDateRange(),
+      defaultValue: this.defaultValueFun(),
       is_edit: false,
       submitLoading: false,
       infoLoading: true,
@@ -502,6 +506,22 @@ export default {
     this.fetchInfo()
   },
   methods: {
+    // PC端创建简历日期选择往前推到16岁 zdq
+    birthdayDateRange(){
+      return {
+        disabledDate(time){
+          var myDate = new Date()
+          return time.getTime() > new Date(new Date(myDate.getFullYear(), 11).getTime() - 16 * 365 * 24 * 3600 * 1000)
+        }
+      }
+    },
+    // PC端创建简历日期选择往前推到16岁 zdq
+    defaultValueFun() {
+      const nowDate = new Date()
+      const nowYear = nowDate.getFullYear()
+      const minBirthdayYear = nowYear - 16
+      return new Date(minBirthdayYear, 11)
+    },
     fetchInfo() {
       this.infoLoading = true
       getFieldRule({}, 'get')

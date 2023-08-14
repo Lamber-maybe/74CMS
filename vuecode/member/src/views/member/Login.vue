@@ -77,6 +77,7 @@ import Captcha from '@/components/captcha/index'
         },
         utype:2,
         redirect:'',
+        sendSmsLimit:false,
       }
     },
     watch: {
@@ -277,6 +278,7 @@ import Captcha from '@/components/captcha/index'
           }
         }
       },
+      //zdq 短信验证码重复发送修改
       // 发送验证码
       sendSms () {
         if (this.$store.state.sendSmsBtnDisabled) {
@@ -290,6 +292,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if(this.sendSmsLimit){
+          return false
+        }
+        this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store
             .dispatch('sendSmsFun', {
@@ -300,11 +306,13 @@ import Captcha from '@/components/captcha/index'
             })
             .then(response => {
               if (response.code === 200) {
+                this.sendSmsLimit = false
                 this.$message({
                   type: 'success',
                   message: this.$store.state.sendSmsMessage
                 })
               } else {
+                this.sendSmsLimit = false
                 this.$message.error(this.$store.state.sendSmsMessage)
               }
             })
@@ -370,7 +378,7 @@ import Captcha from '@/components/captcha/index'
         }
       }
       .tips_color_1{
-        background-color:#fea407; 
+        background-color:#fea407;
         &::before{
           border-color: transparent #fea407 #fea407 transparent;
         }
@@ -379,7 +387,7 @@ import Captcha from '@/components/captcha/index'
         }
       }
       .tips_color_2{
-        background-color:#39c2cf; 
+        background-color:#39c2cf;
         &::before{
           border-color: transparent #39c2cf #39c2cf transparent;
         }

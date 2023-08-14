@@ -132,7 +132,7 @@
     <van-empty
       image="search"
       description="没有找到对应的数据"
-      style="background-color:#fff"
+      style="background-color: #fff"
       v-if="show_empty === true && showLayer === false"
     />
     <van-list
@@ -144,7 +144,11 @@
       :immediate-check="true"
     >
       <div class="box_3">
-        <div v-for="(item,index) in dataset" :key="index" @click="toDetail(item.id)">
+        <div
+          v-for="(item, index) in dataset"
+          :key="index"
+          @click="toDetail(item.id)"
+        >
           <div class="list">
             <div class="top" v-if="item.stick == 1">置顶</div>
             <div class="tx1">
@@ -158,12 +162,25 @@
               {{ item.district_text }}
               <div class="time">{{ item.refreshtime }}</div>
             </div>
-            <div class="tag_wrapper clearfix" v-if="item.tag.length>0">
-              <div class="tag_cell" v-for="(t, key) in item.tag" :key="key">{{ t }}</div>
+            <div class="tag_wrapper clearfix" v-if="item.tag.length > 0">
+              <div class="tag_cell" v-for="(t, key) in item.tag" :key="key">
+                {{ t }}
+              </div>
             </div>
             <div class="company">
               <div class="name">{{ item.companyname }}</div>
-              <div class="auth_ico" v-if="item.company_audit == 1"></div>
+              <div
+                class="auth_ico1"
+                v-if="
+                  item.company_audit == 1 && mobile_company_show_tpl == 'def'
+                "
+              ></div>
+              <div
+                class="auth_ico"
+                v-if="
+                  item.company_audit == 1 && mobile_company_show_tpl == 'tpl2'
+                "
+              ></div>
               <div class="crw_ico" v-if="item.setmeal_icon != ''">
                 <img :src="item.setmeal_icon" />
               </div>
@@ -177,13 +194,19 @@
     <div class="login_layer" v-if="showLayer">
       <div class="ll_tip">30秒快速注册简历，海量职位任意投</div>
       <div class="ll_tip_more">登录或注册简历后可以查看更多职位</div>
-      <div class="ll_qr_box"><img :src="$store.state.config.wechat_qrcode" alt="" class="ll_qr"></div>
+      <div class="ll_qr_box">
+        <img :src="$store.state.config.wechat_qrcode" alt="" class="ll_qr" />
+      </div>
       <div class="ll_tip_more">微信扫一扫，求职更轻松</div>
       <div class="ll_tip_bth">
         <router-link to="/member/login" class="a_btn">登录</router-link>
-        <router-link to="/member/reg/personal" class="a_btn blue">注册</router-link>
+        <router-link to="/member/reg/personal" class="a_btn blue"
+          >注册</router-link
+        >
       </div>
-      <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">联系客服：{{ $store.state.config.contact_tel }}</div>
+      <div class="ll_tip_tel" v-if="$store.state.config.contact_tel">
+        联系客服：{{ $store.state.config.contact_tel }}
+      </div>
     </div>
     <BottomNav></BottomNav>
   </div>
@@ -258,7 +281,8 @@ export default {
       optionJobTag: [],
       selectJobTag: [],
       // 未登录引导
-      showLayer: false
+      showLayer: false,
+      mobile_company_show_tpl: 'def'
     }
   },
   watch: {
@@ -285,6 +309,7 @@ export default {
     }
   },
   created () {
+    this.mobile_company_show_tpl = this.$store.state.config.mobile_company_show_tpl
     // 请求列表数据
     this.initQuery(this.$route.query)
     this.fetchData(true)
@@ -379,7 +404,7 @@ export default {
         if (this.selectJobTag.includes(item.id)) {
           this.selectJobTag.splice(
             this.selectJobTag.findIndex(
-              v => parseInt(v.id) === parseInt(item.id)
+              (v) => parseInt(v.id) === parseInt(item.id)
             ),
             1
           )
@@ -460,19 +485,20 @@ export default {
         let storeCategory = this.$store.state.classifyJobCategory
         let selectText = []
         let topItem = storeCategory.filter(
-          item => parseInt(item.id) === parseInt(this.params.category1)
+          (item) => parseInt(item.id) === parseInt(this.params.category1)
         )[0]
         selectText.push(topItem.text)
         if (topItem.children.length) {
           if (parseInt(this.params.category2)) {
             let secondItem = topItem.children.filter(
-              item => parseInt(item.id) === parseInt(this.params.category2)
+              (item) => parseInt(item.id) === parseInt(this.params.category2)
             )[0]
             selectText.push(secondItem.text)
             if (secondItem.children.length) {
               if (parseInt(this.params.category3)) {
                 let lowestItem = secondItem.children.filter(
-                  item => parseInt(item.id) === parseInt(this.params.category3)
+                  (item) =>
+                    parseInt(item.id) === parseInt(this.params.category3)
                 )[0]
                 selectText.push(lowestItem.text)
               } else {
@@ -502,19 +528,19 @@ export default {
         let storeCity = this.$store.state.classifyCityOriginal
         let selectText = []
         let topItem = storeCity.filter(
-          item => parseInt(item.value) === parseInt(this.params.district1)
+          (item) => parseInt(item.value) === parseInt(this.params.district1)
         )[0]
         selectText.push(topItem.label)
         if (topItem.children.length) {
           if (parseInt(this.params.district2)) {
             let secondItem = topItem.children.filter(
-              item => parseInt(item.value) === parseInt(this.params.district2)
+              (item) => parseInt(item.value) === parseInt(this.params.district2)
             )[0]
             selectText.push(secondItem.label)
             if (secondItem.children.length) {
               if (parseInt(this.params.district3)) {
                 let lowestItem = secondItem.children.filter(
-                  item =>
+                  (item) =>
                     parseInt(item.value) === parseInt(this.params.district3)
                 )[0]
                 selectText.push(lowestItem.label)
@@ -609,7 +635,7 @@ export default {
      */
     restructureData (data, id, type) {
       let restoreArray = data
-      let existSub = restoreArray.findIndex(v => v.id === '')
+      let existSub = restoreArray.findIndex((v) => v.id === '')
       if (existSub === -1) {
         // 防止重复添加
         restoreArray.unshift({ id: '', text: '全部' })
@@ -645,7 +671,7 @@ export default {
       let queryData = this.$route.query
       if (queryData['minwage']) {
         let thisWage = this.optionFilterWage.filter(
-          item => parseInt(item.min) === parseInt(queryData['minwage'])
+          (item) => parseInt(item.min) === parseInt(queryData['minwage'])
         )
         this.optionWage = thisWage[0].value
         this.wageTitle = thisWage[0].text
@@ -657,7 +683,7 @@ export default {
     // 选择薪资范围
     handleWage (value) {
       let thisWage = this.optionFilterWage.filter(
-        item => parseInt(item.value) === value
+        (item) => parseInt(item.value) === value
       )
       this.wageTitle = thisWage[0].text
       this.params.minwage = thisWage[0].min
@@ -681,7 +707,7 @@ export default {
       conditions.pagesize = this.pagesize
       http
         .get(api.joblist, conditions)
-        .then(res => {
+        .then((res) => {
           if (init === true) {
             this.dataset = [...res.data.items]
             this.showLayer = parseInt(res.data.show_mask) === 1
@@ -692,7 +718,10 @@ export default {
           this.loading = false
 
           // 数据全部加载完成
-          if (res.data.items.length < this.pagesize || this.page >= res.data.total_page) {
+          if (
+            res.data.items.length < this.pagesize ||
+            this.page >= res.data.total_page
+          ) {
             this.finished = true
             if (init === false) {
               this.finished_text = '没有更多了'
@@ -789,27 +818,50 @@ export default {
   padding-bottom: 41px;
 }
 .login_layer {
-  width: 100%;padding: 40px 0;text-align: center;background: url("../assets/images/login_layer_job_bg.jpg") 0 no-repeat;
+  width: 100%;
+  padding: 40px 0;
+  text-align: center;
+  background: url("../assets/images/login_layer_job_bg.jpg") 0 no-repeat;
   background-size: 100%;
   .ll_tip_tel {
-    font-size: 14px;color: #666;padding-top: 10px;
+    font-size: 14px;
+    color: #666;
+    padding-top: 10px;
   }
   .ll_tip_bth {
     .a_btn {
-      &.blue { background: #128bed; }
-      display: inline-block;padding: 6px 25px;background: #e33244;color: #fff;border-radius: 3px;margin: 0 10px;
+      &.blue {
+        background: #128bed;
+      }
+      display: inline-block;
+      padding: 6px 25px;
+      background: #e33244;
+      color: #fff;
+      border-radius: 3px;
+      margin: 0 10px;
       font-size: 14px;
     }
   }
   .ll_qr_box {
-    .ll_qr { width: 100px;height: 100px;border: 0; }
-    width: 100px;height: 100px;margin: 10px auto 5px;
+    .ll_qr {
+      width: 100px;
+      height: 100px;
+      border: 0;
+    }
+    width: 100px;
+    height: 100px;
+    margin: 10px auto 5px;
   }
   .ll_tip {
-    font-size: 16px;font-weight: bold;margin-bottom: 5px;color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
   }
   .ll_tip_more {
-    font-size: 14px;color: #666;margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
   }
 }
 .box_3 {
@@ -848,9 +900,18 @@ export default {
       .auth_ico {
         float: left;
         margin-left: 6px;
+        width: 35px;
+        height: 19px;
+        background: url("../assets/images/jobs_list_auth_ico.png") 0 center
+          no-repeat;
+        background-size: 100% 12px;
+      }
+      .auth_ico1 {
+        float: left;
+        margin-left: 6px;
         width: 15px;
         height: 18px;
-        background: url("../assets/images/jobs_list_auth_ico.png") 0 center
+        background: url("../assets/images/jobs_list_auth_ico_1.png") 0 4px
           no-repeat;
         background-size: 15px 11px;
       }

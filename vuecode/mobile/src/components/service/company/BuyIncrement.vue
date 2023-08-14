@@ -399,6 +399,7 @@ export default {
       }
       this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'
       this.$refs.paySubmit.handlerSubmit(api.company_pay, this.submitData)
+      this.submitLock = false
     },
     handlerRefreshStarttime () {
       let t = Date.parse(this.refresh_starttime) / 1000

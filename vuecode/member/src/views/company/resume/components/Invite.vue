@@ -23,7 +23,9 @@
       </el-form-item>
       <el-form-item label="面试职位" v-if="from != 'apply'" prop="jobid">
         <el-select v-model="form.jobid" placeholder="请选择职位">
+          <!--            面试邀请调用联系方式修改 zch 2022/7/21-->
           <el-option
+            @click.native="selectJob(item)"
             v-for="(item, index) in options_jobs"
             :key="index"
             :label="item.jobname"
@@ -123,10 +125,34 @@ export default {
     }
   },
   methods: {
-    initCB() {
+    // 面试邀请调用联系方式修改 zch 2022/7/22
+    selectJob(item){
+      this.form.address = item.address
+      if (item.use_company_contact === 0)
+      {
+        this.form.contact = item.job_contact
+        this.form.tel = item.job_mobile
+      }else {
+        this.form.contact = item.company_contact
+        this.form.tel = item.company_mobile
+      }
+    },
+    initCB(jobid = 0) {
       http
-        .get(api.company_published_jobslist, {})
+        .get(api.company_published_jobslist, {jobid:jobid})
         .then(res => {
+          if (jobid > 0 && res.data.length > 0) {
+            var item = res.data[0]
+            this.form.address = item.address
+            if (item.use_company_contact === 0)
+            {
+              this.form.contact = item.job_contact
+              this.form.tel = item.job_mobile
+            }else {
+              this.form.contact = item.company_contact
+              this.form.tel = item.company_mobile
+            }
+          }
           this.options_jobs = []
           res.data.forEach(element => {
             this.options_jobs.push(element)
@@ -134,23 +160,12 @@ export default {
         })
         .catch(() => { })
       this.fetchSetmeal()
-      this.fetchIterviewPre()
     },
     fetchSetmeal() {
       http
         .get(api.member_setmeal, {})
         .then(res => {
           this.mySetmeal = res.data.info
-        })
-        .catch(() => { })
-    },
-    fetchIterviewPre: function () {
-      http
-        .get(api.interview_add_pre, {})
-        .then(res => {
-          this.form.address = res.data.address
-          this.form.contact = res.data.contact
-          this.form.tel = res.data.tel
         })
         .catch(() => { })
     },

@@ -162,11 +162,11 @@ class Marketing extends Backend
     protected function _parseJobByCondition($condition)
     {
         // 【ID1000225】【bug】公众号营销-套餐已到期信息列表中未过滤修改
+        // 公众号营销搜索问题修改 zdq
         $model = model('JobSearchRtime')
             ->alias('jsr')
             ->join('MemberSetmeal ms','ms.uid=jsr.uid','LEFT')
-            ->where('ms.deadline','eq',0)
-            ->whereOr('ms.deadline','gt',time());
+            ->where('ms.deadline = 0 OR ms.deadline >'.time());
         if (isset($condition['refreshtime']) && intval($condition['refreshtime']) > 0) {
             $settr = intval($condition['refreshtime']);
             $model = $model->where(

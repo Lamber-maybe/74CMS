@@ -558,7 +558,8 @@ var app = new Vue({
 		wechat_login_open:0,
 		wechat_open_appid:'',
 		companyList:[],
-		currentTrade:0
+		currentTrade:0,
+		sendSmsLimit:false
 	},
 	created: function () {
 		this.wechat_open_appid = "{#$global_config.wechat_open_appid#}"
@@ -696,9 +697,14 @@ var app = new Vue({
 				that.doSendSms(null)
 			}
 		},
+		//zdq 短信验证码重复发送修改
 		doSendSms: function (captcha) {
 			var that = this
+			if(that.sendSmsLimit){
+				return false
+			}
 			httppost(qscms.apiList.getLoginCode, { mobile: that.mobile, utype: that.formUtype, captcha: captcha }).then(function (res) {
+				that.sendSmsLimit = false
 				that.$message({
 					type: 'success',
 					message: '验证码发送成功'
@@ -715,7 +721,9 @@ var app = new Vue({
 						that.sendSmsInterval--
 					}
 				}, 1000)
-			}).catch(function () { })
+			}).catch(function () {
+				that.sendSmsLimit = false
+			})
 		},
 		doLogin: function () {
 			var that = this

@@ -18,7 +18,7 @@ class Sitemap
         $total = model('Company')->order('id desc')->count();
         $company_page_num = ceil($total / $this->pagesize);
         for ($i = 1; $i <= $company_page_num; $i++) {
-            $result = $sitemap->addItem('/stimap/company_' . $i . '.xml', '0.9', 'always');
+            $result = $sitemap->addItem('/sitemap/company_' . $i . '.xml', '0.9', 'always');
             if ($result === false) {
                 return false;
             }
@@ -29,7 +29,7 @@ class Sitemap
         $total = model('JobSearchRtime')->count();
         $job_page_num = ceil($total / $this->pagesize);
         for ($i = 1; $i <= $job_page_num; $i++) {
-            $result = $sitemap->addItem('/stimap/job_' . $i . '.xml', '0.9', 'always');
+            $result = $sitemap->addItem('/sitemap/job_' . $i . '.xml', '0.9', 'always');
             if ($result === false) {
                 return false;
             }
@@ -37,7 +37,7 @@ class Sitemap
         /**
          * 生成首页导航
          */
-        $result = $sitemap->addItem('/stimap/page.xml', '1.0', 'always');
+        $result = $sitemap->addItem('/sitemap/page.xml', '1.0', 'always');
         if ($result === false) {
             return false;
         }

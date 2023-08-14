@@ -346,7 +346,11 @@ export default {
         return
       }
       const reader = new FileReader()
-      reader.readAsText(file.raw, 'gb2312')
+      // 【BUG】安全敏感词导入乱码
+      // zdq 2022.08.11
+      // 【旧】
+      // reader.readAsText(file.raw, 'gb2312')
+      reader.readAsText(file.raw, 'UTF-8')
       reader.onerror = e => {
         that.$message.error('读取文件错误')
         return

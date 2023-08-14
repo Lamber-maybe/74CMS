@@ -22,6 +22,14 @@ export function sceneQrcodeDelete(data) {
     data
   })
 }
+// 场景码批量删除 zch 2022/8/1
+export function sceneQrcodeDeleteAll(data) {
+  return request({
+    url: apiArr.sceneQrcodeDeleteAll,
+    method: 'post',
+    data
+  })
+}
 export function sceneQrcodePlatformList(params) {
   return request({
     url: apiArr.sceneQrcodePlatformList,

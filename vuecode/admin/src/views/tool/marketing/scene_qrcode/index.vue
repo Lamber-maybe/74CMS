@@ -70,7 +70,10 @@
         element-loading-text="Loading"
         fit
         highlight-current-row
+        @selection-change="handleSelectionChange"
       >
+        <!--        增加场景码批量删除 zch 2022/7/20-->
+        <el-table-column type="selection" width="42" />
         <el-table-column label="名称" prop="title" min-width="150" />
         <el-table-column align="center" label="页面" prop="type_cn" min-width="100" />
         <el-table-column align="center" label="到期时间" min-width="150">
@@ -126,6 +129,9 @@
           >
             添加场景码
           </el-button>
+          <el-button size="small" type="danger" @click="funDeleteBatch">
+            删除所选
+          </el-button>
         </el-col>
         <el-col :offset="8" :span="16" style="text-align: right;">
           <el-pagination
@@ -171,7 +177,13 @@
 
 <script>
 import diaform from './form.vue'
-import { sceneQrcodeList, sceneQrcodeDelete, sceneQrcodePlatformList, sceneQrcodeTypeList } from '@/api/scene_qrcode'
+import {
+  sceneQrcodeList,
+  sceneQrcodeDelete,
+  sceneQrcodePlatformList,
+  sceneQrcodeTypeList,
+  sceneQrcodeDeleteAll
+} from '@/api/scene_qrcode'
 import { parseTime } from '@/utils/index'
 import apiArr from '@/api'
 import { getToken } from '@/utils/auth'
@@ -212,7 +224,8 @@ export default {
       qrcodeTitle: '',
       qrcodeId: 0,
       options_platform: [],
-      options_type: []
+      options_type: [],
+      tableIdarr: ''
     }
   },
   created() {
@@ -311,6 +324,39 @@ export default {
     },
     funDownload(id){
       location.href = window.global.RequestBaseUrl + apiArr.sceneQrcodeDownload + (window.global.RequestBaseUrl.indexOf('?') == -1 ? '?' : '&') + 'admintoken=' + getToken() + '&id=' + id
+    },
+    // 增加批量删除 zch 2022/8/1
+    funDeleteBatch() {
+      var that = this
+      if (that.tableIdarr.length == 0) {
+        that.$message.error('请选择要删除的信息')
+        return false
+      }
+      that
+        .$confirm('此操作将永久删除选中的信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        .then(() => {
+          const param = {
+            id: that.tableIdarr
+          }
+          sceneQrcodeDeleteAll(param).then(response => {
+            that.$message.success(response.message)
+            that.fetchData()
+            return true
+          })
+        })
+        .catch(() => { })
+    },
+    handleSelectionChange(idlist) {
+      this.tableIdarr = []
+      if (idlist.length > 0) {
+        for (const item of idlist) {
+          this.tableIdarr.push(item.id)
+        }
+      }
     }
   }
 }

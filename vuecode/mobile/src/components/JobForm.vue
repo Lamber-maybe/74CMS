@@ -119,6 +119,12 @@
         placeholder="请填写"
         class="reset_after"
       />
+      <!--    【优化】 求职登录地区样式问题-->
+      <!--    zdq 2022.08.11-->
+      <!--    【变更前】-->
+      <!--    :style="{ 'max-height': '70%' }"-->
+      <!--    【变更后】-->
+      <!--    :style="{ 'height': '70%' }"-->
       <van-field
         readonly
         clickable
@@ -132,7 +138,7 @@
       <van-popup
         v-model="showPickerDistrict"
         position="bottom"
-        :style="{ 'max-height': '70%' }"
+        :style="{ 'height': '70%'  }"
         ref="dropDistrict"
         :lock-scroll="false"
         @click-overlay="handleDistrictOverlay"

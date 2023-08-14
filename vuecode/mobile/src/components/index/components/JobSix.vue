@@ -44,7 +44,7 @@ export default {
   name: 'JobSix',
   data () {
     return {
-      list: []
+      list: [],
     }
   },
   created () {

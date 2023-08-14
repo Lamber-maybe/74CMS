@@ -1,4 +1,4 @@
-INSERT INTO `qs_ad_category` VALUES 
+INSERT INTO `qs_ad_category` VALUES
 (1,'QS_top_slide@mobile','头部轮播',750,240,5,1,'mobile'),
 (2,'QS_index_banner_a@mobile','首页通栏A区',750,130,1,1,'mobile'),
 (3,'QS_index_banner_b@mobile','首页通栏B区',750,130,1,1,'mobile'),
@@ -34,7 +34,7 @@ INSERT INTO `qs_article_category` VALUES
 (6, '劳动法苑', 0, '', '', 1),
 (7, '职场观察', 0, '', '', 1);
 
-INSERT INTO `qs_category` VALUES 
+INSERT INTO `qs_category` VALUES
 (1,'QS_trade','计算机软件/硬件',0),
 (2,'QS_trade','计算机系统/维修',0),
 (3,'QS_trade','通信(设备/运营/服务)',0),
@@ -162,7 +162,7 @@ INSERT INTO `qs_category_group` VALUES
 (7, 'QS_language_level', '语言熟练程度', 1),
 (8, 'QS_current', '目前状态分类', 1);
 
-INSERT INTO `qs_category_job` VALUES 
+INSERT INTO `qs_category_job` VALUES
 (1,0,'生活 | 服务业',0,'','shenghuofuwuye',1),
 (2,0,'人力 | 行政 | 管理',0,'','renlixingzhengguanli',1),
 (3,0,'销售 | 客服 | 采购 | 淘宝',0,'','xiaoshoukefucaigoutaobao',1),
@@ -660,7 +660,7 @@ INSERT INTO `qs_category_job` VALUES
 (495,51,'动物营养/饲料研发',0,'','siliaoyanfa',3),
 (496,52,'其他职位',0,'','qitazhiwei',3);
 
-INSERT INTO `qs_category_major` VALUES 
+INSERT INTO `qs_category_major` VALUES
 (1,0,'工科类',0,1),
 (2,0,'理科类',0,1),
 (3,0,'农学类',0,1),
@@ -743,32 +743,32 @@ INSERT INTO `qs_category_major` VALUES
 (81,8,'未划分专业',0,2),
 (82,8,'其他类',0,2);
 
-INSERT INTO `qs_company_service_emergency` VALUES 
+INSERT INTO `qs_company_service_emergency` VALUES
 (NULL,'职位紧急30天',0,30,'100.00',2,'10.00',1,0),
 (NULL,'职位紧急7天',0,7,'30.00',0,'0.00',1,0),
 (NULL,'职位紧急3天(免费)',1,3,'10.00',1,'0.00',1,99);
 
-INSERT INTO `qs_company_service_points` VALUES 
+INSERT INTO `qs_company_service_points` VALUES
 (NULL,'100点积分',0,100,'9.80',1,0),
 (NULL,'200点积分',1,200,'18.00',1,0),
 (NULL,'300点积分',0,300,'28.88',1,0);
 
-INSERT INTO `qs_company_service_refresh_job_package` VALUES 
+INSERT INTO `qs_company_service_refresh_job_package` VALUES
 (NULL,'刷新3次',1,3,'10.00',1,'0.00',1,0),
 (NULL,'刷新6次',0,6,'15.00',0,'15.00',1,0),
 (NULL,'刷新10次',1,10,'20.00',2,'5.00',1,0);
 
-INSERT INTO `qs_company_service_resume_package` VALUES 
+INSERT INTO `qs_company_service_resume_package` VALUES
 (NULL,'简历下载点100点',1,100,'100.00',1,'0.00',1,0),
 (NULL,'简历下载点200点',0,200,'150.00',0,'10.00',1,0),
 (NULL,'简历下载点300点',0,300,'200.00',2,'15.00',1,0);
 
-INSERT INTO `qs_company_service_stick` VALUES 
+INSERT INTO `qs_company_service_stick` VALUES
 (NULL,'职位置顶3天',1,3,'10.00',0,'0.00',1,0),
 (NULL,'职位置顶7天',0,7,'30.00',1,'0.00',1,0),
 (NULL,'职位置顶30天',0,30,'100.00',2,'10.00',1,0);
 
-INSERT INTO `qs_config` VALUES 
+INSERT INTO `qs_config` VALUES
 (NULL,'sitename',1,'骑士人才系统','网站名称',0),
 (NULL,'sitedomain',1,'','域名',0),
 (NULL,'sitedir',1,'/','目录',0),
@@ -916,15 +916,15 @@ INSERT INTO `qs_config` VALUES
 (NULL,'wechat_login_open', '1', '1', '微信登录是否开启', '0'),
 (NULL,'resume_auto_refresh', '1', '0', '个人会员登录自动刷新简历开关', '0'),
 (NULL,'audit_add_resume', '0', '0', '新注册简历审核状态 0待审核 1审核通过', '0'),
-(NULL,'hotword_display_method', '0', '0', '热门关键词显示方式', '0'), 
-(NULL,'screen_token', '0', '".randstr(16)."', '数据大屏密钥', '0'), 
-(NULL,'screen_base', '0', '0,0,0,0', '数据大屏统计基数', '0'), 
-(NULL,'screen_title', '0', '大数据平台', '数据大屏标题', '0'), 
-(NULL,'rand_click_job', '0', '0', '职位浏览数随机值', '0'), 
-(NULL,'rand_click_company', '0', '0', '企业浏览数随机值', '0'), 
-(NULL,'rand_click_resume', '0', '0', '简历浏览数随机值', '0'), 
+(NULL,'hotword_display_method', '0', '0', '热门关键词显示方式', '0'),
+(NULL,'screen_token', '0', '".randstr(16)."', '数据大屏密钥', '0'),
+(NULL,'screen_base', '0', '0,0,0,0', '数据大屏统计基数', '0'),
+(NULL,'screen_title', '0', '大数据平台', '数据大屏标题', '0'),
+(NULL,'rand_click_job', '0', '0', '职位浏览数随机值', '0'),
+(NULL,'rand_click_company', '0', '0', '企业浏览数随机值', '0'),
+(NULL,'rand_click_resume', '0', '0', '简历浏览数随机值', '0'),
 (NULL,'index_tpl', '1', 'def', '首页模板', '0'),
-(NULL,'audit_com_project', '1', '1', '企业认证项目', '0'), 
+(NULL,'audit_com_project', '1', '1', '企业认证项目', '0'),
 (NULL, 'shortvideo_enable', '1', '1', '视频招聘-视频功能开关', '0'),
 (NULL, 'shortvideo_jobing_view_init', '0', '0', '视频招聘-视频招聘浏览量随机值', '0'),
 (NULL, 'shortvideo_finding_view_init', '0', '0', '视频招聘-视频求职浏览量随机值', '0'),
@@ -945,8 +945,13 @@ INSERT INTO `qs_config` VALUES
 (NULL,'im_notice_open','1','0','聊天公告是否开启','0'),
 (NULL,'im_notice','1','','聊天公告','0'),
 (NULL,'im_unread','1','0','聊天未读通知开关','0'),
-(NULL, 'rand_click_article', 0, 0, '资讯浏览量随机值', 0);
-
+(NULL, 'rand_click_article', 0, 0, '资讯浏览量随机值', 0),
+(NULL,'job_show_tpl',0,'def','职位详情模板',0),
+(NULL,'company_show_tpl',0,'def','企业详情模板',0),
+(NULL,'resume_show_tpl',0,'def','简历详情模板',0),
+(NULL,'mobile_job_show_tpl',1,'def','触屏职位详情模板',0),
+(null,'mobile_company_show_tpl',1,'def','触屏企业详情模板',0),
+(NULL,'mobile_resume_show_tpl',1,'def','触屏简历详情模板',0);
 
 INSERT INTO `qs_cron` VALUES
 (NULL,'清除过期服务','ServiceClear',-1,-1,-1,'1',0,0,1,1,0),
@@ -974,16 +979,16 @@ INSERT INTO `qs_explain` VALUES
 (NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0),
 (NULL, '自定义链接', '', 1, '', '', '', 1264332774, 0);
 
-INSERT INTO `qs_field_rule` VALUES 
+INSERT INTO `qs_field_rule` VALUES
 (NULL,'Resume','marriage',0,1,0,'婚姻状况',0),
 (NULL,'Resume','residence',0,1,1,'现居住地',0),
 (NULL,'Resume','major',0,1,1,'专业',0),
 (NULL,'Resume','height',0,1,1,'身高',0),
 (NULL,'Resume','householdaddress',0,1,1,'籍贯',0),
 (NULL,'Resume','idcard',0,1,1,'身份证号',0),
-(NULL,'Resume','custom_field_1',1,1,1,'政治面貌',1),
-(NULL,'Resume','custom_field_2',0,1,1,'自定义2',1),
-(NULL,'Resume','custom_field_3',0,1,1,'是否退役',1),
+(NULL,'Resume','custom_field_1',0,0,1,'自定义字段1',1),
+(NULL,'Resume','custom_field_2',0,0,1,'自定义字段2',1),
+(NULL,'Resume','custom_field_3',0,0,1,'自定义字段3',1),
 (NULL,'ResumeContact','email',0,1,1,'邮箱',0),
 (NULL,'ResumeContact','weixin',1,1,1,'微信',0),
 (NULL,'ResumeContact','qq',0,1,1,'qq',0),
@@ -1010,9 +1015,9 @@ INSERT INTO `qs_field_rule` VALUES
 (NULL,'JobContact','telephone',0,1,1,'联系固话',0),
 (NULL,'JobContact','qq',0,1,1,'联系QQ',0),
 (NULL,'JobContact','email',1,1,1,'联系邮箱',0),
-(NULL,'Job','custom_field_1',1,1,1,'政治面貌',1),
-(NULL,'Job','custom_field_2',0,1,1,'自定义2',1),
-(NULL,'Job','custom_field_3',0,1,1,'证书要求',1);
+(NULL,'Job','custom_field_1',0,0,1,'自定义字段1',1),
+(NULL,'Job','custom_field_2',0,0,1,'自定义字段2',1),
+(NULL,'Job','custom_field_3',0,0,1,'自定义字段3',1);
 
 INSERT INTO `qs_help_category` VALUES
 (1, '个人求职', 1),
@@ -1054,7 +1059,7 @@ INSERT INTO `qs_hrtool_category` VALUES
 (11, '其它', 0, 1, '企业hr工作中其他事项的参考标准，可以自定义选择添加。');
 
 
-INSERT INTO `qs_im_quickmsg` VALUES 
+INSERT INTO `qs_im_quickmsg` VALUES
 (1,'该职位试用期多长？',2,0),
 (2,'该职位有五险一金吗，什么时候上？',2,0),
 (3,'我对该职位很感兴趣，方便详细聊聊吗？',2,0),
@@ -1067,11 +1072,11 @@ INSERT INTO `qs_link` VALUES
 (NULL, 1, '骑士cms', 'http://www.74cms.com', 0, '骑士官网'),
 (NULL, 1, '电销管理系统', 'https://www.xiaohuatong.cn/', 0, '电话外呼+客户管理软件');
 
-INSERT INTO `qs_mail_tpl` VALUES 
+INSERT INTO `qs_mail_tpl` VALUES
 (NUll,'set_auth_email','邮箱验证','{sitename}提醒您，请验证您的Email','<p style=\"font-size:20px;\"><b>你正在验证邮箱，你的验证码为：</b></p>\r\n<p>{code}</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','',1),
 (NUll,'set_forget','找回密码','{sitename}找回密码','<p style=\"font-size:20px;\"><b>你正在找回密码，你的验证码为：</b></p>\r\n<p>{code}</p>\r\n<p>如果此操作不是您执行的，忽略此邮件即可。</p>\r\n<p>官网：<a href=\"{sitedomain}\" target=\"_blank\">{sitedomain}</a></p>','a:2:{s:5:\"{url}\";s:12:\"验证地址\";s:12:\"{sitedomain}\";s:12:\"官方网站\";}',1);
 
-INSERT INTO `qs_microposte_tpl` VALUES 
+INSERT INTO `qs_microposte_tpl` VALUES
 (NUll,1,'模板1-1','1_1'),
 (NUll,1,'模板1-2','1_2'),
 (NUll,1,'模板1-3','1_3'),
@@ -1097,7 +1102,7 @@ INSERT INTO `qs_microposte_tpl` VALUES
 (NUll,8,'模板8-2','8_2'),
 (NUll,8,'模板8-3','8_3');
 
-INSERT INTO `qs_mobile_index_menu` VALUES 
+INSERT INTO `qs_mobile_index_menu` VALUES
 (NUll,'resume_add','创建简历','',0,'',0,1),
 (NUll,'job_add','发布职位','',0,'',0,1),
 (NUll,'job','找工作','',0,'',0,1),
@@ -1109,7 +1114,7 @@ INSERT INTO `qs_mobile_index_menu` VALUES
 (NUll,'online_jobfair','网络招聘会','',0,'',0,1),
 (NULL, 'shortvideo', '视频招聘', '', '0', '', '1', '1');
 
-INSERT INTO `qs_mobile_index_module` VALUES 
+INSERT INTO `qs_mobile_index_module` VALUES
 (NUll,'header',1,'1'),
 (NUll,'menu',1,'1'),
 (NUll,'section',1,'company,nearby'),
@@ -1119,7 +1124,7 @@ INSERT INTO `qs_mobile_index_module` VALUES
 (NUll,'joblist',1,'1'),
 (NUll,'article',1,'1');
 
-INSERT INTO `qs_navigation` VALUES 
+INSERT INTO `qs_navigation` VALUES
 (NUll,1,'找工作',1,'job','','_self',0),
 (NUll,1,'找企业',1,'company','','_self',0),
 (NUll,1,'简历库',1,'resume','','_self',0),
@@ -1131,7 +1136,7 @@ INSERT INTO `qs_navigation` VALUES
 (NULL,1,'网络招聘会',1,'jobfairol','','_self',0),
 (null, 1, '视频招聘', 1, 'videoRecruitment', '', '_self', 0);
 
-INSERT INTO `qs_notify_rule` VALUES 
+INSERT INTO `qs_notify_rule` VALUES
 (NUll,'reg',1,2,'注册成功','欢迎您注册{sitename}，使用过程中遇到问题请及时联系您的专属客服，{contact}（联系电话：{mobile}，联系微信：{weixin}）','',0,1,1,0,0),
 (NUll,'job_apply',1,1,'收到简历','{fullname}投递了您的职位{jobname}，可能是您需要的人才，建议立即查看','resumeshow',1,0,0,1,0),
 (NUll,'job_audit_success',1,2,'职位审核通过','您发布的{jobname}已通过审核，建议开启招聘加速通道，省心快招人','job_manage',1,0,0,0,0),
@@ -1168,7 +1173,7 @@ INSERT INTO `qs_notify_rule` VALUES
 (NUll,'interview_video',2,1,'视频面试邀请','{companyname}刚刚给你发了一份视频面试邀请，请于{interview_time}准时参加{jobname}\\({wage})的视频面试。','interview_list_video',1,1,1,1,0);
 
 
-INSERT INTO `qs_page` VALUES 
+INSERT INTO `qs_page` VALUES
 (NUll,'首页','index',1,0,'{sitename}PHP高端人才系统(www.74cms.com)——更懂运营的地方人才招聘系统','{sitename},74cms,骑士cms,人才网站源码,php人才网程序','{sitename}CMS是基于PHP+MYSQL的免费网站管理系统，提供完善的人才招聘网站建设方案','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NUll,'职位列表页','joblist',0,0,'{jobcategory}{citycategory}{keyword}招聘列表 - {sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','{jobcategory}{citycategory}{keyword}招聘列表,{sitename}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"搜索关键词\",\"value\":\"keyword\"},{\"name\":\"筛选职位类别\",\"value\":\"jobcategory\"},{\"name\":\"筛选地区\",\"value\":\"citycategory\"}]'),
 (NUll,'职位详情页','jobshow',1,0,'{jobname} - {companyname} - {sitename}','{companyname},{jobname},{nature},{category},{district}','{companyname}招聘岗位,{jobname}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"职位名称\",\"value\":\"jobname\"},{\"name\":\"企业名称\",\"value\":\"companyname\"},{\"name\":\"工作性质\",\"value\":\"nature\"},{\"name\":\"职位类别\",\"value\":\"category\"},{\"name\":\"工作地区\",\"value\":\"district\"}]'),
@@ -1190,17 +1195,17 @@ INSERT INTO `qs_page` VALUES
 
 
 
-INSERT INTO `qs_personal_service_stick` VALUES 
+INSERT INTO `qs_personal_service_stick` VALUES
 (NUll,'简历置顶3天',1,3,'10.00',1,'10.00',1,0),
 (NUll,'简历置顶7天',0,7,'20.00',0,'1.00',1,0),
 (NUll,'简历置顶30天',0,30,'30.00',2,'5.00',1,0);
 
-INSERT INTO `qs_personal_service_tag` VALUES 
+INSERT INTO `qs_personal_service_tag` VALUES
 (NUll,'醒目标签3天',0,3,'10.00',0,'5.00',1,0),
 (NUll,'醒目标签7天',0,7,'20.00',2,'2.00',1,0),
 (NUll,'免费兑换1天',1,1,'2.00',1,'0.00',1,99);
 
-INSERT INTO `qs_resume_module` VALUES 
+INSERT INTO `qs_resume_module` VALUES
 (NUll,'basic','基本资料',15,1,0),
 (NUll,'intention','求职意向',15,1,0),
 (NUll,'specialty','自我描述',5,1,0),
@@ -1213,21 +1218,21 @@ INSERT INTO `qs_resume_module` VALUES
 (NUll,'tag','特长标签',10,1,0),
 (NUll,'img','照片作品',10,1,1);
 
-INSERT INTO `qs_setmeal` VALUES 
+INSERT INTO `qs_setmeal` VALUES
 (1,'免费会员',261,'0.00',0,0,'0.00',0,0,1,0,1,3,50,0.0,0,0,1,'',0,0,0,0,0,0),
 (2,'月度会员',0,'500.00',30,1,'300.00',1606060800,1609344000,1500,10,5,5,30,0.0,0,1,0,'',1,0,1,1,0,0),
 (3,'季度会员',0,'1200.00',90,0,'0.00',0,0,4000,0,3,10,50,0.0,0,0,1,'',0,0,1,1,0,0),
 (4,'年度会员',0,'2500.00',365,0,'0.00',0,0,10000,0,20,20,100,0.0,1,1,1,'赠送广告位',0,0,1,1,0,0);
 
 
-INSERT INTO `qs_sms_tpl` VALUES 
+INSERT INTO `qs_sms_tpl` VALUES
 (NUll,'注册账号','SMS_1','','code,sitename','验证码{code}，你正在注册{sitename}的用户，请在十分钟内完成验证'),
 (NUll,'手机登录验证','SMS_2','','code,sitename','验证码{code}，你正在登录{sitename}的会员，请在十分钟内完成验证'),
 (NUll,'找回密码','SMS_3','','code,sitename','您正在找回{sitename}的会员密码,验证码{code},请在十分钟内完成验证'),
 (NUll,'手机验证','SMS_5','','code,sitename','感谢您使用{sitename}手机验证,验证码为:{code}'),
 (NUll,'测试短信配置','SMS_13','','','您好！这是一条检测短信模块配置的短信。收到此短信，意味着您的短信模块设置正确！您可以进行其它操作了！');
 
-INSERT INTO `qs_task` VALUES 
+INSERT INTO `qs_task` VALUES
 (NUll,2,'sign_in','每日签到',5,1,1),
 (NUll,2,'bind_weixin','绑定微信账号',25,0,0),
 (NUll,2,'bind_qq','绑定QQ账号',10,0,0),
@@ -1247,7 +1252,7 @@ INSERT INTO `qs_task` VALUES
 (NUll,1,'handle_resume','处理3天内收到的简历',10,-1,0),
 (NUll,1,'reg','注册账号',50,0,0);
 
-INSERT INTO `qs_wechat_menu` VALUES 
+INSERT INTO `qs_wechat_menu` VALUES
 (1,0,'找工作','','view','','',0),
 (2,1,'找工作','','view','{domain}joblist','',0),
 (3,1,'找企业','','view','{domain}companylist','',0),
@@ -1264,7 +1269,7 @@ INSERT INTO `qs_wechat_menu` VALUES
 (14,11,'招聘会员','','view','{domain}member/company/index','',0),
 (15,11,'联系客服','contact','click','','',0);
 
-INSERT INTO `qs_wechat_notify_rule` VALUES 
+INSERT INTO `qs_wechat_notify_rule` VALUES
 (NUll,'job_apply',1,'收到简历',1,'收到简历提醒','OPENTM412895123','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','姓名,应聘职位'),
 (NUll,'job_audit_success',1,'职位审核通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间'),
 (NUll,'job_audit_fail',1,'职位审核未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因'),
@@ -1279,12 +1284,12 @@ INSERT INTO `qs_wechat_notify_rule` VALUES
 (NUll,'cron_setmeal_overtime',1,'会员到期',1,'会员到期提醒','TM00147','商业服务 - 中介服务','','[\"first\",\"name\",\"expDate\",\"remark\"]','套餐名称，到期的日期'),
 (NUll,'interview_video',2,'视频面试邀请',1,'面试邀请提醒','OPENTM405565651','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','企业名称,邀请职位,邀请时间');
 
-INSERT INTO `qs_wechat_share` VALUES 
+INSERT INTO `qs_wechat_share` VALUES
 (NUll,'index','首页','找工作招人才就上{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
-(NUll,'joblist','找工作','太原招聘网，职位搜索-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NUll,'joblist','找工作','职位搜索-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'jobshow','职位详情','【招聘信息】{jobname}-{wage}-{companyname}-{sitename}','self','企业logo','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"},{\"label\":\"职位名称\",\"value\":\"jobname\"},{\"label\":\"薪资\",\"value\":\"wage\"},{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"公司名称\",\"value\":\"companyname\"}]'),
 (NUll,'companyshow','企业详情','【公司信息】{companyname}-{district} 正在火热招聘中，快来看看吧-{sitename}','self','企业logo','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"公司名称\",\"value\":\"companyname\"},{\"label\":\"地区\",\"value\":\"district\"},{\"label\":\"性质\",\"value\":\"nature\"},{\"label\":\"行业\",\"value\":\"trade\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
-(NUll,'resumelist','找人才','太原人才库，简历搜索-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
+(NUll,'resumelist','找人才','简历搜索-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'resumeshow','简历详情','【简历信息】{fullname}，{age}，{education}，正在找 {intention_jobs} 的职位-{sitename}','self','简历照片','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"姓名\",\"value\":\"fullname\"},{\"label\":\"性别\",\"value\":\"sex\"},{\"label\":\"年龄\",\"value\":\"age\"},{\"label\":\"学历\",\"value\":\"education\"},{\"label\":\"经验\",\"value\":\"experience\"},{\"label\":\"意向职位\",\"value\":\"intention_jobs\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'newslist','资讯列表','【招聘资讯】{sitename}资讯快报-{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
 (NUll,'newsshow','资讯详情','【招聘资讯】{title}-{sitename}','self','资讯缩略图','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"标题\",\"value\":\"title\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
@@ -1298,7 +1303,7 @@ INSERT INTO `qs_wechat_share` VALUES
 (NULL, 'svpershow', '视频求职详情', '【视频招聘】{resumename}发布了视频简历，快来看看吧-{sitename}', 'self', '视频封面', '{desc}', '[{\"label\":\"姓名\",\"value\":\"resumename\"},{\"label\":\"视频描述\",\"value\":\"desc\"},{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]');
 
 
-INSERT INTO `qs_tweets_label` VALUES 
+INSERT INTO `qs_tweets_label` VALUES
 (NULL, '序号', 'id', '2'),
 (NULL, '公司名称', 'company', '2'),
 (NULL, '职位名称', 'job', '2'),
@@ -1340,15 +1345,34 @@ INSERT INTO `qs_page_mobile` VALUES
 (NULL,'网络招聘会列表','jobfairollist',0,0,'网络招聘会 - {sitename}','','','[{\"name\":\"网站名称\",\"value\":\"sitename\"}]'),
 (NULL,'网络招聘会详情','jobfairolshow',0,0,'{title} - {sitename}','{title}','{title}','[{\"name\":\"网站名称\",\"value\":\"sitename\"},{\"name\":\"招聘会名称\",\"value\":\"title\"}]');
 
-INSERT INTO `qs_sv_ad_category` VALUES 
+
+
+
+INSERT INTO `qs_sv_ad_category` VALUES
 ('1', 'QS_shortvideo_jobing_top', '视频招聘页头部', '750', '250', '3', '1', 'mobile'),
 ('2', 'QS_shortvideo_finding_top', '视频求职页头部', '750', '250', '3', '1', 'mobile');
 
-INSERT INTO `qs_tpl` VALUES 
+INSERT INTO `qs_tpl` VALUES
 (NULL,'默认风格', 'def', 'index'),
-(NULL,'模板二', 'tpl2', 'index');
+(NULL,'模板二', 'tpl2', 'index'),
+(NULL,'模板三', 'tpl3', 'index'),
+(NULL,'模板四', 'tpl4', 'index'),
+(NULL,'默认风格','def','jobshow'),
+(NULL,'模板二','tpl2','jobshow'),
+(NULL,'默认风格','def','companyshow'),
+(NULL,'模板二','tpl2','companyshow'),
+(NULL,'默认风格','def','resumeshow'),
+(NULL,'模板二','tpl2','resumeshow'),
+(NULL,'默认风格','def','mobileJobShow'),
+(NULL,'模板二','tpl2','mobileJobShow'),
+(NULL,'默认风格','def','mobileCompanyShow'),
+(NULL,'模板二','tpl2','mobileCompanyShow'),
+(NULL,'默认风格','def','mobileResumeShow'),
+(NULL,'模板二','tpl2','mobileResumeShow');
 
-INSERT INTO `qs_poster` VALUES 
+
+
+INSERT INTO `qs_poster` VALUES
 (1,1,1,'模板一',0,1),
 (2,2,1,'模板二',0,1),
 (3,3,1,'青年节',0,1),
@@ -1425,7 +1449,9 @@ INSERT INTO `qs_im_rule` VALUES
 (NULL,'audit_status','3',2,'审核状态要求'),
 (NULL,'max_per_day','50',2,'每天最大聊天数'),
 (NULL,'display_status','1',1,'企业显示要求'),
-(NULL,'bind_weixin','0',1,'是否必需绑定微信');
+(NULL,'bind_weixin','0',1,'是否必需绑定微信'),
+(NULL,'unread_reminder',0,0,'在线聊未读消息短信通知'),
+(NULL,'unread_templateid','',0,'微信模板消息通知ID');
 
 
 INSERT INTO `qs_company_service_im` VALUES

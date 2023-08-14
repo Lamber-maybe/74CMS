@@ -16,7 +16,7 @@ return [
 
     // 应用调试模式
     'app_debug' => \think\Env::get('DEBUG', false),
-
+    //支付调试模式，如果开启则所有支付支付0.01元
     'pay_test_mode' =>  \think\Env::get('PAY_TEST_MODE', false),
     // 应用Trace
     'app_trace' => false,

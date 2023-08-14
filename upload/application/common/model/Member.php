@@ -294,14 +294,16 @@ class Member extends \app\common\model\BaseModel
             ->find();
 
         //套餐简历包修改 zch
-        $info['setmeal_resume_point'] = $info['download_resume_point'];
         if ($info['deadline'] != 0 && $info['deadline'] < time()) {
             //如果过期，看配置参数中资源是保留还是清空
             if(config('global_config.overtime_setmeal_resource')==0){
                 //清空
-                $info['download_resume_point'] = $info['purchase_resume_point'];//购买套餐赠送简历点
+                $info['download_resume_point'] = $info['purchase_resume_point']; // 总和
+                $info['setmeal_resume_point'] = 0; // 套餐
+
             }else{
-                $info['download_resume_point'] += $info['purchase_resume_point'];//简历包购买 + 购买套餐赠送简历点
+                $info['download_resume_point'] += $info['purchase_resume_point']; // 简历包购买 + 购买套餐赠送简历点
+                $info['setmeal_resume_point'] = $info['download_resume_point'];
             }
             $overtime_config = config('global_config.setmeal_overtime_conf');
             $info['jobs_meanwhile'] = $overtime_config['jobs_meanwhile'];
@@ -321,6 +323,7 @@ class Member extends \app\common\model\BaseModel
             $info['overtime'] = 1;
         } else {
             $info['overtime'] = 0;
+            $info['setmeal_resume_point'] = $info['download_resume_point'];
             $info['download_resume_point'] += $info['purchase_resume_point'];
         }
         $setmeal = model('Setmeal')->where('id',$info['setmeal_id'])->find();
@@ -476,6 +479,29 @@ class Member extends \app\common\model\BaseModel
                     'coupon_id' => $coupon_config['reg_gift_list'],
                 ]);
             }
+
+            // 千帆马甲注册进行会员绑定
+            $userInfo = cookie('members_bind_info');
+            if (!empty($userInfo) && ($userInfo['type'] == 'qianfanyunapp' || $userInfo['type'] == 'magapp'))
+            {
+                $userInfo_array = [
+                    'uid' => $this->uid,
+                    'type'=> $userInfo['type'],
+                    'openid' => '',
+                    'unionid' => '',
+                    'nickname' => $userInfo['username'],
+                    'avatar' => $userInfo['avatar'],
+                    'bindtime'=>time()
+                ];
+                if ($userInfo['type'] == 'qianfanyunapp')
+                {
+                    $userInfo_array['qianfanyunapp_uid'] = $userInfo['id'];
+                }else{
+                    $userInfo_array['magapp_uid'] = $userInfo['id'];
+                }
+                model('MemberBind')->insert($userInfo_array);
+            }
+
             \think\Db::commit();
         } catch (\Exception $e) {
             \think\Db::rollBack();
@@ -542,6 +568,27 @@ class Member extends \app\common\model\BaseModel
         ) {
             $this->error = $this->getError();
             return false;
+        }
+        // 千帆马甲注册进行会员绑定
+        $userInfo = cookie('members_bind_info');
+        if (!empty($userInfo) && ($userInfo['type'] == 'qianfanyunapp' || $userInfo['type'] == 'magapp'))
+        {
+            $userInfo_array = [
+                'uid' => $this->uid,
+                'type'=> $userInfo['type'],
+                'openid' => '',
+                'unionid' => '',
+                'nickname' => $userInfo['username'],
+                'avatar' => $userInfo['avatar'],
+                'bindtime'=>time()
+            ];
+            if ($userInfo['type'] == 'qianfanyunapp')
+            {
+                $userInfo_array['qianfanyunapp_uid'] = $userInfo['id'];
+            }else{
+                $userInfo_array['magapp_uid'] = $userInfo['id'];
+            }
+            model('MemberBind')->insert($userInfo_array);
         }
         model('Task')->doTask($this->uid, 2, 'reg');
         model('NotifyRule')->notify($this->uid, 2, 'reg', [
@@ -632,13 +679,13 @@ class Member extends \app\common\model\BaseModel
         model('JobApply')
             ->where('personal_uid', 'in', $uid)
             ->delete();
-        model('JobfairExhibitors')
-            ->where('uid', 'in', $uid)
-            ->delete();
+
         model('MarketQueue')
             ->where('uid', 'in', $uid)
             ->delete();
-        model('Member')->where('uid','in',$uid)->delete();
+        model('Member')
+            ->where('uid','in',$uid)
+            ->delete();
         model('MemberBind')
             ->where('uid', 'in', $uid)
             ->delete();
@@ -749,5 +796,89 @@ class Member extends \app\common\model\BaseModel
             ->delete();
         model('Job')->deleteJobByUids($uid);
         return;
+    }
+
+    /**
+     * 通过UID获取用户名称
+     * @param $uid
+     * @return false|void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getMemberNickNameByUid($uid){
+        $member = $this->find($uid);
+        if (null === $member){
+            return false;
+        }
+
+        switch ($member['utype']){
+            case 1:
+                return $this->getCompanyNameByUid($uid);
+
+            case 2:
+                return $this->getMemberNameByUid($uid);
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 获取个人会员名称
+     * @param $uid
+     * @return void
+     */
+    public function getMemberNameByUid($uid){
+        $resume = model('Resume')
+            ->field('display_name, fullname, sex')
+            ->where('uid',$uid)
+            ->find();
+        if (null == $resume){
+            return false;
+        }
+
+        if ($resume['display_name'] == 0) {
+            if ($resume['sex'] == 1) {
+                $resume['fullname'] = cut_str(
+                    $resume['fullname'],
+                    1,
+                    0,
+                    '先生'
+                );
+            } elseif ($resume['sex'] == 2) {
+                $resume['fullname'] = cut_str(
+                    $resume['fullname'],
+                    1,
+                    0,
+                    '女士'
+                );
+            } else {
+                $resume['fullname'] = cut_str(
+                    $resume['fullname'],
+                    1,
+                    0,
+                    '**'
+                );
+            }
+        }
+
+        return $resume['fullname'];
+    }
+
+    /**
+     * 获取企业会员名称
+     * @param $uid
+     * @return void
+     */
+    public function getCompanyNameByUid($uid){
+        $company_name = model('Company')
+            ->where('uid',$uid)
+            ->value('companyname');
+        if (null == $company_name){
+            return false;
+        }
+
+        return $company_name;
     }
 }

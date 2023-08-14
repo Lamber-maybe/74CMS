@@ -26,7 +26,7 @@
         <el-input placeholder="确认密码" v-model="repeatPassword" show-password></el-input>
       </div>
       <el-button class="g_btn" type="primary" @click="handleSubmit">提交</el-button>
-      <div class="g_sw_login"><span @click="changeMethod">邮箱找回密码</span></div>
+      <div class="g_sw_login"><span @click="changeMethod">{{type=='mobile'?'邮箱':'手机'}}找回密码</span></div>
       <div class="b_t1">上面的方式都不可用？</div>
       <div class="b_t2">你还可以进行
         <router-link to="/appeal">账号申诉</router-link>
@@ -63,12 +63,15 @@ import Captcha from '@/components/captcha/index'
         password:'',
         repeatPassword:'',
         regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
-        regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+        regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+        sendSmsLimit:false,
+        sendEmailLimit:false,
       }
     },
     created(){
       this.utype = this.$route.params.utype===undefined?1:this.$route.params.utype
       this.$store.commit('clearCountDownFun')
+      this.$store.commit('clearCountDownFunEmail')
     },
     methods: {
       changeMethod () {
@@ -78,6 +81,7 @@ import Captcha from '@/components/captcha/index'
           this.type = 'mobile'
         }
       },
+      //zdq 短信验证码重复发送修改
       // 发送验证码
       sendSms () {
         if (this.$store.state.sendSmsBtnDisabled) {
@@ -91,6 +95,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if(this.sendSmsLimit){
+          return false
+        }
+        this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store
             .dispatch('sendSmsFun', {
@@ -101,17 +109,20 @@ import Captcha from '@/components/captcha/index'
             })
             .then(response => {
               if (response.code === 200) {
+                this.sendSmsLimit = false
                 this.$message({
                   type: 'success',
                   message: this.$store.state.sendSmsMessage
                 })
               } else {
+                this.sendSmsLimit = false
                 this.$message.error(this.$store.state.sendSmsMessage)
                 return false
               }
             })
         })
       },
+      //zdq 验证码重复发送修改
       sendEmail () {
         if (this.$store.state.sendEmailBtnDisabled) {
           return false
@@ -124,6 +135,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if(this.sendEmailLimit){
+          return false
+        }
+        this.sendEmailLimit = true
         this.$store
           .dispatch('sendEmailFun', {
             url: api.sendmail_forget,
@@ -132,11 +147,13 @@ import Captcha from '@/components/captcha/index'
           })
           .then(res => {
             if (res.code === 200) {
+              this.sendEmailLimit = false
               this.$message({
                 type: 'success',
                 message: this.$store.state.sendEmailMessage
               })
             } else {
+              this.sendEmailLimit = false
               this.$message.error(this.$store.state.sendEmailMessage)
               return false
             }

@@ -143,7 +143,14 @@ class Index extends \app\v1_0\controller\common\Base
             'red_point' => 0,
             'number' => model('ViewJob')
                 ->alias('a')
-                ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.id', 'left')
+                /**
+                 * 【BUG-ID1000257】
+                 * PS：企业会员中心看过我数据统计不准确
+                 * yx - 2022.08.01
+                 * 【旧】
+                 * ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.id', 'left')
+                 */
+                ->join(config('database.prefix') . 'resume b', 'a.personal_uid=b.uid', 'left')
                 ->where('a.company_uid', $this->userinfo->uid)
                 ->where('b.id','not null')
                 ->count(),
@@ -190,16 +197,37 @@ class Index extends \app\v1_0\controller\common\Base
     }
     public function joball()
     {
-        $list = model('Job')
-            ->where('uid', $this->userinfo->uid)
-            ->where('audit', 1)
-            ->where('is_display', 1)
-            ->field('id,jobname')
+        $jobid = input('get.jobid/d',0,'intval');
+        $where = [
+            'j.uid' => $this->userinfo->uid,
+            'j.audit' => 1,
+            'j.is_display' => 1,
+        ];
+        if ($jobid > 0)
+        {
+            $where['j.id'] = $jobid;
+        }
+        //修改面试邀请调用联系方式 zch 2022/07/20
+        $list = model('Job')->alias('j')
+            ->join(config('database.prefix') . 'job_contact b', 'b.jid=j.id', 'left')
+            ->join(config('database.prefix') . 'company_contact c', 'c.comid=j.company_id', 'left')
+            ->where($where)
+            ->field('j.id,j.jobname,b.use_company_contact,b.contact as job_contact,b.mobile as job_mobile,c.contact as company_contact,c.mobile as company_mobile,j.address')
             ->select();
         $return = [];
         foreach ($list as $key => $value) {
             $arr['id'] = $value['id'];
             $arr['jobname'] = $value['jobname'];
+            $arr = [
+                'id' => $value['id'],
+                'jobname' => $value['jobname'],
+                'use_company_contact' => $value['use_company_contact'],
+                'job_contact' => $value['job_contact'],
+                'job_mobile' => $value['job_mobile'],
+                'company_contact' => $value['company_contact'],
+                'company_mobile' => $value['company_mobile'],
+                'address' => $value['address']
+            ];
             $return[] = $arr;
         }
         $this->ajaxReturn(200, '获取数据成功', $return);

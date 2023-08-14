@@ -146,7 +146,6 @@ export default {
   },
   destroyed() {
     this.editor.destroy()
-    console.log(123)
   },
   methods: {
     setUEContent(label){

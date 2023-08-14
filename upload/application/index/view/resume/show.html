@@ -507,7 +507,7 @@
         {#include file="public/tipoff" /#}
     </el-dialog>
 
-    <el-dialog title="面试邀请" :visible.sync="showInvite" width='540px' @opened="handlerInviteOpened"
+    <el-dialog title="面试邀请" :destroy-on-close="true"  :visible.sync="showInvite" width='540px' @opened="handlerInviteOpened"
         @closed="handlerInviteClose">
         {#include file="public/interview" /#}
         <span slot="footer" class="dialog-footer">
@@ -659,6 +659,18 @@
             }
         },
         methods: {
+            // 面试邀请调用联系方式修改 zch 2022/7/22
+            selectJobs(item){
+                this.form.address = item.address
+                if (item.use_company_contact === 0)
+                {
+                    this.form.contact = item.job_contact
+                    this.form.tel = item.job_mobile
+                }else {
+                    this.form.contact = item.company_contact
+                    this.form.tel = item.company_mobile
+                }
+            },
             loopCheckBind:function(){
                 var that = this
                 httpget(qscms.apiList.imCheckBind, {})
@@ -801,23 +813,12 @@
                     })
                     .catch(function () { })
                 this.fetchSetmeal()
-                this.fetchIterviewPre()
             },
             fetchSetmeal: function () {
                 var that = this
                 httpget(qscms.apiList.member_setmeal, {})
                     .then(function (res) {
                         that.mySetmeal = res.data.info
-                    })
-                    .catch(function () { })
-            },
-            fetchIterviewPre: function () {
-                var that = this
-                httpget(qscms.apiList.interviewAddPre, {})
-                    .then(function (res) {
-                        that.form.address = res.data.address
-                        that.form.contact = res.data.contact
-                        that.form.tel = res.data.tel
                     })
                     .catch(function () { })
             },
@@ -847,7 +848,22 @@
                         }
                     });
                 } else {
-                    this.showInvite = false
+                    that.form.type = 1
+                    that.form.interview_date = ''
+                    that.form.interview_time = ''
+                    that.form.address = ''
+                    that.form.contact = ''
+                    that.form.tel = ''
+                    that.form.note = ''
+                    that.form.startTime = ''
+                    that.form.pickerOptions = {
+                        disabledDate(v) {
+                            return v.getTime() < new Date().getTime() - 86400000;
+                        }
+                    }
+                    that.form.disabledDate = ''
+                    that.form.jobid = ''
+                    that.showInvite = false
                 }
             },
             getUserInfo: function () {

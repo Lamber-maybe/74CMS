@@ -3,14 +3,14 @@
     <div class="b1">
       <div class="title">
         <div
-          class="item "
+          class="item"
           :class="currentTab == 1 ? 'active' : ''"
           @click="changeTab(1)"
         >
           {{ firstTabText }}
         </div>
         <div
-          class="item "
+          class="item"
           :class="currentTab == 2 ? 'active' : ''"
           @click="changeTab(2)"
         >
@@ -45,22 +45,29 @@
           </div>
           <div
             class="tag_wrapper clearfix"
-            v-if="
-              item.tag != undefined && item.tag.length > 0
-            "
+            v-if="item.tag != undefined && item.tag.length > 0"
           >
-            <div
-              class="tag_item"
-              v-for="(t, k) in item.tag"
-              :key="k"
-            >
+            <div class="tag_item" v-for="(t, k) in item.tag" :key="k">
               {{ t }}
             </div>
           </div>
           <div class="company">
             <div class="name">{{ item.companyname }}</div>
-            <div class="auth_ico" v-if="item.company_audit == 1"></div>
-            <div class="crw_ico" v-if="item.setmeal_icon != ''"><img :src="item.setmeal_icon" /></div>
+            <div
+              class="auth_ico auth_ico1"
+              v-if="
+                item.company_audit == 1 && mobile_company_show_tpl === 'def'
+              "
+            ></div>
+            <div
+              class="auth_ico"
+              v-if="
+                item.company_audit == 1 && mobile_company_show_tpl === 'tpl2'
+              "
+            ></div>
+            <div class="crw_ico" v-if="item.setmeal_icon != ''">
+              <img :src="item.setmeal_icon" />
+            </div>
             <div class="clear"></div>
           </div>
         </div>
@@ -79,99 +86,103 @@
 </template>
 
 <script>
-import http from '@/utils/http'
-import api from '@/api'
+import http from "@/utils/http";
+import api from "@/api";
 export default {
-  name: 'JobOne',
-  data () {
+  name: "JobOne",
+  data() {
     return {
       currentTab: 1,
-      firstIntentionText: '',
+      firstIntentionText: "",
       intentionSelShow: false,
-      firstTabText: '推荐',
+      firstTabText: "推荐",
       intentionList: [],
       joblist: [],
-      currentIntentionItem: {}
-    }
+      currentIntentionItem: {},
+      mobile_company_show_tpl: "def",
+    };
   },
-  created () {
-    this.fetchListData(true)
+  created() {
+    this.mobile_company_show_tpl =
+      this.$store.state.config.mobile_company_show_tpl;
+    this.fetchListData(true);
   },
   methods: {
-    fetchListData (first_request) {
+    fetchListData(first_request) {
       if (
         this.$store.state.LoginOrNot === true &&
         this.$store.state.LoginType == 2
       ) {
-        this.firstTabText = '推荐'
+        this.firstTabText = "推荐";
         if (first_request === true) {
-          this.fetchDataIntention()
+          this.fetchDataIntention();
         } else {
-          this.fetchDataRecommend()
+          this.fetchDataRecommend();
         }
       } else {
-        this.firstTabText = '紧急'
-        this.fetchDataEmergency()
+        this.firstTabText = "紧急";
+        this.fetchDataEmergency();
       }
     },
-    fetchDataIntention () {
+    fetchDataIntention() {
       http
         .get(api.get_intentions, {})
-        .then(res => {
-          this.intentionList = [...res.data.items]
+        .then((res) => {
+          this.intentionList = [...res.data.items];
           if (this.intentionList.length > 0) {
             for (const key in this.intentionList) {
-              this.intentionList[key].name = this.intentionList[key].category_text
+              this.intentionList[key].name =
+                this.intentionList[key].category_text;
             }
-            this.currentIntentionItem = { ...this.intentionList[0] }
-            this.fetchDataRecommend()
+            this.currentIntentionItem = { ...this.intentionList[0] };
+            this.fetchDataRecommend();
           }
         })
-        .catch(() => {})
+        .catch(() => {});
     },
-    fetchDataRecommend () {
-      const { category_text, id } = this.currentIntentionItem
-      this.firstIntentionText = category_text
+    fetchDataRecommend() {
+      const { category_text, id } = this.currentIntentionItem;
+      this.firstIntentionText = category_text;
       http
         .get(api.recommend_joblist, { id, page: 1, pagesize: 5 })
-        .then(res => {
-          this.joblist = [...res.data.items]
+        .then((res) => {
+          this.joblist = [...res.data.items];
         })
-        .catch(() => {})
+        .catch(() => {});
     },
-    fetchDataNew () {
+    fetchDataNew() {
       http
-        .get(api.joblist, { sort: 'rtime', page: 1, pagesize: 5 })
-        .then(res => {
-          this.joblist = [...res.data.items]
+        .get(api.joblist, { sort: "rtime", page: 1, pagesize: 5 })
+        .then((res) => {
+          this.joblist = [...res.data.items];
         })
-        .catch(() => {})
+        .catch(() => {});
     },
-    fetchDataEmergency () {
+    fetchDataEmergency() {
       http
         .get(api.joblist, { emergency: 1, page: 1, pagesize: 5 })
-        .then(res => {
-          this.joblist = [...res.data.items]
+        .then((res) => {
+          this.joblist = [...res.data.items];
         })
-        .catch(() => {})
+        .catch(() => {});
     },
-    onIntentionSelected (item) {
-      this.intentionSelShow = false
-      item.name = item.category_text
-      this.currentIntentionItem = item
-      this.fetchDataRecommend()
+    onIntentionSelected(item) {
+      this.intentionSelShow = false;
+      item.name = item.category_text;
+      this.currentIntentionItem = item;
+      this.fetchDataRecommend();
     },
-    changeTab (tabId) {
-      this.currentTab = tabId
+    changeTab(tabId) {
+      this.currentTab = tabId;
       if (tabId == 1) {
-        this.fetchListData(false)
+        this.fetchListData(false);
       } else {
-        this.firstIntentionText = ''
-        this.fetchDataNew()
+        this.firstIntentionText = "";
+        this.fetchDataNew();
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -206,10 +217,20 @@ export default {
         .auth_ico {
           float: left;
           margin-left: 6px;
+          width: 35px;
+          height: 18px;
+          background: url("../../../assets/images/jobs_list_auth_ico.png") 0
+            center no-repeat;
+          background-size: 100% 12px;
+        }
+
+        .auth_ico1 {
+          float: left;
+          margin-left: 6px;
           width: 15px;
           height: 18px;
-          background: url("../../../assets/images/jobs_list_auth_ico.png") 0 4px
-            no-repeat;
+          background: url("../../../assets/images/jobs_list_auth_ico_1.png") 0
+            4px no-repeat;
           background-size: 15px 11px;
         }
         .name {
@@ -235,9 +256,9 @@ export default {
           border-radius: 3px;
           margin-bottom: 5px;
           &:not(:last-child) {
-            margin-right:5px;
+            margin-right: 5px;
           }
-          margin-bottom:4px;
+          margin-bottom: 4px;
         }
         width: 100%;
         padding-bottom: 7px;

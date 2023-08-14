@@ -324,11 +324,17 @@
         </van-button>
       </div>
     </van-form>
+    <!--    【优化】 求职登录地区样式问题-->
+    <!--    zdq 2022.08.11-->
+    <!--    【变更前】-->
+    <!--    :style="{ 'max-height': '70%' }"-->
+    <!--    【变更后】-->
+    <!--    :style="{ 'height': '70%' }"-->
     <van-popup
       v-model="showPickerDistrict"
       position="bottom"
       :lock-scroll="false"
-      :style="{ 'max-height': '70%' }"
+      :style="{ 'height': '70%' }"
       ref="dropDistrict"
       @opened="openedDistrict"
     >

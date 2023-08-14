@@ -22,7 +22,7 @@
         {{ itemInfo.deadline | timeFilter }}
       </el-form-item>
       <el-form-item label="延长推广天数" prop="days">
-        <el-input v-model.number="form.days" type="number" />
+        <el-input v-model.number="form.days" type="number" :min="0"/>
       </el-form-item>
       <el-form-item label=" ">
         <el-button type="primary" @click="onSubmit('form')">保存</el-button>

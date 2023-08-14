@@ -35,6 +35,13 @@ class Help extends \app\common\model\BaseModel
                 $arr = [];
                 $arr['id'] = $value['id'];
                 $arr['title'] = $value['name'];
+                /**
+                 * 【ID1000244】【bug】后台内容-帮助中心分类下没内容报错
+                 * 2022.08.02
+                 * 【新增】
+                 * $arr['items'] = [];
+                 */
+                $arr['items'] = [];
                 foreach ($datalist as $k => $v) {
                     $arr['items'][] = ['id'=>$v['id'],'title'=>$v['title']];
                 }

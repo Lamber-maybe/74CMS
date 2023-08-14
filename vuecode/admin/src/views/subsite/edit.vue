@@ -14,6 +14,7 @@
           style="float: right; padding: 0;"
           type="text"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -68,7 +69,7 @@
           <el-input v-model="form.sort_id" />
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
           <el-button @click="goto('/subsite/index')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -83,6 +84,7 @@ import { getClassify } from '@/api/classify'
 export default {
   data() {
     return {
+      issubmit: false,
       loading: true,
       form: {
         sitename: '',
@@ -173,6 +175,7 @@ export default {
     },
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       this.$refs[formName].validate(valid => {
         if (valid) {
           const submitData = JSON.parse(JSON.stringify(this.form))
@@ -190,8 +193,12 @@ export default {
               }, 1500)
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           return false
         }
       })

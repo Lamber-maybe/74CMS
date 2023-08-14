@@ -463,6 +463,14 @@ class Screen extends \app\v1_0\controller\common\Base
             'dataset' => []
         ];
         $datalist = model('Company')
+            /**
+             * 大数据平台
+             * 企业地区分布排行，无地区企业数据展示BUG
+             * yx - 2022.07.26
+             * 【增加】
+             *  ->where('district','>',0)
+             */
+            ->where('district','>',0)
             ->group('district')
             ->order('total desc')
             ->column('district,count(*) as total');

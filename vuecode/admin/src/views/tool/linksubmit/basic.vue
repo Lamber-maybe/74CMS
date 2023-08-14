@@ -84,9 +84,10 @@
           :stroke-width="18"
           :width="220"
         />
-        <p
-          style="font-weight:bold;font-size:20px;text-align:center;margin-bottom:50px;color:#333;"
-        >
+        <p v-if="percentage == '100'" style="font-weight:bold;font-size:20px;text-align:center;margin-bottom:50px;color:#333;">
+          已将 {{ tmp_tit }} 推送到百度
+        </p>
+        <p v-else style="font-weight:bold;font-size:20px;text-align:center;margin-bottom:50px;color:#333;">
           正在推送 {{ tmp_tit }} 到百度
         </p>
         <p>
@@ -225,6 +226,13 @@ export default {
             localStorage.setItem('linksubmit_type', type)
             localStorage.setItem('linksubmit_success', this.submit_info.success)
             this.linkSubmit(range, type, current_page, this.submit_info.success)
+            // 【ID1000255】【优化】百度推送提示修改 zch 2022/8/1
+          } else if (response.data.status == 2){
+            if (this.submit_loading == false){
+              this.$message.error(response.message)
+            } else {
+              this.$message.success('已完成推送')
+            }
           } else {
             this.$alert(response.message, '提示', {
               confirmButtonText: '确定'

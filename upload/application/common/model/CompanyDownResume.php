@@ -147,25 +147,37 @@ class CompanyDownResume extends \app\common\model\BaseModel
                     $need_points = $down_resume_points_config[0];
                 }
             }
+
+            //购买简历包修改 zch  2022/7/22
+
+            $download_point = 0;//消耗套餐点数
+            $purchase_poubt = 0;//消耗简历包点数
+            $surplus_download_point = 0;//剩余套餐点数
+            $surplus_purchase_poubt = 0;//剩余简历包点数
+
             if ($need_points > 0) {
-                //购买简历包修改 zch
-                if (config('global_config.overtime_setmeal_resource')==0)
-                {
-                    if ($member_setmeal['purchase_resume_point'] < $need_points) {
-                        $return_data['status'] = 0;
-                        $return_data['msg'] = '下载简历点数不足，无法进行下载操作';
-                        $return_data['done'] = 0;
-                        break;
-                    }
+                if ($member_setmeal['download_resume_point'] < $need_points) {
+                    $return_data['status'] = 0;
+                    $return_data['msg'] = '下载简历点数不足，无法进行下载操作';
+                    $return_data['done'] = 0;
+                    break;
                 }
-                else
+
+                if ($member_setmeal['setmeal_resume_point'] >= $need_points)
                 {
-                    if ($member_setmeal['download_resume_point'] < $need_points) {
-                        $return_data['status'] = 0;
-                        $return_data['msg'] = '下载简历点数不足，无法进行下载操作';
-                        $return_data['done'] = 0;
-                        break;
-                    }
+                    // 套餐点数足够下载
+                    $download_point = $need_points;
+                    $surplus_download_point = $member_setmeal['setmeal_resume_point'] - $need_points;
+                    $purchase_poubt = 0;
+                    $surplus_purchase_poubt = $member_setmeal['purchase_resume_point'];
+                }else
+                {
+                    //扣除套餐点数和简历包点数
+                    $download_point = $member_setmeal['setmeal_resume_point'];
+                    $surplus_download_point = 0;
+                    $purchase_poubt = $need_points - $member_setmeal['setmeal_resume_point'];
+                    $surplus_purchase_poubt = $member_setmeal['purchase_resume_point'] - $purchase_poubt;
+
                 }
             }
             \think\Db::startTrans();
@@ -180,38 +192,12 @@ class CompanyDownResume extends \app\common\model\BaseModel
                     throw new \Exception($this->getError());
                 }
 
-                //购买简历包修改 zch
-                if ($member_setmeal['setmeal_resume_point'] >= $need_points && config('global_config.overtime_setmeal_resource')!=0)
-                {
-                    $member_setmeals = [
-                        'download_resume_point' => $member_setmeal['setmeal_resume_point'] - $need_points,
-                        'purchase_resume_point' => $member_setmeal['purchase_resume_point']
-                    ];
-                    $download_point = $need_points;
-                    $purchase_poubt = 0;
-                }
-                elseif($member_setmeal['setmeal_resume_point'] < $need_points && config('global_config.overtime_setmeal_resource')!=0){
-                    $member_setmeals = [
-                        'download_resume_point' => 0,
-                        'purchase_resume_point' => $member_setmeal['purchase_resume_point'] - ($need_points - $member_setmeal['setmeal_resume_point'])
-                    ];
-                    $download_point = $member_setmeal['setmeal_resume_point'];
-                    $purchase_poubt = $need_points - $member_setmeal['setmeal_resume_point'];
-                }else
-                {
-                    $member_setmeals = [
-                        'purchase_resume_point' =>  $member_setmeal['purchase_resume_point'] - $need_points
-                    ];
-                    $download_point = $member_setmeal['setmeal_resume_point'];
-                    $purchase_poubt = $need_points - $member_setmeal['setmeal_resume_point'];
-                }
-                model('MemberSetmeal')
-                    ->where('uid', $company_uid)
-                    ->update($member_setmeals);
+                model('MemberSetmeal')->where('uid', $company_uid)->setDec('download_resume_point',$download_point);
+                model('MemberSetmeal')->where('uid', $company_uid)->setDec('purchase_resume_point',$purchase_poubt);
 
                 $log['uid'] = $company_uid;
                 $log['content'] =
-                    '下载简历-【' . $resume_info['fullname'] . '】，消耗套餐赠送下载点数 ' . $download_point . '，消耗简历包下载点数 ' . $purchase_poubt . '，剩余套餐赠送下载点数 ' . $member_setmeal['download_resume_point'].'，剩余简历包下载点数 '.$member_setmeal['purchase_resume_point'];
+                    '下载简历-【' . $resume_info['fullname'] . '】，消耗套餐赠送下载点数 ' . $download_point . '，消耗简历包下载点数 ' . $purchase_poubt . '，剩余套餐赠送下载点数 ' . $surplus_download_point.'，剩余简历包下载点数 '.$surplus_purchase_poubt;
                 $log['addtime'] = time();
                 model('MemberSetmealLog')
                     ->allowField(true)

@@ -640,10 +640,11 @@ button { border: none; background: none; }
 .consult_title li { width: 400px; margin-bottom: 9px; }
 .consult_title li:hover .text1 { color: #1787fb; }
 .consult_title li:hover .text2 { color: #1787fb; }
+/*【ID1000251】【优化】默认模板资讯显示长度超出*/
+.consult_title li .a_div{ width: 77%;float: left; }
+.consult_title li a { color: #999; font-size: 14px; margin-right: 5px; cursor: pointer; height: 24px; }
 
-.consult_title li a { color: #999; font-size: 14px; margin-right: 5px; cursor: pointer; display: block; float: left; height: 24px; }
-
-.consult_title li .text2 { color: #666; font-size: 14px; max-width: 224px; }
+.consult_title li .text2 { color: #666; font-size: 14px; max-width: 45%;}
 
 .consult_time { color: #999; font-size: 12px; float: right; margin-right: 18px; }
 

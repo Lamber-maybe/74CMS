@@ -31,6 +31,8 @@ export default {
   companylist: '/home/company/index',
   // 企业详情
   companyshow: '/home/company/show',
+  //企业详情补充
+  companySupplementary: '/home/company/supplementary',
   // 职位竞争力分析
   competitiveness: '/home/job/competitiveness',
   // 申请职位

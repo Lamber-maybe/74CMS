@@ -86,7 +86,8 @@ export default {
       avatar: '',
       showTextTitle: '用户协议',
       showTextContent: '',
-      showText: false
+      showText: false,
+      sendSmsLimit: false
     }
   },
   created () {
@@ -166,7 +167,7 @@ export default {
         })
         .catch(() => {})
     },
-    // 发送验证码
+    // 发送验证码 zdq验证码重复点击修改
     sendSms () {
       let _this = this
       if (this.$store.state.sendSmsBtnDisabled) {
@@ -180,6 +181,10 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
+      if (this.sendSmsLimit) {
+        return false
+      }
+      this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
           .dispatch('sendSmsFun', {
@@ -189,6 +194,7 @@ export default {
             captcha: res
           })
           .then(response => {
+            this.sendSmsLimit = false
             if (response.code === 200) {
               _this.$notify({type: 'success', message: _this.$store.state.sendSmsMessage})
             } else {

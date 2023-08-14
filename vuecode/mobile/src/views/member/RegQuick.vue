@@ -147,9 +147,15 @@
         @click="showPickerDistrict = !showPickerDistrict"
         class="form_choose reset_after"
       />
+      <!--    【优化】 求职登录地区样式问题-->
+      <!--    zdq 2022.08.11-->
+      <!--    【变更前】-->
+      <!--    :style="{ 'max-height': '70%' }"-->
+      <!--    【变更后】-->
+      <!--    :style="{ 'height': '70%' }"-->
       <van-popup v-model="showPickerDistrict"
                  position="bottom"
-                 :style="{ 'max-height': '70%' }"
+                 :style="{ 'height': '70%' }"
                  ref="dropDistrict"
                  :lock-scroll="false"
                  @click-overlay="handleDistrictOverlay"
@@ -286,7 +292,8 @@ export default {
       wageDefaultIndex2: 0,
       doRegQuickBtnDisabled: false,
       id: 0,
-      showLogin: false
+      showLogin: false,
+      sendSmsLimit: false
     }
   },
   created () {
@@ -490,7 +497,7 @@ export default {
       this.isNoJobTime = false
       this.showPickerEnterJob = !this.showPickerEnterJob
     },
-    // 发送验证码
+    // 发送验证码 zdq验证码重复点击修改
     sendSms () {
       let _this = this
       if (this.$store.state.sendSmsBtnDisabled) {
@@ -504,6 +511,10 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
+      if (this.sendSmsLimit) {
+        return false
+      }
+      this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
           .dispatch('sendSmsFun', {
@@ -513,6 +524,7 @@ export default {
             captcha: res
           })
           .then(response => {
+            this.sendSmsLimit = false
             if (response.code === 200) {
               if (parseInt(response.data.notice) === 1) {
                 _this.$store.commit('clearCountDownFun')

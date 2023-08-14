@@ -71,8 +71,13 @@ export default {
       btnDisabled: false,
       newMobile: '',
       code: '',
-      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/
+      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+      sendSmsLimit: false
     }
+  },
+  created () {
+    // zdq 360浏览器邮箱绑定兼容
+    this.$store.commit('clearCountDownFun')
   },
   methods: {
     initCB () {},
@@ -121,7 +126,7 @@ export default {
           console.log(err)
         })
     },
-    // 发送验证码
+    // 发送验证码 zdq验证码重复点击修改
     sendSms () {
       if (this.$store.state.sendSmsBtnDisabled) {
         return false
@@ -138,6 +143,10 @@ export default {
         this.$notify('新手机号与旧手机号相同')
         return false
       }
+      if (this.sendSmsLimit) {
+        return false
+      }
+      this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
           .dispatch('sendSmsFun', {
@@ -147,6 +156,7 @@ export default {
             captcha: res
           })
           .then(response => {
+            this.sendSmsLimit = false
             if (response.code == 200) {
               this.$notify({
                 type: 'success',

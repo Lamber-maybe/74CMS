@@ -13,6 +13,7 @@
 		<el-form-item label="面试职位" v-if="from != 'apply'" prop="jobid">
 			<el-select v-model="form.jobid"  placeholder="请选择职位">
 				<el-option
+					@click.native="selectJobs(item)"
 					v-for="(item,index) in options_jobs"
 					:key="index"
 					:label="item.jobname"

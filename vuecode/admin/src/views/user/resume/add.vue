@@ -38,6 +38,8 @@
           :editable="false"
           :clearable="false"
           placeholder="选择出生日期"
+          :picker-options="DateRanges"
+          :default-value="defaultValue"
           value-format="yyyy-MM"
         />
       </el-form-item>
@@ -293,8 +295,8 @@ import { getToken } from '@/utils/auth'
 var wage_data = []
 // 【ID1000220】【bug】后台添加简历薪资范围不一致
 let current = 0
-let unit1 = 500
-let unit2 = 5000
+const unit1 = 500
+const unit2 = 5000
 for (let i = 0; i < 37; i++) {
   if (current < 15000){
     current += unit1
@@ -385,6 +387,8 @@ export default {
       }
     }
     return {
+      DateRanges: this.birthdayDateRange(),
+      defaultValue: this.defaultValueFun(),
       submitLoading: false,
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -676,6 +680,22 @@ export default {
     this.fetchInfo()
   },
   methods: {
+    // PC端创建简历日期选择往前推到16岁 zdq
+    birthdayDateRange(){
+      return {
+        disabledDate(time){
+          var myDate = new Date();
+          return time.getTime() > new Date(new Date(myDate.getFullYear(),11).getTime() - 16 * 365 * 24 * 3600 * 1000);
+        }
+      }
+    },
+    // PC端创建简历日期选择往前推到16岁 zdq
+    defaultValueFun() {
+      const nowDate = new Date()
+      const nowYear = nowDate.getFullYear()
+      const minBirthdayYear = nowYear - 16
+      return new Date(minBirthdayYear, 11)
+    },
     fetchInfo() {
       getFieldRule({}, 'get')
         .then(response => {

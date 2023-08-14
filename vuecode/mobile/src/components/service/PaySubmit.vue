@@ -21,9 +21,9 @@ export default {
       //  payType 支付类型
       var payType = ''
       // data字段支付类型存在两个字段 payment pay_type 需要判断那个有值 在调用this.$refs.paySubmit.handlerSubmit此方法是传值字段未统一
-      if (data.payment == 'alipay' || data.payment == 'wxpay') {
+      if (data.payment == 'alipay' || data.payment == 'wxpay' || data.payment == 'free'  || data.payment == 'points') { // 积分支付报错修改 2022.07.11
         payType = data.payment
-      } else if (data.pay_type == 'alipay' || data.pay_type == 'wxpay') {
+      } else if (data.pay_type == 'alipay' || data.pay_type == 'wxpay' || data.pay_type == 'free' || data.pay_type == 'points') { // 积分支付报错修改 2022.07.11
         payType = data.pay_type
       } else {
         this.$dialog.alert({

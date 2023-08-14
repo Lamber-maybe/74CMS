@@ -279,6 +279,7 @@
           type="primary"
           :loading="submitLoading"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -328,6 +329,7 @@ export default {
       }
     }
     return {
+      issubmit: false,
       contactHidden: false,
       infoLoading: true,
       submitLoading: false,
@@ -792,6 +794,7 @@ export default {
       }
       // this.submitLoading = true;
       const that = this
+      that.issubmit = true
       const insertData = { ...this.form }
       insertData.contact.is_display = this.contactHidden === true ? 0 : 1
       this.$refs[formName].validate(valid => {
@@ -819,8 +822,12 @@ export default {
               }, 1500)
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           this.submitLoading = false
           return false
         }

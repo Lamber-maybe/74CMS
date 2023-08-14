@@ -42,6 +42,7 @@ import Captcha from '@/components/captcha/index'
         code:'',
         description:'',
         regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+        sendSmsLimit:false,
       }
     },
     created:function(){
@@ -49,6 +50,7 @@ import Captcha from '@/components/captcha/index'
     },
     methods: {
       // 发送验证码
+      // zdq 获取验证码重复点击修改
       sendSms:function () {
         var that = this
         if (this.$store.state.sendSmsBtnDisabled) {
@@ -62,6 +64,10 @@ import Captcha from '@/components/captcha/index'
           this.$message.error('手机号格式不正确')
           return false
         }
+        if(this.sendSmsLimit){
+          return false
+        }
+        this.sendSmsLimit = true
         this.$refs.captcha.show(function(res) {
           that.$store
             .dispatch('sendSmsFun', {
@@ -72,11 +78,13 @@ import Captcha from '@/components/captcha/index'
             })
             .then(function(response) {
               if (response.code === 200) {
+                that.sendSmsLimit = false
                 that.$message({
                   type: 'success',
                   message: that.$store.state.sendSmsMessage
                 })
               } else {
+                that.sendSmsLimit = false
                 that.$message.error(that.$store.state.sendSmsMessage)
                 return false
               }

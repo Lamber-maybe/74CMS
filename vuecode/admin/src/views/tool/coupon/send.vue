@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card">
+    <el-card
+      v-loading="fullscreenLoading"
+      class="box-card"
+      element-loading-text="发放中"
+    >
       <div
         slot="header"
         class="clearfix"
@@ -78,6 +82,7 @@
           <el-button
             type="primary"
             @click="onSubmit('form')"
+            :disabled="issubmit"
           >
             确定发放
           </el-button>
@@ -101,6 +106,8 @@ export default {
       }
     }
     return {
+      fullscreenLoading: false,
+      issubmit: false,
       options_setmeal: [],
       options_coupon: [],
       options_companylist: [],
@@ -141,7 +148,9 @@ export default {
         .catch(() => {})
     },
     onSubmit(formName) {
+      this.fullscreenLoading = true
       const that = this
+      that.issubmit = true
       const insertData = { ...that.form }
       if (insertData.setmeal_id != -1) {
         insertData.uid = []
@@ -154,11 +163,17 @@ export default {
               setTimeout(function() {
                 that.$router.push('/tool/coupon/log')
               }, 1500)
+              that.fullscreenLoading = false
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              that.fullscreenLoading = false
+              return false
+            })
         } else {
-          // console.log('error submit!!')
+          that.issubmit = false
+          that.fullscreenLoading = false
           return false
         }
       })

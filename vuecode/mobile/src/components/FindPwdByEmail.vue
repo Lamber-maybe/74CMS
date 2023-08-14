@@ -78,7 +78,8 @@ export default {
       code: '',
       password: '',
       repeatPassword: '',
-      regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+      regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+      sendEmailLimit: false
     }
   },
   mounted () {
@@ -143,6 +144,10 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
+      if (this.sendEmailLimit) {
+        return false
+      }
+      this.sendEmailLimit = true
       this.$store
         .dispatch('sendEmailFun', {
           url: api.sendmail_forget,
@@ -150,6 +155,7 @@ export default {
           type: this.utype
         })
         .then(res => {
+          this.sendEmailLimit = false
           if (res.code === 200) {
             this.$notify({
               type: 'success',

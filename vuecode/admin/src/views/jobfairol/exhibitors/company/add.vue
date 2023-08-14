@@ -14,6 +14,7 @@
           style="float: right; padding: 0;"
           type="text"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -37,7 +38,7 @@
               </div>
               <el-form-item label="" prop="note" class="w460"></el-form-item>
               <el-form-item label="">
-                <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+                <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
                 <el-button @click="goto">返回</el-button>
               </el-form-item>
             </el-form>
@@ -98,6 +99,7 @@ export default {
   },
   data() {
     return {
+      issubmit: false,
       companyname: '',
       uid: '',
       jobfair_id: '',
@@ -133,8 +135,10 @@ export default {
     },
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       if (!this.uid){
         this.$message.error('请选择企业')
+        that.issubmit = false
         return !1
       }
       const insertData = {
@@ -148,7 +152,10 @@ export default {
           that.goto()
         }, 1500)
         return true
-      }).catch(() => {})
+      }).catch(() => {
+        that.issubmit = false
+        return false
+      })
     },
     goto() {
       this.$router.push({

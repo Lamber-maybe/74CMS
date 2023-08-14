@@ -213,8 +213,12 @@ class Wechat {
         );
         $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=".$access_token;
         $result_arr = json_decode($this->apiRequest($url, $template, false), true);
-        if (isset($result_arr['errcode'])) {
-            if($result_arr['errcode'] == 40001){
+        /**
+         * 【BUG】
+         * errcode判断错误
+         */
+        if (isset($result_arr['errcode']) && 0 != $result_arr['errcode']) {
+            if ($result_arr['errcode'] == 40001) {
                 $this->getAccessToken(true);
                 return $this->tmp_message($openid, $tmpId, $data, $url);
             }else{

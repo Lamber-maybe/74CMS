@@ -30,8 +30,10 @@
               type="month"
               format="yyyy-MM"
               value-format="yyyy-MM"
-              :picker-options="datePickerRange"
-              placeholder="请选择出生日期">
+              :picker-options="DateRanges"
+              :default-value="defaultValue"
+              placeholder="请选择出生日期"
+              >
             </el-date-picker>
           </div>
           <div class="clear"></div>
@@ -168,6 +170,8 @@
     data () {
       return {
         datePickerRange: this.dateRange(),
+        DateRanges: this.birthdayDateRange(),
+        defaultValue: this.defaultValueFun(),
         basic: {
           fullname: '',
           sex: 1,
@@ -198,7 +202,8 @@
         optionCategory: [],
         optionDistrict: [],
         modelCategory: [],
-        modelDistrict: []
+        modelDistrict: [],
+        placeholderDate:''
       }
     },
     computed: {
@@ -216,9 +221,10 @@
           returnArr.push(tmp_json)
         }
         return returnArr
-      }
+      },
     },
     mounted () {
+      this.placeholderDate = new Date(new Date().getTime() - 16 * 365 * 24 * 3600 * 1000)
       // 学历分类
       this.$store.dispatch('getClassify', 'education').then(() => {
         this.optionEducation = JSON.parse(JSON.stringify(this.$store.state.classifyEdu))
@@ -254,6 +260,22 @@
               return time.getTime() > new Date().getTime();
           }
         }
+      },
+      //PC端创建简历日期选择往前推到16岁 zdq
+      birthdayDateRange(){
+        return {
+          disabledDate(time){
+            var myDate = new Date();
+            return time.getTime() > new Date(new Date(myDate.getFullYear(),11).getTime() - 16 * 365 * 24 * 3600 * 1000);
+          }
+        }
+      },
+      //PC端创建简历日期选择往前推到16岁 zdq
+      defaultValueFun() {
+        const nowDate = new Date()
+        const nowYear = nowDate.getFullYear()
+        const minBirthdayYear = nowYear - 16
+        return new Date(minBirthdayYear, 11)
       },
       // 微信号同手机号
       syncWxMobile () {

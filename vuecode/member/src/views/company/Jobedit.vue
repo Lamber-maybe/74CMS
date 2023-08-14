@@ -54,11 +54,21 @@ export default {
           if (basicInfo.district3 != 0) {
             basicInfo.citycategory_arr.push(basicInfo.district3)
           }
-          let tagIds = basicInfo.tag.toString()
-          let arrData = tagIds.split(',')
-          for (var i = 0; i < arrData.length; i++) {
-            if (!isNaN(arrData[i])) {
-              arrData[i] = parseInt(arrData[i])
+          /**
+           * 【ID1000230】
+           * 【bug】职位标签未选择，修改职位时标签为NAN
+           * 2022.08.03
+           * @type {string}
+           */
+          let tagIds = ''
+          let arrData = []
+          if (basicInfo.tag.length > 0) {
+            tagIds = basicInfo.tag.toString()
+            arrData = tagIds.split(',')
+            for (var i = 0; i < arrData.length; i++) {
+              if (!isNaN(arrData[i])) {
+                arrData[i] = parseInt(arrData[i])
+              }
             }
           }
           if (basicInfo.minwage) {

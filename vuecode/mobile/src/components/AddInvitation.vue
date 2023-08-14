@@ -44,7 +44,7 @@
         v-model="jobname"
         label="面试职位"
         placeholder="请选择"
-        @click="showJobsPicker = true"
+        @click="selectJob"
         class="form_choose reset_after"
       />
       <van-popup
@@ -201,8 +201,22 @@ export default {
     }
   },
   methods: {
-    initCB () {
+    // 面试邀请调用联系方式修改 zch 2022/7/22
+    selectJob (item) {
+      this.form.address = item.address
+      if (item.use_company_contact === 0) {
+        this.form.contact = item.job_contact
+        this.form.tel = item.job_mobile
+      } else {
+        this.form.contact = item.company_contact
+        this.form.tel = item.company_mobile
+      }
+      this.showJobsPicker = true
+    },
+    initCB (jobid = 0) {
       this.jobname = ''
+      this.joblist = []
+      this.options_jobs = []
       this.form = {
         type: '1',
         jobid: '',
@@ -213,6 +227,22 @@ export default {
         tel: '',
         note: ''
       }
+      http
+        .get(api.company_published_jobslist, {jobid: jobid})
+        .then(res => {
+          if (jobid > 0 && res.data.length > 0) {
+            var item = res.data[0]
+            this.form.address = item.address
+            if (item.use_company_contact === 0) {
+              this.form.contact = item.job_contact
+              this.form.tel = item.job_mobile
+            } else {
+              this.form.contact = item.company_contact
+              this.form.tel = item.company_mobile
+            }
+          }
+        })
+        .catch(() => {})
       if (this.from !== 'apply') {
         http
           .get(api.company_published_jobslist, {})
@@ -225,23 +255,12 @@ export default {
           .catch(() => {})
       }
       this.fetchSetmeal()
-      this.fetchIterviewPre()
     },
     fetchSetmeal () {
       http
         .get(api.member_setmeal, {})
         .then(res => {
           this.mySetmeal = res.data.info
-        })
-        .catch(() => {})
-    },
-    fetchIterviewPre: function () {
-      http
-        .get(api.interview_add_pre, {})
-        .then(res => {
-          this.form.address = res.data.address
-          this.form.contact = res.data.contact
-          this.form.tel = res.data.tel
         })
         .catch(() => {})
     },
@@ -315,6 +334,7 @@ export default {
       for (const key in this.joblist) {
         if (key == index) {
           this.form.jobid = this.joblist[key].id
+          this.selectJob(this.joblist[key])
           break
         }
       }

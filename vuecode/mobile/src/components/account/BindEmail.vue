@@ -64,8 +64,13 @@ export default {
       checked: true,
       newEmail: '',
       code: '',
-      regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+      regularEmail: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+      sendEmailLimit: false
     }
+  },
+  created () {
+    // zdq 360浏览器邮箱绑定兼容
+    this.$store.commit('clearCountDownFunEmail')
   },
   methods: {
     initCB () {},
@@ -107,6 +112,7 @@ export default {
           console.log(err)
         })
     },
+    // zdq 360浏览器邮箱绑定兼容
     // 发送验证码
     sendEmail () {
       if (this.$store.state.sendEmailBtnDisabled) {
@@ -124,6 +130,10 @@ export default {
         this.$notify('新邮箱与旧邮箱相同')
         return false
       }
+      if (this.sendEmailLimit) {
+        return false
+      }
+      this.sendEmailLimit = true
       this.$store
         .dispatch('sendEmailFun', {
           url: api.sendmail_bind,
@@ -131,6 +141,7 @@ export default {
           type: this.$store.state.LoginType
         })
         .then(res => {
+          this.sendEmailLimi = false
           if (res.code == 200) {
             this.$notify({
               type: 'success',

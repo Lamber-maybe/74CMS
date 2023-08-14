@@ -176,6 +176,7 @@ export default {
   },
   data () {
     return {
+      jobid: 0,
       showRemark: false,
       remark_item: {},
       apply_id: 0,
@@ -278,6 +279,7 @@ export default {
       this.fetchData(true)
     },
     handlerAgree (item, index) {
+      this.jobid = item.jobid
       if (item.audit != 1) {
         this.$notify('该简历尚未通过审核，不能继续此操作')
         return false
@@ -302,7 +304,7 @@ export default {
       this.apply_id = item.id
       this.apply_dataset_index = index
       this.apply_fullname = item.fullname
-      this.$refs.child.initCB()
+      this.$refs.child.initCB(this.jobid)
       this.showInvite = true
     },
     closeAddInvitation (index) {

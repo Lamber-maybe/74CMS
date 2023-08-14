@@ -82,7 +82,7 @@ class Sitemap
      * 生成文件方法
      */
     private function fileWrite($filename,$content){
-        $dir =  './stimap/';
+        $dir =  './sitemap/';
         if(!is_dir($dir)){
             mkdir($dir,0755);
         }

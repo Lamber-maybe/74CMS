@@ -18,10 +18,11 @@
       :immediate-check="true"
     >
       <div class="list_wrapper">
+<!--        【bug】触屏端，会员中心-谁看过我简历列表详情打不开 zch 2022/7/22-->
         <div
           v-for="(item, index) in dataset"
           :key="index"
-          @click="$router.push('/resume/' + item.personal_uid)"
+          @click="$router.push('/resume/' + item.resume_id)"
         >
           <div class="list">
             <div class="tx1">

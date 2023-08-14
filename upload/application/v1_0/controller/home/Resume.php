@@ -420,6 +420,12 @@ class Resume extends \app\v1_0\controller\common\Base
             )
                 ? $category_data['QS_trade'][$value['trade']]
                 : '';
+
+            // 【新增】求职状态唯一展示
+            $return['base_info']['nature_text_unique'] = !empty($return['base_info']['nature_text_unique']) ? $return['base_info']['nature_text_unique'] : $tmp_arr['nature_text'];
+            // 【新增】薪资唯一展示
+            $return['base_info']['wage_text_unique'] = !empty($return['base_info']['wage_text_unique']) ? $return['base_info']['wage_text_unique'] : $tmp_arr['wage_text'];
+            
             $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
             $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
             $intention_list[] = $tmp_arr;

@@ -28,7 +28,7 @@
     </div>
 </template>
 <script>
-import ListItem from './itemVideo'
+import ListItem from './itemVideoNew'
 import http from '@/utils/http'
 import api from '@/api'
 

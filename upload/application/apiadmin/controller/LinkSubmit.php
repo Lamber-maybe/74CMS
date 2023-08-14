@@ -52,8 +52,15 @@ class LinkSubmit extends \app\common\controller\Backend
                 ->page($current_page . ',' . $pagesize)
                 ->select();
         }
+        // 【ID1000255】【优化】百度推送提示修改（请先配置准入密钥） zch 2022/8/1
+        $linksubmit_token = config('global_config.linksubmit_token');
+        if (empty($linksubmit_token))
+        {
+            $this->ajaxReturn(500, '请先配置准入密钥');
+        }
         if (empty($list)) {
-            $this->ajaxReturn(500, '没有可提交的链接');
+            // 【ID1000255】【优化】百度推送提示修改 zch 2022/8/1
+            $this->ajaxReturn(200, '没有可提交链接',['status'=>2]);
         }
         $urls = [];
         $sitedomain = config('global_config.sitedomain');

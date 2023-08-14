@@ -925,7 +925,7 @@ CREATE TABLE `qs_job_search_key` (
   FULLTEXT KEY `index_jobname` (`jobname`) /*!50100 WITH PARSER `ngram` */ ,
   FULLTEXT KEY `index_companyname` (`companyname`) /*!50100 WITH PARSER `ngram` */ ,
   FULLTEXT KEY `index_fulltext_index` (`jobname`,`companyname`,`company_nature`) /*!50100 WITH PARSER `ngram` */ ,
-  FULLTEXT KEY `index_company_nature` (`company_nature`) /*!50100 WITH PARSER `ngram` */ 
+  FULLTEXT KEY `index_company_nature` (`company_nature`) /*!50100 WITH PARSER `ngram` */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_job_search_key||-_-||
 
@@ -1635,7 +1635,7 @@ CREATE TABLE `qs_resume_search_key` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   FULLTEXT KEY `index_intention_jobs` (`intention_jobs`) /*!50100 WITH PARSER `ngram` */ ,
-  FULLTEXT KEY `index_fulltext_index` (`intention_jobs`,`fulltext_key`) /*!50100 WITH PARSER `ngram` */ 
+  FULLTEXT KEY `index_fulltext_index` (`intention_jobs`,`fulltext_key`) /*!50100 WITH PARSER `ngram` */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_resume_search_key||-_-||
 
@@ -2079,7 +2079,7 @@ CREATE TABLE `qs_member_action_log` (
   `is_login` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
-  FULLTEXT KEY `index_content` (`content`) /*!50100 WITH PARSER `ngram` */ 
+  FULLTEXT KEY `index_content` (`content`) /*!50100 WITH PARSER `ngram` */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_member_action_log||-_-||
 
@@ -2341,7 +2341,6 @@ CREATE TABLE `qs_collection_seting` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集设置';
 ||-_-||qs_collection_seting||-_-||
 
-
 DROP TABLE IF EXISTS `qs_marketing_template`;
 CREATE TABLE `qs_marketing_template` (
  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID（模板ID）',
@@ -2369,3 +2368,22 @@ photo_img int(10) NOT NULL DEFAULT '0' COMMENT '头像id',
 PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='网络招聘会查看记录表';
 ||-_-||qs_jobfair_online_view_log||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_im_unread_remind`;
+CREATE TABLE `qs_im_unread_remind` (
+`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+`to_uid` int(10) NOT NULL COMMENT '消息接收方UID',
+`from_uid` int(10) NOT NULL COMMENT '消息发送方UID',
+`chat_id` varchar(32) NOT NULL COMMENT '聊天ID',
+`message_id` varchar(32) NOT NULL COMMENT '消息ID',
+`message` text COMMENT '消息内容',
+`keyword` varchar(255) NOT NULL COMMENT '留言内容',
+`type` varchar(20) NOT NULL COMMENT '消息类型',
+`remind_mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '提醒方式[0:失败;1:微信公众号模板消息;2:短信提醒;]',
+`add_time` int(10) NOT NULL COMMENT '消息时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_im_unread_remind||-_-||

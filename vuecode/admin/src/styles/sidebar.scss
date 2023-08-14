@@ -61,6 +61,11 @@
       border: none;
       height: 100%;
       width: 100% !important;
+      padding-bottom: 56px;
+    }
+
+    .el-menu--inline{
+      padding-bottom: 0;
     }
 
     // menu hover

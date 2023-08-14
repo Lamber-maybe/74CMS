@@ -14,6 +14,7 @@
           style="float: right; padding: 0;"
           type="text"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -231,7 +232,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label=" ">
-              <el-button type="primary" @click="onSubmit('form')">
+              <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">
                 保存
               </el-button>
               <el-button @click="goto('/business/company/report')">
@@ -253,6 +254,7 @@ import apiArr from '@/api'
 export default {
   data() {
     return {
+      issubmit: false,
       infoLoading: false,
       headers: { admintoken: getToken() },
       fileupload_size: '',
@@ -388,6 +390,7 @@ export default {
     },
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       const insertData = { ...this.form }
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -425,8 +428,12 @@ export default {
               }, 1500)
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           return false
         }
       })

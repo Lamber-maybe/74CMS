@@ -90,7 +90,7 @@
         <el-button  @click="handlerRemarkClose">取  消</el-button>
       </span>
     </el-dialog>
-    <el-dialog width='540px'  title="面试邀请"  :visible.sync="showInvite" @opened="handlerInviteOpened" @closed="handlerInviteClose">
+    <el-dialog width='540px' :destroy-on-close="true" title="面试邀请"  :visible.sync="showInvite" @opened="handlerInviteOpened" @closed="handlerInviteClose">
       <Invite
         ref="invite"
         from="download"

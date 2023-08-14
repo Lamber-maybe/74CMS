@@ -191,7 +191,7 @@
       @handleCurrentChange="doSearch"
     ></pagination>
 
-    <el-dialog width='540px'  title="面试邀请"  :visible.sync="showInvite" @opened="handlerInviteOpened" @closed="handlerInviteClose">
+    <el-dialog width='540px' :destroy-on-close="true"  title="面试邀请"  :visible.sync="showInvite" @opened="handlerInviteOpened" @closed="handlerInviteClose">
       <Invite
         ref="invite"
         from="apply"
@@ -236,6 +236,7 @@ export default {
   },
   data() {
     return {
+      jobid: 0,
       btnLoading:false,
       showInvite:false,
       apply_id:0,
@@ -331,6 +332,7 @@ export default {
       }
     },
     handlerAgree (item) {
+     this.jobid = item.jobid
       if (item.audit != 1) {
         this.$message.error('该简历尚未通过审核，不能继续此操作')
         return false
@@ -358,7 +360,7 @@ export default {
       this.showInvite = true
     },
     handlerInviteOpened(){
-      this.$refs.invite.initCB()
+      this.$refs.invite.initCB(this.jobid)
     },
     handlerInviteClose(setData){
       if(setData===true){

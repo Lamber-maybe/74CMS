@@ -40,7 +40,8 @@
           </div>
           <div class="company">
             <div class="name">{{ item.companyname }}</div>
-            <div class="auth_ico" v-if="item.company_audit == 1"></div>
+            <div class="auth_ico1" v-if="item.company_audit == 1&&mobile_company_show_tpl=='def'"></div>
+            <div class="auth_ico" v-if="item.company_audit == 1&&mobile_company_show_tpl=='tpl2'"></div>
             <div class="crw_ico" v-if="item.setmeal_icon != ''"><img :src="item.setmeal_icon" /></div>
             <div class="clear"></div>
             <div class="time">{{ item.refreshtime }}</div>
@@ -73,10 +74,12 @@ export default {
       firstTabText: '推荐',
       intentionList: [],
       joblist: [],
-      currentIntentionItem: {}
+      currentIntentionItem: {},
+      mobile_company_show_tpl:'def',
     }
   },
   created () {
+    this.mobile_company_show_tpl = this.$store.state.config.mobile_company_show_tpl;
     this.fetchListData(true)
   },
   methods: {
@@ -196,10 +199,19 @@ export default {
         .auth_ico {
           float: left;
           margin-left: 6px;
+          width: 35px;
+          height: 18px;
+          background: url("../../../assets/images/jobs_list_auth_ico.png") 0 center
+            no-repeat;
+          background-size: 100% 12px;
+        }
+        .auth_ico1 {
+          float: left;
+          margin-left: 6px;
           width: 15px;
           height: 18px;
-          background: url("../../../assets/images/jobs_list_auth_ico.png") 0 4px
-            no-repeat;
+          background: url("../../../assets/images/jobs_list_auth_ico_1.png") 0
+            4px no-repeat;
           background-size: 15px 11px;
         }
         .name {

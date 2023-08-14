@@ -178,7 +178,8 @@ export default {
       way: 'pwd',
       showPwd: false,
       checked: true,
-      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/
+      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+      sendSmsLimit: false
     }
   },
   created () {
@@ -374,7 +375,7 @@ export default {
         this.doSubmitCode()
       }
     },
-    // 发送验证码
+    // 发送验证码 zdq 短信验证码重复发送修改
     sendSms () {
       if (this.$store.state.sendSmsBtnDisabled) {
         return false
@@ -387,6 +388,10 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
+      if (this.sendSmsLimit) {
+        return false
+      }
+      this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
           .dispatch('sendSmsFun', {
@@ -396,6 +401,7 @@ export default {
             captcha: res
           })
           .then(response => {
+            this.sendSmsLimit = false
             if (response.code === 200) {
               this.$notify({
                 type: 'success',

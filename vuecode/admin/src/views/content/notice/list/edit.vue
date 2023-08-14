@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>添加公告</span>
+        <span>编辑公告</span>
         <el-button
           style="float: right; padding: 0;margin-left:14px"
           type="text"
@@ -14,6 +14,7 @@
           style="float: right; padding: 0;"
           type="text"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -85,7 +86,7 @@
           <el-input v-model="form.seo_description" type="textarea" rows="4" />
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
           <el-button @click="goto('/content/notice/list')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -123,6 +124,7 @@ export default {
       }
     }
     return {
+      issubmit: false,
       editor: null,
       toolbarConfig: {
         excludeKeys: [
@@ -238,6 +240,7 @@ export default {
     },
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       this.form.content = this.editor.getHtml()
       const insertData = { ...this.form }
       // const insertData = Object.assign({},this.form)
@@ -265,8 +268,12 @@ export default {
               }, 1500)
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           return false
         }
       })

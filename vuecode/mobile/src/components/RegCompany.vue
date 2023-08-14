@@ -137,12 +137,15 @@ export default {
       contact: '',
       mobile: '',
       code: '',
+      invitation_code: '',
       password: '',
       repeatPassword: '',
-      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/
+      regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+      sendSmsLimit: false
     }
   },
   created () {
+    this.invitation_code = this.$route.query.invitation_code
     this.$store.commit('clearCountDownFun')
   },
   methods: {
@@ -207,7 +210,8 @@ export default {
         mobile: this.mobile,
         code: this.code,
         password: this.password,
-        scene_uuid: scene_uuid
+        scene_uuid: scene_uuid,
+        invitation_code : this.invitation_code
       }
       http
         .post(api.reg_company, postData)
@@ -231,7 +235,7 @@ export default {
         })
         .catch(() => {})
     },
-    // 发送验证码
+    // 发送验证码 zdq验证码重复点击修改
     sendSms () {
       let _this = this
       if (this.$store.state.sendSmsBtnDisabled) {
@@ -245,6 +249,10 @@ export default {
         this.$notify('手机号格式不正确')
         return false
       }
+      if (this.sendSmsLimit) {
+        return false
+      }
+      this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
           .dispatch('sendSmsFun', {
@@ -254,6 +262,7 @@ export default {
             captcha: res
           })
           .then(response => {
+            this.sendSmsLimit = false
             if (response.code === 200) {
               _this.$notify({type: 'success', message: _this.$store.state.sendSmsMessage})
             } else {

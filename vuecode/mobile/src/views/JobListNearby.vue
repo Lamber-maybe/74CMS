@@ -851,11 +851,11 @@ export default {
       .auth_ico {
         float: left;
         margin-left: 6px;
-        width: 15px;
+        width: 35px;
         height: 18px;
         background: url("../assets/images/jobs_list_auth_ico.png") 0 center
         no-repeat;
-        background-size: 15px 11px;
+        background-size:100% 12px;
       }
       .name {
         float: left;

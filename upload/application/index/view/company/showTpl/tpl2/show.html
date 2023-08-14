@@ -1,0 +1,841 @@
+{#layout name="public/layout" /#}
+{#load href="__ROOT__/assets/css/highslide.css" /#}
+{#load href="__ROOT__/assets/css/show_tpl/tp2/companyshow.css" /#}
+<div class="content_wrapper" id="app">
+    <div class="content">
+        <div class="list_box1">
+            <div class="details">
+                <div class="clearfix">
+                    <div class="details_left clearfix">
+                        <div class="list_img">
+                            <img src="{#$return.base_info.logo_src#}">
+                        </div>
+                        <div class="list_text clearfix">
+                            <div class="title clearfix">
+                                <div class="c_name">{#$return.base_info.companyname#}</div>
+                                <!-- {#if condition="$return.base_info.audit eq 1"#}
+                                <div class="setmeal_icon2"></div>
+                                {#/if#} -->
+                                {#if condition="$return.base_info.setmeal_icon!=''"#}
+                                <div class="setmeal_icon"><img src="{#$return.base_info.setmeal_icon#}" /></div>
+                                {#/if#}
+                                <!-- <div class="title_btn" v-if="supplementary.report==1"></div> -->
+                            </div>
+                            <div>
+                                <span>{#$return.base_info.nature_text#}</span>
+                                <span>·</span>
+                                <span>{#$return.base_info.trade_text#}</span>
+                                <span>·</span>  
+                                <span>{#$return.base_info.scale_text#}</span>
+                            </div>
+                            <div class="authentication_model">
+                                {#if condition="$return.base_info.audit eq 1"#}
+                                <span>
+                                    <img src="" alt="">
+                                    企业认证
+                                </span>
+                                {#else/#}
+                                <span class="no_authentication_address">
+                                    <img src="" alt="">
+                                    企业未认证
+                                </span>
+                                {#/if#}
+                                <span class="authentication_address" v-if="supplementary.report==1">
+                                    <img src="" alt="">
+                                    实地认证
+                                </span>
+                            </div>
+                            <ul class="details_list clearfix" v-cloak>
+                                <li class="list_item borderNone">
+                                    <span class="item_num">{{supplementary.jobnum}}个</span><br />
+                                    <span class="item_text">在招职位</span>
+                                </li>
+                                <li class="list_item">
+                                    <span class="item_num">{{supplementary.watch_percent}}</span><br />
+                                    <span class="item_text">简历查看率</span>
+                                </li>
+                                <!-- <li class="list_item">
+                                    <span class="item_num">{{supplementary.last_login_time}}</span><br />
+                                    <span class="item_text">最近登录时间</span>
+                                </li> -->
+                                <li class="list_item">
+                                    <span class="item_num">{{supplementary.reg_duration}}</span><br />
+                                    <span class="item_text">入驻时长</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="details_right " v-cloak>
+                        <!-- <p class="right_title">
+                            <span>企业热度：{{clickNum}}</span>
+                            <span class="right_num">粉丝量：{{supplementary.fans}}</span>
+                        </p> -->
+                        <p>
+                            <span class="margin_right" @click="doAttention">
+                                <img v-if="hasAttention===false" src="__ROOT__/assets/images/collect_icon.png" />
+                                <img v-else src="__ROOT__/assets/images/collect_icon_has.png" />
+                                {{hasAttention===true?'已关注':'关注'}}</span>
+                            <el-popover placement="left" width="200" trigger="hover" class="margin_right">
+                                <span>
+                                    <img :src="shareQrcode" width="174" height="174" />
+                                    <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                                </span>
+                                <span slot="reference" style="margin-right:0;">
+                                    <img src="__ROOT__/assets/images/resume_icon4.png" /> 分享
+                                </span>
+                            </el-popover>
+                        </p>
+
+                        <!-- <button class="details_btn" @click="doAttention" v-if="hasAttention===false">立即关注</button>
+                        <button class="details_btn cancel" @click="doAttention" v-else>取消关注</button>
+                        <div class="right_operation">
+                            <el-popover placement="bottom-end" width="200" trigger="hover">
+                                <span>
+                                    <img :src="shareQrcode" width="174" height="174" />
+                                    <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
+                                </span>
+                                <span class="share" slot="reference">好公司，一起分享</span>
+                            </el-popover>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+            <div class="warning_box clearfix">
+                <p class="warning_txt">
+                    {#if condition="$return.base_info.audit eq 1"#}
+                    <span class="authenticationIcon"><img src="__ROOT__/assets/images/company/authentication.png" alt=""></span>
+                    {#/if#}
+                    <span style="margin-left:10px;">招聘过程请勿缴纳费用，谨防诈骗！如遇无效、虚假、诈骗信息，请</span>
+                    <span @click="doTipoff" class="report_btn">立即举报</span>
+                </p>
+                <div class="lately_data">
+                    <span class="lately_time">最近登录：{{supplementary.last_login_time}}</span>
+                    <span>浏览次数：{{clickNum}}</span>
+                </div> 
+            </div>
+            <!-- <div class="list_tab clearfix">
+                <div :class="tab=='introduce'?'tab_active':''" @click="changeTab">公司介绍</div>
+                <div :class="tab=='joblist'?'tab_active':''" @click="changeTab">在招职位</div>
+            </div> -->
+        </div>
+        <div class="list_box2 clearfix">
+            <div class="box2_left">
+                <div class="company" v-show="tab=='introduce'">
+                    {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
+                    <div class="introduce">
+                        <div class="introduce_title title_margin1 clearfix">
+                            <span class="title_item1">公司简介</span>
+                            <div class="bottom_title clearfix" v-if="supplementary.report==1">
+                                该企业已通过实地认证<span @click="handlerReport">查看报告</span>
+                            </div>
+                        </div>
+                        <div class="welfare_list">
+                            {#volist name="return.base_info.tag_text_arr" id="vo"#}
+                            <span>{#$vo#}</span>
+                            {#/volist#}
+                        </div>
+                        <div ref="companyContent" :class="contentAll ? 'introduce_con' : 'introduce_con all'">
+                            <p>{#$return.base_info.content#}</p>
+                        </div>
+                        <div class="introduce_btn" v-if="contentHeight > 280" @click="contentAll = !contentAll">
+                            {{contentAll ? '查看更多' : '收起'}}
+                        </div>
+                    </div>
+                    {#/if#}
+                    {#if condition="$return.base_info.address!=''"#}
+                    <div class="address_con">
+                        <div class="introduce_title">
+                            <span class="title_item1">公司地址</span>    
+                        </div>
+                        <div class="address_title">
+                            <!-- <img src="__ROOT__/assets/images/address_icon.png" /> -->
+                            {#$return.base_info.address#}
+                        </div>
+                        <div class="address_bg">
+                            <img src="__ROOT__/assets/images/company/dtbj.png" alt="">
+                            <div class="adress_detail" @click="showMap=true">
+                                <p class="substring">{#$return.base_info.companyname#}</p>
+                                <p class="substring">{#$return.base_info.address#}</p>
+                            </div>
+                            <span class="rt_btn" @click="showMap=true">
+                                <img src="__ROOT__/assets/images/company/jr.png" alt="">
+                            </span>
+                        </div>
+                        <div id="address_title" class="address_title" style="margin-top:15px;">
+                            <img src="__ROOT__/assets/images/company/address.png" />
+                            <span id="distance"></span>
+                            <span class="address_link" @click="showMap=true">查看路线</span>
+                        </div>
+                        {#if condition="$return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
+                        <div class="map" style="display:none;">
+                            <div id="bdMap2" style="width:100%;height:300px;"></div>
+                        </div>
+                        {#/if#}
+                    </div>
+                    {#/if#}
+                    <div class="company_img"
+                        v-if="supplementary.img_list!==undefined && supplementary.img_list.length>0">
+                        <div class="introduce_title">
+                            <span class="title_item1">企业风采</span>
+                        </div>
+                        <div class="company_imgList">
+                            <!-- <ul class="company_con clearfix">
+                                <li class="highslide-gallery" v-for="(item,index) in supplementary.img_list"
+                                    :key="index">
+                                    <a :href="item.img_src" class="highslide" onclick="return hs.expand(this)"><img
+                                            :src="item.img_src"></a>
+                                </li>
+                            </ul> -->
+                            <el-carousel :loop="false" :autoplay="false" height="204px">
+                                <el-carousel-item class="el-car-item" v-for="(list, index) in imgList" :key="index">
+                                   <img v-for="(imgItemList,index2) in list" :key="index2" class="top-img" :src="imgItemList.img_src" :alt="imgItemList.title" />
+                                </el-carousel-item>
+                            </el-carousel>
+                        </div>
+                    </div>
+                </div>
+                <div class="job_list_box" v-show="tab=='joblist'">
+                    <div v-if="joblist.length>0">
+                        <div class="job_list njl clearfix" v-for="(item,index) in joblist" :key="index">
+                            <div class="job_text_long">
+                                <a class="job_title" :href="item.job_link_url_web" target="_blank">{{item.jobname}}</a>
+                                <p class="job_salary">
+                                    <strong>{{item.wage_text}}</strong>
+                                    <span>{{item.district_text}}</span>
+                                    <span>{{item.education_text}}</span>
+                                    <span>{{item.experience_text}}</span>
+                                </p>
+                                <p class="job_welfare">
+                                    <span v-for="(tag,i) in item.tag" :key="i">{{tag}}</span>
+                                </p>
+                            </div>
+                            <div class="job_btn">
+                                <p>{{item.refreshtime}}</p>
+                                <button class="btn" @click="doApply(item.id)">申请职位</button>
+                            </div>
+                        </div>
+                        <div class="paging1 clearfix">
+                            <div class="paging_box clearfix">
+                                <button class="paging_pre enable" v-if="page>1" @click="page--,pageClick()">上一页</button>
+                                <button class="paging_pre" v-if="page==1">上一页</button>
+                                <div class="paging_num" v-for="(item,index) in pagination" :key="index"
+                                    :class="{ 'active': page == item}" @click="btnClick(item)">{{item}}</div>
+                                <button v-if="page!=total_page" class="paging_next enable"
+                                    @click="page++,pageClick()">下一页</button>
+                                <button v-if="page==total_page" class="paging_next">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="empty_text">该企业暂时还没有发布招聘信息~</div>
+                    </div>
+                </div>
+                <!-- 可能感兴趣的企业 -->
+                <!-- {#if condition="count($return.similar_company_list) gt 0"#}
+                <div class="interest">
+                    <div class="interest_title clearfix">
+                        <span class="title_item1">可能感兴趣的企业</span> 
+                        <a target="_blank" href="{#:url('index/company/index')#}">搜索更多名企></a>
+                    </div>
+                    <div class="clearfix">
+                        {#volist name="return.similar_company_list" id="vo"#}
+                        <div class="company_list clearfix" onclick="window.open('{#:url('index/company/show',['id'=>$vo.id])#}')" >
+                            <div class="interest_img">
+                                <img src="{#$vo.logo_src#}">
+                            </div>
+                            <div class="interest_text">
+                                <a class="text1 c_name substring" href="{#:url('index/company/show',['id'=>$vo.id])#}"
+                                    target="_blank">{#$vo.companyname#}</a>
+                                <p class="text2">
+                                    <span class="text2_border">{#$vo.nature_text#}</span>
+                                    <span class="text2_border">{#$vo.trade_text#}</span>
+                                    <span class="text2_border">{#$vo.scale_text#}</span>
+                                </p>
+                                <p class="text3">在招职位 <span class="color">（{#$vo.jobnum#}）</span></p>
+                            </div>
+                        </div>
+                        {#/volist#}
+                    </div>
+                </div>
+                {#/if#} -->
+
+                <!-- 周边招聘 -->
+                <div class="periphery">
+                    <div class="periphery_title">
+                        <span :class="relationActive=='near'?'active':''"
+                            @click="changeRelationList('near')">周边招聘</span>
+                        <span :class="relationActive=='hot'?'active':''" @click="changeRelationList('hot')">热门搜索</span>
+                    </div>
+                    <div class="periphery_list" v-if="relationActive=='near'">
+                        <div class="list_box peripheryMargin">
+                            {#volist name="return.near_district_list" id="vo"#}
+                            <a target="_blank" href="{#:url('index/job/index',$vo['params'])#}">{#$vo.text#}招聘</a>
+                            {#/volist#}
+                        </div>
+                    </div>
+                    <div class="periphery_list" v-if="relationActive=='hot'">
+                        <div class="list_box peripheryMargin">
+                            {#volist name="return.hotword_list" id="vo"#}
+                            <a target="_blank" href="{#:url('index/job/index',['key'=>$vo['word']])#}">{#$vo.word#}</a>
+                            {#/volist#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box2_right">
+                <div class=" right_box1" v-if="joblist.length>0">
+                    <!-- <div class="information clearfix">
+                        企业资料
+                        <a href="https://aiqicha.baidu.com/s?q={#$return.base_info.companyname#}"
+                            target="_blank">更多工商信息></a>
+                    </div>
+                    <ul class="information_list">
+                        <li><img src="__ROOT__/assets/images/information_icon_1.png">{#$return.base_info.nature_text#}
+                        </li>
+                        <li><img src="__ROOT__/assets/images/information_icon_2.png">{#$return.base_info.trade_text#}
+                        </li>
+                        <li><img src="__ROOT__/assets/images/information_icon_3.png">{#$return.base_info.scale_text#}
+                        </li>
+                        <li title="{#$return.base_info.district_text#}"><img src="__ROOT__/assets/images/information_icon_4.png">{#$return.base_info.district_text#}
+                        </li>
+                    </ul> -->
+                    <!-- <div class="bottom_title clearfix" v-if="supplementary.report!=1">
+                        该企业已通过实地认证<span @click="handlerReport">认证报告&gt;</span>
+                    </div> -->
+                    <div class="information clearfix">
+                        <span></span>
+                        在招职位
+                    </div>
+                    <ul class="job_list" v-infinite-scroll="loadMore" :infinite-scroll-distance="10">
+                        <a :href="item.job_link_url_web" target="_blank" v-for="(item,index) in joblist" :key="index">
+                            <li class="job_item">
+                                <span class="job_name">{{item.jobname}}</span>
+                                <span class="job_wage_text">{{item.wage_text}}</span>
+                                <span class="job_company_name">{{item.companyname}}</span>
+                            </li>
+                        </a>
+                        <p v-if="loadingData" class="loading warn_txt">加载中...</p>
+                        <p v-if="noMoreData" class="noMoreData warn_txt">没有更多了</p>
+                        <div v-if="!joblist.length&&!busyScroll" class="no_data warn_txt">暂无相关文本~</div>
+                    </ul>
+                </div>
+                <!-- {#if condition="count($return.base_info.tag_text_arr) gt 0"#}
+                <div class="right_box2">
+                    <div class="information ">
+                        企业福利
+                    </div>
+                    <div class="welfare_list">
+                        {#volist name="return.base_info.tag_text_arr" id="vo"#}
+                        <span>{#$vo#}</span>
+                        {#/volist#}
+                    </div>
+                </div>
+                {#/if#} -->
+
+                <!-- <div class="right_box5">
+                    <p class="warning warning_title">
+                        <span>风险提示</span>
+                    </p>
+                    <p class="warning warning_item">最近登陆时间：{{supplementary.last_login_time}}</p>
+                    <p class="warning warning_item">最近登录IP：</p>
+                    <p class="warning warning_item">企业营业执照已通过<span class="warning_btn">平台认证</span></p>
+                    <p class="warning warning_item">以上资料仅供参考，请求职者<span class="warning_btn">规避求职风险</span></p>
+                </div> -->
+
+                <!--                增加风险提示-->
+                <div class="risk">
+                    <div class="ts">
+                        <span>风险提示</span>
+                    </div>
+                    <div>
+                        <p>最近登录时间：{#$logo.last_time#}</p>
+                        <p>最近登录IP:{#$logo.last_login_ip#}&nbsp;&nbsp;[{#$logo.last_login_address#}]</p>
+                        {#if condition="$logo.audit eq 1"#}
+                        <p>企业营业执照已通过 <span @click="centerDialogVisible()">平台认证</span></p>
+                        {#/if#}
+                        <p>以上资料仅供参考，请求职者 <span @click="risk()">规避求职风险</span></p>
+                    </div>
+                </div>
+                <div class="right_box3">
+                    <!-- <img :src="rightQrcode" />
+                    <p class="code_text no_pt mar_bt_5">使用微信扫一扫</p>
+                    <p>企业信息秒传到手机</p> -->
+                    <div class="right_code_box clearfix">
+                        <img class="img_margin" :src="rightQrcode">
+                        <p> <span>微信扫一扫</span> <br />企业信息秒传到手机</p>
+                    </div>
+                </div>
+
+                <!-- {#if condition="count($return.hot_company_list) gt 0"#}
+                <div class="right_box4">
+                    <div class="information information_margin clearfix">
+                        热门企业
+                        <a class="text" href="{#:url('index/company/index')#}">查看更多企业></a>
+                    </div>
+                    <div class="enterprise_list">
+                        {#volist name="return.hot_company_list" id="vo"#}
+                        <div class="enterprise_item clearfix">
+                            <div class="enterprise_img">
+                                <img src="{#$vo.logo_src#}">
+                            </div>
+                            <div class="enterprise_text">
+                                <p class="enterprise_text1"><a target="_blank"
+                                        href="{#:url('index/company/show',['id'=>$vo.id])#}">{#$vo.companyname#}</a></p>
+                                <p class="enterprise_text2">在招职位<span class="color">({#$vo.jobnum#})</span></p>
+                            </div>
+                        </div>
+                        {#/volist#}
+
+                    </div>
+                </div>
+                {#/if#} -->
+            </div>
+            <el-dialog title="举报公司" :visible.sync="showTipoff" @opened="tipoffOpened" width="30%">
+                {#include file="public/tipoff" /#}
+            </el-dialog>
+            <!--    平台认证提示-->
+            <el-dialog
+                title="平台认证"
+                :visible.sync="is_centerDialogVisible"
+                border-radius="8px"
+                custom-class="centerDialogVisible"
+                width="374px"
+                center >
+                    <div class="txt">
+                        <p>1、平台已收到该单位的认证资料。</p>
+                        <p>2、该单位对所提供资料的真实性负完全责任。处于保密的原因，平台不公开显示单位的认证资料。</p>
+                    </div>
+                    <div slot="footer" class="button">
+                        <el-button type="primary" @click="is_centerDialogVisible = false" class="know">我知道了</el-button>
+                    </div>
+            </el-dialog>
+
+        <!--    避免求职风险-->
+            <!--    避免求职风险-->
+            <el-dialog
+                title="规避求职风险"
+                :visible.sync="is_risk"
+                custom-class="riskClass"
+                width="843px"
+                center >
+            <div class="risk_box">
+                <p class="p1">1、拒交各种名义的费用。 </p>
+                <p class="p2">任何招聘单位，以任何名义向求职者收取抵押金、服装费、产品押金、风险金、报名费、培训费等行为，都属非法行为。招聘单位培训本单位的职工，也不准收取培训费。求职者遇到此类情况，要坚持拒交，并向招聘单位所在地区举报，以确保自己的合法权益不受侵害。</p>
+                <p class="p1">2、不轻信许诺到外地上岗。</p>
+                <p class="p2">对外地企业或某某外地分公司、分厂、办事处的高薪招聘，不论其待遇多么好，求职者千万要保持清醒的头脑和高度的警惕，不要轻信他的口头许诺，一是不去，二是到劳动保障部门咨询，并办理相关的手续，否则会吃大亏，被骗工骗钱甚至被人贩子骗卖，悔之晚矣。</p>
+                <p class="p1">3、掌握劳动法规和相关政策。</p>
+                <p class="p2">求职者在求职前或求职过程中，应主动学习一些劳动法规和相关政策，提高自己的求职素质和独立思考的能力。</p>
+                <p class="p1">4、多种途径了解公司背景。</p>
+                <p class="p2">在求职者正式进入单位之前，想方设法加强对企业的了解以免误入骗子设下的陷阱。比如：注意招聘单位的营业执照等相关证件；正规单位招聘一般会将招聘地点设在单位的办公室、会议室，一些以租用房间作为应聘地点的单位，要警惕。</p>
+                <p class="p1">5、谨慎签定劳动合同。</p>
+                <p class="p2">与用人企业签合同时，求职者要"三看"：一看企业是否经过工商部门登记以及企业注册的有效期限，否则所签合同无效；二看合同字句是否准确、清楚、完整，不能用缩写、替代或含糊的文字表达；三看劳动合同是否有一些必备内容，包括劳动合同期限、工作内容、劳动保护和劳动条件、劳动报酬、社会保险和福利、劳动纪律、劳动合同终止的条件、违反劳动合同的责任等。必须签书面合同，试用期内也要签合同。</p>
+                <p class="p1">6、发觉被骗，及时报案。</p>
+                <p class="p2">
+                    求职者一旦发觉上当受骗，要及时向招聘单位所在地的人事局、劳动局监察大队或公安局派出所报案，寻求法律保护。但由于劳务诈骗往往涉及公安、工商、劳动、人事等部门，求职者应该根据情况选择最有效的投诉部门，若被投诉对象为合法机构，求职者可以找劳动部门；若求职受骗情况特别严重、诈骗金额大，可以到公安部门进行报案。
+                </p>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="is_risk = false" class="know">我知道了</el-button>
+            </div>
+            </el-dialog>
+            <el-dialog title="查看地图" :visible.sync="showMap" @opened="mapOpened">
+                <div class="jobshow_map">
+                    <div id="bdMap" style="width:100%;height:500px;"></div>
+                    <div class="code">
+                        <div class="code_img">
+                            <img :src="mapQrcode" />
+                            <p>微信扫描上方二维码<br />手机查看上班路线</p>
+                        </div>
+                        <div class="itinerary">
+                            <p>1.微信扫描二维码</p>
+                            <p>2.关注公众号</p>
+                            <p>3.查看该职位的上班路线</p>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
+        </div>
+    </div>
+</div>
+{#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
+<script>
+    $(document).ready(function () {
+        $(function () {
+            hs.graphicsDir = "__ROOT__/assets/js/graphics/";
+            hs.align = 'center';
+            hs.transitions = ['expand', 'crossfade'];
+            hs.outlineType = 'rounded-white';
+            hs.fadeInOut = true;
+            hs.addSlideshow({
+                interval: 5000,
+                repeat: false,
+                useControls: true,
+                fixedControls: 'fit',
+                overlayOptions: {
+                    opacity: 0.75,
+                    position: 'bottom center',
+                    hideOnMouseOut: true
+                }
+            });
+        })
+    })
+
+
+    function initBdMap() {
+        var map = new BMap.Map('bdMap') // 创建Map实例
+        var lng = parseFloat("{#$return.base_info.map_lng#}")
+        var lat = parseFloat("{#$return.base_info.map_lat#}")
+        var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
+        var point = new BMap.Point(lng, lat) // 创建点坐标
+        map.centerAndZoom(point, zoom)
+        map.enableScrollWheelZoom() //启用滚轮放大缩小
+        var marker = new BMap.Marker(new BMap.Point(lng, lat));
+        map.addOverlay(marker);
+    }
+
+    let current_lat = 0,current_lng=0;
+    function loadBdMap2() {
+        if (window.BMap !== undefined) {
+            return
+        }
+        var script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap2'
+        document.body.appendChild(script)
+    }
+    function initBdMap2() {
+        var map = new BMap.Map('bdMap2') // 创建Map实例
+        var geolocation = new BMap.Geolocation();
+	    geolocation.getCurrentPosition(function(r){
+		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+            current_lat = r.point.lat;
+            current_lng = r.point.lng;
+            let distance = countDistance (current_lat, current_lng, parseFloat("{#$return.base_info.map_lat#}"), parseFloat("{#$return.base_info.map_lng#}"))
+            document.getElementById('distance').innerHTML = '距离您 '+distance
+            }else {
+                console.log('failed'+this.getStatus());
+            }        
+        })
+    }
+    if ("{#$return.base_info.map_lat#}" > 0 && "{#$return.base_info.map_lng#}" > 0) {
+        loadBdMap2()
+    }
+    
+    /**
+     * 计算两坐标点之间的距离
+     * 返回友好的距离长度
+     *
+     * @param   current_lat     decimal   当前位置纬度
+     * @param   current_lng     decimal   当前位置经度
+     * @param   target_lat      decimal   目标纬度
+     * @param   target_lng      decimal   目标经度
+     *
+     * @return  decimal   距离
+     */
+    function countDistance (current_lat, current_lng, target_lat, target_lng) {
+        let PI = '3.1415926535898'
+        let radLat1 = current_lat * (PI / 180)
+        let radLat2 = target_lat * (PI / 180)
+        let a = radLat1 - radLat2
+        let b = current_lng * (PI / 180) - target_lng * (PI / 180)
+        let s =
+            2 *
+            Math.asin(
+            Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2))
+            )
+        s = s * 6378
+        // if (!type) {
+        s = s > 1 ? parseFloat(s).toFixed(1) + 'km' : Math.round(s * 1000) + 'm'
+        // } else {
+        //     s = round(s, 1)
+        // }
+        return s
+    }
+
+    var id = parseInt("{#$return.base_info.id#}")
+    var app = new Vue({
+        el: '#app',
+        data: {
+            isLogin: false,
+            utype: 0,
+            tab: 'introduce',
+            shareQrcode: '',
+            rightQrcode: '',
+            relationActive: 'near',
+            supplementary: {},
+            imgList:[],
+            clickNum: 0,
+            joblist: [],
+            page: 1,
+            pagesize: 5,
+            total: 0,
+            total_page: 0,
+            loadingData:false,
+            noMoreData:false,
+            busyScroll:false,
+            hasAttention: false,
+            contentAll: false,
+            contentHeight: 0,
+            showTipoff:false,
+            tipoffForm: {
+                reason: '',
+                content: ''
+            },
+            tipoffRules: {
+                reason: [
+                    { required: true, message: '请选择举报原因', trigger: 'change' }
+                ],
+                content: [
+                    { required: true, message: '请输入备注说明', trigger: 'blur' },
+                    { min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur' }
+                ],
+            },
+            classifyTipoffResume: [],
+            is_centerDialogVisible: false,
+            is_risk: false,
+            showMap: false,
+            mapQrcode: '',
+        },
+        created: function () {
+            this.getUserInfo()
+            this.getSupplementary()
+            this.addClick()
+            this.getJoblist()
+            var locationUrl = "{#$return.share_url#}"
+            this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+            this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_company&url=' + locationUrl + '&comid=' + id
+        },
+        mounted: function () {
+            this.contentHeight = this.$refs.companyContent.clientHeight
+            this.contentAll = this.contentHeight > 280
+        },
+        computed: {
+            //分页
+            pagination: function () {
+                var left = 1;
+                var right = this.total_page;
+                var ar = [];
+                if (this.total_page >= 5) {
+                    if (this.page > 3 && this.page < this.total_page - 2) {
+                        left = this.page - 2
+                        right = this.page + 2
+                    } else {
+                        if (this.page <= 3) {
+                            left = 1
+                            right = 5
+                        } else {
+                            right = this.total_page
+                            left = this.total_page - 4
+                        }
+                    }
+                }
+                while (left <= right) {
+                    ar.push(left)
+                    left++
+                }
+                return ar
+            },
+            options_tipoff: function () {
+                return this.classifyTipoffResume
+            }
+        },
+        methods: {
+            mapOpened: function () {
+                initBdMap()
+            },
+            // 扫码入群 弹框
+            centerDialogVisible:function()
+            {
+                this.is_centerDialogVisible = true
+            },
+            risk:function () {
+              this.is_risk = true
+            },
+            getUserInfo: function () {
+                var that = this
+                httpget(qscms.apiList.userinfo).then(function (res) {
+                    if (res.data.login === true) {
+                        that.isLogin = true
+                        that.utype = res.data.userinfo.utype
+                    }
+                }).catch(function () { })
+            },
+            //分页
+            btnClick: function (data) {//页码点击事件
+                if (data != this.page) {
+                    this.page = data
+                    //根据点击页数请求数据
+                    this.getJoblist();
+                }
+            },
+            pageClick: function () {
+                //根据点击页数请求数据
+                this.getJoblist();
+            },
+            changeTab: function () {
+                this.tab = this.tab == 'introduce' ? 'joblist' : 'introduce'
+            },
+            getJoblist: function () {
+                var that = this
+                that.loadingData = true
+                httpget(qscms.apiList.companyJoblist, { company_id: id, page: that.page, pagesize: that.pagesize}).then(function (res) {
+                    let {code,data}=res
+                    that.loadingData = false
+                    that.joblist = that.joblist.concat(data.items);
+                    // console.log(that.joblist)
+                    that.total = res.data.total
+                    that.total_page = res.data.total_page
+                    if(data.items.length===0){
+                        that.noMoreData = true;
+                        that.busyScroll = true;    
+                    }else{
+                        that.busyScroll = false;    
+                    }
+                }).catch(function () { })
+            },
+            loadMore:function(){
+                    this.loadingData = true
+                    if(!this.busyScroll){
+                        this.noMoreData = false
+                        setTimeout(() => {
+                            this.page += 1
+                            this.getJoblist()
+                        }, 2000)
+                    }else{
+                        this.noMoreData = true
+                        this.loadingData = false
+                    }
+                    },
+            doTipoff: function () {
+                if (this.utype != 2) {
+                    this.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    // if ("{#$return.base_info.audit#}" != 1) {
+                    //     this.$message.error('该简历还未审核通过，不能继续此操作')
+                    //     return false
+                    // }
+                    this.showTipoff = true
+                }
+            },
+            tipoffOpened: function () {
+                var that = this
+                httpget(qscms.apiList.classify + '?type=tipoffResume', {}).then(function (res) {
+                    if (res.code === 200) {
+                        that.classifyTipoffResume = res.data
+                    }
+                }).catch(function () { });
+            },
+            handleSubmitTipoff: function () {
+                var that = this
+                this.$refs.tipoffForm.validate(function (valid) {
+                    if (valid) {
+                        httppost(qscms.apiList.tipoff, { target_id: id, type: 2, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })
+                            .then(function (res) {
+                                that.showTipoff = false
+                                that.$message({
+                                    type: 'success',
+                                    message: res.message
+                                })
+                            })
+                            .catch(function () { })
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            changeRelationList: function (alias) {
+                this.relationActive = alias
+            },
+            addClick: function () {
+                var that = this
+                httppost(qscms.apiList.companyClick, { id: id }).then(function (res) {
+                    that.clickNum = res.data
+                }).catch(function () { })
+            },
+            getSupplementary: function () {
+                var that = this
+                httpget(qscms.apiList.companySupplementary, { id: id }).then(function (res) {
+                    if (res.data !== null) {
+                        that.supplementary = res.data
+                        // console.log(that.supplementary)
+                        let img_list = that.supplementary.img_list
+                        let newDataList = []
+                        let current = 0
+                        if(img_list && img_list.length>0){
+                            for(let i=0;i<=img_list.length-1;i++){
+                                if(i%3 !== 0 || i === 0 ){
+                                if(!newDataList[current]){
+                                    newDataList.push([img_list[i]])
+                                }else{
+                                    newDataList[current].push(img_list[i])
+                                }
+                                }else{
+                                current++
+                                newDataList.push([img_list[i]])
+                                }
+                            }
+                        }
+                        that.imgList = [...newDataList]
+                        that.hasAttention = res.data.has_attention == 1 ? true : false
+                    }
+                }).catch(function () { })
+            },
+            doApply: function (id) {
+                var that = this
+                if (that.utype != 2) {
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    const params = {
+                        jobid: id
+                    }
+                    httppost(qscms.apiList.jobapply, params)
+                        .then(function (res) {
+                            that.$message({ type: 'success', message: res.message })
+                        })
+                        .catch(function () { })
+                }
+            },
+            handlerReport: function () {
+                window.open("{#:url('index/company/report',['id'=>$return.base_info.id])#}")
+            },
+            doAttention: function () {
+                var that = this
+                if (that.utype != 2) {
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    })
+                        .then(function () {
+                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                        })
+                        .catch(function () { })
+                } else {
+                    var params = {
+                        comid: id
+                    }
+                    var _api_url = that.hasAttention === true ? qscms.apiList.companyAttentionCancel : qscms.apiList.companyAttention
+                    httppost(_api_url, params)
+                        .then(function (res) {
+                            that.hasAttention = that.hasAttention === true ? false : true
+                            that.$message({ type: 'success', message: res.message })
+                        })
+                        .catch(function () { })
+                }
+            },
+        }
+    })
+</script>

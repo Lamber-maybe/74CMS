@@ -930,3 +930,19 @@ function get_subsite_condition($table_alias=''){
     }
     return $list;
 }
+
+
+/**
+ * 字符串首尾留1位，尾部跟4个*
+ * @param $string string 需要替换的字符串
+ * @param $asterisk integer 尾部保留几个*号
+ * @return string
+ */
+function srtAsteriskReplace($string, $asterisk = 4)
+{
+    if (empty($string)) {
+        return str_repeat("*", $asterisk);
+    }
+    $firstStr = mb_substr($string, 0, 1, 'UTF-8');
+    return $firstStr . str_repeat("*", $asterisk);
+}

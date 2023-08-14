@@ -761,23 +761,45 @@ class Job extends \app\common\model\BaseModel
                 $return['show_contact_note'] = 'company_close';
             }
         }
-        if ($return['show_contact'] == 1) {
-            if ($contact_info['use_company_contact'] == 1) {
-                $return['contact_info'] = model('CompanyContact')
-                    ->field('id,comid,uid', true)
-                    ->where('comid', $jobinfo['company_id'])
-                    ->find();
-            } else {
-                $return['contact_info'] = $contact_info;
-                unset(
-                    $return['contact_info']['is_display'],
-                    $return['contact_info']['use_company_contact']
-                );
-            }
+
+        /**
+         * 隐藏联系方式，使用*号代替
+         * 【旧】：
+         *  if ($return['show_contact'] == 1)写在条件中
+         */
+        if ($contact_info['use_company_contact'] == 1) {
+            $return['contact_info'] = model('CompanyContact')
+                ->field('id,comid,uid', true)
+                ->where('comid', $jobinfo['company_id'])
+                ->find();
         } else {
-            $return['contact_info'] = [];
+            $return['contact_info'] = $contact_info;
+            unset(
+                $return['contact_info']['is_display'],
+                $return['contact_info']['use_company_contact']
+            );
         }
-        return $return;
+
+        if ($return['show_contact'] == 1) {
+            return $return;
+        } else {
+            /**
+             * 隐藏联系方式，使用*号代替
+             * 【旧】：
+             *  $return['contact_info'] = [];
+             */
+            $tmp = $return['contact_info']->toArray();
+            $contact_return = [];
+            foreach ($tmp as $contact_key => $contact_value) {
+                if (!empty($contact_value)) {
+                    $contact_return[$contact_key] = srtAsteriskReplace($contact_value, 4);
+                } else {
+                    $contact_return[$contact_key] = '*';
+                }
+            }
+            $return['contact_info'] = $contact_return;
+            return $return;
+        }
     }
 
     /**

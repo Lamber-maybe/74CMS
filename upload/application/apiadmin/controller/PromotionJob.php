@@ -41,7 +41,7 @@ class PromotionJob extends \app\common\controller\Backend
             $where['a.deadline'] = ['lt', strtotime('+' . $settr . ' day')];
         }
         $order = 'a.addtime desc';
-        if($sort>0){
+        if ($sort > 0) {
             $order = 'a.deadline asc';
         }
 
@@ -53,7 +53,7 @@ class PromotionJob extends \app\common\controller\Backend
                 'b.company_id=c.id',
                 'LEFT'
             )
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->where($where)
             ->count();
         $list = model('ServiceQueue')
@@ -66,12 +66,12 @@ class PromotionJob extends \app\common\controller\Backend
             )
             ->field('a.*,b.uid,b.jobname,c.companyname')
             ->where($where)
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->order($order)
             ->page($current_page . ',' . $pagesize)
             ->select();
         foreach ($list as $key => $value) {
-            $list[$key]['days'] = ($value['deadline'] - $value['addtime'])/3600/24;
+            $list[$key]['days'] = ($value['deadline'] - $value['addtime']) / 3600 / 24;
             $list[$key]['days'] = ceil($list[$key]['days']);
         }
 
@@ -82,40 +82,40 @@ class PromotionJob extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function searchCompany()
     {
+        // 【优化】后台添加推广数据，数据较大时搜索慢 zch 2022/7/25
         $keyword = input('get.keyword/s', '', 'trim');
         if (!empty($keyword)) {
             // 企业推广时，暂停企业或者职位还在选择列表里 zch 2022.07.06
-            $company_obj = model('Company');
-            $company_obj->where(function ($qr) use($keyword) {
-               $qr->where(['id'=>$keyword,'is_display'=>1]);
+            $company_obj = model('Company')
+                ->alias('c')
+                ->join('jobSearchRtime j', 'j.company_id=c.id', 'left')
+                ->where('j.id', 'not null');
+            $company_obj->where(function ($qr) use ($keyword) {
+                $qr->where(['c.id' => $keyword, 'c.is_display' => 1]);
             });
-            $company_obj->whereOr(function ($qr) use($keyword) {
-                $qr->where(['companyname'=>['like', '%' . $keyword . '%'],'is_display'=>1]);
+            $company_obj->whereOr(function ($qr) use ($keyword) {
+                $qr->where(['c.companyname' => ['like', '%' . $keyword . '%'], 'c.is_display' => 1]);
             });
-            $list = $company_obj->column('id,uid,companyname');
-            foreach($list as $k=>$v)
-            {
-                $job_count = model('jobSearchRtime')->where(['uid'=>$v['uid']])->count();
-                if ($job_count == 0)
-                {
-                    unset($list[$k]);
-                }
-            }
-        } else {
-            $list = [];
+            $list = $company_obj
+                ->field('c.id,c.uid,c.companyname')
+                ->group('c.id')
+                ->select();
         }
-
-        $return['items'] = $list;
+        $return = [
+            'items' => $list
+        ];
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
 
     public function searchJob()
     {
         $company_id = input('get.company_id/d', 0, 'intval');
+        // 【优化】后台添加推广，企业职位为暂停（关闭中）还显示 zch 2022/7/25
         if ($company_id > 0) {
-            $list = model('Job')
+            $list = model('jobSearchKey')
                 ->where('company_id', 'eq', $company_id)
                 ->column('id,uid,jobname');
         } else {
@@ -124,6 +124,7 @@ class PromotionJob extends \app\common\controller\Backend
         $return['items'] = $list;
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function add()
     {
         $input_data = [
@@ -189,16 +190,17 @@ class PromotionJob extends \app\common\controller\Backend
 
         model('AdminLog')->record(
             '添加企业推广。职位ID【' .
-                $data['pid'] .
-                '】；推广类型【' .
-                ($data['type'] == 'jobstick' ? '置顶' : '紧急') .
-                '】；推广天数【' .
-                $input_data['days'] .
-                '】',
+            $data['pid'] .
+            '】；推广类型【' .
+            ($data['type'] == 'jobstick' ? '置顶' : '紧急') .
+            '】；推广天数【' .
+            $input_data['days'] .
+            '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function edit()
     {
         $input_data = [
@@ -229,14 +231,15 @@ class PromotionJob extends \app\common\controller\Backend
         }
         model('AdminLog')->record(
             '编辑企业推广。推广记录ID【' .
-                $input_data['id'] .
-                '】；延长推广天数【' .
-                $input_data['days'] .
-                '】',
+            $input_data['id'] .
+            '】；延长推广天数【' .
+            $input_data['days'] .
+            '】',
             $this->admininfo
         );
         $this->ajaxReturn(200, '保存成功');
     }
+
     public function cancel()
     {
         $id = input('post.id/d', 0, 'intval');

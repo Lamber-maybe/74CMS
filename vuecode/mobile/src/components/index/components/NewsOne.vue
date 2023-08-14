@@ -67,6 +67,7 @@ export default {
         width: 88px;
         height: 63px;
         border-radius: 4px;
+        overflow: hidden;
       }
       .tx2 {
         .tip {

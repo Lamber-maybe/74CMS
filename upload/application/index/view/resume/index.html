@@ -728,9 +728,10 @@
         this.getClassify('education');
         $('.so_condition .J_dropdown').eq(4).addClass('active');
       }
+      // zdq 找人才列表，筛选项选择兼职的为实习，选择实习的为空
       // 工作性质
       if (this.nat) {
-        this.getClassify('jobNature');
+        this.getClassify('resumeNature');
         $('.so_condition .J_dropdown').eq(5).addClass('active');
       }
       // 薪资
@@ -867,7 +868,8 @@
                   }
                 });
               })
-            } else if (type === 'jobNature') {
+              // zdq 找人才列表，筛选项选择兼职的为实习，选择实习的为空
+            } else if (type === 'resumeNature') {
               var natureList = res.data;
               _this.natSelectedText = natureList.filter(function (item) {
                 if (parseInt(item.id) === parseInt(_this.nat)) {

@@ -498,8 +498,15 @@
 				<ul class="consult_title clearfix">
 					{#volist name="article_list" id="vo"#}
 					<li class="float clearfix">
-						<a class="text1" href="{#:url('index/article/index',['cid'=>$vo.cid])#}">#{#$vo.cname#}#</a>
-						<a class="text2 substring" title="{#$vo.title#}" href="{#$vo.link_url#}">{#$vo.title#}</a>
+						<!-- 【ID1000251】【优化】默认模板资讯显示长度超出 -->
+						<div class="a_div substring">
+							<span>
+								<a class="text1" href="{#:url('index/article/index',['cid'=>$vo.cid])#}">#{#$vo.cname#}#</a>
+							</span>
+							<span>
+								<a class="text2" title="{#$vo.title#}" href="{#$vo.link_url#}">{#$vo.title#}</a>
+							</span>
+						</div>
 						<span class="consult_time">{#:date('Y-m-d',$vo.addtime)#}</span>
 					</li>
 					{#/volist#}
@@ -667,7 +674,8 @@
 			catpchaSrc: '',
 			pictureCaptchaCallback: '',
 			guideQrcode:'',
-			showGuide:false
+			showGuide:false,
+			sendSmsLimit:false
     },
 		created: function () {
 			this.getUserInfo()
@@ -761,9 +769,15 @@
 					that.doSendSms(null)
 				}
 			},
+			//zdq 短信验证码重复发送修改
 			doSendSms: function (captcha) {
 				var that = this
+				if(that.sendSmsLimit){
+					return false
+				}
+				that.sendSmsLimit = true
 				httppost(qscms.apiList.getLoginCode, { mobile: that.mobile, utype: that.formUtype, captcha: captcha }).then(function (res) {
+					that.sendSmsLimit = false
 					that.$message({
 						type: 'success',
 						message: '验证码发送成功'
@@ -780,7 +794,9 @@
 							that.sendSmsInterval--
 						}
 					}, 1000)
-				}).catch(function () { })
+				}).catch(function () {
+					that.sendSmsLimit = false
+				})
 			},
 			doLogin: function () {
 				var that = this

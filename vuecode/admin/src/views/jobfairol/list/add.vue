@@ -14,6 +14,7 @@
           style="float: right; padding: 0;"
           type="text"
           @click="onSubmit('form')"
+          :disabled="issubmit"
         >
           保存
         </el-button>
@@ -147,7 +148,7 @@
           </div>
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
           <el-button @click="goto('/jobfairol/list')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -183,6 +184,7 @@ export default {
       }
     }
     return {
+      issubmit: false,
       editor: null,
       toolbarConfig: {
         excludeKeys: [
@@ -310,6 +312,7 @@ export default {
       return true
     },
     onSubmit(formName) {
+      this.issubmit = true
       const that = this
       this.form.content = this.editor.getHtml()
       var insertData = Object.assign({}, this.form)
@@ -325,8 +328,11 @@ export default {
               that.$router.push('/jobfairol/list')
             }, 1500)
             return true
-          }).catch(() => {})
+          }).catch(() => {
+            that.issubmit = false
+          })
         } else {
+          that.issubmit = false
           return false
         }
       })

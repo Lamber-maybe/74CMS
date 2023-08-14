@@ -84,7 +84,8 @@
                     type="month"
                     format="yyyy-MM"
                     value-format="yyyy-MM"
-                    :picker-options="datePickerRange"
+                    :picker-options="DateRanges"
+                    :default-value="defaultValue"
                     placeholder="请选择出生日期">
                   </el-date-picker>
                 </div>
@@ -1055,7 +1056,9 @@
     },
     data () {
       return {
+        DateRanges: this.birthdayDateRange(),
         datePickerRange: this.dateRange(),
+        defaultValue: this.defaultValueFun(),
         basic: {},
         contact: {},
         intention: {},
@@ -1223,6 +1226,22 @@
               return time.getTime() > new Date().getTime();
           }
         }
+      },
+      //PC端创建简历日期选择往前推到16岁 zdq
+      birthdayDateRange(){
+        return {
+          disabledDate(time){
+            var myDate = new Date();
+            return time.getTime() > new Date(new Date(myDate.getFullYear(),11).getTime() - 16 * 365 * 24 * 3600 * 1000);
+          }
+        }
+      },
+      //PC端创建简历日期选择往前推到16岁 zdq
+      defaultValueFun() {
+        const nowDate = new Date()
+        const nowYear = nowDate.getFullYear()
+        const minBirthdayYear = nowYear - 16
+        return new Date(minBirthdayYear, 11)
       },
       handlerPreview(){
         window.open(this.preview_url)
@@ -1781,6 +1800,7 @@
           },
         }).then(res => {
           if (parseInt(res.code) === 200) {
+            console.log(res)
             this.$message({ message: res.message, type: 'success' })
             this.editBasic = false
             this.syncRightMenu()

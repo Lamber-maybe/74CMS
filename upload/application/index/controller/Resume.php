@@ -87,8 +87,19 @@ class Resume extends \app\index\controller\Base
             $params['experience'] = $experience;
         }
         if ($tag != '') {
+            /**
+             * SQL注入
+             * yx - 2022.07.26 10:17
+             * 【旧】
+             * $params['tag'] = $tag;
+             * $selectedTagArr = explode("_",$tag);
+             */
             $params['tag'] = $tag;
-            $selectedTagArr = explode("_",$tag);
+            $params_tags = explode("_", $tag);
+            foreach ($params_tags as $key => $value) {
+                $selectedTagArr[] = intval($value);
+            }
+            $params['tag'] = implode($selectedTagArr, '_');
         }
         if ($sex > 0) {
             $params['sex'] = $sex;
@@ -356,11 +367,15 @@ class Resume extends \app\index\controller\Base
         $seoData['district'] = $return['base_info']['intention_district_text'];
         $seoData['jobcategory'] = $return['base_info']['intention_jobs_text'];
         $seoData['specialty'] = $return['base_info']['specialty'];
+
+
         $this->initPageSeo('resumeshow',$seoData);
 
         $this->assign('return',$return);
         $this->assign('pageHeader',$this->pageHeader);
-        return $this->fetch('show');
+
+        $resume_show_tpl = !empty(config('global_config.resume_show_tpl')) ? config('global_config.resume_show_tpl') : 'def';
+        return $this->fetch('resume/showTpl/'.$resume_show_tpl.'/show');
     }
     protected function writeShowCache($id,$resume_module,$pageCache){
         $where['id'] = $id;
@@ -480,6 +495,12 @@ class Resume extends \app\index\controller\Base
             )
                 ? $category_data['QS_trade'][$value['trade']]
                 : '';
+
+            // 【新增】求职状态唯一展示
+            $return['base_info']['nature_text_unique'] = !empty($return['base_info']['nature_text_unique']) ? $return['base_info']['nature_text_unique'] : $tmp_arr['nature_text'];
+            // 【新增】薪资唯一展示
+            $return['base_info']['wage_text_unique'] = !empty($return['base_info']['wage_text_unique']) ? $return['base_info']['wage_text_unique'] : $tmp_arr['wage_text'];
+
             $return['base_info']['intention_jobs_text'][] = $tmp_arr['category_text'];
             $return['base_info']['intention_district_text'][] = $tmp_arr['district_text'];
             $intention_list[] = $tmp_arr;

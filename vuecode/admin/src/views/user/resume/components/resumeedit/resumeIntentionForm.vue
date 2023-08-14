@@ -94,12 +94,12 @@ import { resumeIntentionAddAndEdit } from '@/api/resume'
 var wage_data = []
 // 【ID1000220】【bug】后台添加简历薪资范围不一致
 let current = 0
-let unit1 = 500
-let unit2 = 5000
+const unit1 = 500
+const unit2 = 5000
 for (let i = 0; i < 37; i++) {
-  if(current<15000){
+  if (current < 15000) {
     current += unit1
-  }else{
+  } else {
     current += unit2
   }
   wage_data.push(current)
@@ -210,7 +210,7 @@ export default {
               return { value: item.value, label: item.label }
             }
           })
-	  // 【ID1000188】【优化】后台修改简历意向地区时，二级分类地区后为空 zdq 2022.07.06
+          // 【ID1000188】【优化】后台修改简历意向地区时，二级分类地区后为空 zdq 2022.07.06
           var options_citycategory = [...response.data.citycategory]
           for (let i = 0; i <= options_citycategory.length - 1; i++){
             if (options_citycategory[i]['children'].length <= 0){

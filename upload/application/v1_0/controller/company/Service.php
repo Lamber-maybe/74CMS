@@ -270,7 +270,8 @@ class Service extends \app\v1_0\controller\common\Base
                 'service_id' => $input_data['service_id'],
                 'status' => 0,
                 'uid'=>$this->userinfo->uid,
-                'addtime' => ['gt', $time]
+                'addtime' => ['gt', $time],
+                'payment' => $input_data['payment']
             ])
             ->count();
 

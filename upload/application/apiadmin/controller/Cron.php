@@ -72,7 +72,12 @@ class Cron extends \app\common\controller\Backend
                 $str_minute = $info['minute'] . '分';
             }
         } else {
-            $str_hour = '';
+            /**
+             * 【BUG】 定时任务每天每几分钟执行有问题
+             * zdq 2022.08.11
+             * 【删除】
+             *  $str_hour = '';
+             */
             $minute_arr = explode('/', $info['minute']);
             $str_minute = '每' . $minute_arr[1] . '分钟';
         }

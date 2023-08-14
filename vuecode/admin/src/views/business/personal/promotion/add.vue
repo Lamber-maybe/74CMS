@@ -32,7 +32,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="推广天数" prop="days">
-        <el-input v-model.number="form.days" type="number" />
+        <el-input v-model.number="form.days" type="number" :min="0"/>
       </el-form-item>
       <el-form-item label="推广方案" prop="type">
         <el-select v-model="form.type" placeholder="请选择">
@@ -44,7 +44,7 @@
         <el-input v-model="form.tag" />
       </el-form-item>
       <el-form-item label=" ">
-        <el-button type="primary" @click="onSubmit('form')">保存</el-button>
+        <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
         <el-button @click="closeDialog">取 消</el-button>
       </el-form-item>
     </el-form>
@@ -60,6 +60,7 @@ import {
 export default {
   data() {
     return {
+      issubmit: false,
       loading: false,
       options_resumelist: [],
       form: {
@@ -97,6 +98,7 @@ export default {
   methods: {
     onSubmit(formName) {
       const that = this
+      that.issubmit = true
       that.$refs[formName].validate(valid => {
         if (valid) {
           const insertData = {
@@ -112,8 +114,12 @@ export default {
               that.pageReload()
               return true
             })
-            .catch(() => {})
+            .catch(() => {
+              that.issubmit = false
+              return false
+            })
         } else {
+          that.issubmit = false
           return false
         }
       })

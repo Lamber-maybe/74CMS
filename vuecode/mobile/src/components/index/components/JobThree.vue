@@ -21,15 +21,9 @@
           </div>
           <div
             class="tag_wrapper"
-            v-if="
-              item.tag != undefined && item.tag.length > 0
-            "
+            v-if="item.tag != undefined && item.tag.length > 0"
           >
-            <div
-              class="tag_item"
-              v-for="(t, k) in item.tag"
-              :key="k"
-            >
+            <div class="tag_item" v-for="(t, k) in item.tag" :key="k">
               {{ t }}
             </div>
             <div class="clear"></div>
@@ -42,8 +36,21 @@
             />
             <div class="up">
               <div class="name">{{ item.companyname }}</div>
-              <div class="auth_ico" v-if="item.company_audit == 1"></div>
-              <div class="crw_ico" v-if="item.setmeal_icon != ''"><img :src="item.setmeal_icon" alt="" /></div>
+              <div
+                class="auth_ico1"
+                v-if="
+                  item.company_audit == 1 && mobile_company_show_tpl == 'def'
+                "
+              ></div>
+              <div
+                class="auth_ico"
+                v-if="
+                  item.company_audit == 1 && mobile_company_show_tpl == 'tpl2'
+                "
+              ></div>
+              <div class="crw_ico" v-if="item.setmeal_icon != ''">
+                <img :src="item.setmeal_icon" alt="" />
+              </div>
               <div class="clear"></div>
             </div>
             <div class="down">
@@ -60,29 +67,31 @@
 </template>
 
 <script>
-import http from '@/utils/http'
-import api from '@/api'
+import http from "@/utils/http";
+import api from "@/api";
 export default {
-  name: 'JobThree',
-  data () {
+  name: "JobThree",
+  data() {
     return {
-      joblist: []
-    }
+      joblist: [],
+      mobile_company_show_tpl:'def',
+    };
   },
-  created () {
-    this.fetchListData()
+  created() {
+    this.mobile_company_show_tpl = this.$store.state.config.mobile_company_show_tpl;
+    this.fetchListData();
   },
   methods: {
-    fetchListData () {
+    fetchListData() {
       http
-        .get(api.joblist, { sort: 'rtime', page: 1, pagesize: 5 })
-        .then(res => {
-          this.joblist = [...res.data.items]
+        .get(api.joblist, { sort: "rtime", page: 1, pagesize: 5 })
+        .then((res) => {
+          this.joblist = [...res.data.items];
         })
-        .catch(() => {})
-    }
-  }
-}
+        .catch(() => {});
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -131,12 +140,21 @@ export default {
           .auth_ico {
             float: left;
             margin-left: 6px;
-            width: 15px;
+            width: 35px;
             height: 18px;
             background: url("../../../assets/images/jobs_list_auth_ico.png") 0
-              4px no-repeat;
-            background-size: 15px 11px;
+              center no-repeat;
+            background-size: 100% 12px;
           }
+        .auth_ico1 {
+          float: left;
+          margin-left: 6px;
+          width: 15px;
+          height: 18px;
+          background: url("../../../assets/images/jobs_list_auth_ico_1.png") 0
+            4px no-repeat;
+          background-size: 15px 11px;
+        }
           .name {
             float: left;
             max-width: 230px;
@@ -162,9 +180,9 @@ export default {
           padding: 3px 5px;
           border-radius: 3px;
           &:not(:last-child) {
-            margin-right:5px;
+            margin-right: 5px;
           }
-          margin-bottom:4px;
+          margin-bottom: 4px;
         }
         width: 100%;
         padding-bottom: 12px;

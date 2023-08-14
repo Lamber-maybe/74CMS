@@ -119,7 +119,13 @@ export default {
     },
     onSubmit(formName) {
       const that = this
-      const parentid_length = that.form.parentid.length
+      // zdq 无法添加一级地区
+      const parentid = that.form.parentid.filter((s) => {
+        if (s != '' || s != null || s != 'undefined'){
+          return s
+        }
+      })
+      const parentid_length = parentid.length
       switch (parentid_length) {
         case 0:
           that.form.level = 1
