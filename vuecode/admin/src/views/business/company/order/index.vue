@@ -237,6 +237,9 @@
       <el-row v-if="dialogContent.amount_detail != ''">
         <el-col :span="24">支付详情：{{ dialogContent.amount_detail }}</el-col>
       </el-row>
+      <el-row v-if="dialogContent.note != ''">
+        <el-col :span="24" style="line-height:26px;">备注：{{ dialogContent.note }}</el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -371,7 +374,8 @@ export default {
             ? '未支付'
             : parseTime(info.paytime, '{y}-{m}-{d} {h}:{i}'),
         status: this.options_status[info.status],
-        amount_detail: info.amount_detail
+        amount_detail: info.amount_detail,
+        note:info.note
       }
       if (info.payment == '') {
         this.dialogContent.payment = '-'
@@ -410,6 +414,7 @@ export default {
       this.$prompt('请输入备注', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
+        closeOnClickModal: false,
         beforeClose: (action, instance, done) => {
           if (action === 'confirm') {
             const note = instance.inputValue ? instance.inputValue : ''

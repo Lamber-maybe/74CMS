@@ -613,7 +613,7 @@ export default {
             this.rules.amount = []
           }
           if (extra_rule.Job.negotiable.is_display == 0) {
-            this.live_fields.Job.negotiable = false
+            this.live_fields.negotiable = false
           }
           if (extra_rule.Job.custom_field_1.is_display == 0) {
             this.live_fields.custom_field_1 = false

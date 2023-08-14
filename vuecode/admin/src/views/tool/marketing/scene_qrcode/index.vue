@@ -300,6 +300,10 @@ export default {
       this.$message({ type: 'success', message: '复制成功' })
     },
     funShowQrcode(row){
+      if(row.deadline>0 && row.status!=1){
+        this.$message.error('场景码已过期')
+        return false
+      }
       this.qrcodeId = row.id
       this.qrcodeTitle = row.title
       this.qrcodeSrc = row.qrcode_src

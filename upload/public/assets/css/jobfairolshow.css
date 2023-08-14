@@ -1,588 +1,609 @@
 .banner_img {
-	height: 410px;
-	background: url(../images/jobfairol/networkJobFair_banner2.png) no-repeat;
-	position: relative;
-	overflow: hidden;
+  height: 410px;
+  background: url(../images/jobfairol/networkJobFair_banner2.png) no-repeat;
+  position: relative;
+  overflow: hidden;
 }
 
 .banner_img img {
-	width: 100%;
-	height: 410px;
+  width: 100%;
+  height: 410px;
 }
 
 .banner_img .notice_list {
-	position: absolute;
-	left: 0;
-	top: 335px;
-	white-space: nowrap;
+  position: absolute;
+  left: 0;
+  top: 335px;
+  white-space: nowrap;
 }
 
 .banner_img .notice_list div {
-	display: inline-block;
-	padding: 8px 17px 8px 25px;
-	background: rgba(0, 0, 0, .3);
-	color: #ffffff;
-	font-size: 14px;
-	border-radius: 20px;
-	position: relative;
+  display: inline-block;
+  padding: 8px 17px 8px 25px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-size: 14px;
+  border-radius: 20px;
+  position: relative;
 }
 
 .banner_img .notice_list div a {
-	color: #ffffff;
-	font-size: 14px;
-	cursor: pointer;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .banner_img .notice_list div::before {
-	content: '';
-	position: absolute;
-	left: 15px;
-	top: 15px;
-	width: 4px;
-	height: 4px;
-	background: #fff;
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
 }
 
 .banner_img .notice_list .list1 {
-	margin-left: 90px;
-	margin-right: 190px;
+  margin-left: 90px;
+  margin-right: 190px;
 }
 
 .banner_img .notice_list .list2 {
-	margin-right: 140px;
+  margin-right: 140px;
 }
 
 .banner_img .notice_list .list3,
 .banner_img .notice_list .list4 {
-	margin-right: 180px;
+  margin-right: 180px;
 }
 
-
 .content_top {
-	background: #fff;
+  background: #fff;
 }
 
 .process_wrapper {
-	box-shadow: 0px 0px 8px 8px #fafafa;
-	margin-bottom: 20px;
-	padding: 16px 50px;
+  box-shadow: 0px 0px 8px 8px #fafafa;
+  margin-bottom: 20px;
+  padding: 16px 50px;
 }
 
 .process_wrapper .process_text {
-	border-bottom: 1px solid #f3f3f3;
-	padding: 24px 34px 36px 20px;
-	position: relative;
-	color: #333333;
-	font-size: 16px;
-	line-height: 26px;
+  border-bottom: 1px solid #f3f3f3;
+  padding: 24px 34px 36px 20px;
+  position: relative;
+  color: #333333;
+  font-size: 16px;
+  line-height: 26px;
 }
 
 .process_text img {
-	width: 23px;
-	height: 19px;
+  width: 23px;
+  height: 19px;
 }
 
 .process_text .img1 {
-	position: absolute;
-	left: -20px;
-	top: 0;
+  position: absolute;
+  left: -20px;
+  top: 0;
 }
 
 .process_text .img2 {
-	position: absolute;
-	right: -20px;
-	bottom: 25px;
+  position: absolute;
+  right: -20px;
+  bottom: 25px;
 }
 
 .sum_wrapper {
-	padding: 30px 0 19px;
+  padding: 30px 0 19px;
 }
 
 .sum_wrapper div {
-	width: 365px;text-align: center;
+  width: 365px;
+  text-align: center;
 }
 
 .sum_wrapper div p {
-	color: #666;
-	font-size: 18px;
-	margin-bottom: 5px;
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 5px;
 }
 
 .sum_wrapper div span {
-	color: #333;
-	font-size: 36px;
-	font-weight: bold;
+  color: #333;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 /* 搜索框 */
 .search_wrapper {
-	background: #f8f8f8;
-	padding: 17px 40px 17px 31px;
-	border-radius: 5px;
+  background: #f8f8f8;
+  padding: 17px 40px 17px 31px;
+  border-radius: 5px;
 }
 
-.search_box {
-	background: #fff;
+.jobfair_search_box {
+  background: #fff;
 }
 
-.search_box .search_btn button {
-	width: 110px;
-	height: 46px;
-	text-align: center;
-	line-height: 46px;
-	background: #1787fb;
-	color: #ffffff;
-	font-size: 16px;
-	cursor: pointer;
+.jobfair_search_box .search_btn button {
+  width: 110px;
+  height: 46px;
+  text-align: center;
+  line-height: 46px;
+  background: #1787fb;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.search_box .search_select {
-	width: 122px;
-	height: 46px;
-	line-height: 46px;
-	cursor: pointer;
-	position: relative;
+.jobfair_search_box .search_select {
+  width: 122px;
+  height: 46px;
+  line-height: 46px;
+  cursor: pointer;
+  position: relative;
 }
 
-.search_box .search_select span {
-	padding-left: 23px;
-	padding-right: 16px;
-	background: url(../images/jobfairol/select_icon.png) right 6px no-repeat;
+.jobfair_search_box .search_select span {
+  padding-left: 23px;
+  padding-right: 16px;
+  background: url(../images/jobfairol/select_icon.png) right 6px no-repeat;
 }
 
-.search_box .search_select:hover .select_hover_box {
-	display: block;
+.jobfair_search_box .search_select:hover .select_hover_box {
+  display: block;
 }
 
-.search_box .select_hover_box {
-	width: 100%;
-	background: #fff;
-	border: 1px solid #e2e2e2;
-	text-align: center;
-	display: none;
-	position: absolute;
-	left: 0;
-	top: 46px;
-	z-index: 10;
+.jobfair_search_box .select_hover_box {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  text-align: center;
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 46px;
+  z-index: 10;
 }
 
-.search_box .select_hover_box li {
-	padding: 5px 0;
+.jobfair_search_box .select_hover_box li {
+  padding: 5px 0;
 }
 
-.search_box .search_input input {
-	width: 526px;
-	border: none;
-	border-left: 1px solid #ededed;
-	height: 20px;
-	padding-left: 20px;
-	margin-top: 13px;
+.jobfair_search_box .search_input input {
+  width: 526px;
+  border: none;
+  border-left: 1px solid #ededed;
+  height: 20px;
+  padding-left: 20px;
+  margin-top: 13px;
 }
-
-
-
 
 .search_wrapper .right_btn {
-	float: right;
+  float: right;
 }
 
 .search_wrapper .right_btn button {
-	padding: 11px 30px 11px 54px;
-	font-size: 16px;
-	border-radius: 30px;
-	cursor: pointer;
+  padding: 11px 30px 11px 54px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
 }
 
 .search_wrapper .right_btn button:first-child {
-	color: #1787fb;
-	border: 1px solid #1787fb;
-	background: url(../images/jobfairol/search_icon1.png) 30px 13px no-repeat;
+  color: #1787fb;
+  border: 1px solid #1787fb;
+  background: url(../images/jobfairol/search_icon1.png) 30px 13px no-repeat;
 }
 
 .search_wrapper .right_btn button:last-child {
-	color: #ff772d;
-	border: 1px solid #ff772d;
-	margin-left: 16px;
-	background: url(../images/jobfairol/search_icon2.png)30px 13px no-repeat;
+  color: #ff772d;
+  border: 1px solid #ff772d;
+  margin-left: 16px;
+  background: url(../images/jobfairol/search_icon2.png) 30px 13px no-repeat;
 }
-
-
 
 /* tab切换 */
 .tab_wrapper {
-	margin: auto;
-	background: #fff;
+  margin: auto;
+  background: #fff;
 }
 
 .tab_wrapper .tab {
-	width: 1200px;
-	margin: auto;
-	padding: 35px 0 13px;
+  width: 1200px;
+  margin: auto;
+  padding: 35px 0 13px;
 }
 
 .tab_wrapper .tab div {
-	width: 580px;
-	text-align: center;
-	font-weight: bold;
-	position: relative;
+  width: 580px;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
 }
 
-.tab_wrapper .tab div a{
-	color: #666666;
-	font-size: 24px;
-	cursor: pointer;
-	text-decoration: none;
+.tab_wrapper .tab div a {
+  color: #666666;
+  font-size: 24px;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .tab_wrapper .tab div .bt_border {
-	position: absolute;
-	left: 50%;
-	bottom: -13px;
-	width: 160px;
-	height: 3px;
-	margin-left: -80px;
-	background: #1787fb;
-	display: none;
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  width: 160px;
+  height: 3px;
+  margin-left: -80px;
+  background: #1787fb;
+  display: none;
 }
 
-.tab_wrapper .tab .active a{
-	color: #1787FB;
+.tab_wrapper .tab .active a {
+  color: #1787fb;
 }
 .tab_wrapper .tab .active .bt_border {
-	display: block;
+  display: block;
 }
 
-.content_wrapper{
-	position: relative;
+.content_wrapper {
+  position: relative;
 }
-
 
 /* 企业列表 */
-.jobfair_wrapper ,
+.jobfair_wrapper,
 .jobHunter_wrapper,
-.post_wrapper{
-	margin-right: -12px;
+.post_wrapper {
+  margin-right: -12px;
 }
 
 .content .jobfair_list {
-	width: 290px;
-	height: 279px;
-	background: #fff;
-	margin-right: 12px;
-	padding: 26px 20px 14px;
-	margin-bottom: 10px;
-	position: relative;
-	transition: linear all .2s;
+  width: 290px;
+  height: 279px;
+  background: #fff;
+  margin-right: 12px;
+  padding: 26px 20px 14px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: linear all 0.2s;
 }
-.content .jobfair_list:hover { -webkit-box-shadow: 0 3px 20px 2px #f0f0f0; box-shadow: 0 3px 20px 2px #f0f0f0; -webkit-transform: translateY(-3px); transform: translateY(-3px); z-index: 1; }
-.jobfair_list .base_information{
-	border-bottom:1px dashed #ebebeb ;
-	padding-bottom: 20px;
-	margin-bottom: 20px;
+.content .jobfair_list:hover {
+  -webkit-box-shadow: 0 3px 20px 2px #f0f0f0;
+  box-shadow: 0 3px 20px 2px #f0f0f0;
+  -webkit-transform: translateY(-3px);
+  transform: translateY(-3px);
+  z-index: 1;
+}
+.jobfair_list .base_information {
+  border-bottom: 1px dashed #ebebeb;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
 }
 
-.jobfair_list .base_information .img{
-	width: 52px;
-	height: 52px;
-	border: 1px solid #f3f3f3;
-	margin-right: 10px;
+.jobfair_list .base_information .img {
+  width: 52px;
+  height: 52px;
+  border: 1px solid #f3f3f3;
+  margin-right: 10px;
 }
 
-.jobfair_list .base_information .text{
-	width:188px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+.jobfair_list .base_information .text {
+  width: 188px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.jobfair_list .base_information .text a{
-	color:#333 ;
-	font-size: 16px;
-	cursor: pointer;
+.jobfair_list .base_information .text a {
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
 }
-.jobfair_list .base_information .text .btn{
-	color:#ffffff ;
-	font-size: 12px;
-	padding:  3px 11px 3px 28px;
-	border-radius: 10px;
-	background: url(../images/jobfairol/WX_icon.png)8px 5px no-repeat;
-	background-color:#00c785;
-	cursor: pointer;
-	margin-top: 8px;
+.jobfair_list .base_information .text .btn {
+  color: #ffffff;
+  font-size: 12px;
+  padding: 3px 11px 3px 28px;
+  border-radius: 10px;
+  background: url(../images/jobfairol/WX_icon.png) 8px 5px no-repeat;
+  background-color: #00c785;
+  cursor: pointer;
+  margin-top: 8px;
 }
 
 .jobfair_list .base_information .img img {
-	width: 52px;
-	height: 52px;
+  width: 52px;
+  height: 52px;
 }
 
 .jobfair_list .post {
-	margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .jobfair_list .post a {
-	color: #666;
-	font-size: 14px;
-	cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .jobfair_list .post .btn {
-	border: 1px solid #1787FB;
-	color: #1787FB;
-	font-size: 12px;
-	padding: 3px 16px;
-	border-radius: 30px;
-	float: right;
-	cursor: pointer;
+  border: 1px solid #1787fb;
+  color: #1787fb;
+  font-size: 12px;
+  padding: 3px 16px;
+  border-radius: 30px;
+  float: right;
+  cursor: pointer;
 }
 
 .jobfair_list .post .btn:hover {
-	background: #1787FB;
-	color: #fff;
+  background: #1787fb;
+  color: #fff;
 }
 
 .jobfair_list .move_wrapper {
-	text-align: center;
-	padding: 8px 0;
-	position: absolute;left: 20px;bottom: 14px;width: 250px;
+  text-align: center;
+  padding: 8px 0;
+  position: absolute;
+  left: 20px;
+  bottom: 14px;
+  width: 250px;
 }
 
 .c_noj {
-	color: #999;text-align: center;height: 130px;line-height: 130px;
+  color: #999;
+  text-align: center;
+  height: 130px;
+  line-height: 130px;
 }
 
 .content.ol {
-	padding-top: 20px;
+  padding-top: 20px;
 }
 
 .paging.ol {
-	text-align: center;
+  text-align: center;
 }
 
 .paging .paging_box.ol {
-	padding-top: 10px;
+  padding-top: 10px;
 }
 
 .move_wrapper a {
-	color: #999;
-	font-size: 12px;
-	cursor: pointer;
+  color: #999;
+  font-size: 12px;
+  cursor: pointer;
 }
 .move_wrapper a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* 求职者列表 */
-.jobHunter_list{
-	width: 290px;
-	height: 279px;
-	background: #fff;
-	text-align: center;
-	padding: 25px 0 35px;
-	margin-right: 12px;
-	margin-bottom: 10px;
-	transition: linear all .2s;
-	cursor: pointer;
+.jobHunter_list {
+  width: 290px;
+  height: 279px;
+  background: #fff;
+  text-align: center;
+  padding: 25px 0 35px;
+  margin-right: 12px;
+  margin-bottom: 10px;
+  transition: linear all 0.2s;
+  cursor: pointer;
 }
-.jobHunter_list:hover { -webkit-box-shadow: 0 3px 20px 2px #f0f0f0; box-shadow: 0 3px 20px 2px #f0f0f0; -webkit-transform: translateY(-3px); transform: translateY(-3px); z-index: 1; }
+.jobHunter_list:hover {
+  -webkit-box-shadow: 0 3px 20px 2px #f0f0f0;
+  box-shadow: 0 3px 20px 2px #f0f0f0;
+  -webkit-transform: translateY(-3px);
+  transform: translateY(-3px);
+  z-index: 1;
+}
 
 .p_img {
-	position: relative;width: 80px;height:80px;margin: 4px auto 15px;border-radius: 80px;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 4px auto 15px;
+  border-radius: 80px;
 }
 .p_img .photo {
-	width: 80px;
-	height:80px ;
-	border-radius: 80px;
-	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+  width: 80px;
+  height: 80px;
+  border-radius: 80px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 .p_img .gm {
-	position: absolute;width: 20px;height: 20px;z-index: 1;right: 3px;bottom: 0;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+  right: 3px;
+  bottom: 0;
 }
 .p_img .gm.m {
-	background: url("../../assets/images/jobfairol/JobFair_img4.png") 0 no-repeat;background-size: 20px;
+  background: url("../../assets/images/jobfairol/JobFair_img4.png") 0 no-repeat;
+  background-size: 20px;
 }
 .p_img .gm.n {
-	background: url("../../assets/images/jobfairol/JobFair_img5.png") 0 no-repeat;background-size: 20px;
+  background: url("../../assets/images/jobfairol/JobFair_img5.png") 0 no-repeat;
+  background-size: 20px;
 }
 
-.jobHunter_list .name{
-	margin-bottom: 15px;
+.jobHunter_list .name {
+  margin-bottom: 15px;
 }
 
-.jobHunter_list .name a{
-	color:#333333 ;
-	font-size: 18px;
-	font-weight: bold;
-	cursor: pointer;
+.jobHunter_list .name a {
+  color: #333333;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.jobHunter_list  .information{
-	color:#666666;
-	font-size: 12px;
-	margin-bottom: 15px;
+.jobHunter_list .information {
+  color: #666666;
+  font-size: 12px;
+  margin-bottom: 15px;
 }
 
-.jobHunter_list  .information span{
-	position: relative;
-	padding-right: 15px;
-	color:#666666 ;
-	font-size: 12px;
+.jobHunter_list .information span {
+  position: relative;
+  padding-right: 15px;
+  color: #666666;
+  font-size: 12px;
 }
-.jobHunter_list  .information span.last {
-	padding-right: 0;
-}
-
-.jobHunter_list  .information span::after{
-	content: '';
-	position: absolute;
-	width: 1px;
-	height: 10px;
-	background: #e2e2e2;
-	right: 6px;
-	top: 2px;
+.jobHunter_list .information span.last {
+  padding-right: 0;
 }
 
-.jobHunter_list  .information span:last-child::after{
-	content: '';
-	width: 0;
-	height: 0;
+.jobHunter_list .information span::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 10px;
+  background: #e2e2e2;
+  right: 6px;
+  top: 2px;
 }
 
-
-.jobHunter_list .post_list{
-	margin-bottom: 20px;
+.jobHunter_list .information span:last-child::after {
+  content: "";
+  width: 0;
+  height: 0;
 }
 
-.jobHunter_list .post_list span{
-	display: inline-block;
-	padding: 3px 13px;
-	border: 1px solid #1787FB;
-	color: #1787FB;
-	border-radius: 20px;
-	font-size: 12px;
-	margin-right: 3px;
-	cursor: pointer;
-}
-.jobHunter_list .update_time{
-	color: #999;	
-	font-size: 12px;
+.jobHunter_list .post_list {
+  margin-bottom: 20px;
 }
 
-
+.jobHunter_list .post_list span {
+  display: inline-block;
+  padding: 3px 13px;
+  border: 1px solid #1787fb;
+  color: #1787fb;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-right: 3px;
+  cursor: pointer;
+}
+.jobHunter_list .update_time {
+  color: #999;
+  font-size: 12px;
+}
 
 /* 职位列表 */
 
-.post_item{
-	width: 290px;
-	background: #fff;
-	padding: 26px 22px 25px;
-	margin-right: 12px;
-	margin-bottom: 13px;
+.post_item {
+  width: 290px;
+  background: #fff;
+  padding: 26px 22px 25px;
+  margin-right: 12px;
+  margin-bottom: 13px;
 }
 
-.post_item .post_img{
-	width:52px ;
-	height: 52px;
-	margin-right: 10px;
-	border: 1px solid #f5f5f5;
+.post_item .post_img {
+  width: 52px;
+  height: 52px;
+  margin-right: 10px;
+  border: 1px solid #f5f5f5;
 }
-.post_item .post_img img{
-	width: 52px;
-	height: 52px;
+.post_item .post_img img {
+  width: 52px;
+  height: 52px;
 }
-.post_item .post_text{
-	border-bottom:1px dashed #ebebeb ;
-}
-
-.post_item .post_name{
-	margin-bottom: 13px;
-} 
-
-.post_item  .post_name a{
-	cursor: pointer;
-	color:#333333 ;
-	font-size: 16px;
+.post_item .post_text {
+  border-bottom: 1px dashed #ebebeb;
 }
 
-.post_item  .post_name span{
-	color:#ff552e ;
-	font-size: 14px;
-	float: right;
+.post_item .post_name {
+  margin-bottom: 13px;
 }
 
-.post_item  .post_information{
-	color:#666666 ;
-	font-size: 12px;
-	margin-bottom: 21px;
+.post_item .post_name a {
+  cursor: pointer;
+  color: #333333;
+  font-size: 16px;
 }
 
-.post_item  .post_information span{
-	position: relative;
-	padding-right: 13px;
+.post_item .post_name span {
+  color: #ff552e;
+  font-size: 14px;
+  float: right;
 }
 
-.post_item  .post_information span::after{
-	content: "";
-	width: 1px;
-	height: 10px;
-	position: absolute;
-	right: 6px;
-	top: 2px;
-	background: #e2e2e2;
+.post_item .post_information {
+  color: #666666;
+  font-size: 12px;
+  margin-bottom: 21px;
 }
 
-.post_item  .post_information span:last-child{
-	padding-right: 0;
+.post_item .post_information span {
+  position: relative;
+  padding-right: 13px;
 }
 
-.post_item  .post_information span:last-child::after{
-	content: "";
-	width: 0;
-	height: 0;
+.post_item .post_information span::after {
+  content: "";
+  width: 1px;
+  height: 10px;
+  position: absolute;
+  right: 6px;
+  top: 2px;
+  background: #e2e2e2;
 }
 
-.post_item  .btn_box{
-	margin-top: 16px;
+.post_item .post_information span:last-child {
+  padding-right: 0;
 }
 
-.post_item  .btn_box a{
-	color:#999999 ;
-	font-size: 12px;
-	line-height: 22px;
-	cursor: pointer;
+.post_item .post_information span:last-child::after {
+  content: "";
+  width: 0;
+  height: 0;
 }
 
-.post_item  .btn_box button{
-	color: #ffffff;
-	font-size: 12px;
-	padding: 3px 11px 3px 28px;
-	border-radius: 10px;
-	background: url(../images/jobfairol/WX_icon.png)8px 5px no-repeat;
-	background-color: #00c785;
-	cursor: pointer;
-	float: right;
+.post_item .btn_box {
+  margin-top: 16px;
 }
 
-.paging .paging_box{
-	padding: 30px 0 10px;
+.post_item .btn_box a {
+  color: #999999;
+  font-size: 12px;
+  line-height: 22px;
+  cursor: pointer;
 }
 
-.paging .paging_box button{
-	background: #fff;
-	cursor: pointer;
+.post_item .btn_box button {
+  color: #ffffff;
+  font-size: 12px;
+  padding: 3px 11px 3px 28px;
+  border-radius: 10px;
+  background: url(../images/jobfairol/WX_icon.png) 8px 5px no-repeat;
+  background-color: #00c785;
+  cursor: pointer;
+  float: right;
+}
+
+.paging .paging_box {
+  padding: 30px 0 10px;
+}
+
+.paging .paging_box button {
+  background: #fff;
+  cursor: pointer;
 }
 
 .face_qr_box {
-	width: 123px;
-	height: 123px;
-	margin: 0 auto 20px;
+  width: 123px;
+  height: 123px;
+  margin: 0 auto 20px;
 }
 .face_qr_box img {
-	width: 123px;
-	height: 123px; border: 0;
+  width: 123px;
+  height: 123px;
+  border: 0;
 }
 .face_qr_txt {
-	line-height: 1;
-	margin-bottom: 10px;
-	color: #666;
-	text-align: center;
+  line-height: 1;
+  margin-bottom: 10px;
+  color: #666;
+  text-align: center;
 }

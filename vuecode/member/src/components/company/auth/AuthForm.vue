@@ -21,6 +21,7 @@
                 :show-file-list="false"
                 action="#"
                 :http-request="handlerUploadLisence"
+                :before-upload="beforeUpload"
               >
                 <img v-if="license_img != ''" class="img" :src="license_img" />
                 <i
@@ -44,6 +45,7 @@
               :show-file-list="false"
               action="#"
               :http-request="handlerUploadIdcardFrond"
+              :before-upload="beforeUpload"
             >
               <img
                 v-if="legal_person_idcard_front_img != ''"
@@ -65,6 +67,7 @@
               :show-file-list="false"
               action="#"
               :http-request="handlerUploadIdcardBack"
+              :before-upload="beforeUpload"
             >
               <img
                 v-if="legal_person_idcard_back_img != ''"
@@ -91,6 +94,7 @@
                 :show-file-list="false"
                 action="#"
                 :http-request="handlerUploadProxy"
+                :before-upload="beforeUpload"
               >
                 <img v-if="proxy_img != ''" class="img" :src="proxy_img" />
                 <i
@@ -150,6 +154,21 @@ export default {
     this.license_img = this.authinfo.license_img
   },
   methods: {
+    beforeUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isPng = file.type === 'image/png';
+      const isLtsize = file.size / 1024 < this.$store.state.config.fileupload_size;
+      let size = this.$store.state.config.fileupload_size / 1024
+      size = size.toFixed(1)
+
+      if (!isJPG && !isPng) {
+        this.$message.error('图片只能是 JPG/PNG 格式!');
+      }
+      if (!isLtsize) {
+        this.$message.error('图片大小不能超过 '+size+'MB!');
+      }
+      return (isJPG || isPng) && isLtsize;
+    },
     handlerUploadLisence(file) {
       http
         .postFormData(api.uploadFile, { file: file.file })

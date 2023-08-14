@@ -162,9 +162,9 @@ export default {
     return {
       checkWageAll: true,
       checkSetmealAll: true,
-      props_jobcategory: { multiple: true },
+      props_jobcategory: { multiple: true,checkStrictly: true },
       options_jobcategory: [],
-      props_citycategory: { multiple: true },
+      props_citycategory: { multiple: true,checkStrictly: true },
       options_citycategory: [],
       options_trade: [],
       options_tag: [],

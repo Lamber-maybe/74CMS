@@ -1304,6 +1304,10 @@ cursor: pointer;
   .subsite_pupop .subsite_box .subsite_list .current_site .site_link{
 	color:#1787fb ;
   }
+  .subsite_pupop .subsite_box .subsite_list .lsit_box{
+	max-height: 300px;
+    overflow-y: scroll;
+  }
   .subsite_pupop .subsite_box .subsite_list .lsit_box .item{
 	display: block;
 	float: left;

@@ -128,7 +128,7 @@ export default {
     return {
       checkNatureAll: true,
       checkSetmealAll: true,
-      props_citycategory: { multiple: true },
+      props_citycategory: { multiple: true,checkStrictly: true },
       options_citycategory: [],
       options_trade: [],
       options_nature: [],

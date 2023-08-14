@@ -148,7 +148,7 @@
       style="width:100%;height:100%"
     >
       <Login
-        :utype="1"
+        :utype="thisType"
         :single_login="true"
         @afterLogin="afterLogin"
         :goback_custom="true"
@@ -218,7 +218,8 @@ export default {
       resKey: '',
       showQrcode: false,
       diaQrUrl: '',
-      diaQrTitle: ''
+      diaQrTitle: '',
+      thisType: 1
     }
   },
   created () {
@@ -356,8 +357,8 @@ export default {
     doApply (e) {
       let t = this
       let loginType = this.$store.state.LoginType
-      let thisType = parseInt(e.target.dataset.type)
-      let confirmText = thisType === 1 ? '当前操作需要登录企业账号' : '当前操作需要登录个人账号'
+      t.thisType = parseInt(e.target.dataset.type)
+      let confirmText = t.thisType === 1 ? '当前操作需要登录企业账号' : '当前操作需要登录个人账号'
       if (this.$store.state.LoginOrNot === false) {
         // 未登录
         this.$dialog
@@ -371,7 +372,7 @@ export default {
           })
           .catch(() => {})
       } else {
-        if (loginType !== thisType) {
+        if (loginType !== t.thisType) {
           this.$dialog
             .confirm({
               title: '提示',

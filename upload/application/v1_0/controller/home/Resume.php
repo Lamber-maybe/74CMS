@@ -97,7 +97,7 @@ class Resume extends \app\v1_0\controller\common\Base
             }
         }
 
-        if(config('global_config.resume_search_login')==1){
+        if(config('global_config.resume_search_login')==1 && $this->platform=='mobile'){
             if($this->userinfo===null){
                 $show_mask = 1;
                 if(!empty($params)){

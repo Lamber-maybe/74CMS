@@ -19,6 +19,9 @@ class Qrcode extends \app\v1_0\controller\common\Base
         if($type=='wechat'){
             $this->makeWechatQrcode();
         }
+        if($type=='bind_weixin'){
+            $this->makeBindWechatQrcode();
+        }
     }
     /**
      * 生成普通二维码（跳转到指定链接）
@@ -32,7 +35,8 @@ class Qrcode extends \app\v1_0\controller\common\Base
             ob_clean();
             $qrcode::png($url,false, 'H', 8, 2);
             exit;
-        }
+       
+	}
     }
     /**
      * 生成微信带参数二维码
@@ -51,6 +55,24 @@ class Qrcode extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(501, 'server error');
             }
 		}
+    }
+    /**
+     * 生成微信绑定二维码
+     */
+    protected function makeBindWechatQrcode(){
+        $alias = 'member_bind_weixin';
+        $params = [
+            'alias'=>$alias,
+            'uid'=>$this->userinfo->uid,
+            'utype'=>$this->userinfo->utype
+        ];
+        $class = new \app\common\lib\Wechat;
+        $qrcode = $class->makeQrcode($params);
+        if($qrcode){
+            $this->ajaxReturn(200, '', $qrcode);
+        }else{
+            $this->ajaxReturn(501, 'server error');
+        }
     }
     protected function showImg($img){
         $size = getimagesize($img);

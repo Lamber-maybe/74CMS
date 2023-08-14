@@ -59,7 +59,7 @@ class SysTool extends \app\common\controller\Backend
 
         $nopass_comuid_arr = model('Company')->where('audit',2)->column('uid');
         if(!empty($nopass_comuid_arr)){
-            if($pass==1){
+            if($nopass==1){
                 $display_comuid_arr = array_merge($display_comuid_arr,$nopass_comuid_arr);
             }else{
                 $not_display_comuid_arr = array_merge($not_display_comuid_arr,$nopass_comuid_arr);

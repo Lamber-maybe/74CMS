@@ -565,17 +565,19 @@ export default {
 }
 .top-qrcode-item {
   display: inline-block;
-  width: 100px;
+  width: 120px;
   margin: 0 10px;
   span {
     display: block;
   }
   .img img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
   }
   .txt {
     text-align: center;
+    font-size:12px;
+    color:#999;
   }
 }
 </style>

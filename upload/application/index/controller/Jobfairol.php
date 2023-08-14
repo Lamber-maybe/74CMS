@@ -352,8 +352,6 @@ class Jobfairol extends \app\index\controller\Base{
             ->where('a.utype',2)
             ->where('a.audit',1);
         if($keyword!=''){
-            $keyword = urldecode(urldecode($keyword));
-            $keyword = trim($keyword);
             $against = '';
             if (false !== stripos($keyword, ' ')) {
                 $keyword = merge_spaces($keyword);

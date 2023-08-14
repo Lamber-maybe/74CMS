@@ -196,7 +196,7 @@
     <van-dialog v-model="showWeixinQrcode" title="微信认证" confirm-button-text="知道了">
       <div class="dialog_wx_qr">
         <div class="tip orange">截屏保存二维码图片，关注公众号</div>
-        <div class="qr_img"><img :src="$store.state.config.wechat_qrcode"/></div>
+        <div class="qr_img"><img v-if="scanQrcodeImg" :src="scanQrcodeImg"/></div>
         <div class="tip_text">微信内使用“扫一扫”打开图片，识别关注公众号完成绑定操作。绑定后即可随时随地接收最新消息通知，还可使用微信快速登录网站。</div>
       </div>
     </van-dialog>
@@ -237,13 +237,19 @@ export default {
       showResetUsername: false,
       showResetPassword: false,
       showResetMobile: false,
-      showBindEmail: false
+      showBindEmail: false,
+      scanQrcodeImg: ''
     }
   },
   created () {
     this.fetchData()
   },
   methods: {
+    initQrcode () {
+      http.get(api.get_qrcode, {type: 'bind_weixin'}).then(res => {
+        this.scanQrcodeImg = res.data
+      })
+    },
     fetchData () {
       http
         .post(api.member_account, {})
@@ -432,6 +438,7 @@ export default {
           })
       } else {
         this.showWeixinQrcode = true
+        this.initQrcode()
       }
     }
   }

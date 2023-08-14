@@ -77,7 +77,7 @@
     
     <div class="indexFooter_nav_con">
         <ul class="indexFooter_nav clearfix">
-            <li><a>网站首页</a></li>
+            <li><a href="{#:url('index/index/index')#}">网站首页</a></li>
             <?php 
                 $explain_data2 = model('Explain')->where('is_display',1)->order('sort_id desc,id asc')->limit(4)->page(2)->column('id,title,link_url'); 
                 $explain_list2 = [];

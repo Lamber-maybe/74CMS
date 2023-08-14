@@ -535,13 +535,16 @@ class Job extends \app\common\model\BaseModel
         model('Company')
             ->where('uid', 'in', $uid_arr)
             ->setField('refreshtime', $timestamp);
+        $model = model('RefreshJobLog');
         foreach ($jobid_arr as $key => $value) {
-            model('RefreshJobLog')->save([
+            $_model = clone $model;
+            $_model->save([
                 'uid' => is_array($uid)?$uid[$key]:$uid,
                 'jobid' => $value,
                 'addtime' => $timestamp,
                 'platform' => config('platform'),
             ]);
+            unset($_model);
         }
         return true;
     }

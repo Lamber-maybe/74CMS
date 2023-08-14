@@ -159,7 +159,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $job_list[$value['company_id']][] = $job_tmp_arr;
             }
         }
-        
+
         $returnlist = [];
         foreach ($list as $key => $value) {
             $tmp_arr = [];
@@ -225,7 +225,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         $list = $list->order('b.refreshtime desc')->page($current_page, $pagesize)->select();
 
         $comid_arr = $cominfo_arr = $logo_arr = $logo_id_arr = $icon_id_arr = $icon_arr = $qrcode_arr = $qrcode_id_arr = $cs_id_arr = $cs_arr = [];
-        
+
         foreach ($list as $key => $value) {
             $comid_arr[] = $value['company_id'];
             if($value['qrcode'] > 0){
@@ -270,7 +270,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $cs_arr = model('Uploadfile')->getFileUrlBatch($cs_id_arr);
             }
         }
-        
+
         $category_district_data = model('CategoryDistrict')->getCache();
         $returnlist = [];
         foreach ($list as $key => $value) {
@@ -308,7 +308,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 $tmp_arr['setmeal_icon'] = '';
                 $tmp_arr['qrcode_src'] = '';
             }
-            
+
             if ($value['district']) {
                 $tmp_arr['district_text'] = isset(
                     $category_district_data[$value['district']]
@@ -370,8 +370,6 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                 ->where('a.utype',2)
                 ->where('a.audit',1);
         if($keyword!=''){
-            $keyword = urldecode(urldecode($keyword));
-            $keyword = trim($keyword);
             $against = '';
             if (false !== stripos($keyword, ' ')) {
                 $keyword = merge_spaces($keyword);
@@ -518,7 +516,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                     }
                 }
             }
-            
+
             if (!empty($category_arr)) {
                 $category_arr = array_unique($category_arr);
                 $tmp_arr['intention_jobs'] = implode(',', $category_arr);

@@ -151,7 +151,7 @@ class Job extends \app\v1_0\controller\common\Base
             $params['north_east_lng'] = $north_east_lng;
         }
 
-        if(config('global_config.job_search_login')==1 && $search_type=='list'){
+        if(config('global_config.job_search_login')==1 && $search_type=='list' && $this->platform=='mobile'){
             if($this->userinfo===null){
                 $show_mask = 1;
                 if(!empty($params)){

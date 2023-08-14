@@ -31,7 +31,7 @@
       </el-table-column>
     </el-table>
     <div class="spaceline" />
-    <el-button size="small" type="primary" @click="onSubmit()">保存</el-button>
+    <el-button v-if="alias == 'alisms'" size="small" type="primary" @click="onSubmit()">保存</el-button>
   </div>
 </template>
 

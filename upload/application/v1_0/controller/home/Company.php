@@ -344,6 +344,7 @@ class Company extends \app\v1_0\controller\common\Base
             ->field('b.save_path,b.platform,a.title')
             ->where('a.comid', $company_id)
             ->where('a.audit', 1)
+            ->limit(6)
             ->select();
         $return = [];
         foreach ($list as $key => $value) {

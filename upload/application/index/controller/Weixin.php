@@ -1,6 +1,6 @@
 <?php
 namespace app\index\controller;
-use app\common\model\Uploadfile;
+
 use app\common\model\shortvideo\SvCompanyVideo;
 use app\common\model\shortvideo\SvPersonalVideo;
 use Think\Exception;
@@ -726,6 +726,81 @@ class Weixin extends \app\common\controller\Base
                     "Url" => config('global_config.mobile_domain').'shortvideo/videoplay?id='.$vid.'&gointype=playlist&videotype='.$vtype
                 ];
                 $this->outputArticle($object,$content_arr);
+                break;
+            case 'member_bind_weixin':
+                $uid = intval($event['uid']);
+                $utype = intval($event['utype']);
+                if(!$uid){
+                    $this->outputText($object,'绑定失败，请尝试重新扫码');
+                }
+                $empty_bind = true;
+                $bindinfo_where = [
+                    'type' => 'weixin'
+                ];
+                $weixin_userinfo = $this->getWeixinUserinfo($object->FromUserName);
+                if($weixin_userinfo===null){
+                    $this->outputText($object,'获取用户信息失败，请稍候再试');
+                }else{
+                    $openid = $weixin_userinfo['openid'];
+                    $unionid = isset($weixin_userinfo['unionid'])?$weixin_userinfo['unionid']:'';
+                    $nickname = $weixin_userinfo['nickname'];
+                    $avatar = $weixin_userinfo['headimgurl'];
+                }
+                if($unionid!=''){
+                    $bindinfo_where['unionid'] = $unionid;
+                }else{
+                    $bindinfo_where['openid'] = $openid;
+                }
+                $bindinfo = model('MemberBind')->where($bindinfo_where)->find();
+                //如果该openid或unionid已经绑定过了，查询已绑定的是否是自己的账户；
+                //情况一：如果不是，清除掉，继续绑定；
+                //情况二：如果是，查询openid一致不一致，不一致说明绑定的是其他端，这次还需要再存一下信息；否则跳过；
+                do{
+                    if($bindinfo!==null){
+                        $empty_bind = false;
+                        if($bindinfo['uid']!=$uid){
+                            model('MemberBind')->where($bindinfo_where)->delete();
+                            $empty_bind = true;
+                            break;
+                        }
+                        if($bindinfo['is_subscribe']==0){
+                            if($bindinfo['openid']!=$openid){
+                                $empty_bind = true;
+                                break;
+                            }
+                        }
+                    }
+                }while(0);
+
+                //检测当前手机号是否绑定过其他账号
+                if($empty_bind===true){
+                    $bindinfo = model('MemberBind')->where('type','weixin')->where('uid',$uid)->find();
+                    if($bindinfo!==null && ($bindinfo['unionid']!=$unionid || $bindinfo['openid']!=$openid)){
+                        model('MemberBind')->where('type','weixin')->where('uid',$uid)->delete();
+                    }
+                }
+
+                if($empty_bind===true){
+                    $fansCheck = model('WechatFans')->where('openid',$openid)->find();
+                    if($fansCheck===null){
+                        $is_subscribe = 0;
+                    }else{
+                        $is_subscribe = 1;
+                    }
+                    $sqlarr['uid'] = $uid;
+                    $sqlarr['type'] = 'weixin';
+                    $sqlarr['openid'] = $openid;
+                    $sqlarr['unionid'] = $unionid;
+                    $sqlarr['nickname'] = $nickname;
+                    $sqlarr['avatar'] = $avatar;
+                    $sqlarr['bindtime'] = time();
+                    $sqlarr['is_subscribe'] = $is_subscribe;
+                    model('MemberBind')->save($sqlarr);
+                    if($is_subscribe==1){
+                        model('Task')->doTask($uid, $utype, 'bind_weixin');
+                    }
+                }
+                $this->outputText($object,'绑定成功');
                 break;
             default:
                 break;

@@ -879,6 +879,9 @@ function badword_filter($content){
     return \app\common\lib\Badword::filter($content);
 }
 function filter_empty_array($arr){
+    if(!is_array($arr)){
+        $arr = [$arr];
+    }
     if(count($arr)==1 && empty($arr[0]))return [];
     return $arr;
 }

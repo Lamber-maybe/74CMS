@@ -47,7 +47,7 @@ class Marketing extends \app\common\controller\Backend
         $jobid_arr = $model->column('a.id');
         $list = [];
         if(!empty($jobid_arr)){
-            $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('id','in',$jobid_arr)->select();
+            $list = model('Job')->field('id,jobname,content,address,minwage,maxwage,negotiable,tag,education,experience')->where('id','in',$jobid_arr)->orderRaw('field(id,'.implode(",",$jobid_arr).')')->select();
         }
         $class = new \app\common\lib\Wechat;
         $return = [];
@@ -99,7 +99,7 @@ class Marketing extends \app\common\controller\Backend
         $resumeid_arr = $model->column('a.id');
         $list = [];
         if(!empty($resumeid_arr)){
-            $list = model('Resume')->field('id,display_name,fullname,sex,birthday,education,enter_job_time,current,specialty')->where('id','in',$resumeid_arr)->select();
+            $list = model('Resume')->field('id,display_name,fullname,sex,birthday,education,enter_job_time,current,specialty')->where('id','in',$resumeid_arr)->orderRaw('field(id,'.implode(",",$resumeid_arr).')')->select();
         }
         $class = new \app\common\lib\Wechat;
         $return = [];
@@ -216,6 +216,7 @@ class Marketing extends \app\common\controller\Backend
                 ->join(config('dababase.prefix') . 'company_info c','a.uid=c.uid','LEFT')
                 ->field('a.id,a.companyname,b.contact,c.address,a.tag')
                 ->where('a.id','in',$comid_arr)
+                ->orderRaw('field(a.id,'.implode(",",$comid_arr).')')
                 ->select();
             $jobdata = model('Job')->field('id,company_id,jobname,minwage,maxwage,negotiable,education,experience,amount,content')->where('company_id','in',$comid_arr)->where('audit',1)->where('is_display',1)->select();
             foreach ($jobdata as $key => $value) {
@@ -436,10 +437,10 @@ class Marketing extends \app\common\controller\Backend
                 $model = $model->order('a.refreshtime','desc');
                 break;
             case 'stick':
-                $model = $model->where('a.stick',1);
+                $model = $model->where('a.stick',1)->order('a.refreshtime','desc');
                 break;
             case 'emergency':
-                $model = $model->where('a.emergency',1);
+                $model = $model->where('a.emergency',1)->order('a.refreshtime','desc');
                 break;
             case 'promotion':
                 $model = $model->order('a.stick','desc')->order('a.emergency','desc');
@@ -568,7 +569,7 @@ class Marketing extends \app\common\controller\Backend
                 $model = $model->order('a.refreshtime','desc');
                 break;
             case 'promotion':
-                $model = $model->order('a.stick','desc');
+                $model = $model->order('a.stick','desc')->order('a.refreshtime','desc');
                 break;
             default:
                 $model = $model->order('a.refreshtime','desc');
