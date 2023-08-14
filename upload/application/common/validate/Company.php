@@ -31,6 +31,9 @@ class Company extends BaseValidate
         'click' => 'number',
         'robot' => 'number|in:0,1'
     ];
+    protected $message = [
+        'district1.gt' =>  '请选择所在地区'
+    ];
     protected function uniqueCompanyname($value, $rule, $data)
     {
         if (config('global_config.company_repeat') == 1) {

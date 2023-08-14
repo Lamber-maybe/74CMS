@@ -1975,10 +1975,11 @@ CREATE TABLE `qs_badword` (
 
 DROP TABLE IF EXISTS `qs_tweets_label`;
 CREATE TABLE `qs_tweets_label` (
-  `id` int(10) NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,,
   `name` varchar(100) NOT NULL,
   `value` text NOT NULL,
-  `type` tinyint(3) NOT NULL DEFAULT '2' COMMENT '1-头部底部；2-主体'
+  `type` tinyint(3) NOT NULL DEFAULT '2' COMMENT '1-头部底部；2-主体',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_tweets_label||-_-||
 
