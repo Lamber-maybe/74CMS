@@ -37,6 +37,8 @@ import {
 import {
   companyBackupsList
 } from '@/api/member_cancel_apply'
+import { jobfairOlModifyState } from '@/api/jobfairol'
+import {jobModifyState} from "@/api/job";
 
 export default {
   // 首页仪表盘
@@ -105,6 +107,7 @@ export default {
   articleAdd: '/article/add',
   articleEdit: '/article/edit',
   articleDelete: '/article/delete',
+  articleModifyState: '/article/articleModifyState',
 
   // 资讯分类
   articleCategoryList: '/article_category/index',
@@ -116,6 +119,7 @@ export default {
   helpAdd: '/help/add',
   helpEdit: '/help/edit',
   helpDelete: '/help/delete',
+  helpModifyState: '/help/helpModifyState',
 
   // 帮助中心分类
   helpCategoryList: '/help_category/index',
@@ -157,6 +161,7 @@ export default {
   adEdit: '/ad/edit',
   adDelete: '/ad/delete',
   adInnerLinkOptions: '/ad/innerLinkOptions',
+  adState: '/ad/adModifyState',
 
   // 广告位
   adCategoryList: '/ad_category/index',
@@ -169,17 +174,20 @@ export default {
   noticeAdd: '/notice/add',
   noticeEdit: '/notice/edit',
   noticeDelete: '/notice/delete',
+  noticeModifyState: '/notice/noticeModifyState',
 
   // 说明页
   explainList: '/explain/index',
   explainAdd: '/explain/add',
   explainEdit: '/explain/edit',
   explainDelete: '/explain/delete',
+  explainModifyState: '/explain/explainModifyState',
   // 友情链接
   flinkList: '/flink/index',
   flinkAdd: '/flink/add',
   flinkEdit: '/flink/edit',
   flinkDelete: '/flink/delete',
+  flinkModifyState: '/flink/flinkModifyState',
 
   // 获取分类缓存
   getClassify: '/classify/index',
@@ -307,6 +315,7 @@ export default {
   resumeImgList: '/resume_img/index',
   resumeImgAudit: '/resume_img/setAudit',
   resumeImgDel: '/resume_img/delete',
+  resumeImgEdit: '/resume_img/edit',
 
   // 企业管理
   companyList: '/company/index',
@@ -323,6 +332,7 @@ export default {
   jobDelete: '/job/delete',
   jobAudit: '/job/setAudit',
   jobRefresh: '/job/refresh',
+  jobModifyState: '/job/jobModifyState',
   // 职位推广链接
   jobLink: '/job/jobLink',
 
@@ -703,6 +713,7 @@ export default {
   jobFairListOlQrService: '/jobfairol/qrService',
   jobFairListOlComBatchAdd: '/jobfairol/companyBatchAdd',
   jobFairListOlPerBatchAdd: '/jobfairol/personalBatchAdd',
+  jobfairOlModifyState: '/jobfairol/modifyState',
 
   // 微信公众号营销
   marketingWxoffiaccount: '/marketing/index',
@@ -973,5 +984,8 @@ export default {
   newDataStatisticsChart: 'new_data_statistics/chart',
   newRealTimeData: 'new_data_statistics/realTimeData',
   newGeneralstatistics: 'new_data_statistics/generalstatistics',
-  newOfficialData: 'new_data_statistics/officialData'
+  newOfficialData: 'new_data_statistics/officialData',
+
+  // 生成企业logo
+  sendCompanyLogo: '/company/sendCompanyLogo',
 }

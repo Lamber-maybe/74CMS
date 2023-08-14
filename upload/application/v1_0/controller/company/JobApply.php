@@ -512,9 +512,20 @@ class JobApply extends \app\v1_0\controller\common\Base
     {
         $id = input('post.id/d', 0, 'intval');
         $info = model('JobApply')->where(['id' => ['eq', $id]])->find();
+        $arr = ['is_look'=>1];
+        $free_viewing_count = model('JobApply')
+            ->where('free_viewing',1)
+            ->whereTime('free_viewing_time', 'today')
+            ->where('company_uid',$this->userinfo->uid)
+            ->count();
+        $resume_view_num = model('MemberSetmeal')->where('uid',$this->userinfo->uid)->value('resume_view_num');
+        if ($free_viewing_count < $resume_view_num){
+            $arr['free_viewing'] = 1;
+            $arr['free_viewing_time'] = time();
+        }
         model('JobApply')
             ->where(['id' => ['eq', $id]])
-            ->setField('is_look', 1);
+            ->update($arr);
         $this->writeMemberActionLog($this->userinfo->uid,'收到的简历设为已查看【简历id：'.$info->resume_id.'】');
         $this->ajaxReturn(200, '设置成功');
     }

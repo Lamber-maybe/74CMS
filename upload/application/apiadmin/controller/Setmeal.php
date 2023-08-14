@@ -77,7 +77,6 @@ class Setmeal extends Backend
                 0,
                 'intval'
             ),
-            'enable_poster' => input('post.enable_poster/d', 0, 'intval'),
             'note' => input('post.note/s', '', 'trim'),
             'recommend' => input('post.recommend/d', 0, 'intval'),
             'gift_point' => input('post.gift_point/d', 0, 'intval'),
@@ -97,6 +96,11 @@ class Setmeal extends Backend
                 'post.im_total/d',
                 0,
                 'intval'
+            ),
+            'resume_view_num' => input(
+                'resume_view_num/d',
+                0,
+                'intval'
             )
         ];
         if ($input_data['preferential_open'] == 1) {
@@ -111,6 +115,10 @@ class Setmeal extends Backend
         } else {
             $input_data['preferential_expense_start'] = 0;
             $input_data['preferential_expense_end'] = 0;
+        }
+
+        if ($input_data['show_apply_contact'] != 1) {
+            $input_data['resume_view_num'] = 0;
         }
 
         try {
@@ -153,8 +161,17 @@ class Setmeal extends Backend
                 . '次/天；使用视频面试:'
                 . model('Setmeal')->map_enable_video_interview[$input_data['enable_video_interview']]
                 . '；收到简历免费查看:'
-                . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']]
-                . '；是否推荐:'
+                . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
+
+            if (1 === $input_data['show_apply_contact']) {
+                $resume_view_num = $input_data['resume_view_num'] . '份/天';
+                if (0 === $input_data['resume_view_num']) {
+                    $resume_view_num = '不限制';
+                }
+                $log_field .= '；收到简历查看上限:' . $resume_view_num;
+            }
+
+            $log_field .= '；是否推荐:'
                 . model('Setmeal')->map_recommend[$input_data['recommend']]
                 . '；允许申请:'
                 . model('Setmeal')->map_is_apply[$input_data['is_apply']]
@@ -265,7 +282,6 @@ class Setmeal extends Backend
                     0,
                     'intval'
                 ),
-                'enable_poster' => input('post.enable_poster/d', 0, 'intval'),
                 'note' => input('post.note/s', '', 'trim'),
                 'recommend' => input('post.recommend/d', 0, 'intval'),
                 'gift_point' => input('post.gift_point/d', 0, 'intval'),
@@ -283,6 +299,11 @@ class Setmeal extends Backend
                 ),
                 'im_total' => input(
                     'post.im_total/d',
+                    0,
+                    'intval'
+                ),
+                'resume_view_num' => input(
+                    'resume_view_num/d',
                     0,
                     'intval'
                 )
@@ -306,8 +327,7 @@ class Setmeal extends Backend
 
             try {
                 $info = model('Setmeal')
-                    ->where('id', $id)
-                    ->find();
+                    ->find($id);
                 if (null === $info) {
                     $this->ajaxReturn(500, '要修改的套餐不存在');
                 }
@@ -325,7 +345,7 @@ class Setmeal extends Backend
                 /**
                  * 日志
                  */
-                $log_field = '系统-企业业务配置-套餐配置，套餐管理，添加套餐，套餐名称:'
+                $log_field = '系统-企业业务配置-套餐配置，套餐管理，修改套餐，套餐名称:'
                     . $info['name'];
                 if ($input_data['name'] != $info['name']) {
                     $log_field .= '->' . $input_data['expense'];
@@ -381,11 +401,51 @@ class Setmeal extends Backend
                         . '->'
                         . model('Setmeal')->map_enable_video_interview[$input_data['enable_video_interview']];
                 }
-                if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
-                    $log_field .= '；收到简历免费查看:'
-                        . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
-                        . '->'
-                        . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
+                if (
+                    $input_data['show_apply_contact'] != $info['show_apply_contact']
+                    ||
+                    $input_data['resume_view_num'] != $info['resume_view_num']
+                ) {
+
+                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+                        $log_field .= '；收到简历免费查看:'
+                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+                            . '->'
+                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
+
+                        if (1 === $input_data['show_apply_contact']) {
+                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
+                            if (0 === $input_data['resume_view_num']) {
+                                $resume_view_num = '不限制';
+                            }
+                            $log_field .= '；收到简历查看上限:不允许->' . $resume_view_num;
+                        } else {
+                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+                            if (0 === $info['resume_view_num']) {
+                                $resume_view_num_old = '不限制';
+                            }
+                            $log_field .= '；收到简历查看上限:' . $resume_view_num_old . '->不允许';
+                        }
+
+                    } else {
+
+                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
+                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
+                            if (0 === $input_data['resume_view_num']) {
+                                $resume_view_num_new = '不限制';
+                            }
+                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+                            if (0 === $info['resume_view_num']) {
+                                $resume_view_num_old = '不限制';
+                            }
+                            $log_field .= '；收到简历查看上限:'
+                                . $resume_view_num_old
+                                . '->'
+                                . $resume_view_num_new;
+                        }
+
+                    }
+
                 }
                 if ($input_data['recommend'] != $info['recommend']) {
                     $log_field .= '；是否推荐:'
@@ -483,7 +543,7 @@ class Setmeal extends Backend
             /**
              * 日志
              */
-            $log_field = '系统-企业业务配置-套餐配置，套餐管理，添加套餐，套餐名称:'
+            $log_field = '系统-企业业务配置-套餐配置，套餐管理，删除套餐，套餐名称:'
                 . $info['name']
                 . '(ID:'
                 . $info['id']
@@ -509,8 +569,15 @@ class Setmeal extends Backend
                 . '次/天；使用视频面试:'
                 . model('Setmeal')->map_enable_video_interview[$info['enable_video_interview']]
                 . '；收到简历免费查看:'
-                . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
-                . '；是否推荐:'
+                . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']];
+            if (1 === $info['show_apply_contact']) {
+                $resume_view_num = $info['resume_view_num'] . '份/天';
+                if (0 === $info['resume_view_num']) {
+                    $resume_view_num = '不限制';
+                }
+                $log_field .= '；收到简历查看上限:' . $resume_view_num;
+            }
+            $log_field .= '；是否推荐:'
                 . model('Setmeal')->map_recommend[$info['recommend']]
                 . '；允许申请:'
                 . model('Setmeal')->map_is_apply[$info['is_apply']]

@@ -9,11 +9,21 @@
           {{ info.title }}
         </div>
         <div class="some">
-          <div class="form" :class="info.source == 1 ? 'rep' : ''">
-            {{ info.source_text }}
+          <div class="source">
+            <div class="form2">
+              {{ info.c_name }}
+            </div>
+            <div class="form" :class="info.source == 1 ? 'rep' : ''">
+              {{ info.source_text }}
+            </div>
+            <div class="source_reprint" v-if="info.source == 1">
+              来源：{{ info.source_reprint }}
+            </div>
           </div>
-          <div class="time">{{ info.addtime | timeFilter }}</div>
-          <div class="num">{{ info.click }}</div>
+          <div class="see" :class="info.source == 1 ? 'see_top2' : 'see_top'">
+            <div class="time">{{ info.addtime | timeFilter }}</div>
+            <div class="num">{{ info.click }}</div>
+          </div>
           <div class="clear"></div>
         </div>
       </div>
@@ -176,39 +186,65 @@ export default {
 .list_wrapper {
   .list_block {
     .some {
-      .form {
-        &.rep {
-          color: #ff6600;
-          background-color: #fff5e8;
-        }
-        float: left;
-        line-height: 16px;
-        padding: 0 6px;
+      .source_reprint{
         font-size: 11px;
-        color: #1787fb;
-        border-radius: 3px;
-        background-color: #e7f3ff;
-        margin-right: 10px;
-      }
-      .time {
-        float: left;
-        padding-left: 17px;
-        font-size: 12px;
         color: #999999;
-        height: 16px;
-        background: url("../assets/images/com_man_i3.png") 0 2px no-repeat;
-        background-size: 12px;
       }
-      .num {
-        float: left;
-        font-size: 12px;
-        color: #999999;
-        height: 16px;
-        margin-left: 10px;
-        background: url("../assets/images/com_man_ic2.png") 0 3px no-repeat;
-        background-size: 13px 10px;
-        padding-left: 17px;
+      .source{
+        .form {
+          &.rep {
+            color: #ff6600;
+            background-color: #fff5e8;
+          }
+          float: left;
+          line-height: 16px;
+          padding: 0 6px;
+          font-size: 11px;
+          color: #1787fb;
+          border-radius: 3px;
+          background-color: #e7f3ff;
+          margin-right: 6px;
+        }
+        .form2 {
+          float: left;
+          line-height: 16px;
+          padding: 0 6px;
+          font-size: 11px;
+          color: #999999;
+          border-radius: 3px;
+          background-color: #f3f3f3;
+          margin-right: 5px;
+        }
       }
+      .see_top{
+        padding-top: 25px;
+      }
+      .see_top2{
+        padding-top: 7px;
+      }
+      .see{
+        .time {
+          float: left;
+          padding-left: 17px;
+          font-size: 12px;
+          color: #999999;
+          height: 16px;
+          background: url("../assets/images/com_man_i3.png") 0 2px no-repeat;
+          background-size: 12px;
+          float: left;
+        }
+        .num {
+          float: right;
+          font-size: 12px;
+          color: #999999;
+          height: 16px;
+          margin-left: 10px;
+          background: url("../assets/images/com_man_ic2.png") 0 3px no-repeat;
+          background-size: 13px 10px;
+          padding-left: 17px;
+        }
+      }
+
     }
     .title {
       line-height: 1.6;

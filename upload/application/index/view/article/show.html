@@ -8,12 +8,13 @@
                 <div class="detailed_title_box">
                     <p class="detailed_title">{#$info.title#}</p>
                     <div class="detailed_bottom clearfix">
+                        <span class="guide">{#$info.category_text#}</span>
                         {#eq name="info.source" value="0"#}
                         <span class="original">原创</span>
                         {#else/#}
                         <span class="original2">转载</span>
+                        <span class="source_reprint">来源：{#$info.source_reprint#}</span>
                         {#/eq#}
-                        <span class="guide">{#$info.category_text#}</span>
                         <p class="handle_right">
                             <el-popover placement="bottom-end" width="200" trigger="hover">
                                 <span>

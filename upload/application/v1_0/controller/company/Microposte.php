@@ -11,15 +11,6 @@ class Microposte extends \app\v1_0\controller\common\Base
         parent::_initialize();
     }
     /**
-     * 根据职位数获取模板
-     */
-    public function tpl()
-    {
-        $jobnum = input('get.jobnum/d',0,'intval');
-        $list = model('MicroposteTpl')->where('jobnum',$jobnum)->select();
-        $this->ajaxReturn(200, '获取数据成功', ['items'=>$list]);
-    }
-    /**
      * 根据职位id获取职位信息
      */
     public function joblist(){

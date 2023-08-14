@@ -326,7 +326,7 @@ class Company extends \app\common\model\BaseModel
                 'company_auth_success',
                 [
                     '您提交的企业认证资料已认证通过。',
-                    '通过审核',
+                    '企业认证资料通过审核',
                     date('Y年m月d日 H:i',$timestamp),
                     '点击进入会员中心'
                 ],
@@ -343,7 +343,7 @@ class Company extends \app\common\model\BaseModel
                 'company_auth_fail',
                 [
                     '您提交的企业认证未通过审核。',
-                    '审核未通过',
+                    '企业认证资料审核不通过',
                     date('Y年m月d日 H:i',$timestamp),
                     $reason?$reason:'无',
                     '请修改后再次发布，点击去修改'

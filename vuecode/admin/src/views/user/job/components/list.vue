@@ -133,11 +133,12 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="职位状态" min-width="100">
+        <el-table-column label="职位状态" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.is_display | displayFilter">
-              {{ options_display[scope.row.is_display] }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column align="center" label="推广" min-width="120">
@@ -317,7 +318,7 @@
 
 <script>
 import { getClassify } from '@/api/classify'
-import { jobList, jobDelete, jobAudit, jobRefresh } from '@/api/job'
+import { jobList, jobDelete, jobAudit, jobRefresh, jobModifyState } from '@/api/job'
 import { parseTime, setMemberLogin } from '@/utils/index'
 import { exportJobById } from '@/api/export'
 import { management } from '@/api/member'
@@ -394,6 +395,36 @@ export default {
     this.fetchData()
   },
   methods: {
+    modifyState(row){
+      if (row.display === false) {
+        this.$confirm('确定要把' + row.jobname + '的招聘状态设为暂停招聘吗？ 设为暂停招聘后此职位将无法被用户搜索。', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.saveState(row)
+        }).catch(() => {
+          this.fetchData()
+          return false
+        })
+      } else {
+        this.saveState(row)
+      }
+    },
+    saveState(row){
+      const that = this
+      const param = {
+        is_display: row.display,
+        id: row.id
+      }
+      jobModifyState(param).then(response => {
+        this.$message.success(response.message)
+        this.fetchData()
+        return true
+      }).catch(() => {
+        that.issubmit = false
+      })
+    },
     funManagement(row) {
       const params = {
         uid: row.uid

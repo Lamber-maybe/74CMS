@@ -57,6 +57,18 @@ class Member extends \app\common\model\BaseModel
         if ($model->save()) {
             if(!intval($status)){
                 model('IdentityToken')->where(['uid'=>$uid])->delete(); //锁定即删除token,
+                /**
+                 * 【ID1000411】
+                 * 【优化】后台锁定账号时增加 清马甲/千帆绑定的表字段
+                 * yx - 2022.11.09
+                 * [新增]
+                 */
+                model('MemberBind')
+                    ->where([
+                        'uid' => $uid,
+                        'type' => ['in',['qianfanyunapp','magapp']]
+                    ])
+                    ->delete();
             }
             if ($model->utype == 1) {
                 model('Company')->setUserStatus($uid, $status);
@@ -127,6 +139,7 @@ class Member extends \app\common\model\BaseModel
             $setmeal_info['enable_video_interview'];
         $data['enable_poster'] = $setmeal_info['enable_poster'];
         $data['show_apply_contact'] = $setmeal_info['show_apply_contact'];
+        $data['resume_view_num'] = $setmeal_info['resume_view_num'];
         $data['expired'] = 0;
         $check_setmeal = model('MemberSetmeal')
             ->where('uid', $data['uid'])
@@ -322,7 +335,6 @@ class Member extends \app\common\model\BaseModel
                 $overtime_config['service_added_discount'];
             $info['enable_video_interview'] =
                 $overtime_config['enable_video_interview'];
-            $info['enable_poster'] = $overtime_config['enable_poster'];
             $info['show_apply_contact'] =
                 $overtime_config['show_apply_contact'];
             $info['overtime'] = 1;

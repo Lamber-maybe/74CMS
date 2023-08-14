@@ -192,7 +192,7 @@ class Tipoff extends \app\common\controller\Backend
 
             // 日志
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '，'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

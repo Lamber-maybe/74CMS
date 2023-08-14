@@ -37,3 +37,10 @@ export function articleDelete(data) {
     data
   })
 }
+export function articleModifyState(data) {
+  return request({
+    url: apiArr.articleModifyState,
+    method: 'post',
+    data
+  })
+}

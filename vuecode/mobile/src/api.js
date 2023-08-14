@@ -347,10 +347,6 @@ export default {
   get_qrcode: '/home/qrcode/index',
   // 微信分享参数
   wechat_share_config: '/home/share/wechat',
-  // 微海报-根据职位数获取模板
-  microposte_get_tpl_by_jobnum: '/company/microposte/tpl',
-  // 微海报-获取职位列表
-  microposte_get_joblist: '/company/microposte/joblist',
   // 获取图片验证码
   captcha_picture: '/home/captcha/picture',
   // 解绑

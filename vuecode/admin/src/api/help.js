@@ -37,3 +37,10 @@ export function helpDelete(data) {
     data
   })
 }
+export function helpModifyState(data) {
+  return request({
+    url: apiArr.helpModifyState,
+    method: 'post',
+    data
+  })
+}

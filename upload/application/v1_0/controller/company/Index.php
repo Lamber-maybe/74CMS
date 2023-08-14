@@ -17,7 +17,7 @@ class Index extends \app\v1_0\controller\common\Base
     public function index()
     {
         $companyinfo = model('Company')
-            ->field('id,logo,companyname,scale,nature,trade,audit,district1,district2,district3,district')
+            ->field('id,logo,companyname,scale,nature,trade,audit,district1,district2,district3,district,tag')
             ->where('uid', $this->userinfo->uid)
             ->find();
         $auth = model('CompanyAuth')->where('uid', $this->userinfo->uid)->find();
@@ -27,6 +27,36 @@ class Index extends \app\v1_0\controller\common\Base
             $return_companyinfo['id'] = $companyinfo['id'];
             $return_companyinfo['companyname'] = $companyinfo['companyname'];
             $return_companyinfo['district1'] = $companyinfo['district1'];
+            $return_companyinfo['district2'] = $companyinfo['district2'];
+            $return_companyinfo['district3'] = $companyinfo['district3'];
+            $return_companyinfo['citycategory_arr'] = [];
+            if ($companyinfo['district1'] > 0)
+            {
+                array_push($return_companyinfo['citycategory_arr'],$companyinfo['district1']);
+            }
+            if ($companyinfo['district2'] > 0)
+            {
+                array_push($return_companyinfo['citycategory_arr'],$companyinfo['district2']);
+            }
+            if ($companyinfo['district3'] > 0)
+            {
+                array_push($return_companyinfo['citycategory_arr'],$companyinfo['district3']);
+            }
+            $return_companyinfo['tag'] = !empty($companyinfo['tag']) ? explode(',',$companyinfo['tag']) : '';
+            $category_data = model('Category')->getCache('QS_jobtag');
+            $tag_arr = [];
+            if (!empty($return_companyinfo['tag']))
+            {
+                foreach ($return_companyinfo['tag'] as $k=>$v)
+                {
+                    $return_companyinfo['tag'][$k] = intval($v);
+                    if (isset($category_data[$v]))
+                    {
+                        array_push($tag_arr,$category_data[$v]);
+                    }
+                }
+            }
+            $return_companyinfo['tag_text'] = implode(',',$tag_arr);
             $return_companyinfo['district1_text'] = isset($category_district_data[$companyinfo['district1']])
                 ? $category_district_data[$companyinfo['district1']] : '';
             $return_companyinfo['district2_text'] = isset($category_district_data[$companyinfo['district2']])
@@ -366,5 +396,37 @@ class Index extends \app\v1_0\controller\common\Base
             'dateArr'=>$dateArr
         ];
         $this->ajaxReturn(200,'获取数据成功',$return);
+    }
+
+    // 生成企业logo
+    public function sendCompanyLogo(){
+        $imgBase64 = input('post.imgBase64/s','','trim');
+        $company_id = 100;
+
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/',$imgBase64,$res)) {
+            //获取图片类型
+            $type = $res[2];
+            //图片保存路径
+            $new_file = "upload/company_logo/".$company_id.'/';
+            if (!file_exists($new_file)) {
+                mkdir($new_file,0755,true);
+            }
+            //图片名字
+            $new_file = $new_file.time().'.'.$type;
+            if (file_put_contents($new_file,base64_decode(str_replace($res[1],'', $imgBase64)))) {
+                $id = model('Uploadfile')->insertGetId([
+                    'save_path' => substr($new_file,6),
+                    'platform' => 'default',
+                    'addtime' => time()
+                ]);
+                $arr = [
+                    'file_id' => $id,
+                    'file_url' => config('global_config.sitedomain').'/'.$new_file
+                ];
+                $this->ajaxReturn(200,'生成成功',$arr);
+            } else {
+                $this->ajaxReturn(500,'生成失败');
+            }
+        }
     }
 }

@@ -280,7 +280,7 @@ class Subsite extends Backend
                 }
 
                 $log_result = model('AdminLog')->writeLog(
-                    rtrim($log_field, '；'),
+                    $log_field,
                     $this->admininfo,
                     0,
                     3
@@ -314,7 +314,7 @@ class Subsite extends Backend
                 ->join('Tpl t', 't.alias = s.tpl')
                 ->whereIn('s.id', $id)
                 ->column('s.sitename,s.district1,s.district2,s.district3,t.title as tpl_title');
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要删除的地区分站');
             }
 
@@ -355,7 +355,7 @@ class Subsite extends Backend
             }
 
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

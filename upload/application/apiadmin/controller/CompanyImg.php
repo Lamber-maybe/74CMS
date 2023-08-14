@@ -86,7 +86,7 @@ class CompanyImg extends Backend
         $id = input('post.id/a', []);
         $audit = input('post.audit/d', 0, 'intval');
         if (empty($id)) {
-            $this->ajaxReturn(500, '请选择数据');
+            $this->ajaxReturn(500, '请选择要审核的企业风采');
         }
 
         try {
@@ -95,7 +95,7 @@ class CompanyImg extends Backend
             $list = model('CompanyImg')
                 ->where('id', 'in', $id)
                 ->select();
-            if (empty($list)) {
+            if (null === $list) {
                 throw new \Exception('没有要审核的企业风采');
             }
 
@@ -116,13 +116,16 @@ class CompanyImg extends Backend
             /**
              * 日志
              */
-            $log_field = '批量审核';
             $comIds = array_column($list, 'comid', 'comid');
             $company_arr = model('Company')->whereIn('id', $comIds)->column('id,companyname');
+            $l_list = [];
             foreach ($company_arr as $c_id => $c_name) {
-                $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+                $l_list[] = '{' . $c_name . '}(企业ID:' . $c_id . ')';
             }
-            $log_field = rtrim($log_field, '；') . '上传的企业风采，审核结果:' . model('CompanyImg')->map_audit[$audit];
+            $log_field = '批量审核'
+                . implode('；', $l_list)
+                . '上传的企业风采，审核结果:'
+                . model('CompanyImg')->map_audit[$audit];
             model('AdminLog')->writeLog(
                 $log_field,
                 $this->admininfo,

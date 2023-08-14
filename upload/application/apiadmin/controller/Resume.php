@@ -1726,7 +1726,7 @@ class Resume extends \app\common\controller\Backend
             $list = model('Resume')
                 ->whereIn('id', $id)
                 ->column('id,uid,fullname');
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要审核的简历');
             }
 
@@ -1737,12 +1737,15 @@ class Resume extends \app\common\controller\Backend
             /**
              * 日志
              */
-            $log_field = '审核简历';
+            $l_list = [];
             foreach ($list as $one) {
-                $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
+                $l_list[] = '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')';
             }
 
-            $log_field = rtrim($log_field, '；') . '，审核状态:' . model('Resume')->map_audit[$audit];
+            $log_field = '审核简历'
+                . implode('；', $l_list)
+                . '，审核状态:'
+                . model('Resume')->map_audit[$audit];
             if ($audit === 2) {
                 $log_field .= '，原因：' . (empty($reason) ? '未填写' : $reason);
             }
@@ -1780,7 +1783,7 @@ class Resume extends \app\common\controller\Backend
             $list = model('Resume')
                 ->whereIn('id', $id)
                 ->column('id,uid,fullname');
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要操作的简历');
             }
 
@@ -1791,11 +1794,18 @@ class Resume extends \app\common\controller\Backend
             /**
              * 日志
              */
-            $log_field = '设置简历等级';
+            $l_list = [];
             foreach ($list as $one) {
-                $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
+                $l_list[] = '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')';
             }
-            $log_field = rtrim($log_field, '；') . '，简历等级:' . ($level === 1 ? '优质简历' : '普通简历');
+            $log_field = '设置简历等级'
+                . implode('；', $l_list)
+                . '，简历等级:'
+                . (
+                $level === 1
+                    ? '优质简历'
+                    : '普通简历'
+                );
             $log_result = model('AdminLog')->writeLog(
                 $log_field,
                 $this->admininfo,
@@ -1875,7 +1885,7 @@ class Resume extends \app\common\controller\Backend
         $list = model('Resume')
             ->whereIn('uid', $uidArr)
             ->column('id,uid,fullname');
-        if (null === $list) {
+        if (empty($list)) {
             $this->ajaxReturn(500, '没有要刷新的简历');
         }
 
@@ -1899,7 +1909,7 @@ class Resume extends \app\common\controller\Backend
             $log_field .= '{' . $one['fullname'] . '}(简历ID:' . $one['id'] . ')；';
         }
         $log_result = model('AdminLog')->writeLog(
-            rtrim($log_field, '；'),
+            $log_field,
             $this->admininfo,
             0,
             1

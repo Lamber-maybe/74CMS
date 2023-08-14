@@ -112,16 +112,21 @@
                           <li>每日职聊上限：<span>{{item.im_max_perday}}次/天</span></li>
                         </ul>
                       </div>
-                      <div v-if="item.service_added_discount>0 || item.enable_poster==1 || item.enable_video_interview==1 || item.show_apply_contact==1 || item.note!=''">
+                      <div v-if="item.service_added_discount>0 || item.enable_video_interview==1 || item.show_apply_contact==1 || item.note!=''">
                         <div class="hover_title">套餐特权</div>
                         <ul>
                           <li v-if="item.service_added_discount>0">套餐增值包折扣{{item.service_added_discount}}折</li>
-                          <li v-if="item.enable_poster==1">允许使用微海报</li>
-                          <li v-if="item.enable_video_interview==1">允许使用视频面试</li>
-                          <li v-if="item.show_apply_contact==1">收到简历免费查看</li>
+                          <li v-if="item.show_apply_contact==1">
+                            <span v-if="item.show_apply_contact === 0">不允许</span>
+                            <span v-else-if="item.resume_view_num === 0">收到简历免费查看：不限</span>
+                            <span v-else>收到简历免费查看：{{item.resume_view_num}}份/天</span>
+                          </li>
                         </ul>
                         <div class="hover_otd" v-if="item.note!=''">
                           <span>其他说明：</span><span class="dec">{{item.note}}</span>
+                        </div>
+                        <div class="hover_otd" v-else>
+                          <span>其他说明：</span><span class="dec">无</span>
                         </div>
                       </div>
                     </div>

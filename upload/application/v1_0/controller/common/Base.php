@@ -22,7 +22,17 @@ class Base extends \app\common\controller\Base
             $this->platform = isset($header_info['platform']) ? $header_info['platform'] : '';
         }
         if(!$this->platform){
-            $this->platform = 'wechat';
+            // 增加判断平台来源是否app  zch
+            $userAgent =  \think\Request::instance()->header('user-agent');
+            $isMagappx = strpos($userAgent, "MAGAPPX");
+            $isQianFan = strpos($userAgent, "QianFan");
+            if ($isMagappx || $isQianFan)
+            {
+                $this->platform = 'app';
+            }else
+            {
+                $this->platform = 'wechat';
+            }
         }
         \think\Config::set('platform', $this->platform);
         if(config('global_config.isclose')==1){

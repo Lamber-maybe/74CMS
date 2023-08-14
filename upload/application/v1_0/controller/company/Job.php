@@ -824,8 +824,6 @@ class Job extends \app\v1_0\controller\common\Base
         }
 
         $return['items'] = $list;
-        $member_setmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-        $return['enable_poster'] = $member_setmeal['enable_poster'];
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
 

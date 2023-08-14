@@ -44,3 +44,10 @@ export function adInnerLinkOptions(params) {
     params
   })
 }
+export function adState(data) {
+  return request({
+    url: apiArr.adState,
+    method: 'post',
+    data
+  })
+}

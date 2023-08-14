@@ -37,3 +37,10 @@ export function explainDelete(data) {
     data
   })
 }
+export function explainModifyState(data) {
+  return request({
+    url: apiArr.explainModifyState,
+    method: 'post',
+    data
+  })
+}

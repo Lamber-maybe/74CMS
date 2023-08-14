@@ -169,16 +169,12 @@
         class="reset_after no_border"
       />
       <div class="box_4">
-        <van-field
-          style="background-color:#f9f9f9;"
-          v-model="basic.content"
-          rows="5"
-          autosize
-          label=""
-          type="textarea"
-          placeholder="请输入详细的职位描述"
-          wrap="hard"
-        />
+         <textarea
+           v-model="basic.content"
+           rows="5"
+           style="background-color:#f9f9f9;"
+           placeholder="请输入详细的职位描述">
+        </textarea>
         <van-tag type="primary" class="tpl_tag" size="medium" v-for="(item, index) in tpllist" :key="index" @click="basic.content = item.content">{{ item.title }}</van-tag>
       </div>
       <div
@@ -649,6 +645,7 @@ export default {
     this.$store.dispatch('getClassify', 'jobNature')
     this.$store.dispatch('getClassifyWage')
     this.$store.dispatch('getClassifyAge')
+    this.companyDetail()
   },
   mounted () {
     this.restoreJobCategory()
@@ -697,6 +694,21 @@ export default {
     }
   },
   methods: {
+    companyDetail () {
+      if (this.type === 'add') {
+        http
+          .get(api.company_index)
+          .then(res => {
+            this.district_text = res.data.companyinfo.district_text
+            this.basic.district1 = res.data.companyinfo.district1
+            this.basic.district2 = res.data.companyinfo.district2
+            this.basic.district3 = res.data.companyinfo.district3
+            this.basic.tag = res.data.companyinfo.tag
+            this.tag_text = res.data.companyinfo.tag_text
+          })
+          .catch(() => { })
+      }
+    },
     validatorContactLen (val) {
       return val.length <= 6
     },
@@ -938,6 +950,7 @@ export default {
         basic: this.basic,
         contact: this.contact
       })
+      this.is_submit = false
     },
     handlerCloseMap (mapInfo) {
       this.showMap = false

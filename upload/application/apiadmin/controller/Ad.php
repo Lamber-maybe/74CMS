@@ -2,9 +2,10 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class Ad extends \app\common\controller\Backend
+class Ad extends Backend
 {
     public function index()
     {
@@ -83,6 +84,7 @@ class Ad extends \app\common\controller\Backend
                 )
                     ? model('BaseModel')->map_ad_platform[$category_arr[$value['cid']]['platform']]
                     : '';
+            $value['display'] = $value['is_display'] === 1 ? true : false;
             $list[$key] = $value;
         }
 
@@ -314,7 +316,7 @@ class Ad extends \app\common\controller\Backend
                 }
 
                 $log_result = model('AdminLog')->writeLog(
-                    rtrim($log_field, '；'),
+                    $log_field,
                     $this->admininfo,
                     0,
                     3
@@ -364,7 +366,7 @@ class Ad extends \app\common\controller\Backend
                     ',广告位:' . model('BaseModel')->map_ad_platform[$category['platform']] . '/' . $category['name'] . '；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -386,5 +388,69 @@ class Ad extends \app\common\controller\Backend
     {
         $list = model('Ad')->innerLinks;
         $this->ajaxReturn(200, '获取数据成功', $list);
+    }
+
+    public function adModifyState()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的广告');
+        }
+
+        $display = input('post.display/d', 0, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$display])) {
+            $this->ajaxReturn(500, '要设置的显示状态错误');
+        }
+        $display_text = model('BaseModel')->map_is_display[$display];
+
+        try {
+            $ad = model('Ad')
+                ->find($id);
+            if (null === $ad) {
+                throw new \Exception('要修改的广告不存在');
+            }
+
+            $category = model('AdCategory')
+                ->field('id,platform,name')
+                ->where('id', $ad['cid'])
+                ->find();
+
+            Db::startTrans();
+
+            $modify_result = model('Ad')
+                ->where('id', $id)
+                ->setField('is_display', $display);
+            if (false === $modify_result) {
+                throw new \Exception(model('Ad')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '编辑广告位，广告标题:'
+                . $ad['title']
+                . ',广告位:'
+                . model('BaseModel')->map_ad_platform[$category['platform']]
+                . '/'
+                . $category['name']
+                . '，显示状态:'
+                . $display_text;
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200, '修改成功，显示状态修改为' . $display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

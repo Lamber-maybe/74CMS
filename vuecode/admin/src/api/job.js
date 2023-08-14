@@ -44,3 +44,10 @@ export function jobRefresh(data) {
     data
   })
 }
+export function jobModifyState(data) {
+  return request({
+    url: apiArr.jobModifyState,
+    method: 'post',
+    data
+  })
+}

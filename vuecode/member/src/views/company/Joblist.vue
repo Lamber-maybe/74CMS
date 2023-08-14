@@ -36,9 +36,6 @@
                 <div class="btn" @click="handlerShare(scope.row)">
                   <img src="../../assets/images/Publishing_icon_3.png" />分享到朋友圈
                 </div>
-                <div class="btn" @click="handlerMicroposte(scope.row)">
-                  <img src="../../assets/images/Publishing_icon_4.png"/>开启微海报
-                </div>
               </div>
 
 
@@ -70,7 +67,6 @@
 			</el-table>
 			<div class="btns">
 				<el-button size="mini" @click="handlerRefreshBatch">刷新</el-button>
-				<el-button size="mini" @click="handlerMicroposteBatch">生成海报</el-button>
 				<el-button size="mini" @click="handlerCloseBatch">关闭</el-button>
 				<el-button size="mini" @click="handlerDelBatch">删除</el-button>
 			</div>
@@ -257,7 +253,6 @@ import Poster from '@/components/Poster'
 				},
 				showShare:false,
 				shareQrcode:'',
-				enable_poster:0,
         showRefreshJobDirectService:false,
         refreshJobDirectServiceInfo:[],
         payment:'wxpay'
@@ -305,7 +300,6 @@ import Poster from '@/components/Poster'
 					.get(api.company_joblist, this.params)
 					.then(res => {
 						this.dataset = [...res.data.items]
-						this.enable_poster = res.data.enable_poster
 						this.listLoading = false
 						if(init===true){
 							this.fetchTotal()
@@ -580,28 +574,6 @@ import Poster from '@/components/Poster'
 			handlerShare(item) {
 				this.showPoster = true
 				this.posterId = item.id
-			},
-			handlerMicroposte(item){
-				if(this.enable_poster==0){
-					this.$message.error('您当前的套餐不允许使用微海报，请先升级套餐')
-					return false
-				}
-				this.$router.push('/company/microposte?jobid='+item.id)
-			},
-			handlerMicroposteBatch(){
-				if(this.multipleSelection.length===0){
-					this.$message.error('请选择职位')
-					return false
-				}
-				if(this.enable_poster==0){
-					this.$message.error('您当前的套餐不允许使用微海报，请先升级套餐')
-					return false
-				}
-				let jobarr = []
-				this.multipleSelection.forEach(element => {
-					jobarr.push(element.id)
-				});
-				this.$router.push('/company/microposte?jobid='+jobarr.join(','))
 			},
       handlerRefreshDirectService () {
         if (this.refreshJobDirectServiceInfo.use_type === 'points') {

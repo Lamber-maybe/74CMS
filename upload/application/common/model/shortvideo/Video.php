@@ -329,33 +329,9 @@ class Video extends BaseModel
             if ($this->type == 1) {
                 $edit_audit = intval(config('global_config.shortvideo_edited_jobing_audit'));
                 if ($edit_audit) $data['audit'] = $edit_audit;
-                if ($data['audit'] == 1) {
-                    $company_name = model('Company')
-                        ->where('uid', $uid)
-                        ->value('companyname');
-                    model('AdminNotice')->send(
-                        16,
-                        '视频招聘审核',
-                        '企业名称:【' . $company_name . '】' . "\r\n" .
-                        '视频标题:【' . $title . '】',
-                        '视频招聘审核，请及时跟进（后台->应用->视频招聘）'
-                    );
-                }
             } else {
                 $edit_audit = intval(config('global_config.shortvideo_edited_finding_audit'));
                 if ($edit_audit) $data['audit'] = $edit_audit;
-                if ($data['audit'] == 1) {
-                    $username = model('Resume')
-                        ->where('uid', $uid)
-                        ->value('fullname');
-                    model('AdminNotice')->send(
-                        17,
-                        '视频求职审核',
-                        '姓名:【' . $username . '】' . "\r\n" .
-                        '视频标题:【' . $title . '】',
-                        '视频求职审核，请及时跟进（后台->应用->视频求职）'
-                    );
-                }
             }
             if ($data['audit'] == self::AUDIT_YES && $data['is_public'] == self::PUBLIC_YES) {
                 $data['id'] = $row['real_id'];
@@ -369,18 +345,6 @@ class Video extends BaseModel
             $data['is_public'] = self::PUBLIC_YES;
             if ($this->type == 1) {
                 $add_audit = intval(config('global_config.shortvideo_new_jobing_audit'));
-                if ($add_audit == 1) {
-                    $company_name = model('Company')
-                        ->where('uid', $uid)
-                        ->value('companyname');
-                    model('AdminNotice')->send(
-                        16,
-                        '视频招聘审核',
-                        '企业名称:【' . $company_name . '】' . "\r\n" .
-                        '视频标题:【' . $title . '】',
-                        '视频招聘审核，请及时跟进（后台->应用->视频招聘）'
-                    );
-                }
                 $data['audit'] = $add_audit;
                 $view_count = intval(config('global_config.shortvideo_jobing_view_init'));
                 if ($view_count > 0) {
@@ -388,18 +352,6 @@ class Video extends BaseModel
                 }
             } else {
                 $add_audit = intval(config('global_config.shortvideo_new_finding_audit'));
-                if ($add_audit == 1) {
-                    $username = model('Resume')
-                        ->where('uid', $uid)
-                        ->value('fullname');
-                    model('AdminNotice')->send(
-                        17,
-                        '视频求职审核',
-                        '姓名:【' . $username . '】' . "\r\n" .
-                        '视频标题:【' . $title . '】',
-                        '视频求职审核，请及时跟进（后台->应用->视频求职）'
-                    );
-                }
                 $data['audit'] = $add_audit;
                 $view_count = intval(config('global_config.shortvideo_finding_view_init'));
                 if ($view_count > 0) {

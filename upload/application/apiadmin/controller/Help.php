@@ -2,9 +2,10 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class Help extends \app\common\controller\Backend
+class Help extends Backend
 {
     public function index()
     {
@@ -52,6 +53,7 @@ class Help extends \app\common\controller\Backend
             $value['cname'] = isset($category_arr[$value['cid']])
                 ? $category_arr[$value['cid']]
                 : '';
+            $value['display'] = $value['is_display'] === 1 ? true : false;
             $list[$key] = $value;
         }
 
@@ -201,7 +203,7 @@ class Help extends \app\common\controller\Backend
 
             // 日志
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -219,5 +221,63 @@ class Help extends \app\common\controller\Backend
         }
 
         $this->ajaxReturn(200, '删除成功');
+    }
+
+    public function helpModifyState()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的帮助中心信息');
+        }
+
+        $display = input('post.display/d', 0, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$display])) {
+            $this->ajaxReturn(500, '要设置的显示状态错误');
+        }
+        $display_text = model('BaseModel')->map_is_display[$display];
+
+        try {
+            $help = model('Help')
+                ->find($id);
+            if (null === $help) {
+                throw new \Exception('要修改的帮助中心信息不存在');
+            }
+
+            Db::startTrans();
+
+            $modify_result = model('Help')
+                ->where('id', $id)
+                ->setField('is_display', $display);
+            if (false === $modify_result) {
+                throw new \Exception(model('Help')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '修改帮助中心信息，'
+                . $help['title']
+                . '(ID:'
+                . $help['id']
+                . ')'
+                . '，显示状态:'
+                . $display_text;
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200, '修改成功，显示状态修改为' . $display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

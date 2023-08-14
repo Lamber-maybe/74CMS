@@ -29,10 +29,8 @@ class SetmealOvertimeNotice
                     1,
                     'cron_setmeal_overtime',
                     [
-                        '您好，您的会员套餐即将到期',
-                        $value['name'],
-                        date('Y年m月d日 H:i',$value['deadline']),
-                        '到期后将失去会员专享特权，点击查看会员特权'
+                        '您的套餐权益即将到期，请及时联系客服',
+                        date('Y年m月d日 H:i',$value['deadline'])
                     ],
                     'member/company/mysetmeal'
                 );

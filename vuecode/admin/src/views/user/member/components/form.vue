@@ -116,7 +116,7 @@ export default {
           {
             min: 6,
             max: 30,
-            message: '长度在 6 到 30 个字符',
+            message: '长度在 6 到 30 个字',
             trigger: 'blur'
           },
           { validator: validateUsername, trigger: 'blur' }
@@ -126,7 +126,7 @@ export default {
           {
             min: 6,
             max: 15,
-            message: '长度在 6 到 15 个字符',
+            message: '长度在 6 到 15 个字',
             trigger: 'blur'
           }
         ],

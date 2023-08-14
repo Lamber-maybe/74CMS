@@ -263,7 +263,16 @@ class Profile extends \app\v1_0\controller\common\Base
             }
             $company_profile['field_rule'] = $field_rule;
 
-            $coordinate = model('Config')->bd09ToWgs84($company_profile['basic']['map_lng'],$company_profile['basic']['map_lat']);
+            $coordinate = [
+                'lng' => 0,
+                'lat' => 0,
+            ];
+            if (!empty($company_profile['basic']['map_lng']) && !empty($company_profile['basic']['map_lat'])) {
+                $coordinate = model('Config')->bd09ToWgs84(
+                    $company_profile['basic']['map_lng'],
+                    $company_profile['basic']['map_lat']
+                );
+            }
             $company_profile['basic']['map_lng'] = $coordinate['lng'];
             $company_profile['basic']['map_lat'] = $coordinate['lat'];
 

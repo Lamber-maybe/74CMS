@@ -67,13 +67,13 @@ export default {
       this.infoLoading = true
       const that = this
       let utype = ''
-      if(that.listtype == 'company'){
+      if (that.listtype == 'company'){
         utype = 1
       }
-      if(that.listtype == 'personal'){
+      if (that.listtype == 'personal'){
         utype = 2
       }
-      if(that.listtype == 'administrators'){
+      if (that.listtype == 'administrators'){
         utype = 3
       }
       const params = {

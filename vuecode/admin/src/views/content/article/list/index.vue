@@ -100,11 +100,12 @@
             <span>{{ scope.row.addtime | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" min-width="80">
+        <el-table-column label="是否显示" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.is_display | displayFilter">
-              {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)">
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" min-width="150">
@@ -132,6 +133,9 @@
           <el-button size="small" type="primary" @click="goTo('add')">
             添加资讯
           </el-button>
+          <el-button size="small" type="primary" @click="displayStatus">
+            显示状态
+          </el-button>
           <el-button size="small" type="danger" @click="funDeleteBatch">
             删除所选
           </el-button>
@@ -150,11 +154,25 @@
         </el-col>
       </el-row>
     </el-card>
+    <el-dialog title="将显示状态设置为" :visible.sync="dialogFormVisible" width="27%">
+      <el-form class="common-form" label-width="80px">
+        <el-form-item label="显示状态">
+          <el-radio-group v-model="display">
+            <el-radio label="1">显示</el-radio>
+            <el-radio label="0">隐藏</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="fun_set_display">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { articleList, articleDelete } from '@/api/article'
+import { articleList, articleDelete, articleModifyState } from '@/api/article'
 import { parseTime } from '@/utils/index'
 import { getClassify } from '@/api/classify'
 
@@ -184,7 +202,9 @@ export default {
       is_display: '',
       cid: '0',
       key_type: '1',
-      keyword: ''
+      keyword: '',
+      dialogFormVisible: false,
+      display: '1'
     }
   },
   created() {
@@ -192,6 +212,42 @@ export default {
     this.fetchCategoryData()
   },
   methods: {
+    displayStatus() {
+      var that = this
+      if (that.tableIdarr.length == 0) {
+        that.$message.error('请选择要修改的数据')
+        return false
+      }
+      that.dialogFormVisible = true
+    },
+    fun_set_display() {
+      const that = this
+      const param = {
+        display: this.display,
+        id: this.tableIdarr
+      }
+      articleModifyState(param).then(response => {
+        this.$message.success(response.message)
+        this.fetchData()
+        this.display = '1'
+        that.dialogFormVisible = false
+        return true
+      }).catch(() => {})
+    },
+    modifyState(row){
+      const that = this
+      const param = {
+        display: row.display,
+        id: [row.id]
+      }
+      articleModifyState(param).then(response => {
+        this.$message.success(response.message)
+        this.fetchData()
+        return true
+      }).catch(() => {
+        that.issubmit = false
+      })
+    },
     fetchData() {
       this.listLoading = true
       const param = {

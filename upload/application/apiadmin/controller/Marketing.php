@@ -494,7 +494,7 @@ class Marketing extends Backend
             return [];
         }
 
-        return $model->distinct('c.id')->limit($limit_start, $this->pageSize)->select();
+        return $model->distinct('c.id')->order('c.id', 'desc')->limit($limit_start, $this->pageSize)->select();
     }
 
     protected function _searchCompanyByIds($condition = [])

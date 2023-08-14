@@ -98,3 +98,32 @@ export function setContactStatus(params) {
     params
   })
 }
+// 简历作品批量审核列表
+export function allCustomersImg(params) {
+  return request({
+    url: apiArr.resumeImgList,
+    method: 'get',
+    params
+  })
+}
+export function resumeImgAudit(data) {
+  return request({
+    url: apiArr.resumeImgAudit,
+    method: 'post',
+    data
+  })
+}
+export function resumeImgDelete(data) {
+  return request({
+    url: apiArr.resumeImgDel,
+    method: 'post',
+    data
+  })
+}
+export function resumeImgEdit(data) {
+  return request({
+    url: apiArr.resumeImgEdit,
+    method: 'post',
+    data
+  })
+}

@@ -43,8 +43,11 @@
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
         <el-col :span="11">
-          <el-form-item label="使用微海报">
-            <el-radio-group v-model="form.enable_poster">
+          <el-form-item label="收到简历免费查看">
+            <el-radio-group
+              v-model="form.show_apply_contact"
+              @change="fun_change_show_apply_contact"
+            >
               <el-radio :label="1">允许</el-radio>
               <el-radio :label="0">不允许</el-radio>
             </el-radio-group>
@@ -75,11 +78,21 @@
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
         <el-col :span="11">
-          <el-form-item label="收到简历免费查看">
-            <el-radio-group v-model="form.show_apply_contact">
-              <el-radio :label="1">允许</el-radio>
-              <el-radio :label="0">不允许</el-radio>
-            </el-radio-group>
+          <el-form-item label="收到简历查看上限" prop="resume_view_num">
+            <el-input
+              v-model.number="form.resume_view_num"
+              type="number"
+              class="small"
+              min="0"
+              :disabled="form.show_apply_contact == 0"
+              @blur="format_number(0, 'resume_view_num')"
+            >
+              <template slot="append">份 / 天</template>
+            </el-input>
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content">0表示不限制</div>
+              <i class="el-icon-info" />
+            </el-tooltip>
           </el-form-item>
         </el-col>
       </el-row>
@@ -305,7 +318,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="11"> &nbsp; </el-col>
+        <el-col :span="11" />
       </el-row>
       <el-row>
         <el-col :span="11">
@@ -394,7 +407,6 @@ export default {
         download_resume_max_perday: 0,
         im_max_perday: 0,
         enable_video_interview: 1,
-        enable_poster: 1,
         recommend: 1,
         gift_point: 0,
         show_apply_contact: 1,
@@ -402,7 +414,8 @@ export default {
         preferential_expense_start: '',
         preferential_expense_end: '',
         icon: 0,
-        note: ''
+        note: '',
+        resume_view_num: 0
       },
       iconUrl: '',
       rules: {
@@ -601,6 +614,11 @@ export default {
       if (val == 0) {
         this.form.preferential_expense_timerange = []
         this.form.preferential_expense = 0
+      }
+    },
+    fun_change_show_apply_contact(val) {
+      if (val === 0) {
+        this.form.resume_view_num = 0
       }
     },
     handleIconSuccess(res, file) {

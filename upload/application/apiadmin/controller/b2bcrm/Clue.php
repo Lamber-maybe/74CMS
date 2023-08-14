@@ -211,7 +211,7 @@ class Clue extends Backend
         $district1 = !empty($category_district_data[$crm_clue['district1']]) ? $category_district_data[$crm_clue['district1']] : '';
         $district2 = !empty($category_district_data[$crm_clue['district2']]) ? $category_district_data[$crm_clue['district2']] : '';
         $district3 = !empty($category_district_data[$crm_clue['district3']]) ? $category_district_data[$crm_clue['district3']] : '';
-        $crm_clue['district'] = [$crm_clue['district1'],$crm_clue['district2'],$crm_clue['district3']];
+        $crm_clue['district'] = [$crm_clue['district1'], $crm_clue['district2'], $crm_clue['district3']];
         $crm_clue['district_text'] = $district1 . $district2 . $district3;
         $crm_clue['last_visit_time'] = !empty($crm_clue['last_visit_time']) ? date('Y-m-d H:i:s', $crm_clue['last_visit_time']) : '从未跟进';
         $crm_clue['visit_count'] = model('b2bcrm.CrmFollowUp')->where(['clue_id' => $clue_id])->count();
@@ -272,7 +272,7 @@ class Clue extends Backend
                 $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 1
@@ -446,7 +446,7 @@ class Clue extends Backend
                 $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 1
@@ -770,7 +770,7 @@ class Clue extends Backend
                 $log_field .= '{' . $c_name . '}(线索ID:' . $c_id . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -1348,6 +1348,15 @@ class Clue extends Backend
             $this->ajaxReturn(500, '未找到该线索信息');
         }
 
+        $contactInfo = [
+            'contact' => '',
+            'mobile' => '',
+            'telephone' => '',
+            'qq' => '',
+            'email' => '',
+            'sex' => 0,
+            'is_main' => 0
+        ];
         $contactId = input('post.contact_id/d', 0, 'intval');
         if (!empty($contactId)) {
             // 查询联系方式
@@ -1453,7 +1462,6 @@ class Clue extends Backend
                 $log_field .= '性别:' . (!empty($contactInfo['sex']) ? model('Resume')->map_sex[$contactInfo['sex']] : '无') . '->' . (!empty($inputData['sex']) ? model('Resume')->map_sex[$inputData['sex']] : '未填写') . '；';
             }
 
-            $log_field = rtrim($log_field, '；');
             model('AdminLog')->writeLog(
                 $log_field,
                 $this->admininfo,
@@ -1467,7 +1475,7 @@ class Clue extends Backend
             // 回滚事务
             $clueContactModel->rollback();
             saveLog('报错信息：' . json_encode(['Line' => $e->getLine(), 'File' => $e->getFile(), 'Message' => $e->getMessage()]));
-            $this->ajaxReturn(500, '修改失败');
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
         }
 
         $this->ajaxReturn(200, '修改成功');

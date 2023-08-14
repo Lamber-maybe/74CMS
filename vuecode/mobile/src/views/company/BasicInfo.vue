@@ -156,7 +156,7 @@
         class="reset_after no_border"
       />
       <div class="box_4" v-if="field_rule.info.short_desc.is_display == 1">
-        <van-field
+        <textarea
           style="background-color:#f9f9f9;"
           :rules="
             field_rule.info.short_desc.is_require == 1
@@ -170,11 +170,8 @@
           "
           v-model="info.short_desc"
           rows="2"
-          autosize
-          label=""
-          type="textarea"
-          placeholder="请输入"
-        />
+          placeholder="请输入">
+        </textarea>
       </div>
       <van-field
         v-if="field_rule.info.content.is_display == 1"
@@ -185,7 +182,9 @@
         class="reset_after no_border"
       />
       <div class="box_4" v-if="field_rule.info.content.is_display == 1">
-        <van-field
+        <textarea
+          v-model="info.content"
+          rows="2"
           style="background-color:#f9f9f9;"
           :rules="
             field_rule.info.content.is_require == 1
@@ -197,13 +196,8 @@
                 ]
               : []
           "
-          v-model="info.content"
-          rows="2"
-          autosize
-          label=""
-          type="textarea"
-          placeholder="请输入"
-        />
+          placeholder="请输入">
+        </textarea>
       </div>
       <div class="form_split_10"></div>
       <van-field
@@ -804,12 +798,12 @@ export default {
 .box_4 {
   textarea {
     width: 100%;
-    height: 130px;
+    height: 80px;
     border: 0;
     background-color: #f9f9f9;
     font-size: 14px;
     resize: none;
-    padding: 8px 15px;
+    padding: 13px 25px;
     line-height: 1.8;
     &::placeholder {
       color: #c9c9c9;

@@ -13,8 +13,8 @@
         <el-button
           style="float: right; padding: 0;"
           type="text"
-          @click="onSubmit('form')"
           :disabled="issubmit"
+          @click="onSubmit('form')"
         >
           保存
         </el-button>
@@ -36,11 +36,11 @@
             <Toolbar
               style="border-bottom: 1px solid #ccc"
               :editor="editor"
-              :defaultConfig="toolbarConfig"
+              :default-config="toolbarConfig"
             />
             <Editor
-              style="height: 400px; overflow-y: hidden;"
               v-model="form.content"
+              style="height: 400px; overflow-y: hidden;"
               @onCreated="onCreated"
             />
           </div>
@@ -79,6 +79,18 @@
         <el-form-item label="外部链接" prop="link_url">
           <el-input v-model="form.link_url" />
         </el-form-item>
+        <el-form-item label="来源" prop="source">
+          <el-radio-group
+            v-model="form.source"
+            @change="fun_change_source"
+          >
+            <el-radio label="0">原创</el-radio>
+            <el-radio label="1">转载</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="form.source == 1" label="转载来源" prop="source_reprint">
+          <el-input v-model="form.source_reprint" placeholder="请输入转载来源" />
+        </el-form-item>
         <el-form-item label="seo关键词" prop="seo_keywords">
           <el-input v-model="form.seo_keywords" />
         </el-form-item>
@@ -86,7 +98,7 @@
           <el-input v-model="form.seo_description" type="textarea" rows="4" />
         </el-form-item>
         <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')" :disabled="issubmit">保存</el-button>
+          <el-button type="primary" :disabled="issubmit" @click="onSubmit('form')">保存</el-button>
           <el-button @click="goto('/content/notice/list')">返回</el-button>
         </el-form-item>
       </el-form>
@@ -138,13 +150,15 @@ export default {
       form: {
         title: '',
         content: '',
-        attach:[],
+        attach: [],
         is_display: true,
         link_url: '',
         seo_keywords: '',
         seo_description: '',
         addtime: '',
-        sort_id: 0
+        sort_id: 0,
+        source: '0',
+        source_reprint: ''
       },
       rules: {
         title: [
@@ -164,6 +178,13 @@ export default {
         ],
         seo_description: [
           { max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur' }
+        ],
+        source_reprint: [
+          {
+            max: 10,
+            message: '长度在 1 到 10 个字符',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -185,6 +206,11 @@ export default {
     editor.destroy() // 组件销毁时，及时销毁编辑器
   },
   methods: {
+    fun_change_source(val) {
+      if (val === '0') {
+        this.form.source_reprint = ''
+      }
+    },
     onCreated(editor) {
       this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
       this.editor.getMenuConfig('uploadImage').headers = {
@@ -199,12 +225,12 @@ export default {
       this.editor.getMenuConfig('uploadVideo').server = window.global.RequestBaseUrl + apiArr.uploadEditorVideo
     },
     handleRemove(file, fileList) {
-      let index = this.form.attach.indexOf({name:file.name,url:file.url})
-      this.form.attach.splice(index,1)
+      const index = this.form.attach.indexOf({ name: file.name, url: file.url })
+      this.form.attach.splice(index, 1)
     },
     handleAttachSuccess(res, file) {
       if (res.code == 200) {
-        let info = {name:res.data.name,url:res.data.url}
+        const info = { name: res.data.name, url: res.data.url }
         this.form.attach.push(info)
       } else {
         this.$message.error(res.message)
@@ -214,7 +240,7 @@ export default {
     beforeAttachUpload(file) {
       const configFileExtArr = 'doc,docx,xls,xlsx,csv,ppt,pptx,pdf'
       const filename_arr = file.name.split('.')
-      const filetype = filename_arr[filename_arr.length-1]
+      const filetype = filename_arr[filename_arr.length - 1]
       if (!configFileExtArr.includes(filetype)) {
         this.$message.error('上传文件格式不允许')
         return false
@@ -234,12 +260,17 @@ export default {
           this.form = { ...response.data.info }
           this.form.addtime = this.form.addtime * 1000
           this.form.is_display = this.form.is_display == 1
+          this.form.source = this.form.source.toString()
           this.infoLoading = false
         })
         .catch(() => {})
     },
     onSubmit(formName) {
       const that = this
+      if (that.form.source == 1 && that.form.source_reprint == '') {
+        this.$message.error('请输入转载来源')
+        return false
+      }
       that.issubmit = true
       this.form.content = this.editor.getHtml()
       const insertData = { ...this.form }

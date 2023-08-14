@@ -147,11 +147,12 @@
             <span>{{ scope.row.sort_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" min-width="80">
+        <el-table-column label="是否显示" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.is_display | displayFilter">
-              {{ scope.row.is_display == 1 ? "显示" : "隐藏" }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)">
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" min-width="150">
@@ -201,7 +202,7 @@
 </template>
 
 <script>
-import { adList, adDelete } from '@/api/ad'
+import { adList, adDelete, adState } from '@/api/ad'
 import { parseTime } from '@/utils/index'
 import { getClassify } from '@/api/classify'
 
@@ -242,6 +243,22 @@ export default {
     this.fetchCategoryData()
   },
   methods: {
+    modifyState(row){
+      const that = this
+      const param = {
+        display: row.display,
+        id: row.id
+      }
+      adState(param).then(response => {
+        this.$message.success(response.message)
+        setTimeout(function() {
+          that.$router.push('/content/ad/list')
+        }, 1500)
+        return true
+      }).catch(() => {
+        that.issubmit = false
+      })
+    },
     funPlatform(e) {
       if (e == 0) {
         this.adCategory = []

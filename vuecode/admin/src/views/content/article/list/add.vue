@@ -108,10 +108,16 @@
           <el-input v-model="form.seo_description" type="textarea" rows="4" />
         </el-form-item>
         <el-form-item label="来源" prop="source">
-          <el-select v-model="form.source" placeholder="请选择资讯来源">
-            <el-option label="原创" :value="0" />
-            <el-option label="转载" :value="1" />
-          </el-select>
+          <el-radio-group
+            v-model="form.source"
+            @change="fun_change_source"
+          >
+            <el-radio label="0">原创</el-radio>
+            <el-radio label="1">转载</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="转载来源" v-if="form.source == 1" prop="source_reprint">
+          <el-input v-model="form.source_reprint" placeholder="请输入转载来源"/>
         </el-form-item>
 
         <el-form-item label="">
@@ -179,7 +185,8 @@ export default {
         seo_description: '',
         addtime: '',
         sort_id: 0,
-        source: 0
+        source: '0',
+        source_reprint: ''
       },
       imageUrl: '',
       rules: {
@@ -238,6 +245,13 @@ export default {
             message: '长度在 0 到 200 个字符',
             trigger: 'blur'
           }
+        ],
+        source_reprint: [
+          {
+            max: 10,
+            message: '长度在 1 到 10 个字符',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -260,6 +274,11 @@ export default {
     editor.destroy() // 组件销毁时，及时销毁编辑器
   },
   methods: {
+    fun_change_source(val) {
+      if (val === '0') {
+        this.form.source_reprint = ''
+      }
+    },
     onCreated(editor) {
       this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
       this.editor.getMenuConfig('uploadImage').headers = {
@@ -311,6 +330,10 @@ export default {
     },
     onSubmit(formName) {
       const that = this
+      if (that.form.source == 1 && that.form.source_reprint == '') {
+        this.$message.error('请输入转载来源')
+        return false
+      }
       that.issubmit = true
       this.form.content = this.editor.getHtml()
       const insertData = { ...this.form }

@@ -182,7 +182,7 @@ class CompanyInterviewVideo extends \app\common\model\BaseModel
                     'Hi，'.$resumeinfo['fullname'].'，你收到一条面试邀请，好机会不要错过哦！',
                     $company_profile['companyname'],
                     $jobinfo['jobname'],
-                    date('Y年m月d日 H:i'),
+                    date('Y年m月d日 H:i'). ' 参加视频面试',
                     '点击查看更多面试邀请信息'
                 ],
                 'member/personal/interview_video'

@@ -186,12 +186,6 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            微海报：
-            <b>{{ detailContent.enable_poster == 1 ? '可用' : '不可用' }}</b>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
             收到简历免费查看：
             <b>{{ detailContent.show_apply_contact == 1 ? '是' : '否' }}</b>
           </el-col>

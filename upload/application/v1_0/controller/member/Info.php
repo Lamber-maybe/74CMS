@@ -249,7 +249,7 @@ class Info extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, $validate->getError());
         }
         $input_data['img'] = !empty($input_data['img']) ? implode(",", $input_data['img']) : '';
-        model('Tipoff')->save($input_data);
+        $id = model('Tipoff')->insertGetId($input_data);
         if ($input_data['type'] == 1) {
             model('Task')->doTask($this->userinfo->uid, 2, 'report_job');
         }

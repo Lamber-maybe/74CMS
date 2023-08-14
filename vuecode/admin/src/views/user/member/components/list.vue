@@ -161,10 +161,12 @@
             <span v-else>{{ scope.row.last_login_time | timeFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="会员状态">
+        <el-table-column label="会员状态" width="100">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
-            <el-tag v-else type="danger">已锁定</el-tag>
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)"
+            />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="270">
@@ -292,7 +294,7 @@ import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import diaform from './form.vue'
 import detail from './detail.vue'
-import { memberList, memberLock, memberDelete, management, memberIm } from '@/api/member'
+import { memberList, memberLock, memberDelete, management, memberIm, memberModifyState } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
 
 export default {
@@ -345,6 +347,34 @@ export default {
     this.fetchPlatformOptions()
   },
   methods: {
+    modifyState(row){
+      if (row.display === false) {
+        this.$confirm('确定锁定该会员吗? 锁定后该会员将无法登录。', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.saveState(row)
+        }).catch(() => {
+          this.fetchData()
+          return false
+        })
+      } else {
+        this.saveState(row)
+      }
+    },
+    saveState(row){
+      const param = {
+        status: row.display,
+        uid: row.uid
+      }
+      memberLock(param).then(response => {
+        this.$message.success(response.message)
+        this.fetchData()
+        return true
+      }).catch(() => {
+      })
+    },
     funManagement(row) {
       const params = {
         uid: row.uid

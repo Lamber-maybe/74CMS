@@ -293,7 +293,7 @@ class WechatMenu extends \app\common\controller\Backend
                 $log_field .= '所属菜单:' . $p_menu . '，名称:' . $menu['title'] . '；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

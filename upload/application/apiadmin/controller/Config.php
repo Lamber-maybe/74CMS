@@ -130,7 +130,7 @@ class Config extends \app\common\controller\Backend
                 ->saveAll($sqldata);
 
             model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 3
@@ -176,7 +176,7 @@ class Config extends \app\common\controller\Backend
                 $fieldList = model('FieldRule')
                     ->whereIn('id', $fieldIds)
                     ->column('*', 'id');
-                if (null === $fieldList) {
+                if (empty($fieldList)) {
                     $this->ajaxReturn(500, '没有要修改的自定义字段');
                 }
 
@@ -240,7 +240,7 @@ class Config extends \app\common\controller\Backend
                 // 开启事务
                 Db::startTrans();
 
-                if (!empty($sql_arr)) {
+                if (!empty($sqldata)) {
                     if (
                         false ===
                         model('FieldRule')
@@ -292,7 +292,7 @@ class Config extends \app\common\controller\Backend
                 $moduleIds = array_column($inputdata, 'id');
                 $moduleList = model('ResumeModule')->whereIn('id', $moduleIds)
                     ->column('*', 'id');
-                if (null === $moduleList) {
+                if (empty($moduleList)) {
                     $this->ajaxReturn(500, '没有要修改的简历模块');
                 }
 
@@ -326,7 +326,7 @@ class Config extends \app\common\controller\Backend
                 // 开启事务
                 Db::startTrans();
 
-                if (!empty($sql_arr)) {
+                if (!empty($sqldata)) {
                     if (
                         false ===
                         model('ResumeModule')
@@ -526,7 +526,7 @@ class Config extends \app\common\controller\Backend
             $ruleIds = array_column($inputdata, 'id');
             $ruleList = model('NotifyRule')->whereIn('id', $ruleIds)
                 ->column('id,title,open_message,open_sms,open_email,open_push', 'id');
-            if (null === $ruleList) {
+            if (empty($ruleList)) {
                 $this->ajaxReturn(500, '没有要修改的消息通知');
             }
 
@@ -644,7 +644,7 @@ class Config extends \app\common\controller\Backend
         $inputdata = input('post.');
         $configlist = model('WechatNotifyRule')->column('id,title,utype', 'id');
         $sqldata = [];
-        foreach ($inputdata as $key => $value) {
+        foreach ($inputdata as $value) {
             if (!isset($configlist[$value['id']])) {
                 continue;
             }

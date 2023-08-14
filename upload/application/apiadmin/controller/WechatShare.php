@@ -80,7 +80,7 @@ class WechatShare extends \app\common\controller\Backend
                 }
 
                 $log_result = model('AdminLog')->writeLog(
-                    rtrim($log_field, '；'),
+                    $log_field,
                     $this->admininfo,
                     0,
                     1

@@ -1086,10 +1086,12 @@ button {
 }
 
 .login_text {
-	text-align: center;
 	font-size: 12px;
 	color: #999;
 	margin: 13px 0;
+	margin-top: 19px;
+	padding-bottom: 3px;
+	width: 104%;
 }
 
 .login_text a {
@@ -2955,4 +2957,56 @@ button {
 	-webkit-animation: fadeInLeftBig .3s ease-in-out;
 }
 
-/* 职位分类改版 end */
+.register {
+	float: left;
+}
+.p_group {
+	float: right;
+	margin-top: -11px;
+}
+.p_group .p_item{
+	float: left;
+	margin-left: -9px;
+}
+.p_group .p_item .p_ico {
+	display: block; width: 35px; height: 35px; margin: 0 auto; border-radius: 35px;
+}
+.p_group .p_item .qq {
+	background: url("../images/tpl/qq-small.png") center center no-repeat;
+	background-size: 50% 50%;
+}
+.p_group .p_item .wx {
+	background: url("../images/tpl/wx-small.png") center center no-repeat;
+	background-size: 50% 50%;
+}
+
+.wxLogin {
+	width: 100%;
+	height: 100%;
+	padding-top: 15px;
+}
+
+.wxLogin .wxQrBox {
+	width: 100%;
+	height: 266px;
+}
+
+.wxLogin .wxQrBox iframe {
+	width: 100%;
+	height: 100%;
+	margin-top: -30px;
+}
+
+.wxLogin .exitScan {
+	width: 100%;
+	line-height: 1;
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+	left: 0;
+	color: #1787fb;
+}
+
+.impowerBox .qrcode{
+width: 120px !important;
+}

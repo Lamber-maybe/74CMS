@@ -100,20 +100,14 @@
         </div>
         <div class="item i4">
           收到的简历免费查看
-          <div
-            class="tip_text"
-            :class="mySetmeal.show_apply_contact == 1 ? 'orange' : 'gray'"
-          >
-            {{ mySetmeal.show_apply_contact == 1 ? "支持" : "暂不支持" }}
+          <div class="tip_text gray" v-if="mySetmeal.show_apply_contact === 0">
+            暂不支持
           </div>
-        </div>
-        <div class="item i5">
-          微海报
-          <div
-            class="tip_text"
-            :class="mySetmeal.enable_poster == 1 ? 'orange' : 'gray'"
-          >
-            {{ mySetmeal.enable_poster == 1 ? "支持" : "暂不支持" }}
+          <div class="tip_text" v-else-if="mySetmeal.resume_view_num === 0">
+            不限
+          </div>
+          <div class="tip_text" v-else>
+            {{ mySetmeal.resume_view_num }}份/天
           </div>
         </div>
         <div class="item i6">

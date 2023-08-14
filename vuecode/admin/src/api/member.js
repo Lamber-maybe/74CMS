@@ -114,4 +114,3 @@ export function lifeCycle(params) {
     params
   })
 }
-

@@ -108,3 +108,10 @@ export function refreshJob(data) {
     data
   })
 }
+export function sendCompanyLogo(data) {
+  return request({
+    url: apiArr.sendCompanyLogo,
+    method: 'post',
+    data
+  })
+}

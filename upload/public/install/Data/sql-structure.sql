@@ -115,6 +115,7 @@ CREATE TABLE `qs_article` (
   `addtime` int(10) unsigned NOT NULL,
   `sort_id` int(10) unsigned NOT NULL DEFAULT '0',
   `source` tinyint(1) unsigned NOT NULL,
+  `source_reprint` varchar(10) NOT NULL DEFAULT '' COMMENT '转载来源',
   PRIMARY KEY (`id`),
   KEY `index_click` (`click`),
   KEY `index_addtime` (`addtime`),
@@ -866,6 +867,8 @@ CREATE TABLE `qs_job_apply` (
   `handle_status` tinyint(1) unsigned NOT NULL,
   `source` tinyint(1) unsigned NOT NULL COMMENT '0自主投递 1委托投递',
   `platform` varchar(30) NOT NULL DEFAULT '',
+  `free_viewing` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否免费查看简历:0|否;1|是',
+  `free_viewing_time` int(10) NOT NULL DEFAULT '0' COMMENT '查看时间',
   PRIMARY KEY (`id`),
   KEY `index_company_uid` (`company_uid`),
   KEY `index_personal_uid` (`personal_uid`)
@@ -1162,6 +1165,7 @@ CREATE TABLE `qs_member_setmeal` (
   `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '每天最多可发起聊天次数',
   `im_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一共可发起聊天次数',
   `purchase_resume_point` int(10) NOT NULL DEFAULT '0' COMMENT '购买增值简历包',
+  `resume_view_num` int(10) NOT NULL DEFAULT '0' COMMENT '收到简历免费查看数',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_setmeal_id` (`setmeal_id`)
@@ -1255,6 +1259,8 @@ CREATE TABLE `qs_notice` (
   `click` int(10) unsigned NOT NULL DEFAULT '0',
   `addtime` int(10) unsigned NOT NULL,
   `sort_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `source` tinyint(4) NOT NULL DEFAULT '0' COMMENT '来源:0|原创;1|转载',
+  `source_reprint` varchar(10) NOT NULL DEFAULT '' COMMENT '转载来源',
   PRIMARY KEY (`id`),
   KEY `index_sort_id_addtime` (`sort_id`,`addtime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1758,6 +1764,7 @@ CREATE TABLE `qs_setmeal` (
   `is_apply` tinyint(1) unsigned NOT NULL,
   `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0',
   `im_total` int(10) unsigned NOT NULL DEFAULT '0',
+  `resume_view_num` int(10) NOT NULL DEFAULT '0' COMMENT '收到简历免费查看数',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_setmeal||-_-||
@@ -1976,6 +1983,7 @@ CREATE TABLE `qs_jobfair_online` (
   `qrcode` int(10) unsigned NOT NULL,
   `pc_header_logo` int(10) NOT NULL COMMENT 'pc头部图片id',
   `mobile_header_logo` int(10) NOT NULL COMMENT '触屏头部图片id',
+  `display` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示:0|否;1|是',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_jobfair_online||-_-||

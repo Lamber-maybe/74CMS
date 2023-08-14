@@ -219,6 +219,11 @@ button{
 	background: #fff2e9;
 	color: #ff6600;
 }
+.information_detailed .detailed_bottom .source_reprint{
+	color: #999999;
+	font-size: 12px;
+	padding-left: 2px;
+}
 
 .information_detailed .detailed_bottom .guide {
 	background: #f3f3f3;

@@ -1,5 +1,7 @@
 <?php
 namespace app\apiadmin\controller;
+use think\Db;
+
 class Jobfairol extends \app\common\controller\Backend{
     public function _initialize(){
         parent::_initialize();
@@ -25,7 +27,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $total = model('JobfairOnline')->where($where)->count();
         $timestamp = time();
         $field =
-            'id,title,thumb,starttime,endtime,click,addtime,enable_setmeal_id,CASE 
+            'id,display,title,thumb,starttime,endtime,click,addtime,enable_setmeal_id,CASE 
         WHEN starttime<=' .
             $timestamp .
             ' AND endtime>'.$timestamp.' THEN 2
@@ -50,6 +52,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $returnlist = [];
         foreach ($list as $key => $value) {
             $tmp_arr = [];
+            $tmp_arr['display'] = $value['display'] == 1 ? true : false;
             $tmp_arr['id'] = $value['id'];
             $tmp_arr['title'] = $value['title'];
             $tmp_arr['thumb_src'] = isset($thumb_arr[$value['thumb']])?$thumb_arr[$value['thumb']]:default_empty('jobfair_thumb');
@@ -715,5 +718,60 @@ class Jobfairol extends \app\common\controller\Backend{
     public function getJobfairOnAll(){
         $jobfair = model('JobfairOnline')->field('id,title')->order(['addtime' => 'desc'])->select();
         $this->ajaxReturn(200, '获取数据成功',['items'=>$jobfair]);
+    }
+    // 网络招聘会显示状态修改
+    public function modifyState(){
+        $id = input('post.id/d',0,'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的网络招聘会');
+        }
+
+        $display = input('post.display/d', 0, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$display])){
+            $this->ajaxReturn(500, '要设置的显示状态错误');
+        }
+        $display_text = model('BaseModel')->map_is_display[$display];
+
+        try {
+            $info = model('JobfairOnline')
+                ->find($id);
+            if (null === $info) {
+                throw new \Exception('要修改的网络招聘会不存在');
+            }
+
+            Db::startTrans();
+
+            $modify_result = model('JobfairOnline')
+                ->where('id', $id)
+                ->setField('display', $display);
+            if (false === $modify_result) {
+                throw new \Exception(model('JobfairOnline')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '修改网络招聘会，标题:'
+                . $info['title']
+                . '，显示状态:'
+                . $display_text;
+
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200,'修改成功，显示状态修改为'.$display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

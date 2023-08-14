@@ -92,7 +92,7 @@
 					<router-link class="edit_ico" to="/member/personal/resume/specialty"></router-link>
 					<div class="clear"></div>
 				</div>
-				<div class="box_content">{{ basic.specialty }}</div>
+				<div class="box_content" style="white-space: pre-wrap">{{ basic.specialty }}</div>
 			</div>
 			<!--教育经历-->
 			<div class="box_6" v-if="moduleStore.education!==undefined && moduleStore.education.is_display == 1">
@@ -135,7 +135,7 @@
               }}
 						</div>
 						<div class="t3">{{ item.jobname }}</div>
-						<div class="t4">{{ item.duty }}</div>
+						<div class="t4" style="white-space: pre-wrap">{{ item.duty }}</div>
 					</router-link>
 				</div>
 			</div>
@@ -157,7 +157,7 @@
               }}
 						</div>
 						<div class="t3">{{ item.course }}</div>
-						<div class="t4">{{ item.description }}</div>
+						<div class="t4" style="white-space: pre-wrap">{{ item.description }}</div>
 					</router-link>
 				</div>
 			</div>
@@ -179,7 +179,7 @@
               }}
 						</div>
 						<div class="t3">{{ item.role }}</div>
-						<div class="t4">{{ item.description }}</div>
+						<div class="t4" style="white-space: pre-wrap">{{ item.description }}</div>
 					</router-link>
 				</div>
 			</div>

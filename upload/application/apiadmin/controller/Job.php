@@ -1,14 +1,17 @@
 <?php
+
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class Job extends \app\common\controller\Backend
+class Job extends Backend
 {
     public function _initialize()
     {
         parent::_initialize();
     }
+
     public function index()
     {
         $where = [];
@@ -79,7 +82,7 @@ class Job extends \app\common\controller\Backend
                 'c.id=j.company_id',
                 'LEFT'
             )
-            ->join(config('database.prefix').'member m','j.uid=m.uid','LEFT')
+            ->join(config('database.prefix') . 'member m', 'j.uid=m.uid', 'LEFT')
             ->where($where)
             ->count();
         $list = model('Job')
@@ -89,7 +92,7 @@ class Job extends \app\common\controller\Backend
                 'c.id=j.company_id',
                 'LEFT'
             )
-            ->join(config('database.prefix').'member m','j.uid=m.uid','LEFT')
+            ->join(config('database.prefix') . 'member m', 'j.uid=m.uid', 'LEFT')
             ->field('j.*,c.companyname,m.mobile as member_mobile')
             ->where($where)
             ->order($order)
@@ -113,20 +116,20 @@ class Job extends \app\common\controller\Backend
             $contact_company_list = [];
         }
         foreach ($list as $key => $value) {
-            if(isset($contact_list[$value['id']])){
-                if($contact_list[$value['id']]['use_company_contact']==1){
-                    $value['contact'] = isset($contact_company_list[$value['company_id']])?$contact_company_list[$value['company_id']]['contact']:'';
-                    $value['mobile'] = isset($contact_company_list[$value['company_id']])?$contact_company_list[$value['company_id']]['mobile']:'';
-                }else{
-                    $value['contact'] = isset($contact_list[$value['id']])?$contact_list[$value['id']]['contact']:'';
-                    $value['mobile'] = isset($contact_list[$value['id']])?$contact_list[$value['id']]['mobile']:'';
+            if (isset($contact_list[$value['id']])) {
+                if ($contact_list[$value['id']]['use_company_contact'] == 1) {
+                    $value['contact'] = isset($contact_company_list[$value['company_id']]) ? $contact_company_list[$value['company_id']]['contact'] : '';
+                    $value['mobile'] = isset($contact_company_list[$value['company_id']]) ? $contact_company_list[$value['company_id']]['mobile'] : '';
+                } else {
+                    $value['contact'] = isset($contact_list[$value['id']]) ? $contact_list[$value['id']]['contact'] : '';
+                    $value['mobile'] = isset($contact_list[$value['id']]) ? $contact_list[$value['id']]['mobile'] : '';
                 }
-            }else{
+            } else {
                 $value['contact'] = '';
                 $value['mobile'] = '';
             }
-            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
-            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'], ENT_QUOTES);
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'], ENT_QUOTES);
             $value['job_link'] = url('index/job/show', ['id' => $value['id']]);
             $value['company_link'] = url('index/company/show', [
                 'id' => $value['company_id']
@@ -134,19 +137,20 @@ class Job extends \app\common\controller\Backend
             $value['education_text'] = isset(
                 model('BaseModel')->map_education[$value['education']]
             )
-            ? model('BaseModel')->map_education[$value['education']]
-            : '不限';
+                ? model('BaseModel')->map_education[$value['education']]
+                : '不限';
             $value['experience_text'] = isset(
                 model('BaseModel')->map_experience[$value['experience']]
             )
-            ? model('BaseModel')->map_experience[$value['experience']]
-            : '不限';
+                ? model('BaseModel')->map_experience[$value['experience']]
+                : '不限';
             $value['wage_text'] = model('BaseModel')->handle_wage(
                 $value['minwage'],
                 $value['maxwage'],
                 $value['negotiable']
             );
             $value['sitename'] = config('global_config.sitename');
+            $value['display'] = !!$value['is_display'];
             $list[$key] = $value;
         }
 
@@ -157,6 +161,7 @@ class Job extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function edit()
     {
         $id = input('get.id/d', 0, 'intval');
@@ -167,21 +172,21 @@ class Job extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info = $info->toArray();
-            $info['jobname'] = htmlspecialchars_decode($info['jobname'],ENT_QUOTES);
-            $info['address'] = htmlspecialchars_decode($info['address'],ENT_QUOTES);
-            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
-            $info['department'] = htmlspecialchars_decode($info['department'],ENT_QUOTES);
-            $info['custom_field_1'] = htmlspecialchars_decode($info['custom_field_1'],ENT_QUOTES);
-            $info['custom_field_2'] = htmlspecialchars_decode($info['custom_field_2'],ENT_QUOTES);
-            $info['custom_field_3'] = htmlspecialchars_decode($info['custom_field_3'],ENT_QUOTES);
+            $info['jobname'] = htmlspecialchars_decode($info['jobname'], ENT_QUOTES);
+            $info['address'] = htmlspecialchars_decode($info['address'], ENT_QUOTES);
+            $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
+            $info['department'] = htmlspecialchars_decode($info['department'], ENT_QUOTES);
+            $info['custom_field_1'] = htmlspecialchars_decode($info['custom_field_1'], ENT_QUOTES);
+            $info['custom_field_2'] = htmlspecialchars_decode($info['custom_field_2'], ENT_QUOTES);
+            $info['custom_field_3'] = htmlspecialchars_decode($info['custom_field_3'], ENT_QUOTES);
 
             $info_contact = model('JobContact')
                 ->where('jid', $id)
                 ->find();
             $info['contact'] = $info_contact->toArray();
-            $info['contact']['contact'] = htmlspecialchars_decode($info['contact']['contact'],ENT_QUOTES);
-            $info['contact']['weixin'] = htmlspecialchars_decode($info['contact']['weixin'],ENT_QUOTES);
-            $info['contact']['telephone'] = htmlspecialchars_decode($info['contact']['telephone'],ENT_QUOTES);
+            $info['contact']['contact'] = htmlspecialchars_decode($info['contact']['contact'], ENT_QUOTES);
+            $info['contact']['weixin'] = htmlspecialchars_decode($info['contact']['weixin'], ENT_QUOTES);
+            $info['contact']['telephone'] = htmlspecialchars_decode($info['contact']['telephone'], ENT_QUOTES);
 
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info
@@ -247,6 +252,7 @@ class Job extends \app\common\controller\Backend
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function delete()
     {
         $id = input('post.id/a');
@@ -273,7 +279,7 @@ class Job extends \app\common\controller\Backend
             }
             // 日志
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -315,12 +321,14 @@ class Job extends \app\common\controller\Backend
 
             $audit_set = model('Job')->map_audit[$audit];
 
-            $log_field = '审核职位，';
+            $l_list = [];
             foreach ($list as $jobInfo) {
-                $log_field .= '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')；';
+                $l_list[] = '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')';
                 $audit_original = model('Job')->map_audit[$jobInfo['audit']];
             }
-            $log_field = rtrim($log_field, '；') . '，';
+            $log_field = '审核职位，'
+                . implode('；', $l_list)
+                . '，';
             if (count($list) === 1) {
                 $log_field .= $audit_original . '->' . $audit_set;
             } else {
@@ -351,6 +359,7 @@ class Job extends \app\common\controller\Backend
 
         $this->ajaxReturn(200, '审核成功');
     }
+
     public function refresh()
     {
         $idArr = input('post.id/a');
@@ -376,16 +385,78 @@ class Job extends \app\common\controller\Backend
             $this->ajaxReturn(500, $result['msg']);
         }
 
-        $log_field = '刷新';
+        $l_list = [];
         foreach ($result['data'] as $jobInfo) {
-            $log_field .= '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')；';
+            $l_list[] = '{' . $jobInfo['jobname'] . '}(职位ID:' . $jobInfo['id'] . ')';
         }
+        $log_field = '刷新'
+            . implode('；', $l_list)
+            . '，后台刷新不占用企业免费刷新额度';
         model('AdminLog')->writeLog(
-            rtrim($log_field, '；') . '，后台刷新不占用企业免费刷新额度',
+            $log_field,
             $this->admininfo,
             0,
             1
         );
         $this->ajaxReturn(200, '成功刷新' . count($result['data']) . '条职位');
+    }
+
+    public function jobModifyState()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的职位');
+        }
+
+        $is_display = input('post.is_display/d', 1, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$is_display])) {
+            $this->ajaxReturn(500, '要设置的职位状态错误');
+        }
+        $display_text = model('Job')->map_display[$is_display];
+
+        try {
+            $jobInfo = model('Job')
+                ->find($id);
+            if (null === $jobInfo) {
+                throw new \Exception('要修改的职位不存在');
+            }
+
+            Db::startTrans();
+
+            $modify_result = model('Job')
+                ->where('id', $id)
+                ->setField('is_display', $is_display);
+            if (false === $modify_result) {
+                throw new \Exception(model('Job')->getError());
+            }
+
+            model('Job')->refreshSearch($id);
+
+            /**
+             * 日志
+             */
+            $log_field = '修改职位招聘状态，{'
+                . $jobInfo['jobname']
+                . '}(职位ID:'
+                . $jobInfo['id']
+                . ')，招聘状态:'
+                . $display_text;
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200, '修改成功，显示状态修改为' . $display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

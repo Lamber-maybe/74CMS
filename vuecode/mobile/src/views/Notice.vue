@@ -27,6 +27,9 @@
           <div class="title">
             {{ item.title }}
           </div>
+          <div class="form" :class="item.source == 1 ? 'rep' : ''">
+            {{ item.source_text }}
+          </div>
           <div class="time">
             {{ item.addtime | timeFilter }}
             <div class="num">{{ item.click }}</div>
@@ -134,6 +137,20 @@ export default {
 <style lang="scss" scoped>
 .list_wrapper {
   .list_block {
+    .form{
+      &.rep {
+        color: #ff6600;
+        background-color: #fff5e8;
+      }
+      float: left;
+      line-height: 16px;
+      padding: 0 6px;
+      font-size: 11px;
+      color: #1787fb;
+      border-radius: 3px;
+      background-color: #e7f3ff;
+      margin-right: 10px;
+    }
     .time {
       .num {
         position: absolute;
@@ -147,11 +164,11 @@ export default {
         padding-left: 17px;
       }
       position: relative;
-      padding-left: 17px;
+      padding-left: 60px;
       font-size: 12px;
       color: #999999;
       height: 16px;
-      background: url("../assets/images/com_man_i3.png") 0 2px no-repeat;
+      background: url("../assets/images/com_man_i3.png") 43px 2px no-repeat;
       background-size: 12px;
     }
     .title {

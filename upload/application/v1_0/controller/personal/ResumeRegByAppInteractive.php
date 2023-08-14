@@ -196,7 +196,6 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, model('Resume')->getError());
         }
         $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历求职状态和开始工作时间');
-
         $this->ajaxReturn(200, '保存成功');
     }
     /**

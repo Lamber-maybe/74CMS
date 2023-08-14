@@ -363,8 +363,6 @@ export default {
     account_cancel_apply: '/member/account/cancelApply',
     // 二维码
     get_qrcode: '/home/qrcode/index',
-    // 微海报-根据职位数获取模板
-    microposte_get_tpl_by_jobnum: '/company/microposte/tpl',
     // 扫描微信支付结果
     scan_wxpay_result: '/home/pay/scanWxpay',
     // 获取图片验证码
@@ -498,5 +496,7 @@ export default {
   // 发送注销验证码
   cancelApply: '/member/sendsms/cancelApply',
   // 导出PDF简历
-  exportPdfByPhp: '/home/resume/exportPdfByPhp'
+  exportPdfByPhp: '/home/resume/exportPdfByPhp',
+  // 生成企业LOGO头像
+  sendCompanyLogo: '/company/index/sendCompanyLogo',
 }

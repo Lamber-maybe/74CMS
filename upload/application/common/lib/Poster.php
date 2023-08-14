@@ -1100,7 +1100,7 @@ class Poster
                 }
                 $top_plus = $job_index * 80;
                 $config['text'][] = [
-                    'text' => cut_str($value['jobname'], 10, 0, '...'),
+                    'text' => cut_str($value['jobname'], 8, 0, '...'),
                     'fontPath' => $this->fontPath,
                     'left' => 116,
                     'top' => 1620 + $top_plus,

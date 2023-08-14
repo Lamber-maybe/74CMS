@@ -266,8 +266,7 @@ export default {
       },
       showIncrement: false,
       options_increment: [],
-      increment_jobid: 0,
-      enable_poster: 0
+      increment_jobid: 0
     }
   },
   created () {
@@ -317,7 +316,6 @@ export default {
           } else {
             this.dataset = this.dataset.concat(res.data.items)
           }
-          this.enable_poster = res.data.enable_poster
           // 加载状态结束
           this.loading = false
 
@@ -421,9 +419,6 @@ export default {
         { name: '职位紧急', value: 'emergency', disabled: false },
         { name: '智能刷新', value: 'job_refresh', disabled: false }
       ]
-      if (this.enable_poster == 1) {
-        this.options_increment.push({ name: '微海报', value: 'microposte', disabled: false })
-      }
       if (item.stick === 1) {
         this.options_increment[0].disabled = true
       }

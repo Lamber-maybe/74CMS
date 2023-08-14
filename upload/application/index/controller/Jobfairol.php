@@ -37,7 +37,7 @@ class Jobfairol extends \app\index\controller\Base{
          * [新]:
          * ->order('score DESC, id DESC')
          */
-        $list = model('JobfairOnline')->field($field)->order('score DESC, id DESC')->page($current_page, $pagesize)->select();
+        $list = model('JobfairOnline')->where('display',1)->field($field)->order('score DESC, id DESC')->page($current_page, $pagesize)->select();
         $participate_company = $participate_personal = $jobfair_id_arr = $thumb_arr = $thumb_id_arr = [];
         foreach ($list as $key => $value) {
             $jobfair_id_arr[] = $value['id'];

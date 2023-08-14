@@ -55,6 +55,8 @@ class PromotionJob extends \app\common\controller\Backend
                 'b.company_id=c.id',
                 'LEFT'
             )
+            ->where('b.audit',1)
+            ->where('b.is_display',1)
             ->where('b.id', 'not null')
             ->where($where)
             ->count();
@@ -67,6 +69,8 @@ class PromotionJob extends \app\common\controller\Backend
                 'LEFT'
             )
             ->field('a.*,b.uid,b.jobname,c.companyname')
+            ->where('b.audit',1)
+            ->where('b.is_display',1)
             ->where($where)
             ->where('b.id', 'not null')
             ->order($order)

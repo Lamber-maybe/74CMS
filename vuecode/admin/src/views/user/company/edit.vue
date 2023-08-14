@@ -33,8 +33,8 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="live_fields.logo === true" label="Logo" prop="logo">
-        <div style="position: relative">
+      <el-form-item class="logo-el-form-item" v-if="live_fields.logo === true" label="Logo" prop="logo">
+        <div style="position: relative;height: 120px;">
           <div v-if="form.logo" class="transparent" @click="logoDel">
             <i class="el-icon-delete" />
             删除
@@ -51,6 +51,7 @@
             <i v-else class="el-icon-plus logo-uploader-icon" />
           </el-upload>
         </div>
+        <span class="sendLogo" @click="logoDialogVisible = true">智能生成LOGO</span>
         <span class="smalltip">
           <i class="el-icon-info" />
           建议尺寸120*120
@@ -211,18 +212,75 @@
         <!--        </el-button>-->
       </el-form-item>
     </el-form>
+    <el-dialog
+      title="智能生成LOGO"
+      :visible.sync="logoDialogVisible"
+      width="455px"
+      append-to-body
+      @close="closeDialog"
+    >
+      <div class="logo_box">
+        <div id="img">
+          <div v-if="string_type===1" class="backgroudcolor" :style="{ background: backgroudcolor }">
+            <span v-if="logo_name == ''">
+              LOGO
+            </span>
+            <span v-else>
+              {{ logo_name }}
+            </span>
+          </div>
+          <div v-else class="backgroudcolor2" :style="{ background: backgroudcolor }">
+            <div class="logo_background">
+              <span class="logo_name">
+                {{ logo_name }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="custom">
+            <div class="top">
+              <span class="asterisk">*</span>
+              <span class="custom_text">自定义LOGO文字：</span>
+            </div>
+            <div class="input">
+              <el-input v-model="logo_name" class="custom_text_input" style="width: 291px;" placeholder="请输入LOGO文字（2-4个汉子）" maxlength="4" minlength="2" />
+            </div>
+            <div class="color_box2">
+              <div>
+                <span class="asterisk">*</span>
+                <span class="custom_colors">自定义LOGO颜色：</span>
+              </div>
+              <div class="color_box_div">
+                <div
+                  v-for="(item,index) in color_arr"
+                  :key="index"
+                >
+                  <div class="color_box" :style="{ background: item}" @click="backgroudcolor = item">
+                    <img v-if="item == backgroudcolor" src="../../../assets/images/company/crm/check_mark.png" alt="" class="color_img">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="logo_submit_box">
+              <el-button size="small" type="primary" :loading="logoLoading" @click="save_logo">生成</el-button>
+              <el-button size="small" @click="closeDialog">取消</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getFieldRule } from '@/api/configuration'
-import { companyEdit } from '@/api/company'
+import { companyEdit, sendCompanyLogo } from '@/api/company'
 import { validMobile, validEmail, validUrl } from '@/utils/validate'
 import { getToken } from '@/utils/auth'
 import { getClassify } from '@/api/classify'
-// import { apiUpload } from '@/api/upload'
+import html2canvas from 'html2canvas'
 import apiArr from '@/api'
-// import { config } from 'vuex'
 
 export default {
   props: {
@@ -257,6 +315,11 @@ export default {
       }
     }
     return {
+      string_type: 1,
+      color_arr: ['#3E6EF9', '#FF8432', '#6647FF', '#8FAC0C', '#3B83C0', '#2CE7F3', '#FF5656', '#21C78E', '#FECD25', '#F02D94', '#8EBBFB', '#FEA68F', '#BCB4E3', '#DFE2AD', '#98BAD8', '#AFE8EC', '#FFE2E2', '#90E7D2', '#FEF3C6', '#F8B4E7'],
+      logoDialogVisible: false,
+      logo_name: '',
+      backgroudcolor: '#3E6EF9',
       secrecyHidden: false,
       infoLoading: true,
       submitLoading: false,
@@ -491,12 +554,28 @@ export default {
             }
           ]
         }
-      }
+      },
+      logoLoading: false
     }
   },
   computed: {
     config() {
       return this.$store.state.config
+    }
+  },
+  watch: {
+    logo_name: {
+      handler(newValue, oldValue){
+        var pattern = new RegExp('[\u4E00-\u9FA5]+')
+
+        var str = newValue
+
+        if (pattern.test(str) && newValue.toString().length === 4){
+          this.string_type = 2
+        } else {
+          this.string_type = 1
+        }
+      }
     }
   },
   created() {
@@ -505,6 +584,51 @@ export default {
     this.fetchData()
   },
   methods: {
+    closeDialog(){
+      this.logoDialogVisible = false
+      this.logo_name = ''
+    },
+    save_logo(){
+      this.logoLoading = true
+      const name_length = this.logo_name.length
+      if (name_length < 2){
+        this.$message.error('自定义LOGO文字至少2个汉字')
+        this.logoLoading = false
+        return false
+      }
+      if (name_length > 4){
+        this.$message.error('自定义LOGO文字至多4个汉字')
+        this.logoLoading = false
+        return false
+      }
+      if (this.form.logo > 0){
+        this.$confirm('检测到已存在企业Logo,继续保存将替换原有Logo,是否确认替换？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.onsubmitLogo()
+        })
+      } else {
+        this.onsubmitLogo()
+      }
+    },
+    onsubmitLogo(){
+      html2canvas(document.querySelector('#img'), { width: 80, height: 80, allowTaint: false, useCORS: true }).then(canvas => {
+        sendCompanyLogo({ imgBase64: canvas.toDataURL(), company_id: this.id })
+          .then(response => {
+            this.$message.success(response.message)
+            this.logoUrl = response.data.file_url
+            this.form.logo = response.data.file_id
+            this.logoDialogVisible = false
+            this.logoLoading = false
+            return true
+          })
+          .catch(() => {
+            this.logoLoading = false
+          })
+      })
+    },
     logoDel(){
       this.logoUrl = ''
       this.form.logo = ''
@@ -731,7 +855,7 @@ export default {
   text-align: center;
   line-height: 25px;
   position: absolute;
-  bottom: 15px;
+  bottom: 0;
   color: #d5cece;
   left: 1px;
   width: 120px;
@@ -776,5 +900,100 @@ export default {
 }
 .el-form.common-form .input-sel .el-input .el-input__inner {
   width: 120px;
+}
+.sendLogo{
+  color: #2196f3;
+  margin: 12px 0 2px 10px;
+  display: block;
+  height: 21px;
+  line-height: 21px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.backgroudcolor{
+  width: 80px;
+  height: 80px;
+  color: white;
+  text-align: center;
+  line-height: 77px;
+  font-size: 24px;
+  border-radius: 5px;
+  float: left;
+}
+.backgroudcolor2{
+  width: 80px;
+  height: 80px;
+  color: white;
+  text-align: center;
+  font-size: 24px;
+  border-radius: 5px;
+  float: left;
+}
+.custom {
+  padding: 0 0 39px 99px;
+  text-align: left;
+}
+.top{
+  padding-bottom: 10px;
+}
+.input .el-input{
+  width: 245px;
+}
+.input .el-input__inner{
+  height: 26px;
+}
+.color_box{
+  width: 19px;
+  height: 19px;
+  float: left;
+  margin-left: 10px;
+  margin-bottom: 9px;
+  border-radius: 10px;
+}
+.logo_box{
+  height: 278px;
+  padding-top: 18px;
+}
+.logo_background{
+  width: 60px;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin: 8px 0 0 13px
+}
+.logo_name{
+  letter-spacing: 6px;
+  line-height: 31px;
+}
+.asterisk{
+  color: #FF4848;
+  font-size: 13px
+}
+.custom_colors{
+  color: #303133;
+  font-size: 13px;
+  padding-left: 5px;
+  font-weight: bold;
+}
+.color_box_div{
+  padding-top: 14px;
+}
+.custom_text{
+  font-size: 13px;
+  color: #303133;
+  padding-left: 5px;
+  font-weight: bold;
+}
+.custom_text_input{
+  height: 25px;
+  width: 120%;
+}
+.color_img{
+  padding-left: 3px
+}
+.logo_submit_box{
+  padding: 81px 0 0 21px;
+}
+.color_box2{
+  padding-top: 39px;
 }
 </style>

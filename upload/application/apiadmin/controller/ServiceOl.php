@@ -179,7 +179,7 @@ class ServiceOl extends Backend
             $list = model('ServiceOl')
                 ->whereIn('id', $id)
                 ->column('id,name,mobile');
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要删除的在线客服');
             }
 
@@ -198,7 +198,7 @@ class ServiceOl extends Backend
                 $log_field .= '姓名:' . $one['name'] . '；电话:' . $one['mobile'] . '；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

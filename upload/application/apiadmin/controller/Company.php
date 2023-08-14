@@ -457,12 +457,15 @@ class Company extends Backend
             } else {
                 $log_field = '审核营业执照';
             }
+
+            $l_list = [];
             foreach ($list as $company) {
-                $log_field .= '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')；';
+                $l_list[] = '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')';
                 $audit_original = model('Company')->map_audit[$company['audit']];
             }
+            $log_field .= implode('；', $l_list);
+
             if (count($list) === 1) {
-                $log_field = rtrim($log_field, '；');
                 $log_field .= '营业执照，' . $audit_original . '->' . $audit_set;
             } else {
                 $log_field .= $audit_set;
@@ -553,11 +556,13 @@ class Company extends Backend
             } else {
                 $log_field = '修改';
             }
+            $l_list = [];
             foreach ($list as $company) {
-                $log_field .= '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')；';
+                $l_list[] = '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')';
                 $is_display_original = model('Company')->map_is_display[$company['is_display']];
             }
-            $log_field = rtrim($log_field, '；') . '的显示状态，';
+            $log_field .= implode('；', $l_list)
+                . '的显示状态，';
             if (count($list) === 1) {
                 $log_field .= $is_display_original . '->' . $is_display_set;
             } else {
@@ -625,7 +630,7 @@ class Company extends Backend
 
             $jobModel  = model('Job');
             $jobIdList = [];
-            $log_field = '刷新';
+            $l_list = [];
             foreach ($companyList as $companyInfo) {
                 // 获取当前企业下已审核的所有职位
                 $jobWhere = [
@@ -648,11 +653,14 @@ class Company extends Backend
 
                 // 记录刷新的职位ID
                 $jobIdList = array_merge($jobIdList, array_column($result['data'], 'id'));
-                $log_field .= '{' . $companyInfo['companyname'] . '}(企业ID:' . $companyInfo['id'] . ')；';
+                $l_list[] = '{' . $companyInfo['companyname'] . '}(企业ID:' . $companyInfo['id'] . ')';
             }
 
             if (!empty($jobIdList)) {
-                $log_field = rtrim($log_field, '；') . '的全部在招职位，后台刷新不占用企业刷新数';
+                $log_field = '刷新'
+                    . implode('；', $l_list)
+                    . '的全部在招职位，后台刷新不占用企业刷新数';
+
                 model('AdminLog')->writeLog(
                     $log_field,
                     $this->admininfo,
@@ -677,4 +685,48 @@ class Company extends Backend
         }
     }
 
+    /**
+     * 生成企业LOGO
+     * @access public
+     * @author zch
+     * @return Json
+     * Date Time：2023年4月25日15:42:25
+     */
+    public function sendCompanyLogo()
+    {
+        $imgBase64 = input('post.imgBase64/s','','trim');
+        if (empty($imgBase64)) {
+            $this->ajaxReturn(500, '请先生成企业LOGO');
+        }
+        $company_id = input('post.company_id/d',0,'intval');
+        if (empty($company_id)) {
+            $this->ajaxReturn(500, '请选择要生成LOGO的企业');
+        }
+
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/',$imgBase64,$res)) {
+            //获取图片类型
+            $type = $res[2];
+            //图片保存路径
+            $new_file = "upload/company_logo/".$company_id.'/';
+            if (!file_exists($new_file)) {
+                mkdir($new_file,0755,true);
+            }
+            //图片名字
+            $new_file = $new_file.time().'.'.$type;
+            if (file_put_contents($new_file,base64_decode(str_replace($res[1],'', $imgBase64)))) {
+                $id = model('Uploadfile')->insertGetId([
+                    'save_path' => substr($new_file,6),
+                    'platform' => 'default',
+                    'addtime' => time()
+                ]);
+                $arr = [
+                    'file_id' => $id,
+                    'file_url' => config('global_config.sitedomain').'/'.$new_file
+                ];
+                $this->ajaxReturn(200,'生成成功',$arr);
+            } else {
+                $this->ajaxReturn(500,'生成失败');
+            }
+        }
+    }
 }

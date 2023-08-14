@@ -681,7 +681,7 @@ class Company extends Backend
                 $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 1
@@ -869,7 +869,7 @@ class Company extends Backend
                 $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 1
@@ -1410,8 +1410,7 @@ class Company extends Backend
         $data = ['uid' => $uid];
 
         if (!empty($company_mobile)) {
-            $preg_phone = '/^1[345789]\d{9}$/ims';
-            if (!preg_match($preg_phone, $company_mobile)) {
+            if (!fieldRegex($company_mobile,'mobile')) {
                 throw new \Exception('手机号格式错误');
             }
             $data['mobile'] = $company_mobile;
@@ -1465,7 +1464,7 @@ class Company extends Backend
         $list = model('CompanyImg')
             ->where('id', 'in', $id)
             ->select();
-        if (empty($list)) {
+        if (null === $list) {
             throw new \Exception('没有要审核的企业风采');
         }
 
@@ -1480,13 +1479,16 @@ class Company extends Backend
             }
         }
 
-        $log_field = '审核';
+        $l_list = [];
         $comIds = array_column($list, 'comid', 'comid');
         $company_arr = model('Company')->whereIn('id', $comIds)->column('id,companyname');
         foreach ($company_arr as $c_id => $c_name) {
-            $log_field .= '{' . $c_name . '}(企业ID:' . $c_id . ')；';
+            $l_list[] = '{' . $c_name . '}(企业ID:' . $c_id . ')';
         }
-        $log_field = rtrim($log_field, '；') . '的企业风采，' . model('CompanyImg')->map_audit[$audit];
+        $log_field = '审核'
+            . implode('；', $l_list)
+            . '的企业风采，'
+            . model('CompanyImg')->map_audit[$audit];
         $log_result = model('AdminLog')->writeLog(
             $log_field,
             $this->admininfo,
@@ -1646,9 +1648,7 @@ class Company extends Backend
 
         if (isset($post['email'])) {
             if (!empty($post['email'])) {
-                $preg_email = '/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@([a-zA-Z0-9]+[-.])+([a-z]{2,5})$/ims';
-
-                if (!preg_match($preg_email, $post['email'])) {
+                if (!fieldRegex($post['email'],'email')) {
                     throw new \Exception('请输入正确的邮箱格式');
                 }
             }
@@ -1670,8 +1670,7 @@ class Company extends Backend
         }
 
         if (isset($post['mobile'])) {
-            $preg_phone = '/^1[345789]\d{9}$/ims';
-            if (!preg_match($preg_phone, $post['mobile'])) {
+            if (!fieldRegex($post['mobile'],'mobile')) {
                 throw new \Exception('手机号格式错误');
             }
             /**
@@ -1768,11 +1767,12 @@ class Company extends Backend
             } else {
                 $log_field = '修改';
             }
+            $l_list = [];
             foreach ($list as $company) {
-                $log_field .= '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')；';
+                $l_list[] = '{' . $company['companyname'] . '}(企业ID:' . $company['id'] . ')';
                 $is_display_original = model('Company')->map_is_display[$company['is_display']];
             }
-            $log_field = rtrim($log_field, '；') . '的显示状态，';
+            $log_field .= implode('；', $l_list) . '的显示状态，';
             if (count($list) === 1) {
                 $log_field .= $is_display_original . '->' . $is_display_set;
             } else {

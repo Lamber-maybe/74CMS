@@ -141,3 +141,10 @@ export function exportCompanyJobsList(params) {
     params
   })
 }
+export function jobfairOlModifyState(params) {
+  return request({
+    url: apiArr.jobfairOlModifyState,
+    method: 'post',
+    data: params
+  })
+}

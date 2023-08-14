@@ -2,14 +2,15 @@
   <div id="app">
     <Head>自我描述</Head>
     <div class="form_top_border"></div>
-    <van-field
-      v-model="specialty"
-      rows="5"
-      type="textarea"
-      placeholder="你可以通过描述你擅长的东西，也可以简单的介绍一 下，说说你的求职目标。"
-      show-word-limi
-      class="reset_after"
-    />
+    <div class="reset_after">
+      <textarea
+        v-model="specialty"
+        rows="5"
+        placeholder="你可以通过描述你擅长的东西，也可以简单的介绍一 下，说说你的求职目标。"
+        show-word-limi
+      >
+      </textarea>
+    </div>
     <div style="margin: 16px 16px 0;">
       <van-button round block type="info" @click="handleSubmit">
         保存
@@ -67,4 +68,20 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.reset_after{
+  textarea{
+    width: 100%;
+    line-height: 24px;
+    padding: 24px 27px;
+    border: none;
+    font-size: 13.5px;
+    color: #000000ba;
+    background-color: white;
+    resize: none;
+  }
+  textarea::-webkit-input-placeholder{
+    color: #bec7cb;
+  }
+}
+</style>

@@ -742,9 +742,13 @@
 			pictureCaptchaCallback: '',
 			guideQrcode: '',
 			showGuide: false,
-			sendSmsLimit: false
+			sendSmsLimit: false,
+			wechat_login_open:0,
+			scan: false,
 		},
 		created: function() {
+			this.wechat_login_open = parseInt("{#$global_config.wechat_login_open#}")
+			this.account_qqlogin_open = parseInt("{#$global_config.account_qqlogin_open#}")
 			this.getUserInfo()
 			this.captcha_open = captcha_open
 			this.captcha_type = captcha_type
@@ -758,8 +762,34 @@
 			if (navigator.userAgent.indexOf('Trident') > -1) {
 				this.isIe = true
 			}
+			if (window.WxLogin === undefined) {
+				let script = document.createElement('script')
+				let head = document.getElementsByTagName('head')[0]
+				script.type = 'text/javascript'
+				script.charset = 'UTF-8'
+				script.src = 'https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js'
+				head.appendChild(script)
+			}
 		},
 		methods: {
+			showScan(){
+				let that = this
+				this.scan = !this.scan
+				if(this.scan===true){
+					new window.WxLogin({
+						id:"wxlogin",
+						appid: '{#$global_config.wechat_open_appid#}',
+						scope: "snsapi_login",
+						redirect_uri: location.href,
+						state: "",
+						style: "",
+						href: "data:text/css;base64,LmxvZ2luUGFuZWwgewogICAgd2lkdGg6IDIyNnB4OwogICAgcGFkZGluZy10b3A6IDMxcHg7Cn0KLmltcG93ZXJCb3ggLnFyY29kZSB7CiAgd2lkdGg6IDEyMHB4Owp9Ci5pbXBvd2VyQm94IC5pbmZvIHsKICB3aWR0aDogMjAwcHg7Cn0KLmltcG93ZXJCb3ggLnN0YXR1cyB7CiAgdGV4dC1hbGlnbjogY2VudGVyOwp9Cgo="
+					});
+				}
+			},
+			qqLogin:function(){
+				location.href = qscms.locationList.oauthQq
+			},
 			handlerMemberCenter: function(utype) {
 				if (utype == 1) {
 					location.href = qscms.locationList.indexCompany

@@ -49,9 +49,6 @@ class MemberSetmeal extends BaseModel
                     case 'im_max_perday':
                         $log_field .= '允许发起聊天数:' . $setmeal[$item] . '次/天；';
                         break;
-//                    case 'enable_poster':
-//                        $log_field .= '是否可以使用微海报:' . $setmeal[$item] . '；';
-//                        break;
                     case 'enable_video_interview':
                         $log_field .= '使用视频面试:' . ($setmeal[$item] === 1 ? '允许' : '不允许') . '；';
                         break;

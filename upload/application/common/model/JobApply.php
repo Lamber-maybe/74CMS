@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-class JobApply extends \app\common\model\BaseModel
+class JobApply extends BaseModel
 {
     public $map_status = [
         0 => '待处理',
@@ -105,7 +105,7 @@ class JobApply extends \app\common\model\BaseModel
             return false;
         }
         $resume_info = model('Resume')
-            ->field('id,fullname,audit')
+            ->field('id,fullname,audit,enter_job_time,sex,education')
             ->where('uid', $personal_uid)
             ->find();
         if (null === $resume_info) {
@@ -114,7 +114,7 @@ class JobApply extends \app\common\model\BaseModel
         }
         if ($resume_info['audit'] != 1) {
             $this->error =
-                '你的简历还没有审核通过，请联系管理员审核通过后进行操作';
+                '您的简历正在审核中，请耐心等待…';
             return false;
         }
         if (
@@ -161,7 +161,7 @@ class JobApply extends \app\common\model\BaseModel
                 [
                     'fullname' => $resume_info['fullname'],
                     'jobname' => $job_info['jobname'],
-		    'resumeurl' => url('index/resume/show', ['id' => $resume_info['id']], '', config('global_config.sitedomain'))
+                    'resumeurl' => url('index/resume/show', ['id' => $resume_info['id']], '', config('global_config.sitedomain'))
                 ],
                 $resume_info['id'],
                 '',
@@ -169,6 +169,11 @@ class JobApply extends \app\common\model\BaseModel
                     'job_id' => $jobid
                 ]
             );
+            $sex_text = isset(model('Resume')->map_sex[$resume_info['sex']]) ? model('Resume')->map_sex[$resume_info['sex']] : '';
+            $education = isset(model('Resume')->map_education[$resume_info['education']]) ? model('Resume')->map_education[$resume_info['education']] : '';
+            $experience = $resume_info['enter_job_time'] == 0
+                ? '无经验'
+                : format_date($resume_info['enter_job_time']);
             //微信通知
             model('WechatNotifyRule')->notify(
                 $company_info['uid'],
@@ -176,7 +181,7 @@ class JobApply extends \app\common\model\BaseModel
                 'job_apply',
                 [
                     $resume_info['fullname'] . '刚刚投递了您的职位。',
-                    $resume_info['fullname'],
+                    $resume_info['fullname'].'('. $sex_text . ',' . $education . ',' . $experience .')',
                     $job_info['jobname'],
                     '点击立即查看简历详情'
                 ],

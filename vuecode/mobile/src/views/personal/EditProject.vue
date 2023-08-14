@@ -66,14 +66,14 @@
       label="项目描述"
       class="reset_after no_border"
     />
-    <van-field
-      v-model="description"
-      rows="3"
-      type="textarea"
-      placeholder="请填写项目描述"
-      show-word-limi
-      class="reset_after"
-    />
+    <div class="reset_after">
+      <textarea
+        v-model="description"
+        rows="3"
+        placeholder="请填写项目描述"
+      >
+    </textarea>
+    </div>
     <div style="margin: 16px 16px 0;">
 <!--       修改项目经历重复保存  zch 2022/9/16-->
       <van-button round block type="info" @click="handleSubmit" :disabled="issubmit">
@@ -292,5 +292,20 @@ export default {
   text-align: center;
   width: 100%;
   padding: 15px 0;
+}
+.reset_after{
+  textarea{
+    width: 100%;
+    line-height: 24px;
+    padding: 24px 27px;
+    border: none;
+    font-size: 13.5px;
+    color: #000000ba;
+    background-color: white;
+    resize: none;
+  }
+  textarea::-webkit-input-placeholder{
+    color: #bec7cb;
+  }
 }
 </style>

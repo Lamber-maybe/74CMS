@@ -2,14 +2,16 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class CompanySetmeal extends \app\common\controller\Backend
+class CompanySetmeal extends Backend
 {
     public function _initialize()
     {
         parent::_initialize();
     }
+
     /**
      * 列表
      */
@@ -49,53 +51,53 @@ class CompanySetmeal extends \app\common\controller\Backend
                     break;
             }
         }
-        if($setmeal>0){
+        if ($setmeal > 0) {
             $where['c.setmeal_id'] = $setmeal;
         }
-        if($expire>0){
-            if($expire==1){
-                $where['c.deadline'] = [['lt',time()],['neq',0],'and'];
-            }else if($expire==2){
-                $where['c.deadline'] = [['gt',time()],['lt',strtotime('+'.config('global_config.meal_min_remind').'day')],'and'];
+        if ($expire > 0) {
+            if ($expire == 1) {
+                $where['c.deadline'] = [['lt', time()], ['neq', 0], 'and'];
+            } else if ($expire == 2) {
+                $where['c.deadline'] = [['gt', time()], ['lt', strtotime('+' . config('global_config.meal_min_remind') . 'day')], 'and'];
             }
         }
         $total = model('Company')
             ->alias('a')
-            ->join(config('database.prefix').'member_setmeal c','a.uid=c.uid','LEFT')
+            ->join(config('database.prefix') . 'member_setmeal c', 'a.uid=c.uid', 'LEFT')
             ->where($where)
             ->count();
         $list = model('Company')
             ->alias('a')
-            ->join(config('database.prefix').'company_contact b','a.uid=b.uid','LEFT')
-            ->join(config('database.prefix').'member_setmeal c','a.uid=c.uid','LEFT')
-            ->join(config('database.prefix').'setmeal d','d.id=c.setmeal_id','LEFT')
+            ->join(config('database.prefix') . 'company_contact b', 'a.uid=b.uid', 'LEFT')
+            ->join(config('database.prefix') . 'member_setmeal c', 'a.uid=c.uid', 'LEFT')
+            ->join(config('database.prefix') . 'setmeal d', 'd.id=c.setmeal_id', 'LEFT')
             ->field('a.id,a.uid,a.companyname,b.contact,b.mobile,c.setmeal_id,c.deadline,c.download_resume_point,d.name as setmeal_name')
             ->where($where)
             ->order('a.id desc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-        
+
         foreach ($list as $key => $value) {
-            if($value['deadline']==0){
+            if ($value['deadline'] == 0) {
                 $value['deadline_cn'] = '无限期';
                 $value['surplus_days'] = '-';
                 $value['expire'] = 0;
-            }else if($value['deadline']<time()){
-                $value['deadline_cn'] = date('Y-m-d',$value['deadline']);
+            } else if ($value['deadline'] < time()) {
+                $value['deadline_cn'] = date('Y-m-d', $value['deadline']);
                 $value['surplus_days'] = '0天';
                 $value['expire'] = 1;
-            }else{
-                $value['deadline_cn'] = date('Y-m-d',$value['deadline']);
+            } else {
+                $value['deadline_cn'] = date('Y-m-d', $value['deadline']);
                 $surplus_seconds = $value['deadline'] - time();
-                $surplus_days = ceil($surplus_seconds/3600/24);
-                $value['surplus_days'] = $surplus_days.'天';
-                if($surplus_days<config('global_config.meal_min_remind')){
+                $surplus_days = ceil($surplus_seconds / 3600 / 24);
+                $value['surplus_days'] = $surplus_days . '天';
+                if ($surplus_days < config('global_config.meal_min_remind')) {
                     $value['expire'] = 2;
-                }else{
+                } else {
                     $value['expire'] = 0;
                 }
             }
-            
+
             $value['link'] = url('index/company/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }
@@ -107,6 +109,7 @@ class CompanySetmeal extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function log()
     {
         $where = [];
@@ -132,15 +135,16 @@ class CompanySetmeal extends \app\common\controller\Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function edit()
     {
         $uid = input('get.uid/d', 0, 'intval');
         if ($uid) {
-            $info = model('MemberSetmeal')->alias('a')->where('a.uid',$uid)->join(config('database.prefix').'setmeal b','a.setmeal_id=b.id','LEFT')->field('a.*,b.name as setmeal_name')->find();
+            $info = model('MemberSetmeal')->alias('a')->where('a.uid', $uid)->join(config('database.prefix') . 'setmeal b', 'a.setmeal_id=b.id', 'LEFT')->field('a.*,b.name as setmeal_name')->find();
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['deadline'] = $info['deadline']>0?date('Y-m-d',$info['deadline']):'';
+            $info['deadline'] = $info['deadline'] > 0 ? date('Y-m-d', $info['deadline']) : '';
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
             $input_data = [
@@ -168,7 +172,6 @@ class CompanySetmeal extends \app\common\controller\Backend
                     0,
                     'intval'
                 ),
-                'enable_poster' => input('post.enable_poster/d', 0, 'intval'),
                 'show_apply_contact' => input(
                     'post.show_apply_contact/d',
                     0,
@@ -179,19 +182,20 @@ class CompanySetmeal extends \app\common\controller\Backend
                 'charge_val' => input('post.charge_val/d', 0, 'floatval'),
                 'im_total' => input('post.im_total/d', 0, 'intval'),
                 'im_max_perday' => input('post.im_max_perday/d', 0, 'intval'),
+                'resume_view_num' => input('post.resume_view_num/d', 0, 'intval')
             ];
             $info = $member_setmeal = model('MemberSetmeal')->where('uid', $input_data['uid'])->find();
-            
-            if($input_data['days']!=0){
-                if($info['deadline']==0){
+
+            if ($input_data['days'] != 0) {
+                if ($info['deadline'] == 0) {
                     $input_data['deadline'] = 0;
-                }else{
+                } else {
                     $input_data['deadline'] = $info['deadline'] + $input_data['days'] * 3600 * 24;
                 }
-            }else{
-                if($input_data['deadline']==''){
+            } else {
+                if ($input_data['deadline'] == '') {
                     $input_data['deadline'] = $info['deadline'];
-                }else{
+                } else {
                     $input_data['deadline'] = strtotime($input_data['deadline']);
                 }
             }
@@ -218,12 +222,20 @@ class CompanySetmeal extends \app\common\controller\Backend
                 }
 
                 $company_info = model('Company')->field('id,companyname')->where('uid', $input_data['uid'])->find();
-                $log_field = '编辑{' . $company_info['companyname'] . '}(企业ID:' . $company_info['id'] . ')的套餐信息，';
+                $log_field = '编辑{'
+                    . $company_info['companyname']
+                    . '}(企业ID:'
+                    . $company_info['id']
+                    . ')的套餐信息，';
 
                 $note = '系统操作【管理员：' . $this->admininfo->username . '】。' . $input_data['explain'];
                 if ($input_data['is_charge'] == 1 && $input_data['charge_val'] > 0) {
-                    $note .= '；收费' . $input_data['charge_val'] . '元';
-                    $log_field .= '收费金额: ' . $input_data['charge_val'] . '；';
+                    $note .= '；收费'
+                        . $input_data['charge_val']
+                        . '元';
+                    $log_field .= '收费金额: '
+                        . $input_data['charge_val']
+                        . '；';
                 } else {
                     $log_field .= '收费金额: 0；';
                 }
@@ -236,44 +248,128 @@ class CompanySetmeal extends \app\common\controller\Backend
                     ->save($log);
 
                 if ($input_data['deadline'] != $member_setmeal['deadline']) {
-                    $old_deadline = $member_setmeal['deadline'] == 0 ? '无限期' : date('Y-m-d', $member_setmeal['deadline']);
-                    $new_deadline = $input_data['deadline'] == 0 ? '无限期' : date('Y-m-d', $input_data['deadline']);
-                    $log_field .= '到期时间:' . $old_deadline . '->' . $new_deadline . '；';
+                    $old_deadline = $member_setmeal['deadline'] == 0
+                        ? '无限期'
+                        : date('Y-m-d', $member_setmeal['deadline']);
+                    $new_deadline = $input_data['deadline'] == 0
+                        ? '无限期'
+                        : date('Y-m-d', $input_data['deadline']);
+                    $log_field .= '到期时间:'
+                        . $old_deadline
+                        . '->'
+                        . $new_deadline
+                        . '；';
                 }
 
                 if ($input_data['jobs_meanwhile'] != $member_setmeal['jobs_meanwhile']) {
-                    $log_field .= '同时在招职位数:' . $member_setmeal['jobs_meanwhile'] . '->' . $input_data['jobs_meanwhile'] . '；';
+                    $log_field .= '同时在招职位数:'
+                        . $member_setmeal['jobs_meanwhile']
+                        . '->'
+                        . $input_data['jobs_meanwhile']
+                        . '；';
                 }
 
                 if ($input_data['download_resume_point'] != $member_setmeal['download_resume_point']) {
-                    $log_field .= '下载简历点数:' . $member_setmeal['download_resume_point'] . '->' . $input_data['download_resume_point'] . '；';
+                    $log_field .= '下载简历点数:'
+                        . $member_setmeal['download_resume_point']
+                        . '->'
+                        . $input_data['download_resume_point']
+                        . '；';
                 }
 
                 if ($input_data['im_total'] != $member_setmeal['im_total']) {
-                    $log_field .= '职聊次数:' . $member_setmeal['im_total'] . '->' . $input_data['im_total'] . '；';
+                    $log_field .= '职聊次数:'
+                        . $member_setmeal['im_total']
+                        . '->'
+                        . $input_data['im_total']
+                        . '；';
                 }
 
                 if ($input_data['im_max_perday'] != $member_setmeal['im_max_perday']) {
-                    $log_field .= '允许发起聊天数:' . $member_setmeal['im_max_perday'] . '次/天->' . $input_data['im_max_perday'] . '次/天；';
+                    $log_field .= '允许发起聊天数:'
+                        . $member_setmeal['im_max_perday']
+                        . '次/天->'
+                        . $input_data['im_max_perday']
+                        . '次/天；';
                 }
 
                 if ($input_data['refresh_jobs_free_perday'] != $member_setmeal['refresh_jobs_free_perday']) {
-                    $log_field .= '免费刷新职位:' . $member_setmeal['refresh_jobs_free_perday'] . '次/天->' . $input_data['refresh_jobs_free_perday'] . '次/天；';
+                    $log_field .= '免费刷新职位:'
+                        . $member_setmeal['refresh_jobs_free_perday']
+                        . '次/天->'
+                        . $input_data['refresh_jobs_free_perday']
+                        . '次/天；';
                 }
 
                 if ($input_data['enable_video_interview'] != $member_setmeal['enable_video_interview']) {
-                    $log_field .= '使用视频面试:' . model('Setmeal')->map_enable[$member_setmeal['enable_video_interview']] . '->' . model('Setmeal')->map_enable[$input_data['enable_video_interview']] . '；';
+                    $log_field .= '使用视频面试:'
+                        . model('Setmeal')->map_enable_video_interview[$member_setmeal['enable_video_interview']]
+                        . '->'
+                        . model('Setmeal')->map_enable_video_interview[$input_data['enable_video_interview']]
+                        . '；';
                 }
 
-                if ($input_data['show_apply_contact'] != $member_setmeal['show_apply_contact']) {
-                    $log_field .= '收到简历免费查看:' . model('Setmeal')->map_enable[$member_setmeal['show_apply_contact']] . '->' . model('Setmeal')->map_enable[$input_data['show_apply_contact']] . '；';
+                if (
+                    $input_data['show_apply_contact'] != $info['show_apply_contact']
+                    ||
+                    $input_data['resume_view_num'] != $info['resume_view_num']
+                ) {
+
+                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+                        $log_field .= '收到简历免费查看:'
+                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+                            . '->'
+                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']] . '；';
+
+                        if (1 === $input_data['show_apply_contact']) {
+                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
+                            if (0 === $input_data['resume_view_num']) {
+                                $resume_view_num = '不限制';
+                            }
+                            $log_field .= '收到简历查看上限:不允许->' . $resume_view_num . '；';
+                        } else {
+                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+                            if (0 === $info['resume_view_num']) {
+                                $resume_view_num_old = '不限制';
+                            }
+                            $log_field .= '收到简历查看上限:' . $resume_view_num_old . '->不允许；';
+                        }
+
+                    } else {
+
+                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
+                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
+                            if (0 === $input_data['resume_view_num']) {
+                                $resume_view_num_new = '不限制';
+                            }
+                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+                            if (0 === $info['resume_view_num']) {
+                                $resume_view_num_old = '不限制';
+                            }
+                            $log_field .= '收到简历查看上限:'
+                                . $resume_view_num_old
+                                . '->'
+                                . $resume_view_num_new . '；';
+                        }
+
+                    }
+
                 }
 
                 if ($input_data['download_resume_max_perday'] != $member_setmeal['download_resume_max_perday']) {
-                    $log_field .= '下载简历上限:' . $member_setmeal['download_resume_max_perday'] . '份/天->' . $input_data['download_resume_max_perday'] . '份/天；';
+                    $log_field .= '下载简历上限:'
+                        . $member_setmeal['download_resume_max_perday']
+                        . '份/天->'
+                        . $input_data['download_resume_max_perday']
+                        . '份/天；';
                 }
 
-                $log_field .= '操作说明:' . (empty($input_data['explain']) ? '无' : $input_data['explain']);
+                $log_field .= '操作说明:'
+                    . (
+                    empty($input_data['explain'])
+                        ? '无'
+                        : $input_data['explain']
+                    );
 
                 // 日志
                 $log_result = model('AdminLog')->writeLog(
@@ -297,6 +393,7 @@ class CompanySetmeal extends \app\common\controller\Backend
             $this->ajaxReturn(200, '保存成功');
         }
     }
+
     public function add()
     {
         $uid = input('post.uid/d', 0, 'intval');
@@ -316,8 +413,16 @@ class CompanySetmeal extends \app\common\controller\Backend
             model('Member')->setMemberSetmeal(['uid' => $uid, 'setmeal_id' => $setmeal_id, 'note' => '管理员更换套餐'], 0, $this->admininfo->id);
 
             // 日志
+            $log_field = '{'
+                . $company_info['companyname']
+                . '}(企业ID:'
+                . $company_info['comid']
+                . ')更换套餐，'
+                . $company_info['setmeal_name']
+                . ' -> '
+                . $new_setmeal;
             $log_result = model('AdminLog')->writeLog(
-                '{' . $company_info['companyname'] . '}(企业ID:' . $company_info['comid'] . ')更换套餐，' . $company_info['setmeal_name'] . ' -> ' . $new_setmeal,
+                $log_field,
                 $this->admininfo,
                 0,
                 5
@@ -336,6 +441,7 @@ class CompanySetmeal extends \app\common\controller\Backend
 
         $this->ajaxReturn(200, '更换套餐成功');
     }
+
     /**
      * 套餐开通记录
      */
@@ -387,14 +493,14 @@ class CompanySetmeal extends \app\common\controller\Backend
         $total = model('MemberSetmealOpenLog')
             ->alias('a')
             ->field('a.*,b.companyname')
-            ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')
             ->where($where)
             ->count();
         $list = model('MemberSetmealOpenLog')
             ->alias('a')
             ->field('a.*,b.companyname,c.oid,c.service_type,c.service_name,c.amount,c.service_amount,c.service_amount_after_discount,c.deduct_amount,c.deduct_points,c.payment,c.addtime as order_addtime,c.paytime,c.status,c.extra,c.note,c.add_platform,c.pay_platform,c.service_id')
-            ->join(config('database.prefix').'company b','a.uid=b.uid','LEFT')
-            ->join(config('database.prefix').'order c','a.order_id=c.id','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'LEFT')
+            ->join(config('database.prefix') . 'order c', 'a.order_id=c.id', 'LEFT')
             ->where($where)
             ->order('a.id desc')
             ->page($current_page . ',' . $pagesize)
@@ -410,12 +516,14 @@ class CompanySetmeal extends \app\common\controller\Backend
             }
             if ($value['deduct_amount'] > 0 && $value['deduct_points'] == 0) {
                 $value['amount_detail'] =
-                    ($value['amount_detail'] == ''
+                    (
+                    $value['amount_detail'] == ''
                         ? '原价' . $value['service_amount']
-                        : $value['amount_detail']) .
-                    ' - 优惠券抵扣' .
-                    $value['deduct_amount'] .
-                    '元';
+                        : $value['amount_detail']
+                    )
+                    . ' - 优惠券抵扣'
+                    . $value['deduct_amount']
+                    . '元';
             }
         }
         $return['items'] = $list;

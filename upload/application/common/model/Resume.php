@@ -809,7 +809,7 @@ class Resume extends \app\common\model\BaseModel
                 'resume_audit_success',
                 [
                     '您的简历已通过审核。',
-                    '通过审核',
+                    '您的简历已通过审核',
                     date('Y年m月d日 H:i'),
                     '点击查看查看最新招聘职位'
                 ],
@@ -827,9 +827,9 @@ class Resume extends \app\common\model\BaseModel
                 'resume_audit_fail',
                 [
                     '您的简历未通过审核。',
-                    '审核未通过',
+                    '您的简历未通过审核',
                     date('Y年m月d日 H:i'),
-                    $reason,
+                    $reason ? $reason : '无',
                     '请修改后再次发布，点击去修改'
                 ],
                 'member/personal/resume'
@@ -1030,12 +1030,42 @@ class Resume extends \app\common\model\BaseModel
                         $userinfo->uid
                     );
                     if ($member_setmeal['show_apply_contact'] == 1) {
-                        if(model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null){
-                            $return['show_contact'] = 0;
-                            $return['show_contact_note'] = 'need_download';
-                        }else{
-                            $return['show_contact'] = 1;
-                            $return['show_contact_note'] = '';
+                        if($member_setmeal['resume_view_num'] > 0){
+                            $job_apply = model('JobApply')
+                                ->where('company_uid', $userinfo->uid)
+                                ->where('is_look',1)
+                                ->where('free_viewing',1)
+                                ->where('personal_uid',$basic['uid'])
+                                ->find();
+                            if ($job_apply === null){
+                                $count = model('JobApply')
+                                    ->where('company_uid', $userinfo->uid)
+                                    ->where('is_look',1)
+                                    ->whereTime('free_viewing_time', 'today')
+                                    ->where('free_viewing',1)
+                                    ->count();
+                                if ($count >= $member_setmeal['resume_view_num']){
+                                    $return['show_contact'] = 0;
+                                    $return['show_contact_note'] = 'need_download';
+                                }else{
+                                    $return['show_contact'] = 1;
+                                    $return['show_contact_note'] = '';
+                                }
+                            }else{
+                                $return['show_contact'] = 1;
+                                $return['show_contact_note'] = '';
+                            }
+                        }
+                        else
+                        {
+                            $JobApply = model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find();
+                            if($JobApply === null){
+                                $return['show_contact'] = 0;
+                                $return['show_contact_note'] = 'need_download';
+                            }else{
+                                $return['show_contact'] = 1;
+                                $return['show_contact_note'] = '';
+                            }
                         }
                     }
                     if ($return['show_contact'] === 0 && model('CompanyDownResume')->where('uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null) {
@@ -1082,12 +1112,42 @@ class Resume extends \app\common\model\BaseModel
                         $userinfo->uid
                     );
                     if ($member_setmeal['show_apply_contact'] == 1) {
-                        if(model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null){
-                            $return['show_contact'] = 0;
-                            $return['show_contact_note'] = 'need_download';
-                        }else{
-                            $return['show_contact'] = 1;
-                            $return['show_contact_note'] = '';
+                        if($member_setmeal['resume_view_num'] > 0){
+                            $job_apply = model('JobApply')
+                                ->where('company_uid', $userinfo->uid)
+                                ->where('is_look',1)
+                                ->where('free_viewing',1)
+                                ->where('personal_uid',$basic['uid'])
+                                ->find();
+                            if ($job_apply === null){
+                                $count = model('JobApply')
+                                    ->where('company_uid', $userinfo->uid)
+                                    ->where('is_look',1)
+                                    ->whereTime('free_viewing_time', 'today')
+                                    ->where('free_viewing',1)
+                                    ->count();
+                                if ($count >= $member_setmeal['resume_view_num']){
+                                    $return['show_contact'] = 0;
+                                    $return['show_contact_note'] = 'need_download';
+                                }else{
+                                    $return['show_contact'] = 1;
+                                    $return['show_contact_note'] = '';
+                                }
+                            }else{
+                                $return['show_contact'] = 1;
+                                $return['show_contact_note'] = '';
+                            }
+                        }
+                        else
+                        {
+                            $JobApply = model('JobApply')->where('company_uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find();
+                            if($JobApply === null){
+                                $return['show_contact'] = 0;
+                                $return['show_contact_note'] = 'need_download';
+                            }else{
+                                $return['show_contact'] = 1;
+                                $return['show_contact_note'] = '';
+                            }
                         }
                     }
                     if ($return['show_contact'] === 0 && model('CompanyDownResume')->where('uid', $userinfo->uid)->where('personal_uid', $basic['uid'])->field('id')->find() === null) {

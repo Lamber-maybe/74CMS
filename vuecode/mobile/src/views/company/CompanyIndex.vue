@@ -179,13 +179,6 @@
       <div class="form_split_10"></div>
       <div class="box_9">
         <div
-          v-if="setmeal && setmeal.enable_poster==1"
-          class="handle_line l7"
-          @click="handlerJump('/member/company/microposte',1)"
-        >
-          微海报
-        </div>
-        <div
           class="handle_line l1"
           @click="handlerJump('/member/company/manage',1)"
         >

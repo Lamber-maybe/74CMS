@@ -264,6 +264,7 @@
             >
             </el-option>
           </el-select>
+          <a style="text-decoration-line: none;cursor: pointer;color: #03a9f4;padding-left: 10px;" @click="clean">清空</a>
         </el-form-item>
         <el-form-item
           prop="basic.department"
@@ -304,7 +305,7 @@
                 ]
               : []
           "
-        >````
+        >
           <el-select
             :disabled="form.basic.age_na !== false"
             v-model="form.basic.minage"
@@ -617,6 +618,17 @@ export default {
     this.$store.dispatch('getClassifyWage')
     this.$store.dispatch('getClassifyAge')
   },
+  created() {
+    if (this.type === 'add') {
+      http
+        .get(api.company_index)
+        .then(res => {
+          this.form.basic.tag = res.data.companyinfo.tag
+          this.form.basic.citycategory_arr = res.data.companyinfo.citycategory_arr
+        })
+        .catch(() => { })
+    }
+  },
   computed: {
     config() {
       return this.$store.state.config
@@ -749,6 +761,9 @@ export default {
     }
   },
   methods: {
+    clean() {
+      this.form.basic.tag = []
+    },
     setLocation(e) {
       let that = this
       that.location = ''

@@ -262,7 +262,7 @@ export default {
             {
               min: 6,
               max: 15,
-              message: '长度在 6 到 15 个字符',
+              message: '长度在 6 到 15 个字',
               trigger: 'blur'
             },
             { validator: validateUsername, trigger: 'blur' }
@@ -272,7 +272,7 @@ export default {
             {
               min: 6,
               max: 15,
-              message: '长度在 6 到 15 个字符',
+              message: '长度在 6 到 15 个字',
               trigger: 'blur'
             }
           ],
@@ -300,7 +300,7 @@ export default {
           },
           {
             max: 60,
-            message: '长度在 1 到 60 个字符',
+            message: '长度在 1 到 60 个字',
             trigger: 'blur'
           }
         ],
@@ -312,7 +312,7 @@ export default {
           },
           {
             max: 60,
-            message: '长度在 1 到 60 个字符',
+            message: '长度在 1 到 60 个字',
             trigger: 'blur'
           }
         ],
@@ -352,7 +352,7 @@ export default {
           },
           {
             max: 15,
-            message: '长度在 1 到 15 个字符',
+            message: '长度在 1 到 15 个字',
             trigger: 'blur'
           }
         ],
@@ -372,7 +372,7 @@ export default {
             },
             {
               max: 30,
-              message: '长度在 1 到 30 个字符',
+              message: '长度在 1 到 30 个字',
               trigger: 'blur'
             }
           ],
@@ -423,7 +423,7 @@ export default {
             },
             {
               max: 200,
-              message: '长度在 0 到 200 个字符',
+              message: '长度在 0 到 200 个字',
               trigger: 'blur'
             },
             { validator: validateUrl, trigger: 'blur' }
@@ -436,7 +436,7 @@ export default {
             },
             {
               max: 255,
-              message: '长度在 0 到 255 个字符',
+              message: '长度在 0 到 255 个字',
               trigger: 'blur'
             }
           ],
@@ -455,7 +455,7 @@ export default {
             },
             {
               max: 255,
-              message: '长度在 0 到 255 个字符',
+              message: '长度在 0 到 255 个字',
               trigger: 'blur'
             }
           ]

@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card" style="position:relative;">
       <div class="tit">
-        新客户排行榜（{{currentMonth}}月）
+        新客户排行榜（{{ currentMonth }}月）
         <!-- <div>
           <el-date-picker v-model="date" type="month" placeholder="选择月">
           </el-date-picker>
@@ -12,9 +12,9 @@
         <!-- <el-table-column label="排名" type="index" width="50" align="center"></el-table-column> -->
         <el-table-column label="排名">
           <template slot-scope="scope">
-            <img v-if="scope.row.ranking == 1" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top1.png" alt="" />
-            <img v-if="scope.row.ranking == 2" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top2.png" alt="" />
-            <img v-if="scope.row.ranking == 3" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top3.png" alt="" />
+            <img v-if="scope.row.ranking == 1" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top1.png" alt="">
+            <img v-if="scope.row.ranking == 2" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top2.png" alt="">
+            <img v-if="scope.row.ranking == 3" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top3.png" alt="">
             <div v-if="scope.row.ranking != 1 && scope.row.ranking != 2 && scope.row.ranking != 3" style="color: #B0B0B0;font-size: 18px;font-style:italic;">
               {{ scope.row.ranking }}
             </div>
@@ -25,7 +25,7 @@
             <div style="color: #666;">{{ scope.row.username }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="成交客户" align="center">
+        <el-table-column label="新客户数" align="center">
           <template slot-scope="scope">
             <div style="color: #FF7C0E;">{{ scope.row.num }}个</div>
           </template>
@@ -44,14 +44,14 @@ export default {
       listLoading: true,
       dataset: [],
       date: new Date(),
-      currentMonth: new Date().getMonth()+1
-    };
+      currentMonth: new Date().getMonth() + 1
+    }
   },
   watch: {
     dataArr(val) {
-      this.listLoading = false;
-      this.dataArr = val;
-      this.dataset = val.new_customersdeal_ranking_list;
+      this.listLoading = false
+      this.dataArr = val
+      this.dataset = val.new_customersdeal_ranking_list
     }
   },
   created() {},
@@ -59,16 +59,16 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       // console.log(row, rowIndex)
       if (rowIndex === 0) {
-        return 'top1';
+        return 'top1'
       } else if (rowIndex === 1) {
-        return 'top2';
+        return 'top2'
       } else if (rowIndex === 2) {
-        return 'top3';
+        return 'top3'
       }
-      return '';
+      return ''
     }
   }
-};
+}
 </script>
 <style scoped>
 .tit {

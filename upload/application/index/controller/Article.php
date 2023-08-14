@@ -110,7 +110,7 @@ class Article extends \app\index\controller\Base
             ->where('id', '>', $info['id'])
             ->where('is_display',1)//解决在资讯设置为隐藏后，列表中不显示，但详情上一条下一条依然会有入口问题
            ->order('id asc')
-            ->field('id,title,link_url')
+            ->field('id,title,link_url,source_reprint')
             ->find();
         if($prev!==null){
             $prev['link_url'] = $prev['link_url']==''?url('index/article/show',['id'=>$prev['id']]):$prev['link_url'];
@@ -120,7 +120,7 @@ class Article extends \app\index\controller\Base
             ->where('id', '<', $info['id'])
             ->where('is_display',1)//解决在资讯设置为隐藏后，列表中不显示，但详情上一条下一条依然会有入口问题
             ->order('id desc')
-            ->field('id,title,link_url')
+            ->field('id,title,link_url,source_reprint')
             ->find();
         if($next!==null){
             $next['link_url'] = $next['link_url']==''?url('index/article/show',['id'=>$next['id']]):$next['link_url'];

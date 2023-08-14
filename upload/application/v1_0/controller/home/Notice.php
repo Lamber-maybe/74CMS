@@ -21,11 +21,26 @@ class Notice extends \app\v1_0\controller\common\Base
          */
         $where['addtime'] = ['lt',time()];
         $list = model('Notice')
-            ->field('id,title,link_url,click,addtime')
+            ->field('id,title,link_url,click,addtime,source,source_reprint')
             ->where($where)
             ->page($current_page, $pagesize)
             ->order('sort_id desc,id desc')
             ->select();
+        foreach ($list as $k=>$v)
+        {
+            switch ($v['source'])
+            {
+                case 0:
+                    $list[$k]['source_text'] = '原创';
+                    break;
+                case 1:
+                    $list[$k]['source_text'] = '转载';
+                    break;
+                default:
+                    $list[$k]['source_text'] = '';
+                    break;
+            }
+        }
         $return['items'] = $list;
 
         $this->ajaxReturn(200, '获取数据成功', $return);
@@ -79,7 +94,18 @@ class Notice extends \app\v1_0\controller\common\Base
             ->order('id desc')
             ->field('id,title')
             ->find();
-
+        switch ($info['source'])
+        {
+            case 0:
+                $info['source_text'] = '原创';
+                break;
+            case 1:
+                $info['source_text'] = '转载';
+                break;
+            default:
+                $info['source_text'] = '';
+                break;
+        }
         $this->ajaxReturn(200, '获取数据成功', [
             'info' => $info,
             'prev' => $prev,

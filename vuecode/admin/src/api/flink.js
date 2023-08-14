@@ -37,3 +37,10 @@ export function flinkDelete(data) {
     data
   })
 }
+export function flinkModifyState(data) {
+  return request({
+    url: apiArr.flinkModifyState,
+    method: 'post',
+    data
+  })
+}

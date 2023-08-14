@@ -2,16 +2,16 @@
   <div>
     <el-card class="box-card" style="position:relative;">
       <div class="tit">
-        成交客户排行榜（{{currentMonth}}月）
+        成交客户排行榜（{{ currentMonth }}月）
         <!-- <div><el-date-picker v-model="date" type="month" placeholder="选择月"></el-date-picker></div> -->
       </div>
       <el-table v-loading="listLoading" :data="dataset" size="mini" :height="height" :row-class-name="tableRowClassName">
         <!-- <el-table-column label="排名" type="index" width="50" align="center"></el-table-column> -->
         <el-table-column label="排名">
           <template slot-scope="scope">
-            <img v-if="scope.row.ranking == 1" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top1.png" alt="" />
-            <img v-if="scope.row.ranking == 2" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top2.png" alt="" />
-            <img v-if="scope.row.ranking == 3" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top3.png" alt="" />
+            <img v-if="scope.row.ranking == 1" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top1.png" alt="">
+            <img v-if="scope.row.ranking == 2" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top2.png" alt="">
+            <img v-if="scope.row.ranking == 3" class="top_icon" src="../../../../../assets/images/company/crm/SaleStatistics/top3.png" alt="">
             <div v-if="scope.row.ranking != 1 && scope.row.ranking != 2 && scope.row.ranking != 3" style="color: #B0B0B0;font-size: 18px;font-style:italic;">
               {{ scope.row.ranking }}
             </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { jobHotRefresh } from '@/api/stat';
+import { jobHotRefresh } from '@/api/stat'
 export default {
   props: ['height', 'dataArr'],
   data() {
@@ -42,15 +42,15 @@ export default {
       listLoading: false,
       dataset: [],
       date: new Date(),
-      currentMonth: new Date().getMonth()+1
-    };
+      currentMonth: new Date().getMonth() + 1
+    }
   },
   watch: {
     dataArr(val) {
-      this.listLoading = false;
-      this.dataArr = val;
-      this.dataset = val.deal_ranking_list;
-      this.listLoading = false;
+      this.listLoading = false
+      this.dataArr = val
+      this.dataset = val.deal_ranking_list
+      this.listLoading = false
     }
   },
   created() { },
@@ -58,16 +58,16 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       // console.log(row, rowIndex)
       if (rowIndex === 0) {
-        return 'top1';
+        return 'top1'
       } else if (rowIndex === 1) {
-        return 'top2';
+        return 'top2'
       } else if (rowIndex === 2) {
-        return 'top3';
+        return 'top3'
       }
-      return '';
+      return ''
     }
   }
-};
+}
 </script>
 <style scoped>
 .tit {

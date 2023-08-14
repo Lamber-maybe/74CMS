@@ -88,12 +88,6 @@
           <el-radio :label="0">不允许</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="使用微海报">
-        <el-radio-group v-model="form.enable_poster">
-          <el-radio :label="1">允许</el-radio>
-          <el-radio :label="0">不允许</el-radio>
-        </el-radio-group>
-      </el-form-item>
       <el-form-item label="收到简历免费查看">
         <el-radio-group v-model="form.show_apply_contact">
           <el-radio :label="1">允许</el-radio>
@@ -122,7 +116,6 @@ export default {
         download_resume_max_perday: 0,
         im_max_perday:0,
         enable_video_interview: 1,
-        enable_poster: 1,
         show_apply_contact: 1
       },
       rules: {
@@ -199,7 +192,6 @@ export default {
             download_resume_max_perday,
             im_max_perday,
             enable_video_interview,
-            enable_poster,
             show_apply_contact
           } = { ...response.data.setmeal_overtime_conf }
           this.form = {
@@ -209,7 +201,6 @@ export default {
             download_resume_max_perday: parseInt(download_resume_max_perday),
             im_max_perday: parseInt(im_max_perday),
             enable_video_interview: parseInt(enable_video_interview),
-            enable_poster: parseInt(enable_poster),
             show_apply_contact: parseInt(show_apply_contact)
           }
           this.infoLoading = false

@@ -23,8 +23,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             ' THEN 1
         ELSE 0
         END AS score';
-        $list = model('JobfairOnline')->field($field)->order('score desc')->page($current_page, $pagesize)->select();
-        $total = model('JobfairOnline')->field($field)->count();
+        $list = model('JobfairOnline')->where('display',1)->field($field)->order('score DESC, id DESC')->page($current_page, $pagesize)->select();
+        $total = model('JobfairOnline')->where('display',1)->field($field)->count();
         $participate_company = $participate_personal = $jobfair_id_arr = $thumb_arr = $thumb_id_arr = [];
         foreach ($list as $key => $value) {
             $jobfair_id_arr[] = $value['id'];

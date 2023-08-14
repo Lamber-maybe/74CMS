@@ -31,8 +31,6 @@
 						</div>
 						<div class="tx2">
 							{{ base_info.age }}岁 · {{ base_info.experience_text }} · {{ base_info.education_text }}
-
-							<span>更新：{{ base_info.refreshtime }}</span>
 						</div>
 						<div class="tag" v-if="base_info.service_tag != ''">{{ base_info.service_tag }}</div>
 					</div>
@@ -48,16 +46,17 @@
 							次
 						</div>
 					</div>
-					<!-- <div class="down">
-            {{ base_info.refreshtime }} 更新
+					<div class="down">
+            <div>
+              <span>更新：{{ base_info.refreshtime }}</span>
+            </div>
             <div
               class="right"
               @click="showDetail = !showDetail"
-              v-if="moreDetailBtn"
             >
               更多基本信息
             </div>
-          </div> -->
+          </div>
 					<div class="collect" :class="has_fav == 1 ? 'collect_act' : ''" @click="doFav"><!-- {{ has_fav == 1 ? "已收藏" : "收藏" }} --></div>
 					<div class="share" @click="doShare"></div>
 				</div>
@@ -2450,23 +2449,23 @@ export default {
 					top: 11px;
 					width: 6px;
 					height: 6px;
-					border-top: 1px solid #666666;
-					border-right: 1px solid #666666;
+					border-top: 1px solid #fff;
+					border-right: 1px solid #fff;
 					transform: rotate(45deg);
 					content: ' ';
 				}
 
 				position: absolute;
 				right: 2px;
-				top: 50%;
+				top: 68%;
 				transform: translate(0, -50%);
 				font-size: 12px;
-				color: #999999;
+				color: #fff;
 				padding: 5px 11px 5px 0;
 			}
 
 			position: relative;
-			padding: 12.5px 2px;
+			padding: 12.5px 2px 2px;
 			font-size: 12px;
 			color: #999999;
 			// border-top: 1px solid #f8f8f8;
@@ -2474,7 +2473,7 @@ export default {
 
 		div.mid-div {
 			position: relative;
-			margin: 18px 0 36px;
+			margin: 18px 0 0 0;
 
 			.mid {
 				padding: 8px;

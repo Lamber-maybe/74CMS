@@ -966,6 +966,15 @@ class Order extends \app\common\model\BaseModel
                 'oid' => $order['oid'],
             ]
         );
+        $name = '';
+        if ($order['utype'] == 1) {
+            $company = model('Company')->where('uid', $order['uid'])->field('companyname')->find();
+            $name = !empty($company['companyname']) ? mb_substr($company['companyname'],0,10) : '';
+        }
+        if ($order['utype'] == 2) {
+            $resume = model('Resume')->where('uid', $order['uid'])->field('fullname')->find();
+            $name = !empty($resume['fullname']) ? mb_substr($resume['fullname'],0,10) : '';
+        }
         //微信通知
         model('WechatNotifyRule')->notify(
             $order['uid'],
@@ -974,7 +983,7 @@ class Order extends \app\common\model\BaseModel
             [
                 '亲，您的订单已支付成功',
                 $order['oid'],
-                $order['service_name'],
+                $name .'-'.$order['service_name'],
                 $order['amount'] . '元',
                 $this->map_payment[$payment],
                 date('Y年m月d日 H:i:s', $time),
@@ -982,7 +991,6 @@ class Order extends \app\common\model\BaseModel
             ],
             'member/order/' . $order->id
         );
-
         if ($order['service_type'] == 'single_resume_down' || $order['service_type'] == 'single_job_refresh') {
             $order = $order->toArray();
             model('OrderTmp')->where('id', $order['id'])->delete();

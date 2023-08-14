@@ -5,7 +5,14 @@
         <div class="notice_details clearfix">
             <div class="notice_details_left float">
                 <div class="details_titleBox">
-                    <p class="notice_details_title">{#$info.title#}</p>	
+                    <p class="notice_details_title">{#$info.title#}</p>
+                    {#eq name="info.source" value="0"#}
+                    <span class="original">原创</span>
+                    {#else/#}
+                    <span class="original2">转载</span>
+                    <span class="source_reprint">来源：{#$info.source_reprint#}</span>
+                    {#/eq#}
+
                     <p class="notice_details_handel clearfix">
                         <span class="notice_time">{#:date('Y-m-d H:i',$info.addtime)#}</span>
                         <span class="notice_see" v-cloak>{{clickNum}}</span>

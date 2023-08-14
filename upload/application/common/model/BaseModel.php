@@ -38,6 +38,14 @@ class BaseModel extends Model
         6 => '5-10年',
         7 => '10年以上',
     ];
+    public $map_is_display = [
+        0 => '不显示',
+        1 => '显示'
+    ];
+    public $map_is_public = [
+        0 => '不公开',
+        1 => '公开'
+    ];
     public function getColumn()
     {
         $tablename = $this->getTablename();

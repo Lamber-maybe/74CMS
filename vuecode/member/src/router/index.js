@@ -628,19 +628,7 @@ const routes = [{
                 },
 
 
-              ]
-            },
-            {
-                path: '/company/microposte', //微海报
-                name: 'CompanyMicroposte',
-                component: () =>
-                    import ('../views/company/Microposte'),
-                meta: {
-                    title: '微海报 - 企业会员中心',
-                    keepAlive: false,
-                    loginCheck: true,
-                    utype: 1
-                }
+                ]
             },
             {
                 path: '/company/manage', //企业管理

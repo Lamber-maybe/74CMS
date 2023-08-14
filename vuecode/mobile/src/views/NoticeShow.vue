@@ -8,6 +8,14 @@
         <div class="title">
           {{ info.title }}
         </div>
+        <div :class="info.source == 1 ? 'source' : 'source2'">
+          <div class="form" :class="info.source == 1 ? 'rep' : ''">
+            {{ info.source_text }}
+          </div>
+          <div class="source_reprint" v-if="info.source == 1">
+            来源：{{ info.source_reprint }}
+          </div>
+        </div>
         <div class="time">
           {{ info.addtime | timeFilter }}
           <div class="num">{{ info.click }}</div>
@@ -201,6 +209,34 @@ export default {
 }
 .list_wrapper {
   .list_block {
+    .source{
+      padding-bottom: 7px;
+      .source_reprint{
+        font-size: 11px;
+        color: #999999;
+      }
+    }
+    .source2{
+      padding-bottom: 24px;
+      .source_reprint{
+        font-size: 11px;
+        color: #999999;
+      }
+    }
+    .form {
+      &.rep {
+        color: #ff6600;
+        background-color: #fff5e8;
+      }
+      float: left;
+      line-height: 16px;
+      padding: 0 6px;
+      font-size: 11px;
+      color: #1787fb;
+      border-radius: 3px;
+      background-color: #e7f3ff;
+      margin-right: 6px;
+    }
     .time {
       .num {
         position: absolute;

@@ -207,7 +207,7 @@ class SmsBlacklist extends \app\common\controller\Backend
             $list = model('SmsBlacklist')
                 ->where('id', 'in', $id)
                 ->column('mobile');
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要删除的短信黑名单');
             }
 

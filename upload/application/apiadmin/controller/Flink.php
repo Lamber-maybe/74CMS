@@ -2,9 +2,10 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class Flink extends \app\common\controller\Backend
+class Flink extends Backend
 {
     public function index()
     {
@@ -38,7 +39,9 @@ class Flink extends \app\common\controller\Backend
             ->order('sort_id desc,id asc')
             ->page($current_page . ',' . $pagesize)
             ->select();
-
+        foreach ($list as $k => $v) {
+            $list[$k]['display'] = !!$v['is_display'];
+        }
         $return['items'] = $list;
         $return['total'] = $total;
         $return['current_page'] = $current_page;
@@ -174,7 +177,7 @@ class Flink extends \app\common\controller\Backend
 
             // 日志
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -192,5 +195,63 @@ class Flink extends \app\common\controller\Backend
         }
 
         $this->ajaxReturn(200, '删除成功');
+    }
+
+    public function flinkModifyState()
+    {
+        $id = input('post.id/d', 0, 'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的友情链接');
+        }
+
+        $display = input('post.display/d', 0, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$display])) {
+            $this->ajaxReturn(500, '要设置的显示状态错误');
+        }
+        $display_text = model('BaseModel')->map_is_display[$display];
+
+        try {
+            $link = model('Link')
+                ->find($id);
+            if (null === $link) {
+                throw new \Exception('要修改的友情链接不存在');
+            }
+
+            Db::startTrans();
+
+            $modify_result = model('Link')
+                ->where('id', $id)
+                ->setField('is_display', $display);
+            if (false === $modify_result) {
+                throw new \Exception(model('Link')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $log_field = '修改友情链接，'
+                . $link['name']
+                . '(ID:'
+                . $link['id']
+                . ')'
+                . '，显示状态:'
+                . $display_text;
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200, '修改成功，显示状态修改为' . $display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

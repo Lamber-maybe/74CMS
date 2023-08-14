@@ -72,6 +72,14 @@
             <el-tag v-else type="info">已结束</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="显示状态" width="100">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)">
+            </el-switch>
+          </template>
+        </el-table-column>
         <el-table-column
           align="center"
           prop="created_at"
@@ -157,7 +165,7 @@
 </template>
 
 <script>
-import { jobFairOnLineList, jobFairOnLineDelete } from '@/api/jobfairol'
+import { jobFairOnLineList, jobFairOnLineDelete, jobfairOlModifyState } from '@/api/jobfairol'
 import { parseTime } from '@/utils'
 
 export default {
@@ -185,6 +193,22 @@ export default {
     this.getJobFairOnLine()
   },
   methods: {
+    modifyState(row){
+      const that = this
+      const param = {
+        display: row.display,
+        id: row.id
+      }
+      jobfairOlModifyState(param).then(response => {
+        this.$message.success(response.message)
+        setTimeout(function() {
+          that.$router.push('/jobfairol/list')
+        }, 1500)
+        return true
+      }).catch(() => {
+        that.issubmit = false
+      })
+    },
     // 获取网络招聘会
     getJobFairOnLine: function(){
       this.listLoading = true

@@ -67,7 +67,9 @@
         element-loading-text="Loading"
         fit
         highlight-current-row
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="42" />
         <el-table-column label="推广简历" prop="fullname" min-width="120" />
         <el-table-column align="center" label="推广类型" min-width="120">
           <template slot-scope="scope">
@@ -108,6 +110,9 @@
           <el-button size="small" type="primary" @click="funAdd">
             添加推广
           </el-button>
+          <el-button size="small" type="primary" @click="funRefresh">
+            刷新简历
+          </el-button>
         </el-col>
         <el-col :span="16" style="text-align: right;">
           <el-pagination
@@ -147,6 +152,8 @@ import {
   resumePromotionCancel
 } from '@/api/promotion_resume'
 import { parseTime } from '@/utils/index'
+import {jobRefresh} from "@/api/job";
+import {resumeRefresh} from "@/api/resume";
 
 export default {
   components: {
@@ -175,7 +182,8 @@ export default {
       key_type: '1',
       keyword: '',
       rules: {},
-      sort: ''
+      sort: '',
+      tableIdarr: [],
     }
   },
   created() {
@@ -253,6 +261,29 @@ export default {
           })
         })
         .catch(() => {})
+    },
+    handleSelectionChange(idlist) {
+      this.tableIdarr = []
+      this.tableUidarr = []
+      if (idlist.length > 0) {
+        for (const item of idlist) {
+          this.tableIdarr.push(item.pid)
+          this.tableUidarr.push(item.uid)
+        }
+      }
+    },
+    funRefresh() {
+      var that = this
+      if (that.tableIdarr.length == 0) {
+        that.$message.error('请选择要刷新的简历')
+        return false
+      }
+      const param = {
+        uid: that.tableUidarr
+      }
+      resumeRefresh(param).then(response => {
+        that.$message.success(response.message)
+      })
     }
   }
 }

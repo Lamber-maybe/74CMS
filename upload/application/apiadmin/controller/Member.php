@@ -146,8 +146,9 @@ class Member extends Backend
             ->select();
 
         foreach ($list as $key => $value) {
-            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']]) ? model('BaseModel')->map_platform[$value['platform']] : '未知平台';
-            $list[$key]['is_openid'] = empty($value['openid']) ? '否' : '是';
+            $list[$key]['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
+            $list[$key]['is_openid'] = empty($value['openid'])?'否':'是';
+            $list[$key]['display'] = $value['status'] === 1 ? true : false;
         }
         $return['items'] = $list;
         $return['total'] = $total;

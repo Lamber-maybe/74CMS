@@ -159,7 +159,7 @@ class MemberCancelApply extends \app\common\controller\Backend
             }
 
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -512,7 +512,7 @@ class MemberCancelApply extends \app\common\controller\Backend
 
         try {
             $list = model($model)->whereIn('id', $id)->column($field);
-            if (null === $list) {
+            if (empty($list)) {
                 $this->ajaxReturn(500, '没有要删除的注销备份信息');
             }
 
@@ -530,7 +530,7 @@ class MemberCancelApply extends \app\common\controller\Backend
                 $log_field .= '{' . $one . '}；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

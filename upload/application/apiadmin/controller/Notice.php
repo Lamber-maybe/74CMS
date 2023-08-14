@@ -2,9 +2,10 @@
 
 namespace app\apiadmin\controller;
 
+use app\common\controller\Backend;
 use think\Db;
 
-class Notice extends \app\common\controller\Backend
+class Notice extends Backend
 {
     public function index()
     {
@@ -46,7 +47,7 @@ class Notice extends \app\common\controller\Backend
             } else {
                 $value['link'] = $value['link_url'];
             }
-
+            $value['display'] = $value['is_display'] === 1 ? true : false;
             $list[$key] = $value;
         }
         $return['items'] = $list;
@@ -70,6 +71,8 @@ class Notice extends \app\common\controller\Backend
             'addtime' => input('post.addtime/s', '', 'trim'),
             'sort_id' => input('post.sort_id/d', 0, 'intval'),
             'click' => input('post.click/d', 0, 'intval'),
+            'source' => input('post.source/d', 0, 'intval'),
+            'source_reprint' => input('post.source_reprint/s', '', 'trim')
         ];
         if ($input_data['addtime']) {
             $input_data['addtime'] = strtotime($input_data['addtime']);
@@ -142,6 +145,8 @@ class Notice extends \app\common\controller\Backend
                 'addtime' => input('post.addtime/s', '', 'trim'),
                 'sort_id' => input('post.sort_id/d', 0, 'intval'),
                 'click' => input('post.click/d', 0, 'intval'),
+                'source' => input('post.source/d', 0, 'intval'),
+                'source_reprint' => input('post.source_reprint/s', '', 'trim')
             ];
             $id = intval($input_data['id']);
             if (!$id) {
@@ -216,7 +221,7 @@ class Notice extends \app\common\controller\Backend
                 $log_field .= $notice['title'] . '(ID:' . $notice['id'] . ')；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -232,5 +237,65 @@ class Notice extends \app\common\controller\Backend
         }
 
         $this->ajaxReturn(200, '删除成功');
+    }
+
+    public function noticeModifyState()
+    {
+        $id = input('post.id/a', [], 'intval');
+        if (empty($id)) {
+            $this->ajaxReturn(500, '请选择要修改的公告');
+        }
+
+        $display = input('post.display/d', 0, 'intval');
+        if (empty(model('BaseModel')->map_is_display[$display])) {
+            $this->ajaxReturn(500, '要设置的显示状态错误');
+        }
+        $display_text = model('BaseModel')->map_is_display[$display];
+
+        try {
+            $notice = model('Notice')
+                ->whereIn('id', $id)
+                ->select();
+            if (null === $notice) {
+                throw new \Exception('没有要修改的公告');
+            }
+
+            Db::startTrans();
+
+            $modify_result = model('Notice')
+                ->whereIn('id', $id)
+                ->setField('is_display', $display);
+            if (false === $modify_result) {
+                throw new \Exception(model('Notice')->getError());
+            }
+
+            /**
+             * 日志
+             */
+            $l_list = [];
+            foreach ($notice as $one) {
+                $l_list[] = $one['title'] . '(ID:' . $one['id'] . ')';
+            }
+            $log_field = '编辑公告，标题:'
+                . implode('；', $l_list)
+                . '，显示状态:'
+                . $display_text;
+            $log_result = model('AdminLog')->writeLog(
+                $log_field,
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            Db::commit();
+            $this->ajaxReturn(200, '修改成功，显示状态修改为' . $display_text);
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->ajaxReturn(500, '修改失败', ['err_msg' => $e->getMessage()]);
+        }
     }
 }

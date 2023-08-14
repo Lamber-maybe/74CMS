@@ -73,7 +73,6 @@
           @click="toggleOpen"
           v-if="
             setmealDetail.service_added_discount > 0 ||
-              setmealDetail.enable_poster == 1 ||
               setmealDetail.enable_video_interview == 1 ||
               setmealDetail.show_apply_contact == 1
           "
@@ -84,7 +83,6 @@
           v-show="!openDetail"
           v-if="
             setmealDetail.service_added_discount > 0 ||
-              setmealDetail.enable_poster == 1 ||
               setmealDetail.enable_video_interview == 1 ||
               setmealDetail.show_apply_contact == 1
           "
@@ -93,14 +91,14 @@
           <div class="tx2">
             <span class="tq" v-if="setmealDetail.service_added_discount > 0"
               >套餐增值包折扣{{ setmealDetail.service_added_discount }}折</span
-            ><span class="tq" v-if="setmealDetail.enable_poster == 1"
-              >允许使用微海报</span
             >
             <span class="tq" v-if="setmealDetail.enable_video_interview == 1"
               >允许使用视频面试</span
-            ><span class="tq" v-if="setmealDetail.show_apply_contact == 1"
-              >收到简历免费查看</span
             >
+            <span v-if="setmealDetail.show_apply_contact == 1">
+              <span class="tq" v-if="setmealDetail.resume_view_num === 0">收到简历免费查看：不限</span>
+              <span class="tq" v-else>收到简历免费查看：{{ setmealDetail.resume_view_num }}份/天</span>
+            </span>
           </div>
           <div class="tx2" v-if="setmealDetail.note" style="padding-top:0">
             <span class="dec">说明：{{ setmealDetail.note }}</span>

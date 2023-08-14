@@ -72,11 +72,12 @@
             <span>{{ scope.row.notes }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否显示" min-width="100">
+        <el-table-column label="是否显示" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.is_display | displayFilter">
-              {{ scope.row.is_display == 1 ? '显示' : '隐藏' }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.display"
+              @change="modifyState(scope.row)">
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" min-width="160">
@@ -126,7 +127,7 @@
 </template>
 
 <script>
-import { flinkList, flinkDelete } from '@/api/flink'
+import { flinkList, flinkDelete, flinkModifyState } from '@/api/flink'
 
 export default {
   filters: {
@@ -157,6 +158,22 @@ export default {
     this.fetchData()
   },
   methods: {
+    modifyState(row){
+      const that = this
+      const param = {
+        display: row.display,
+        id: row.id
+      }
+      flinkModifyState(param).then(response => {
+        this.$message.success(response.message)
+        setTimeout(function() {
+          that.$router.push('/content/flink/list')
+        }, 1500)
+        return true
+      }).catch(() => {
+        that.issubmit = false
+      })
+    },
     fetchData() {
       this.listLoading = true
       const param = {

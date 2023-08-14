@@ -90,8 +90,6 @@ import FindPwd from '../views/member/FindPwd'
 import AccountBinding from '../views/member/AccountBinding'
 import PersonalOrderAdd from '../views/personal/Service/OrderPay'
 import Video from '../views/Video'
-import Microposte from '../views/company/Microposte'
-import ScanMicroposte from '../views/ScanMicroposte'
 import ScanUpload from '../views/ScanUpload'
 import JobfairolIndex from '../views/jobfairol/Index'
 import JobfairolShow from '../views/jobfairol/Show'
@@ -1102,28 +1100,6 @@ const routes = [{
     title: '音视频',
     keepAlive: false,
     loginCheck: true,
-    utype: 0
-  }
-},
-{
-  path: '/member/company/microposte',
-  name: 'Microposte',
-  component: Microposte,
-  meta: {
-    title: '微海报',
-    keepAlive: false,
-    loginCheck: true,
-    utype: 1
-  }
-},
-{
-  path: '/member/scan_microposte',
-  name: 'ScanMicroposte',
-  component: ScanMicroposte,
-  meta: {
-    title: '微海报',
-    keepAlive: false,
-    loginCheck: false,
     utype: 0
   }
 },

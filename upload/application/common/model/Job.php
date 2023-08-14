@@ -521,7 +521,7 @@ class Job extends \app\common\model\BaseModel
                     'job_audit_success',
                     [
                         '您发布的' . $value['jobname'] . '已通过审核',
-                        '通过审核',
+                        mb_substr($value['jobname'],0,16) .'通过审核',
                         date('Y年m月d日 H:i'),
                         '点击开启招聘加速通道，省心快招人'
                     ],
@@ -553,9 +553,9 @@ class Job extends \app\common\model\BaseModel
                     'job_audit_fail',
                     [
                         '您发布的' . $value['jobname'] . '未通过审核',
-                        '审核未通过',
+                        mb_substr($value['jobname'],0,15) .'审核未通过',
                         date('Y年m月d日 H:i'),
-                        $reason,
+                        $reason ? $reason : '无',
                         '请修改后再次发布，点击去修改。'
                     ],
                     'member/company/jobedit/' . $value['id']

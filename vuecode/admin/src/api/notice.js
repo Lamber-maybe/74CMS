@@ -37,3 +37,10 @@ export function noticeDelete(data) {
     data
   })
 }
+export function noticeModifyState(data) {
+  return request({
+    url: apiArr.noticeModifyState,
+    method: 'post',
+    data
+  })
+}

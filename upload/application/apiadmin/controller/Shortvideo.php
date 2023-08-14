@@ -88,7 +88,7 @@ class Shortvideo extends Backend
         $m->delAll($id);
 
         model('AdminLog')->writeLog(
-            rtrim($log_field, '；'),
+            $log_field,
             $this->admininfo,
             0,
             4
@@ -453,7 +453,7 @@ class Shortvideo extends Backend
                 $log_field .= '标题:' . $ad['title'] . ';广告位:' . $platform . '/' . $ad['name'] . '；';
             }
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4
@@ -644,7 +644,7 @@ class Shortvideo extends Backend
                 }
 
                 $log_result = model('AdminLog')->writeLog(
-                    rtrim($log_field, '；'),
+                    $log_field,
                     $this->admininfo,
                     0,
                     3
@@ -701,7 +701,7 @@ class Shortvideo extends Backend
             }
 
             $log_result = model('AdminLog')->writeLog(
-                rtrim($log_field, '；'),
+                $log_field,
                 $this->admininfo,
                 0,
                 4

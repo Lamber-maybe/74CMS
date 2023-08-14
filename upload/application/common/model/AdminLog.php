@@ -57,33 +57,33 @@ class AdminLog extends BaseModel
         if (is_array($content)) {
             $log_all = [];
             foreach ($content as $one) {
-                $one = rtrim($one, '；');
-                $one = rtrim($one, '，');
+                $one = trim($one);
+                $one = $this->mb_rtrim($one, '；');
+                $one = $this->mb_rtrim($one, '，');
                 $log_all[] = [
                     'admin_id' => $admin_info->id,
                     'admin_name' => $admin_info->username,
                     'content' => $one,
                     'is_login' => $is_login,
                     'addtime' => time(),
-                    'ip' => $ip,
-                    'ip_addr' => $ip_addr,
                     'ip' => $remote_ip,
+                    'ip_addr' => $ip_addr,
                     'type' => $type,
                 ];
             }
             return $this->saveAll($log_all);
 
         } else {
-            $content = rtrim($content, '；');
-            $content = rtrim($content, '，');
+            $content = trim($content);
+            $content = $this->mb_rtrim($content, '；');
+            $content = $this->mb_rtrim($content, '，');
             $data['admin_id'] = $admin_info->id;
             $data['admin_name'] = $admin_info->username;
             $data['content'] = $content;
             $data['is_login'] = $is_login;
             $data['addtime'] = time();
-            $data['ip'] = $ip;
-            $data['ip_addr'] = $ip_addr;
             $data['ip'] = $remote_ip;
+            $data['ip_addr'] = $ip_addr;
             $data['type'] = $type;
             return $this->save($data);
         }
@@ -110,4 +110,28 @@ class AdminLog extends BaseModel
         $data['type'] = $type;
         return $this->save($data);
     }
+
+    private function mb_ltrim($str, $char)
+    {
+        if (empty($str)) return '';
+        while (mb_substr($str, 0, 1) == $char) {
+            $str = mb_substr($str, 1);
+        }
+        return $str;
+    }
+
+    private function mb_rtrim($str, $char)
+    {
+        if (empty($str)) return '';
+        while (mb_substr($str, -1, 1) == $char) {
+            $str = mb_substr($str, 0, -1);
+        }
+        return $str;
+    }
+
+    private function mb_trim($str, $char)
+    {
+        return mb_rtrim(mb_ltrim($str, $char), $char);
+    }
+
 }

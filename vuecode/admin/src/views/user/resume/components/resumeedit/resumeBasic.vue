@@ -391,7 +391,7 @@ export default {
           { required: true, message: '请输入姓名', trigger: 'blur' },
           {
             max: 30,
-            message: '长度在 1 到 15 个字符',
+            message: '长度在 1 到 15 个字',
             trigger: 'blur'
           }
         ],

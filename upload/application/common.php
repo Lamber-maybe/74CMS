@@ -1060,3 +1060,28 @@ function getMonthRange( $date, $returnFirstDay = true ) {
         return $monthLastDay;
     }
 }
+
+
+if(!function_exists('mb_ltrim')){
+    function mb_ltrim($str, $char){
+        if(empty($str)) return '';
+        while (mb_substr($str, 0, 1) == $char){
+            $str = mb_substr($str, 1);
+        }
+        return $str;
+    }
+}
+if(!function_exists('mb_rtrim')){
+    function mb_rtrim($str, $char){
+        if(empty($str)) return '';
+        while (mb_substr($str, -1, 1) == $char){
+            $str = mb_substr($str, 0, -1);
+        }
+        return $str;
+    }
+}
+if(!function_exists('mb_trim')){
+    function mb_trim($str, $char){
+        return mb_rtrim(mb_ltrim($str, $char), $char);
+    }
+}

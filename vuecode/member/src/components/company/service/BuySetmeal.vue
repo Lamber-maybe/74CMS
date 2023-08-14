@@ -44,9 +44,12 @@
             <div>免费刷新：<span class="color">{{setmealDetail.refresh_jobs_free_perday}}次/天</span></div>
             <div>下载上限：<span class="color">{{setmealDetail.download_resume_max_perday}}份/天</span></div>
             <div>增值服务专享折扣：<span class="color">{{setmealDetail.service_added_discount>0?(setmealDetail.service_added_discount+'折'):'无折扣'}}</span></div>
-            <div>使用微海报：<span class="color">{{setmealDetail.enable_poster==1?'允许':'不允许'}}</span></div>
             <div>使用视频面试：<span class="color">{{setmealDetail.enable_video_interview==1?'允许':'不允许'}}</span></div>
-            <div>收到简历查看：<span class="color">{{setmealDetail.show_apply_contact==1?'免费':'不免费'}}</span></div>
+            <div>收到简历查看：
+              <span class="color" v-if="setmealDetail.show_apply_contact === 0">不允许</span>
+              <span class="color" v-else-if="setmealDetail.resume_view_num>0">{{setmealDetail.resume_view_num}}份/天</span>
+              <span class="color" v-else>不限</span>
+            </div>
             <div class="dec">其他说明：<span class="color">{{setmealDetail.note==''?'无':setmealDetail.note}}</span></div>
         </div>
       </li>

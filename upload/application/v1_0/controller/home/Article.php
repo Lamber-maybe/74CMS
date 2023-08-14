@@ -98,7 +98,7 @@ class Article extends \app\v1_0\controller\common\Base
             ->order('id desc')
             ->field('id,title')
             ->find();
-
+        $info['c_name'] = model('ArticleCategory')->where('id',$info['cid'])->value('name');
         $this->ajaxReturn(200, '获取数据成功', [
             'info' => $info,
             'prev' => $prev,
