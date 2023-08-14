@@ -556,23 +556,13 @@ const userRouter = {
           access: 'company_down'
         }
       }
-      // {
-      //   path: '/user/cancel_apply',
-      //   name: 'cancel_apply',
-      //   component: () =>
-      //     import('@/views/user/cancel_apply/index'),
-      //   meta: {
-      //     title: '账号注销申请',
-      //     access: 'cancel_apply'
-      //   }
-      // }
     ]
   },
   {
     path: '/user/cancel_apply',
     name: 'cancel_apply',
     component: () =>
-      import('@/views/user/cancel_apply'),
+      import('@/views/user/cancel_apply/index'),
     redirect: 'noRedirect',
     alwaysShow: true,
     meta: {
@@ -580,26 +570,67 @@ const userRouter = {
       access: 'cancel_apply'
     },
     children: [
-      // {
-      //   path: '/user/company/noaudit',
-      //   name: 'companyNoaudit',
-      //   component: () =>
-      //     import('@/views/user/company/noaudit'),
-      //   meta: {
-      //     title: '待审核企业',
-      //     access: 'companyNoaudit'
-      //   }
-      // },
-      // {
-      //   path: '/user/company/list',
-      //   name: 'companyList',
-      //   component: () =>
-      //     import('@/views/user/company/list'),
-      //   meta: {
-      //     title: '企业管理',
-      //     access: 'companyList'
-      //   }
-      // },
+      {
+        path: '/user/commpany_cancel_apply',
+        name: 'commpany_cancel_apply',
+        component: () =>
+          import('@/views/user/cancel_apply/company/index'),
+        meta: {
+          title: '企业注销申请',
+          access: 'commpany_cancel_apply'
+        }
+      },
+      {
+        path: '/user/person_cancel_apply',
+        name: 'person_cancel_apply',
+        component: () =>
+          import('@/views/user/cancel_apply/person/person'),
+        meta: {
+          title: '个人注销申请',
+          access: 'person_cancel_apply'
+        }
+      },
+      {
+        path: '/user/company_cancel_backup',
+        name: 'company_cancel_backup',
+        component: () =>
+          import('@/views/user/cancel_apply/backup/backup'),
+        meta: {
+          title: '企业备份资料',
+          access: 'company_cancel_backup'
+        },
+        hidden: true
+      },
+      {
+        path: '/user/person_cancel_backup',
+        name: 'person_cancel_backup',
+        component: () =>
+          import('@/views/user/cancel_apply/backup/person_backup'),
+        meta: {
+          title: '个人备份资料',
+          access: 'person_cancel_backup'
+        },
+        hidden: true
+        // {
+        //   path: '/user/company/noaudit',
+        //   name: 'companyNoaudit',
+        //   component: () =>
+        //     import('@/views/user/company/noaudit'),
+        //   meta: {
+        //     title: '待审核企业',
+        //     access: 'companyNoaudit'
+        //   }
+        // },
+        // {
+        //   path: '/user/company/list',
+        //   name: 'companyList',
+        //   component: () =>
+        //     import('@/views/user/company/list'),
+        //   meta: {
+        //     title: '企业管理',
+        //     access: 'companyList'
+        //   }
+        // },
 
       // {
       //   path: '/user/job/noaudit',
@@ -672,15 +703,6 @@ const userRouter = {
       //     access: 'company_down'
       //   }
       // }
-      {
-        path: '/user/cancel_apply',
-        name: 'cancel_apply',
-        component: () =>
-          import('@/views/user/cancel_apply/index'),
-        meta: {
-          title: '账号注销申请',
-          access: 'cancel_apply'
-        }
       }
     ]
   }

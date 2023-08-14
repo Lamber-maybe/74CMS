@@ -292,4 +292,44 @@ class Sendsms extends \app\v1_0\controller\common\Base
             return true;
         }
     }
+    /**
+     * 手机号验证码注销发送验证码
+     */
+    public function cancelApply()
+    {
+        $mobile = input('post.mobile/s', '', 'trim');
+        if (!fieldRegex($mobile, 'mobile')) {
+            $this->ajaxReturn(500, '手机号格式错误');
+        }
+        $utype = input('post.utype/d', 0, 'intval');
+        if (!$utype) {
+            $this->ajaxReturn(500, '参数错误');
+        }
+        $this->_verify(input('post.'));
+        if(1===cache('sendsms_time_limit_'.$mobile)){
+            $this->ajaxReturn(500,'请60秒后再重新获取');
+        }
+        $code = mt_rand(1000, 9999) . '';
+        $templateCode = 'SMS_15';
+        $params = [
+            'code' => $code,
+            'sitename' => config('global_config.sitename')
+        ];
+        $class = new \app\common\lib\Sms();
+        if (false === $class->send($mobile, $templateCode, $params)) {
+            $this->ajaxReturn(500, $class->getError());
+        }
+        cache(
+            'smscode_' . $mobile,
+            [
+                'code' => $code,
+                'mobile' => $mobile,
+                'utype' => $utype
+            ],
+            180
+        );
+        cache('sendsms_time_limit_'.$mobile,1,60);
+        \think\Cache::set('smscode_error_num_' . $mobile, 0, 180);
+        $this->ajaxReturn(200, '发送验证码成功');
+    }
 }

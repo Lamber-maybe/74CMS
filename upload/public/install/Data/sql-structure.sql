@@ -1107,6 +1107,8 @@ CREATE TABLE `qs_member_cancel_apply` (
   `companyname` varchar(100) NOT NULL,
   `mobile` varchar(11) NOT NULL,
   `contact` varchar(30) NOT NULL,
+  `utype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '会员类型 1-企业 2-会员',
+  `is_backups` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已备份 1-是 0-否',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_member_cancel_apply||-_-||
@@ -2445,6 +2447,7 @@ CREATE TABLE `qs_crm_clue` (
 `scale` int(10) NOT NULL DEFAULT '0' COMMENT '公司规模',
 `collection_time` int(10) NOT NULL DEFAULT '0' COMMENT '领取时间',
 `tripartite_id` varchar(50) NOT NULL DEFAULT '' COMMENT '三方ID',
+`telephone` varchar(20) NOT NULL DEFAULT '' COMMENT '固话',
 PRIMARY KEY (`id`),
 KEY `index_mobile` (`mobile`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crm线索表';
@@ -2841,3 +2844,58 @@ PRIMARY KEY (`id`),
 KEY index_mark (`mark`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT = '企业名录缓存表';
 ||-_-||qs_company_directory_cache||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_company_cancel_apply_backups`;
+CREATE TABLE `qs_company_cancel_apply_backups`  (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`cancel_apply_id` int(10) NOT NULL DEFAULT '0' COMMENT '注销申请id',
+`cid` int(10) NOT NULL DEFAULT '0' COMMENT 'company_id',
+`uid` int(10) NOT NULL DEFAULT '0' COMMENT 'uid',
+`mobile` char(11) NOT NULL DEFAULT '' COMMENT '会员联系方式',
+`companyname` varchar(60) NOT NULL DEFAULT '' COMMENT '企业名称',
+`contact` varchar(30) NOT NULL DEFAULT '' COMMENT '企业联系人',
+`contact_mobile` char(11) NOT NULL DEFAULT '' COMMENT '企业联系人电话',
+`addtime` int(10) NOT NULL DEFAULT '0' COMMENT '企业添加时间',
+`reg_time` int(10) NOT NULL DEFAULT '0' COMMENT '注册时间',
+`setmeal_id` int(10) NOT NULL DEFAULT '0' COMMENT '套餐ID',
+`setmeal_name` varchar(30) NOT NULL DEFAULT '' COMMENT '套餐名称',
+`jobs_num` int(10) NOT NULL DEFAULT '0' COMMENT '在招职位',
+`job_apply_count` int(10) NOT NULL DEFAULT '0' COMMENT '收到简历',
+`download_resume_num` int(10) NOT NULL DEFAULT '0' COMMENT '下载简历数',
+`cancel_apply_time` int(10) NOT NULL DEFAULT '0' COMMENT '注销申请时间',
+`create_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`content` text COMMENT '备份内容',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业注销备份';
+||-_-||qs_company_cancel_apply_backups||-_-||
+
+
+
+
+DROP TABLE IF EXISTS `qs_person_cancel_apply_backups`;
+CREATE TABLE `qs_person_cancel_apply_backups`  (
+`id` int(10) NOT NULL AUTO_INCREMENT,
+`cancel_apply_id` int(10) NOT NULL DEFAULT '0' COMMENT '注销申请id',
+`uid` int(10) NOT NULL DEFAULT '0' COMMENT 'uid',
+`rid` int(10) NOT NULL DEFAULT '0' COMMENT '简历id',
+`mobile` char(11) NOT NULL DEFAULT '' COMMENT '会员联系方式',
+`fullname` varchar(15) NOT NULL DEFAULT '' COMMENT '简历名称',
+`contact_mobile` char(11) NOT NULL DEFAULT '' COMMENT '简历联系人电话',
+`addtime` int(10) NOT NULL DEFAULT '0' COMMENT '简历添加时间',
+`reg_time` int(10) NOT NULL DEFAULT '0' COMMENT '注册时间',
+`cancel_apply_time` int(10) NOT NULL DEFAULT '0' COMMENT '注销申请时间',
+`create_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`education` int(10) NOT NULL DEFAULT '0' COMMENT '学历id',
+`education_name` varchar(50) NOT NULL DEFAULT '' COMMENT '学历名称',
+`enter_job_time` int(10) NOT NULL DEFAULT '0' COMMENT '参加工作时间',
+`delivery_num` int(10) NOT NULL DEFAULT '0' COMMENT '投递数',
+`download_num` int(10) NOT NULL DEFAULT '0' COMMENT '被下载数',
+`viewed_num` int(10) NOT NULL DEFAULT '0' COMMENT '被查看数',
+`invitation_num` int(10) NOT NULL DEFAULT '0' COMMENT '被邀请数',
+`content` text COMMENT '备份内容',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='个人注销备份';
+||-_-||qs_person_cancel_apply_backups||-_-||

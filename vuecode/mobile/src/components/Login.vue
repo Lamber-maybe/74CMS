@@ -59,7 +59,7 @@
               v-model="formCode.code"
             />
           </label>
-          <button class="log_get_btn" :style="'color:'+$store.state.sendSmsBtnTextColor" @click="sendSms">
+          <button class="log_get_btn" :disabled="is_submit" :style="'color:'+$store.state.sendSmsBtnTextColor" @click="sendSms">
             {{ $store.state.sendSmsBtnText }}
           </button>
         </div>
@@ -132,7 +132,7 @@
         <span style="white-space: pre-line;" v-html="showTextContent"></span>
       </div>
     </van-popup>
-    <Captcha ref="captcha"></Captcha>
+    <Captcha ref="captcha" @setSubmitFun="setSubmitFun"></Captcha>
   </div>
 </template>
 
@@ -179,7 +179,8 @@ export default {
       showPwd: false,
       checked: true,
       regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
-      sendSmsLimit: false
+      sendSmsLimit: false,
+      is_submit: false
     }
   },
   created () {
@@ -397,6 +398,7 @@ export default {
        *   return false
        * }
        * */
+      this.is_submit = true
       this.sendSmsLimit = true
       this.$refs.captcha.show(res => {
         this.$store
@@ -409,11 +411,13 @@ export default {
           .then(response => {
             this.sendSmsLimit = false
             if (response.code === 200) {
+              this.is_submit = false
               this.$notify({
                 type: 'success',
                 message: this.$store.state.sendSmsMessage
               })
             } else {
+              this.is_submit = false
               this.$notify(this.$store.state.sendSmsMessage)
             }
           })
@@ -421,6 +425,9 @@ export default {
     },
     gobackCustomMethod () {
       this.$emit('gobackCustomMethod')
+    },
+    setSubmitFun () {
+      this.is_submit = false
     }
   }
 }

@@ -16,6 +16,14 @@
       <div class="notice_content editor-content-view">
         <span style="white-space: pre-line;" v-html="info.content"></span>
       </div>
+      <div class="attach">
+        <div class="attachItem" v-for="(item,index) in attachList" :key="index">
+          <a class="downloadLink" :href="item.url" :download="item.url">
+            <span class="text">附件{{ index + 1}}：</span>
+            {{item.name}}
+          </a>
+        </div>
+      </div>
     </div>
     <div class="jump_block">
       <div class="jump_content">
@@ -65,7 +73,8 @@ export default {
       id: 0,
       info: {},
       prev: {},
-      next: {}
+      next: {},
+      attachList: []
     }
   },
   watch: {
@@ -89,6 +98,17 @@ export default {
           this.next = next
           this.pageTitle =
             this.info.title + ' - ' + this.$store.state.config.sitename
+          let { attach_info } = info
+          let { sitedomain } = this.$store.state.config
+          this.attachList = []
+          attach_info.forEach((item) => {
+            this.attachList.push({
+              name: item.name,
+              status: item.status,
+              uid: item.uid,
+              url: sitedomain + '/upload/' + item.url
+            })
+          })
           let wechatShareInfo = {
             title: info.title
           }
@@ -216,6 +236,25 @@ export default {
     border-bottom: 1px solid #f3f3f3;
   }
   background-color: #ffffff;
-  padding: 0 17px;
+  padding: 0 17px 26px;
+}
+.attach{
+  .attachItem {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+    .downloadLink{
+      color:#FF6600;
+      font-size:13px;
+      .text{
+        color: #333333;
+        font-size: 13px;
+      }
+    }
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
 }
 </style>

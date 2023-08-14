@@ -5,7 +5,7 @@
         slot="header"
         class="clearfix"
       >
-        <span  style="font-weight: 600;color: #333;">求职意向</span><div class="must">必填</div>
+        <span style="font-weight: 600;color: #333;">求职意向</span><div class="must">必填</div>
         <el-button
           style="float: right; padding: 6px 18px;font-size: 13px;"
           type="primary"
@@ -67,8 +67,8 @@
       </div>
     </el-card>
     <el-dialog
-      append-to-body
       v-if="dialogFormVisible"
+      append-to-body
       :title="dialogTitle"
       :visible.sync="dialogFormVisible"
       width="35%"
@@ -94,7 +94,7 @@ export default {
   components: {
     diaform
   },
-  props: ['id'],
+  props: ['id', 'field_rule'],
   data() {
     return {
       li4_width: '24%',
@@ -109,25 +109,21 @@ export default {
     }
   },
   created() {
+    this.getFieldRule(this.field_rule)
     this.fetchData()
   },
   methods: {
+    getFieldRule(response){
+      const extra_rule = response.ResumeIntention
+      if (extra_rule.trade.is_display == 0) {
+        this.live_fields.trade = false
+      }
+    },
     fetchData() {
-      getFieldRule({}, 'get')
-        .then(response => {
-          const extra_rule = response.data.ResumeIntention
-          if (extra_rule.trade.is_display == 0) {
-            this.live_fields.trade = false
-          }
-          const param = {
-            rid: this.id
-          }
-          return resumeIntentionList(param)
-        })
-        .then(response => {
-          this.list = response.data.items
-          this.$emit('setLoading', 'resumeIntention')
-        })
+      resumeIntentionList({ 'rid': this.id }).then(response => {
+        this.list = response.data.items
+        this.$emit('setLoading', 'resumeIntention')
+      })
     },
     funAdd() {
       /**

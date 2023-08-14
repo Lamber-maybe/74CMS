@@ -494,5 +494,7 @@ export default {
   //导入创建简历
   importResumeCreate: '/personal/resume_reg_by_analysis/importCreate',
   // 校验简历解析配置
-  documentCheck: '/home/zhitoo/documentCheck'
+  documentCheck: '/home/zhitoo/documentCheck',
+  // 发送注销验证码
+  cancelApply: '/member/sendsms/cancelApply'
 }

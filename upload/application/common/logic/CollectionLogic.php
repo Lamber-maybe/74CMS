@@ -114,13 +114,27 @@ class CollectionLogic
      * Date Time：2022年3月25日16:31:03
      */
     private function _verifyCompanyInfo($params){
-        // 校验企业信息是否已存在
-        $companyModel = model('Company');
-        $companyInfo = $companyModel->where(['companyname' => $params['company_name']])->field('id,uid')->find();
-        if (empty($companyInfo) || $companyInfo === null) {
-            return callBack(false, '未查询到企业信息');
+        // 判断如果有手机号的话根据手机号去查询企业及会员信息
+        if (!empty($params['contact_mobile']) && fieldRegex($params['contact_mobile'], 'mobile')) {
+            $memberInfo = model('Member')->where(['mobile' => $params['contact_mobile']])->field('uid')->find();
+            if (is_null($memberInfo) || empty($memberInfo)) {
+                return callBack(false, '未查询到会员信息');
+            }
+            $companyInfo = model('Company')->where(['uid' => $memberInfo['uid']])->field('id,uid')->find();
+            if (is_null($companyInfo) || empty($companyInfo)) {
+                throw new \Exception('企业数据错误，请求SQL为：'.model('member')->getLastSql());
+            }
+        }else{
+            // 校验企业信息是否已存在
+            $companyInfo = model('Company')->where(['companyname' => $params['company_name']])->field('id,uid')->find();
+            if (empty($companyInfo) || $companyInfo === null) {
+                return callBack(false, '未查询到企业信息');
+            }
+            $memberInfo = model('Member')->where(['uid' => $companyInfo['uid']])->field('uid')->find();
+            if (is_null($memberInfo) || empty($memberInfo)) {
+                throw new \Exception('会员数据错误，请求SQL为：'.model('member')->getLastSql());
+            }
         }
-        $memberInfo = model('Member')->where(['uid' => $companyInfo['uid']])->field('uid')->find();
 
         $data = [
             'uid'        => $memberInfo['uid'],
@@ -139,8 +153,9 @@ class CollectionLogic
      */
     private function _registerMemberAndCompany($params){
         // 注册会员信息
-        $uid = $this->_registerMember();
-        $params['uid'] = $uid;
+        $result = $this->_registerMember($params);
+        $params['uid'] = $result['uid'];
+        $params['contact_mobile'] = $result['contact_mobile'];
         // 注册企业信息
         $companyId = $this->_registerCompany($params);
         $params['company_id'] = $companyId;
@@ -151,30 +166,35 @@ class CollectionLogic
      * 注册会员信息
      * @access private
      * @author chenyang
-     * @return integer
+     * @param  array $params [请求参数]
+     * @return array
      * Date Time：2022年3月25日16:49:31
      */
-    private function _registerMember(){
+    private function _registerMember($params){
         // 生成会员信息
-        $memberData = $this->_generateMemberData();
+        $memberData = $this->_generateMemberData($params);
         // 保存会员信息
         $uid = model('member')->insertGetId($memberData);
         if (empty($uid)) {
             throw new \Exception('新增会员信息失败，请求SQL为：'.model('member')->getLastSql());
         }
-        return $uid;
+        return ['uid' => $uid, 'contact_mobile' => $memberData['mobile']];
     }
 
     /**
      * 生成会员信息
      * @access private
      * @author chenyang
+     * @param  array $params [请求参数]
      * @return array
      * Date Time：2022年3月25日18:04:31
      */
-    private function _generateMemberData(){
-        // 生成会员手机号
-        $mobile = $this->_generateMemberMobile();
+    private function _generateMemberData($params){
+        $mobile = $params['contact_mobile'];
+        if (empty($params['contact_mobile']) || !fieldRegex($params['contact_mobile'], 'mobile')) {
+            // 生成会员手机号
+            $mobile = $this->_generateMemberMobile();
+        }
         // 获取前缀
         $prefix = '';
         if (!empty($this->_accountSeting)) {
@@ -386,8 +406,8 @@ class CollectionLogic
             ],
             'contact' => [
                 'uid'       => $params['uid'],
-                'contact'   => '',
-                'mobile'    => '',
+                'contact'   => !empty($params['contact_name']) ? $params['contact_name'] : '招聘专员',
+                'mobile'    => empty($params['contact_mobile']) || !fieldRegex($params['contact_mobile'], 'mobile') ? '' : $params['contact_mobile'],
                 'weixin'    => '',
                 'telephone' => '',
                 'qq'        => '',
@@ -1090,12 +1110,32 @@ class CollectionLogic
             throw new \Exception('更新企业详情失败，请求SQL为：'.model('CompanyInfo')->getLastSql());
         }
 
-        // 更新企业联系方式
-        // 暂不启用，因为获取不到企业联系方式
-        // $updateResult = model('CompanyContact')->where(['comid' => $params['company_id']])->update($companyData['contact']);
-        // if ($updateResult === false) {
-        //     throw new \Exception('更新企业联系方式失败，请求SQL为：'.model('CompanyContact')->getLastSql());
-        // }
+        // 获取企业联系方式
+        $contactField = [
+            'contact',
+            'mobile'
+        ];
+        $contactWhere = [
+            'comid' => $params['company_id']
+        ];
+        $contactInfo = model('CompanyContact')->field($contactField)->where($contactWhere)->find();
+        if (!empty($contactInfo)) {
+            // 判断联系人或手机号不等于当前采集到的时再去进行修改
+            $updateContactData = [];
+            if (!empty($params['contact_name']) && $companyData['contact']['contact'] != $contactInfo['contact']) {
+                $updateContactData['contact'] = $companyData['contact']['contact'];
+            }
+            if (!empty($params['contact_mobile']) && $companyData['contact']['mobile'] != $contactInfo['mobile']) {
+                $updateContactData['mobile'] = $companyData['contact']['mobile'];
+            }
+            if (!empty($updateContactData)) {
+                // 更新企业联系方式
+                $updateResult = model('CompanyContact')->where(['comid' => $params['company_id']])->update($updateContactData);
+                if ($updateResult === false) {
+                    throw new \Exception('更新企业联系方式失败，请求SQL为：'.model('CompanyContact')->getLastSql());
+                }
+            }
+        }
     }
 
     /**

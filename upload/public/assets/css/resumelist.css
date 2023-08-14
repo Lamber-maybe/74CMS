@@ -134,8 +134,8 @@
 	margin-bottom: 13px;
 }
 
-.list_name_box.list_name_box_active a{
-	color: #909090;
+.list_name_box_active a{
+	color: #771caa;
 }
 
 .name,

@@ -991,45 +991,49 @@
                         type: 'warning',
                     })
                         .then(function () {
-                            var params = {
-                                resume_id: id
-                            }
-                            httppost(qscms.apiList.resumeDownload, params).then(function (res) {
-                                if (res.data.done == 0) {
-                                    if (res.data.need_upgrade == 1){
-                                        that.showUpgradePackage = true
-                                    } else {
-                                        that.showDirectService = true
-                                        var btnCn = ''
-                                        if(res.data.use_type == 'points'){
-                                            btnCn = '立即兑换'
-                                        }
-                                        if(res.data.use_type == 'package'){
-                                            btnCn = '购买增值包'
-                                        }
-                                        if(res.data.use_type == 'money'){
-                                            btnCn = '立即支付'
-                                        }
-                                        that.directServiceInfo = {
-                                            use_type: res.data.use_type,
-                                            need_points: res.data.need_points,
-                                            need_expense: res.data.need_expense,
-                                            discount: res.data.discount,
-                                            btnCn: btnCn,
-                                            cancel:res.data.use_type == 'package' ? '升级套餐': '取 消'
-                                        }
-                                    }
-                                    return false
-                                } else {
-                                    that.$message({ type: 'success', message: res.message })
-                                    that.getContact()
-                                }
-                            })
-                                .catch(function () { })
+                            that.downloadResume()
                         })
                         .catch(function () { })
 
                 }
+            },
+            downloadResume() {
+                var that = this
+                var params = {
+                    resume_id: id
+                }
+                httppost(qscms.apiList.resumeDownload, params).then(function (res) {
+                    if (res.data.done == 0) {
+                        if (res.data.need_upgrade == 1){
+                            that.showUpgradePackage = true
+                        } else {
+                            that.showDirectService = true
+                            var btnCn = ''
+                            if(res.data.use_type == 'points'){
+                                btnCn = '立即兑换'
+                            }
+                            if(res.data.use_type == 'package'){
+                                btnCn = '购买增值包'
+                            }
+                            if(res.data.use_type == 'money'){
+                                btnCn = '立即支付'
+                            }
+                            that.directServiceInfo = {
+                                use_type: res.data.use_type,
+                                need_points: res.data.need_points,
+                                need_expense: res.data.need_expense,
+                                discount: res.data.discount,
+                                btnCn: btnCn,
+                                cancel:res.data.use_type == 'package' ? '升级套餐': '取 消'
+                            }
+                        }
+                        return false
+                    } else {
+                        that.$message({ type: 'success', message: res.message })
+                        that.getContact()
+                    }
+                })
+                    .catch(function () { })
             },
             doInterview: function () {
                 var that = this
@@ -1193,8 +1197,14 @@
                         return false
                     }
                     if (that.contactData.show_contact===0){
-                        this.$message.error('您尚未下载该简历，不能继续此操作')
-                        return false
+                        this.$confirm('查看简历附件需先下载简历，是否下载【'+ fullName + '】的简历？', '提示', {
+                            type: 'warning',
+                            confirmButtonText: '下载'
+                        })
+                            .then(function () {
+                                that.downloadResume()
+                            })
+                            .catch(function () { })
                     }
                 }
             }

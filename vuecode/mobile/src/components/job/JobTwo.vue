@@ -32,6 +32,7 @@
         <div class="tx2">
           {{ base_info.wage_text }}
           <span>更新：{{ base_info.refreshtime }}</span>
+		  <img v-if="base_info.job_status!=1" class="invalid_job" src="../../assets/images/jobshow/invalid_job.png" />
         </div>
         <!-- <div class="tx3">
           {{ base_info.district_text }} · {{ base_info.experience_text }} ·
@@ -2386,13 +2387,22 @@ export default {
     font-weight: bold;
     color: #ff5d24;
     margin-bottom: 8.5px;
-    span {
-      font-size: 12px;
-      color: #999999;
-      float: right;
-      font-weight: normal;
-      padding-top: 7px;
-    }
+		position: relative;
+		.invalid_job{
+			display: block;
+			width: 79px;
+			height: 47px;
+			position: absolute;
+			right: 55px;
+			    top: -24px;
+		}
+		span {
+		  font-size: 12px;
+		  color: #999999;
+		  float: right;
+		  font-weight: normal;
+		  padding-top: 7px;
+		}
   }
 
   .tx1 {

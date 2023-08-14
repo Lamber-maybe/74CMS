@@ -67,17 +67,35 @@
       <div class="tab_box">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="跟进记录" name="first">
-            <followUpRecord :clue_id="rowId" :contacts="details.contacts" :mobile="details.mobile"
-              @clueDetails="clueDetails" />
+            <followUpRecord
+              :clue_id="rowId"
+              :contacts="details.contacts"
+              :mobile="details.mobile"
+              @clueDetails="clueDetails"
+            />
           </el-tab-pane>
           <el-tab-pane label="线索详情" name="second">
-            <clueDetailsEdit v-if="activeName == 'second'" :clue_id="rowId" :sameClientVisible='sameClientVisible'
-             :componeyList="componeyList" :comId="comId" @changeSameClient="changeSameClient" :details="details"
-             @clueDetails="clueDetails" @conversion="conversion" @hideDetail="hideDetail"/>
+            <clueDetailsEdit
+              v-if="activeName == 'second'"
+              :clue_id="rowId"
+              :same-client-visible="sameClientVisible"
+              :componey-list="componeyList"
+              :com-id="comId"
+              :details="details"
+              @changeSameClient="changeSameClient"
+              @clueDetails="clueDetails"
+              @conversion="conversion"
+              @hideDetail="hideDetail"
+            />
           </el-tab-pane>
           <el-tab-pane label="联系人" name="third">
-            <clueContact v-if="activeName == 'third'" :clue_id="rowId" :details="details" @clueDetails="clueDetails"
-              @conversion="conversion" />
+            <clueContact
+              v-if="activeName == 'third'"
+              :clue_id="rowId"
+              :details="details"
+              @clueDetails="clueDetails"
+              @conversion="conversion"
+            />
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -86,96 +104,96 @@
 </template>
 
 <script>
-  import followUpRecord from '@/views/user/company/crm/components/FollowUpRecord'
-  import clueDetailsEdit from '@/views/user/company/crm/components/ClueDetails'
-  import clueContact from '@/views/user/company/crm/components/clueContact'
-  import {
-    clueDetails
-  } from '@/api/company_crm'
-  import {
-    verifyRepeatCompany,
-    mergeClueToCompany
-  } from '@/api/directory'
-  export default {
-    name: 'Show',
-    components: {
-      clueDetailsEdit,
-      followUpRecord,
-      clueContact
-    },
-    props: {
-      rowId: {
-        default: ''
-      }
-    },
-    data() {
-      return {
-        details: [],
-        activeName: 'first',
-        loading: false,
-        sameClientVisible: false,
-        componeyList: [],
-        comId: 0
-      }
-    },
-    created() {
-      this.clueDetails()
-    },
-    methods: {
-      getVerifyRepeatCompany() {
-        verifyRepeatCompany({
-          'clue_id': this.rowId
-        }).then(res => {
-          if (res.data == '') {
-            this.$router.push('/user/company/add?id=' + this.details.id)
-          } else {
-            this.activeName = 'second'
-            this.sameClientVisible = true
-            this.componeyList = res.data
-            this.componeyList[0].select = true
-            this.comId = this.componeyList[0].id
-          }
-        })
-      },
-      conversion() {
-        this.getVerifyRepeatCompany();
-      },
-      hideDetail(){
-        this.$emit('hideDetail')
-      },
-      clueDetails() {
-        this.loading = true
-        clueDetails({
-          'clue_id': this.rowId
-        }).then(res => {
-          this.details = res.data
-          var citycategory_arr = []
-          if (res.data.district1 != 0) {
-            citycategory_arr.push(res.data.district1)
-          }
-          if (res.data.district2 != 0) {
-            citycategory_arr.push(res.data.district2)
-          }
-          if (res.data.district3 != 0) {
-            citycategory_arr.push(res.data.district3)
-          }
-          this.details.citycategory_arr = citycategory_arr
-          this.details.citycategory_arr = citycategory_arr
-          this.loading = false
-        }).catch(() => {
-
-        })
-      },
-      changeSameClient(val) {
-        this.sameClientVisible = false
-      },
-      handleClick() {
-        if (this.activeName == 'first' || this.activeName == 'second') {
-          this.clueDetails()
+import followUpRecord from '@/views/user/company/crm/components/FollowUpRecord'
+import clueDetailsEdit from '@/views/user/company/crm/components/ClueDetails'
+import clueContact from '@/views/user/company/crm/components/clueContact'
+import {
+  clueDetails
+} from '@/api/company_crm'
+import {
+  verifyRepeatCompany,
+  mergeClueToCompany
+} from '@/api/directory'
+export default {
+  name: 'Show',
+  components: {
+    clueDetailsEdit,
+    followUpRecord,
+    clueContact
+  },
+  props: {
+    rowId: {
+      default: ''
+    }
+  },
+  data() {
+    return {
+      details: [],
+      activeName: 'first',
+      loading: false,
+      sameClientVisible: false,
+      componeyList: [],
+      comId: 0
+    }
+  },
+  created() {
+    this.clueDetails()
+  },
+  methods: {
+    getVerifyRepeatCompany() {
+      verifyRepeatCompany({
+        'clue_id': this.rowId
+      }).then(res => {
+        if (res.data == '') {
+          this.$router.push('/user/company/add?id=' + this.details.id)
+        } else {
+          this.activeName = 'second'
+          this.sameClientVisible = true
+          this.componeyList = res.data
+          this.componeyList[0].select = true
+          this.comId = this.componeyList[0].id
         }
+      })
+    },
+    conversion() {
+      this.getVerifyRepeatCompany()
+    },
+    hideDetail(){
+      this.$emit('hideDetail')
+    },
+    clueDetails() {
+      this.loading = true
+      clueDetails({
+        'clue_id': this.rowId
+      }).then(res => {
+        this.details = res.data
+        var citycategory_arr = []
+        if (res.data.district1 != 0) {
+          citycategory_arr.push(res.data.district1)
+        }
+        if (res.data.district2 != 0) {
+          citycategory_arr.push(res.data.district2)
+        }
+        if (res.data.district3 != 0) {
+          citycategory_arr.push(res.data.district3)
+        }
+        this.details.citycategory_arr = citycategory_arr
+        this.details.citycategory_arr = citycategory_arr
+        this.loading = false
+      }).catch(() => {
+
+      })
+    },
+    changeSameClient(val) {
+      this.sameClientVisible = false
+    },
+    handleClick() {
+      if (this.activeName == 'first' || this.activeName == 'second') {
+        this.clueDetails()
       }
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>

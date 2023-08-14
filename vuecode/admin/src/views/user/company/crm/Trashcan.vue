@@ -19,8 +19,10 @@
       </div>
       <div>
         <el-table
+          ref="multipleTable"
           v-loading="loading"
           border
+          :height="tabelHeight"
           :data="trashcanList"
           :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
           :cell-style="{'border-right': '1px solid #e4e6eb'}"
@@ -197,11 +199,42 @@ export default {
       tableIdarr: [],
       configAry: [],
       uid_arr: [],
-      company_id_arr: []
+      company_id_arr: [],
+      tabelHeight: 0
     }
   },
   created() {
     this.getDataList()
+  },
+  updated(){
+    this.$nextTick(() => {
+      this.$refs.multipleTable.doLayout()
+      if (!this.loading){
+        setTimeout(() => {
+          var classStr = this.$refs.multipleTable.$el.className
+          var classAry = classStr.split(' ')
+          var a = document.querySelectorAll('.el-table__fixed-right')[0]
+          var b = document.querySelectorAll('.el-table__empty-block')[0]
+          if (b != undefined){
+            b.style.width = 100 + '%'
+          }
+          var isClass = classAry.find(function(value, index, arr){
+            return value == 'el-table--scrollable-y'
+          })
+          if (isClass){
+            a.style.right = 10 + 'px'
+          } else {
+            a.style.right = 0 + 'px'
+          }
+        }, 100)
+      }
+    })
+  },
+  mounted(){
+    this.$nextTick(() => {
+      var docHeight = document.documentElement.clientHeight
+      this.tabelHeight = docHeight - 316 - 60
+    })
   },
   methods: {
     funSearchKeyword(){

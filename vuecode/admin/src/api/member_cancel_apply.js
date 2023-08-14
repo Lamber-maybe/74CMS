@@ -22,4 +22,45 @@ export function memberCancelApplyHandle(data) {
     data
   })
 }
-
+export function memberCancelApplyBackups(data) {
+  return request({
+    url: apiArr.memberCancelApplyBackups,
+    method: 'post',
+    data
+  })
+}
+export function memberCancelApplyDeleteAll(data) {
+  return request({
+    url: apiArr.memberCancelApplyDeleteAll,
+    method: 'post',
+    data
+  })
+}
+export function exportBackups(data) {
+  return request({
+    url: apiArr.exportBackups,
+    method: 'post',
+    data
+  })
+}
+export function backupsList(params) {
+  return request({
+    url: apiArr.backupsList,
+    method: 'get',
+    params
+  })
+}
+export function backupsDelete(data) {
+  return request({
+    url: apiArr.backupsDelete,
+    method: 'post',
+    data
+  })
+}
+export function classify(params) {
+  return request({
+    url: apiArr.classify,
+    method: 'get',
+    params
+  })
+}

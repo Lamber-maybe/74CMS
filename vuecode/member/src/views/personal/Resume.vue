@@ -398,7 +398,7 @@
             <div class="clear"></div>
           </div>
           <div class="tg_add">
-            <el-input class="w156" v-model="customTagText" :disabled="selectedTags.length >= 10" placeholder="请输入自定义标签">
+            <el-input class="w217" v-model="customTagText" :disabled="selectedTags.length >= 10" placeholder="请输入自定义标签(最多5个字)" maxlength="5">
             </el-input>
             <el-button type="info" plain :disabled="selectedTags.length >= 10" @click="addCusTag">添加
             </el-button>
@@ -883,16 +883,17 @@
         <div class="enclosureResume" v-if="enclosure_resume.title">{{enclosure_resume.title}}
           <span class="delEnclosure" @click="delEnclosure()">删除</span>
         </div>
-        <div class="l_add" v-if="!enclosure_resume.title&&!editEnclosure">
+        <div class="l_add l_add_file" v-if="!enclosure_resume.title && !editEnclosure">
           <div v-if="fileLoading" class="loadingImg">
             <img class="loadingIcon" src="../../assets/images/personal/resume/loading.gif" alt="" />
             <div>文件上传中，请稍后</div>
           </div>
-          <el-upload v-else class="avatar-uploader" action="#" :show-file-list="false" :http-request="handlerUploadResume"
+          <el-upload v-else class="avatar-uploader avatar-uploader-file" action="#" :show-file-list="false" :http-request="handlerUploadResume"
             :before-upload="beforeUploadFile">
             <div class="la_title">上传附件</div>
             <div class="la_des">附件简历支持的格式：txt、html、pdf、doc、docx，文件不超过{{sizeLimit}}M</div>
           </el-upload>
+          <div class="clear"></div>
         </div>
       </div>
     </div>
@@ -1583,7 +1584,7 @@
         } else {
           if (!this.customTagText) {
             this.$message({
-              message: '请输入自定义标签',
+              message: '请输入自定义标签(最多5个字)',
               type: 'warning'
             })
           } else {
@@ -3119,7 +3120,7 @@
 
         .tg_add {
           position: relative;
-          width: 226px;
+          width: 100%;
           height: 40px;
           border-radius: 3px;
 
@@ -3267,6 +3268,18 @@
               width: 40px;
               height: 40px;
               margin: 0 auto 5px;
+            }
+          }
+          &.l_add_file{
+            padding-top: 0;
+            .avatar-uploader-file{
+              width: 100%;
+              height: 100%;
+              ::v-deep .el-upload{
+                width: 100%;
+                height: 100%;
+                padding-top: 23px;
+              }
             }
           }
         }

@@ -56,7 +56,7 @@
             :before-upload="beforeAttachUpload"
           >
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传excel,word,ppt文件，且不超过{{ fileupload_size }}kb</div>
+            <div slot="tip" class="el-upload__tip">只能上传excel,word,ppt,pdf,zip,rar文件，且不超过{{ fileupload_size }}kb</div>
           </el-upload>
         </el-form-item>
         <el-form-item label="是否显示">

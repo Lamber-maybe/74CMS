@@ -16,7 +16,7 @@
           <div class="b_input" v-else>
             <el-input v-model="formCode.mobile" @keyup.native.enter="handleSubmit" placeholder="请输入手机号" clearable></el-input>
             <el-input placeholder="请输入验证码" @keyup.native.enter="keyupSubmit" v-model="formCode.code" clearable></el-input>
-            <div class="for_position"><el-button type="text" @click="sendSms" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
+            <div class="for_position"><el-button type="text" @click="sendSms" :disabled="is_submit" :style="'color:'+$store.state.sendSmsBtnTextColor">{{ $store.state.sendSmsBtnText }}</el-button></div>
           </div>
           <div class="b_handle">
             <div class="h_left" @click="loginByCode = !loginByCode">{{loginByCode ? '账号密码登录' : '手机验证码登录'}}</div>
@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="clear"></div>
-      <Captcha ref="captcha" :mask="true"></Captcha>
+      <Captcha ref="captcha" :mask="true" @setSubmitFun="setSubmitFun"></Captcha>
     </div>
 </template>
 
@@ -78,6 +78,7 @@ import Captcha from '@/components/captcha/index'
         utype:2,
         redirect:'',
         sendSmsLimit:false,
+        is_submit: false
       }
     },
     watch: {
@@ -301,7 +302,7 @@ import Captcha from '@/components/captcha/index'
          *   return false
          * }
          * */
-
+        this.is_submit = true
         this.sendSmsLimit = true
         this.$refs.captcha.show(res => {
           this.$store
@@ -313,12 +314,14 @@ import Captcha from '@/components/captcha/index'
             })
             .then(response => {
               if (response.code === 200) {
+                this.is_submit = false
                 this.sendSmsLimit = false
                 this.$message({
                   type: 'success',
                   message: this.$store.state.sendSmsMessage
                 })
               } else {
+                this.is_submit = false
                 this.sendSmsLimit = false
                 this.$message.error(this.$store.state.sendSmsMessage)
               }
@@ -327,6 +330,9 @@ import Captcha from '@/components/captcha/index'
       },
       qqLogin(){
         this.$router.push('/oauth/qq/login')
+      },
+      setSubmitFun(){
+        this.is_submit = false
       }
     }
   }

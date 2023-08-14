@@ -5,9 +5,9 @@
       :key="index"
       :name="index"
     >
-      <component :is="'resume_'+index" :id="id" @resumeDetails="resumeDetails" @setLoading="setLoading($event)" />
+      <component :is="'resume_'+index" :id="id" :field_rule="fieldRule" @resumeDetails="resumeDetails" @setLoading="setLoading($event)" />
     </div>
-    <resume_enclosure :id="id" :resumeEnclosure="resumeEnclosure" @resumeDetails="resumeDetails"></resume_enclosure>
+    <resume_enclosure :id="id" :resume-enclosure="resumeEnclosure" @resumeDetails="resumeDetails" />
   </div>
 </template>
 
@@ -25,6 +25,7 @@ import resume_language from './components/resumeedit/resumeLanguage.vue'
 import resume_tag from './components/resumeedit/resumeTag.vue'
 import resume_img from './components/resumeedit/resumeImg.vue'
 import resume_enclosure from './components/resumeedit/resumeEnclosure.vue'
+import { getFieldRule } from '@/api/configuration'
 
 export default {
   components: {
@@ -41,7 +42,7 @@ export default {
     resume_img,
     resume_enclosure
   },
-  props: ['id','resumeEnclosure'],
+  props: ['id', 'resumeEnclosure'],
   data() {
     return {
       moduleList: {},
@@ -51,7 +52,8 @@ export default {
       resumeSpecialty: false,
       resumeEducation: false,
       resumeWork: false,
-      resumeTag: false
+      resumeTag: false,
+      fieldRule: []
     }
   },
   created() {
@@ -71,9 +73,13 @@ export default {
       }
     },
     getModuleList() {
-      resumeModuleList().then(response => {
-        this.moduleList = { ...response.data.items }
-      })
+      getFieldRule({}, 'get')
+        .then(response => {
+          this.fieldRule = response.data
+          return resumeModuleList()
+        }).then(response => {
+          this.moduleList = { ...response.data.items }
+        })
     },
     resumeDetails(){
       this.$emit('resumeDetails')

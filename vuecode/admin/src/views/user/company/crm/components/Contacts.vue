@@ -75,7 +75,7 @@
             <el-radio v-model="parmas.sex" label="2">女</el-radio>
           </el-form-item>
 
-          <el-form-item prop="mobile">
+          <el-form-item>
             <span slot="label">
               <span>手机号:</span>
             </span>
@@ -192,10 +192,6 @@ export default {
           { required: true, message: '请输入联系人', trigger: 'blur' },
           { max: 6, message: '长度在 0 到 6 个字符', trigger: 'blur' }
         ],
-        mobile: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' },
-          { validator: validateContactMobile, trigger: 'blur' }
-        ]
       },
       type: '',
       isDialog: false,
@@ -270,6 +266,11 @@ export default {
       }
       this.submitLoading = true
       const insertData = { ...this.parmas }
+      if(insertData.mobile == '' && insertData.telephone == ''){
+        this.$message.error('请填写手机号或公司座机二选一')
+        this.submitLoading = false
+        return false
+      }
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.type == 'add'){
@@ -540,6 +541,7 @@ export default {
       .top{
         border-bottom: 1px dotted #ebeef5;
         .title{
+          height:20px;
           margin-bottom:16px;
           .name{
             font-size: 20px;
@@ -572,6 +574,7 @@ export default {
           }
         }
         .phone{
+          height:18px;
           color: #303033;
           margin-bottom: 12px;
           font-size: 14px;
@@ -589,6 +592,7 @@ export default {
         line-height: 14px;
         color: #666;
         .line{
+          height:16px;
           margin-bottom: 10px;
           &:last-child{
             margin-bottom: 0;

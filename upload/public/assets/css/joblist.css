@@ -40,7 +40,7 @@
     background: url(../images/job_right_icon.png) 0 1px no-repeat;
 }
 .job_list2 .job_title.job_title_active a{
-    color: #909090;
+    color: #771caa;
 }
 .job_title:hover .job_list_hover { display: block; }
 

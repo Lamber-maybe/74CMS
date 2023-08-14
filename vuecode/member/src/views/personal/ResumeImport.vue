@@ -15,7 +15,7 @@
           <div class="t_name">基本信息</div>
           <div
             class="tobeimproved"
-            v-if="basic.fullname == '' || basic.sex == '' || basic.age == '' || basic.education == '' || basic.experience == '' || contact.mobile == ''"
+            v-if="basic.fullname == '' || basic.sex == '' || basic.age == '' || basic.education == '' || basic.experience == '' || contact.mobile == '' || basic.current_text == ''"
           ></div>
           <div class="clear"></div>
         </div>
@@ -51,6 +51,7 @@
             <div class="ot_item">{{ basic.age ? basic.age : '年龄' }}</div>
             <div class="ot_item">{{ basic.education_cn ? basic.education_cn : '学历' }}</div>
             <div class="ot_item">{{ basic.experience_cn ? basic.experience_cn : '经验' }}</div>
+            <div class="ot_item">{{ basic.current_text ? basic.current_text : '求职状态' }}</div>
             <div class="clear"></div>
           </div>
           <div class="ct">
@@ -103,10 +104,22 @@
               <div class="f_item">
                 <div class="i_label">
                   <span class="req">*</span>
+                  求职状态
+                </div>
+                <div class="i_input">
+                  <el-select class="w250" v-model="basic.current" placeholder="请选择求职状态" @change="changeCurrent">
+                    <el-option v-for="(item, index) in optionCurrent" :key="index" :label="item.text" :value="item.id"></el-option>
+                  </el-select>
+                </div>
+                <div class="clear"></div>
+              </div>
+              <div class="f_item">
+                <div class="i_label">
+                  <span class="req">*</span>
                   最高学历
                 </div>
                 <div class="i_input">
-                  <el-select :style="{ width: '196px' }" v-model="basic.education" placeholder="请选择最高学历">
+                  <el-select class="w250" v-model="basic.education" placeholder="请选择最高学历">
                     <el-option v-for="(item, index) in optionEducation" :key="index" :label="item.text" :value="item.id"></el-option>
                   </el-select>
                 </div>
@@ -169,7 +182,7 @@
                   婚姻状况
                 </div>
                 <div class="i_input">
-                  <el-select :style="{ width: '196px' }" v-model="basic.marriage" placeholder="请选择婚姻状况">
+                  <el-select class="w250" v-model="basic.marriage" placeholder="请选择婚姻状况">
                     <el-option v-for="(item, index) in optionMarriage" :key="index" :label="item.text" :value="item.id"></el-option>
                   </el-select>
                 </div>
@@ -183,7 +196,7 @@
                 <div class="i_input">
                   <el-cascader
                     ref="intMajor"
-                    :style="{ width: '196px' }"
+                    :style="{ width: '250px' }"
                     v-model="basicMajor"
                     placeholder="请选择专业"
                     :options="optionMajor"
@@ -245,10 +258,10 @@
             {{ basic.current_text }}
             <div class="ed" @click="editItemFun('', 'current')">编辑</div>
           </div> -->
-          <div class="fill_group fill_al">
+          <div class="fill_group fill_al" v-if="intentionList.length == 0 && !editIntention">
             <div class="fill_bm">
               <div class="fill_line">
-                <div class="f_item f_item_top">
+                <!-- <div class="f_item f_item_top">
                   <div class="i_label">
                     <span class="req">*</span>
                     求职状态
@@ -259,8 +272,8 @@
                     </el-select>
                   </div>
                   <div class="clear"></div>
-                </div>
-                <div class="intentionWarn" v-if="intentionList.length == 0 && !editIntention">
+                </div> -->
+                <div class="intentionWarn">
                   我们将根据您的求职意向为你推荐、筛选匹配的职位，以提升您的求职体验，请添加您的求职意向。
                 </div>
               </div>
@@ -394,7 +407,7 @@
               <div class="clear"></div>
             </div>
             <div class="tg_add">
-              <el-input class="w156" v-model="customTagText" :disabled="selectedTags.length >= 10" placeholder="请输入自定义标签"></el-input>
+              <el-input class="w217" maxlength="5" v-model="customTagText" :disabled="selectedTags.length >= 10" placeholder="请输入自定义标签(最多5个字)"></el-input>
               <el-button type="info" plain :disabled="selectedTags.length >= 10" @click="addCusTag">添加</el-button>
             </div>
             <div class="fill_btn">
@@ -434,9 +447,9 @@
             <div class="intentionWarn" v-if="educationList.length == 0 && !editEducation">教育经历是你学历和专业能力的最佳体现，立即添加提升求职竞争力！</div>
           </div>
           <div v-if="!editEducation">
-            <div class="bit bit_hand listItem" v-for="(item, index) in educationList" :key="index">
-              <div class="ed" @click="editItemFun(item, 'education')">编辑</div>
-              <div class="del" @click="delItemFun('resume_education_delete', item.id, educationList)">删除</div>
+            <div :class="item.incomplete?'bit bit_hand listItem incompleteItem':'bit bit_hand listItem'" :style="item.incomplete?'box-shadow: 0px 2px 8px 1px rgba(217,217,217,0.21);':''" v-for="(item, index) in educationList" :key="index">
+              <div class="ed" :style="item.incomplete?'display:block':''" @click="editItemFun(item, 'education')">编辑</div>
+              <div class="del" :style="item.incomplete?'display:block':''" @click="delItemFun('resume_education_delete', item.id, educationList)">删除</div>
               <div class="e_time">{{ item.starttime }} - {{ item.todate ? '至今' : item.endtime }}</div>
               <div class="e_t1">{{ item.school }}</div>
               <div class="e_t2">{{ item.education_text }}{{ item.major ? `，${item.major}` : '' }}</div>
@@ -535,9 +548,9 @@
             <div class="la_des">工作经历是你丰富阅历的最佳呈现，丰富的工作经历更易获得HR的青睐！</div>
           </div> -->
           <div v-if="!editWork">
-            <div class="bit bit_hand itemList" v-for="(item, index) in workList" :key="index">
-              <div class="ed" @click="editItemFun(item, 'work')">编辑</div>
-              <div class="del" @click="delItemFun('resume_work_delete', item.id, workList)">删除</div>
+            <div :class="item.incomplete?'bit bit_hand itemList incompleteItem':'bit bit_hand itemList'" v-for="(item, index) in workList" :key="index">
+              <div class="ed editBtn" :style="item.incomplete?'display:block':''" @click="editItemFun(item, 'work')">编辑</div>
+              <div class="del deleteBtn" :style="item.incomplete?'display:block':''" @click="delItemFun('resume_work_delete', item.id, workList)">删除</div>
               <div class="e_time">{{ item.starttime }} - {{ item.todate ? '至今' : item.endtime }}</div>
               <div class="e_t1">{{ item.companyname }}</div>
               <div class="e_t2">{{ item.jobname }}</div>
@@ -1261,6 +1274,7 @@ export default {
     doResetArray(type, array) {
       if (type == 'intention_list') {
         for (let i in array) {
+          array[i].id = parseInt(i)
           array[i].incomplete = false;
           if (array[i].nature == '' || array[i].category1 == '' || array[i].district1 == '' || array[i].trade == '' || array[i].minwage == '' || array[i].maxwage == '') {
             array[i].incomplete = true;
@@ -1269,6 +1283,7 @@ export default {
         this.intentionList = array;
       } else if (type == 'resume_work') {
         for (let i in array) {
+          array[i].id = parseInt(i)
           array[i].todate = array[i].todate ? 1 : 0;
           array[i].incomplete = false;
           if (array[i].companyname == '' || array[i].starttime == '' || (array[i].todate == '' && array[i].endtime == '') || array[i].jobname == '' || array[i].duty == '') {
@@ -1278,9 +1293,10 @@ export default {
         this.workList = array;
       } else if (type == 'resume_education') {
         for (let i in array) {
+          array[i].id = parseInt(i)
           array[i].todate = array[i].todate ? 1 : 0;
           array[i].incomplete = false;
-          if (array[i].school == '' || array[i].starttime == '' || (array[i].todate == '' && array[i].endtime == '') || array[i].education == '') {
+          if (array[i].school == '' || array[i].starttime == '' || (array[i].todate == '' && array[i].endtime == '') || array[i].education == ''|| array[i].major == '') {
             array[i].incomplete = true;
           }
           if (array[i].education == 0) {
@@ -1479,7 +1495,6 @@ export default {
         });
         return false;
       }
-      console.log(this.loopTags)
       this.loopTags = this.loopTags.map(function(item) {
         let isSelect = false;
         if (data.id) {
@@ -1632,6 +1647,13 @@ export default {
         });
         return false;
       }
+      if (!this.basic.current) {
+        this.$message({
+          message: '请选择求职状态',
+          type: 'warning'
+        });
+        return false;
+      }
       if (!this.isNoJobTime) {
         if (!this.basic.enter_job_time) {
           this.$message({
@@ -1697,7 +1719,9 @@ export default {
         major1: this.basic.major1,
         major2: this.basic.major2,
         height: this.basic.height,
-        householdaddress: this.basic.householdaddress
+        householdaddress: this.basic.householdaddress,
+        current: this.basic.current,
+        current_text: this.basic.current_text
       };
       this.contact = {
         mobile: this.contact.mobile ? this.contact.mobile : '',
@@ -2314,7 +2338,7 @@ export default {
       if (this.intentionList.length > 0) {
         for (let i in this.intentionList) {
           if (this.intentionList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条求职意向信息！');
             return;
           }
@@ -2324,7 +2348,7 @@ export default {
         for (let i in this.educationList) {
           this.educationList[i].todate = this.workList[i].todate ? 1 : 0;
           if (this.educationList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条教育经历！');
             return;
           }
@@ -2334,7 +2358,7 @@ export default {
         for (let i in this.workList) {
           this.workList[i].todate = this.workList[i].todate ? 1 : 0;
           if (this.workList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条工作经历！');
             return;
           }
@@ -2344,7 +2368,7 @@ export default {
         for (let i in this.trainList) {
           this.trainList[i].todate = this.trainList[i].todate ? 1 : 0;
           if (this.trainList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条培训经历！');
             return;
           }
@@ -2354,7 +2378,7 @@ export default {
         for (let i in this.projectList) {
           this.projectList[i].todate = this.projectList[i].todate ? 1 : 0;
           if (this.projectList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条项目经历！');
             return;
           }
@@ -2363,7 +2387,7 @@ export default {
       if (this.certificateList.length > 0) {
         for (let i in this.certificateList) {
           if (this.certificateList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条证书信息！');
             return;
           }
@@ -2372,7 +2396,7 @@ export default {
       if (this.languageList.length > 0) {
         for (let i in this.languageList) {
           if (this.languageList[i].incomplete) {
-            let j = i + 1;
+            let j = parseInt(i) + 1;
             this.$message.error('请完善第' + j + '条证书信息！');
             return;
           }
@@ -2610,8 +2634,8 @@ export default {
 
       .ed {
         position: absolute;
-        right: 77px;
-        top: 2px;
+        right: 89px;
+        top: 12px;
         color: #666;
         padding-left: 21px;
         cursor: pointer;
@@ -2622,8 +2646,8 @@ export default {
 
       .del {
         position: absolute;
-        right: 0;
-        top: 2px;
+        right: 12px;
+        top: 12px;
         color: #666;
         padding-left: 21px;
         cursor: pointer;
@@ -2969,7 +2993,7 @@ export default {
 
       .tg_add {
         position: relative;
-        width: 226px;
+        width: 100%;
         height: 40px;
         border-radius: 3px;
 
@@ -3014,7 +3038,7 @@ export default {
 
     .b5 {
       padding: 37px 0 40px 0;
-      border-top: 1px solid #f3f3f3;
+      // border-top: 1px solid #f3f3f3;
       &.noHaveData {
         background: #fffcf9;
         border: 1px dashed #ffebd2;
@@ -3030,9 +3054,15 @@ export default {
       }
 
       .bit {
-        padding-left: 158px;
+        padding-left: 165px;
+        padding-top: 12px;
+        padding-bottom: 12px;
         &.itemList {
           position: relative;
+        }
+        &.incompleteItem{
+          box-shadow: 0px 2px 8px 1px rgba(217,217,217,0.21);
+          overflow: hidden;
         }
 
         .incompleteWarn {
@@ -3045,21 +3075,22 @@ export default {
           border-radius: 15px;
           color: #ff4a3c;
           font-size: 12px;
-          position: absolute;
-          bottom: -33px;
-          left: 159px;
+          // position: absolute;
+          // bottom: -33px;
+          // left: 159px;
           box-sizing: border-box;
           padding-left: 33px;
+          margin-top: 8px;
         }
 
         &:not(:last-child) {
-          margin-bottom: 35px;
+          margin-bottom: 12px;
         }
 
         .e_time {
           position: absolute;
-          left: 0;
-          top: 1.5px;
+          left: 12px;
+          top: 14px;
           font-size: 14px;
           color: #999;
         }
@@ -3067,8 +3098,8 @@ export default {
         &::before {
           content: '';
           position: absolute;
-          left: 132px;
-          top: 7px;
+          left: 148px;
+          top: 19px;
           width: 8px;
           height: 8px;
           border-radius: 100%;
@@ -3078,10 +3109,10 @@ export default {
         &::after {
           content: '';
           position: absolute;
-          left: 135px;
-          top: 20px;
+          left: 151.5px;
+          top: 34px;
           width: 1px;
-          height: 90%;
+          height: 63%;
           border-left: 1px solid #f3f3f3;
         }
 
@@ -3346,7 +3377,7 @@ export default {
             position: relative;
 
             .el-input {
-              width: 196px;
+              width: 250px;
             }
 
             .el-checkbox__label {

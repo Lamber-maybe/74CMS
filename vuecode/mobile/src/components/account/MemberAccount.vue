@@ -1,78 +1,218 @@
 <template>
-	<div id="app">
-		<Head>账号管理</Head>
-		<div class="form_split_10"></div>
-		<van-field readonly clickable label="修改用户名" :value="username" :placeholder="username"
-			class="form_choose reset_read_after" input-align="right" @click="openResetUsername" />
-		<van-field readonly clickable label="修改密码" placeholder="" class="form_choose reset_read_after no_border"
-			input-align="right" @click="openResetPassword" />
-		<div class="form_split_10"></div>
-		<van-field v-if="$store.state.LoginType == 1" readonly clickable label="企业认证"
-			:value="company_auth == 1 ? company_auth_text : ''" :placeholder="company_auth_text"
-			class="form_choose reset_read_after" input-align="right" @click="handlerCompanyAuth" />
-		<van-field readonly clickable label="手机认证" :value="mobile ? mobile : ''" placeholder="未绑定"
-			class="form_choose reset_read_after" input-align="right" @click="openResetMobile" />
-		<van-field readonly clickable label="绑定邮箱" :value="email ? email : ''" placeholder="未绑定"
-			class="form_choose reset_read_after" input-align="right" @click="openBindEmail" />
-		<div class="box_title">第三方账号绑定后可以使用绑定的账号快速登录网站</div>
-		<van-field readonly clickable label="腾讯QQ" :value="bind_qq == 1 ? '已绑定' : ''" placeholder="未绑定"
-			class="form_choose reset_read_after" input-align="right" @click="handlerBindQq" />
-		<van-field readonly clickable label="微信" :value="bind_weixin == 1 ? '已绑定' : ''" placeholder="未绑定"
-			class="form_choose reset_read_after no_border" input-align="right" @click="handlerBindWeixin" />
-		<div class="form_split_10"></div>
-		<van-field readonly clickable label="系统消息" value="" placeholder="" class="form_choose reset_read_after"
-			input-align="right" @click="
+  <div id="app">
+    <Head>账号管理</Head>
+    <div class="form_split_10"></div>
+    <van-field
+      readonly
+      clickable
+      label="修改用户名"
+      :value="username"
+      :placeholder="username"
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="openResetUsername"
+    />
+    <van-field
+      readonly
+      clickable
+      label="修改密码"
+      placeholder=""
+      class="form_choose reset_read_after no_border"
+      input-align="right"
+      @click="openResetPassword"
+    />
+    <div class="form_split_10"></div>
+    <van-field
+      v-if="$store.state.LoginType == 1"
+      readonly
+      clickable
+      label="企业认证"
+      :value="company_auth == 1 ? company_auth_text : ''"
+      :placeholder="company_auth_text"
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="handlerCompanyAuth"
+    />
+    <van-field
+      readonly
+      clickable
+      label="手机认证"
+      :value="mobile ? mobile : ''"
+      placeholder="未绑定"
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="openResetMobile"
+    />
+    <van-field
+      readonly
+      clickable
+      label="绑定邮箱"
+      :value="email ? email : ''"
+      placeholder="未绑定"
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="openBindEmail"
+    />
+    <div class="box_title">第三方账号绑定后可以使用绑定的账号快速登录网站</div>
+    <van-field
+      readonly
+      clickable
+      label="腾讯QQ"
+      :value="bind_qq == 1 ? '已绑定' : ''"
+      placeholder="未绑定"
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="handlerBindQq"
+    />
+    <van-field
+      readonly
+      clickable
+      label="微信"
+      :value="bind_weixin == 1 ? '已绑定' : ''"
+      placeholder="未绑定"
+      class="form_choose reset_read_after no_border"
+      input-align="right"
+      @click="handlerBindWeixin"
+    />
+    <div class="form_split_10"></div>
+    <van-field
+      readonly
+      clickable
+      label="系统消息"
+      value=""
+      placeholder=""
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="
         $router.push(
           '/member/' + (utype == 1 ? 'company' : 'personal') + '/msglist'
         )
-      " />
-		<van-field readonly clickable label="登录日志" value="" placeholder="" class="form_choose reset_read_after"
-			input-align="right" @click="
+      "
+    />
+    <van-field
+      readonly
+      clickable
+      label="登录日志"
+      value=""
+      placeholder=""
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="
         $router.push(
           '/member/' + (utype == 1 ? 'company' : 'personal') + '/loginlog'
         )
-      " />
-		<van-field readonly clickable label="建议反馈" value="" placeholder="" class="form_choose reset_read_after"
-			input-align="right" @click="openFeedback" />
-		<div class="form_split_10" v-if="$store.state.LoginType===1"></div>
-		<van-field v-if="$store.state.LoginType===1" readonly clickable label="注销账号" value="" placeholder=""
-			class="form_choose reset_read_after no_border" input-align="right" @click="handlerWithdraw" />
-		<div class="form_split_10"></div>
-		<div style="margin: 16px;">
-			<van-button round block type="info" @click="logout">
-				退出登录
-			</van-button>
-		</div>
-		<van-popup :lazy-render="false" v-model="showResetUsername" position="right" :overlay="false"
-			style="width:100%;height:100%">
-			<ResetUsername ref="resetUsername" :username_original="username" @closePopout="closeResetUsername">
-			</ResetUsername>
-		</van-popup>
-		<van-popup :lazy-render="false" v-model="showResetPassword" position="right" :overlay="false"
-			style="width:100%;height:100%">
-			<ResetPassword ref="resetPassword" :is_set_password="is_set_password" @closePopout="closeResetPassword">
-			</ResetPassword>
-		</van-popup>
-		<van-popup :lazy-render="false" v-model="showResetMobile" position="right" :overlay="false"
-			style="width:100%;height:100%">
-			<ResetMobile ref="resetMobile" :mobile_original="mobile" @closePopout="closeResetMobile"></ResetMobile>
-		</van-popup>
-		<van-popup :lazy-render="false" v-model="showBindEmail" position="right" :overlay="false"
-			style="width:100%;height:100%">
-			<BindEmail ref="bindEmail" :email_original="email" @closePopout="closeBindEmail"></BindEmail>
-		</van-popup>
-		<van-popup :lazy-render="false" v-model="showFeedback" position="right" :overlay="false"
-			style="width:100%;height:100%">
-			<Feedback ref="feedback" @closePopout="showFeedback = false"></Feedback>
-		</van-popup>
-		<van-dialog v-model="showWeixinQrcode" title="微信认证" confirm-button-text="知道了">
-			<div class="dialog_wx_qr">
-				<div class="tip orange">截屏保存二维码图片，关注公众号</div>
-				<div class="qr_img"><img v-if="scanQrcodeImg" :src="scanQrcodeImg" /></div>
-				<div class="tip_text">微信内使用“扫一扫”打开图片，识别关注公众号完成绑定操作。绑定后即可随时随地接收最新消息通知，还可使用微信快速登录网站。</div>
-			</div>
-		</van-dialog>
-	</div>
+      "
+    />
+    <van-field
+      readonly
+      clickable
+      label="建议反馈"
+      value=""
+      placeholder=""
+      class="form_choose reset_read_after"
+      input-align="right"
+      @click="openFeedback"
+    />
+    <div class="form_split_10"></div>
+    <van-field
+      readonly
+      clickable
+      label="注销账号"
+      value=""
+      placeholder=""
+      class="form_choose reset_read_after no_border"
+      input-align="right"
+      @click="handlerWithdraw"
+    />
+    <div class="form_split_10"></div>
+    <div style="margin: 16px;">
+      <van-button round block type="info" @click="logout">
+        退出登录
+      </van-button>
+    </div>
+    <van-popup
+      :lazy-render="false"
+      v-model="showResetUsername"
+      position="right"
+      :overlay="false"
+      style="width:100%;height:100%"
+    >
+      <ResetUsername
+        ref="resetUsername"
+        :username_original="username"
+        @closePopout="closeResetUsername"
+      ></ResetUsername>
+    </van-popup>
+    <van-popup
+      :lazy-render="false"
+      v-model="showResetPassword"
+      position="right"
+      :overlay="false"
+      style="width:100%;height:100%"
+    >
+      <ResetPassword
+        ref="resetPassword"
+        :is_set_password="is_set_password"
+        @closePopout="closeResetPassword"
+      ></ResetPassword>
+    </van-popup>
+    <van-popup
+      :lazy-render="false"
+      v-model="showResetMobile"
+      position="right"
+      :overlay="false"
+      style="width:100%;height:100%"
+    >
+      <ResetMobile
+        ref="resetMobile"
+        :mobile_original="mobile"
+        @closePopout="closeResetMobile"
+      ></ResetMobile>
+    </van-popup>
+    <van-popup
+      :lazy-render="false"
+      v-model="showBindEmail"
+      position="right"
+      :overlay="false"
+      style="width:100%;height:100%"
+    >
+      <BindEmail
+        ref="bindEmail"
+        :email_original="email"
+        @closePopout="closeBindEmail"
+      ></BindEmail>
+    </van-popup>
+    <van-popup
+      :lazy-render="false"
+      v-model="showFeedback"
+      position="right"
+      :overlay="false"
+      style="width:100%;height:100%"
+    >
+      <Feedback ref="feedback" @closePopout="showFeedback = false"></Feedback>
+    </van-popup>
+    <van-popup
+            :lazy-render="false"
+            v-model="accountCancellation"
+            position="right"
+            :overlay="false"
+            style="width:100%;height:100%"
+    >
+      <AccountCancellation
+              :utype=$store.state.LoginType
+              :mobile=mobile
+              :phone = phone
+              @closePopout="closeAccountCancellation"
+      ></AccountCancellation>
+    </van-popup>
+    <van-dialog v-model="showWeixinQrcode" title="微信认证" confirm-button-text="知道了">
+      <div class="dialog_wx_qr">
+        <div class="tip orange">截屏保存二维码图片，关注公众号</div>
+        <div class="qr_img"><img v-if="scanQrcodeImg" :src="scanQrcodeImg"/></div>
+        <div class="tip_text">微信内使用“扫一扫”打开图片，识别关注公众号完成绑定操作。绑定后即可随时随地接收最新消息通知，还可使用微信快速登录网站。</div>
+      </div>
+    </van-dialog>
+  </div>
 </template>
 
 <script>
@@ -81,6 +221,7 @@ import ResetUsername from '@/components/account/ResetUsername'
 import ResetPassword from '@/components/account/ResetPassword'
 import ResetMobile from '@/components/account/ResetMobile'
 import BindEmail from '@/components/account/BindEmail'
+import AccountCancellation from '@/components/account/AccountCancellation'
 import http from '@/utils/http'
 import api from '@/api'
 export default {
@@ -91,7 +232,8 @@ export default {
     ResetPassword,
     ResetMobile,
     BindEmail,
-    Feedback
+    Feedback,
+    AccountCancellation
   },
   data () {
     return {
@@ -110,7 +252,9 @@ export default {
       showResetPassword: false,
       showResetMobile: false,
       showBindEmail: false,
-      scanQrcodeImg: ''
+      scanQrcodeImg: '',
+      accountCancellation: false,
+      phone: ''
     }
   },
   created () {
@@ -137,29 +281,13 @@ export default {
           this.bind_qq = res.data.bind_qq
           this.bind_sina = res.data.bind_sina
           this.bind_weixin = res.data.bind_weixin
+          const tel = this.mobile
+          this.phone = tel.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
         })
         .catch(() => {})
     },
     handlerWithdraw () {
-      this.$dialog
-        .confirm({
-          title: '系统提示',
-          message: '提交申请将删除您的所有会员数据，永久注销会员账号。是否继续提交注销申请？'
-        })
-        .then(() => {
-          http
-            .post(api.account_cancel_apply, {})
-            .then(res => {
-              this.$notify({
-                type: 'success',
-                message: res.message
-              })
-            })
-            .catch(() => {})
-        })
-        .catch(() => {
-          // on cancel
-        })
+      this.accountCancellation = true
     },
     logout () {
       this.$dialog
@@ -203,6 +331,9 @@ export default {
     closeResetPassword (is_set_password) {
       this.is_set_password = is_set_password
       this.showResetPassword = false
+    },
+    closeAccountCancellation () {
+      this.accountCancellation = false
     },
     openResetMobile () {
       if (this.mobile != '') {

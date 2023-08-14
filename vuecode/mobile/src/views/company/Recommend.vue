@@ -203,7 +203,7 @@ export default {
           this.loading = false
 
           // 数据全部加载完成
-          if (res.data.items.length < this.pagesize) {
+          if (res.data.items.length < this.pagesize || this.page >= 10) {
             this.finished = true
             if (init === false) {
               this.finished_text = '没有更多了'

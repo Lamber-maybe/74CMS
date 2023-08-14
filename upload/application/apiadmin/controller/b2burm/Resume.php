@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\common\model\shortvideo\SvPersonalVideo;
 use app\common\model\Uploadfile;
 use Think\Db;
+use think\Validate;
 
 class Resume extends Backend
 {
@@ -13,7 +14,8 @@ class Resume extends Backend
      * @return void
      * 简历列表
      */
-    public function index(){
+    public function index()
+    {
         $where = [];
         $having_where = '';
         $order = 'r.refreshtime desc';
@@ -33,76 +35,76 @@ class Resume extends Backend
         $sort_type = input('post.sort_type/s', '', 'trim');
         $contact_status = input('post.contact_status/d', 0, 'intval');
         $sort = input('post.sort/s', '', 'trim');
-        $citycategory = input('post.citycategory/a',[]);
-        $jobcategory = input('post.jobcategory/a',[]);
+        $citycategory = input('post.citycategory/a', []);
+        $jobcategory = input('post.jobcategory/a', []);
         $platform = input('post.platform/s', '', 'trim');
         $enclosure_resume = input('post.enclosure_resume/d', 0, 'intval');
-        if($platform != ''){
-            $where['m.platform'] = ['=',$platform];
+        if ($platform != '') {
+            $where['m.platform'] = ['=', $platform];
         }
-        if($sort_type != '' && $sort != ''){ // 排序
-            if($sort_type == 'refreshtime'){
-                $order = 'r.refreshtime '.$sort;
+        if ($sort_type != '' && $sort != '') { // 排序
+            if ($sort_type == 'refreshtime') {
+                $order = 'r.refreshtime ' . $sort;
             }
-            if($sort_type == 'last_login_time'){
-                $order = 'm.last_login_time '.$sort;
+            if ($sort_type == 'last_login_time') {
+                $order = 'm.last_login_time ' . $sort;
             }
-            if($sort_type == 'reg_time'){
-                $order = 'm.reg_time '.$sort;
+            if ($sort_type == 'reg_time') {
+                $order = 'm.reg_time ' . $sort;
             }
-            if($sort_type == 'final_follow'){
-                $order = 'r.last_visit_time '.$sort;
+            if ($sort_type == 'final_follow') {
+                $order = 'r.last_visit_time ' . $sort;
             }
         }
-        if($education > 0){//学历
-            $where['r.education'] = ['=',$education];
+        if ($education > 0) {//学历
+            $where['r.education'] = ['=', $education];
         }
-        if($high_quality != ''){//简历等级
-            $where['r.high_quality'] = ['=',$high_quality];
+        if ($high_quality != '') {//简历等级
+            $where['r.high_quality'] = ['=', $high_quality];
         }
-        if($audit != ''){//审核状态
-            $where['r.audit'] = ['=',$audit];
+        if ($audit != '') {//审核状态
+            $where['r.audit'] = ['=', $audit];
         }
 
-        if($experience > 0){
+        if ($experience > 0) {
             switch ($experience) {
                 case 1: //无经验/应届生
-                    $where['r.enter_job_time'] = ['=',0];
+                    $where['r.enter_job_time'] = ['=', 0];
                     break;
                 case 2://1年以下
                     $where['r.enter_job_time'] = ['>', strtotime('-1 year')];
                     break;
                 case 3://1年-2年
-                    $where['r.enter_job_time'] = [['<=',strtotime('-1 year')],['>',strtotime('-2 year')],'and'];
+                    $where['r.enter_job_time'] = [['<=', strtotime('-1 year')], ['>', strtotime('-2 year')], 'and'];
                     break;
                 case 4://2年-3年
-                    $where['r.enter_job_time'] = [['<=', strtotime('-2 year')],['>',strtotime('-3 year')],'and'];
+                    $where['r.enter_job_time'] = [['<=', strtotime('-2 year')], ['>', strtotime('-3 year')], 'and'];
                     break;
                 case 5://3年-5年
-                    $where['r.enter_job_time'] = [['<=', strtotime('-3 year')],['>',strtotime('-5 year')],'and'];
+                    $where['r.enter_job_time'] = [['<=', strtotime('-3 year')], ['>', strtotime('-5 year')], 'and'];
                     break;
                 case 6://5年-10年
-                    $where['r.enter_job_time'] = [['<=', strtotime('-5 year')],['>',strtotime('-10 year')],'and'];
+                    $where['r.enter_job_time'] = [['<=', strtotime('-5 year')], ['>', strtotime('-10 year')], 'and'];
                     break;
                 case 7://10年以上
-                    $where['r.enter_job_time'] = [['<', strtotime('-10 year')],['<>',0],'and'];
+                    $where['r.enter_job_time'] = [['<', strtotime('-10 year')], ['<>', 0], 'and'];
                     break;
                 default:
                     break;
             }
         }
 
-        if($contact_status > 0){
+        if ($contact_status > 0) {
             switch ($contact_status) {
                 case 1: //电话联系
-                    $where['r.is_status_phone'] = ['=',2];
+                    $where['r.is_status_phone'] = ['=', 2];
                     break;
                 case 2: //微信联系
-                    $where['r.is_status_weixin'] = ['=',2];
+                    $where['r.is_status_weixin'] = ['=', 2];
                     break;
                 case 3: //从未联系
-                    $where['r.is_status_weixin'] = ['=',1];
-                    $where['r.is_status_phone'] = ['=',1];
+                    $where['r.is_status_weixin'] = ['=', 1];
+                    $where['r.is_status_phone'] = ['=', 1];
                     break;
             }
         }
@@ -128,21 +130,21 @@ class Resume extends Backend
             m.last_login_time,
             m.reg_time,
             ifnull(bind.id,0) as is_bind';
-         // 查询条件 - 关键词
+        // 查询条件 - 关键词
         if (!empty($keyword) && !empty($key_type)) {
             switch ($key_type) {
                 case 1: // 企业名称
                     $where['r.fullname'] = ['like', '%' . $keyword . '%'];
                     break;
                 case 2: // 会员手机号
-                    $where['m.mobile'] = ['like',"%{$keyword}%"];
+                    $where['m.mobile'] = ['like', "%{$keyword}%"];
                     break;
                 case 3: // 企业手机号
-                    $total_join[] = ['resume_contact c','r.id=c.rid','LEFT'];
-                    $where['c.mobile'] = ['like',"%{$keyword}%"];
+                    $total_join[] = ['resume_contact c', 'r.id=c.rid', 'LEFT'];
+                    $where['c.mobile'] = ['like', "%{$keyword}%"];
                     break;
                 case 4: // 简历ID
-                    $where['r.id'] = ['=',$keyword];
+                    $where['r.id'] = ['=', $keyword];
                     break;
                 default:
                     break;
@@ -357,34 +359,28 @@ class Resume extends Backend
 //            }
 //        }
 
-        if(!empty($citycategory) || !empty($jobcategory)){
-            $total_join[] = ['ResumeIntention ris','ris.rid=r.id','LEFT'];
-            $list_join[] = ['ResumeIntention ris','ris.rid=r.id','LEFT'];
-            if(!empty($citycategory)){//意向地区
-                if (isset($citycategory[0]) && !empty($citycategory[0]))
-                {
+        if (!empty($citycategory) || !empty($jobcategory)) {
+            $total_join[] = ['ResumeIntention ris', 'ris.rid=r.id', 'LEFT'];
+            $list_join[] = ['ResumeIntention ris', 'ris.rid=r.id', 'LEFT'];
+            if (!empty($citycategory)) {//意向地区
+                if (isset($citycategory[0]) && !empty($citycategory[0])) {
                     $where['ris.district1'] = $citycategory[0];
                 }
-                if (isset($citycategory[1]) && !empty($citycategory[1]))
-                {
+                if (isset($citycategory[1]) && !empty($citycategory[1])) {
                     $where['ris.district2'] = $citycategory[1];
                 }
-                if (isset($citycategory[2]) && !empty($citycategory[2]))
-                {
+                if (isset($citycategory[2]) && !empty($citycategory[2])) {
                     $where['ris.district3'] = $citycategory[2];
                 }
             }
-            if(!empty($jobcategory)){//意向职位
-                if (isset($jobcategory[0]) && !empty($jobcategory[0]))
-                {
+            if (!empty($jobcategory)) {//意向职位
+                if (isset($jobcategory[0]) && !empty($jobcategory[0])) {
                     $where['ris.category1'] = $jobcategory[0];
                 }
-                if (isset($jobcategory[1]) && !empty($jobcategory[1]))
-                {
+                if (isset($jobcategory[1]) && !empty($jobcategory[1])) {
                     $where['ris.category2'] = $jobcategory[1];
                 }
-                if (isset($jobcategory[2]) && !empty($jobcategory[2]))
-                {
+                if (isset($jobcategory[2]) && !empty($jobcategory[2])) {
                     $where['ris.category3'] = $jobcategory[2];
                 }
             }
@@ -395,13 +391,13 @@ class Resume extends Backend
                 case 1:
                     $total_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
                     $list_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
-                    $where['re.id'] = ['not null',''];
+                    $where['re.id'] = ['not null', ''];
                     break;
 
                 case 2:
                     $total_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
                     $list_join[] = ['ResumeEnclosure re', 're.rid=r.id', 'LEFT'];
-                    $where['re.id'] = ['null',''];
+                    $where['re.id'] = ['null', ''];
                     break;
 
                 default:
@@ -409,22 +405,22 @@ class Resume extends Backend
             }
         }
         $total = model('Resume')->alias('r');
-        foreach ($total_join as $k=>$v){
-            $total = $total->join($v[0],$v[1],$v[2]);
+        foreach ($total_join as $k => $v) {
+            $total = $total->join($v[0], $v[1], $v[2]);
         }
-        $total = $total->join('member m','r.uid=m.uid','LEFT')
+        $total = $total->join('member m', 'r.uid=m.uid', 'LEFT')
             ->where($where)
             ->field($total_field)
             ->group('r.id')
             ->having($having_where)
             ->count();
         $list = model('Resume')->alias('r');
-        foreach ($list_join as $k=>$v){
-            $list = $list->join($v[0],$v[1],$v[2]);
+        foreach ($list_join as $k => $v) {
+            $list = $list->join($v[0], $v[1], $v[2]);
         }
-        $list = $list->join('member m','r.uid=m.uid','LEFT')
-            ->join('resume_contact c','r.id=c.rid','LEFT')
-            ->join('member_bind bind',"bind.uid = c.uid and bind.type='weixin'",'LEFT')
+        $list = $list->join('member m', 'r.uid=m.uid', 'LEFT')
+            ->join('resume_contact c', 'r.id=c.rid', 'LEFT')
+            ->join('member_bind bind', "bind.uid = c.uid and bind.type='weixin'", 'LEFT')
             ->where($where)
             ->field($field)
             ->group('r.id')
@@ -432,51 +428,51 @@ class Resume extends Backend
             ->having($having_where)
             ->page($current_page . ',' . $pagesize)
             ->select();
-        $id_arr = array_column($list,'id');
-        if($delivery_num <= 0){
+        $id_arr = array_column($list, 'id');
+        if ($delivery_num <= 0) {
             $job_apply = db('job_apply')->alias('ja')
-                ->join('job j','ja.jobid = j.id')
-                ->where('j.jobname','not null')
-                ->where('ja.resume_id','in',$id_arr)
+                ->join('job j', 'ja.jobid = j.id')
+                ->where('j.jobname', 'not null')
+                ->where('ja.resume_id', 'in', $id_arr)
                 ->field('count(ja.id) as num,ja.resume_id')
                 ->group('ja.resume_id')
                 ->select();
-            if(!empty($job_apply)){
-                $job_apply = array_column($job_apply,null,'resume_id');
+            if (!empty($job_apply)) {
+                $job_apply = array_column($job_apply, null, 'resume_id');
             }
         }
-        if($downloaded <= 0){
+        if ($downloaded <= 0) {
             $company_down_resume = db('company_down_resume')
                 ->alias('a')
-                ->where('a.resume_id','in',$id_arr)
+                ->where('a.resume_id', 'in', $id_arr)
                 ->field('count(a.id) as num,a.resume_id')
                 ->group('a.resume_id')
                 ->select();
-            if(!empty($company_down_resume)){
-                $company_down_resume = array_column($company_down_resume,null,'resume_id');
+            if (!empty($company_down_resume)) {
+                $company_down_resume = array_column($company_down_resume, null, 'resume_id');
             }
         }
-        if($viewed <= 0){
+        if ($viewed <= 0) {
             $view_resume = db('view_resume')
-                ->where('resume_id','in',$id_arr)
+                ->where('resume_id', 'in', $id_arr)
                 ->field('count(id) as num,resume_id')
                 ->group('resume_id')
                 ->select();
-            if(!empty($view_resume)){
-                $view_resume = array_column($view_resume,null,'resume_id');
+            if (!empty($view_resume)) {
+                $view_resume = array_column($view_resume, null, 'resume_id');
             }
         }
-        if($invitation <= 0){
-                //被面邀
+        if ($invitation <= 0) {
+            //被面邀
             $company_interview = db('company_interview')->alias('ci')
-                ->join('job j','ci.jobid = j.id')
-                ->where('j.jobname','not null')
-                ->where('ci.resume_id','in',$id_arr)
+                ->join('job j', 'ci.jobid = j.id')
+                ->where('j.jobname', 'not null')
+                ->where('ci.resume_id', 'in', $id_arr)
                 ->field('count(ci.id) as num,ci.resume_id')
                 ->group('ci.resume_id')
                 ->select();
-            if(!empty($company_interview)){
-                $company_interview = array_column($company_interview,null,'resume_id');
+            if (!empty($company_interview)) {
+                $company_interview = array_column($company_interview, null, 'resume_id');
             }
         }
 //        if($works <= 0){
@@ -491,7 +487,7 @@ class Resume extends Backend
 //        }
 
 
-        foreach ($list as $k=>$v){
+        foreach ($list as $k => $v) {
             $v['photo_img_src'] = $v['photo_img'] != 0
                 ? model('Uploadfile')->getFileUrl(
                     $v['photo_img']
@@ -512,27 +508,27 @@ class Resume extends Backend
                 ? model('Resume')->countCompletePercent($v['id'])
                 : 0;
             //投递数
-            if($delivery_num <= 0){
+            if ($delivery_num <= 0) {
                 $v['delivery_num'] = 0;
                 if (isset($job_apply[$v['id']]) && !empty($job_apply[$v['id']])) {
                     $v['delivery_num'] = $job_apply[$v['id']]['num'];
                 }
             }
-            if($downloaded <= 0){
+            if ($downloaded <= 0) {
                 //被下载
                 $v['downloaded'] = 0;
                 if (isset($company_down_resume[$v['id']]) && !empty($company_down_resume[$v['id']])) {
                     $v['downloaded'] = $company_down_resume[$v['id']]['num'];
                 }
             }
-            if($viewed <= 0){
+            if ($viewed <= 0) {
                 //被查看
                 $v['viewed'] = 0;
                 if (isset($view_resume[$v['id']]) && !empty($view_resume[$v['id']])) {
                     $v['viewed'] = $view_resume[$v['id']]['num'];
                 }
             }
-            if($invitation <= 0){
+            if ($invitation <= 0) {
                 //被面邀
                 $v['invitation'] = 0;
                 if (isset($company_interview[$v['id']]) && !empty($company_interview[$v['id']])) {
@@ -546,15 +542,15 @@ class Resume extends Backend
 //                    $v['works'] = $resume_img[$v['id']]['num'];
 //                }
 //            }
-            $v['follow_num'] = model('b2bcrm.CrmFollowUp')->where('relation_id',$v['id'])->count();
-            if($v['last_visit_time'] != null ){
-                $v['final_follow'] = date('Y-m-d H:i:s',$v['last_visit_time']);
-            }else{
+            $v['follow_num'] = model('b2bcrm.CrmFollowUp')->where('relation_id', $v['id'])->count();
+            if ($v['last_visit_time'] != null) {
+                $v['final_follow'] = date('Y-m-d H:i:s', $v['last_visit_time']);
+            } else {
                 $v['final_follow'] = 0;
             }
 
             // 附件简历
-            $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['uid'=>$v['uid']]);
+            $enclosure_resume = model('ResumeEnclosure')->getEnclosure(['uid' => $v['uid']]);
             $v['enclosure_resume'] = !empty($enclosure_resume) ? $enclosure_resume['enclosure'] : '';
         }
         $return['items'] = $list;
@@ -564,10 +560,12 @@ class Resume extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     /**
      * 简历详情
      */
-    public function resumeDetail(){
+    public function resumeDetail()
+    {
         $resume_id = input('get.id/d', 0, 'intval');
         $start = input('get.start/s', '', 'trim');
         $end = input('get.end/s', '', 'trim');
@@ -577,10 +575,10 @@ class Resume extends Backend
         // r.last_visit_time,
         $data = model('Resume')
             ->alias('r')
-            ->where('r.id',$resume_id)
-            ->join('member m','r.uid=m.uid','LEFT')
-            ->join('resume_contact c','r.id=c.rid','LEFT')
-            ->join('member_points mp','r.uid = mp.uid','LEFT')
+            ->where('r.id', $resume_id)
+            ->join('member m', 'r.uid=m.uid', 'LEFT')
+            ->join('resume_contact c', 'r.id=c.rid', 'LEFT')
+            ->join('member_points mp', 'r.uid = mp.uid', 'LEFT')
             ->field('r.id,
             r.uid,
             r.high_quality,
@@ -619,93 +617,93 @@ class Resume extends Backend
             ->find();
         $data['weixin_bind'] = empty($weixin_bind) ? 0 : 1;
 
-        $data['photo_img_src'] =$data['photo_img'] > 0
-                ? model('Uploadfile')->getFileUrl(
+        $data['photo_img_src'] = $data['photo_img'] > 0
+            ? model('Uploadfile')->getFileUrl(
                 $data['photo_img']
-                )
-                : default_empty('photo');
-        $data['education_cn'] = isset(
-                model('BaseModel')->map_education[$data['education']]
             )
-                ? model('BaseModel')->map_education[$data['education']]
-                : '学历未知';
+            : default_empty('photo');
+        $data['education_cn'] = isset(
+            model('BaseModel')->map_education[$data['education']]
+        )
+            ? model('BaseModel')->map_education[$data['education']]
+            : '学历未知';
         $data['experience_cn'] =
             $data['enter_job_time'] == 0
-                    ? '无经验'
-                    : format_date($data['enter_job_time']);
+                ? '无经验'
+                : format_date($data['enter_job_time']);
         $data['link'] = url('index/resume/show', ['id' => $data['id']]);
-            //完整度
+        //完整度
         $data['complete_percent'] = isset($data['id'])
-                ? model('Resume')->countCompletePercent($data['id'])
-                : 0;
+            ? model('Resume')->countCompletePercent($data['id'])
+            : 0;
         $data['age'] =
-                intval($data['birthday']) == 0
-                    ? '年龄未知'
-                    : date('Y') - intval($data['birthday']) . '岁';
-        $data['platform_cn'] = isset(model('BaseModel')->map_platform[$data['platform']])?model('BaseModel')->map_platform[$data['platform']]:'未知平台';
-        $data['follow_up_num'] = model('b2bcrm.CrmFollowUp')->where('uid',$data['uid'])->count();
+            intval($data['birthday']) == 0
+                ? '年龄未知'
+                : date('Y') - intval($data['birthday']) . '岁';
+        $data['platform_cn'] = isset(model('BaseModel')->map_platform[$data['platform']]) ? model('BaseModel')->map_platform[$data['platform']] : '未知平台';
+        $data['follow_up_num'] = model('b2bcrm.CrmFollowUp')->where('uid', $data['uid'])->count();
         $where = [];
-        if($start != '' && $end != ''){
-            $start = strtotime($start.' 00:00:00');
-            $end = strtotime($end.' 23:59:59');
-            $where['a.addtime'] = [['>',$start],['<=',$end],'and'];
+        if ($start != '' && $end != '') {
+            $start = strtotime($start . ' 00:00:00');
+            $end = strtotime($end . ' 23:59:59');
+            $where['a.addtime'] = [['>', $start], ['<=', $end], 'and'];
         }
         //浏览职位
         $data['view_job'] = model('ViewJob')
             ->alias('a')
-            ->where('a.personal_uid',$data['uid'])
+            ->where('a.personal_uid', $data['uid'])
             ->where($where)
             ->count();
         //投递数
         $data['delivery_num'] = model('JobApply')
             ->alias('a')
-            ->join('job j','a.jobid = j.id')
-            ->where('j.jobname','not null')
-            ->where('a.resume_id',$data['id'])
+            ->join('job j', 'a.jobid = j.id')
+            ->where('j.jobname', 'not null')
+            ->where('a.resume_id', $data['id'])
             ->where($where)
             ->count();
         //被下载
         $data['downloaded'] = model('CompanyDownResume')
             ->alias('a')
-            ->where('a.resume_id',$data['id'])
+            ->where('a.resume_id', $data['id'])
             ->where($where)
             ->count();
         //被查看
         $data['viewed'] = model('ViewResume')
             ->alias('a')
-            ->where('a.resume_id',$data['id'])
+            ->where('a.resume_id', $data['id'])
             ->where($where)
             ->count();
         //被面邀
         $data['invitation'] = model('CompanyInterview')
             ->alias('a')
-            ->join('job j','a.jobid = j.id')
-            ->where('j.jobname','not null')
-            ->where('a.resume_id',$data['id'])
+            ->join('job j', 'a.jobid = j.id')
+            ->where('j.jobname', 'not null')
+            ->where('a.resume_id', $data['id'])
             ->where($where)
             ->count();
         //主动刷新
         $data['refresh'] = model('RefreshResumeLog')
             ->alias('a')
-            ->where('a.uid',$data['uid'])
+            ->where('a.uid', $data['uid'])
             ->where($where)
             ->count();
-        $resume_img = model('ResumeImg')->where('rid',$data['id'])->field('img,audit,id')->select();
+        $resume_img = model('ResumeImg')->where('rid', $data['id'])->field('img,audit,id')->select();
         $resume_img_arr = [];
-        foreach ($resume_img as $k=>$v){
+        foreach ($resume_img as $k => $v) {
             $img_src = model('Uploadfile')->getFileUrl(
                 $v['img']
             );
             $resume_img_arr[] = [
-                'id'=> $v['id'],
-                'img_id'=> $v['img'],
-                'img_src'=>$img_src,
-                'audit'=>$v['audit']
+                'id' => $v['id'],
+                'img_id' => $v['img'],
+                'img_src' => $img_src,
+                'audit' => $v['audit']
             ];
         }
         $data['resume_img_arr'] = $resume_img_arr;
         $m = new SvPersonalVideo();
-        $resume_video = $m->where('uid',$data['uid'])->field('id,is_public,audit,filesize,fid,view_count')->select();
+        $resume_video = $m->where('uid', $data['uid'])->field('id,is_public,audit,filesize,fid,view_count')->select();
         $up = new Uploadfile();
         $up->getFileUrlBatch2($resume_video, 'fid', 'video_src');
         $data['resume_video'] = $resume_video;
@@ -753,7 +751,7 @@ class Resume extends Backend
             ->alias('a')
             ->join(config('database.prefix') . 'job j', 'j.id=a.jobid', 'left')
             ->where($where)
-            ->where('j.jobname','not null')
+            ->where('j.jobname', 'not null')
             ->count();
         $list = model('JobApply')
             ->alias('a')
@@ -762,7 +760,7 @@ class Resume extends Backend
             )
             ->join(config('database.prefix') . 'job j', 'j.id=a.jobid', 'left')
             ->where($where)
-            ->where('j.jobname','not null')
+            ->where('j.jobname', 'not null')
             ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
@@ -829,8 +827,8 @@ class Resume extends Backend
                 $tmp_arr['status_code'] = 'no_look';
                 $tmp_arr['status_text'] = 'HR未查看';
             }
-            $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
-            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
+            $tmp_arr['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $value['comid']]);
 
             $returnlist[] = $tmp_arr;
         }
@@ -841,6 +839,7 @@ class Resume extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function interview()
     {
         $uid = input('get.uid/d', 0, 'intval');
@@ -851,14 +850,14 @@ class Resume extends Backend
             ->alias('a')
             ->join(config('database.prefix') . 'job b', 'a.jobid=b.id', 'left')
             ->where($where)
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->count();
         $list = model('CompanyInterview')
             ->alias('a')
             ->join(config('database.prefix') . 'job b', 'a.jobid=b.id', 'left')
             ->field('a.id,a.comid,a.companyname,a.jobid,a.jobname,a.resume_id,a.fullname,a.interview_time,a.contact,a.address,a.tel,a.note,a.addtime,a.is_look,b.education,b.experience,b.nature,b.minwage,b.maxwage,b.negotiable,b.map_lat,b.map_lng')
             ->where($where)
-            ->where('b.id','not null')
+            ->where('b.id', 'not null')
             ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
@@ -886,8 +885,8 @@ class Resume extends Backend
                 : '';
 
             $value['overtime'] = $value['interview_time'] > time() ? 0 : 1;
-            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
-            $value['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
+            $value['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']]);
+            $value['company_link_url_web'] = url('index/company/show', ['id' => $value['comid']]);
 
             $list[$key] = $value;
         }
@@ -898,6 +897,7 @@ class Resume extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
     public function attentionMe()
     {
         $uid = input('get.uid/d', 0, 'intval');
@@ -906,16 +906,16 @@ class Resume extends Backend
         $where['a.personal_uid'] = $uid;
         $total = model('ViewResume')
             ->alias('a')
-            ->join(config('database.prefix').'company b','a.company_uid=b.uid','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.company_uid=b.uid', 'LEFT')
             ->where($where)
-            ->where('b.companyname','not null')
+            ->where('b.companyname', 'not null')
             ->count();
         $list = model('ViewResume')
             ->alias('a')
-            ->join(config('database.prefix').'company b','a.company_uid=b.uid','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.company_uid=b.uid', 'LEFT')
             ->field('a.*,b.companyname,b.id as company_id,b.audit as company_audit,b.district,b.scale,b.nature')
             ->where($where)
-            ->where('b.companyname','not null')
+            ->where('b.companyname', 'not null')
             ->order('a.addtime desc')
             ->page($current_page, $pagesize)
             ->select();
@@ -939,7 +939,7 @@ class Resume extends Backend
         //解决企业下载个人简历，在个人会员中心的对我感兴趣中的标签还是显示未下载PC 触屏
         $downlist = model('CompanyDownResume')
             ->where('personal_uid', 'eq', $uid)
-            ->column('comid,id','comid');
+            ->column('comid,id', 'comid');
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         $returnlist = [];
@@ -972,7 +972,7 @@ class Resume extends Backend
             $tmp_arr['first_jobname'] = isset($job_list[$value['company_uid']])
                 ? $job_list[$value['company_uid']][0]
                 : '';
-            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['company_id']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $value['company_id']]);
             $returnlist[] = $tmp_arr;
         }
         $return['items'] = $returnlist;
@@ -982,27 +982,29 @@ class Resume extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    public function viewjob(){
+
+    public function viewjob()
+    {
         $uid = input('get.uid/d', 0, 'intval');
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $where['a.personal_uid'] = $uid;
         $total = model('ViewJob')
             ->alias('a')
-            ->join(config('database.prefix').'company b','a.company_uid=b.uid','LEFT')
-            ->join(config('database.prefix').'job c','a.jobid=c.id','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.company_uid=b.uid', 'LEFT')
+            ->join(config('database.prefix') . 'job c', 'a.jobid=c.id', 'LEFT')
             ->where($where)
-            ->where('b.companyname','not null')
-            ->where('c.jobname','not null')
+            ->where('b.companyname', 'not null')
+            ->where('c.jobname', 'not null')
             ->count();
         $list = model('ViewJob')
             ->alias('a')
-            ->join(config('database.prefix').'company b','a.company_uid=b.uid','LEFT')
-            ->join(config('database.prefix').'job c','a.jobid=c.id','LEFT')
+            ->join(config('database.prefix') . 'company b', 'a.company_uid=b.uid', 'LEFT')
+            ->join(config('database.prefix') . 'job c', 'a.jobid=c.id', 'LEFT')
             ->field('a.*,b.companyname,b.audit as company_audit,b.id as company_id,c.jobname,c.education,c.experience,c.district,c.negotiable,c.minwage,c.maxwage,c.click')
             ->where($where)
-            ->where('b.companyname','not null')
-            ->where('c.jobname','not null')
+            ->where('b.companyname', 'not null')
+            ->where('c.jobname', 'not null')
             ->order('a.id desc')
             ->page($current_page, $pagesize)
             ->select();
@@ -1042,8 +1044,8 @@ class Resume extends Backend
                 );
             }
             $tmp_arr['click'] = $value['click'];
-            $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
-            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['company_id']]);
+            $tmp_arr['job_link_url_web'] = url('index/job/show', ['id' => $value['jobid']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show', ['id' => $value['company_id']]);
             $returnlist[] = $tmp_arr;
         }
         $return['items'] = $returnlist;
@@ -1059,84 +1061,97 @@ class Resume extends Backend
     public function updateResume()
     {
         $uid = input('post.uid/s', '', 'trim');
-        $post = input('post.');
-        $reason = isset($post['reason']) ? trim($post['reason']) : '';
-        $examine = isset($post['examine']) ? intval($post['examine']) : 0;
         if (!$uid) {
             $this->ajaxReturn(500, '参数错误');
         }
-        $info = model('Member')->find($uid);
-        if (!$info) {
-            $this->ajaxReturn(500, '数据获取失败');
+        $type = input('post.type/s', '', 'trim');
+        $needle = model('resume')->needle;
+        if ($type == '' && !isset($needle[$type])) {
+            $this->ajaxReturn(500, '请选择正确的简历编辑项');
+        }else{
+            $needle_arr = $needle[$type];
         }
-        $arr = [];
-        if (isset($post['high_quality'])) {
-            $arr['high_quality'] = intval($post['high_quality']);
-        }
-        if (isset($post['remark'])) {
-            $arr['remark'] = trim($post['remark']);
-        }
-        if (isset($post['comment'])) {
-            $arr['comment'] = trim($post['comment']);
-        }
-        if (isset($post['audit'])) {
-            $arr['audit'] = intval($post['audit']);
-        }
-        if (isset($post['is_display'])) {
-            $arr['is_display'] = intval($post['is_display']);
+        $input_data = [];
+        foreach ($needle_arr as $k => $v) {
+            $data = input('post.' . $k . $v['type'],
+                $v['default'],
+                $v['filter']);
+            if (!empty($v['validate'])) {
+                $rule = [
+                    $k => $v['validate']['rule'],
+                ];
+                $msg = [
+                    $k => $v['validate']['message'],
+                ];
+                $validate = new Validate($rule, $msg);
+                if (!$validate->check([$k => $data])) {
+                    $this->ajaxReturn(500, $validate->getError());
+                }
+            }
+            $input_data[$k] = $data;
         }
         try {
-            if (isset($post['password']) || isset($post['member_mobile']) || isset($post['email'])) {
-                $this->updateMember($uid, $post, $info); // 修改密码或手机号
+            switch ($type) {
+                case 'password':
+                case 'member_mobile':
+                case 'email':
+                    $this->updateMember($uid, $input_data, $type);
+                    break;
+                case 'resume_mobile':
+                    $this->updateResumeMobile($uid, $input_data);
+                    break;
+                case 'resume_img':
+                    $this->auditResumeImg($input_data);
+                    break;
+                case 'is_display':
+                case 'high_quality':
+                case 'audit':
+                case 'comment':
+                case 'remark':
+                default:
+                    $this->editResume($uid, $input_data, $type);
+                    break;
             }
-            if (isset($post['resume_mobile'])) {
-                $post['resume_mobile'] = empty($post['resume_mobile']) ? '' : $post['resume_mobile'];
-                $this->updateEmail($uid, $post['resume_mobile']);
-            }
-            if (!empty($arr)) {
-                $this->editCompany($uid, $arr,$reason);
-            }
-            if (isset($post['resume_img'])) {
-                $post['resume_img'] = empty($post['resume_img']) ? '' : $post['resume_img'];
-                $this->setAudit($post['resume_img'], $examine);
-            }
-            $this->ajaxReturn(200, '修改成功');
         } catch (\Exception $e) {
             $this->ajaxReturn(500, $e->getMessage());
         }
-
+        $this->ajaxReturn(200, '修改成功');
     }
     // 审核简历作品
-    private function setAudit($id, $audit)
+    private function auditResumeImg($data)
     {
-        if (!is_array($id)) {
-            throw new \Exception('简历作品id请传入数组格式');
+        Db::startTrans();
+        try{
+            model('ResumeImg')
+                ->where('id', 'in', implode(',',$data['resume_img']))
+                ->setField('audit', $data['examine']);
+            model('AdminLog')->record(
+                '将简历作品状态变更为【' .
+                model('ResumeImg')->map_audit[$data['examine']] .
+                '】。作品ID【' .
+                implode(",", $data['resume_img']) .
+                '】',
+                $this->admininfo
+            );
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            throw new \Exception($e->getMessage());
         }
-        model('ResumeImg')
-            ->where('id', 'in', $id)
-            ->setField('audit', $audit);
-        model('AdminLog')->record(
-            '将简历作品状态变更为【' .
-            model('ResumeImg')->map_audit[$audit] .
-            '】。作品ID【' .
-            implode(",", $id) .
-            '】',
-            $this->admininfo
-        );
         return true;
     }
 
     // 修改简历手机号
-    private function updateEmail($uid, $resume_mobile)
+    private function updateResumeMobile($uid, $input_data)
     {
         $data = ['uid' => $uid];
-        if (!empty($resume_mobile)) {
-            $preg_phone = '/^1[3456789]\d{9}$/ims';
-            if (!preg_match($preg_phone, $resume_mobile)) {
-                throw new \Exception('手机号格式错误');
-            }
-            $data['mobile'] = $resume_mobile;
+        $preg_phone = '/^1[3456789]\d{9}$/ims';
+        if (!preg_match($preg_phone, $input_data['resume_mobile'])) {
+            throw new \Exception('手机号格式错误');
         }
+        $data['mobile'] = $input_data['resume_mobile'];
         $resume_contact = model('ResumeContact')->where(['uid' => $uid])->find();
         $isupdate = false;
         if (!empty($resume_contact)) {
@@ -1148,18 +1163,17 @@ class Resume extends Backend
             ->isUpdate($isupdate)
             ->save($data);
         if (false === $update_email) {
-            throw new \Exception(model('CompanyContact')->getError());
+            throw new \Exception(model('ResumeContact')->getError());
         }
         model('AdminLog')->record(
-            '编辑简历手机。简历UID【' . $uid . '】' . '修改后简历手机【' . $resume_mobile . '】',
+            '编辑简历手机。简历UID【' . $uid . '】' . '修改后简历手机【' . $input_data['resume_mobile'] . '】',
             $this->admininfo
         );
-
         return true;
     }
 
     // 修改简历
-    private function editCompany($uid, $input_data, $reason = '')
+    private function editResume($uid, $data, $type)
     {
         $resume_id = model('Resume')
             ->where(['uid' => ['in', $uid]])
@@ -1167,23 +1181,29 @@ class Resume extends Backend
         if (empty($resume_id)) {
             throw new \Exception('简历uid错误');
         }
-        if (isset($input_data['audit']) && !empty($input_data['audit'])) {
-            model('Resume')->setAudit($resume_id, $input_data['audit'], $reason);
+        if ($type == 'audit') {
+            model('Resume')->setAudit($resume_id, $data['audit'], $data['reason']);
             model('AdminLog')->record(
                 '将简历审核变更为【' .
-                model('Resume')->map_audit[$input_data['audit']] .
+                model('Resume')->map_audit[$data['audit']] .
                 '】。简历ID【' .
                 implode(',', $resume_id) .
                 '】',
                 $this->admininfo
             );
-        }else{
+        } else {
+            $is_refreshSearch = false;
+            if ($type == 'high_quality' || $type == 'is_display') {
+                $is_refreshSearch = true;
+            }
             $update_member = model('Resume')
                 ->allowField(true)
-                ->save($input_data, ['uid' => $uid]);
-
+                ->save($data, ['uid' => $uid]);
             if (false === $update_member) {
-                throw new \Exception(model('Company')->getError());
+                throw new \Exception(model('Resume')->getError());
+            }
+            if ($is_refreshSearch) {
+                model('Resume')->refreshSearch(0, $uid);//更新简历索引
             }
             model('AdminLog')->record(
                 '编辑简历。简历UID【' . $uid . '】',
@@ -1194,50 +1214,54 @@ class Resume extends Backend
     }
 
     // 修改密码或手机号
-    private function updateMember($uid, $post, $info)
+    private function updateMember($uid, $data, $type)
     {
-        if (!empty($post['password'])) {
-            $input_data['password'] = model('Member')->makePassword(
-                $post['password'],
-                $info['pwd_hash']
-            );
-        }
-
-        if (isset($post['email'])) {
-            if (!empty($post['email'])) {
-                $preg_email = '/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@([a-zA-Z0-9]+[-.])+([a-z]{2,5})$/ims';
-
-                if (!preg_match($preg_email, $post['email'])) {
-                    throw new \Exception('请输入正确的邮箱格式');
+        $clean_token = false;
+        switch ($type) {
+            case 'password':
+                $pwd_hash = model('Member')->where('uid',$uid)->value('pwd_hash');
+                $input_data['password'] = model('Member')->makePassword(
+                    $data['password'],
+                    $pwd_hash
+                );
+                $clean_token = true;
+                break;
+            case 'member_mobile':
+                $preg_phone = '/^1[345789]\d{9}$/ims';
+                if (!preg_match($preg_phone, $data['member_mobile'])) {
+                    throw new \Exception('手机号格式错误');
                 }
-            }
-            $input_data['email'] = $post['email'];
-        }
+                /**
+                 * 【ID1000439】
+                 * 【bug】原个人会员手机号存在，企业客户详情不能修改，会员能修改的问题
+                 * 说明：
+                 * 修改途中发现，URM中修改手机号查询全部`Member`表，新增只查询个人会员
+                 * yx - 2022.11.24
+                 * [新增]:
+                 * 'utype' => 2
+                 */
+                $member_uid = model('Member')
+                    ->where([
+                        'mobile' =>  $data['member_mobile'],
+                        'utype' => 2
+                    ])
+                    ->value('mobile');
+                if (!empty($member_uid) && $member_uid != $uid) {
+                    throw new \Exception('手机号已存在');
+                }
+                $input_data['mobile'] = $data['member_mobile'];
+                $clean_token = true;
+                break;
+            case 'email':
+                if ( isset($data['email']) &&  $data['email'] != '') {
+                    $preg_email = '/^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@([a-zA-Z0-9]+[-.])+([a-z]{2,5})$/ims';
 
-        if (isset($post['member_mobile'])) {
-            $preg_phone = '/^1[345789]\d{9}$/ims';
-            if (!preg_match($preg_phone, $post['member_mobile'])) {
-                throw new \Exception('手机号格式错误');
-            }
-            /**
-             * 【ID1000439】
-             * 【bug】原个人会员手机号存在，企业客户详情不能修改，会员能修改的问题
-             * 说明：
-             * 修改途中发现，URM中修改手机号查询全部`Member`表，新增只查询个人会员
-             * yx - 2022.11.24
-             * [新增]:
-             * 'utype' => 2
-             */
-            $member_uid = model('Member')
-                ->where([
-                    'mobile' => $post['member_mobile'],
-                    'utype' => 2
-                ])
-                ->value('mobile');
-            if (!empty($member_uid) && $member_uid != $uid) {
-                throw new \Exception('手机号已存在');
-            }
-            $input_data['mobile'] = $post['member_mobile'];
+                    if (!preg_match($preg_email, $data['email'])) {
+                        throw new \Exception('请输入正确的邮箱格式');
+                    }
+                }
+                $input_data['email'] = $data['email'];
+                break;
         }
         $update_member = model('Member')
             ->allowField(true)
@@ -1251,11 +1275,7 @@ class Resume extends Backend
          * 修改会员手机号、密码。及后台修改时，清除所有登录状态，需重新登录
          * yx - 2022.11.09
          */
-        if (
-            (isset($input_data['password']) && !empty($input_data['password']))
-            ||
-            (!empty($input_data['mobile']) && $input_data['mobile'] != $info['mobile'])
-        ) {
+        if ($clean_token) {
             model('IdentityToken')->where(['uid' => $uid])->delete(); //修改密码即删除token,
         }
 
@@ -1265,40 +1285,42 @@ class Resume extends Backend
         );
         return true;
     }
+
     /**
      * 简历联系状态
      */
-    public function setContactStatus(){
+    public function setContactStatus()
+    {
         $id = input('get.id/d', 0, 'intval');
         $type = input('get.type/s', '', 'trim');
-        if($id <= 0){
-            $this->ajaxReturn(500,'简历ID错误');
+        if ($id <= 0) {
+            $this->ajaxReturn(500, '简历ID错误');
         }
-        $resume = model('Resume')->where('id',$id)->find();
-        if(empty($resume)){
-            $this->ajaxReturn(500,'简历信息错误');
+        $resume = model('Resume')->where('id', $id)->find();
+        if (empty($resume)) {
+            $this->ajaxReturn(500, '简历信息错误');
         }
         $data = [];
         $msg = '';
-        if($type == 'weixin'){
+        if ($type == 'weixin') {
             $msg = '设置微信';
-            if($resume['is_status_weixin'] == 1){
+            if ($resume['is_status_weixin'] == 1) {
                 $data['is_status_weixin'] = 2;
-            }else{
+            } else {
                 $data['is_status_weixin'] = 1;
             }
-        }else{
+        } else {
             $msg = '设置电话';
-            if($resume['is_status_phone'] == 1){
+            if ($resume['is_status_phone'] == 1) {
                 $data['is_status_phone'] = 2;
-            }else{
+            } else {
                 $data['is_status_phone'] = 1;
             }
         }
-        $res = model('Resume')->save($data,['id'=>$id]);
-        if(false === $res){
-            $this->ajaxReturn(500,$msg.'失败');
+        $res = model('Resume')->save($data, ['id' => $id]);
+        if (false === $res) {
+            $this->ajaxReturn(500, $msg . '失败');
         }
-        $this->ajaxReturn(200,$msg.'成功');
+        $this->ajaxReturn(200, $msg . '成功');
     }
 }

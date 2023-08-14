@@ -297,6 +297,12 @@ class CompanyDirectoryLogic
                 responseJson(400, '营业状态不正确！');
             }
             $condition['ent'] = $params['ent_status'];
+            /**
+             *【ID1000464】
+             * 【bug】企业名录30天内搜索同一条件时重复扣费(存储排序问题)
+             * yx - 2022.12.12
+             */
+            sort($condition['ent']);
         }
         // 联系方式：1|有手机，2|有固话，3|有邮箱，4|有QQ，5|无联系方式
         $contactArr = array_keys($this->_contactArr);
@@ -306,6 +312,12 @@ class CompanyDirectoryLogic
                 responseJson(400, '联系方式不正确！');
             }
             $condition['contact'] = $params['contact'];
+            /**
+             *【ID1000464】
+             * 【bug】企业名录30天内搜索同一条件时重复扣费(存储排序问题)
+             * yx - 2022.12.12
+             */
+            sort($condition['contact']);
         }
         // 成立时间
         if ((isset($params['starttime']) && $params['starttime'] && isset($params['endtime']) && $params['endtime'])) {

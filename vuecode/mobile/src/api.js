@@ -506,5 +506,7 @@ export default {
   //简历解析 -上传附件简历
   enclosureSave: '/personal/resume/enclosureSave',
   //简历解析 -附件简历删除
-  enclosureDelete: '/personal/resume/enclosureDelete'
+  enclosureDelete: '/personal/resume/enclosureDelete',
+  // 发送注销验证码
+  cancelApply: '/member/sendsms/cancelApply'
 }

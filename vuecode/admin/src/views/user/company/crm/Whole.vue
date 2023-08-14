@@ -13,8 +13,13 @@
         </el-button>
       </div>
       <div class="list-search">
-        <el-input v-model="keyword" style="width: 440px;" placeholder="请输入搜索内容" class="input-with-select"
-                  @keyup.enter.native="funSearchKeyword">
+        <el-input
+          v-model="keyword"
+          style="width: 440px;"
+          placeholder="请输入搜索内容"
+          class="input-with-select"
+          @keyup.enter.native="funSearchKeyword"
+        >
           <el-select slot="prepend" v-model="key_type" placeholder="请选择" class="input-sel">
             <el-option label="线索名称" value="1" />
             <el-option label="手机号码" value="2" />
@@ -24,7 +29,8 @@
       </div>
       <div
         v-if="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter!='' || followCountFilter != ''"
-        class="filterCriteria">
+        class="filterCriteria"
+      >
         <div style="float:left;display: inline-block;margin-top: 6px;">已选条件：</div>
         <div style="float:left;display: inline-block;width: 80%">
           <!--          saleFilter: '',-->
@@ -68,22 +74,36 @@
             </div>
           </div>
         </div>
-        <div style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;"
-             @click="reset('all')">
+        <div
+          style="float:right;display: inline-block;margin-top: 6px;color:#409eff;font-size: 13px;"
+          @click="reset('all')"
+        >
           <i class="el-icon-delete" /> 清空条件
         </div>
         <div style="clear:both;" />
       </div>
       <div style="position: relative;">
         <div
-          :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'">
+          :class="saleFilter !='' || industryFilter !='' || regionFilter !='' || createdByFilter !='' || collectionFilter != '' || followCountFilter != ''? 'setField_s' : 'setField'"
+        >
           <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
             <div class="setField_h">
               <div v-for="item in fieldData" class="setFields">
-                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked
-                       @change="select(item.field)">
-                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field"
-                       @change="select(item.field)">
+                <input
+                  v-if="item.select == true"
+                  type="checkbox"
+                  :name="item.name"
+                  :value="item.field"
+                  checked
+                  @change="select(item.field)"
+                >
+                <input
+                  v-if="item.select == false"
+                  type="checkbox"
+                  :name="item.name"
+                  :value="item.field"
+                  @change="select(item.field)"
+                >
                 <span style="margin-left: 10px;">{{ item.name }}</span>
               </div>
             </div>
@@ -97,15 +117,34 @@
             </div>
           </el-popover>
         </div>
-        <el-table ref="multipleTable" v-loading="loading" :data="tableData" tooltip-effect="dark"
-                  :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}" border stripe
-                  style="width: 100%;" @sort-change="sortTable" @selection-change="handleSelectionChange">
+        <el-table
+          ref="multipleTable"
+          v-loading="loading"
+          :data="tableData"
+          tooltip-effect="dark"
+          :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
+          border
+          stripe
+          :height="tabelHeight"
+          style="width: 100%;"
+          @sort-change="sortTable"
+          @selection-change="handleSelectionChange"
+        >
           <el-table-column fixed type="selection" width="55" />
-          <el-table-column v-for="items in fieldData" v-if="items.is_locking == true && items.select == true" fixed
-                           :sortable="items.is_sortable" :prop="items.field" :width="items.width">
+          <el-table-column
+            v-for="items in fieldData"
+            v-if="items.is_locking == true && items.select == true"
+            fixed
+            :sortable="items.is_sortable"
+            :prop="items.field"
+            :width="items.width"
+          >
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)"
-                   @mouseleave="locks(items.field)">
+              <div
+                :class="items.is_sortable == 'custom' ? 'sotrTime':''"
+                @mouseenter="locks(items.field)"
+                @mouseleave="locks(items.field)"
+              >
                 <span>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
@@ -163,14 +202,24 @@
                     <el-button class="filterOperation" type="text" size="small" @click="confirm()">确认</el-button>
                   </div>
                   <div
-                    v-if="items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'creat_username' || items.field == 'collection_time'  || items.field == 'follow_count'"
-                    slot="reference" class="drop_down" />
+                    v-if="items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'creat_username' || items.field == 'collection_time' || items.field == 'follow_count'"
+                    slot="reference"
+                    class="drop_down"
+                  />
                   <!-- 创建人-->
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="unlock_display"
-                     @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="unlock"
-                     @click="locking(items.field)" />
+                <div
+                  v-if="items.is_lock_display == true"
+                  slot="reference"
+                  class="unlock_display"
+                  @click="locking(items.field)"
+                />
+                <div
+                  v-if="items.is_lock_display == false"
+                  slot="reference"
+                  class="unlock"
+                  @click="locking(items.field)"
+                />
               </div>
             </template>
             <template slot-scope="scope">
@@ -238,11 +287,19 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column v-for="items in fieldData" v-if="items.is_locking == false && items.select == true"
-                           :prop="items.field" :sortable="items.is_sortable" :width="items.width">
+          <el-table-column
+            v-for="items in fieldData"
+            v-if="items.is_locking == false && items.select == true"
+            :prop="items.field"
+            :sortable="items.is_sortable"
+            :width="items.width"
+          >
             <template slot="header" slot-scope="scope">
-              <div :class="items.is_sortable == 'custom' ? 'sotrTime':''" @mouseenter="locks(items.field)"
-                   @mouseleave="locks(items.field)">
+              <div
+                :class="items.is_sortable == 'custom' ? 'sotrTime':''"
+                @mouseenter="locks(items.field)"
+                @mouseleave="locks(items.field)"
+              >
                 <span>{{ items.name }}</span>
                 <el-popover placement="bottom" trigger="hover">
                   <!-- 销售-->
@@ -302,13 +359,23 @@
                   </div>
                   <div
                     v-if="items.field == 'creat_username' || items.field == 'admin_username' || items.field == 'trade' || items.field == 'district' || items.field == 'collection_time' || items.field == 'follow_count'"
-                    slot="reference" class="drop_down" />
+                    slot="reference"
+                    class="drop_down"
+                  />
                   <!-- 创建人-->
                 </el-popover>
-                <div v-if="items.is_lock_display == true" slot="reference" class="lock_display"
-                     @click="locking(items.field)" />
-                <div v-if="items.is_lock_display == false" slot="reference" class="lock"
-                     @click="locking(items.field)" />
+                <div
+                  v-if="items.is_lock_display == true"
+                  slot="reference"
+                  class="lock_display"
+                  @click="locking(items.field)"
+                />
+                <div
+                  v-if="items.is_lock_display == false"
+                  slot="reference"
+                  class="lock"
+                  @click="locking(items.field)"
+                />
               </div>
 
             </template>
@@ -331,11 +398,17 @@
                 <span v-else> {{ scope.row.contacts }} </span>
               </div>
               <div v-if="items.field == 'mobile'">
-                <span v-if="scope.row.mobile == '' || scope.row.mobile == null"> - </span>
-                <span v-else>
+                <span v-if="(scope.row.mobile == '' || scope.row.mobile == null) && (scope.row.telephone == '' || scope.row.telephone == null)"> - </span>
+                <span v-else-if="scope.row.mobile != ''">
                   {{ scope.row.mobile }}
                   <div class="dial" title="拨打联系人手机号">
                     <div class="disal_img" @click="clickDial(scope.row.mobile, scope.row.name )" />
+                  </div>
+                </span>
+                <span v-else>
+                  {{ scope.row.telephone }}
+                  <div class="dial" title="拨打联系人手机号">
+                    <div class="disal_img" @click="clickDial(scope.row.telephone, scope.row.name )" />
                   </div>
                 </span>
               </div>
@@ -380,14 +453,29 @@
           <el-table-column label="操作" width="140" fixed="right">
             <template slot-scope="scope">
               <el-button class="operation" type="text" size="small" @click="see(scope.row.id)">查看</el-button>
-              <el-button v-if="list_type == 2" class="operation" type="text" size="small"
-                         @click="release(scope.row.id)">释放</el-button>
+              <el-button
+                v-if="list_type == 2"
+                class="operation"
+                type="text"
+                size="small"
+                @click="release(scope.row.id)"
+              >释放</el-button>
               <el-button v-if="list_type == 2" class="operation" type="text" size="small" @click="see(scope.row.id)">跟进
               </el-button>
-              <el-button v-if="list_type == 1" class="operation" type="text" size="small"
-                         @click="funAuditBatch('single',scope.row.id)">领取</el-button>
-              <el-button v-if="list_type == 1" class="operation" type="text" size="small"
-                         @click="wholeDel('single',scope.row.id)">删除</el-button>
+              <el-button
+                v-if="list_type == 1"
+                class="operation"
+                type="text"
+                size="small"
+                @click="funAuditBatch('single',scope.row.id)"
+              >领取</el-button>
+              <el-button
+                v-if="list_type == 1"
+                class="operation"
+                type="text"
+                size="small"
+                @click="wholeDel('single',scope.row.id)"
+              >删除</el-button>
             </template>
           </el-table-column>
 
@@ -409,15 +497,30 @@
           </el-button>
         </el-col>
         <el-col :span="12" style="text-align: right">
-          <el-pagination background destroy-on-close :current-page="currentPage" :page-sizes="[10, 15, 20, 30, 40]"
-                         :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"
-                         @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+          <el-pagination
+            background
+            destroy-on-close
+            :current-page="currentPage"
+            :page-sizes="[10, 15, 20, 30, 40]"
+            :page-size="pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
         </el-col>
       </div>
     </el-card>
-    <el-drawer v-if="drawer" size="75%" :show-close="false" :with-header="false" :wrapper-closable="false"
-               :visible.sync="drawer" :before-close="handleClose">
-      <show :row-id="rowId" @hideDetail="hideDetail"/>
+    <el-drawer
+      v-if="drawer"
+      size="75%"
+      :show-close="false"
+      :with-header="false"
+      :wrapper-closable="false"
+      :visible.sync="drawer"
+      :before-close="handleClose"
+    >
+      <show :row-id="rowId" @hideDetail="hideDetail" />
       <!-- 关闭按钮 -->
       <div class="close" @click="handleClose">
         <i class="el-icon-close" />
@@ -530,23 +633,6 @@ export default {
       pagesize: 10,
       total: 0,
       currentPage: 1,
-      saleKey: [{
-        text: 'aa',
-        value: 'aa'
-      },
-        {
-          text: 'bb',
-          value: 'bb'
-        },
-        {
-          text: 'cc',
-          value: 'cc'
-        },
-        {
-          text: 'dd',
-          value: 'dd'
-        }
-      ],
       multipleSelection: [],
       exportData: [],
       tableData: [],
@@ -576,14 +662,14 @@ export default {
         'id': 1,
         'name': '今日新增线索'
       },
-        {
-          'id': 2,
-          'name': '本周新增线索'
-        },
-        {
-          'id': 3,
-          'name': '本月新增线索'
-        }
+      {
+        'id': 2,
+        'name': '本周新增线索'
+      },
+      {
+        'id': 3,
+        'name': '本月新增线索'
+      }
       ],
       collectionScreen: '',
       collectionFilter: '',
@@ -591,21 +677,22 @@ export default {
         'id': 1,
         'name': '跟进0次线索'
       },
-        {
-          'id': 2,
-          'name': '跟进1次线索'
-        },
-        {
-          'id': 3,
-          'name': '跟进2次线索'
-        },
-        {
-          'id': 4,
-          'name': '跟进3次及以上线索'
-        }
+      {
+        'id': 2,
+        'name': '跟进1次线索'
+      },
+      {
+        'id': 3,
+        'name': '跟进2次线索'
+      },
+      {
+        'id': 4,
+        'name': '跟进3次及以上线索'
+      }
       ],
       followCountScreen: '',
-      followCountFilter: ''
+      followCountFilter: '',
+      tabelHeight: 0
     }
   },
   computed: {
@@ -626,7 +713,36 @@ export default {
       }
     }
   },
-  mounted() {},
+  updated(){
+    this.$nextTick(() => {
+      this.$refs.multipleTable.doLayout()
+      if (!this.loading){
+        setTimeout(() => {
+          var classStr = this.$refs.multipleTable.$el.className
+          var classAry = classStr.split(' ')
+          var a = document.querySelectorAll('.el-table__fixed-right')[0]
+          var b = document.querySelectorAll('.el-table__empty-block')[0]
+          if (b != undefined){
+            b.style.width = 100 + '%'
+          }
+          var isClass = classAry.find(function(value, index, arr){
+            return value == 'el-table--scrollable-y'
+          })
+          if (isClass){
+            a.style.right = 10 + 'px'
+          } else {
+            a.style.right = 0 + 'px'
+          }
+        }, 100)
+      }
+    })
+  },
+  mounted(){
+    this.$nextTick(() => {
+      var docHeight = document.documentElement.clientHeight
+      this.tabelHeight = docHeight - 316 - 60
+    })
+  },
   created() {
     this.currentNav = this.$route.name
     if (this.currentNav == 'wholeClue'){
@@ -654,9 +770,9 @@ export default {
   },
   methods: {
     sortTable({
-                column,
-                order
-              }) {
+      column,
+      order
+    }) {
       if (order == 'ascending') {
         this.sortType = 'asc'
       } else if (order == 'descending'){
@@ -688,26 +804,26 @@ export default {
     },
     clueList(){
       this.loading = true
-      //新增线索
+      // 新增线索
       if (localStorage.getItem('collectionScreen')) {
-        let collectionScreenData = localStorage.getItem('collectionScreen')
-        this.collectionScreen = parseInt(collectionScreenData);
+        const collectionScreenData = localStorage.getItem('collectionScreen')
+        this.collectionScreen = parseInt(collectionScreenData)
         this.collectionFilter = {
           name: collectionScreenData == '1' ? '今日新增线索' : (collectionScreenData == '2' ? '本周新增线索' : '本月新增线索'),
           field: 'collection_time'
-        };
-        localStorage.setItem('collectionScreen', '');
+        }
+        localStorage.setItem('collectionScreen', '')
       }
-      //线索跟进
+      // 线索跟进
       if (localStorage.getItem('followCountScreen')) {
-        let followCountScreenData = localStorage.getItem('followCountScreen')
-        this.followCountScreen = parseInt(followCountScreenData);
+        const followCountScreenData = localStorage.getItem('followCountScreen')
+        this.followCountScreen = parseInt(followCountScreenData)
         this.followCountFilter = {
           name: followCountScreenData == '1' ? '跟进0次的线索' : (followCountScreenData == '2' ? '跟进1次的线索' : (
             followCountScreenData == '3' ? '跟进2次的线索' : '跟进3次及以上的线索')),
           field: 'follow_count'
-        };
-        localStorage.setItem('followCountScreen', '');
+        }
+        localStorage.setItem('followCountScreen', '')
       }
       clueList({
         'page': this.currentPage,
@@ -730,8 +846,8 @@ export default {
           this.currentPage = res.data.current_page
           this.loading = false
         }).catch(() => {
-        this.loading = false
-      })
+          this.loading = false
+        })
     },
     setFieldClose(){
       this.menu_icon = 'menu'
@@ -762,7 +878,7 @@ export default {
           }
         }).catch(() => {
 
-      })
+        })
     },
     crmCustomList(){
       var list_type = this.list_type
@@ -793,7 +909,7 @@ export default {
           }
         }).catch(() => {
 
-      })
+        })
     },
     locking(field){
       for (var i = 0; i <= this.fieldData.length - 1; i++){
@@ -831,7 +947,13 @@ export default {
         this.menu_icon = 'menu'
       }
     },
-    confirm(){
+    confirm(type){
+      if (type != 'reset'){
+        this.tabelHeight = 'calc(100vh - 446px)'
+        this.$nextTick(() => {
+          this.$refs.multipleTable.doLayout()
+        })
+      }
       if (this.saleScreen != ''){
         for (var i = 0; i <= this.saleScreenData.length - 1; i++){
           if (this.saleScreen == this.saleScreenData[i].id){
@@ -951,6 +1073,7 @@ export default {
       this.drawer = false
     },
     hideDetail(){
+      this.clueList()
       this.drawer = false
     },
     handleSizeChange(val){
@@ -1105,6 +1228,7 @@ export default {
       this.multipleSelection = id_arr
     },
     reset(field){
+      this.tabelHeight = 'calc(100vh - 372px)'
       if (field == 'all'){
         this.saleScreen = []
         this.industryScreen = []
@@ -1133,7 +1257,7 @@ export default {
       if (field == 'follow_count') {
         this.followCountScreen = ''
       }
-      this.confirm()
+      this.confirm('reset')
     },
     clickDial(phone, name){
       this.$confirm('是否对【' + name + '】' + phone + ' 发起呼叫？', '提示', {

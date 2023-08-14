@@ -1,33 +1,33 @@
 <template>
   <div>
-    <Head :show-back="false" :show-admin="true">会员管理</Head>
-    <div class="public_item_title">会员用户管理</div>
+    <Head :show-back="false" :show-admin="true" @accessMobile="accessMobile">会员管理</Head>
+    <div v-if="access_mobile=='all' || access_mobile.member_company == 1 || access_mobile.member_personal == 1 || access_mobile.member_invalid == 1" class="public_item_title">会员用户管理</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c1" @click="$router.push('/user_list/1')"><p class="t1">企业会员</p></div>
-        <div class="bc_cell c2" @click="$router.push('/user_list/2')"><p class="t1">个人会员</p></div>
-        <div class="bc_cell c3" @click="$router.push('/user_list/0')"><p class="t1">无效会员</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.member_company == 1" class="bc_cell c1" @click="$router.push('/user_list/1')"><p class="t1">企业会员</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.member_personal == 1" class="bc_cell c2" @click="$router.push('/user_list/2')"><p class="t1">个人会员</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.member_invalid == 1" class="bc_cell c3" @click="$router.push('/user_list/0')"><p class="t1">无效会员</p></div>
       </div>
     </div>
-    <div class="public_item_title">个人简历管理</div>
+    <div v-if="access_mobile=='all' || access_mobile.resume_manage == 1 || access_mobile.resume_img == 1" class="public_item_title">个人简历管理</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c4" @click="$router.push('/resume_list/0')"><p class="t1">未审核简历</p></div>
-        <div class="bc_cell c5" @click="$router.push('/resume_list/1')"><p class="t1">简历管理</p></div>
-        <div class="bc_cell c6" @click="$router.push('/photo_list')"><p class="t1">照片/作品</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.resume_manage == 1" class="bc_cell c4" @click="$router.push('/resume_list/0')"><p class="t1">未审核简历</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.resume_manage == 1" class="bc_cell c5" @click="$router.push('/resume_list/1')"><p class="t1">简历管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.resume_img == 1" class="bc_cell c6" @click="$router.push('/photo_list')"><p class="t1">照片/作品</p></div>
       </div>
     </div>
-    <div class="public_item_title">企业信息管理</div>
+    <div v-if="access_mobile=='all' || access_mobile.company_manage == 1 || access_mobile.job_manage == 1 || access_mobile.company_img == 1 || access_mobile.cancel_apply == 1" class="public_item_title">企业信息管理</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c7" @click="$router.push('/company_list/0')"><p class="t1">待审核企业</p></div>
-        <div class="bc_cell c8" @click="$router.push('/company_list/1')"><p class="t1">企业管理</p></div>
-        <div class="bc_cell c9" @click="$router.push('/job_list/0')"><p class="t1">待审核职位</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.company_manage == 1" class="bc_cell c7" @click="$router.push('/company_list/0')"><p class="t1">待审核企业</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.company_manage == 1" class="bc_cell c8" @click="$router.push('/company_list/1')"><p class="t1">企业管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.job_manage == 1" class="bc_cell c9" @click="$router.push('/job_list/0')"><p class="t1">待审核职位</p></div>
       </div>
       <div class="bc_line">
-        <div class="bc_cell c10" @click="$router.push('/job_list/1')"><p class="t1">职位管理</p></div>
-        <div class="bc_cell c11" @click="$router.push('/companyimg_list')"><p class="t1">企业风采</p></div>
-        <div class="bc_cell c12" @click="$router.push('/cancellation')"><p class="t1">账号注销申请</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.job_manage == 1" class="bc_cell c10" @click="$router.push('/job_list/1')"><p class="t1">职位管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.company_img == 1" class="bc_cell c11" @click="$router.push('/companyimg_list')"><p class="t1">企业风采</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.cancel_apply == 1" class="bc_cell c12" @click="$router.push('/cancellation')"><p class="t1">账号注销申请</p></div>
       </div>
     </div>
     <BottomNav></BottomNav>
@@ -36,7 +36,34 @@
 
 <script>
   export default {
-    name: "userIndex"
+    name: "userIndex",
+    data() {
+      return {
+        access_mobile: {
+          'member_company' : 0,
+          'member_invalid' : 0,
+          'member_personal' : 0,
+          'resume_img' : 0,
+          'resume_manage' : 0,
+          'cancel_apply' : 0,
+          'company_img' : 0,
+          'company_manage' : 0,
+          'job_manage' : 0
+        }
+      };
+    },
+    methods: {
+      accessMobile(val){
+        if (val == 'all'){
+          this.access_mobile = val
+        } else {
+          let checkedKeys = val.checkedKeys
+          for (const element of checkedKeys) {
+            this.access_mobile[element] = 1
+          }
+        }
+      }
+    }
   }
 </script>
 

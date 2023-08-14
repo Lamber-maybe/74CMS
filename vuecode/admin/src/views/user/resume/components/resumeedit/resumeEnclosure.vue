@@ -12,6 +12,7 @@
       <div v-else class="resumeEnclosureUpload">
         <el-upload
           class="avatar-uploader"
+          list-type="picture-card"
           :action="apiUpload"
           :headers="headers"
           :data="uploadData"
@@ -166,6 +167,7 @@ export default {
     cursor: pointer;
   }
 }
+
 .resumeEnclosureUpload {
   width: 148px;
   height: 148px;
@@ -175,5 +177,18 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 28px;
+  .avatar-uploader{
+    width: 100%;
+    height: 100%;
+  }
+}
+::v-deep .el-upload {
+  display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    outline: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 148px;
 }
 </style>

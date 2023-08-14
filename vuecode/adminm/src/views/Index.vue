@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head :show-refresh="true" :show-back="false" :show-admin="true" @dorefresh="fetchData">{{globalConfig.sitename}}</Head>
+    <Head :show-refresh="true" :show-back="false" :show-admin="true" @dorefresh="fetchData" @accessMobile="accessMobile">{{globalConfig.sitename}}</Head>
     <van-overlay z-index="10" :show="fetchDataFinish===false"><van-loading color="#1989fa" class="loading" >数据加载中...</van-loading></van-overlay>
     <div class="b1">
       <div class="public_item_title">
@@ -50,21 +50,21 @@
       </div>
       <div class="b_content">
         <div class="bc_line">
-          <div class="bc_cell" @click="$router.push('/company_list/0')">
+          <div class="bc_cell" @click="jumpCompanyList(0)">
             <p class="t1">{{pending_data[0]===undefined?0:pending_data[0].num}}</p><p class="t2">{{pending_data[0]===undefined?'':pending_data[0].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/company_list/3')">
+          <div class="bc_cell" @click="jumpCompanyList(3)">
             <p class="t1">{{pending_data[1]===undefined?0:pending_data[1].num}}</p><p class="t2">{{pending_data[1]===undefined?'':pending_data[1].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/job_list/0')">
+          <div class="bc_cell" @click="jumpJobList(0)">
             <p class="t1">{{pending_data[2]===undefined?0:pending_data[2].num}}</p><p class="t2">{{pending_data[2]===undefined?'':pending_data[2].title}}</p>
           </div>
         </div>
         <div class="bc_line">
-          <div class="bc_cell" @click="$router.push('/resume_list/0')">
+          <div class="bc_cell" @click="jumpResumeList(0)">
             <p class="t1">{{pending_data[3]===undefined?0:pending_data[3].num}}</p><p class="t2">{{pending_data[3]===undefined?'':pending_data[3].title}}</p>
           </div>
-          <div class="bc_cell" @click="$router.push('/cancellation')">
+          <div class="bc_cell" @click="jumpCancellation()">
             <p class="t1">{{pending_data[4]===undefined?0:pending_data[4].num}}</p><p class="t2">{{pending_data[4]===undefined?'':pending_data[4].title}}</p>
           </div>
           <div class="bc_cell" @click="$router.push('/tipoff')">
@@ -150,7 +150,13 @@
         income_data:{},
         pending_data:[],
         down_apply_line:null,
-        reg_line:null
+        reg_line:null,
+        access_mobile: {
+          'company_manage' : 0,
+          'job_manage' : 0,
+          'resume_manage' : 0,
+          'cancel_apply' : 0
+        }
       }
     },
     created () {
@@ -186,6 +192,47 @@
           })
           .catch(() => {})
       },
+      accessMobile(val){
+        if (val == 'all'){
+          this.access_mobile = val
+        } else {
+          let checkedKeys = val.checkedKeys
+          for (const element of checkedKeys) {
+            this.access_mobile[element] = 1
+          }
+        }
+      },
+      jumpCompanyList(flag){
+        if (this.access_mobile=='all' || 1 === this.access_mobile.company_manage){
+          let path = '/company_list/' + flag
+          this.$router.push(path)
+        } else {
+          this.$toast.fail('您的权限不足，请联系超级管理员。')
+        }
+      },
+      jumpJobList(flag){
+        if (this.access_mobile=='all' || 1 === this.access_mobile.job_manage){
+          let path = '/job_list/' + flag
+          this.$router.push(path)
+        } else {
+          this.$toast.fail('您的权限不足，请联系超级管理员。')
+        }
+      },
+      jumpResumeList(flag){
+        if (this.access_mobile=='all' || 1 === this.access_mobile.resume_manage){
+          let path = '/resume_list/' + flag
+          this.$router.push(path)
+        } else {
+          this.$toast.fail('您的权限不足，请联系超级管理员。')
+        }
+      },
+      jumpCancellation(){
+        if (this.access_mobile=='all' || 1 === this.access_mobile.cancel_apply){
+          this.$router.push('/cancellation')
+        } else {
+          this.$toast.fail('您的权限不足，请联系超级管理员。')
+        }
+      }
     }
   }
 </script>

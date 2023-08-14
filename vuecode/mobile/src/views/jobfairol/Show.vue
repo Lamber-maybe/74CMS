@@ -287,6 +287,23 @@
     <van-overlay :show="selectJobShow" z-index="3" :lock-scroll="false">
       <SelectJob @handleCommunicate="handleCommunicate" @handleCloseSelectJob="handleCloseSelectJob" :chatid="imChatid" :companyId="companyId" :isSelectJob="false"></SelectJob>
     </van-overlay>
+    <!-- 绑定微信开始 -->
+    <van-dialog
+      v-model="bindWeixinShow"
+      title="系统提示"
+      :show-cancel-button="false"
+      :show-confirm-button="true"
+      @confirm="handleImCheckBind"
+    >
+      <div class="bind-weixin-box">
+        <div class="title-1">您当前未绑定微信，绑定后可发起聊天。</div>
+        <div class="img">
+          <img :src="scanQrcodeImg" alt="" />
+        </div>
+        <div class="title-2">使用微信扫一扫，按提示快速绑定</div>
+      </div>
+    </van-dialog>
+    <!-- 绑定微信结束 -->
   </div>
 </template>
 
@@ -321,7 +338,7 @@ export default {
       boxHeight: 50,
       lanesCount: 1,
       filterItemShow: false,
-      itemList: [{ name: '职位', tab: 'job' } , { name: '企业', tab: 'com' }, { name: '求职者', tab: 'res' }],
+      itemList: [{ name: '职位', tab: 'job' }, { name: '企业', tab: 'com' }, { name: '求职者', tab: 'res' }],
       filterText: '职位',
       tab: 'com',
       com_loading: false,
@@ -361,7 +378,11 @@ export default {
       companyId: '',
       imChatid: '',
       jobname: '',
-      fullname: ''
+      fullname: '',
+      // 绑定微信
+      bindWeixinShow: false,
+      // 绑定微信二维码
+      scanQrcodeImg: ''
     }
   },
   created () {
@@ -414,7 +435,6 @@ export default {
       if (this.$store.state.LoginType === 0) {
         if (istype === 'compan') {
           this.thisType = 2
-          console.log(this.thisType)
           confirmText = '当前操作需要登录个人账号'
         } else if (istype === 'job') {
           this.thisType = 2
@@ -724,6 +744,28 @@ export default {
     },
     closeLogin () {
       this.showLogin = false
+    },
+    /**
+     * 绑定微信二维码
+     */
+    getScanQrcodeImg () {
+      http.get(api.get_qrcode, { type: 'bind_weixin' }).then((res) => {
+        this.scanQrcodeImg = res.data
+      })
+    },
+    handleImCheckBind () {
+      http.get(api.imCheckBind).then((res) => {
+        if (res.data != 0) {
+          location.reload(true)
+        }
+      })
+    }
+  },
+  watch: {
+    bindWeixinShow (e) {
+      if (e === true) {
+        this.getScanQrcodeImg()
+      }
     }
   }
 }
@@ -1376,5 +1418,30 @@ export default {
   .banner_img .notice_list .list3,
   .banner_img .notice_list .list4 {
     margin-right: 180px;
+  }
+
+  // 绑定微信开始
+  .bind-weixin-box {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px 0;
+    .title-1 {
+      color: #646566;
+      font-size: 14px;
+    }
+    .img {
+      width: 111px;
+      height: 111px;
+      margin: 13px auto 10px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .title-2 {
+      color: #999999;
+      font-size: 13px;
+    }
   }
 </style>

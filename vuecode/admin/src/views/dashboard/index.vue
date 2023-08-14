@@ -27,14 +27,14 @@
               <img class="icon" src="../../assets/images/dashboard/incomeIcon.png" alt="">
               <div class="topBox1">收入（总/月）元</div>
               <div class="topBox2">
-                <span>{{ revenue.month }}</span>
+                <span>{{ revenue.total }}</span>
                 /
-                <span>{{ revenue.today }}</span>
+                <span>{{ revenue.month}}</span>
               </div>
               <div id="top_line1" style="height:100px;" />
               <div class="topBox3">
                 <span>今日收入</span>
-                <span>{{ revenue.total }}</span>
+                <span>{{ revenue.today }}</span>
               </div>
             </div>
           </el-col>
@@ -43,14 +43,14 @@
               <img class="icon" src="../../assets/images/dashboard/OrderIcon.png" alt="">
               <div class="topBox1">支付订单（总/月）</div>
               <div class="topBox2">
-                <span>{{ order_num.month }}</span>
+                <span>{{ order_num.total }}</span>
                 /
-                <span>{{ order_num.today }}</span>
+                <span>{{ order_num.month }}</span>
               </div>
               <div id="top_line2" style="height:100px;" />
               <div class="topBox3">
                 <span>今日订单</span>
-                <span>{{ order_num.total }}</span>
+                <span>{{ order_num.today }}</span>
               </div>
             </div>
           </el-col>
@@ -59,14 +59,13 @@
               <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
               <div class="topBox1">企业会员数</div>
               <div class="topBox2">
-                <span>{{ company.total_job }}</span>
-                /
-                <span>{{ company.month }}</span>
+                <span>{{ company.total}}</span>
+                <span class="label_small">{{ company.total_job }}职位</span>
               </div>
               <div id="top_line3" style="height:100px;" />
               <div class="topBox3">
                 <span>本月新增会员</span>
-                <span>{{ company.total }}</span>
+                <span>{{ company.month }}</span>
               </div>
             </div>
           </el-col>
@@ -75,14 +74,13 @@
               <img class="icon" src="../../assets/images/dashboard/memberIcon.png" alt="">
               <div class="topBox1">个人会员数</div>
               <div class="topBox2">
-                <span>{{ personal.total_resume }}</span>
-                /
-                <span>{{ personal.month }}</span>
+                <span>{{ personal.total}}</span>
+                <span class="label_small">{{ personal.total_resume}}简历</span>
               </div>
               <div id="top_line4" style="height:100px;" />
               <div class="topBox3">
                 <span>本月新增会员</span>
-                <span>{{ personal.total }}</span>
+                <span>{{ personal.month }}</span>
               </div>
             </div>
           </el-col>
@@ -1034,6 +1032,12 @@ export default {
     font-weight: bold;
     border-bottom: none;
   }
+  ::v-deep .el-card{
+    &.is-always-shadow{
+      box-shadow: none;
+      border: none;
+    }
+  }
 
   // -- 快捷菜单
   .refreshBox {
@@ -1120,6 +1124,12 @@ export default {
       span {
         color: #232323;
         font-weight: bold;
+      }
+      .label_small{
+        color: #55585C;
+        font-size: 14px;
+        margin-left: 10px;
+        font-weight: initial;
       }
     }
 
@@ -1274,6 +1284,11 @@ export default {
             font-size: 13px;
             margin-left: 8px;
             cursor: pointer;
+            a{
+              display: block;
+              width: 100%;
+              height: 100%;
+            }
 
             &:hover {
               background: #ff8247;
@@ -1319,6 +1334,11 @@ export default {
             color: #ff8247;
             margin-right: 8px;
             cursor: pointer;
+            a{
+              display: block;
+              width: 100%;
+              height: 100%;
+            }
 
             &:hover {
               background: #ff9640;
@@ -1337,6 +1357,11 @@ export default {
             line-height: 28px;
             color: #3ccc93;
             cursor: pointer;
+            a{
+              display: block;
+              width: 100%;
+              height: 100%;
+            }
 
             &:hover {
               background: #3ccc93;
@@ -1428,12 +1453,17 @@ export default {
   .pending_data_menu {
     ::v-deep .el-card__header {
       padding-bottom: 0;
+      padding-top: 25px;
+    }
+    ::v-deep .el-card__body{
+      padding-bottom: 25px;
     }
   }
 
   .pending_data_qrcode {
     ::v-deep .el-card__body {
-      padding-top: 20px;
+      padding-top: 26px;
+      padding-bottom: 26px;
     }
 
     .descBox {

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Head :show-back="false" :show-admin="true">系统工具</Head>
-    <div class="public_item_title">系统项目</div>
+    <Head :show-back="false" :show-admin="true" @accessMobile="accessMobile">系统工具</Head>
+    <div v-if="access_mobile=='all' || access_mobile.clearcache == 1 || access_mobile.site_status == 1 || access_mobile.reg_status == 1" class="public_item_title">系统项目</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c1" @click="clearcache"><p class="t1">更新缓存</p></div>
-        <div class="bc_cell c2" @click="closeOpenSite"><p class="t1">网站启停</p><p class="t2">{{globalConfig.isclose==1?'关闭中':'已开启'}}</p></div>
-        <div class="bc_cell c3" @click="closeOpenReg"><p class="t1">暂停注册</p><p class="t2">{{globalConfig.closereg==1?'关闭注册':'允许注册'}}</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.clearcache == 1" class="bc_cell c1" @click="clearcache"><p class="t1">更新缓存</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.site_status == 1" class="bc_cell c2" @click="closeOpenSite"><p class="t1">网站启停</p><p class="t2">{{globalConfig.isclose==1?'关闭中':'已开启'}}</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.reg_status == 1" class="bc_cell c3" @click="closeOpenReg"><p class="t1">暂停注册</p><p class="t2">{{globalConfig.closereg==1?'关闭注册':'允许注册'}}</p></div>
       </div>
     </div>
     <div class="public_item_title">个人业务管理</div>
@@ -28,7 +28,12 @@
     name: "configIndex",
     data(){
       return {
-        globalConfig:{}
+        globalConfig:{},
+        access_mobile: {
+          'clearcache' : 0,
+          'site_status' : 0,
+          'reg_status' : 0
+        }
       }
     },
     created(){
@@ -117,6 +122,16 @@
             // on cancel
           });
       },
+      accessMobile(val){
+        if (val == 'all'){
+          this.access_mobile = val
+        } else {
+          let checkedKeys = val.checkedKeys
+          for (const element of checkedKeys) {
+            this.access_mobile[element] = 1
+          }
+        }
+      }
     }
   }
 </script>

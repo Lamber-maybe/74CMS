@@ -264,37 +264,21 @@
 				{#if condition="$show_mask eq 0"#}
 				<li class="tab paging">
 					<ul class="pagination-simple">
-
-						<!--【ID1000221】【bug】简历列表显示，右上角上一页改为<,后台设置只显示10条，之前的page参数为3；刷新后出现  3/1 样式-->
-						{#if condition="$dataset.total_page eq 1"#}
-						<li class="pn disabled"><a>
-								<< /a>
-						</li>
-						<li class="pn pagenum"><span
-								class="color">{#$dataset.total_page#}</span><span>/{#$dataset.total_page#}</span></li>
-						{#else#}
 						{#if condition="$prevPage eq 0"#}
-						<li class="pn disabled"><a>
-								<< /a>
-						</li>
+						<li class="pn disabled"><a>上一页</a></li>
 						{#else#}
-						<li class="pn"><a href="?page={#$prevPage#}">
-								<< /a>
-						</li>
+						<li class="pn"><a href="?page={#$prevPage#}">上一页</a></li>
 						{#/if#}
-						<li class="pn pagenum"><span
-								class="color">{#$currentPage#}</span><span>/{#$dataset.total_page#}</span></li>
+						<li class="pn pagenum"><span class="color">{#$currentPage#}</span><span>/{#$dataset.total_page#}</span></li>
+						{#if condition="$nextPage gt $dataset.total_page"#}
+						<li class="pn disabled"><a>下一页</a></li>
+						{#else#}
+						<li class="pn"><a href="?page={#$nextPage#}">下一页</a></li>
 						{#/if#}
-
-            {#if condition="$nextPage gt $dataset.total_page"#}
-            <li class="pn disabled"><a>></a></li>
-            {#else#}
-            <li class="pn"><a href="?page={#$nextPage#}">></a></li>
-            {#/if#}
-          </ul>
-        </li>
-        {#/if#}
-      </ul>
+					</ul>
+				</li>
+				{#/if#}
+			</ul>
       <div class="option clearfix">
         <!--  【ID1000392】【新增】职位、简历搜索页列表展现排序
         <div class="option_text">

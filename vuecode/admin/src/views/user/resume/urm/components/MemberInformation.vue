@@ -135,15 +135,15 @@
               </div>
             </div>
           </div>
-<!--          <div class="item">-->
-<!--            <div class="info">-->
-<!--              <span class="label">客服评价：</span>-->
-<!--              <span class="text">{{ details.comment ? details.comment : '-' }}</span>-->
-<!--            </div>-->
-<!--            <div class="btn">-->
-<!--              <el-button size="small" type="primary" plain @click="handleEdit('comment')">填写</el-button>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="item">-->
+          <!--            <div class="info">-->
+          <!--              <span class="label">客服评价：</span>-->
+          <!--              <span class="text">{{ details.comment ? details.comment : '-' }}</span>-->
+          <!--            </div>-->
+          <!--            <div class="btn">-->
+          <!--              <el-button size="small" type="primary" plain @click="handleEdit('comment')">填写</el-button>-->
+          <!--            </div>-->
+          <!--          </div>-->
           <div class="item">
             <div class="info" style="padding: 15px 0px 15px 6px; ">
               <span class="label" style="width: 108px;">客服评价：</span>
@@ -166,15 +166,15 @@
               <el-button size="small" type="primary" plain @click="handleEdit('remark')">修改</el-button>
             </div>
           </div>
-<!--          <div class="item">-->
-<!--            <div class="info">-->
-<!--              <span class="label">备注信息：</span>-->
-<!--              <span class="text">{{ details.remark ? details.remark : '-' }}</span>-->
-<!--            </div>-->
-<!--            <div class="btn">-->
-<!--              <el-button size="small" type="primary" plain @click="handleEdit('remark')">填写备注</el-button>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="item">-->
+          <!--            <div class="info">-->
+          <!--              <span class="label">备注信息：</span>-->
+          <!--              <span class="text">{{ details.remark ? details.remark : '-' }}</span>-->
+          <!--            </div>-->
+          <!--            <div class="btn">-->
+          <!--              <el-button size="small" type="primary" plain @click="handleEdit('remark')">填写备注</el-button>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </el-col>
       <el-col :span="12">
@@ -517,42 +517,42 @@ export default {
           this.$message.error('密码不能为空')
           return false
         }
-        data = { 'password': this.form.password, 'uid': this.uid }
+        data = { 'password': this.form.password, 'uid': this.uid, 'type': 'password' }
       }
       if (type == 'member_mobile'){
         if (this.form.member_mobile == ''){
           this.$message.error('手机号码不能为空')
           return false
         }
-        data = { 'member_mobile': this.form.member_mobile, 'uid': this.uid }
+        data = { 'member_mobile': this.form.member_mobile, 'uid': this.uid, 'type': 'member_mobile' }
       }
       if (type == 'email'){
-        data = { 'email': this.form.email, 'uid': this.uid }
+        data = { 'email': this.form.email, 'uid': this.uid, 'type': 'email' }
       }
       if (type == 'resume_mobile'){
         if (this.form.resume_mobile == ''){
           this.$message.error('手机号码不能为空')
           return false
         }
-        data = { 'resume_mobile': this.form.resume_mobile, 'uid': this.uid }
+        data = { 'resume_mobile': this.form.resume_mobile, 'uid': this.uid, 'type': 'resume_mobile' }
       }
       if (type == 'high_quality'){
-        data = { 'high_quality': this.form.high_quality, 'uid': this.uid }
+        data = { 'high_quality': this.form.high_quality, 'uid': this.uid, 'type': 'high_quality' }
       }
       if (type == 'remark'){
-        data = { 'remark': this.form.remark, 'uid': this.uid }
+        data = { 'remark': this.form.remark, 'uid': this.uid, 'type': 'remark' }
       }
       if (type == 'comment'){
-        data = { 'comment': this.form.comment, 'uid': this.uid }
+        data = { 'comment': this.form.comment, 'uid': this.uid, 'type': 'comment' }
       }
       if (type == 'audit'){
-        data = { 'audit': this.form.examine, 'reason': this.setAuditReason, 'uid': this.uid }
+        data = { 'audit': this.form.examine, 'reason': this.setAuditReason, 'uid': this.uid, 'type': 'audit' }
       }
       if (type == 'examine'){
-        data = { 'examine': this.form.examine, 'resume_img': this.form.resume_img, 'uid': this.uid }
+        data = { 'examine': this.form.examine, 'resume_img': this.form.resume_img, 'uid': this.uid, 'type': 'resume_img' }
       }
       if (type == 'is_display'){
-        data = { 'is_display': this.form.is_display, 'uid': this.uid }
+        data = { 'is_display': this.form.is_display, 'uid': this.uid, 'type': 'is_display' }
       }
       updateResume(data)
         .then(res => {
@@ -644,7 +644,6 @@ export default {
           this.form.remark = res.data.remark
           this.form.comment = res.data.comment
           this.form.examine = res.data.examine.toString()
-
         }).catch(() => {
 
         })

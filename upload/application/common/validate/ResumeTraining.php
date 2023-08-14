@@ -26,7 +26,7 @@ class ResumeTraining extends BaseValidate
     protected function checkStarttime($value, $rule, $data)
     {
         if ($value>=time()) {
-            return '开始时间不能晚于当前时间';
+            return '培训经历开始时间不能晚于当前时间';
         } else {
             return true;
         }
@@ -34,9 +34,10 @@ class ResumeTraining extends BaseValidate
     protected function checkEndtime($value, $rule, $data)
     {
         if (!$value && !$data['todate']) {
-            return '请选择结束时间';
+            return '请选择培训经历结束时间';
         }else if($data['todate']==0 && $value<$data['starttime']){
-            return '结束时间不能早于开始时间';
+            //【优化】提示错误但不知道是哪个，需要提示明确 zch 2022.12.13
+            return '培训经历结束时间不能早于开始时间';
         } else {
             return true;
         }

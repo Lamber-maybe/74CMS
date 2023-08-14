@@ -11,6 +11,9 @@
         <el-form-item label="联系手机：" prop="mobile">
           <el-input v-model="form.mobile" oninput="value=value.replace(/[^0-9.]/g,'')" />
         </el-form-item>
+        <el-form-item label="座机：" prop="telephone">
+          <el-input v-model="form.telephone" />
+        </el-form-item>
         <el-form-item label="联系微信：">
           <el-input v-model="form.weixin" />
         </el-form-item>
@@ -166,16 +169,6 @@ export default {
           message: '长度在 0 到 6 个字符',
           trigger: 'blur'
         }
-        ],
-        mobile: [{
-          required: true,
-          message: '请输入联系电话',
-          trigger: 'blur'
-        },
-        {
-          validator: validateContactMobile,
-          trigger: 'blur'
-        }
         ]
       },
       form: {
@@ -189,7 +182,8 @@ export default {
         'address': '',
         'trade': '',
         'remark': '',
-        'district': []
+        'district': [],
+        'telephone': ''
       },
       submitLoading: false,
       scaleData: [],
@@ -303,6 +297,10 @@ export default {
     },
     onSubmit(formName) {
       if (this.submitLoading === true) {
+        return false
+      }
+      if (this.mobile == '' && this.telephone == '') {
+        this.$message.error('请填写联系手机或座机二选一')
         return false
       }
       this.submitLoading = true

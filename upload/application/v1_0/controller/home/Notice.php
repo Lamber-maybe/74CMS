@@ -46,6 +46,18 @@ class Notice extends \app\v1_0\controller\common\Base
         $info->click++;
         $info->save();
         $info = $info->toArray();
+
+        /**
+         * 【ID1000453】
+         * 【优化】公告触屏端增加简历附件的显示(同资讯)
+         * yx - 2022.12.16
+         */
+        if (isset($info['attach']) && !empty($info['attach'])) {
+            $info['attach_info'] = json_decode($info['attach'], true);
+        } else {
+            $info['attach_info'] = [];
+        }
+
         $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
 
         /**

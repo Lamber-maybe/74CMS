@@ -514,7 +514,7 @@ export default {
           text-overflow: ellipsis;
 
           &.clickedColor {
-            color: #909090;
+            color: #771caa;
           }
         }
 

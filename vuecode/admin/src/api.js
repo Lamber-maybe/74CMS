@@ -8,9 +8,25 @@ import {
   exportList,
   refreshCrmJob, setDisplay
 } from '@/api/company_crm'
-import { customerServiceEdit } from '@/api/personal'
-import { bindSeat, customLndex, dataBoardcallRecordList, outboundSeat, recordDetails } from '@/api/outbound'
-import {resumeDel, resumeUrmInterview, resumeUrmViewJob, urmList} from '@/api/resume_urm'
+import {
+  customerServiceEdit
+} from '@/api/personal'
+import {
+  bindSeat,
+  customLndex,
+  dataBoardcallRecordList,
+  outboundSeat,
+  recordDetails
+} from '@/api/outbound'
+import {
+  resumeDel,
+  resumeUrmInterview,
+  resumeUrmViewJob,
+  urmList
+} from '@/api/resume_urm'
+import {
+  companyBackupsList
+} from '@/api/member_cancel_apply'
 
 export default {
   // 首页仪表盘
@@ -310,7 +326,12 @@ export default {
   memberCancelApplyList: '/member_cancel_apply/index',
   memberCancelApplyDelete: '/member_cancel_apply/delete',
   memberCancelApplyHandle: '/member_cancel_apply/handle',
-
+  memberCancelApplyDeleteAll: '/member_cancel_apply/deleteAll',
+  // 注销申请备份
+  memberCancelApplyBackups: '/member_cancel_apply/backups',
+  exportBackups: '/member_cancel_apply/exportBackups',
+  backupsList: '/member_cancel_apply/backupsList',
+  backupsDelete: '/member_cancel_apply/backupsDelete',
   // 优惠券
   couponList: '/coupon/index',
   couponAdd: '/coupon/add',
@@ -898,7 +919,7 @@ export default {
   urmRecycleBinReturn: 'b2burm/recycle_bin/recover',
   resumeDel: 'b2burm/recycle_bin/put',
   setContactStatus: 'b2burm/resume/setContactStatus',
-  //企业名录
+  // 企业名录
   baseConfig: 'b2bcrm/company_directory/baseConfig',
   getCompanyClueList: 'b2bcrm/company_directory/getCompanyClueList',
   getConsumeRecordList: 'b2bcrm/company_directory/getConsumeRecordList',
@@ -919,7 +940,7 @@ export default {
   resumeCheck: 'zhitoo/resume/check',
   documentConfig: 'zhitoo/document/config',
   documentCheck: 'zhitoo/document/check',
-  //工作看板
+  // 工作看板
   workData: 'b2bcrm/work_statistics/work',
   salesStatistics: 'b2bcrm/work_statistics/salesStatistics',
   newCompanyStatistics: 'b2bcrm/work_statistics/newCompanyStatistics',
@@ -927,10 +948,10 @@ export default {
   newCompanyFollowStatistics: 'b2bcrm/work_statistics/newCompanyFollowStatistics',
   newClueFollowStatistics: 'b2bcrm/work_statistics/newClueFollowStatistics',
   workLifeCycle: 'b2bcrm/work_statistics/lifeCycle',
-  //销售看板
+  // 销售看板
   salesKanban: '/b2bcrm/sale_statistics/salesKanban',
   companyCrmClueStatistics: '/b2bcrm/sale_statistics/companyCrmClueStatistics',
-  //首页新增接口
+  // 首页新增接口
   newDataStatisticsIndex: 'new_data_statistics/index',
   newDataStatisticsChart: 'new_data_statistics/chart',
   newRealTimeData: 'new_data_statistics/realTimeData',

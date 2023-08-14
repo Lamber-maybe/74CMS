@@ -33,7 +33,8 @@
               <div v-if="item.is_main == 1" class="contactInfo">
                 <span class="toMain isMain">主要</span>
                 <span class="name">{{ item.contact }}</span>
-                <span class="mobile">{{ item.mobile }}</span>
+                <span class="mobile" v-if="item.mobile != ''">{{ item.mobile }}</span>
+                <span class="mobile" v-else>{{ item.telephone }}</span>
               </div>
               <div class="contactIcon">
                 <img class="edit editSelect" src="../../../../../assets/images/company/crm/edit.png" @click="editContact(item)">
@@ -51,6 +52,7 @@
             <el-button size="mini" style="margin-left: 10px;" @click="check()">查重</el-button>
           </div>
         </el-form-item>
+        <el-form-item label="座机：" prop="telephone"><el-input v-model="form.telephone" /></el-form-item>
         <el-form-item>
           <div v-if="addContactBtn" class="el-input addContact" @click="addContact()">
             <img class="addIcon" src="../../../../../assets/images/company/crm/tianjia.png" alt="">
@@ -85,7 +87,7 @@
             <el-radio label="0">公共线索</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item><el-button type="primary" @click="onSubmit('form')">立即创建</el-button></el-form-item>
+        <el-form-item><el-button type="primary" :loading="submitLoading" @click="onSubmit('form')">立即创建</el-button></el-form-item>
       </el-form>
     </div>
     <!-- 线索名称重复 -->
@@ -186,7 +188,8 @@ export default {
         address: '',
         remark: '',
         trade: '',
-        company_size: ''
+        company_size: '',
+        telephone: ''
       },
       scaleData: [],
       options_citycategory: [],
@@ -215,19 +218,20 @@ export default {
       return false
     },
     onSubmit(formName) {
-      if (this.submitLoading === true) {
-        return false
-      }
+      /*
+       * 【bug】出现提示后，添加联系人无法保存
+       * 【bug】添加线索重复点击问题
+       * zch 2022.12.12
+       * */
       this.submitLoading = true
       const that = this
       const insertData = {
         ...this.form
       }
-      console.log(this.form.contact)
-      console.log(this.form.mobile)
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.contact_list.length == 0) {
+            this.submitLoading = false
             this.$message.error('请添加联系人！')
           } else {
             if (this.form.contact != '' && this.form.mobile != '' && !this.editContactModule) {
@@ -245,18 +249,18 @@ export default {
               .then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.message)
+                  if (this.form.sale == '0') {
+                    setTimeout(function() {
+                      that.$router.push('/user/company/crm/internationalWaters')
+                    }, 1500)
+                  } else {
+                    setTimeout(function() {
+                      that.$router.push('/user/company/crm/my')
+                    }, 1500)
+                  }
                 } else {
                   this.$message.error(res.message)
-                }
-                that.submitLoading = false
-                if (this.form.sale == '0') {
-                  setTimeout(function() {
-                    that.$router.push('/user/company/crm/internationalWaters')
-                  }, 1500)
-                } else {
-                  setTimeout(function() {
-                    that.$router.push('/user/company/crm/my')
-                  }, 1500)
+                  that.submitLoading = false
                 }
               })
               .catch(() => {
@@ -264,6 +268,7 @@ export default {
               })
           }
         } else {
+          this.isSubmit = false
           this.submitLoading = false
           return false
         }
@@ -346,6 +351,7 @@ export default {
     editContact(item) {
       this.form.contact = item.contact
       this.form.mobile = item.mobile
+      this.form.telephone = item.telephone
       this.addContactBtn = false
       this.editContactModule = true
       for (const i in this.contact_list) {
@@ -359,6 +365,7 @@ export default {
     cancelEditItemContact() {
       this.form.contact = ''
       this.form.mobile = ''
+      this.form.telephone = ''
       this.addContactBtn = true
       this.editContactModule = false
       for (const i in this.contact_list) {
@@ -372,10 +379,12 @@ export default {
         if (this.currentContactIndex == i) {
           this.contact_list[i].contact = this.form.contact
           this.contact_list[i].mobile = this.form.mobile
+          this.contact_list[i].telephone = this.form.telephone
         }
       }
       this.form.contact = ''
       this.form.mobile = ''
+      this.form.telephone = ''
       this.addContactBtn = true
       this.editContactModule = false
     },
@@ -440,9 +449,9 @@ export default {
         this.$message.error('请输入联系人姓名！')
       } else if (this.form.contact.length > 6) {
         this.$message.error('联系人姓名长度在 0 到 6 个字符！')
-      } else if (this.form.mobile == '') {
-        this.$message.error('请输入联系人电话！')
-      } else if (this.form.mobile.length != 11) {
+      } else if (this.form.mobile == '' && this.form.telephone == '') {
+        this.$message.error('请输入联系人电话或座机二选一！')
+      } else if (this.form.mobile != '' && this.form.mobile.length != 11) {
         this.$message.error('请输入正确的电话格式！')
       } else {
         for (const i in this.contact_list) {
@@ -454,16 +463,19 @@ export default {
         const obj = {
           contact: this.form.contact,
           mobile: this.form.mobile,
+          telephone: this.form.telephone,
           inputHover: false,
           editClass: false,
           is_main: 0
         }
+        console.log(obj)
         if (this.contact_list.length == 0) {
           obj.is_main = 1
         }
         this.contact_list.push(obj)
         this.form.contact = ''
         this.form.mobile = ''
+        this.form.telephone = ''
       }
     },
     // 设为主要联系人

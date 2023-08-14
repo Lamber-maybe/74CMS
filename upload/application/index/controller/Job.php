@@ -390,6 +390,35 @@ class Job extends \app\index\controller\Base
         if ($jobinfo === null) {
             return false;
         }
+
+        /**
+         * 【新增】职位状态
+         * yx - 2022.12.16
+         */
+        $base_info = [];
+        $job_is_display = intval($jobinfo['is_display']);
+        $job_audit = intval($jobinfo['audit']);
+        if (1 === $job_is_display) {
+            // 1.1职位已关闭
+            if (1 === $job_audit) {
+                // 2.1职位审核通过
+                $base_info['job_status'] = 1;
+                $base_info['job_status_cn'] = '发布中';
+            } elseif (0 === $job_audit) {
+                // 2.2职位审核中
+                $base_info['job_status'] = 0;
+                $base_info['job_status_cn'] = '审核中';
+            } else {
+                // 2.3职位审核未通过
+                $base_info['job_status'] = 2;
+                $base_info['job_status_cn'] = '未通过';
+            }
+        } else {
+            // 1.2职位开启状态
+            $base_info['job_status'] = 3;
+            $base_info['job_status_cn'] = '已关闭';
+        }
+
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         $category_job_data = model('CategoryJob')->getCache();

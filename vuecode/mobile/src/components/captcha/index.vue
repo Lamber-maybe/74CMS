@@ -1,6 +1,6 @@
 <template>
   <div>
-    <components :is="who" ref="child"></components>
+    <components :is="who" ref="child" @setSubmitFun="setSubmitFun"></components>
   </div>
 </template>
 
@@ -33,6 +33,9 @@ export default {
       } else {
         callback()
       }
+    },
+    setSubmitFun () {
+      this.$emit('setSubmitFun')
     }
   }
 }

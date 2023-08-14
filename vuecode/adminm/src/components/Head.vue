@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       info: {},
+      access_mobile: {}
     };
   },
   created() {
@@ -50,6 +51,8 @@ export default {
         .get(api.adminDetail, {})
         .then((res) => {
           that.info = res.data;
+          that.access_mobile = res.data.access_mobile;
+          this.$emit('accessMobile',that.access_mobile)
         })
         .catch(() => {});
     },

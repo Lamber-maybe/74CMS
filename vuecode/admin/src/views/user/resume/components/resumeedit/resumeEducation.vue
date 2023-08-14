@@ -92,7 +92,7 @@ export default {
   components: {
     diaform
   },
-  props: ['id'],
+  props: ['id', 'field_rule'],
   data() {
     return {
       li4_width: '24%',
@@ -107,25 +107,21 @@ export default {
     }
   },
   created() {
+    this.getFieldRule(this.field_rule)
     this.fetchData()
   },
   methods: {
+    getFieldRule(response){
+      const extra_rule = response.ResumeEducation
+      if (extra_rule.major.is_display == 0) {
+        this.live_fields.major = false
+      }
+    },
     fetchData() {
-      getFieldRule({}, 'get')
-        .then(response => {
-          const extra_rule = response.data.ResumeEducation
-          if (extra_rule.major.is_display == 0) {
-            this.live_fields.major = false
-          }
-          const param = {
-            rid: this.id
-          }
-          return resumeEducationList(param)
-        })
-        .then(response => {
-          this.list = response.data.items
-          this.$emit('setLoading', 'resumeEducation')
-        })
+      resumeEducationList({ 'rid': this.id }).then(response => {
+        this.list = response.data.items
+        this.$emit('setLoading', 'resumeEducation')
+      })
     },
     funAdd() {
       this.itemId = 0

@@ -1,25 +1,25 @@
 <template>
   <div>
-    <Head :show-back="false" :show-admin="true">业务管理</Head>
-    <div class="public_item_title">企业业务管理</div>
+    <Head :show-back="false" :show-admin="true" @accessMobile="accessMobile">业务管理</Head>
+    <div v-if="access_mobile=='all' || access_mobile.setmeal == 1 || access_mobile.order_company == 1 || access_mobile.setmeal_add == 1 || access_mobile.promotion_job_add == 1 || access_mobile.points_company == 1" class="public_item_title">企业业务管理</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c1" @click="$router.push('/setmeal')"><p class="t1">套餐管理</p></div>
-        <div class="bc_cell c2" @click="$router.push('/order/1')"><p class="t1">订单管理</p></div>
-        <div class="bc_cell c3" @click="$router.push('/setmeal_add')"><p class="t1">开通套餐</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.setmeal == 1" class="bc_cell c1" @click="$router.push('/setmeal')"><p class="t1">套餐管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.order_company == 1" class="bc_cell c2" @click="$router.push('/order/1')"><p class="t1">订单管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.setmeal_add == 1" class="bc_cell c3" @click="$router.push('/setmeal_add')"><p class="t1">开通套餐</p></div>
       </div>
       <div class="bc_line">
-        <div class="bc_cell c4" @click="$router.push('/promotion_add')"><p class="t1">新增推广</p></div>
-        <div class="bc_cell c5" @click="$router.push('/points')"><p class="t1">积分充值</p></div>
-        <div class="bc_cell c9"></div>
+        <div v-if="access_mobile=='all' || access_mobile.promotion_job_add == 1" class="bc_cell c4" @click="$router.push('/promotion_add')"><p class="t1">新增推广</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.points_company == 1" class="bc_cell c5" @click="$router.push('/points')"><p class="t1">积分充值</p></div>
+<!--        <div class="bc_cell c9"></div>-->
       </div>
     </div>
-    <div class="public_item_title">个人业务管理</div>
+    <div v-if="access_mobile=='all' || access_mobile.order_personal == 1 || access_mobile.promotion_resume_add == 1" class="public_item_title">个人业务管理</div>
     <div class="b1">
       <div class="bc_line">
-        <div class="bc_cell c6" @click="$router.push('/order/2')"><p class="t1">订单管理</p></div>
-        <div class="bc_cell c8" @click="$router.push('/promotion_resume_add')"><p class="t1">新增推广</p></div>
-        <div class="bc_cell c10"></div>
+        <div v-if="access_mobile=='all' || access_mobile.order_personal == 1" class="bc_cell c6" @click="$router.push('/order/2')"><p class="t1">订单管理</p></div>
+        <div v-if="access_mobile=='all' || access_mobile.promotion_resume_add == 1" class="bc_cell c8" @click="$router.push('/promotion_resume_add')"><p class="t1">新增推广</p></div>
+<!--        <div class="bc_cell c10"></div>-->
       </div>
     </div>
     <BottomNav></BottomNav>
@@ -28,7 +28,32 @@
 
 <script>
   export default {
-    name: "businessIndex"
+    name: "businessIndex",
+    data() {
+      return {
+        access_mobile: {
+          'setmeal' : 0,
+          'order_company' : 0,
+          'setmeal_add' : 0,
+          'promotion_job_add' : 0,
+          'points_company' : 0,
+          'order_personal' : 0,
+          'promotion_resume_add' : 0
+        }
+      };
+    },
+    methods: {
+      accessMobile(val){
+        if (val == 'all'){
+          this.access_mobile = val
+        } else {
+          let checkedKeys = val.checkedKeys
+          for (const element of checkedKeys) {
+            this.access_mobile[element] = 1
+          }
+        }
+      }
+    }
   }
 </script>
 

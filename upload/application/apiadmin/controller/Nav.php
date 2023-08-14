@@ -64,6 +64,16 @@ class Nav extends \app\common\controller\Backend
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');
             }
+            /**
+             * 【ID1000480】
+             * 【bug】系统导航设置站外链接后，无法切换回系统页面
+             * yx - 2022.12.27
+             * [新增]:
+             * 导航类型为系统页面，将跳转链接置空
+             */
+            if (1 === $input_data['link_type']) {
+                $input_data['url'] = '';
+            }
             if (
                 false ===
                 model('Navigation')

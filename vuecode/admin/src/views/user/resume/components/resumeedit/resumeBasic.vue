@@ -34,7 +34,7 @@
           现居住地：{{ form.residence | defaultFilter }}
         </span>
         <span v-if="live_fields.major === true" class="item-row">
-          所学专业：{{ form.major_text | defaultFilter}}
+          所学专业：{{ form.major_text | defaultFilter }}
         </span>
         <span v-if="live_fields.height === true" class="item-row">
           身高：{{ form.height | defaultFilter }}
@@ -279,7 +279,6 @@
 </template>
 
 <script>
-import { getFieldRule } from '@/api/configuration'
 import { getClassify } from '@/api/classify'
 import { validMobile, validEmail } from '@/utils/validate'
 import { resumeBasic } from '@/api/resume'
@@ -292,7 +291,7 @@ export default {
       return data == '' ? '未填写' : data
     }
   },
-  props: ['id'],
+  props: ['id', 'field_rule'],
   data() {
     var validateContactMobile = (rule, value, callback) => {
       if (!validMobile(value)) {
@@ -510,11 +509,112 @@ export default {
   },
   mounted() { },
   created() {
+    this.getFieldRule(this.field_rule)
     this.fileupload_size = this.config.fileupload_size
     this.fileupload_ext = this.config.fileupload_ext
     this.fetchInfo()
   },
   methods: {
+    getFieldRule(response){
+      console.log(response)
+      const { Resume, ResumeContact } = {
+        ...response
+      }
+      const extra_rule = {
+        Resume,
+        ResumeContact
+      }
+      this.custom_field_1_cn = extra_rule.Resume.custom_field_1.field_cn
+      this.custom_field_2_cn = extra_rule.Resume.custom_field_2.field_cn
+      this.custom_field_3_cn = extra_rule.Resume.custom_field_3.field_cn
+      if (extra_rule.Resume.marriage.is_display == 0) {
+        this.live_fields.marriage = false
+        this.rules.marriage = []
+      } else if (extra_rule.Resume.marriage.is_require == 0) {
+        this.rules.marriage = []
+      }
+      if (extra_rule.Resume.residence.is_display == 0) {
+        this.live_fields.residence = false
+        this.rules.residence = []
+      } else if (extra_rule.Resume.residence.is_require == 0) {
+        this.rules.residence = []
+      }
+      if (extra_rule.Resume.major.is_display == 0) {
+        this.live_fields.major = false
+        this.rules.major_arr = []
+      } else if (extra_rule.Resume.major.is_require == 0) {
+        this.rules.major_arr = []
+      }
+      if (extra_rule.Resume.height.is_display == 0) {
+        this.live_fields.height = false
+        this.rules.height = []
+      } else if (extra_rule.Resume.height.is_require == 0) {
+        this.rules.height = []
+      }
+      if (extra_rule.Resume.householdaddress.is_display == 0) {
+        this.live_fields.householdaddress = false
+        this.rules.householdaddress = []
+      } else if (extra_rule.Resume.householdaddress.is_require == 0) {
+        this.rules.householdaddress = []
+      }
+      if (extra_rule.Resume.idcard.is_display == 0) {
+        this.live_fields.idcard = false
+        this.rules.idcard = []
+      } else if (extra_rule.Resume.idcard.is_require == 0) {
+        this.rules.idcard = []
+      }
+      if (extra_rule.Resume.custom_field_1.is_display == 0) {
+        this.live_fields.custom_field_1 = false
+        this.rules.custom_field_1 = []
+      } else if (extra_rule.Resume.custom_field_1.is_require == 0) {
+        this.rules.custom_field_1 = []
+      } else {
+        this.rules.custom_field_1[0].message = this.rules.custom_field_1[0].message.replace(
+          'custom_field_1',
+          this.custom_field_1_cn
+        )
+      }
+      if (extra_rule.Resume.custom_field_2.is_display == 0) {
+        this.live_fields.custom_field_2 = false
+        this.rules.custom_field_2 = []
+      } else if (extra_rule.Resume.custom_field_2.is_require == 0) {
+        this.rules.custom_field_2 = []
+      } else {
+        this.rules.custom_field_2[0].message = this.rules.custom_field_2[0].message.replace(
+          'custom_field_2',
+          this.custom_field_2_cn
+        )
+      }
+      if (extra_rule.Resume.custom_field_3.is_display == 0) {
+        this.live_fields.custom_field_3 = false
+        this.rules.custom_field_3 = []
+      } else if (extra_rule.Resume.custom_field_3.is_require == 0) {
+        this.rules.custom_field_3 = []
+      } else {
+        this.rules.custom_field_3[0].message = this.rules.custom_field_3[0].message.replace(
+          'custom_field_3',
+          this.custom_field_3_cn
+        )
+      }
+      if (extra_rule.ResumeContact.email.is_display == 0) {
+        this.live_fields.contact.email = false
+        this.rules.contact.email = []
+      } else if (extra_rule.ResumeContact.email.is_require == 0) {
+        this.rules.contact.email = []
+      }
+      if (extra_rule.ResumeContact.weixin.is_display == 0) {
+        this.live_fields.contact.weixin = false
+        this.rules.contact.weixin = []
+      } else if (extra_rule.ResumeContact.weixin.is_require == 0) {
+        this.rules.contact.weixin = []
+      }
+      if (extra_rule.ResumeContact.qq.is_display == 0) {
+        this.live_fields.contact.qq = false
+        this.rules.contact.qq = []
+      } else if (extra_rule.ResumeContact.qq.is_require == 0) {
+        this.rules.contact.qq = []
+      }
+    },
     // PC端创建简历日期选择往前推到16岁 zdq
     birthdayDateRange(){
       return {
@@ -533,120 +633,19 @@ export default {
     },
     fetchInfo() {
       this.infoLoading = true
-      getFieldRule({}, 'get')
-        .then(response => {
-          const { Resume, ResumeContact } = {
-            ...response.data
-          }
-          const extra_rule = {
-            Resume,
-            ResumeContact
-          }
-          this.custom_field_1_cn = extra_rule.Resume.custom_field_1.field_cn
-          this.custom_field_2_cn = extra_rule.Resume.custom_field_2.field_cn
-          this.custom_field_3_cn = extra_rule.Resume.custom_field_3.field_cn
-          if (extra_rule.Resume.marriage.is_display == 0) {
-            this.live_fields.marriage = false
-            this.rules.marriage = []
-          } else if (extra_rule.Resume.marriage.is_require == 0) {
-            this.rules.marriage = []
-          }
-          if (extra_rule.Resume.residence.is_display == 0) {
-            this.live_fields.residence = false
-            this.rules.residence = []
-          } else if (extra_rule.Resume.residence.is_require == 0) {
-            this.rules.residence = []
-          }
-          if (extra_rule.Resume.major.is_display == 0) {
-            this.live_fields.major = false
-            this.rules.major_arr = []
-          } else if (extra_rule.Resume.major.is_require == 0) {
-            this.rules.major_arr = []
-          }
-          if (extra_rule.Resume.height.is_display == 0) {
-            this.live_fields.height = false
-            this.rules.height = []
-          } else if (extra_rule.Resume.height.is_require == 0) {
-            this.rules.height = []
-          }
-          if (extra_rule.Resume.householdaddress.is_display == 0) {
-            this.live_fields.householdaddress = false
-            this.rules.householdaddress = []
-          } else if (extra_rule.Resume.householdaddress.is_require == 0) {
-            this.rules.householdaddress = []
-          }
-          if (extra_rule.Resume.idcard.is_display == 0) {
-            this.live_fields.idcard = false
-            this.rules.idcard = []
-          } else if (extra_rule.Resume.idcard.is_require == 0) {
-            this.rules.idcard = []
-          }
-          if (extra_rule.Resume.custom_field_1.is_display == 0) {
-            this.live_fields.custom_field_1 = false
-            this.rules.custom_field_1 = []
-          } else if (extra_rule.Resume.custom_field_1.is_require == 0) {
-            this.rules.custom_field_1 = []
-          } else {
-            this.rules.custom_field_1[0].message = this.rules.custom_field_1[0].message.replace(
-              'custom_field_1',
-              this.custom_field_1_cn
-            )
-          }
-          if (extra_rule.Resume.custom_field_2.is_display == 0) {
-            this.live_fields.custom_field_2 = false
-            this.rules.custom_field_2 = []
-          } else if (extra_rule.Resume.custom_field_2.is_require == 0) {
-            this.rules.custom_field_2 = []
-          } else {
-            this.rules.custom_field_2[0].message = this.rules.custom_field_2[0].message.replace(
-              'custom_field_2',
-              this.custom_field_2_cn
-            )
-          }
-          if (extra_rule.Resume.custom_field_3.is_display == 0) {
-            this.live_fields.custom_field_3 = false
-            this.rules.custom_field_3 = []
-          } else if (extra_rule.Resume.custom_field_3.is_require == 0) {
-            this.rules.custom_field_3 = []
-          } else {
-            this.rules.custom_field_3[0].message = this.rules.custom_field_3[0].message.replace(
-              'custom_field_3',
-              this.custom_field_3_cn
-            )
-          }
-          if (extra_rule.ResumeContact.email.is_display == 0) {
-            this.live_fields.contact.email = false
-            this.rules.contact.email = []
-          } else if (extra_rule.ResumeContact.email.is_require == 0) {
-            this.rules.contact.email = []
-          }
-          if (extra_rule.ResumeContact.weixin.is_display == 0) {
-            this.live_fields.contact.weixin = false
-            this.rules.contact.weixin = []
-          } else if (extra_rule.ResumeContact.weixin.is_require == 0) {
-            this.rules.contact.weixin = []
-          }
-          if (extra_rule.ResumeContact.qq.is_display == 0) {
-            this.live_fields.contact.qq = false
-            this.rules.contact.qq = []
-          } else if (extra_rule.ResumeContact.qq.is_require == 0) {
-            this.rules.contact.qq = []
-          }
-          return getClassify({
-            type: 'resumeSex,education,major,current,marriage'
-          })
-        })
-        .then(response => {
-          this.options_sex = [...response.data.resumeSex]
-          this.options_education = [...response.data.education]
-          this.options_major = [...response.data.major]
-          this.options_current = [...response.data.current]
-          this.options_marriage = [...response.data.marriage]
-          const param = {
-            id: this.id
-          }
-          return resumeBasic(param, 'get')
-        })
+      getClassify({
+        type: 'resumeSex,education,major,current,marriage'
+      }).then(response => {
+        this.options_sex = [...response.data.resumeSex]
+        this.options_education = [...response.data.education]
+        this.options_major = [...response.data.major]
+        this.options_current = [...response.data.current]
+        this.options_marriage = [...response.data.marriage]
+        const param = {
+          id: this.id
+        }
+        return resumeBasic(param, 'get')
+      })
         .then(response => {
           this.form = { ...this.form, ...response.data.info }
           this.form.height =

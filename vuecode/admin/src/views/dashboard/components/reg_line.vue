@@ -79,7 +79,7 @@ export default {
       if (init === false) {
         this.charts.showLoading()
       }
-      this.type = parseInt(this.tabVal) == 0 ? 'reg' : parseInt(this.tabVal) == 1 ? 'income' : parseInt(this.tabVal) == 1 ? 'personal' : 'company'
+      this.type = parseInt(this.tabVal) == 0 ? 'reg' : parseInt(this.tabVal) == 1 ? 'income' : parseInt(this.tabVal) == 2 ? 'personal' : 'company'
       const params = {
         type: this.type,
         start_time: this.daterange[0],

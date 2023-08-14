@@ -1,48 +1,48 @@
 <template>
   <div>
     <div class="box">
-      <div class="box-item" v-for="(item,index) in list" :key="index">
+      <div v-for="(item,index) in list" :key="index" class="box-item">
         <div class="box-item-name">
-          <span class="name" v-if="item.contact!=''">{{item.contact}}</span>
-          <span class="name" v-else>未知联系人</span>
-          <span class="label" v-if="item.is_main==1">主要</span>
+          <span v-if="item.contact!=''" class="name">{{ item.contact }}</span>
+          <span v-else class="name">未知联系人</span>
+          <span v-if="item.is_main==1" class="label">主要</span>
         </div>
         <div class="box-item-tel">
-          <span class="box-item-telnum">{{item.mobile || '-'}}</span>
-          <span class="box-item-tel-icon"></span>
+          <span class="box-item-telnum">{{ item.mobile || '-' }}</span>
+          <span class="box-item-tel-icon" />
         </div>
         <div class="box-item-contact-other">
-          <div>座机：{{item.telephone}}</div>
-          <div>QQ：{{item.qq}}</div>
-          <div>邮箱：{{item.email}}</div>
+          <div>座机：{{ item.telephone }}</div>
+          <div>QQ：{{ item.qq }}</div>
+          <div>邮箱：{{ item.email }}</div>
         </div>
         <div class="oprations-list">
-          <span class="opration1" v-if="item.is_main==0" @click="doSomeThing('main',item)">设为主要</span>
-          <span v-else></span>
+          <span v-if="item.is_main==0" class="opration1" @click="doSomeThing('main',item)">设为主要</span>
+          <span v-else />
           <div class="opration2">
             <span class="edit" @click="edit('edit',item)">修改</span>
-            <span class="del" v-if="item.is_main==0" @click="doSomeThing('delete',item)">删除</span>
+            <span v-if="item.is_main==0" class="del" @click="doSomeThing('delete',item)">删除</span>
           </div>
         </div>
       </div>
       <div class="box-item" @click="addContact('add')">
         <div class="add-btn">
           <!-- <span class="add-icon">+</span> -->
-          <i class="el-icon-circle-plus" style="color: rgb(37, 177, 73);margin-right: 3px;"></i>
+          <i class="el-icon-circle-plus" style="color: rgb(37, 177, 73);margin-right: 3px;" />
           <span class="add-text">添加联系人</span>
         </div>
       </div>
 
     </div>
-    <el-dialog :visible.sync="addContactVisible" append-to-body :title='title' :fullscreen='false' width="45%">
-      <el-form class="form-box" ref="form" :model="form" label-width="100px" :rules="rules">
+    <el-dialog :visible.sync="addContactVisible" append-to-body :title="title" :fullscreen="false" width="45%">
+      <el-form ref="form" class="form-box" :model="form" label-width="100px" :rules="rules">
         <el-form-item class="form-item" label="姓名：" prop="contact">
           <el-input v-model="form.contact" placeholder="请输入联系人姓名" />
         </el-form-item>
         <el-form-item label="性别">
           <el-radio-group v-model="form.sex">
-            <el-radio :label='0' value="0">男</el-radio>
-            <el-radio :label='1' value="1">女</el-radio>
+            <el-radio :label="0" value="0">男</el-radio>
+            <el-radio :label="1" value="1">女</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item class="form-item" label="手机号：" prop="mobile">
@@ -58,7 +58,7 @@
           <el-input v-model="form.qq" placeholder="请输入联系人QQ" />
         </el-form-item>
         <el-form-item class="e_button">
-          <el-button type="primary" @click="onSubmit('form')" :loading="submitLoading">保存</el-button>
+          <el-button type="primary" :loading="submitLoading" @click="onSubmit('form')">保存</el-button>
           <el-button @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -67,82 +67,136 @@
 </template>
 
 <script>
-  import {
-    getContactList,
-    setAsMainContact,
-    clueAddContact,
-    clueEditContact,
-    deleteContact
-  } from '@/api/directory'
-  import {
-    validMobile
-  } from '@/utils/validate'
+import {
+  getContactList,
+  setAsMainContact,
+  clueAddContact,
+  clueEditContact,
+  deleteContact
+} from '@/api/directory'
+import {
+  validMobile
+} from '@/utils/validate'
 
-  export default {
-    name: 'ClueDetails',
-    props: ['clue_id', 'details'],
-    data() {
-      var validateContactMobile = (rule, value, callback) => {
-        if (!validMobile(value)) {
-          callback(new Error('请输入正确的手机号'))
-        } else {
-          callback()
-        }
-      }
-      return {
-        rules: {
-          contact: [{
-            required: true,
-            message: '请输入联系人姓名',
-            trigger: 'blur'
-          }],
-          mobile: [{
-              required: true,
-              message: '请输入联系电话',
-              trigger: 'blur'
-            },
-            {
-              validator: validateContactMobile,
-              trigger: 'blur'
-            }
-          ]
-        },
-        form: {
-          'contact': '',
-          'sex': '',
-          'mobile': '',
-          'telephone': '',
-          'email': '',
-          'qq': ''
-        },
-        submitLoading: false,
-        scaleData: [],
-        options_citycategory: [],
-        industryScreenData: [],
-        list: [],
-        addContactVisible: false,
-        title: '添加联系人',
-        oprationVal: 'add'
-      }
-    },
-    created() {
-      this.getContactList()
-    },
-    methods: {
-      getContactList() {
-        getContactList({
-          clue_id: this.clue_id
-        }).then(res => {
-          if (res.code == 200) {
-            this.list = res.data
-            this.copyList = res.data
-          } else {
-            this.$message.error(res.message)
-          }
-        })
+export default {
+  name: 'ClueDetails',
+  props: ['clue_id', 'details'],
+  data() {
+    // var validateContactMobile = (rule, value, callback) => {
+    //   if (!validMobile(value)) {
+    //     callback(new Error('请输入正确的手机号'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    return {
+      rules: {
+        contact: [{
+          required: true,
+          message: '请输入联系人姓名',
+          trigger: 'blur'
+        }]
+        // mobile: [{
+        //     required: true,
+        //     message: '请输入联系电话',
+        //     trigger: 'blur'
+        //   },
+        //   {
+        //     validator: validateContactMobile,
+        //     trigger: 'blur'
+        //   }
+        // ]
       },
-      addContact(type) {
-        this.oprationVal = type
+      form: {
+        'contact': '',
+        'sex': '',
+        'mobile': '',
+        'telephone': '',
+        'email': '',
+        'qq': ''
+      },
+      submitLoading: false,
+      scaleData: [],
+      options_citycategory: [],
+      industryScreenData: [],
+      list: [],
+      addContactVisible: false,
+      title: '添加联系人',
+      oprationVal: 'add'
+    }
+  },
+  created() {
+    this.getContactList()
+  },
+  methods: {
+    getContactList() {
+      getContactList({
+        clue_id: this.clue_id
+      }).then(res => {
+        if (res.code == 200) {
+          this.list = res.data
+          this.copyList = res.data
+        } else {
+          this.$message.error(res.message)
+        }
+      })
+    },
+    addContact(type) {
+      this.oprationVal = type
+      this.form = {
+        'contact': '',
+        'sex': '',
+        'mobile': '',
+        'telephone': '',
+        'email': '',
+        'qq': ''
+      }
+      this.addContactVisible = true
+    },
+    edit(type, item) {
+      this.oprationVal = type
+      this.form = item
+      this.addContactVisible = true
+    },
+    doSomeThing(type, item) {
+      const valTxt = type == 'main' ? '确定将此联系人设为主要联系人吗？' : '确定删除该联系人吗？'
+      const cancelTxt = type == 'main' ? '已取消设为主要' : '已取消删除'
+      const params = {
+        clue_id: this.clue_id,
+        contact_id: item.contact_id
+      }
+      this.$confirm(valTxt, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (type == 'main') {
+          setAsMainContact(params).then(res => {
+            this.$message.success(res.message)
+            this.getContactList()
+          }).catch(() => {
+
+          })
+        } else if (type == 'delete') {
+          deleteContact(params).then(res => {
+            this.$message.success(res.message)
+            this.getContactList()
+          }).catch(() => {
+
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: cancelTxt
+        })
+      })
+    },
+    conversion() {
+      this.$emit('conversion')
+    },
+    reset() {
+      if (this.oprationVal == 'add') {
         this.form = {
           'contact': '',
           'sex': '',
@@ -151,135 +205,84 @@
           'email': '',
           'qq': ''
         }
-        this.addContactVisible = true
-      },
-      edit(type, item) {
-        this.oprationVal = type
-        this.form = item
-        this.addContactVisible = true
-      },
-      doSomeThing(type, item) {
-        let valTxt = type == 'main' ? '确定将此联系人设为主要联系人吗？' : '确定删除该联系人吗？'
-        let cancelTxt = type == 'main' ? '已取消设为主要' : '已取消删除'
-        let params = {
-          clue_id: this.clue_id,
-          contact_id: item.contact_id
+      } else if (this.oprationVal == 'edit') {
+        this.form = {
+          'contact': '',
+          'sex': '',
+          'mobile': '',
+          'telephone': '',
+          'email': '',
+          'qq': ''
         }
-        this.$confirm(valTxt, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          if (type == 'main') {
-            setAsMainContact(params).then(res => {
-              this.$message.success(res.message)
-              this.getContactList()
+      }
+    },
+    onSubmit(formName) {
+      const oprationVal = this.oprationVal
+      if (this.submitLoading === true) {
+        return false
+      }
+      if (!this.form.mobile && !this.form.telephone) {
+        this.$message.error('请填写手机号或公司座机二选一')
+        return false
+      }
+      this.submitLoading = true
+      const insertData = {
+        ...this.form
+      }
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          insertData.clue_id = this.clue_id
+          if (oprationVal == 'add') {
+            clueAddContact(insertData).then(res => {
+              if (res.code == 200) {
+                this.addContactVisible = false
+                this.$message.success(res.message)
+                this.form = {
+                  'contact': '',
+                  'sex': '',
+                  'mobile': '',
+                  'telephone': '',
+                  'email': '',
+                  'qq': ''
+                }
+                this.getContactList()
+              } else {
+                this.$message.error(res.message)
+              }
+              this.submitLoading = false
             }).catch(() => {
-
+              this.submitLoading = false
             })
-          } else if (type == 'delete') {
-            deleteContact(params).then(res => {
-              this.$message.success(res.message)
-              this.getContactList()
+          } else if (oprationVal == 'edit') {
+            clueEditContact(insertData).then(res => {
+              if (res.code == 200) {
+                this.addContactVisible = false
+                this.$message.success(res.message)
+                this.form = {
+                  'contact': '',
+                  'sex': '',
+                  'mobile': '',
+                  'telephone': '',
+                  'email': '',
+                  'qq': ''
+                }
+                this.getContactList()
+              } else {
+                this.$message.error(res.message)
+              }
+              this.submitLoading = false
             }).catch(() => {
-
+              this.submitLoading = false
             })
           }
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: cancelTxt
-          })
-        })
-      },
-      conversion() {
-        this.$emit('conversion')
-      },
-      reset() {
-        if (this.oprationVal == 'add') {
-          this.form = {
-            'contact': '',
-            'sex': '',
-            'mobile': '',
-            'telephone': '',
-            'email': '',
-            'qq': ''
-          }
-        } else if (this.oprationVal == 'edit') {
-          this.form = {
-            'contact': '',
-            'sex': '',
-            'mobile': '',
-            'telephone': '',
-            'email': '',
-            'qq': ''
-          }
-        }
-      },
-      onSubmit(formName) {
-        let oprationVal = this.oprationVal
-        if (this.submitLoading === true) {
+        } else {
+          this.submitLoading = false
           return false
         }
-        this.submitLoading = true
-        const insertData = {
-          ...this.form
-        }
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            insertData.clue_id = this.clue_id
-            if (oprationVal == 'add') {
-              clueAddContact(insertData).then(res => {
-                if (res.code == 200) {
-                  this.addContactVisible = false
-                  this.$message.success(res.message)
-                  this.form = {
-                    'contact': '',
-                    'sex': '',
-                    'mobile': '',
-                    'telephone': '',
-                    'email': '',
-                    'qq': ''
-                  }
-                  this.getContactList()
-                } else {
-                  this.$message.error(res.message)
-                }
-                this.submitLoading = false
-              }).catch(() => {
-                this.submitLoading = false
-              })
-            } else if (oprationVal == 'edit') {
-              clueEditContact(insertData).then(res => {
-                if (res.code == 200) {
-                  this.addContactVisible = false
-                  this.$message.success(res.message)
-                  this.form = {
-                    'contact': '',
-                    'sex': '',
-                    'mobile': '',
-                    'telephone': '',
-                    'email': '',
-                    'qq': ''
-                  }
-                  this.getContactList()
-                } else {
-                  this.$message.error(res.message)
-                }
-                this.submitLoading = false
-              }).catch(() => {
-                this.submitLoading = false
-              })
-            }
-
-          } else {
-            this.submitLoading = false
-            return false
-          }
-        })
-      }
+      })
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>

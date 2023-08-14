@@ -513,6 +513,14 @@ export default {
     this.$store.dispatch('getClassify', 'trade')
     this.$store.dispatch('getClassify', 'companyScale')
     this.$store.dispatch('getClassify', 'citycategory')
+    /**
+     * 【ID1000476】
+     * 【bug】注册企业后点发布职位页面空白
+     * yx - 2022.12.26
+     * [新增]:
+     * jobNature
+     */
+    this.$store.dispatch('getClassify', 'jobNature')
     this.fetchData()
   },
   computed: {

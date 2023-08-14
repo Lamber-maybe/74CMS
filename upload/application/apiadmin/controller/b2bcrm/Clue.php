@@ -11,7 +11,7 @@ class Clue extends Backend
 
     protected $rule = [
         'contact' => 'require|max:6',
-        'mobile' => 'require|number|max:11',
+        'mobile' => 'number|max:11',
         'weixin' => 'max:15',
         'telephone' => 'max:20',
         'qq' => 'max:15',
@@ -20,7 +20,7 @@ class Clue extends Backend
 
     protected $message = [
         'contact' => '联系人必填，且最多6个字',
-        'mobile' => '手机号必填，且11位数字',
+        'mobile' => '手机号为11位数字',
         'weixin' => '微信最多15位',
         'telephone' => '座机最多20位',
         'qq' => 'QQ最多15位',
@@ -151,7 +151,7 @@ class Clue extends Backend
                 break;
         }
 
-        $field = 'a.id,a.`name`,a.admin_id,a.mobile,a.contacts,a.weixin,a.district1,a.district2,a.district3,a.district,a.address,a.updatetime,a.createtime,a.creat_id,a.last_visit_time,a.remark,a.trade,count(b.id) as follow_count,a.collection_time,count(b.id) as follow_count,a.tripartite_id';
+        $field = 'a.id,a.`name`,a.admin_id,a.mobile,a.contacts,a.weixin,a.district1,a.district2,a.district3,a.district,a.address,a.updatetime,a.createtime,a.creat_id,a.last_visit_time,a.remark,a.trade,count(b.id) as follow_count,a.collection_time,count(b.id) as follow_count,a.tripartite_id,a.telephone';
         $list = model('b2bcrm.CrmClue')->getList($where, $order, $current_page, $pagesize, $field);
 
         $category_data = model('Category')->getCache('QS_trade');
@@ -436,16 +436,17 @@ class Clue extends Backend
             if (empty($contactInfo['contact'])) {
                 $this->ajaxReturn(500, '请填写联系人');
             }
-            if (empty($contactInfo['mobile'])) {
-                $this->ajaxReturn(500, '请填写联系电话');
+            if (empty($contactInfo['mobile']) && empty($contactInfo['telephone'])) {
+                $this->ajaxReturn(500, '请填写联系电话或固话二选一');
             }
-            if (!fieldRegex($contactInfo['mobile'], 'mobile')) {
+            if (!empty($contactInfo['mobile']) && !fieldRegex($contactInfo['mobile'], 'mobile')) {
                 $this->ajaxReturn(500, '联系电话格式错误');
             }
             if ($contactInfo['is_main'] == 1) {
                 $mainContact = [
                     'contact' => $contactInfo['contact'],
                     'mobile' => $contactInfo['mobile'],
+                    'telephone' => isset($contactInfo['telephone']) ? $contactInfo['telephone'] : ''
                 ];
             }
         }
@@ -454,12 +455,13 @@ class Clue extends Backend
             $mainContact = [
                 'contact' => $contactList[0]['contact'],
                 'mobile' => $contactList[0]['mobile'],
+                'telephone' => isset($contactInfo[0]['telephone']) ? $contactInfo[0]['telephone'] : ''
             ];
             $contactList[0]['is_main'] = 1;
         }
         $input_data['contacts'] = $mainContact['contact'];
         $input_data['mobile'] = $mainContact['mobile'];
-
+        $input_data['telephone'] = $mainContact['telephone'];
         $preg_wechat = '/^[_a-zA-Z0-9]{5,19}+$/isu';
         if (!empty($input_data['weixin']) && !preg_match($preg_wechat, $input_data['weixin'])) {
             $this->ajaxReturn(500, '微信号格式错误');
@@ -566,7 +568,10 @@ class Clue extends Backend
                 $this->ajaxReturn(500, '线索名称已存在');
             }
         }
-        if (!fieldRegex($input['mobile'], 'mobile')) {
+        if (empty($input['mobile']) && empty($input['telephone'])){
+            $this->ajaxReturn(500, '请填写联系手机或座机二选一');
+        }
+        if (!empty($input['mobile']) && !fieldRegex($input['mobile'], 'mobile')) {
             $this->ajaxReturn(500, '联系电话格式错误');
         }
         $preg_wechat = '/^[_a-zA-Z0-9]{5,19}+$/isu';
@@ -937,7 +942,7 @@ class Clue extends Backend
             '0 as contact_id',
             'contacts as contact',
             'mobile',
-            '"" as telephone',
+            'telephone',
             '"" as qq',
             '"" as email',
             '0 as sex',
@@ -991,7 +996,8 @@ class Clue extends Backend
         $clueField = [
             'id',
             'mobile',
-            'contacts'
+            'contacts',
+            'telephone'
         ];
         $clueWhere = [
             'id' => $clueId
@@ -1010,7 +1016,8 @@ class Clue extends Backend
             'id',
             'contact',
             'mobile',
-            'is_main'
+            'is_main',
+            'telephone'
         ];
         $contactWhere = [
             'id' => $contactId,
@@ -1024,8 +1031,12 @@ class Clue extends Backend
         if (empty($contactInfo['contact'])) {
             $this->ajaxReturn(500, '请先完善联系人姓名再来设置');
         }
+        if (!$contactInfo['mobile'] && !$contactInfo['telephone'])
+        {
+            $this->ajaxReturn(500, '手机号和座机都未填写，不能设置为主要联系方式');
+        }
         // 手机号格式正确才可以设为主要
-        if (!fieldRegex($contactInfo['mobile'], 'mobile')) {
+        if (!empty($contactInfo['mobile']) && !fieldRegex($contactInfo['mobile'], 'mobile')) {
             $this->ajaxReturn(500, '手机号格式不正确，不能设置为主要联系方式');
         }
         if ($contactInfo['is_main'] == 1) {
@@ -1050,6 +1061,7 @@ class Clue extends Backend
                     'clue_id' => $clueId,
                     'contact' => $clueInfo['contacts'],
                     'mobile' => $clueInfo['mobile'],
+                    'telephone' => $clueInfo['telephone'],
                     'addtime' => time()
                 ];
                 $result = $clueContactModel->insertGetId($contactData);
@@ -1088,7 +1100,8 @@ class Clue extends Backend
             ];
             $updateData = [
                 'mobile' => $contactInfo['mobile'],
-                'contacts' => $contactInfo['contact']
+                'contacts' => $contactInfo['contact'],
+                'telephone' => $contactInfo['telephone']
             ];
             $result = $clueModel->where($updateWhere)->update($updateData);
             if (false === $result) {
@@ -1146,16 +1159,17 @@ class Clue extends Backend
             'email' => input('post.email/s', '', 'trim'),
             'sex' => input('post.sex/d', 0)
         ];
+        if (empty($inputData['mobile']) && empty($inputData['telephone']))
+        {
+            $this->ajaxReturn(500, '请填写手机号或公司座机二选一');
+        }
         $validate = new Validate($this->rule, $this->message);
         $result = $validate->check($inputData);
         if (false === $result) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        if (!fieldRegex($inputData['mobile'], 'mobile')) {
+        if (!empty($inputData['mobile']) && !fieldRegex($inputData['mobile'], 'mobile')) {
             $this->ajaxReturn(500, '手机号格式不正确');
-        }
-        if (!empty($inputData['telephone']) && !fieldRegex($inputData['telephone'], 'tel')) {
-            $this->ajaxReturn(500, '座机号格式不正确');
         }
         if (!empty($inputData['email']) && !fieldRegex($inputData['email'], 'email')) {
             $this->ajaxReturn(500, '邮箱格式不正确');
@@ -1259,16 +1273,17 @@ class Clue extends Backend
             'email' => input('post.email/s', '', 'trim'),
             'sex' => input('post.sex/d', 0)
         ];
+        if (empty($inputData['mobile']) && empty($inputData['telephone']))
+        {
+            $this->ajaxReturn(500, '请填写手机号或公司座机二选一');
+        }
         $validate = new Validate($this->rule, $this->message);
         $result = $validate->check($inputData);
         if (false === $result) {
             $this->ajaxReturn(500, $validate->getError());
         }
-        if (!fieldRegex($inputData['mobile'], 'mobile')) {
+        if (!empty($inputData['mobile']) && !fieldRegex($inputData['mobile'], 'mobile')) {
             $this->ajaxReturn(500, '手机号格式不正确');
-        }
-        if (!empty($inputData['telephone']) && !fieldRegex($inputData['telephone'], 'tel')) {
-            $this->ajaxReturn(500, '座机号格式不正确');
         }
         if (!empty($inputData['email']) && !fieldRegex($inputData['email'], 'email')) {
             $this->ajaxReturn(500, '邮箱格式不正确');
@@ -1304,6 +1319,7 @@ class Clue extends Backend
                 $updateData = [
                     'mobile' => $inputData['mobile'],
                     'contacts' => $inputData['contact'],
+                    'telephone' => $inputData['telephone']
                 ];
                 $result = $clueModel->where($updateWhere)->update($updateData);
                 if (false === $result) {
@@ -1581,28 +1597,6 @@ class Clue extends Backend
             $contactList = array_merge($contactList, $contactData);
         }
 
-        // 查询线索的跟进记录
-        $followField = [
-            '2 as type',
-            "$companyInfo[uid] as uid",
-            'admin_id',
-            '1 as utype',
-            'mode',
-            'next_time',
-            'result',
-            'enclosure',
-            'create_time',
-            'link_man',
-            'link_mobile',
-            'linkman_id',
-        ];
-        $followWhere = [
-            'type' => 1,
-            'clue_id' => $clueId,
-        ];
-        $followModel = db('crm_follow_up');
-        $followList = $followModel->field($followField)->where($followWhere)->select();
-
         $companyContactModel = db('crm_company_contact');
         // 开启事务
         $companyContactModel->startTrans();
@@ -1612,19 +1606,8 @@ class Clue extends Backend
             if (empty($result)) {
                 throw new \Exception('添加客户联系人失败-请求SQL为：' . $companyContactModel->getLastSql());
             }
-            // 合并跟进记录
-            if (!empty($followList)) {
-                $result = $followModel->insertAll($followList);
-                if (empty($result)) {
-                    throw new \Exception('添加客户跟进记录失败-请求SQL为：' . $followModel->getLastSql());
-                }
-            }
             // 判断企业最后跟进信息没有并且要合并的线索中有的话，就将线索中的最后跟进信息同步过去
-            if (
-                (empty($companyInfo['last_visit_time']) || empty($companyInfo['last_visit_admin']))
-                &&
-                (!empty($clueInfo['last_visit_time']) || !empty($clueInfo['last_visit_admin']))
-            ) {
+            if (intval($clueInfo['last_visit_time']) > intval($companyInfo['last_visit_time'])) {
                 $updateWhere = [
                     'id' => $companyId
                 ];
@@ -1636,6 +1619,33 @@ class Clue extends Backend
                 if (false === $result) {
                     throw new \Exception('更改客户最后跟进信息失败-请求SQL为：' . $companyModel->getLastSql());
                 }
+            }
+
+            $crmClueRes = model('b2bcrm.CrmClue')->isUpdate('true')
+                ->save(
+                    [
+                    'is_customer' => 1,
+                    'utype' => 1,
+                    'uid' => $companyInfo['uid']
+                    ],
+                    ['id' => $clueId]
+                );
+            if (false === $crmClueRes) {
+                throw new \Exception('线索转换失败-错误：' . model('b2bcrm.CrmClue')->getError());
+            }
+            $crmFollowUpRes = model('b2bcrm.CrmFollowUp')
+                ->isUpdate(true)
+                ->save(
+                    [
+                    'uid' => $companyInfo['uid']
+                    ],
+                    [
+                        'clue_id' => $clueId,
+                        'type' => 1
+                    ]
+                );
+            if (false === $crmFollowUpRes) {
+                throw new \Exception('线索跟进记录转换失败-错误：' . model('b2bcrm.CrmFollowUp')->getError());
             }
 
             model('AdminLog')->record(

@@ -1011,7 +1011,7 @@ export default {
         margin-right: 6px;
 
         &.clickedColor {
-          color: #909090;
+          color: #771caa;
         }
       }
       position: relative;

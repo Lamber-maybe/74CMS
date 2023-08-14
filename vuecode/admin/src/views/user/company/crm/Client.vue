@@ -88,16 +88,16 @@
         <div
           :class="
             weixinFilter != '' ||
-            gradeFilter != '' ||
-            examineFilter != '' ||
-            mealFilter != '' ||
-            followupFilter != '' ||
-            authenticationFilter != '' ||
-            positionFilter != '' ||
-            saleFilter != '' ||
-            deadlineFilter != '' ||
-            districtFilter != '' ||
-            tradeFilter != ''
+              gradeFilter != '' ||
+              examineFilter != '' ||
+              mealFilter != '' ||
+              followupFilter != '' ||
+              authenticationFilter != '' ||
+              positionFilter != '' ||
+              saleFilter != '' ||
+              deadlineFilter != '' ||
+              districtFilter != '' ||
+              tradeFilter != ''
               ? 'setField_s'
               : 'setField'
           "
@@ -105,14 +105,14 @@
           <el-popover v-model="visiblepop" placement="bottom-start" width="220" trigger="manual">
             <div class="setField_h">
               <div v-for="item in fieldData" class="setFields">
-                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)" />
-                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)" />
+                <input v-if="item.select == true" type="checkbox" :name="item.name" :value="item.field" checked @change="select(item.field)">
+                <input v-if="item.select == false" type="checkbox" :name="item.name" :value="item.field" @change="select(item.field)">
                 <span style="margin-left: 10px;">{{ item.name }}</span>
               </div>
             </div>
             <el-button slot="reference" :class="menu_icon == 'menu' ? 'field_s' : 'field_s_select'" @click="menu">
-              <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="" />
-              <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="" />
+              <img v-if="menu_icon == 'menu'" src="../../../../assets/images/company/crm/menu.png" alt="">
+              <img v-if="menu_icon == 'menu_select'" src="../../../../assets/images/company/crm/menu1.png" alt="">
             </el-button>
             <div style="margin-top:10px;margin-right: 10px;">
               <el-button class="filterOperation" type="text" size="small" @click="setFieldClose()">关闭</el-button>
@@ -128,6 +128,7 @@
           :header-cell-style="{ background: '#f9f9f9', 'border-right': '1px solid #e4e6eb' }"
           border
           stripe
+          :height="tabelHeight"
           :default-sort="{ prop: 'addtime' }"
           style="width: 100%;"
           @sort-change="sortTable"
@@ -692,32 +693,32 @@
             <div class="title2">扫码添加客服</div>
             <div class="title3">快速开通呼叫业务</div>
           </div>
-          <div class="code"><img src="../../../../assets/images/outbound/renew.png" alt="" /></div>
+          <div class="code"><img src="../../../../assets/images/outbound/renew.png" alt=""></div>
           <div style="clear:both" />
           <div class="slogan">一键发起云呼叫，自动录音，助力提升沟通效率！</div>
           <div class="advantage">
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">免硬件设备</div>
             </div>
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">录音清晰无杂音</div>
             </div>
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">外显销售手机号</div>
             </div>
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">招聘行业专用线路</div>
             </div>
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">稳定性更高</div>
             </div>
             <div class="advantage-box">
-              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt="" /></div>
+              <div class="img"><img src="../../../../assets/images/outbound/choose.png" alt=""></div>
               <div class="title">防封强、接通率高</div>
             </div>
           </div>
@@ -738,7 +739,7 @@
   </div>
 </template>
 <script>
-import clientShow from '@/views/user/company/crm/components/ClientShow';
+import clientShow from '@/views/user/company/crm/components/ClientShow'
 import {
   classify,
   clueAdminLists,
@@ -753,17 +754,17 @@ import {
   companyRelease,
   companySetDisplay,
   putRecycleBin
-} from '@/api/company_crm';
-import { export_json_to_excel } from '@/excel/Export2Excel';
-import { parseTime, setMemberLogin } from '@/utils';
-import { outboundCall } from '@/api/outbound';
-import { management } from '@/api/member';
+} from '@/api/company_crm'
+import { export_json_to_excel } from '@/excel/Export2Excel'
+import { parseTime, setMemberLogin } from '@/utils'
+import { outboundCall } from '@/api/outbound'
+import { management } from '@/api/member'
 
 export default {
   name: 'Client',
   filters: {
     timeFilter(timestamp) {
-      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}');
+      return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
     }
   },
   components: {
@@ -847,51 +848,82 @@ export default {
       district: '',
       tradeFilter: '',
       districtFilter: '',
-      props: { multiple: false, checkStrictly: true }
-    };
+      props: { multiple: false, checkStrictly: true },
+      tabelHeight: 0
+    }
   },
   computed: {
     clueTime() {
-      var clueTime = this.$route.query.time;
-      return clueTime;
+      var clueTime = this.$route.query.time
+      return clueTime
     }
   },
   watch: {
     clueTime() {
-      var clue_type = localStorage.getItem('clue_type');
-      var clue_company_id = localStorage.getItem('clue_company_id');
+      var clue_type = localStorage.getItem('clue_type')
+      var clue_company_id = localStorage.getItem('clue_company_id')
       if (clue_type != '' && clue_type == 'follow') {
-        this.drawer = true;
-        this.rowId = clue_company_id;
-        localStorage.setItem('clue_company_id', '');
-        localStorage.setItem('clue_type', '');
+        this.drawer = true
+        this.rowId = clue_company_id
+        localStorage.setItem('clue_company_id', '')
+        localStorage.setItem('clue_type', '')
       }
     }
   },
+  updated(){
+    this.$nextTick(() => {
+      this.$refs.multipleTable.doLayout()
+      if (!this.loading){
+        setTimeout(() => {
+          var classStr = this.$refs.multipleTable.$el.className
+          var classAry = classStr.split(' ')
+          var a = document.querySelectorAll('.el-table__fixed-right')[0]
+          var b = document.querySelectorAll('.el-table__empty-block')[0]
+          if (b != undefined){
+            b.style.width = 100 + '%'
+          }
+          var isClass = classAry.find(function(value, index, arr){
+            return value == 'el-table--scrollable-y'
+          })
+          if (isClass){
+            a.style.right = 10 + 'px'
+          } else {
+            a.style.right = 0 + 'px'
+          }
+        }, 100)
+      }
+    })
+  },
+  mounted(){
+    this.$nextTick(() => {
+      var docHeight = document.documentElement.clientHeight
+      this.tabelHeight = docHeight - 316 - 60
+    })
+  },
   created() {
-    this.currentNav = this.$route.name;
+    this.currentNav = this.$route.name
     if (this.currentNav == 'allClient') {
-      this.title = '全部客户';
-      this.list_type = 0;
+      this.title = '全部客户'
+      this.list_type = 0
     } else if (this.currentNav == 'myClient') {
-      this.title = '我的客户';
-      this.list_type = 2;
+      this.title = '我的客户'
+      this.list_type = 2
     } else if (this.currentNav == 'pubilceClient') {
-      this.title = '客户公海';
-      this.list_type = 1;
+      this.title = '客户公海'
+      this.list_type = 1
     }
-    this.crmCustomList();
-    this.clueList();
-    this.classify();
-    this.lifeCycle();
-    this.clueAdminLists();
-    var clue_type = localStorage.getItem('clue_type');
-    var clue_company_id = localStorage.getItem('clue_company_id');
+    this.crmCustomList()
+    this.clueList()
+    this.classify()
+    this.lifeCycle()
+    this.clueAdminLists()
+    var clue_type = localStorage.getItem('clue_type')
+    var clue_company_id = localStorage.getItem('clue_company_id')
     if (clue_type != '' && clue_type == 'follow') {
-      this.drawer = true;
-      this.rowId = clue_company_id;
-      localStorage.setItem('clue_company_id', '');
-      localStorage.setItem('clue_type', '');
+      this.drawer = true
+      this.rowId = clue_company_id
+      localStorage.setItem('clue_company_id', '')
+      localStorage.setItem('clue_type', '')
     }
   },
   // mounted() {
@@ -912,41 +944,41 @@ export default {
         .then(() => {
           putRecycleBin({ company_id: id }).then(response => {
             if (response.code == 200) {
-              this.$message.success(response.message);
-              this.clueList();
+              this.$message.success(response.message)
+              this.clueList()
             } else {
-              this.$message.error(response.message);
+              this.$message.error(response.message)
             }
-          });
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     funIsDisplayBtn() {
       companySetDisplay({ id: this.multipleSelection, is_display: this.is_display }).then(response => {
         if (response.code == 200) {
-          this.$message.success(response.message);
-          this.dialogIsDispay = false;
-          this.clueList();
+          this.$message.success(response.message)
+          this.dialogIsDispay = false
+          this.clueList()
         } else {
-          this.$message.error(response.message);
+          this.$message.error(response.message)
         }
-      });
+      })
     },
     funReceive() {
-      var that = this;
+      var that = this
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要领取的企业');
-        return false;
+        that.$message.error('请选择要领取的企业')
+        return false
       }
-      this.receive(that.uid_arr);
+      this.receive(that.uid_arr)
     },
     funRelease() {
-      var that = this;
+      var that = this
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要释放的企业');
-        return false;
+        that.$message.error('请选择要释放的企业')
+        return false
       }
-      this.release(that.uid_arr);
+      this.release(that.uid_arr)
     },
     release(id) {
       this.$confirm('确定要释放该企业', '提示', {
@@ -957,14 +989,14 @@ export default {
         .then(() => {
           companyRelease({ uid: id }).then(response => {
             if (response.code == 200) {
-              this.$message.success(response.message);
-              this.clueList();
+              this.$message.success(response.message)
+              this.clueList()
             } else {
-              this.$message.error(response.message);
+              this.$message.error(response.message)
             }
-          });
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     receive(id) {
       this.$confirm('确定要领取该企业吗？', '提示', {
@@ -975,29 +1007,29 @@ export default {
         .then(() => {
           companyReceive({ uid: id }).then(response => {
             if (response.code == 200) {
-              this.$message.success(response.message);
-              this.clueList();
+              this.$message.success(response.message)
+              this.clueList()
             } else {
-              this.$message.error(response.message);
+              this.$message.error(response.message)
             }
-          });
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     goto(target) {
-      this.$router.push(target);
+      this.$router.push(target)
     },
     sortTable({ column, order }) {
       if (order == 'ascending') {
-        this.sortType = 'asc';
+        this.sortType = 'asc'
       } else if (order == 'descending') {
-        this.sortType = 'desc';
+        this.sortType = 'desc'
       } else {
-        this.sortType = '';
+        this.sortType = ''
       }
-      this.sort_type = column.property;
-      this.sort = this.sortType;
-      this.clueList();
+      this.sort_type = column.property
+      this.sort = this.sortType
+      this.clueList()
     },
     funExport() {
       var that = this
@@ -1014,16 +1046,16 @@ export default {
         return false
       }
       if (that.multipleSelection.length == 0) {
-        that.$message.error('请选择要导出的企业');
-        return false;
+        that.$message.error('请选择要导出的企业')
+        return false
       }
-      var exportData = this.exportData;
+      var exportData = this.exportData
       for (var i = 0; i <= exportData.length - 1; i++) {
         if (exportData[i].not_following_day == -1) {
-          exportData[i].not_following_day = '';
+          exportData[i].not_following_day = ''
         }
       }
-      that.exportExcel(this.exportData);
+      that.exportExcel(this.exportData)
       // exportCrmCompanyById(param).then(response => {
       //   if (response.code == 200) {
       //     console.log(response.data.items)
@@ -1037,167 +1069,174 @@ export default {
     },
     exportExcel(list) {
       require.ensure([], () => {
-        const { export_json_to_excel } = require('@/excel/Export2Excel');
-        const tHeader = this.export_name; // 上面设置Excel的表格第一行的标题
-        const filterVal = this.export_field;
-        const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, '企业导出');
-      });
+        const { export_json_to_excel } = require('@/excel/Export2Excel')
+        const tHeader = this.export_name // 上面设置Excel的表格第一行的标题
+        const filterVal = this.export_field
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '企业导出')
+      })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map(v => filterVal.map(j => v[j]))
     },
     handlerRefreshJobBatch() {
       if (this.multipleSelection.length <= 0) {
-        this.$message({ type: 'error', message: '请选择要刷新的企业' });
-        return false;
+        this.$message({ type: 'error', message: '请选择要刷新的企业' })
+        return false
       }
       this.$confirm('确定要批量刷新所选企业的所有职位？', '系统提示', {
         type: 'warning'
       })
         .then(() => {
-          var companyIdstr = this.multipleSelection.join(',');
+          var companyIdstr = this.multipleSelection.join(',')
           refreshCrmJob({ company_id: companyIdstr, is_batch: 1 })
             .then(res => {
               if (res.code == 200) {
-                this.$message({ type: 'success', message: res.message });
-                this.clueList();
+                this.$message({ type: 'success', message: res.message })
+                this.clueList()
               } else {
-                this.$message({ type: 'error', message: res.message });
+                this.$message({ type: 'error', message: res.message })
               }
             })
-            .catch(() => {});
+            .catch(() => {})
         })
         .catch(() => {
           // on cancel
-        });
+        })
     },
     displayBatch() {
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要设置的企业');
-        return false;
+        this.$message.error('请选择要设置的企业')
+        return false
       }
-      this.dialogIsDispay = true;
+      this.dialogIsDispay = true
     },
     closeDialog() {
-      this.dialogFormVisible = false;
+      this.dialogFormVisible = false
     },
     fun_set_audit() {
       if (this.auditSubmitLoading == true) {
-        return false;
+        return false
       }
-      this.auditSubmitLoading = true;
+      this.auditSubmitLoading = true
       const params = {
         id: this.multipleSelection,
         audit: this.setAuditVal,
         reason: this.setAuditReason
-      };
+      }
       companyCrmAudit(params, 'post').then(response => {
         if (response.code == 200) {
-          this.$message.success(response.message);
-          this.auditSubmitLoading = false;
-          this.clueList();
-          this.closeDialog();
-          return true;
+          this.$message.success(response.message)
+          this.auditSubmitLoading = false
+          this.clueList()
+          this.closeDialog()
+          return true
         } else {
-          this.auditSubmitLoading = false;
-          this.$message.error(response.message);
-          return false;
+          this.auditSubmitLoading = false
+          this.$message.error(response.message)
+          return false
         }
-      });
+      })
     },
     choose() {
       this.tableData.forEach(row => {
-        this.$refs.multipleTable.toggleRowSelection(row);
-      });
+        this.$refs.multipleTable.toggleRowSelection(row)
+      })
     },
     handleSelectionChange(val) {
-      var id_arr = [];
-      var uid_arr = [];
+      var id_arr = []
+      var uid_arr = []
       val.forEach(row => {
-        id_arr.push(row.id);
-        uid_arr.push(row.uid);
-      });
-      this.uid_arr = uid_arr;
-      this.multipleSelection = id_arr;
-      this.exportData = val;
+        id_arr.push(row.id)
+        uid_arr.push(row.uid)
+      })
+      this.uid_arr = uid_arr
+      this.multipleSelection = id_arr
+      this.exportData = val
     },
     funAuditBatch() {
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要认证的企业');
-        return false;
+        this.$message.error('请选择要认证的企业')
+        return false
       }
-      this.setAuditVal = 0;
-      this.dialogFormVisible = true;
+      this.setAuditVal = 0
+      this.dialogFormVisible = true
     },
     setFieldClose() {
-      this.menu_icon = 'menu';
-      this.visiblepop = false;
+      this.menu_icon = 'menu'
+      this.visiblepop = false
     },
     reset(field) {
+      this.tabelHeight = 'calc(100vh - 372px)'
       if (field == 'all') {
-        this.authenticationScreen = '';
-        this.positionScreen = '';
-        this.followupScreen = '';
-        this.examineScreen = '';
-        this.mealScreen = '';
-        this.gradeScreen = '';
-        this.saleScreen = '';
-        this.key_type = '1';
-        this.keyword = '';
-        this.setmealDeadline = [];
-        this.weixin = [];
-        this.trade_name = '';
-        this.trade = '';
-        this.district = '';
+        this.authenticationScreen = ''
+        this.positionScreen = ''
+        this.followupScreen = ''
+        this.examineScreen = ''
+        this.mealScreen = ''
+        this.gradeScreen = ''
+        this.saleScreen = ''
+        this.key_type = '1'
+        this.keyword = ''
+        this.setmealDeadline = []
+        this.weixin = []
+        this.trade_name = ''
+        this.trade = ''
+        this.district = ''
       }
       if (field == 'audit') {
-        this.authenticationScreen = '';
+        this.authenticationScreen = ''
       }
       if (field == 'jobs_num') {
-        this.positionScreen = '';
+        this.positionScreen = ''
       }
       if (field == 'not_following_day') {
-        this.followupScreen = '';
+        this.followupScreen = ''
       }
       if (field == 'is_display') {
-        this.examineScreen = '';
+        this.examineScreen = ''
       }
       if (field == 'setmeal_name') {
-        this.mealScreen = '';
+        this.mealScreen = ''
       }
       if (field == 'is_bind') {
-        this.weixin = '';
+        this.weixin = ''
       }
       if (field == 'life_cycle_txt') {
-        this.gradeScreen = '';
+        this.gradeScreen = ''
       }
       if (field == 'admin_username') {
-        this.saleScreen = '';
+        this.saleScreen = ''
       }
       if (field == 'deadline') {
-        this.setmealDeadline = '';
+        this.setmealDeadline = ''
       }
       if (field == 'trade_name' || field == 'trade') {
-        this.trade = '';
+        this.trade = ''
       }
       if (field == 'district') {
-        this.district = '';
+        this.district = ''
       }
-      this.confirm();
+      this.confirm('reset')
     },
-    confirm() {
+    confirm(type) {
+      if (type != 'reset'){
+        this.tabelHeight = 'calc(100vh - 446px)'
+        this.$nextTick(() => {
+          this.$refs.multipleTable.doLayout()
+        })
+      }
       if (this.weixin != '') {
         for (var i = 0; i <= this.weixinData.length - 1; i++) {
           if (this.weixin == this.weixinData[i].id) {
             this.weixinFilter = {
               field: 'is_bind',
               name: this.weixinData[i].name
-            };
+            }
           }
         }
       } else {
-        this.weixinFilter = '';
+        this.weixinFilter = ''
       }
       if (this.gradeScreen != '') {
         for (var i = 0; i <= this.gradeScreenData.length - 1; i++) {
@@ -1205,11 +1244,11 @@ export default {
             this.gradeFilter = {
               field: 'life_cycle_txt',
               name: this.gradeScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.gradeFilter = '';
+        this.gradeFilter = ''
       }
       if (this.examineScreen != '') {
         for (var i = 0; i <= this.examineScreenData.length - 1; i++) {
@@ -1217,11 +1256,11 @@ export default {
             this.examineFilter = {
               field: 'is_display',
               name: this.examineScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.examineFilter = '';
+        this.examineFilter = ''
       }
       if (this.mealScreen != '') {
         for (var i = 0; i <= this.mealScreenData.length - 1; i++) {
@@ -1229,11 +1268,11 @@ export default {
             this.mealFilter = {
               field: 'setmeal_name',
               name: this.mealScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.mealFilter = '';
+        this.mealFilter = ''
       }
       if (this.followupScreen != '') {
         for (var i = 0; i <= this.followupScreenData.length - 1; i++) {
@@ -1241,11 +1280,11 @@ export default {
             this.followupFilter = {
               field: 'not_following_day',
               name: this.followupScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.followupFilter = '';
+        this.followupFilter = ''
       }
       if (this.positionScreen != '') {
         for (var i = 0; i <= this.positionScreenData.length - 1; i++) {
@@ -1253,11 +1292,11 @@ export default {
             this.positionFilter = {
               field: 'jobs_num',
               name: this.positionScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.positionFilter = '';
+        this.positionFilter = ''
       }
       if (this.authenticationScreen !== '') {
         for (var i = 0; i <= this.authenticationScreenData.length - 1; i++) {
@@ -1265,11 +1304,11 @@ export default {
             this.authenticationFilter = {
               field: 'audit',
               name: this.authenticationScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.authenticationFilter = '';
+        this.authenticationFilter = ''
       }
       if (this.saleScreen != '') {
         for (var i = 0; i <= this.saleScreenData.length - 1; i++) {
@@ -1277,11 +1316,11 @@ export default {
             this.saleFilter = {
               field: 'admin_username',
               name: this.saleScreenData[i].name
-            };
+            }
           }
         }
       } else {
-        this.saleFilter = '';
+        this.saleFilter = ''
       }
       if (this.setmealDeadline != '') {
         for (var i = 0; i <= this.setmealDeadlineData.length - 1; i++) {
@@ -1289,11 +1328,11 @@ export default {
             this.deadlineFilter = {
               field: 'deadline',
               name: this.setmealDeadlineData[i].name
-            };
+            }
           }
         }
       } else {
-        this.deadlineFilter = '';
+        this.deadlineFilter = ''
       }
       if (this.trade != '') {
         for (var i = 0; i <= this.trade_list.length - 1; i++) {
@@ -1301,11 +1340,11 @@ export default {
             this.tradeFilter = {
               field: 'trade_name',
               name: this.trade_list[i].name
-            };
+            }
           }
         }
       } else {
-        this.tradeFilter = '';
+        this.tradeFilter = ''
       }
       if (this.district != '') {
         if (this.district.length == 1) {
@@ -1314,7 +1353,7 @@ export default {
               this.districtFilter = {
                 field: 'district',
                 name: this.districtData[i].label
-              };
+              }
             }
           }
         }
@@ -1325,7 +1364,7 @@ export default {
                 this.districtFilter = {
                   field: 'district',
                   name: this.districtData[i].children[a].label
-                };
+                }
               }
             }
           }
@@ -1338,107 +1377,107 @@ export default {
                   this.districtFilter = {
                     field: 'district',
                     name: this.districtData[i].children[a].children[b].label
-                  };
+                  }
                 }
               }
             }
           }
         }
       } else {
-        this.districtFilter = '';
+        this.districtFilter = ''
       }
-      this.currentPage = 1;
-      this.clueList();
-      this.crmCustomList();
+      this.currentPage = 1
+      this.clueList()
+      this.crmCustomList()
     },
     funSearchKeyword() {
-      this.currentPage = 1;
-      this.clueList();
+      this.currentPage = 1
+      this.clueList()
     },
     classify() {
       classify({ type: 'setmealList,companyAudit,trade,citycategory' })
         .then(res => {
-          this.mealScreenData = res.data.setmealList;
-          this.trade_list = res.data.trade;
-          this.districtData = res.data.citycategory;
-          const options_audit_arr = [...res.data.companyAudit];
+          this.mealScreenData = res.data.setmealList
+          this.trade_list = res.data.trade
+          this.districtData = res.data.citycategory
+          const options_audit_arr = [...res.data.companyAudit]
           options_audit_arr.forEach(el => {
-            this.authenticationScreenData[el.id] = el.name;
-          });
-          this.form_options_audit = [...this.authenticationScreenData];
+            this.authenticationScreenData[el.id] = el.name
+          })
+          this.form_options_audit = [...this.authenticationScreenData]
 
-          this.authenticationScreenData = res.data.companyAudit;
-          this.authenticationScreenData.push({ name: '未认证', id: 3 });
+          this.authenticationScreenData = res.data.companyAudit
+          this.authenticationScreenData.push({ name: '未认证', id: 3 })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     lifeCycle() {
       lifeCycle()
         .then(res => {
-          this.gradeScreenData = res.data;
+          this.gradeScreenData = res.data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     clueList() {
-      this.loading = true;
+      this.loading = true
       if (localStorage.getItem('clue_audit') && localStorage.getItem('clue_audit') == '1') {
-        this.authenticationScreen = 0;
-        this.authenticationFilter = { name: '待审核', field: 'audit' };
-        localStorage.setItem('clue_audit', '');
+        this.authenticationScreen = 0
+        this.authenticationFilter = { name: '待审核', field: 'audit' }
+        localStorage.setItem('clue_audit', '')
       }
-      //新增客户
+      // 新增客户
       if (localStorage.getItem('gradeScreen') && localStorage.getItem('gradeScreen') == '1') {
-        this.gradeScreen = 1;
-        this.gradeFilter = { name: '新客户', field: 'life_cycle_txt' };
-        localStorage.setItem('gradeScreen', '');
+        this.gradeScreen = 1
+        this.gradeFilter = { name: '新客户', field: 'life_cycle_txt' }
+        localStorage.setItem('gradeScreen', '')
       }
-      //到期未续费客户
+      // 到期未续费客户
       if (localStorage.getItem('setmealDeadline') && localStorage.getItem('setmealDeadline') == '2') {
-        this.setmealDeadline = 2;
-        this.deadlineFilter = { name: '已到期', field: 'deadline' };
-        localStorage.setItem('setmealDeadline', '');
+        this.setmealDeadline = 2
+        this.deadlineFilter = { name: '已到期', field: 'deadline' }
+        localStorage.setItem('setmealDeadline', '')
       }
-      //即将到期客户
+      // 即将到期客户
       if (localStorage.getItem('setmealDeadline') && localStorage.getItem('setmealDeadline') == '1') {
-        this.setmealDeadline = 1;
-        this.deadlineFilter = { name: '即将到期', field: 'deadline' };
-        localStorage.setItem('setmealDeadline', '');
+        this.setmealDeadline = 1
+        this.deadlineFilter = { name: '即将到期', field: 'deadline' }
+        localStorage.setItem('setmealDeadline', '')
       }
-      //从未跟进客户
+      // 从未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '6') {
-        this.followupScreen = 6;
-        this.followupFilter = { name: '从未跟进', field: 'deadline' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 6
+        this.followupFilter = { name: '从未跟进', field: 'deadline' }
+        localStorage.setItem('followupScreen', '')
       }
-      //今日跟进客户
+      // 今日跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '1') {
-        this.followupScreen = 1;
-        this.followupFilter = { name: '今日跟进客户', field: 'not_following_day' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 1
+        this.followupFilter = { name: '今日跟进客户', field: 'not_following_day' }
+        localStorage.setItem('followupScreen', '')
       }
-      //即将转入公海客户
+      // 即将转入公海客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '7') {
-        this.followupScreen = 7;
-        this.followupFilter = { name: '即将转入公海客户', field: 'not_following_day' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 7
+        this.followupFilter = { name: '即将转入公海客户', field: 'not_following_day' }
+        localStorage.setItem('followupScreen', '')
       }
-      //30天内跟进客户
+      // 30天内跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '2') {
-        this.followupScreen = 2;
-        this.followupFilter = { name: '30天内跟进客户', field: 'not_following_day' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 2
+        this.followupFilter = { name: '30天内跟进客户', field: 'not_following_day' }
+        localStorage.setItem('followupScreen', '')
       }
-      //15天内未跟进客户
+      // 15天内未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '4') {
-        this.followupScreen = 4;
-        this.followupFilter = { name: '15天内未跟进客户', field: 'not_following_day' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 4
+        this.followupFilter = { name: '15天内未跟进客户', field: 'not_following_day' }
+        localStorage.setItem('followupScreen', '')
       }
-      //7天内未跟进客户
+      // 7天内未跟进客户
       if (localStorage.getItem('followupScreen') && localStorage.getItem('followupScreen') == '3') {
-        this.followupScreen = 3;
-        this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' };
-        localStorage.setItem('followupScreen', '');
+        this.followupScreen = 3
+        this.followupFilter = { name: '7天内未跟进客户', field: 'not_following_day' }
+        localStorage.setItem('followupScreen', '')
       }
       crmCompanyList({
         page: this.currentPage,
@@ -1462,74 +1501,74 @@ export default {
       })
         .then(res => {
           if (res.data.items.length >= 0) {
-            this.tableData = res.data.items;
-            this.total = res.data.total;
-            this.currentPage = res.data.current_page;
+            this.tableData = res.data.items
+            this.total = res.data.total
+            this.currentPage = res.data.current_page
           } else {
-            this.tableData = [];
-            this.total = 0;
-            this.currentPage = 1;
+            this.tableData = []
+            this.total = 0
+            this.currentPage = 1
           }
-          this.loading = false;
+          this.loading = false
         })
         .catch(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
     clueAdminLists() {
       clueAdminLists()
         .then(res => {
-          this.saleScreenData = res.data;
+          this.saleScreenData = res.data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     handleSizeChange(val) {
-      this.pagesize = val;
-      this.clueList();
+      this.pagesize = val
+      this.clueList()
     },
     handleCurrentChange(val) {
-      this.currentPage = val;
-      this.clueList();
+      this.currentPage = val
+      this.clueList()
     },
     setFieldConfirm() {
-      var list_type = this.list_type;
-      var list_type_z = 0;
+      var list_type = this.list_type
+      var list_type_z = 0
       if (list_type == 0) {
-        list_type_z = 1;
+        list_type_z = 1
       }
       if (list_type == 1) {
-        list_type_z = 2;
+        list_type_z = 2
       }
       if (list_type == 2) {
-        list_type_z = 3;
+        list_type_z = 3
       }
       crmCustomListEdit({ menu: list_type_z, type: 2, value: JSON.stringify(this.fieldData) }, 'post')
         .then(res => {
           if (res.code == 200) {
-            this.$message.success(res.message);
+            this.$message.success(res.message)
           } else {
-            this.$message.error(res.message);
+            this.$message.error(res.message)
           }
-          this.visiblepop = false;
-          this.menu_icon = 'menu';
+          this.visiblepop = false
+          this.menu_icon = 'menu'
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     crmCustomList() {
-      var list_type = this.list_type;
-      var list_type_z = 0;
+      var list_type = this.list_type
+      var list_type_z = 0
       if (list_type == 0) {
-        list_type_z = 1;
+        list_type_z = 1
       }
       if (list_type == 1) {
-        list_type_z = 2;
+        list_type_z = 2
       }
       if (list_type == 2) {
-        list_type_z = 3;
+        list_type_z = 3
       }
       crmCustomList({ menu: list_type_z, type: 2 })
         .then(res => {
-          this.fieldData = JSON.parse(res.data);
+          this.fieldData = JSON.parse(res.data)
           for (var i = 0; i <= this.fieldData.length - 1; i++) {
             // 【优化】客户模块增加登录时间的列 zch 2022.10.12
             // 【新增】
@@ -1541,68 +1580,68 @@ export default {
               this.fieldData[i].field == 'collection_time' ||
               this.fieldData[i].field == 'last_login_time'
             ) {
-              this.fieldData[i].is_sortable = 'custom';
+              this.fieldData[i].is_sortable = 'custom'
             } else {
-              this.fieldData[i].is_sortable = false;
+              this.fieldData[i].is_sortable = false
             }
-            this.fieldData[i].is_popover = false;
-            this.export_name.push(this.fieldData[i].name);
-            this.export_field.push(this.fieldData[i].field);
+            this.fieldData[i].is_popover = false
+            this.export_name.push(this.fieldData[i].name)
+            this.export_field.push(this.fieldData[i].field)
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     locking(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_locking == true) {
-            this.fieldData[i].is_locking = false;
-            this.fieldData[i].is_lock_display = false;
-            this.fieldData[i].icon = 'el-icon-lock';
+            this.fieldData[i].is_locking = false
+            this.fieldData[i].is_lock_display = false
+            this.fieldData[i].icon = 'el-icon-lock'
           } else {
-            this.fieldData[i].icon = 'el-icon-unlock';
-            this.fieldData[i].is_lock_display = false;
-            this.fieldData[i].is_locking = true;
+            this.fieldData[i].icon = 'el-icon-unlock'
+            this.fieldData[i].is_lock_display = false
+            this.fieldData[i].is_locking = true
           }
         }
       }
-      this.setFieldConfirm();
+      this.setFieldConfirm()
     },
     select(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].select == true) {
-            this.fieldData[i].select = false;
+            this.fieldData[i].select = false
           } else {
-            this.fieldData[i].select = true;
+            this.fieldData[i].select = true
           }
         }
       }
     },
     menu() {
       if (this.menu_icon == 'menu') {
-        this.visiblepop = true;
-        this.menu_icon = 'menu_select';
+        this.visiblepop = true
+        this.menu_icon = 'menu_select'
       } else {
-        this.visiblepop = false;
-        this.menu_icon = 'menu';
+        this.visiblepop = false
+        this.menu_icon = 'menu'
       }
     },
     see(value) {
-      this.drawer = true;
-      this.rowId = value.row.id;
+      this.drawer = true
+      this.rowId = value.row.id
     },
     handleClose() {
-      this.drawer = false;
-      this.clueList();
+      this.drawer = false
+      this.clueList()
     },
     funPopover(field) {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_popover == true) {
-            this.fieldData[i].is_popover = false;
+            this.fieldData[i].is_popover = false
           } else {
-            this.fieldData[i].is_popover = true;
+            this.fieldData[i].is_popover = true
           }
         }
       }
@@ -1611,22 +1650,22 @@ export default {
       for (var i = 0; i <= this.fieldData.length - 1; i++) {
         if (this.fieldData[i].field == field) {
           if (this.fieldData[i].is_lock_display == true) {
-            this.fieldData[i].is_lock_display = false;
+            this.fieldData[i].is_lock_display = false
           } else {
-            this.fieldData[i].is_lock_display = true;
+            this.fieldData[i].is_lock_display = true
           }
         }
       }
     },
     add() {
-      this.$router.push('/user/company/add');
+      this.$router.push('/user/company/add')
     },
     clickDial(phone, name) {
-      var company_name = '';
+      var company_name = ''
       if (name == '' || name == null) {
-        company_name = '未完善企业资料';
+        company_name = '未完善企业资料'
       } else {
-        company_name = name;
+        company_name = name
       }
       this.$confirm('是否对【' + company_name + '】' + phone + ' 发起呼叫？', '提示', {
         confirmButtonText: '确定',
@@ -1637,29 +1676,29 @@ export default {
           outboundCall({ mobile: phone })
             .then(res => {
               if (res.code == 200) {
-                this.meetDialogVisible = true;
-                this.dialPhone = phone;
-                this.dialName = name;
+                this.meetDialogVisible = true
+                this.dialPhone = phone
+                this.dialName = name
               }
               if (res.code == 4040) {
-                this.callDialogVisible = true;
+                this.callDialogVisible = true
               }
             })
-            .catch(res => {});
+            .catch(res => {})
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     callHandleClose() {
-      this.callDialogVisible = false;
+      this.callDialogVisible = false
     },
     meetHandleClose() {
-      this.meetDialogVisible = false;
+      this.meetDialogVisible = false
     },
     jumpDetails(url) {
-      window.open(url);
+      window.open(url)
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

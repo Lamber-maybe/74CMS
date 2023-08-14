@@ -10,34 +10,6 @@ use app\common\base\BaseValidate;
 
 class CollectionValidate extends BaseValidate
 {
-    protected $paramData = [
-        'username'           => '', // 用户名
-        'password'           => '', // 密码
-        'jobname'            => '', // 职位名称
-        'content'            => '', // 职位描述
-        'nature'             => '', // 工作性质
-        'salary'             => '', // 薪资待遇
-        'recruit_num'        => '', // 招聘人数
-        'education'          => '', // 学历要求
-        'experience'         => '', // 经验要求
-        'district'           => '', // 工作地区
-        'address'            => '', // 工作地址
-        'welfare'            => '', // 岗位福利
-        'company_name'       => '', // 企业名称
-        'company_website'    => '', // 企业网址
-        'company_nature'     => '', // 企业性质
-        'company_trade'      => '', // 企业所属行业
-        'company_district'   => '', // 企业地区
-        'company_address'    => '', // 企业地址
-        'company_scale'      => '', // 企业规模
-        'company_content'    => '', // 企业介绍
-        'company_short_desc' => '', // 企业简介
-        'title'              => '', // 文章标题
-        'category'           => '', // 文章分类
-        'click'              => '', // 点击量
-        'sort_id'            => '', // 排序
-        'source'             => '', //来源
-    ];
 
     protected $interfaceParam  =   [
         // 类名
@@ -66,6 +38,8 @@ class CollectionValidate extends BaseValidate
                     ['field_name'=>'company_scale','name'=>'企业规模','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_content','name'=>'企业介绍','type'=>'is_string','default'=>'','require'=>false],
                     ['field_name'=>'company_short_desc','name'=>'企业简介','type'=>'is_string','default'=>'','require'=>false],
+                    ['field_name'=>'contact_name','name'=>'联系人名称','type'=>'is_string','default'=>'','require'=>false],
+                    ['field_name'=>'contact_mobile','name'=>'联系人电话','type'=>'is_string','default'=>'','require'=>false],
                 ],
             ],
             // 保存企业信息
@@ -82,6 +56,8 @@ class CollectionValidate extends BaseValidate
                     ['field_name'=>'company_scale','name'=>'企业规模','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_content','name'=>'企业介绍','type'=>'is_string','default'=>'','require'=>true],
                     ['field_name'=>'company_short_desc','name'=>'企业简介','type'=>'is_string','default'=>'','require'=>true],
+                    ['field_name'=>'contact_name','name'=>'联系人名称','type'=>'is_string','default'=>'','require'=>false],
+                    ['field_name'=>'contact_mobile','name'=>'联系人电话','type'=>'is_string','default'=>'','require'=>false],
                 ],
             ],
             // 保存资讯信息

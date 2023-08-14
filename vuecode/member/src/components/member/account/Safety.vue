@@ -1,7 +1,9 @@
 <template>
 	<div class="safety">
-		<warning title="温馨提示：手机号、邮箱认证通过后可增强您账号的安全性，也可通过已认证的手机号、邮箱快速登录帐号。"></warning>
-		<ul class="information_list">
+      <warning title="温馨提示：手机号、邮箱认证通过后可增强您账号的安全性，也可通过已认证的手机号、邮箱快速登录帐号。如需申请注销请"></warning>
+      <a @click="openCancellation" :class= "$store.state.LoginType == 1 ? 'clickBtn1' : 'clickBtn2'">点击</a>
+
+    <ul class="information_list">
 			<li>
 				<div class="name">
 					<img src="../../../assets/images/username.png" />用户名
@@ -95,7 +97,17 @@
     <el-dialog title="绑定微信" :visible.sync="showBindWeixin" width="450px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true">
        <BindWeixin></BindWeixin>
     </el-dialog>
-
+    <el-dialog :title=dialog_title
+               :visible.sync="cancellation" width="647px"
+               :destroy-on-close="true">
+      <Cancellation
+        :utype=$store.state.LoginType
+        :mobile=mobile
+        :phone=phone
+        ref="cancellation"
+        @closeDialog="closeResetCancellation">
+      </Cancellation>
+    </el-dialog>
 	</div>
 </template>
 
@@ -108,6 +120,8 @@ import ResetPassword from './components/ResetPassword.vue'
 import ResetMobile from './components/ResetMobile.vue'
 import ResetEmail from './components/ResetEmail.vue'
 import BindWeixin from './components/BindWeixin.vue'
+import Cancellation from './components/Cancellation.vue'
+
 	export default{
 		name: 'AccountSafety',
 		props: ['utype'],
@@ -132,6 +146,9 @@ import BindWeixin from './components/BindWeixin.vue'
 				showResetMobile: false,
 				showResetEmail: false,
 				showBindWeixin:false,
+        cancellation: false,
+        phone: '',
+        dialog_title:'注销企业账号',
 			}
 		},
 		components:{
@@ -140,10 +157,16 @@ import BindWeixin from './components/BindWeixin.vue'
 			ResetPassword,
 			ResetMobile,
 			ResetEmail,
-			BindWeixin
+			BindWeixin,
+      Cancellation
 		},
 		created () {
 			this.fetchData()
+      if (this.$store.state.LoginType === 1) {
+        this.dialog_title = '注销企业账号'
+      } else {
+        this.dialog_title = '注销个人账号'
+      }
 		},
 		methods:{
 			openResetUsername () {
@@ -200,6 +223,8 @@ import BindWeixin from './components/BindWeixin.vue'
 					this.bind_weixin = res.data.bind_weixin
 					this.bind_weixin_nickname = res.data.bind_weixin_nickname
 					this.bind_qq_nickname = res.data.bind_qq_nickname
+          const tel = this.mobile
+          this.phone = tel.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
 					})
 					.catch(() => {})
 			},
@@ -260,11 +285,34 @@ import BindWeixin from './components/BindWeixin.vue'
 					})
 				}
 			},
+      openCancellation(){
+        this.cancellation = true
+      },
+      closeResetCancellation () {
+        this.cancellation = false
+      }
 		}
 	}
 </script>
 
 <style scoped lang="scss">
+  .safety {
+    position: relative;
+  }
+  .clickBtn1 {
+    position: absolute;
+    top: 12px;
+    left: 758px;
+    color: #E6A23C;
+    cursor: pointer;
+  }
+  .clickBtn2 {
+    position: absolute;
+    top: 12px;
+    right: 127px;
+    color: #E6A23C;
+    cursor: pointer;
+  }
 	.information_list li{
 		line-height: 91px;
 		display: flex;

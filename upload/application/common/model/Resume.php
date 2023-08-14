@@ -9,7 +9,127 @@ class Resume extends \app\common\model\BaseModel
         1 => '已通过',
         2 => '未通过'
     ];
-
+    public  $needle = [
+        'password' => [
+            'password' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => [
+                    'rule' => 'require',
+                    'message' => '请输入修改的密码'
+                ]
+            ],
+        ],
+        'member_mobile' => [
+            'member_mobile' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => [
+                    'rule' => 'require',
+                    'message' => '请输入会员手机号'
+                ]
+            ],
+        ],
+        'email' => [
+            'email' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => []
+            ],
+        ],
+        'resume_mobile' => [
+            'resume_mobile' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => [
+                    'rule' => 'require',
+                    'message' => '请输入会员手机号'
+                ]
+            ],
+        ],
+        'high_quality' => [
+            'high_quality' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => [
+                    'rule' => 'in:0,1',
+                    'message' => '简历等级参数错误'
+                ]
+            ],
+        ],
+        'remark' => [
+            'remark' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => [
+                    'rule' => 'max:100',
+                    'message' => '简历备注内容长度有误'
+                ]
+            ],
+        ],
+        'comment' => [
+            'comment' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => [
+                    'rule' => 'max:100',
+                    'message' => '客服评价内容长度有误'
+                ]
+            ],
+        ],
+        'audit' => [
+            'audit' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => [
+                    'rule' => 'in:0,1,2',
+                    'message' => '简历审核参数错误'
+                ]
+            ],
+            'reason' => [
+                'type' => '/s',
+                'default' => '',
+                'filter' => 'trim',
+                'validate' => []
+            ],
+        ],
+        'resume_img' => [
+            'examine' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => [
+                    'rule' => 'in:0,1,2',
+                    'message' => '简历作品审核参数错误'
+                ]
+            ],
+            'resume_img' => [
+                'type' => '/a',
+                'default' => [],
+                'filter' => '',
+                'validate' => []
+            ],
+        ],
+        'is_display' => [
+            'is_display' => [
+                'type' => '/d',
+                'default' => 0,
+                'filter' => 'intval',
+                'validate' => [
+                    'rule' => 'in:0,1',
+                    'message' => '简历公开状态参数错误'
+                ]
+            ],
+        ],
+    ];
     /**
      * 【优化】简历未定义数组下标问题
      *  zch 2022.9.21

@@ -501,39 +501,50 @@ class Account extends \app\v1_0\controller\common\Base
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
     public function cancelApply(){
+        $code = input('post.code/s', '', 'trim');
+        $auth_result = cache('smscode_' . $this->userinfo->mobile);
+        if ($auth_result === false || $auth_result['code'] != $code)
+        {
+            $this->ajaxReturn(500, '验证码错误');
+        }
         $data['uid'] = $this->userinfo->uid;
         $data['addtime'] = time();
         $data['status'] = 0;
         $data['handlertime'] = 0;
         $data['mobile'] = $this->userinfo->mobile;
-        /*
-         * 【排查】注销连点问题
-         * zch 2022.10.17
-         * 新增是否已提交验证
-         * */
+        $utype = $this->userinfo->utype;
         $cance_apply_count = model('MemberCancelApply')
             ->where(['uid'=>$data['uid'],'status'=>0])
             ->count();
         if ($cance_apply_count > 0)
         {
-            $this->ajaxReturn(500, '您已提交注销申请，管理员正在处理。');
+            $this->ajaxReturn(500, '您已提交过注销申请，请耐心等待网站审核结果。');
         }
-        $company_profile = model('Company')->where('uid',$this->userinfo->uid)->find();
-        if($company_profile===null){
-            $data['companyname'] = '不详';
-            $data['contact'] = '不详';
-            $data['regtime'] = '不详';
-        }else{
-            $data['companyname'] = $company_profile['companyname'];
-            $data['regtime'] = date('Y-m-d',$company_profile['addtime']);
-            $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
-            if($company_contact===null){
-                $data['contact'] = '不详';
-            }else{
-                $data['contact'] = $company_contact['contact'];
-                $data['mobile'] = $company_contact['mobile'];
-            }
+
+        $member = model('Member')->where('uid',$this->userinfo->uid)->find();
+
+        switch ($utype)
+        {
+            case 1:
+                $utype_name = '企业会员';
+                $data['companyname'] = model('Company')->where('uid',$this->userinfo->uid)->value('companyname');
+                $company_contact = model('CompanyContact')->where('uid',$this->userinfo->uid)->find();
+                if($company_contact===null){
+                    $data['contact'] = '不详';
+                }else{
+                    $data['contact'] = $company_contact['contact'];
+                }
+                $name = '企业名称：【'.$data['companyname'].'】';
+                break;
+            case 2:
+                $utype_name = '个人会员';
+                $data['contact'] = model('Resume')->where('uid',$this->userinfo->uid)->value('fullname');
+                $data['companyname'] = '';
+                $name = '简历名称：【'.$data['contact'].'】';
+                break;
         }
+        $data['regtime'] = date('Y-m-d',$member['reg_time']);
+        $data['utype'] = $utype;
         model('MemberCancelApply')->save($data);
         $this->writeMemberActionLog($this->userinfo->uid,'提交账号注销申请');
         $this->ajaxReturn(200, '申请成功');

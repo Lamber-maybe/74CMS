@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="输入图中验证码" :visible.sync="showDialog" :modal="showMadal" width="350px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true">
+    <el-dialog title="输入图中验证码" :visible.sync="showDialog" :modal="showMadal" width="350px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true" :before-close="handleClose" append-to-body>
        <el-form  label-width="0px" :inline="true" @submit.native.prevent>
 
         <div class="verification_code">
@@ -78,6 +78,10 @@ export default {
           this.src = res.data.src
         })
         .catch(() => {})
+    },
+    handleClose(done) {
+      this.$emit('setSubmitFun')
+      done()
     }
   }
 }

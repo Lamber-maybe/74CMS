@@ -51,6 +51,7 @@ export default {
       this.showDialog = false
     },
     beforeClose (action, done) {
+      this.$emit('setSubmitFun')
       done(this.enableClose)
     },
     show (callback) {

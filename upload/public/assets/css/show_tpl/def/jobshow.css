@@ -1,6 +1,23 @@
 .content1_wrapper {
 	background: #fff;
 	padding: 45px 30px 25px;
+	position: relative;
+}
+.content1_wrapper .invalid_job{
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 369px;
+	height: 100%;
+	z-index: 999;
+	background: linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0));
+}
+.content1_wrapper .invalid_job img{
+	display: block;
+	width: 111px;
+	height: 66px;
+	float: right;
+	margin: 34px 42px 0 0;
 }
 
 .post_name {

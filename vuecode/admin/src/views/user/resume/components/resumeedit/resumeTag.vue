@@ -28,11 +28,15 @@
       >
         <el-form-item label="特长标签" prop="tag">
           <el-select
+            id='selectSku'
             v-model="form.tag"
             multiple
             filterable
             allow-create
             default-first-option
+            remote
+            :remote-method="remoteMethod"
+            @change="tagChange"
             placeholder="请选择特长标签"
             :multiple-limit="6"
           >
@@ -134,6 +138,18 @@ export default {
           return false
         }
       })
+    },
+    remoteMethod(query){
+      if(query.length>5){
+        this.$message.warning('特长标签字数不得超过5个字！')
+      }
+    },
+    tagChange(e){
+      let tags = this.form.tag
+      let len = tags.length - 1
+      for(let i in tags){
+        this.form.tag[len] = this.form.tag[len].slice(0,5)
+      }
     }
   }
 }

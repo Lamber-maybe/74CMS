@@ -155,6 +155,7 @@
           :header-cell-style="{ background: '#f9f9f9', 'border-right': '1px solid #e4e6eb' }"
           border
           stripe
+          :height="tabelHeight"
           style="width: 100%;"
           @sort-change="sortTable"
           @selection-change="handleSelectionChange"
@@ -983,7 +984,8 @@ export default {
       iframeUrl: '',
       configInfo: {},
       is_check: 0,
-      resumeLink: ''
+      resumeLink: '',
+      tabelHeight: 0
     }
   },
   computed: {
@@ -1003,6 +1005,36 @@ export default {
         localStorage.setItem('clue_resume_id', '')
       }
     }
+  },
+  updated(){
+    this.$nextTick(() => {
+      this.$refs.multipleTable.doLayout()
+      if (!this.loading){
+        setTimeout(() => {
+          var classStr = this.$refs.multipleTable.$el.className
+          var classAry = classStr.split(' ')
+          var a = document.querySelectorAll('.el-table__fixed-right')[0]
+          var b = document.querySelectorAll('.el-table__empty-block')[0]
+          if (b != undefined){
+            b.style.width = 100 + '%'
+          }
+          var isClass = classAry.find(function(value, index, arr){
+            return value == 'el-table--scrollable-y'
+          })
+          if (isClass){
+            a.style.right = 10 + 'px'
+          } else {
+            a.style.right = 0 + 'px'
+          }
+        }, 100)
+      }
+    })
+  },
+  mounted(){
+    this.$nextTick(() => {
+      var docHeight = document.documentElement.clientHeight
+      this.tabelHeight = docHeight - 316 - 60
+    })
   },
   created() {
     this.urmList()
@@ -1178,6 +1210,7 @@ export default {
       this.urmList()
     },
     reset(field) {
+      this.tabelHeight = 'calc(100vh - 372px)'
       if (field == 'all') {
         this.educationScreen = ''
         this.highQualityScreen = ''
@@ -1269,7 +1302,13 @@ export default {
         this.menu_icon = 'menu'
       }
     },
-    confirm() {
+    confirm(type) {
+      if (type != 'reset'){
+        this.tabelHeight = 'calc(100vh - 446px)'
+        this.$nextTick(() => {
+          this.$refs.multipleTable.doLayout()
+        })
+      }
       this.currentPage = 1
       if (this.educationScreen != '') {
         for (var i = 0; i <= this.educationData.length - 1; i++) {

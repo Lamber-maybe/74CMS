@@ -559,767 +559,778 @@
 </template>
 
 <script>
-import VideoList from '../../views/shortvideo/components/VideoListtwo';
-import wxshare from '@/assets/js/share.js';
-import Tipoff from '@/components/Tipoff';
-import AddInvitation from '@/components/AddInvitation';
-import { isWeiXin, parseTime } from '@/utils/index';
-import PopupPayment from '@/components/service/PopupPayment';
-import http from '@/utils/http';
-import api from '@/api';
-import Login from '@/components/Login';
-import Share from '@/components/share/Share';
-import SharePoster from '@/components/share/SharePoster';
-import Vue from 'vue';
-import { ImagePreview } from 'vant';
-import SelectJob from '@/views/im/components/SelectJob.vue';
-import { mapMutations } from 'vuex';
-import PaySubmit from '@/components/service/PaySubmit';
+import VideoList from '../../views/shortvideo/components/VideoListtwo'
+import wxshare from '@/assets/js/share.js'
+import Tipoff from '@/components/Tipoff'
+import AddInvitation from '@/components/AddInvitation'
+import { isWeiXin, parseTime } from '@/utils/index'
+import PopupPayment from '@/components/service/PopupPayment'
+import http from '@/utils/http'
+import api from '@/api'
+import Login from '@/components/Login'
+import Share from '@/components/share/Share'
+import SharePoster from '@/components/share/SharePoster'
+import Vue from 'vue'
+import { ImagePreview } from 'vant'
+import SelectJob from '@/views/im/components/SelectJob.vue'
+import { mapMutations } from 'vuex'
+import PaySubmit from '@/components/service/PaySubmit'
 
-Vue.use(ImagePreview);
+Vue.use(ImagePreview)
 export default {
-	name: 'ResumeShow',
-	components: {
-		VideoList,
-		Login,
-		PopupPayment,
-		AddInvitation,
-		Tipoff,
-		Share,
-		SharePoster,
-		SelectJob,
-		PaySubmit
-	},
-	filters: {
-		monthTimeFilter(timestamp) {
-			return parseTime(timestamp, '{y}-{m}');
-		}
-	},
-	data() {
-		return {
-			resumeShow: 'resume',
-			codePro: {
-				show: false,
-				x: '',
-				timeout: 0,
-				a: '',
-				btnCn: '立即拔打'
-			},
-			showTipoff: false,
-			showInvite: false,
-			moreDetailBtn: false,
-			showDetail: false,
-			showPayment: false,
-			showDirectService: false,
-			directServiceInfo: {},
-			enableClick: true,
-			mainLoading: true,
-			query_id: '',
-			is_company_login: false,
-			showLogin: false,
-			after_login_data: {},
-			resume_module: {},
-			field_rule: {
-				basic: {},
-				contact: {},
-				intention: {},
-				education: {}
-			},
-			base_info: {},
-			intention_list: [],
-			show_contact: 0,
-			show_contact_note: '',
-			contact_info: {},
-			work_list: [],
-			education_list: [],
-			enclosure_resume: {},
-			project_list: [],
-			training_list: [],
-			language_list: [],
-			certificate_list: [],
-			img_list: [],
-			apply_num: 0,
-			download_num: 0,
-			has_fav: 0,
-			phone_protect_open: false,
-			phone_protect_timeout: 0,
-			phone_protect_type: 0,
-			cur_com_mobile: '',
-			swiperOption: {
-				pagination: {
-					el: '.swiper-pagination',
-					renderBullet: function(index, className) {
-						return '<span class="' + className + ' resume-show-swiper-span"></span>';
-					},
-					bulletActiveClass: 'resume-show-swiper-bullet-active'
-				},
-				autoplay: true,
-				slidesPerView: 3,
-				slidesPerGroup: 3,
-				freeMode: true,
-				speed: 600,
-				watchOverflow: true
-			},
-			shareid: 0,
-			showShare: false,
-			showWxLayer: false,
-			showLayer: false,
-			showPoster: false,
-			previewImgList: [],
-			page: 1,
-			finished: false,
-			loading: false,
-			finished_text: '',
-			videonum: 0,
-			bindWeixinShow: false,
-			jobid: 0,
-			selectJobShow: false,
-			imChatid: '',
-			companyId: '',
-			selectJobObj: {},
-			// 绑定微信二维码
-			scanQrcodeImg: '',
-			putAway: true,
-			params: {
-				company_uid: '',
-				job_apply_id: ''
-			},
-			showUpgradePackage: false,
-			LoginType: 0
-		};
-	},
-	created() {
-		this.query_id = this.$route.params.id;
-		this.LoginType = this.$store.state.LoginType;
-		this.is_company_login = !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1);
-		// 请求数据
-		this.initQuery(this.$route.query);
-		this.getScanQrcodeImg();
-		if (this.$store.state.config.shortvideo_enable === '1') {
-			this.fetchVideonum();
-		}
-	},
-	watch: {
-		bindWeixinShow(e) {
-			if (e === true) {
-				this.getScanQrcodeImg();
-			}
-		}
-	},
-	methods: {
-		...mapMutations(['setImShowParams', 'setimChatid']),
-		handlerHomePage() {
-			this.$router.push('/index');
-		},
-		/**
+  name: 'ResumeShow',
+  components: {
+    VideoList,
+    Login,
+    PopupPayment,
+    AddInvitation,
+    Tipoff,
+    Share,
+    SharePoster,
+    SelectJob,
+    PaySubmit
+  },
+  filters: {
+    monthTimeFilter (timestamp) {
+      return parseTime(timestamp, '{y}-{m}')
+    }
+  },
+  data () {
+    return {
+      resumeShow: 'resume',
+      codePro: {
+        show: false,
+        x: '',
+        timeout: 0,
+        a: '',
+        btnCn: '立即拔打'
+      },
+      showTipoff: false,
+      showInvite: false,
+      moreDetailBtn: false,
+      showDetail: false,
+      showPayment: false,
+      showDirectService: false,
+      directServiceInfo: {},
+      enableClick: true,
+      mainLoading: true,
+      query_id: '',
+      is_company_login: false,
+      showLogin: false,
+      after_login_data: {},
+      resume_module: {},
+      field_rule: {
+        basic: {},
+        contact: {},
+        intention: {},
+        education: {}
+      },
+      base_info: {},
+      intention_list: [],
+      show_contact: 0,
+      show_contact_note: '',
+      contact_info: {},
+      work_list: [],
+      education_list: [],
+      enclosure_resume: {},
+      project_list: [],
+      training_list: [],
+      language_list: [],
+      certificate_list: [],
+      img_list: [],
+      apply_num: 0,
+      download_num: 0,
+      has_fav: 0,
+      phone_protect_open: false,
+      phone_protect_timeout: 0,
+      phone_protect_type: 0,
+      cur_com_mobile: '',
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination',
+          renderBullet: function (index, className) {
+            return '<span class="' + className + ' resume-show-swiper-span"></span>'
+          },
+          bulletActiveClass: 'resume-show-swiper-bullet-active'
+        },
+        autoplay: true,
+        slidesPerView: 3,
+        slidesPerGroup: 3,
+        freeMode: true,
+        speed: 600,
+        watchOverflow: true
+      },
+      shareid: 0,
+      showShare: false,
+      showWxLayer: false,
+      showLayer: false,
+      showPoster: false,
+      previewImgList: [],
+      page: 1,
+      finished: false,
+      loading: false,
+      finished_text: '',
+      videonum: 0,
+      bindWeixinShow: false,
+      jobid: 0,
+      selectJobShow: false,
+      imChatid: '',
+      companyId: '',
+      selectJobObj: {},
+      // 绑定微信二维码
+      scanQrcodeImg: '',
+      putAway: true,
+      params: {
+        company_uid: '',
+        job_apply_id: ''
+      },
+      showUpgradePackage: false,
+      LoginType: 0
+    }
+  },
+  created () {
+    this.query_id = this.$route.params.id
+    this.LoginType = this.$store.state.LoginType
+    this.is_company_login = !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
+    // 请求数据
+    this.initQuery(this.$route.query)
+    this.getScanQrcodeImg()
+    if (this.$store.state.config.shortvideo_enable === '1') {
+      this.fetchVideonum()
+    }
+  },
+  watch: {
+    bindWeixinShow (e) {
+      if (e === true) {
+        this.getScanQrcodeImg()
+      }
+    }
+  },
+  methods: {
+    ...mapMutations(['setImShowParams', 'setimChatid']),
+    handlerHomePage () {
+      this.$router.push('/index')
+    },
+    /**
 		 * 绑定微信二维码
 		 */
-		getScanQrcodeImg() {
-			http.get(api.get_qrcode, {
-				type: 'bind_weixin'
-			}).then(res => {
-				this.scanQrcodeImg = res.data;
-			});
-		},
-		callCodePro() {
-			location.href = `tel:${this.codePro.x}`;
-		},
-		async fetchData(next_method = null) {
-			var request_params;
-			if (this.params.company_uid == '' || this.params.job_apply_id == '') {
-				request_params = {
-					id: this.query_id
-				};
-			} else {
-				request_params = {
-					id: this.query_id,
-					company_uid: this.params.company_uid,
-					job_apply_id: this.params.job_apply_id
-				};
-			}
-			let res = await http.get(api.resumeshow, request_params);
-			const {
-				resume_module,
-				field_rule,
-				base_info,
-				intention_list,
-				show_contact,
-				show_contact_note,
-				contact_info,
-				work_list,
-				education_list,
-				enclosure_resume,
-				project_list,
-				training_list,
-				language_list,
-				certificate_list,
-				img_list,
-				apply_num,
-				download_num,
-				has_fav,
-				phone_protect_open,
-				phone_protect_timeout,
-				cur_com_mobile,
-				phone_protect_type
-			} = {
-				...res.data
-			};
-			this.resume_module = resume_module;
-			this.field_rule = field_rule;
-			this.base_info = base_info;
-			// 判断是否显示更多基本信息按钮
-			for (const key in this.field_rule.basic) {
-				let item = this.field_rule.basic[key];
-				if (item.is_display == 1 && this.base_info[key]) {
-					this.moreDetailBtn = true;
-					break;
-				}
-			}
-			this.intention_list = intention_list;
-			this.show_contact = show_contact;
-			this.show_contact_note = show_contact_note;
-			this.contact_info = contact_info;
-			this.work_list = work_list;
-			this.education_list = education_list;
-			this.enclosure_resume = enclosure_resume;
-			this.project_list = project_list;
-			this.training_list = training_list;
-			this.language_list = language_list;
-			this.certificate_list = certificate_list;
-			this.img_list = img_list;
-			this.apply_num = apply_num;
-			this.download_num = download_num;
-			this.has_fav = has_fav;
-			this.phone_protect_open = phone_protect_open;
-			this.phone_protect_timeout = phone_protect_timeout;
-			this.cur_com_mobile = cur_com_mobile;
-			this.phone_protect_type = phone_protect_type;
-			let wechatShareInfo = {
-				fullname: base_info.fullname,
-				sex: base_info.sex == 1 ? '男' : '女',
-				age: base_info.age + '岁',
-				education: base_info.education_text,
-				experience: base_info.experience_text,
-				intention_jobs: base_info.intention_jobs_text,
-				imgUrl: base_info.photo_img_src
-			};
-			wxshare(wechatShareInfo, 'resumeshow', location.href);
-			this.mainLoading = false;
-			if (next_method !== null) {
-				this[next_method]();
-			}
-			this.previewImgList = this.img_list.map(function(item) {
-				return item.img_src;
-			});
-		},
-		async doTel() {
-			if (this.show_contact == 1) {
-				if (this.phone_protect_open) {
-					let res = await http.get(api.secret_phone, {
-						resume_id: this.query_id
-					});
-					const { code, message, data } = res;
-					if (code == 200) {
-						this.codePro.x = data.x;
-						this.codePro.timeout = data.timeout;
-						this.codePro.a = data.a;
-						this.codePro.show = true;
-						let that = this;
-						this.$nextTick(() => {
-							let tmh = null;
-							let tm = function() {
-								if (that.codePro.show && that.codePro.timeout > 0) {
-									that.codePro.timeout--;
-									tmh = setTimeout(tm, 1000);
-								} else {
-									that.codePro.show = false;
-									clearTimeout(tmh);
-								}
-							};
-							setTimeout(tm, 1000);
-						});
-					} else {
-						this.$message.error(message);
-					}
-				} else {
-					this.$dialog
-						.confirm({
-							title: '提示',
-							message: '即将拨打号码：' + this.contact_info.mobile,
-							confirmButtonText: '确定拨打'
-						})
-						.then(() => {
-							window.location.href = `tel:${this.contact_info.mobile}`;
-						})
-						.catch(() => {});
-				}
-			} else if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'doTel'
-						};
-					})
-					.catch(() => {});
-			} else {
-				if (this.show_contact_note == 'need_download') {
-					this.$notify('请先下载简历');
-				}
-			}
-		},
-		doMsg() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'doMsg'
-						};
-					})
-					.catch(() => {});
-			} else {
-				// if (this.base_info.audit != 1) {
-				//   this.$notify('该简历还未审核通过，不能继续此操作')
-				//   return false
-				// }
-				http.post(api.company_index, {}).then(res => {
-					var { companyinfo } = res.data;
+    getScanQrcodeImg () {
+      http.get(api.get_qrcode, {
+        type: 'bind_weixin'
+      }).then(res => {
+        this.scanQrcodeImg = res.data
+      })
+    },
+    callCodePro () {
+      location.href = `tel:${this.codePro.x}`
+    },
+    async fetchData (next_method = null) {
+      var request_params
+      if (this.params.company_uid == '' || this.params.job_apply_id == '') {
+        request_params = {
+          id: this.query_id
+        }
+      } else {
+        request_params = {
+          id: this.query_id,
+          company_uid: this.params.company_uid,
+          job_apply_id: this.params.job_apply_id
+        }
+      }
+      let res = await http.get(api.resumeshow, request_params)
+      const {
+        resume_module,
+        field_rule,
+        base_info,
+        intention_list,
+        show_contact,
+        show_contact_note,
+        contact_info,
+        work_list,
+        education_list,
+        enclosure_resume,
+        project_list,
+        training_list,
+        language_list,
+        certificate_list,
+        img_list,
+        apply_num,
+        download_num,
+        has_fav,
+        phone_protect_open,
+        phone_protect_timeout,
+        cur_com_mobile,
+        phone_protect_type
+      } = {
+        ...res.data
+      }
+      this.resume_module = resume_module
+      this.field_rule = field_rule
+      this.base_info = base_info
+      // 判断是否显示更多基本信息按钮
+      for (const key in this.field_rule.basic) {
+        let item = this.field_rule.basic[key]
+        if (item.is_display == 1 && this.base_info[key]) {
+          this.moreDetailBtn = true
+          break
+        }
+      }
+      this.intention_list = intention_list
+      this.show_contact = show_contact
+      this.show_contact_note = show_contact_note
+      this.contact_info = contact_info
+      this.work_list = work_list
+      this.education_list = education_list
+      this.enclosure_resume = enclosure_resume
+      this.project_list = project_list
+      this.training_list = training_list
+      this.language_list = language_list
+      this.certificate_list = certificate_list
+      this.img_list = img_list
+      this.apply_num = apply_num
+      this.download_num = download_num
+      this.has_fav = has_fav
+      this.phone_protect_open = phone_protect_open
+      this.phone_protect_timeout = phone_protect_timeout
+      this.cur_com_mobile = cur_com_mobile
+      this.phone_protect_type = phone_protect_type
+      let wechatShareInfo = {
+        fullname: base_info.fullname,
+        sex: base_info.sex == 1 ? '男' : '女',
+        age: base_info.age + '岁',
+        education: base_info.education_text,
+        experience: base_info.experience_text,
+        intention_jobs: base_info.intention_jobs_text,
+        imgUrl: base_info.photo_img_src
+      }
+      wxshare(wechatShareInfo, 'resumeshow', location.href)
+      this.mainLoading = false
+      if (next_method !== null) {
+        this[next_method]()
+      }
+      this.previewImgList = this.img_list.map(function (item) {
+        return item.img_src
+      })
+    },
+    async doTel () {
+      if (this.show_contact == 1) {
+        if (this.phone_protect_open) {
+          let res = await http.get(api.secret_phone, {
+            resume_id: this.query_id
+          })
+          const { code, message, data } = res
+          if (code == 200) {
+            this.codePro.x = data.x
+            this.codePro.timeout = data.timeout
+            this.codePro.a = data.a
+            this.codePro.show = true
+            let that = this
+            this.$nextTick(() => {
+              let tmh = null
+              let tm = function () {
+                if (that.codePro.show && that.codePro.timeout > 0) {
+                  that.codePro.timeout--
+                  tmh = setTimeout(tm, 1000)
+                } else {
+                  that.codePro.show = false
+                  clearTimeout(tmh)
+                }
+              }
+              setTimeout(tm, 1000)
+            })
+          } else {
+            this.$message.error(message)
+          }
+        } else {
+          this.$dialog
+            .confirm({
+              title: '提示',
+              message: '即将拨打号码：' + this.contact_info.mobile,
+              confirmButtonText: '确定拨打'
+            })
+            .then(() => {
+              window.location.href = `tel:${this.contact_info.mobile}`
+            })
+            .catch(() => {})
+        }
+      } else if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'doTel'
+            }
+          })
+          .catch(() => {})
+      } else {
+        if (this.show_contact_note == 'need_download') {
+          this.$notify('请先下载简历')
+        }
+      }
+    },
+    doMsg () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'doMsg'
+            }
+          })
+          .catch(() => {})
+      } else {
+        // if (this.base_info.audit != 1) {
+        //   this.$notify('该简历还未审核通过，不能继续此操作')
+        //   return false
+        // }
+        http.post(api.company_index, {}).then(res => {
+          var { companyinfo } = res.data
 
-					// if (this.jobid == 0) {
-					this.companyId = companyinfo.id;
-					//   this.selectJobShow = true
-					//   return false
-					// }
-					http.post(api.imStart, {
-						token: this.$store.state.imToken,
-						resumeid: this.base_info.id,
-						jobid: this.jobid
-					}).then(res => {
-						// disabled 不能使用功能
-						// bind_weixin绑定微信
-						// complete_resume完善简历
-						// 空字符串 正常使用
-						// choose_job 选择职位
-						// pay 需要购买增值服务，触屏是快捷支付
-						console.log(res);
-						if (parseInt(res.code) == 200) {
-							if (res.data.next == '') {
-								this.setImShowParams({
-									jobname: this.selectJobObj.jobname,
-									name: this.base_info.fullname,
-									resumeid: this.base_info.id,
-									jobid: this.jobid,
-									companyId: companyinfo.id
-								});
-								this.setimChatid(res.data.chatid);
-								this.$router.push({
-									path: '/im/' + res.data.chatid
-								});
-								return false;
-							}
-							if (res.data.next == 'disabled') {
-								// this.$notify({ type: 'danger', message: res.message })
-								this.$dialog({
-									title: '系统提示',
-									message: res.message,
-									showConfirmButton: true
-								}).then(() => {});
-								return false;
-							}
-							if (res.data.next == 'complete_resume') {
-								this.$dialog
-									.confirm({
-										title: '系统提示',
-										message: res.message,
-										confirmButtonText: '去完善简历',
-										showCancelButton: true
-									})
-									.then(() => {
-										this.$router.push({
-											path: '/member/personal/resume'
-										});
-									})
-									.catch(() => {});
-								return false;
-							}
-							if (res.data.next == 'bind_weixin') {
-								this.bindWeixinShow = true;
-							}
-							if (res.data.next == 'pay') {
-								// 快捷支付
-								this.$dialog
-									.confirm({
-										title: '系统提示',
-										message: res.message,
-										confirmButtonText: '去支付'
-									})
-									.then(() => {
-										this.$router.push({
-											path: '/member/order/add/common?type=service&service_type=im'
-										});
-									})
-									.catch(() => {});
-							}
-							if (res.data.next == 'choose_job') {
-								this.selectJobShow = true;
-							}
-						}
-					});
-				});
-				// this.$router.push('/im/' + this.base_info.im_userid)
-			}
-			//  else {
-			//   this.$notify('暂时无法与当前用户进行职聊')
-			//   return false
-			// }
-		},
-		/**
+          // if (this.jobid == 0) {
+          this.companyId = companyinfo.id
+          //   this.selectJobShow = true
+          //   return false
+          // }
+          http.post(api.imStart, {
+            token: this.$store.state.imToken,
+            resumeid: this.base_info.id,
+            jobid: this.jobid
+          }).then(res => {
+            // disabled 不能使用功能
+            // bind_weixin绑定微信
+            // complete_resume完善简历
+            // 空字符串 正常使用
+            // choose_job 选择职位
+            // pay 需要购买增值服务，触屏是快捷支付
+            console.log(res)
+            if (parseInt(res.code) == 200) {
+              if (res.data.next == '') {
+                this.setImShowParams({
+                  jobname: this.selectJobObj.jobname,
+                  name: this.base_info.fullname,
+                  resumeid: this.base_info.id,
+                  jobid: this.jobid,
+                  companyId: companyinfo.id
+                })
+                this.setimChatid(res.data.chatid)
+                this.$router.push({
+                  path: '/im/' + res.data.chatid
+                })
+                return false
+              }
+              if (res.data.next == 'disabled') {
+                // this.$notify({ type: 'danger', message: res.message })
+                this.$dialog({
+                  title: '系统提示',
+                  message: res.message,
+                  showConfirmButton: true
+                }).then(() => {})
+                return false
+              }
+              if (res.data.next == 'complete_resume') {
+                this.$dialog
+                  .confirm({
+                    title: '系统提示',
+                    message: res.message,
+                    confirmButtonText: '去完善简历',
+                    showCancelButton: true
+                  })
+                  .then(() => {
+                    this.$router.push({
+                      path: '/member/personal/resume'
+                    })
+                  })
+                  .catch(() => {})
+                return false
+              }
+              if (res.data.next == 'bind_weixin') {
+                this.bindWeixinShow = true
+              }
+              if (res.data.next == 'pay') {
+                // 快捷支付
+                this.$dialog
+                  .confirm({
+                    title: '系统提示',
+                    message: res.message,
+                    confirmButtonText: '去支付'
+                  })
+                  .then(() => {
+                    this.$router.push({
+                      path: '/member/order/add/common?type=service&service_type=im'
+                    })
+                  })
+                  .catch(() => {})
+              }
+              if (res.data.next == 'choose_job') {
+                this.selectJobShow = true
+              }
+            }
+          })
+        })
+        // this.$router.push('/im/' + this.base_info.im_userid)
+      }
+      //  else {
+      //   this.$notify('暂时无法与当前用户进行职聊')
+      //   return false
+      // }
+    },
+    /**
 		 * 选择沟通职位
 		 * @jobItem 当前沟通职位信息
 		 */
-		handleCommunicate(jobItem) {
-			this.selectJobShow = false;
-			this.jobid = jobItem.id;
-			this.selectJobObj = jobItem;
-			this.doMsg();
-		},
-		/**
+    handleCommunicate (jobItem) {
+      this.selectJobShow = false
+      this.jobid = jobItem.id
+      this.selectJobObj = jobItem
+      this.doMsg()
+    },
+    /**
 		 * 是否绑定微信公众号
 		 */
-		handleImCheckBind() {
-			http.get(api.imCheckBind).then(res => {
-				if (res.data != 0) {
-					location.reload(true);
-				}
-			});
-		},
-		/**
+    handleImCheckBind () {
+      http.get(api.imCheckBind).then(res => {
+        if (res.data != 0) {
+          location.reload(true)
+        }
+      })
+    },
+    /**
 		 * 选择职位弹窗关闭
 		 */
-		handleCloseSelectJob() {
-			this.selectJobShow = false;
-		},
-		doInterview() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'doInterview'
-						};
-					})
-					.catch(() => {});
-			} else {
-				if (this.base_info.audit != 1) {
-					this.$notify('该简历还未审核通过，不能继续此操作');
-					return false;
-				}
-				this.showInvite = true;
-				this.$refs.child.initCB();
-			}
-		},
-		doDownload() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'doDownload'
-						};
-					})
-					.catch(() => {});
-			} else {
-				if (this.enableClick === false) {
-					return false;
-				}
-				this.enableClick = false;
-				if (this.base_info.audit != 1) {
-					this.enableClick = true;
-					this.$notify('该简历还未审核通过，不能继续此操作');
-					return false;
-				}
-				const params = {
-					resume_id: this.query_id
-				};
-				http.post(api.resumedownload, params)
-					.then(res => {
-						this.enableClick = true;
-						if (res.data.done == 0) {
-							if (res.data.need_upgrade == 1) {
-								this.showUpgradePackage = true;
-							} else {
-								this.showDirectService = true;
-								var btnCn = '';
-								if (res.data.use_type == 'points') {
-									btnCn = '立即兑换';
-								}
-								if (res.data.use_type == 'package') {
-									btnCn = '购买增值包';
-								}
-								if (res.data.use_type == 'money') {
-									btnCn = '立即支付';
-								}
-								this.directServiceInfo = {
-									use_type: res.data.use_type,
-									need_points: res.data.need_points,
-									need_expense: res.data.need_expense,
-									discount: res.data.discount,
-									resume: this.query_id,
-									btnCn: btnCn,
-									cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
-								};
-							}
-							return false;
-						} else {
-							this.$notify({
-								type: 'success',
-								message: res.message
-							});
-							this.fetchData();
-						}
-					})
-					.catch(() => {
-						this.enableClick = true;
-					});
-			}
-		},
-		doFav() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'doFav'
-						};
-					})
-					.catch(() => {});
-			} else {
-				if (this.enableClick === false) {
-					return false;
-				}
-				this.enableClick = false;
-				if (this.base_info.audit != 1) {
-					this.enableClick = true;
-					this.$notify('该简历还未审核通过，不能继续此操作');
-					return false;
-				}
-				const params = {
-					resume_id: this.query_id
-				};
-				let _api_url = this.has_fav == 1 ? api.resumefav_cancel : api.resumefav;
-				http.post(_api_url, params)
-					.then(res => {
-						this.enableClick = true;
-						this.has_fav = this.has_fav == 1 ? 0 : 1;
-						this.$notify({
-							type: 'success',
-							message: res.message
-						});
-					})
-					.catch(() => {
-						this.enableClick = true;
-					});
-			}
-		},
-		doShare() {
-			this.showShare = true;
-		},
-		cancelShare() {
-			this.showShare = false;
-			this.showWxLayer = false;
-			this.showLayer = false;
-		},
-		handleForward() {
-			const agent = navigator.userAgent.toLowerCase();
-			if (agent.indexOf('micromessenger') < 0) {
-				setTimeout(() => {
-					this.showLayer = true;
-				}, 150);
-			} else {
-				setTimeout(() => {
-					this.showWxLayer = true;
-				}, 150);
-			}
-		},
-		handlePoster() {
-			this.shareid = this.query_id;
-			this.showPoster = true;
-		},
-		closePoster() {
-			this.showPoster = false;
-		},
-		afterLogin(data) {
-			this.showLogin = false;
-			this.is_company_login = true;
-			let method = null;
-			if (data.method != undefined) {
-				method = data.method;
-			}
-			this.fetchData(method);
-		},
-		handlerDirectService() {
-			if (this.directServiceInfo.use_type == 'points') {
-				this.handlerDirectPay('points');
-			} else if (this.directServiceInfo.use_type == 'package') {
-				this.$router.push('/member/order/add/common?type=service&service_type=resume_package');
-			} else {
-				this.showPayment = true;
-			}
-		},
-		cancels() {
-			if (this.directServiceInfo.use_type == 'package') {
-				this.$router.push('/member/order/add/common?type=setmeal');
-			} else {
-				this.showDirectService = false;
-			}
-		},
-		handlerDirectPay(payment) {
-			let pay_data = {
-				service_type: 'single_resume_down',
-				deduct_points: this.directServiceInfo.use_type == 'points' ? this.directServiceInfo.need_points : 0,
-				payment,
-				resumeid: this.query_id,
-				return_url: this.$store.state.config.mobile_domain + 'resume/' + this.query_id
-			};
-			this.$refs.paySubmit.handlerSubmit(api.company_pay_direct_service, pay_data);
-			// http
-			//   .post(api.company_pay_direct_service, pay_data)
-			//   .then(res => {
-			//     if (res.data.pay_status == 1) {
-			//       this.$notify({ type: 'success', message: '支付成功' })
-			//       this.fetchData(true)
-			//       return false
-			//     } else {
-			//       this.handlerPay(res.data.parameter, payment)
-			//     }
-			//   })
-			//   .catch(() => {})
-		},
-		// handlerPay (parameter, payment) {
-		//   if (payment == 'wxpay') {
-		//     if (isWeiXin()) {
-		//       let successUrl = this.$route.path
-		//       let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + parameter.jsApiParameters.appId + '&timeStamp=' + parameter.jsApiParameters.timeStamp + '&nonceStr=' + parameter.jsApiParameters.nonceStr + '&package=' + parameter.jsApiParameters.package + '&signType=' + parameter.jsApiParameters.signType + '&paySign=' + parameter.jsApiParameters.paySign + '&successUrl=' + successUrl
-		//       window.location.href = locationUrl
-		//     } else {
-		//       window.location.href = parameter
-		//     }
-		//   } else {
-		//     window.location.href = parameter
-		//   }
-		// },
-		handlerReport() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-						this.after_login_data = {
-							method: 'handlerReport'
-						};
-					})
-					.catch(() => {});
-			} else {
-				if (this.base_info.audit != 1) {
-					this.$notify('该简历还未审核通过，不能继续此操作');
-					return false;
-				}
-				this.$refs.tipoff.initCB();
-				this.showTipoff = true;
-			}
-		},
-		// 预览作品
-		previewImg(index) {
-			ImagePreview({
-				images: this.previewImgList,
-				showIndex: true,
-				loop: false,
-				startPosition: index,
-				closeOnPopstate: true,
-				closeable: true
-			});
-		},
-		fetchVideonum() {
-			http.get(api.shortvideo_total, {
-				rid: this.query_id
-			})
-				.then(res => {
-					this.videonum = res.data;
-				})
-				.catch(() => {});
-		},
-		initQuery(query) {
-			for (const key in this.params) {
-				if (query.hasOwnProperty(key)) {
-					this.params[key] = query[key];
-				} else {
-					this.params[key] = '';
-				}
-			}
-			this.fetchData();
-		},
-		companyServiceDownloadResume() {
-			this.$router.push('/member/order/add/common?type=service&service_type=resume_package');
-		},
-		companyServiceUpgradePackage() {
-			this.$router.push('/member/order/add/common?type=setmeal');
-		},
-		//下载附件简历
-		doEnclosureDowenload() {
-			if (this.is_company_login === false) {
-				this.$dialog
-					.confirm({
-						title: '提示',
-						message: '当前操作需要登录企业账号',
-						confirmButtonText: '去登录'
-					})
-					.then(() => {
-						this.showLogin = true;
-					})
-					.catch(() => {});
-			} else {
-				if (this.base_info.audit != 1) {
-					this.$notify('该简历还未审核通过，不能继续此操作');
-					return false;
-				}
-				if (this.show_contact_note == 'need_download') {
-					this.$notify('请先下载简历');
-					return false;
-				}
-			}
-		}
-	}
-};
+    handleCloseSelectJob () {
+      this.selectJobShow = false
+    },
+    doInterview () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'doInterview'
+            }
+          })
+          .catch(() => {})
+      } else {
+        if (this.base_info.audit != 1) {
+          this.$notify('该简历还未审核通过，不能继续此操作')
+          return false
+        }
+        this.showInvite = true
+        this.$refs.child.initCB()
+      }
+    },
+    doDownload () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'doDownload'
+            }
+          })
+          .catch(() => {})
+      } else {
+        if (this.enableClick === false) {
+          return false
+        }
+        this.enableClick = false
+        if (this.base_info.audit != 1) {
+          this.enableClick = true
+          this.$notify('该简历还未审核通过，不能继续此操作')
+          return false
+        }
+        this.downloadResume()
+      }
+    },
+    downloadResume () {
+      const params = {
+        resume_id: this.query_id
+      }
+      http.post(api.resumedownload, params)
+        .then(res => {
+          this.enableClick = true
+          if (res.data.done == 0) {
+            if (res.data.need_upgrade == 1) {
+              this.showUpgradePackage = true
+            } else {
+              this.showDirectService = true
+              var btnCn = ''
+              if (res.data.use_type == 'points') {
+                btnCn = '立即兑换'
+              }
+              if (res.data.use_type == 'package') {
+                btnCn = '购买增值包'
+              }
+              if (res.data.use_type == 'money') {
+                btnCn = '立即支付'
+              }
+              this.directServiceInfo = {
+                use_type: res.data.use_type,
+                need_points: res.data.need_points,
+                need_expense: res.data.need_expense,
+                discount: res.data.discount,
+                resume: this.query_id,
+                btnCn: btnCn,
+                cancel: res.data.use_type == 'package' ? '升级套餐' : '取消'
+              }
+            }
+            return false
+          } else {
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
+            this.fetchData()
+          }
+        })
+        .catch(() => {
+          this.enableClick = true
+        })
+    },
+    doFav () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'doFav'
+            }
+          })
+          .catch(() => {})
+      } else {
+        if (this.enableClick === false) {
+          return false
+        }
+        this.enableClick = false
+        if (this.base_info.audit != 1) {
+          this.enableClick = true
+          this.$notify('该简历还未审核通过，不能继续此操作')
+          return false
+        }
+        const params = {
+          resume_id: this.query_id
+        }
+        let _api_url = this.has_fav == 1 ? api.resumefav_cancel : api.resumefav
+        http.post(_api_url, params)
+          .then(res => {
+            this.enableClick = true
+            this.has_fav = this.has_fav == 1 ? 0 : 1
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
+          })
+          .catch(() => {
+            this.enableClick = true
+          })
+      }
+    },
+    doShare () {
+      this.showShare = true
+    },
+    cancelShare () {
+      this.showShare = false
+      this.showWxLayer = false
+      this.showLayer = false
+    },
+    handleForward () {
+      const agent = navigator.userAgent.toLowerCase()
+      if (agent.indexOf('micromessenger') < 0) {
+        setTimeout(() => {
+          this.showLayer = true
+        }, 150)
+      } else {
+        setTimeout(() => {
+          this.showWxLayer = true
+        }, 150)
+      }
+    },
+    handlePoster () {
+      this.shareid = this.query_id
+      this.showPoster = true
+    },
+    closePoster () {
+      this.showPoster = false
+    },
+    afterLogin (data) {
+      this.showLogin = false
+      this.is_company_login = true
+      let method = null
+      if (data.method != undefined) {
+        method = data.method
+      }
+      this.fetchData(method)
+    },
+    handlerDirectService () {
+      if (this.directServiceInfo.use_type == 'points') {
+        this.handlerDirectPay('points')
+      } else if (this.directServiceInfo.use_type == 'package') {
+        this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
+      } else {
+        this.showPayment = true
+      }
+    },
+    cancels () {
+      if (this.directServiceInfo.use_type == 'package') {
+        this.$router.push('/member/order/add/common?type=setmeal')
+      } else {
+        this.showDirectService = false
+      }
+    },
+    handlerDirectPay (payment) {
+      let pay_data = {
+        service_type: 'single_resume_down',
+        deduct_points: this.directServiceInfo.use_type == 'points' ? this.directServiceInfo.need_points : 0,
+        payment,
+        resumeid: this.query_id,
+        return_url: this.$store.state.config.mobile_domain + 'resume/' + this.query_id
+      }
+      this.$refs.paySubmit.handlerSubmit(api.company_pay_direct_service, pay_data)
+      // http
+      //   .post(api.company_pay_direct_service, pay_data)
+      //   .then(res => {
+      //     if (res.data.pay_status == 1) {
+      //       this.$notify({ type: 'success', message: '支付成功' })
+      //       this.fetchData(true)
+      //       return false
+      //     } else {
+      //       this.handlerPay(res.data.parameter, payment)
+      //     }
+      //   })
+      //   .catch(() => {})
+    },
+    // handlerPay (parameter, payment) {
+    //   if (payment == 'wxpay') {
+    //     if (isWeiXin()) {
+    //       let successUrl = this.$route.path
+    //       let locationUrl = this.$store.state.config.mobile_domain + 'pay/jsapi?appId=' + parameter.jsApiParameters.appId + '&timeStamp=' + parameter.jsApiParameters.timeStamp + '&nonceStr=' + parameter.jsApiParameters.nonceStr + '&package=' + parameter.jsApiParameters.package + '&signType=' + parameter.jsApiParameters.signType + '&paySign=' + parameter.jsApiParameters.paySign + '&successUrl=' + successUrl
+    //       window.location.href = locationUrl
+    //     } else {
+    //       window.location.href = parameter
+    //     }
+    //   } else {
+    //     window.location.href = parameter
+    //   }
+    // },
+    handlerReport () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+            this.after_login_data = {
+              method: 'handlerReport'
+            }
+          })
+          .catch(() => {})
+      } else {
+        if (this.base_info.audit != 1) {
+          this.$notify('该简历还未审核通过，不能继续此操作')
+          return false
+        }
+        this.$refs.tipoff.initCB()
+        this.showTipoff = true
+      }
+    },
+    // 预览作品
+    previewImg (index) {
+      ImagePreview({
+        images: this.previewImgList,
+        showIndex: true,
+        loop: false,
+        startPosition: index,
+        closeOnPopstate: true,
+        closeable: true
+      })
+    },
+    fetchVideonum () {
+      http.get(api.shortvideo_total, {
+        rid: this.query_id
+      })
+        .then(res => {
+          this.videonum = res.data
+        })
+        .catch(() => {})
+    },
+    initQuery (query) {
+      for (const key in this.params) {
+        if (query.hasOwnProperty(key)) {
+          this.params[key] = query[key]
+        } else {
+          this.params[key] = ''
+        }
+      }
+      this.fetchData()
+    },
+    companyServiceDownloadResume () {
+      this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
+    },
+    companyServiceUpgradePackage () {
+      this.$router.push('/member/order/add/common?type=setmeal')
+    },
+    // 下载附件简历
+    doEnclosureDowenload () {
+      if (this.is_company_login === false) {
+        this.$dialog
+          .confirm({
+            title: '提示',
+            message: '当前操作需要登录企业账号',
+            confirmButtonText: '去登录'
+          })
+          .then(() => {
+            this.showLogin = true
+          })
+          .catch(() => {})
+      } else {
+        if (this.base_info.audit != 1) {
+          this.$notify('该简历还未审核通过，不能继续此操作')
+          return false
+        }
+        if (this.show_contact_note == 'need_download') {
+          this.$dialog
+            .confirm({
+              title: '提示',
+              message: '查看简历附件需先下载简历，是否下载【' + this.base_info.fullname + '】的简历？',
+              confirmButtonText: '下载'
+            })
+            .then(() => {
+              this.downloadResume()
+            })
+            .catch(() => {})
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss">

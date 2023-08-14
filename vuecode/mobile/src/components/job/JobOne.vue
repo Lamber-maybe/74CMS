@@ -25,7 +25,10 @@
         <div class="tx1">
           {{ base_info.jobname }}
         </div>
-        <div class="tx2">{{ base_info.wage_text }}</div>
+        <div class="tx2">{{ base_info.wage_text }}
+			<!-- 无效职位标识 -->
+			<img v-if="base_info.job_status!=1" class="invalid_job" src="../../assets/images/jobshow/invalid_job.png" />
+		</div>
         <div class="tx3">
           {{ base_info.district_text }} · {{ base_info.experience_text }} ·
           {{ base_info.education_text }}
@@ -2163,6 +2166,15 @@ export default {
     font-weight: bold;
     color: #ff5d24;
     margin-bottom: 8.5px;
+	position: relative;
+		.invalid_job{
+			display: block;
+			width: 79px;
+			height: 47px;
+			position: absolute;
+			right: 45px;
+			top: 2px;
+		}
   }
 
   .tx1 {

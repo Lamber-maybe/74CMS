@@ -83,6 +83,9 @@ import MessageList from './components/MessageList'
 export default {
   filters: {
     timeFilter(timestamp) {
+      if (timestamp === null){
+        timestamp = 0
+      }
       return parseTime(timestamp, '{y}-{m}-{d} {h}:{i}')
     }
   },
@@ -143,7 +146,7 @@ export default {
       window.ws.send(msgStr)
     },
     handleCurrentChange: function(val){
-      this.currentPage = val
+      this.currentPage = parseInt(val)
       this.fetchData()
     },
     initMessageListHeight(){
@@ -175,7 +178,7 @@ export default {
           this.listLoading = false
           this.list = response.data.items
           this.total = response.data.total
-          this.currentPage = response.data.currentPage
+          this.currentPage = parseInt(response.data.currentPage)
           this.pagesize = response.data.pagesize
         })
         .catch(() => { })

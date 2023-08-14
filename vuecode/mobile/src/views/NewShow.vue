@@ -95,17 +95,13 @@ export default {
       http
         .get(api.news_show, { id: this.id })
         .then(res => {
-          console.log(res)
           const { info, prev, next } = { ...res.data }
           this.info = info
           this.prev = prev
           this.next = next
-          let wechatShareInfo = {
-            title: this.info.title,
-            imgUrl: this.info.thumb
-          }
           let { attach_info } = info
-          let {sitedomain} = this.$store.state.config
+          let { sitedomain } = this.$store.state.config
+          this.attachList = []
           attach_info.forEach((item) => {
             this.attachList.push({
               name: item.name,
@@ -114,7 +110,10 @@ export default {
               url: sitedomain + '/upload/' + item.url
             })
           })
-          console.log(this.attachList)
+          let wechatShareInfo = {
+            title: this.info.title,
+            imgUrl: this.info.thumb
+          }
           wxshare(wechatShareInfo, 'newsshow', location.href)
         })
         .catch(() => {})

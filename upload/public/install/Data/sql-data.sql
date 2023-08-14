@@ -1246,7 +1246,8 @@ INSERT INTO `qs_sms_tpl` VALUES
 (NUll,'找回密码','SMS_3','','code,sitename','您正在找回{sitename}的会员密码,验证码{code},请在十分钟内完成验证'),
 (NUll,'手机验证','SMS_5','','code,sitename','感谢您使用{sitename}手机验证,验证码为:{code}'),
 (NUll,'测试短信配置','SMS_13','','','您好！这是一条检测短信模块配置的短信。收到此短信，意味着您的短信模块设置正确！您可以进行其它操作了！'),
-(NULL,'在线职聊未读消息提醒','SMS_14','','membername,url','您有{membername}的留言，点击查看{url}');
+(NULL,'在线职聊未读消息提醒','SMS_14','','membername,url','您有{membername}的留言，点击查看{url}'),
+(NULL,'注销账号','SMS_15','','code,sitename','验证码{code}，你正在注销{sitename}的用户，请在十分钟内完成验证');
 
 INSERT INTO `qs_task` VALUES
 (NUll,2,'sign_in','每日签到',5,1,1),

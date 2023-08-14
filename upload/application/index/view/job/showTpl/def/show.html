@@ -4,6 +4,10 @@
 <div class="content_wrapper" id="app">
     <div class="content">
         <div class="content1_wrapper clearfix">
+			<!-- 无效职位标识 -->
+			{#if condition="$return.base_info.job_status != 1"#}
+			<div class="invalid_job"><img src="__ROOT__/assets/images/jobshow/invalid_job.png"></div>
+			{#/if#}
             <div class="content1_text float">
                 <h3 class="post_name">{#$return.base_info.jobname#}</h3>
                 <p class="salary">{#$return.base_info.wage_text#}
@@ -542,93 +546,91 @@
 {#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
 <script>
     $(document).ready(function () {
-        $(function () {
-            setTimeout(function () {
-                handlePic();
-            }, 500)
-            function handlePic() {
-                var liw = 0, ml, r, s, al = 188;
-                $('.piclist li').each(function () {
-                    liw += $(this).width() + 0;
-                    $(this).css('width', $(this).width() + 'px');
-                })
-                $('.piclist').width(liw + 'px');
+      $(function () {
+        setTimeout(function () {
+          handlePic()
+        }, 500)
+        function handlePic() {
+          var liw = 0; var ml; var r; var s; var al = 188
+          $('.piclist li').each(function () {
+            liw += $(this).width() + 0
+            $(this).css('width', $(this).width() + 'px')
+          })
+          $('.piclist').width(liw + 'px')
 
-                $('.pic_next').click(function () {
+          $('.pic_next').click(function () {
+            if ($('.piclist').is(':animated')) {
+              $('.piclist').stop(true, true)
+            }/* 避免点击事件重复 */
 
-                    if ($('.piclist').is(':animated')) {
-                        $('.piclist').stop(true, true);
-                    }/* 避免点击事件重复 */
-
-                    ml = parseInt($('.piclist').css('left'));
-                    r = liw - (al - ml);  /* 700为外部区块.infopic的宽度，15为li之间的距离，即.piclist li的margin-right的值 */
-                    if (r < al) {
-                        s = r - 0;
-                    } else {
-                        s = al;
-                    }
-                    $('.piclist').animate({ left: ml - s + 'px' }, 'slow');
-                })
-
-                $('.pic_prev').click(function () {
-
-                    if ($('.piclist').is(':animated')) {
-                        $('.piclist').stop(true, true);
-                    }/* 避免点击事件重复 */
-
-                    ml = parseInt($('.piclist').css('left'));
-                    if (ml > -al) {
-                        s = ml;
-                    } else {
-                        s = -al;
-                    }
-                    $('.piclist').animate({ left: ml - s + 'px' }, 'slow');
-                });
+            ml = parseInt($('.piclist').css('left'))
+            r = liw - (al - ml) /* 700为外部区块.infopic的宽度，15为li之间的距离，即.piclist li的margin-right的值 */
+            if (r < al) {
+              s = r - 0
+            } else {
+              s = al
             }
-            hs.graphicsDir = "__ROOT__/assets/js/graphics/";
-            hs.align = 'center';
-            hs.transitions = ['expand', 'crossfade'];
-            hs.outlineType = 'rounded-white';
-            hs.fadeInOut = true;
-            hs.addSlideshow({
-                interval: 5000,
-                repeat: false,
-                useControls: true,
-                fixedControls: 'fit',
-                overlayOptions: {
-                    opacity: 0.75,
-                    position: 'bottom center',
-                    hideOnMouseOut: true
-                }
-            });
+            $('.piclist').animate({ left: ml - s + 'px' }, 'slow')
+          })
+
+          $('.pic_prev').click(function () {
+            if ($('.piclist').is(':animated')) {
+              $('.piclist').stop(true, true)
+            }/* 避免点击事件重复 */
+
+            ml = parseInt($('.piclist').css('left'))
+            if (ml > -al) {
+              s = ml
+            } else {
+              s = -al
+            }
+            $('.piclist').animate({ left: ml - s + 'px' }, 'slow')
+          })
+    }
+        hs.graphicsDir = '__ROOT__/assets/js/graphics/'
+    hs.align = 'center'
+        hs.transitions = ['expand', 'crossfade']
+        hs.outlineType = 'rounded-white'
+        hs.fadeInOut = true
+        hs.addSlideshow({
+          interval: 5000,
+          repeat: false,
+          useControls: true,
+          fixedControls: 'fit',
+          overlayOptions: {
+            opacity: 0.75,
+            position: 'bottom center',
+            hideOnMouseOut: true
+          }
         })
     })
+    })
     function loadBdMap() {
-        if (window.BMap !== undefined) {
-            return
-        }
-        var script = document.createElement('script')
-        script.type = 'text/javascript'
-        script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap'
-        document.body.appendChild(script)
+      if (window.BMap !== undefined) {
+        return
+      }
+      var script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = '//api.map.baidu.com/api?v=2.0&ak={#$global_config.map_ak#}&callback=initBdMap'
+      document.body.appendChild(script)
     }
     function initBdMap() {
-        var map = new BMap.Map('bdMap') // 创建Map实例
-        var lng = parseFloat("{#$return.base_info.map_lng#}")
-        var lat = parseFloat("{#$return.base_info.map_lat#}")
-        var zoom = parseInt("{#$return.base_info.map_zoom#}") > 0 ? parseInt("{#$return.base_info.map_zoom#}") : parseInt("{#$global_config.map_zoom#}")
-        var point = new BMap.Point(lng, lat) // 创建点坐标
-        map.centerAndZoom(point, zoom)
-        map.enableScrollWheelZoom() //启用滚轮放大缩小
-        var marker = new BMap.Marker(new BMap.Point(lng, lat));
-        map.addOverlay(marker);
-        var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT });
-        var top_left_navigation = new BMap.NavigationControl();
-        map.addControl(top_left_control);
-        map.addControl(top_left_navigation);
-    }
-    var id = parseInt("{#$return.base_info.id#}")
-    var isWxOpen = !!parseInt("{#$global_config.wechat_open#}")
+      var map = new BMap.Map('bdMap') // 创建Map实例
+      var lng = parseFloat('{#$return.base_info.map_lng#}')
+      var lat = parseFloat('{#$return.base_info.map_lat#}')
+      var zoom = parseInt('{#$return.base_info.map_zoom#}') > 0 ? parseInt('{#$return.base_info.map_zoom#}') : parseInt('{#$global_config.map_zoom#}')
+      var point = new BMap.Point(lng, lat) // 创建点坐标
+      map.centerAndZoom(point, zoom)
+      map.enableScrollWheelZoom() // 启用滚轮放大缩小
+      var marker = new BMap.Marker(new BMap.Point(lng, lat))
+    map.addOverlay(marker)
+    var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT })
+    var top_left_navigation = new BMap.NavigationControl()
+    map.addControl(top_left_control)
+    map.addControl(top_left_navigation)
+}
+    var id = parseInt('{#$return.base_info.id#}')
+    var isWxOpen = !!parseInt('{#$global_config.wechat_open#}')
     function loadTencent() {
       if (window.BMap !== undefined) {
         return
@@ -647,9 +649,9 @@
       script.src = 'https://v.vaptcha.com/v3.js'
       document.body.appendChild(script)
     }
-    var captcha_open = parseInt("{#$global_config.captcha_open#}");
-    var captcha_type = "{#$global_config.captcha_type#}";
-    if (captcha_open == 1) {
+    var captcha_open = parseInt('{#$global_config.captcha_open#}')
+var captcha_type = '{#$global_config.captcha_type#}'
+if (captcha_open == 1) {
       if (captcha_type == 'tencent') {
         loadTencent()
       } else if (captcha_type == 'vaptcha') {
@@ -657,730 +659,728 @@
       }
     }
     var app = new Vue({
-        el: '#app',
-        data: {
-            bind_timer:'',
-            scanQrcodeImg:'',
-            showBindWeixin:false,
-            wx_code_url:'/assets/images/loading.gif',
-            codeShow: false,
-            hasGetCode:false,
-            showTipoff: false,
-            tipoffForm: {
-                reason: '',
-                content: ''
-            },
-            tipoffRules: {
-                reason: [
-                    { required: true, message: '请选择举报原因', trigger: 'change' }
-                ],
-                content: [
-                    { required: true, message: '请输入备注说明', trigger: 'blur' },
-                    { min: 20, max: 100, message: '长度在 20 到 100 个字符', trigger: 'blur' }
-                ],
-            },
-            classifyTipoffJob: [],
-            isLogin: false,
-            utype: 0,
-            showMap: false,
-            hasFav: false,
-            hasApply: true,
-            clickNum: 0,
-            shareQrcode: '',
-            rightQrcode: '',
-            imQrcode: '',
-            mapQrcode: '',
-            relationActive: 'near',
-            contactData: {
-                field_rule: {
-                    email: {},
-                    qq: {},
-                    telephone: {},
-                    weixin: {}
-                },
-                contact_info: {},
-                show_contact: 0,
-                show_contact_note: ''
-            },
-            rightFixed: false,
-            supplementary: {},
-            contentAll: false,
-            contentHeight: 0,
-            showRegQuick: false,
-            regQuick: {
-              fullname: '',
-              sex: 1,
-              birthday: '',
-              education: '',
-              optionEducation: [],
-              enter_job_time: '',
-              isNoJobTime: false,
-              mobile: '',
-              code: '',
-              password: '',
-              intentionItemCategory: [],
-              intentionItemDistrict: [],
-              optionCategory: [],
-              optionDistrict: [],
-              current: '',
-              minwage: '',
-              maxwage: '',
-              optionCurrent: [],
-              optionMinWage: [],
-              optionMaxWage: [],
-              doRegQuickBtnDisabled: false
-            },
-            regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
-            sendSmsBtnDisabled: false,
-            sendSmsBtnText: '获取验证码',
-            sendSmsTimer: '',
-            sendSmsInterval: 60,
-            captcha_open: 0,
-            captcha_type: '',
-            showPictureCaptcha: false,
-            secret_str: '',
-            catpchaSrc: '',
-            pictureCaptchaCallback: '',
-            formUtype: 2,
-            is_centerDialogVisible: false,
-            is_risk: false,
-            captchaForm: {
-              code: ''
-            },
-            captchaRules: {
-              code: [
-                { required: true, message: '请输入验证码', trigger: 'blur' }
-              ],
-            }
+      el: '#app',
+      data: {
+        bind_timer: '',
+        scanQrcodeImg: '',
+        showBindWeixin: false,
+        wx_code_url: '/assets/images/loading.gif',
+        codeShow: false,
+        hasGetCode: false,
+        showTipoff: false,
+        tipoffForm: {
+          reason: '',
+          content: ''
         },
-        created: function () {
-            this.getUserInfo()
-            this.getSupplementary()
-            this.getContact()
-            this.getFavStatus()
-            this.addClick()
-            this.getRegQuickInfo()
-            var locationUrl = "{#$return.share_url#}"
-            this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_job&url=' + locationUrl + '&jobid=' + id
-            this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
-            this.imQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url={#$return.im_url#}'
-            this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode&jobid=' + id
-            this.captcha_open = captcha_open
-            this.captcha_type = captcha_type
-            if(navigator.userAgent.indexOf('Trident')>-1){
-                this.contentHeight = document.getElementById("jobContent").clientHeight
-                this.contentAll = this.contentHeight > 450
-            }
+        tipoffRules: {
+          reason: [
+            { required: true, message: '请选择举报原因', trigger: 'change' }
+          ],
+          content: [
+            { required: true, message: '请输入备注说明', trigger: 'blur' },
+            { min: 20, max: 100, message: '长度在 20 到 100 个字符', trigger: 'blur' }
+          ]
         },
-        mounted: function () {
-            // 滚动条的获取
-            window.addEventListener('scroll', this.getScrollTop)
-            if(navigator.userAgent.indexOf('Trident')<=-1){
-                this.contentHeight = this.$refs.jobContent.clientHeight
-                this.contentAll = this.contentHeight > 450
-            }
+        classifyTipoffJob: [],
+        isLogin: false,
+        utype: 0,
+        showMap: false,
+        hasFav: false,
+        hasApply: true,
+        clickNum: 0,
+        shareQrcode: '',
+        rightQrcode: '',
+        imQrcode: '',
+        mapQrcode: '',
+        relationActive: 'near',
+        contactData: {
+          field_rule: {
+            email: {},
+            qq: {},
+            telephone: {},
+            weixin: {}
+          },
+          contact_info: {},
+          show_contact: 0,
+          show_contact_note: ''
         },
-        computed: {
-            options_tipoff: function () {
-                return this.classifyTipoffJob
-            }
+        rightFixed: false,
+        supplementary: {},
+        contentAll: false,
+        contentHeight: 0,
+        showRegQuick: false,
+        regQuick: {
+          fullname: '',
+          sex: 1,
+          birthday: '',
+          education: '',
+          optionEducation: [],
+          enter_job_time: '',
+          isNoJobTime: false,
+          mobile: '',
+          code: '',
+          password: '',
+          intentionItemCategory: [],
+          intentionItemDistrict: [],
+          optionCategory: [],
+          optionDistrict: [],
+          current: '',
+          minwage: '',
+          maxwage: '',
+          optionCurrent: [],
+          optionMinWage: [],
+          optionMaxWage: [],
+          doRegQuickBtnDisabled: false
         },
-        methods: {
-            // 扫码入群 弹框
-            centerDialogVisible:function()
-            {
-                this.is_centerDialogVisible = true
-            },
-            risk:function () {
-              this.is_risk = true
-            },
-            loopCheckBind:function(){
-                var that = this
-                httpget(qscms.apiList.imCheckBind, {})
-                    .then(function(res){
-                        if(res.code==200){
-                            if(res.data==1){
-                                that.showBindWeixin = false
-                                clearInterval(that.bind_timer);
-                                that.$message({ type: 'success', message: '绑定成功' })
-                                setTimeout(function(){
-                                    httpget(qscms.apiList.imGetToken, {})
-                                        .then(function(res){
-                                            qscms.imToken = res.data
-                                            that.startIm()
-                                        }).catch(()=>{})
-                                },2000)
-                            }
-                        }
-                    })
-            },
-            startIm:function(){
-                var that = this
-                if (parseInt(that.utype) === 0) {
-                    // 未登录
-                    that.$confirm('当前操作需要登录求职者账号', '提示', {
-                        type: 'warning',
-                        confirmButtonText: '去登录'
-                    }).then(function () {
-                        location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                    })
-                } else if (parseInt(that.utype) !== 2) {
-                    that.$confirm('当前操作需要登录求职者账号', '提示', {
-                        type: 'warning',
-                        confirmButtonText: '去登录'
-                    }).then(function () {
-                        location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                    })
-                    .catch(function () { })
-                }else{
-                    httppost(qscms.apiList.imStart, {token:qscms.imToken,jobid:id})
-                        .then(function (res) {
-                            if(res.data.next==''){
-                                location.href = qscms.locationList.personalIm + '?chat=' + res.data.chatid
-                                return false;
-                            }
-                            if(res.data.next=='disabled'){
-                                that.$alert(res.message, '系统提示', {
-                                    showCancelButton:false,
-                                    type: 'warning'
-                                });
-                                return false;
-                            }
-                            if(res.data.next=='complete_resume'){
-                                that.$alert(res.message, '系统提示', {
-                                    showCancelButton:false,
-                                    confirmButtonText:'去完善简历',
-                                    type: 'warning',
-                                    dangerouslyUseHTMLString:true,
-                                    callback: () => {
-                                        location.href = qscms.locationList.personalResume
-                                        return false;
-                                    }
-                                });
-                                return false;
-                            }
-                            if(res.data.next=='bind_weixin'){
-                                that.showBindWeixin = true
-                                that.bind_timer = setInterval(that.loopCheckBind, 3000);
-                                return false;
-                            }
-                        })
-                        .catch(function (res) {
-                            that.$message.error(res.message)
-                        })
-                }
-            },
-            doApplyResume: function () {
-              var that = this
-              if (parseInt(this.utype) === 0) {
-                // 未登录
-                this.showRegQuick = true
-              } else {
-                if (parseInt(this.utype) !== 2) {
-                  this.$confirm('当前操作需要登录求职者账号', '提示', {
-                    type: 'warning',
-                    confirmButtonText: '去登录'
-                  }).then(function () {
-                    location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                  })
-                  .catch(function () { })
-                } else {
-                  var params = {
-                    jobid: id
-                  }
-                  httppost(qscms.apiList.jobapply, params)
-                    .then(function (res) {
-                      that.$message({ type: 'success', message: res.message })
-                      location.reload()
-                    })
-                    .catch(function () { })
+        regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
+        sendSmsBtnDisabled: false,
+        sendSmsBtnText: '获取验证码',
+        sendSmsTimer: '',
+        sendSmsInterval: 60,
+        captcha_open: 0,
+        captcha_type: '',
+        showPictureCaptcha: false,
+        secret_str: '',
+        catpchaSrc: '',
+        pictureCaptchaCallback: '',
+        formUtype: 2,
+        is_centerDialogVisible: false,
+        is_risk: false,
+        captchaForm: {
+          code: ''
+        },
+        captchaRules: {
+          code: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
+          ]
+        }
+      },
+      created: function () {
+        this.getUserInfo()
+        this.getSupplementary()
+        this.getContact()
+        this.getFavStatus()
+        this.addClick()
+        this.getRegQuickInfo()
+        var locationUrl = '{#$return.share_url#}'
+        this.rightQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?alias=subscribe_job&url=' + locationUrl + '&jobid=' + id
+        this.shareQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url=' + locationUrl
+        this.imQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=normal&url={#$return.im_url#}'
+        this.mapQrcode = qscms.apiUrl + qscms.apiList.qrcode + '?type=wechat&alias=mapQrcode&jobid=' + id
+        this.captcha_open = captcha_open
+        this.captcha_type = captcha_type
+        if (navigator.userAgent.indexOf('Trident') > -1){
+          this.contentHeight = document.getElementById('jobContent').clientHeight
+          this.contentAll = this.contentHeight > 450
+        }
+      },
+      mounted: function () {
+        // 滚动条的获取
+        window.addEventListener('scroll', this.getScrollTop)
+        if (navigator.userAgent.indexOf('Trident') <= -1){
+          this.contentHeight = this.$refs.jobContent.clientHeight
+          this.contentAll = this.contentHeight > 450
+        }
+      },
+      computed: {
+        options_tipoff: function () {
+          return this.classifyTipoffJob
+        }
+      },
+      methods: {
+        // 扫码入群 弹框
+        centerDialogVisible: function() {
+          this.is_centerDialogVisible = true
+        },
+        risk: function () {
+          this.is_risk = true
+        },
+        loopCheckBind: function(){
+          var that = this
+          httpget(qscms.apiList.imCheckBind, {})
+            .then(function(res){
+              if (res.code == 200){
+                if (res.data == 1){
+                  that.showBindWeixin = false
+                  clearInterval(that.bind_timer)
+                  that.$message({ type: 'success', message: '绑定成功' })
+                  setTimeout(function(){
+                    httpget(qscms.apiList.imGetToken, {})
+                      .then(function(res){
+                        qscms.imToken = res.data
+                        that.startIm()
+                      }).catch(() => {})
+                  }, 2000)
                 }
               }
-            },
-            regQuickToLogin: function () {
+            })
+        },
+        startIm: function(){
+          var that = this
+          if (parseInt(that.utype) === 0) {
+            // 未登录
+            that.$confirm('当前操作需要登录求职者账号', '提示', {
+              type: 'warning',
+              confirmButtonText: '去登录'
+            }).then(function () {
               location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-            },
-            // 选择无工作经验
-            handleNoJobTime: function () {
-              var that = this
-              that.regQuick.enter_job_time = ''
-              that.regQuick.isNoJobTime = true
-            },
-            doRegQuick: function () {
-              var that = this
-              if (that.doRegQuickBtnDisabled === true) {
-                return false
-              }
-              if (!that.regQuick.fullname) {
-                that.$message.error('请输入姓名')
-                return false
-              }
-              if (!that.regQuick.sex) {
-                that.$message.error('请选择性别')
-                return false
-              }
-              if (!that.regQuick.birthday) {
-                that.$message.error('请选择出生日期')
-                return false
-              }
-              if (!that.regQuick.education) {
-                that.$message.error('请选择最高学历')
-                return false
-              }
-              if (!that.regQuick.isNoJobTime) {
-                if (!that.regQuick.enter_job_time) {
-                  that.$message.error('请选择开始工作时间')
+            })
+          } else if (parseInt(that.utype) !== 2) {
+            that.$confirm('当前操作需要登录求职者账号', '提示', {
+              type: 'warning',
+              confirmButtonText: '去登录'
+            }).then(function () {
+              location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+            })
+              .catch(function () { })
+          } else {
+            httppost(qscms.apiList.imStart, { token: qscms.imToken, jobid: id })
+              .then(function (res) {
+                if (res.data.next == ''){
+                  location.href = qscms.locationList.personalIm + '?chat=' + res.data.chatid
                   return false
                 }
-              }
-              if (!that.regQuick.intentionItemCategory[0]) {
-                that.$message.error('请选择期望职位')
-                return false
-              }
-              if (!that.regQuick.intentionItemDistrict[0]) {
-                that.$message.error('请选择期望地区')
-                return false
-              }
-              if (!that.regQuick.minwage || !that.regQuick.maxwage) {
-                that.$message.error('请选择期望薪资')
-                return false
-              }
-              if (!that.regQuick.current) {
-                that.$message.error('请选择求职状态')
-                return false
-              }
-              if (!that.regQuick.mobile) {
-                that.$message.error('请输入手机号')
-                return false
-              }
-              if (!that.regularMobile.test(that.regQuick.mobile)) {
-                that.$message.error('手机号格式不正确')
-                return false
-              }
-              if (!that.regQuick.code) {
-                that.$message.error('请输入验证码')
-                return false
-              }
-              if (!that.regQuick.password) {
-                that.$message.error('请输入密码')
-                return false
-              }
-              that.doRegQuickBtnDisabled = true
-              httppost(qscms.apiList.regResumeQuick, {
-                jobid: id,
-                fullname: that.regQuick.fullname,
-                sex: that.regQuick.sex,
-                birthday: that.regQuick.birthday,
-                education: that.regQuick.education,
-                enter_job_time: that.regQuick.enter_job_time,
-                category1: that.regQuick.intentionItemCategory[0],
-                category2: that.regQuick.intentionItemCategory[1],
-                category3: that.regQuick.intentionItemCategory[2],
-                district1: that.regQuick.intentionItemDistrict[0],
-                district2: that.regQuick.intentionItemDistrict[1],
-                district3: that.regQuick.intentionItemDistrict[2],
-                minwage: that.regQuick.minwage,
-                maxwage: that.regQuick.maxwage,
-                current: that.regQuick.current,
-                mobile: that.regQuick.mobile,
-                code: that.regQuick.code,
-                password: that.regQuick.password
-              }).then(function (res) {
-                that.doRegQuickBtnDisabled = false
-                if (res.code === 200) {
-                  // 设置登录状态
-                  that.utype = res.data.utype
-                  var visitor = {
-                    utype: res.data.utype,
-                    token: res.data.token,
-                    mobile: res.data.mobile,
-                    userIminfo: res.data.user_iminfo
-                  }
-                  Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 });
-                  that.showRegQuick = false
-                  setTimeout(function() {
-                    if (parseInt(res.data.next_code) === 50005) {
-                      // 去完善简历
-                      that.$confirm(res.message, '提示', {
-                        type: 'warning',
-                        confirmButtonText: '继续完善',
-                        showCancelButton: false
-                      })
-                      .then(function () {
-                        location.href = qscms.locationList.personalResume + '?redirect=' + location.href
-                      })
-                    } else {
-                      // 投递成功
-                      that.$message({ type: 'success', message: res.message })
-                      setTimeout(function() {
-                        window.location.reload()
-                      }, 1000)
+                if (res.data.next == 'disabled'){
+                  that.$alert(res.message, '系统提示', {
+                    showCancelButton: false,
+                    type: 'warning'
+                  })
+                  return false
+                }
+                if (res.data.next == 'complete_resume'){
+                  that.$alert(res.message, '系统提示', {
+                    showCancelButton: false,
+                    confirmButtonText: '去完善简历',
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true,
+                    callback: () => {
+                      location.href = qscms.locationList.personalResume
+                      return false
                     }
-                  }, 300)
-                } else {
-                  that.$message.error(res.message)
+                  })
+                  return false
+                }
+                if (res.data.next == 'bind_weixin'){
+                  that.showBindWeixin = true
+                  that.bind_timer = setInterval(that.loopCheckBind, 3000)
+                  return false
                 }
               })
-            },
-            changeImg: function () {
-              var that = this
-              httpget(qscms.apiList.captchaPicture, {})
-                  .then(function (res) {
-                    that.secret_str = res.data.secret_str
-                    that.catpchaSrc = res.data.src
+              .catch(function (res) {
+                that.$message.error(res.message)
+              })
+          }
+        },
+        doApplyResume: function () {
+          var that = this
+          if (parseInt(this.utype) === 0) {
+            // 未登录
+            this.showRegQuick = true
+          } else {
+            if (parseInt(this.utype) !== 2) {
+              this.$confirm('当前操作需要登录求职者账号', '提示', {
+                type: 'warning',
+                confirmButtonText: '去登录'
+              }).then(function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+              })
+                .catch(function () { })
+            } else {
+              var params = {
+                jobid: id
+              }
+              httppost(qscms.apiList.jobapply, params)
+                .then(function (res) {
+                  that.$message({ type: 'success', message: res.message })
+                  location.reload()
+                })
+                .catch(function () { })
+            }
+          }
+        },
+        regQuickToLogin: function () {
+          location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+        },
+        // 选择无工作经验
+        handleNoJobTime: function () {
+          var that = this
+          that.regQuick.enter_job_time = ''
+          that.regQuick.isNoJobTime = true
+        },
+        doRegQuick: function () {
+          var that = this
+          if (that.doRegQuickBtnDisabled === true) {
+            return false
+          }
+          if (!that.regQuick.fullname) {
+            that.$message.error('请输入姓名')
+            return false
+          }
+          if (!that.regQuick.sex) {
+            that.$message.error('请选择性别')
+            return false
+          }
+          if (!that.regQuick.birthday) {
+            that.$message.error('请选择出生日期')
+            return false
+          }
+          if (!that.regQuick.education) {
+            that.$message.error('请选择最高学历')
+            return false
+          }
+          if (!that.regQuick.isNoJobTime) {
+            if (!that.regQuick.enter_job_time) {
+              that.$message.error('请选择开始工作时间')
+              return false
+            }
+          }
+          if (!that.regQuick.intentionItemCategory[0]) {
+            that.$message.error('请选择期望职位')
+            return false
+          }
+          if (!that.regQuick.intentionItemDistrict[0]) {
+            that.$message.error('请选择期望地区')
+            return false
+          }
+          if (!that.regQuick.minwage || !that.regQuick.maxwage) {
+            that.$message.error('请选择期望薪资')
+            return false
+          }
+          if (!that.regQuick.current) {
+            that.$message.error('请选择求职状态')
+            return false
+          }
+          if (!that.regQuick.mobile) {
+            that.$message.error('请输入手机号')
+            return false
+          }
+          if (!that.regularMobile.test(that.regQuick.mobile)) {
+            that.$message.error('手机号格式不正确')
+            return false
+          }
+          if (!that.regQuick.code) {
+            that.$message.error('请输入验证码')
+            return false
+          }
+          if (!that.regQuick.password) {
+            that.$message.error('请输入密码')
+            return false
+          }
+          that.doRegQuickBtnDisabled = true
+          httppost(qscms.apiList.regResumeQuick, {
+            jobid: id,
+            fullname: that.regQuick.fullname,
+            sex: that.regQuick.sex,
+            birthday: that.regQuick.birthday,
+            education: that.regQuick.education,
+            enter_job_time: that.regQuick.enter_job_time,
+            category1: that.regQuick.intentionItemCategory[0],
+            category2: that.regQuick.intentionItemCategory[1],
+            category3: that.regQuick.intentionItemCategory[2],
+            district1: that.regQuick.intentionItemDistrict[0],
+            district2: that.regQuick.intentionItemDistrict[1],
+            district3: that.regQuick.intentionItemDistrict[2],
+            minwage: that.regQuick.minwage,
+            maxwage: that.regQuick.maxwage,
+            current: that.regQuick.current,
+            mobile: that.regQuick.mobile,
+            code: that.regQuick.code,
+            password: that.regQuick.password
+          }).then(function (res) {
+            that.doRegQuickBtnDisabled = false
+            if (res.code === 200) {
+              // 设置登录状态
+              that.utype = res.data.utype
+              var visitor = {
+                utype: res.data.utype,
+                token: res.data.token,
+                mobile: res.data.mobile,
+                userIminfo: res.data.user_iminfo
+              }
+              Cookies.set('qscms_visitor', JSON.stringify(visitor), { expires: 7 })
+              that.showRegQuick = false
+              setTimeout(function() {
+                if (parseInt(res.data.next_code) === 50005) {
+                  // 去完善简历
+                  that.$confirm(res.message, '提示', {
+                    type: 'warning',
+                    confirmButtonText: '继续完善',
+                    showCancelButton: false
                   })
+                    .then(function () {
+                      location.href = qscms.locationList.personalResume + '?redirect=' + location.href
+                    })
+                } else {
+                  // 投递成功
+                  that.$message({ type: 'success', message: res.message })
+                  setTimeout(function() {
+                    window.location.reload()
+                  }, 1000)
+                }
+              }, 300)
+            } else {
+              that.$message.error(res.message)
+            }
+          })
+        },
+        changeImg: function () {
+          var that = this
+          httpget(qscms.apiList.captchaPicture, {})
+            .then(function (res) {
+              that.secret_str = res.data.secret_str
+              that.catpchaSrc = res.data.src
+            })
+            .catch(function () { })
+        },
+        bindWeixinOpened: function(){
+          var that = this
+          httpget(qscms.apiList.qrcode, { type: 'bind_weixin' })
+            .then(function (res) {
+              that.scanQrcodeImg = res.data
+            })
+            .catch(function () { })
+        },
+        pictureCaptchaOpened: function () {
+          this.changeImg()
+        },
+        submitPictureCaptcha: function () {
+          var that = this
+          that.$refs.captchaForm.validate(function (valid) {
+            if (valid) {
+              that.showPictureCaptcha = false
+              that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+            } else {
+              return false
+            }
+          })
+        },
+        // 发送验证码
+        sendSms: function () {
+          var that = this
+          if (that.sendSmsBtnDisabled === true) {
+            return false
+          }
+          if (!that.regQuick.mobile) {
+            that.$message.error('请输入手机号')
+            return false
+          }
+          if (!that.regularMobile.test(that.regQuick.mobile)) {
+            that.$message.error('手机号格式不正确')
+            return false
+          }
+          if (that.captcha_open == 1) {
+            if (that.captcha_type == 'tencent') {
+              var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
+                that.doSendSms(res)
+              })
+              captchaWindow.show()
+            } else if (that.captcha_type == 'vaptcha') {
+              vaptcha({
+                vid: '{#$global_config.captcha_vaptcha_vid#}', // 验证单元id
+                type: 'invisible', // 显示类型 隐藏式
+                scene: 0, // 场景值 默认0
+                offline_server: '' // 离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
+              }).then(function (vaptchaObj) {
+                obj = vaptchaObj // 将VAPTCHA验证实例保存到局部变量中
+                // 获取token的方式二：
+                vaptchaObj.listen('pass', function () {
+                  that.doSendSms({ code: vaptchaObj.getToken() })
+                })
+                // 关闭验证弹窗时触发
+                vaptchaObj.listen('close', function () {
+                  // 验证弹窗关闭触发
+                })
+                obj.validate()
+              })
+            } else {
+              that.showPictureCaptcha = true
+              that.pictureCaptchaCallback = 'doSendSms'
+            }
+          } else {
+            that.doSendSms(null)
+          }
+        },
+        doSendSms: function (captcha) {
+          var that = this
+          httppost(qscms.apiList.getRegQuickCode, { mobile: that.regQuick.mobile, captcha: captcha }).then(function (res) {
+            if (parseInt(res.data.notice) === 1) {
+              that.showRegQuick = false
+              setTimeout(function () {
+                that.$confirm(res.message, '提示', {
+                  type: 'warning',
+                  confirmButtonText: '是',
+                  cancelButtonText: '否'
+                }).then(function () {
+                  location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                })
                   .catch(function () { })
-            },
-            bindWeixinOpened:function(){
-                var that = this
-                httpget(qscms.apiList.qrcode, {type:'bind_weixin'})
-                    .then(function (res) {
-                        that.scanQrcodeImg = res.data
-                    })
-                    .catch(function () { })
-            },
-            pictureCaptchaOpened: function () {
-              this.changeImg()
-            },
-            submitPictureCaptcha: function () {
-              var that = this
-              that.$refs.captchaForm.validate(function (valid) {
-                if (valid) {
-                  that.showPictureCaptcha = false
-                  that[that.pictureCaptchaCallback]({ code: that.captchaForm.code, secret_str: that.secret_str })
+              }, 300)
+            } else {
+              that.$message({
+                type: 'success',
+                message: res.message
+              })
+              that.sendSmsTimer = setInterval(function () {
+                if (that.sendSmsInterval === 0) {
+                  that.sendSmsBtnDisabled = false
+                  that.sendSmsBtnText = '获取验证码'
+                  that.sendSmsInterval = 60
+                  clearInterval(that.sendSmsTimer)
                 } else {
-                  return false;
+                  that.sendSmsBtnDisabled = true
+                  that.sendSmsBtnText = '重发 ' + that.sendSmsInterval + ' 秒'
+                  that.sendSmsInterval--
                 }
-              });
-            },
-            // 发送验证码
-            sendSms: function () {
-              var that = this
-              if (that.sendSmsBtnDisabled === true) {
-                return false
+              }, 1000)
+            }
+          }).catch(function () { })
+        },
+        changeMinWage: function (minWage) {
+          this.makeWageOption('max', minWage + 500)
+        },
+        makeWageOption: function (type, minValue) {
+          var that = this
+          var wageArray = []
+          var storeMaxWage = 15000
+          var _optionMinWage = []
+          var _optionMaxWage = []
+          if (minValue <= storeMaxWage) {
+            var a = minValue
+            var b = storeMaxWage
+            if (type === 'min') {
+              for (var i = a; i < b; i += 500){
+                _optionMinWage.push(i)
               }
-              if (!that.regQuick.mobile) {
-                that.$message.error('请输入手机号')
-                return false
+              that.regQuick.optionMinWage = _optionMinWage
+            } else if (type === 'max') {
+              for (var i = a; i <= b; i += 500){
+                _optionMaxWage.push(i)
               }
-              if (!that.regularMobile.test(that.regQuick.mobile)) {
-                that.$message.error('手机号格式不正确')
-                return false
-              }
-              if (that.captcha_open == 1) {
-                if (that.captcha_type == 'tencent') {
-                  var captchaWindow = new TencentCaptcha('{#$global_config.captcha_tencent_appid#}', function (res) {
-                    that.doSendSms(res)
-                  });
-                  captchaWindow.show()
-                } else if (that.captcha_type == 'vaptcha') {
-                  vaptcha({
-                    vid: "{#$global_config.captcha_vaptcha_vid#}", // 验证单元id
-                    type: "invisible", // 显示类型 隐藏式
-                    scene: 0, // 场景值 默认0
-                    offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
-                  }).then(function (vaptchaObj) {
-                    obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
-                    //获取token的方式二：
-                    vaptchaObj.listen("pass", function () {
-                      that.doSendSms({ code: vaptchaObj.getToken() })
-                    });
-                    //关闭验证弹窗时触发
-                    vaptchaObj.listen("close", function () {
-                      //验证弹窗关闭触发
-                    });
-                    obj.validate();
-                  });
+              that.regQuick.optionMaxWage = _optionMaxWage
+            }
+          }
+          return wageArray
+        },
+        getRegQuickInfo: function () {
+          var that = this
+          httpget(qscms.apiList.classify + '?type=education', {}).then(function (res) {
+            if (res.code === 200) {
+              that.regQuick.optionEducation = res.data
+            }
+          }).catch(function () { })
+          httpget(qscms.apiList.classify + '?type=jobcategory', {}).then(function (res) {
+            if (res.code === 200) {
+              that.regQuick.optionCategory = that.handleclassify(res.data)
+            }
+          }).catch(function () { })
+          httpget(qscms.apiList.classify + '?type=citycategory', {}).then(function (res) {
+            if (res.code === 200) {
+              that.regQuick.optionDistrict = that.handleclassify(res.data)
+            }
+          }).catch(function () { })
+          httpget(qscms.apiList.classify + '?type=current', {}).then(function (res) {
+            if (res.code === 200) {
+              that.regQuick.optionCurrent = res.data
+            }
+          }).catch(function () { })
+          this.makeWageOption('min', 500)
+          this.makeWageOption('max', 1000)
+        },
+        handleclassify: function (data) {
+          var dataArray = JSON.parse(JSON.stringify(data))
+          var commitArray = []
+          commitArray = dataArray.map(function(item) {
+            if (item.children.length) {
+              var level2Array = item.children
+              level2Array = level2Array.map(function(level2Item) {
+                if (level2Item.children.length) {
+                  return { label: level2Item.label, value: level2Item.value, children: level2Item.children }
                 } else {
-                  that.showPictureCaptcha = true
-                  that.pictureCaptchaCallback = 'doSendSms'
+                  return { label: level2Item.label, value: level2Item.value }
                 }
+              })
+              return { value: item.value, label: item.label, children: level2Array }
+            } else {
+              return { value: item.value, label: item.label }
+            }
+          })
+          return commitArray
+        },
+        onMouseover: function(){
+          this.codeShow = true
+          if (this.hasGetCode) return
+          if (!isWxOpen) {
+            this.wx_code_url = encodeURI(qscms.apiUrl + qscms.apiList.qrcode + '?url={#$return.share_url#}')
+            this.hasGetCode = true
+          } else {
+            var that = this
+            httpget(qscms.apiList.qrcode, { type: 'wechat', alias: 'subscribe_job', jobid: id, getsrc: 1 }).then(function(res){
+              if (res.code == 200){
+                that.wx_code_url = res.data
+                that.hasGetCode = true
               } else {
-                that.doSendSms(null)
+                that.$message({
+                  type: 'error',
+                  message: res.message
+                })
               }
-            },
-            doSendSms: function (captcha) {
-              var that = this
-              httppost(qscms.apiList.getRegQuickCode, { mobile: that.regQuick.mobile, captcha: captcha }).then(function (res) {
-                if (parseInt(res.data.notice) === 1) {
-                  that.showRegQuick = false
-                  setTimeout(function () {
-                    that.$confirm(res.message, '提示', {
-                      type: 'warning',
-                      confirmButtonText: '是',
-                      cancelButtonText: '否'
-                    }).then(function () {
-                      location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                    })
-                    .catch(function () { })
-                  }, 300)
-                } else {
+            })
+          }
+        },
+        onMouseout: function(){
+          this.codeShow = false
+        },
+        getUserInfo: function () {
+          var that = this
+          httpget(qscms.apiList.userinfo).then(function (res) {
+            if (res.data.login === true) {
+              that.isLogin = true
+              that.utype = res.data.userinfo.utype
+            }
+          }).catch(function () { })
+        },
+        // 监听页面滚动
+        getScrollTop: function () {
+          var scrollTop = 0
+          if (document.documentElement && document.documentElement.scrollTop) {
+            scrollTop = document.documentElement.scrollTop
+          } else if (document.body) {
+            scrollTop = document.body.scrollTop
+          }
+          this.rightFixed = scrollTop >= 400
+        },
+        mapOpened: function () {
+          loadBdMap()
+        },
+        getSupplementary: function () {
+          var that = this
+          httpget(qscms.apiList.jobSupplementary, { id: id }).then(function (res) {
+            if (res.data !== null) {
+              that.supplementary = res.data
+            }
+          }).catch(function () { })
+        },
+        getFavStatus: function () {
+          var that = this
+          httpget(qscms.apiList.jobFavCheck, { id: id }).then(function (res) {
+            that.hasFav = res.data == 1
+          }).catch(function () { })
+        },
+        addClick: function () {
+          var that = this
+          httppost(qscms.apiList.jobClick, { id: id }).then(function (res) {
+            that.clickNum = res.data
+          }).catch(function () { })
+        },
+        getContact: function () {
+          var that = this
+          httpget(qscms.apiList.jobContact, { id: id }).then(function (res) {
+            that.contactData = res.data
+            that.hasApply = res.data.has_apply == 1
+          }).catch(function () { })
+        },
+        changeRelationList: function (alias) {
+          this.relationActive = alias
+        },
+        doFav: function () {
+          var that = this
+          if (this.utype != 2) {
+            this.$confirm('当前操作需要登录求职者账号', '提示', {
+              type: 'warning',
+              confirmButtonText: '去登录'
+            })
+              .then(function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+              })
+              .catch(function () { })
+          } else {
+            var params = {
+              jobid: id
+            }
+            var _api_url = that.hasFav === true ? qscms.apiList.jobFavCancel : qscms.apiList.jobFav
+            httppost(_api_url, params)
+              .then(function (res) {
+                that.hasFav = that.hasFav !== true
+                that.$message({ type: 'success', message: res.message })
+              })
+              .catch(function () { })
+          }
+        },
+        doApply: function () {
+          var that = this
+          if (that.utype != 2) {
+            that.$confirm('当前操作需要登录求职者账号', '提示', {
+              type: 'warning',
+              confirmButtonText: '去登录'
+            })
+              .then(function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+              })
+              .catch(function () { })
+          } else {
+            var params = {
+              jobid: id
+            }
+            httppost(qscms.apiList.jobapply, params)
+              .then(function (res) {
+                that.$message({ type: 'success', message: res.message })
+              })
+              .catch(function () { })
+          }
+        },
+        doCreateResume: function () {
+          location.href = qscms.locationList.createResume
+        },
+        handlerLoginForContact: function () {
+          location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+        },
+        handlerResumeStick: function () {
+          location.href = qscms.locationList.personalService
+        },
+        handlerReport: function () {
+          window.open("{#:url('index/company/report',['id'=>$return.com_info.id])#}")
+        },
+        doTipoff: function () {
+          var that = this
+          if (that.utype != 2) {
+            that.$confirm('当前操作需要登录求职者账号', '提示', {
+              type: 'warning',
+              confirmButtonText: '去登录'
+            })
+              .then(function () {
+                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+              })
+              .catch(function () { })
+          } else {
+            that.showTipoff = true
+          }
+        },
+        tipoffOpened: function () {
+          var that = this
+          httpget(qscms.apiList.classify + '?type=tipoffJob', {}).then(function (res) {
+            if (res.code === 200) {
+              that.classifyTipoffJob = res.data
+            }
+          }).catch(function () { })
+        },
+        handleSubmitTipoff: function () {
+          var that = this
+          this.$refs.tipoffForm.validate(function (valid) {
+            if (valid) {
+              httppost(qscms.apiList.tipoff, { target_id: id, type: 1, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })
+                .then(function (res) {
+                  that.showTipoff = false
                   that.$message({
                     type: 'success',
                     message: res.message
                   })
-                  that.sendSmsTimer = setInterval(function () {
-                    if (that.sendSmsInterval === 0) {
-                      that.sendSmsBtnDisabled = false
-                      that.sendSmsBtnText = '获取验证码'
-                      that.sendSmsInterval = 60
-                      clearInterval(that.sendSmsTimer)
-                    } else {
-                      that.sendSmsBtnDisabled = true
-                      that.sendSmsBtnText = '重发 ' + that.sendSmsInterval + ' 秒'
-                      that.sendSmsInterval--
-                    }
-                  }, 1000)
-                }
-              }).catch(function () { })
-            },
-            changeMinWage: function (minWage) {
-              this.makeWageOption('max', minWage + 500)
-            },
-            makeWageOption: function (type, minValue) {
-              var that = this
-              var wageArray = []
-              var storeMaxWage = 15000;
-              var _optionMinWage = []
-              var _optionMaxWage = []
-              if (minValue <= storeMaxWage) {
-                var a = minValue
-                var b = storeMaxWage
-                if (type === 'min') {
-                    for(var i=a;i<b;i+=500){
-                        _optionMinWage.push(i);
-                    }
-                    that.regQuick.optionMinWage = _optionMinWage
-                } else if (type === 'max') {
-                    for(var i=a;i<=b;i+=500){
-                        _optionMaxWage.push(i);
-                    }
-                    that.regQuick.optionMaxWage = _optionMaxWage
-                }
-              }
-              return wageArray
-            },
-            getRegQuickInfo: function () {
-              var that = this
-              httpget(qscms.apiList.classify + '?type=education', {}).then(function (res) {
-                if (res.code === 200) {
-                  that.regQuick.optionEducation = res.data
-                }
-              }).catch(function () { });
-              httpget(qscms.apiList.classify + '?type=jobcategory', {}).then(function (res) {
-                if (res.code === 200) {
-                  that.regQuick.optionCategory = that.handleclassify(res.data)
-                }
-              }).catch(function () { });
-              httpget(qscms.apiList.classify + '?type=citycategory', {}).then(function (res) {
-                if (res.code === 200) {
-                  that.regQuick.optionDistrict = that.handleclassify(res.data)
-                }
-              }).catch(function () { });
-              httpget(qscms.apiList.classify + '?type=current', {}).then(function (res) {
-                if (res.code === 200) {
-                  that.regQuick.optionCurrent = res.data
-                }
-              }).catch(function () { });
-              this.makeWageOption('min', 500)
-              this.makeWageOption('max', 1000)
-            },
-            handleclassify: function (data) {
-              var dataArray = JSON.parse(JSON.stringify(data))
-              var commitArray = []
-              commitArray = dataArray.map(function(item) {
-                if (item.children.length) {
-                  var level2Array = item.children
-                  level2Array = level2Array.map(function(level2Item) {
-                    if (level2Item.children.length) {
-                      return { label: level2Item.label, value: level2Item.value, children: level2Item.children }
-                    } else {
-                      return { label: level2Item.label, value: level2Item.value }
-                    }
-                  })
-                  return { value: item.value, label: item.label, children: level2Array }
-                } else {
-                  return { value: item.value, label: item.label }
-                }
-              })
-              return commitArray;
-            },
-            onMouseover:function(){
-                this.codeShow = true;
-                if(this.hasGetCode)return;
-                if(!isWxOpen)
-                {
-                    this.wx_code_url = encodeURI(qscms.apiUrl +  qscms.apiList.qrcode + '?url={#$return.share_url#}')
-                    this.hasGetCode = true;
-                }else{
-                    var that = this;
-                    httpget(qscms.apiList.qrcode, {type:'wechat',alias:'subscribe_job', jobid:id, getsrc:1}).then(function(res){
-                        if(res.code == 200){
-                            that.wx_code_url = res.data;
-                            that.hasGetCode = true;
-                        }else{
-                            that.$message({
-                                type: 'error',
-                                message: res.message
-                            })
-                        }
-                    });
-                }
-            },
-            onMouseout:function(){
-                this.codeShow = false;
-            },
-            getUserInfo: function () {
-                var that = this
-                httpget(qscms.apiList.userinfo).then(function (res) {
-                    if (res.data.login === true) {
-                        that.isLogin = true
-                        that.utype = res.data.userinfo.utype
-                    }
-                }).catch(function () { })
-            },
-            // 监听页面滚动
-            getScrollTop: function () {
-                var scrollTop = 0
-                if (document.documentElement && document.documentElement.scrollTop) {
-                    scrollTop = document.documentElement.scrollTop
-                } else if (document.body) {
-                    scrollTop = document.body.scrollTop
-                }
-                this.rightFixed = scrollTop >= 400
-            },
-            mapOpened: function () {
-                loadBdMap()
-            },
-            getSupplementary: function () {
-                var that = this
-                httpget(qscms.apiList.jobSupplementary, { id: id }).then(function (res) {
-                    if (res.data !== null) {
-                        that.supplementary = res.data
-                    }
-                }).catch(function () { })
-            },
-            getFavStatus: function () {
-                var that = this
-                httpget(qscms.apiList.jobFavCheck, { id: id }).then(function (res) {
-                    that.hasFav = res.data == 1 ? true : false
-                }).catch(function () { })
-            },
-            addClick: function () {
-                var that = this
-                httppost(qscms.apiList.jobClick, { id: id }).then(function (res) {
-                    that.clickNum = res.data
-                }).catch(function () { })
-            },
-            getContact: function () {
-                var that = this
-                httpget(qscms.apiList.jobContact, { id: id }).then(function (res) {
-                    that.contactData = res.data
-                    that.hasApply = res.data.has_apply == 1 ? true : false
-                }).catch(function () { })
-            },
-            changeRelationList: function (alias) {
-                this.relationActive = alias
-            },
-            doFav: function () {
-                var that = this
-                if (this.utype != 2) {
-                    this.$confirm('当前操作需要登录求职者账号', '提示', {
-                        type: 'warning',
-                        confirmButtonText: '去登录'
-                    })
-                        .then(function () {
-                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                        })
-                        .catch(function () { })
-                } else {
-                    var params = {
-                        jobid: id
-                    }
-                    var _api_url = that.hasFav === true ? qscms.apiList.jobFavCancel : qscms.apiList.jobFav
-                    httppost(_api_url, params)
-                        .then(function (res) {
-                            that.hasFav = that.hasFav === true ? false : true
-                            that.$message({ type: 'success', message: res.message })
-                        })
-                        .catch(function () { })
-                }
-            },
-            doApply: function () {
-                var that = this
-                if (that.utype != 2) {
-                    that.$confirm('当前操作需要登录求职者账号', '提示', {
-                        type: 'warning',
-                        confirmButtonText: '去登录'
-                    })
-                        .then(function () {
-                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                        })
-                        .catch(function () { })
-                } else {
-                    var params = {
-                        jobid: id
-                    }
-                    httppost(qscms.apiList.jobapply, params)
-                        .then(function (res) {
-                            that.$message({ type: 'success', message: res.message })
-                        })
-                        .catch(function () { })
-                }
-            },
-            doCreateResume: function () {
-                location.href = qscms.locationList.createResume
-            },
-            handlerLoginForContact: function () {
-                location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-            },
-            handlerResumeStick: function () {
-                location.href = qscms.locationList.personalService
-            },
-            handlerReport: function () {
-                window.open("{#:url('index/company/report',['id'=>$return.com_info.id])#}")
-            },
-            doTipoff: function () {
-                var that = this
-                if (that.utype != 2) {
-                    that.$confirm('当前操作需要登录求职者账号', '提示', {
-                        type: 'warning',
-                        confirmButtonText: '去登录'
-                    })
-                        .then(function () {
-                            location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
-                        })
-                        .catch(function () { })
-                } else {
-                    that.showTipoff = true
-                }
-            },
-            tipoffOpened: function () {
-                var that = this
-                httpget(qscms.apiList.classify + '?type=tipoffJob', {}).then(function (res) {
-                    if (res.code === 200) {
-                        that.classifyTipoffJob = res.data
-                    }
-                }).catch(function () { });
-            },
-            handleSubmitTipoff: function () {
-                var that = this
-                this.$refs.tipoffForm.validate(function (valid) {
-                    if (valid) {
-                        httppost(qscms.apiList.tipoff, { target_id: id, type: 1, reason: that.tipoffForm.reason, content: that.tipoffForm.content, img: [] })
-                            .then(function (res) {
-                                that.showTipoff = false
-                                that.$message({
-                                    type: 'success',
-                                    message: res.message
-                                })
-                            })
-                            .catch(function () { })
-                    } else {
-                        return false;
-                    }
-                });
-            },
+                })
+                .catch(function () { })
+            } else {
+              return false
+            }
+          })
         }
+      }
     })
 </script>

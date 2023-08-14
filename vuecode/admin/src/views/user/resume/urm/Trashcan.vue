@@ -21,9 +21,11 @@
       </div>
       <div>
         <el-table
+          ref="multipleTable"
           v-loading="loading"
           border
           :data="tableData"
+          :height="tabelHeight"
           :header-cell-style="{background:'#f9f9f9', 'border-right': '1px solid #e4e6eb'}"
           :cell-style="{'border-right': '1px solid #e4e6eb'}"
           style="width: 100%"
@@ -86,18 +88,18 @@
               <span v-if="scope.row.complete_percent == ''"> - </span>
               <!--                <span v-else> {{ scope.row.complete_percent }}% </span>-->
               <div class="complete_percent">
-                  <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e">
-                    <el-progress color="#f51e1e" :percentage="scope.row.complete_percent" />
-                  </span>
+                <span v-if="scope.row.complete_percent < 45" style="color:#f51e1e">
+                  <el-progress color="#f51e1e" :percentage="scope.row.complete_percent" />
+                </span>
                 <span v-if="scope.row.complete_percent < 60 && scope.row.complete_percent >= 45" style="color:#fb3c11">
-                    <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
-                  </span>
+                  <el-progress color="#fb3c11" :percentage="scope.row.complete_percent" />
+                </span>
                 <span v-if="scope.row.complete_percent < 80 && scope.row.complete_percent >= 60" style="color:#1db75a">
-                    <el-progress  color="#1db75a" :percentage="scope.row.complete_percent" />
-                  </span>
-                <span  v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
-                    <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
-                  </span>
+                  <el-progress color="#1db75a" :percentage="scope.row.complete_percent" />
+                </span>
+                <span v-if="scope.row.complete_percent <= 100 && scope.row.complete_percent >= 80" style="color:#409eff">
+                  <el-progress color="#409eff" :percentage="scope.row.complete_percent" />
+                </span>
               </div>
             </template>
           </el-table-column>
@@ -244,8 +246,39 @@ export default {
       currentPage: 1,
       pagesize: 10,
       total: 0,
-      keyword: ''
+      keyword: '',
+      tabelHeight: 0
     }
+  },
+  updated(){
+    this.$nextTick(() => {
+      this.$refs.multipleTable.doLayout()
+      if (!this.loading){
+        setTimeout(() => {
+          var classStr = this.$refs.multipleTable.$el.className
+          var classAry = classStr.split(' ')
+          var a = document.querySelectorAll('.el-table__fixed-right')[0]
+          var b = document.querySelectorAll('.el-table__empty-block')[0]
+          if (b != undefined){
+            b.style.width = 100 + '%'
+          }
+          var isClass = classAry.find(function(value, index, arr){
+            return value == 'el-table--scrollable-y'
+          })
+          if (isClass){
+            a.style.right = 10 + 'px'
+          } else {
+            a.style.right = 0 + 'px'
+          }
+        }, 100)
+      }
+    })
+  },
+  mounted(){
+    this.$nextTick(() => {
+      var docHeight = document.documentElement.clientHeight
+      this.tabelHeight = docHeight - 316 - 60
+    })
   },
   created() {
     this.getDataList()

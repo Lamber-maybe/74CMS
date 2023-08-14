@@ -122,6 +122,7 @@ class ResumeRecommend
         $list = $list
             ->where($this->where)
             ->orderRaw($this->orderby)
+            ->distinct('a.uid')
             ->page($this->current_page, $this->pagesize)
             ->select();
         $return['items'] = $list;

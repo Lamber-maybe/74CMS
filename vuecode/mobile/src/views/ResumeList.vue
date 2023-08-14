@@ -1124,7 +1124,7 @@
 						color: #333333;
 
 						&.clickedColor {
-							color: #909090;
+							color: #771caa;
 						}
 					}
 

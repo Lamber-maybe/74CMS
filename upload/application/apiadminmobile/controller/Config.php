@@ -59,9 +59,12 @@ class Config extends \app\apiadmin\controller\Config
         $info = model('Admin')
             ->alias('a')
             ->join(config('database.prefix').'admin_role b','a.role_id=b.id','LEFT')
-            ->field('a.id,a.username,a.addtime,a.last_login_time,a.last_login_ip,a.last_login_ipaddress,b.name as role_name')
+            ->field('a.id,a.username,a.addtime,a.last_login_time,a.last_login_ip,a.last_login_ipaddress,
+            b.name as role_name,b.access_mobile')
             ->where('a.id',$id)
             ->find();
+        $info['access_mobile'] = $info['access_mobile'] == 'all' ? $info['access_mobile'] : unserialize($info['access_mobile']);
+
         if (!$info) {
             $this->ajaxReturn(500, '数据获取失败');
         }

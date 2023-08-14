@@ -62,12 +62,15 @@ class Recommend extends \app\v1_0\controller\common\Base
         $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 5, 'intval');
         $list = model('Job')
+            ->alias('a')
+            ->join('job_recommend_sort b','b.jobid=a.id and b.uid='.$this->userinfo->uid,'left')
             ->field(
-                'id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,negotiable'
+                'a.id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,negotiable'
             )
             ->where('audit', 1)
             ->where('is_display', 1)
-            ->where('uid', 'eq', $this->userinfo->uid)
+            ->where('a.uid', 'eq', $this->userinfo->uid)
+            ->order('b.sort asc')
             ->select();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
@@ -148,6 +151,9 @@ class Recommend extends \app\v1_0\controller\common\Base
             $this->ajaxReturn(500, '没有找到求职意向');
         }
         $total = model('JobSearchRtime')->where('category1',$intention_info['category1'])->where('refreshtime','gt',time() - 3600 * 24 * 360)->count();
+        if ($total >= 100) {
+            $total = 100;
+        }
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
     public function resume()
@@ -244,6 +250,9 @@ class Recommend extends \app\v1_0\controller\common\Base
             }
         }
         $total = $total->count('distinct a.uid');
+        if ($total >= 100) {
+            $total = 100;
+        }
         $this->ajaxReturn(200, '获取数据成功', $total);
     }
 
@@ -614,5 +623,66 @@ class Recommend extends \app\v1_0\controller\common\Base
         return $result_data_list;
     }
 
+    /*
+     * 推荐职位排序
+     * zch
+     * 2022/8/19
+     * */
+    public function jobSort()
+    {
+        $data = input('post.job/a',[]);
+        if (empty($data))
+        {
+            $this->ajaxReturn(200, '修改成功', []);
+        }
+        $arr = [];
+        try {
+            Db::startTrans();
+            foreach($data as $k=>$v){
+                $arr[] = [
+                    'jobid' => intval(isset($v['jobid']) ? $v['jobid'] : 0),
+                    'sort'  => intval(isset($v['sort']) ? $v['sort'] : 0),
+                    'uid'   => $this->userinfo->uid
+                ];
+            }
 
+            model('JobRecommendSort')->where(['uid'=>$this->userinfo->uid])->delete();
+            model('JobRecommendSort')->insertAll($arr);
+            Db::commit();
+            $this->getRecommendJob();
+
+        }catch (\Exception $e)
+        {
+            Db::rollback();
+            $this->ajaxReturn(500, $e->getMessage(), []);
+        }
+
+    }
+
+    /*
+     * 获取推荐职位
+     * zch
+     * 2022/8/19
+     * */
+    public function getRecommendJob()
+    {
+        $this->checkLogin(1);
+        $this->interceptCompanyProfile();
+        $this->interceptCompanyAuth();
+        $list = model('Job')
+            ->alias('a')
+            ->join('JobRecommendSort b','a.id=b.jobid and b.uid='.$this->userinfo->uid,'left')
+            ->field(
+                'a.id,jobname,category1,category2,category3,district1,district2,district3,minwage,maxwage,nature,education,experience,minage,maxage,ifnull(b.sort,0) as sort'
+            )
+            ->where(['audit'=>1,'is_display'=>1,'a.uid'=>$this->userinfo->uid])
+            ->order('b.sort','asc')
+            ->select();
+        foreach ($list as $key => $value) {
+            $list[$key]['trade'] = $this->company_profile->trade;
+        }
+
+        $return['items'] = $list;
+        $this->ajaxReturn(200, '获取数据成功', $return);
+    }
 }

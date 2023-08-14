@@ -11,7 +11,6 @@ class CompanyContact extends Backend
         'comid'  => 'require|gt:0|max:10',
         'uid'   => 'require|gt:0|max:10',
         'contact' => 'require|max:6',
-        'mobile'=>'require|number|max:11',
         'weixin'=>'max:15',
         'telephone'=>'max:20',
         'qq'=>'max:15',
@@ -22,7 +21,6 @@ class CompanyContact extends Backend
         'comid' =>  '企业id必填，且最多10位数字',
         'uid' => 'uid必填，且最多10位数字',
         'contact' => '联系人必填，且最多6个字',
-        'mobile' => '手机号必填，且11位数字',
         'weixin' => '微信最多15位',
         'telephone' => '座机最多20位',
         'qq' => 'QQ最多15位',
@@ -80,10 +78,10 @@ class CompanyContact extends Backend
             'comid' => input('post.comid/d',0,'intval'),
             'uid' => input('post.uid/d',0,'intval'),
             'contact' => input('post.contact/s','','trim'),
-            'mobile' => input('post.mobile/d',0,'intval'),
+            'mobile' => input('post.mobile/s','','trim'),
             'weixin' => input('post.weixin/s','','trim'),
             'telephone' => input('post.telephone/s','','trim'),
-            'qq' => input('post.telephone/s','','trim'),
+            'qq' => input('post.qq/s','','trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
             'email' => input('post.email/s','','trim'),
             'sex' => input('post.sex/d',0,'intval')
         ];
@@ -99,9 +97,8 @@ class CompanyContact extends Backend
             {
                 $this->ajaxReturn(500, $validate->getError());
             }
-            if (!empty($data_input['mobile']) && !fieldRegex($data_input['mobile'], 'mobile'))
-            {
-                throw new \Exception('手机号格式错误');
+            if (!empty($data_input['mobile']) && !fieldRegex($data_input['mobile'], 'mobile')) {
+                throw new \Exception('手机号格式不正确');
             }
             if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email'))
             {
@@ -147,7 +144,7 @@ class CompanyContact extends Backend
             'mobile' => input('post.mobile/s','','trim'),
             'weixin' => input('post.weixin/s','','trim'),
             'telephone' => input('post.telephone/s','','trim'),
-            'qq' => input('post.telephone/s','','trim'),
+            'qq' => input('post.qq/s','','trim'), // 【bug】后台企业管理中添加联系人设置固话保存后 固话自动会显示在QQ那一栏中 zch 2022.12.12
             'email' => input('post.email/s','','trim'),
             'sex' => input('post.sex/d',0,'intval')
         ];
@@ -164,12 +161,12 @@ class CompanyContact extends Backend
                 $this->ajaxReturn(500, $validate->getError());
             }
 
-            if (!empty($data_input['mobile']))
+            if (!empty($data_input['mobile']) && !fieldRegex($data_input['mobile'], 'mobile')) {
+                throw new \Exception('手机号格式不正确');
+            }
+            if (!empty($data_input['email']) && !fieldRegex($data_input['email'], 'email'))
             {
-                $preg_phone = '/^1[345789]\d{9}$/ims';
-                if (!preg_match($preg_phone, $data_input['mobile'])) {
-                    throw new \Exception('手机号格式错误');
-                }
+                throw new \Exception('邮箱格式错误');
             }
             $edit = model('b2bcrm.CrmCompanyContact')
                 ->isUpdate(true)
