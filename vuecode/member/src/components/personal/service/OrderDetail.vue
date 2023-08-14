@@ -76,7 +76,7 @@ import api from '@/api'
       info: {
         extra: {}
       },
-      payment: 'alipay',
+      payment: 'wxpay',
     }
   },
   created () {

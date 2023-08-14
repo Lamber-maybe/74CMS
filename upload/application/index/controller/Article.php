@@ -127,6 +127,7 @@ class Article extends \app\index\controller\Base
         }else{
             $seoData['seo_description'] = cut_str(strip_tags($info['content']),100);
         }
+        $info['attach'] = json_decode($info['attach'],true);
         $this->initPageSeo('articleshow',$seoData);
         $this->assign('hotArticleList',$hotArticleList);
         $this->assign('options',$options);

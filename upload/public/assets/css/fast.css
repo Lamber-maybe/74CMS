@@ -304,9 +304,10 @@ input{
 }
 .dialogtwo .describe{
     color: #777777;
-    line-height: 2;
+    line-height: 1.8;
     margin-top: 15px;
-    font: 400 14px Arial;
+    font-size:14px;
+    font-weight: 400;
 }
 .el-textarea__inner{
     font: 400 14px Arial;

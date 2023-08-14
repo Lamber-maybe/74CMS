@@ -226,6 +226,15 @@ export default {
       submitLock: false
     }
   },
+  watch: {
+    amount: function (newVal) {
+      if (newVal == 0) {
+        this.submitData.payment = 'free'
+      } else {
+        this.submitData.payment = 'wxpay'
+      }
+    }
+  },
   created () {
     let objDate = new Date()
     this.minDate = new Date(

@@ -77,6 +77,7 @@ class Notice extends \app\index\controller\Base
         }else{
             $seoData['seo_description'] = cut_str(strip_tags($info['content']),100);
         }
+        $info['attach'] = json_decode($info['attach'],true);
         $this->initPageSeo('noticeshow',$seoData);
         $this->assign('newNoticeList',$newNoticeList);
         $this->assign('info',$info);

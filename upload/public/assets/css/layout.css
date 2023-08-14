@@ -224,7 +224,8 @@
 
 .handle .handLe_img {
   /*width: 170px;*/
-  height: 70px;
+  max-width:170px;
+  max-height: 70px;
   vertical-align: middle;
 }
 

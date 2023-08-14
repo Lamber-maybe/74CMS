@@ -665,6 +665,10 @@ class Weixin extends \app\common\controller\Base
             case 'admin_bind':
                 if($admin_id = $event['admin_id']) $admininfo = model('Admin')->find($admin_id);
                 if (isset($admininfo)) {
+                    if($admininfo->openid==$object->FromUserName){
+                        $this->outputText($object,'绑定失败，失败原因：当前微信已经绑定过其他管理员');
+                        break;
+                    }
                     $admininfo->openid = $object->FromUserName;
                     $admininfo->save();
                     $this->outputText($object,'管理员绑定成功');

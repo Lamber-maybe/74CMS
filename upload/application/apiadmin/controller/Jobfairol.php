@@ -183,7 +183,7 @@ class Jobfairol extends \app\common\controller\Backend{
         $where['utype'] = 1;
         $list = model('JobfairOnlineParticipate')
             ->alias('a')
-            ->field('a.*,b.companyname,b.setmeal_id,b.audit c_audit,c.contact,c.mobile,c.telephone')
+            ->field('a.*,b.companyname,b.setmeal_id,b.audit c_audit,c.contact,c.mobile,c.telephone,b.id as company_id')
             ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
             ->join(config('database.prefix') . 'company_contact c', 'a.uid=c.uid', 'left')
             ->where($where);
@@ -212,7 +212,7 @@ class Jobfairol extends \app\common\controller\Backend{
                 $val['add_day'] = ceil((time()-$qr['addtime'])/86400);
                 $val['qrcode_url'] = model('Uploadfile')->getFileUrl($qr['id']);
             }
-            $val['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $val['id']]);
+            $val['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $val['company_id']]);
             $list[$key] = $val;
         }
         $total = model('JobfairOnlineParticipate')
@@ -404,6 +404,8 @@ class Jobfairol extends \app\common\controller\Backend{
         $data['utype'] = input('post.utype/d',1,'intval');
         $data['source'] = 1;
         $data['audit'] = 1;
+        $data['qrcode'] = 0;
+        $data['stick'] = 0;
         $data['addtime'] = time();
         $reg = model('JobfairOnline')->participateAdd($data);
         $this->ajaxReturn($reg['state']?200:500, $reg['msg']);

@@ -193,7 +193,9 @@ class Login extends \app\v1_0\controller\common\Base
                 'mobile' => ['eq', $input_data['mobile']]
             ])
             ->find();
+        $is_reg = 0;
         if (!$member) {
+            $is_reg = 1;
             //如果未注册过，默认给注册一下
             if ($input_data['utype'] == 1) {
                 $member = model('Member')->regCompany($input_data);
@@ -212,7 +214,7 @@ class Login extends \app\v1_0\controller\common\Base
         cache('smscode_' . $input_data['mobile'], null);
 
         //通知完整度
-        if ($input_data['utype'] == 2) {
+        if ($input_data['utype'] == 2 && $is_reg==0) {
             //自动刷新
             if(config('global_config.resume_auto_refresh')==1){
                 $condition = ['uid'=>$member['uid']];

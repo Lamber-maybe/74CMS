@@ -388,7 +388,7 @@ button { border: none; background: none; }
 
 .job_icon { width: 15px; height: 13px; }
 
-.update_list .item { font-size: 14px; padding-left: 12px; position: relative; color: #404c5b; margin-bottom: 12px; height: 20px; line-height: 20px; }
+.update_list .item {max-width:500px; font-size: 14px; padding-left: 12px; position: relative; color: #404c5b; margin-bottom: 12px; height: 18px; line-height: 18px; }
 
 .update_list .item::before { position: absolute; left: 0; top: 0; content: '\02022'; color: gray; }
 
@@ -402,7 +402,7 @@ button { border: none; background: none; }
 
 .update_list .item .setmeal_icon1 { display: block; width: 19px; height: 20px; float: left; margin-left: 5px; background: url("../images/details_icon_1.png") 0 center no-repeat; }
 
-.update_list .item .jobname { display: block; max-width: 105px; height: 20px; line-height: 20px; float: left; color: #1787fb; padding-left: 20px; font-size: 14px; }
+.update_list .item .jobname { display: block;  height: 20px; line-height: 20px; float: left; color: #1787fb; padding-left: 20px; font-size: 14px; }
 
 .update_list .item .jobname:hover { text-decoration: underline; }
 

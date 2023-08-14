@@ -13,6 +13,15 @@
                 </div>
                 <div class="details_con">
                     {#$info.content#}
+                    {#if condition="count($info.attach) gt 0"#}
+                    <div style="margin-top:20px;" class="attach-list">
+                        <ul> 
+                            {#volist name="info.attach" id="vo"#}
+                            <li>附件【<a href="{#:url('index/download/index')#}?url={#:urlencode($vo.url)#}&name={#$vo.name#}" target="_blank">{#$i#}：{#$vo.name#}</a>】</li>
+                            {#/volist#}
+                        </ul>
+                    </div>
+                    {#/if#}
                 </div>
                 <div class="details_paging clearfix">
                     {#if condition="$prev===null"#}

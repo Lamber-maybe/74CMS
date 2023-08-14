@@ -300,8 +300,16 @@ for (let i = 16; i <= 65; i++) {
   age_data.push(i)
 }
 var wage_data = []
-for (let i = 1000; i <= 15000; i += 500) {
-  wage_data.push(i)
+let current = 0
+let unit1 = 500
+let unit2 = 5000
+for (let i = 0; i < 37; i++) {
+  if(current<15000){
+    current += unit1
+  }else{
+    current += unit2
+  }
+  wage_data.push(current)
 }
 export default {
   data() {
@@ -715,6 +723,7 @@ export default {
             }
             this.options_minwage.push(tmp_json)
           }
+          this.options_minwage.pop()
           for (let index = 0; index < age_data.length; index++) {
             const tmp_json = {
               id: age_data[index],

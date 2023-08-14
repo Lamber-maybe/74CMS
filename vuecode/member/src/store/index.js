@@ -30,7 +30,7 @@ const store = new Vuex.Store({
     sendEmailTimer: '',
     sendEmailMessage: '',
     minWage: 500,
-    maxWage: 15000,
+    maxWage: 50000,
     minAge: 16,
     maxAge: 65,
     classifyEdu: '',
@@ -378,8 +378,16 @@ const store = new Vuex.Store({
     // 设置薪资分类
     getClassifyWage(context) {
       let wageArray = []
-      for (let i = 500; i <= 15000; i += 500) {
-        wageArray.push(i)
+      let current = 0
+      let unit1 = 500
+      let unit2 = 5000
+      for (let i = 0; i < 37; i++) {
+        if(current<15000){
+          current += unit1
+        }else{
+          current += unit2
+        }
+        wageArray.push(current)
       }
       context.commit('setClassifyWage', wageArray)
     },

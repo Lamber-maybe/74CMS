@@ -183,6 +183,15 @@ export default {
       couponList: [{ id: 0, text: '不使用优惠券', name: '不使用优惠券' }]
     }
   },
+  watch: {
+    amount: function (newVal) {
+      if (newVal == 0) {
+        this.submitData.payment = 'coupon'
+      } else {
+        this.submitData.payment = 'wxpay'
+      }
+    }
+  },
   created () {
     this.fetchData()
   },

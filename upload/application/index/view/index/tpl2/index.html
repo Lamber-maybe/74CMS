@@ -7,6 +7,22 @@
 	{#load href="__ROOT__/assets/theme/index/tpl2/css/header.css" /#}
 	{#load href="__ROOT__/assets/css/public.css" /#}
 	{#load href="__ROOT__/assets/theme/index/tpl2/css/index.css" /#}
+	<script>
+		function getQueryVariable(variable)
+		{
+				var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i=0;i<vars.length;i++) {
+						var pair = vars[i].split("=");
+						if(pair[0] == variable){return pair[1];}
+				}
+				return(false);
+		}
+		var code = getQueryVariable("code") 
+		if(code!==false){
+			location.href=qscms.sitedir + qscms.memberDirname + '/oauth/weixin/'+code
+		}
+	</script>
 </head>
 
 <body>
@@ -45,33 +61,50 @@
 					<?php
 						$navlist = model('Navigation')->getList();
 						foreach($navlist as $key=>$value){
-							switch($value['page']){
-								case 'job':
-									$navlist[$key]['url'] = url('index/job/index');
-									break;
-								case 'resume':
-									$navlist[$key]['url'] = url('index/resume/index');
-									break;
-								case 'company':
-									$navlist[$key]['url'] = url('index/company/index');
-									break;
-								case 'article':
-									$navlist[$key]['url'] = url('index/article/index');
-									break;
-								case 'map':
-									$navlist[$key]['url'] = url('index/map/index');
-									break;
-								case 'hrtool':
-									$navlist[$key]['url'] = url('index/hrtool/index');
-									break;
-								case 'help':
-									$navlist[$key]['url'] = url('index/help/show');
-									break;
-								case 'jobfairol':
-									$navlist[$key]['url'] = url('index/jobfairol/index');
-									break;
-								default:
-									break;
+							if($value['url']==''){
+								switch($value['page']){
+									case 'job':
+										$navlist[$key]['url'] = url('index/job/index');
+										break;
+									case 'resume':
+										$navlist[$key]['url'] = url('index/resume/index');
+										break;
+									case 'company':
+										$navlist[$key]['url'] = url('index/company/index');
+										break;
+									case 'jobfair':
+										$navlist[$key]['url'] = url('index/jobfair/index');
+										break;
+									case 'article':
+										$navlist[$key]['url'] = url('index/article/index');
+										break;
+									case 'map':
+										$navlist[$key]['url'] = url('index/map/index');
+										break;
+									case 'hrtool':
+										$navlist[$key]['url'] = url('index/hrtool/index');
+										break;
+									case 'help':
+										$navlist[$key]['url'] = url('index/help/show');
+										break;
+									case 'jobfairol':
+										$navlist[$key]['url'] = url('index/jobfairol/index');
+										break;
+									case 'campus':
+										$navlist[$key]['url'] = url('index/campus/index');
+										break;
+									case 'freelance':
+										$navlist[$key]['url'] = url('index/freelance/index');
+										break;
+									case 'fastjob':
+										$navlist[$key]['url'] = url('index/fast/job');
+										break;
+									case 'fastresume':
+										$navlist[$key]['url'] = url('index/fast/resume');
+										break;
+									default:
+										break;
+								}
 							}
 						}
 						$navlist1 = array_slice($navlist,0,7);

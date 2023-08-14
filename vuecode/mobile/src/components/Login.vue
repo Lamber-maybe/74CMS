@@ -234,9 +234,17 @@ export default {
         .catch(() => {})
     },
     qqLogin () {
+      if (!this.checked) {
+        this.$notify('请同意用户协议和隐私政策')
+        return false
+      }
       this.$router.push('/member/oauth/qq/login')
     },
     wxLogin () {
+      if (!this.checked) {
+        this.$notify('请同意用户协议和隐私政策')
+        return false
+      }
       this.$router.push('/member/oauth/weixin')
     },
     initLayout () {

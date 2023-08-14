@@ -139,6 +139,7 @@ import api from '@/api'
           height: 90px;
           overflow: hidden;
           img {
+            max-width:170px;
             max-height: 70px;
             position: absolute;
             left: 0;

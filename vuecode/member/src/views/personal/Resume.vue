@@ -2259,21 +2259,39 @@
        * @returns {[]}
        */
       makeWageOption (type, minValue) {
+        let max
+        if (type === 'min') {
+          this.optionMinWage = []
+          max = this.$store.state.maxWage - 5000
+        }else{
+          this.optionMaxWage = []
+          max = this.$store.state.maxWage
+        }
+        
         let wageArray = []
-        if (minValue <= this.$store.state.maxWage) {
-          let a = minValue
-          let b = this.$store.state.maxWage
+        let current = minValue
+        let unit1 = 500
+        let unit2 = 5000
+        while(current <= max){
           if (type === 'min') {
-            this.optionMinWage = [...Array(((b - a) / 500))].map((e, i) => a + i * 500)
-          } else if (type === 'max') {
-            this.optionMaxWage = [...Array(((b - a) / 500) + 1)].map((e, i) => a + i * 500)
+            this.optionMinWage.push(current)
+          }else{
+            this.optionMaxWage.push(current)
           }
+          if(current<15000){
+            current += unit1
+          }else{
+            current += unit2
+          }
+        }
+        if(type==='max'){
+          this.intentionItem.maxwage = this.optionMaxWage[0]
         }
         return wageArray
       },
       // 薪资级联
       changeMinWage (minWage) {
-        this.makeWageOption('max', minWage + 500)
+        this.makeWageOption('max', minWage>=15000?(minWage+5000):(minWage + 500))
       },
       // 选择职位和地区分类
       handleValues (value) {

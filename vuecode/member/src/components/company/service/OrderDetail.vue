@@ -164,7 +164,7 @@ export default {
       info: {
         extra: {}
       },
-      payment: 'alipay',
+      payment: 'wxpay',
       shortDesc: '',
       showWaitingPay: false,
     }

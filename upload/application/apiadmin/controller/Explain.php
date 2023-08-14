@@ -59,12 +59,14 @@ class Explain extends \app\common\controller\Backend
         $input_data = [
             'title' => input('post.title/s', '', 'trim'),
             'content' => input('post.content/s', '', 'trim'),
+            'attach' => input('post.attach/a', []),
             'is_display' => input('post.is_display/d', 1, 'intval'),
             'link_url' => input('post.link_url/s', '', 'trim'),
             'seo_keywords' => input('post.seo_keywords/s', '', 'trim'),
             'seo_description' => input('post.seo_description/s', '', 'trim'),
             'sort_id' => input('post.sort_id/d', 0, 'intval')
         ];
+        $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
         if (
             false ===
             model('Explain')
@@ -93,12 +95,14 @@ class Explain extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info['content'] = htmlspecialchars_decode($info['content']);
+            $info['attach'] = json_decode($info['attach'],true);
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
         } else {
             $input_data = [
                 'id' => input('post.id/d', 0, 'intval'),
                 'title' => input('post.title/s', '', 'trim'),
                 'content' => input('post.content/s', '', 'trim'),
+                'attach' => input('post.attach/a', []),
                 'is_display' => input('post.is_display/d', 1, 'intval'),
                 'link_url' => input('post.link_url/s', '', 'trim'),
                 'seo_keywords' => input('post.seo_keywords/s', '', 'trim'),
@@ -109,6 +113,7 @@ class Explain extends \app\common\controller\Backend
                 ),
                 'sort_id' => input('post.sort_id/d', 0, 'intval')
             ];
+            $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
             $id = intval($input_data['id']);
             if (!$id) {
                 $this->ajaxReturn(500, '请选择数据');

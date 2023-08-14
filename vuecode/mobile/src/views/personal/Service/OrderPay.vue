@@ -173,6 +173,15 @@ export default {
       checked: true
     }
   },
+  watch: {
+    amount: function (newVal) {
+      if (newVal == 0) {
+        this.submitData.payment = 'free'
+      } else {
+        this.submitData.payment = 'wxpay'
+      }
+    }
+  },
   created () {
     this.type =
       this.$route.params.type === undefined

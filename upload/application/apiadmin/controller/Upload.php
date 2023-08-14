@@ -97,7 +97,20 @@ class Upload extends \app\common\controller\Backend
         }while(0);
         exit(JSON_ENCODE($returnJson));
     }
-    
+    public function attach()
+    {
+        $file = input('file.file');
+        if (!$file) {
+            $this->ajaxReturn(500, '请选择文件');
+        }
+        $filemanager = new \app\common\lib\FileManager();
+        $result = $filemanager->uploadReturnPath($file,true);
+        if (false !== $result) {
+            $this->ajaxReturn(200, '上传成功', ['url'=>$result['save_path'],'name'=>$file->getInfo()['name']]);
+        } else {
+            $this->ajaxReturn(500, $filemanager->getError());
+        }
+    }
     public function poster()
     {
         $file = input('file.file');
@@ -108,6 +121,20 @@ class Upload extends \app\common\controller\Backend
         $result = $filemanager->uploadReturnPath($file);
         if (false !== $result) {
             $this->ajaxReturn(200, '上传成功', $result['save_path']);
+        } else {
+            $this->ajaxReturn(500, $filemanager->getError());
+        }
+    }
+    public function ad()
+    {
+        $file = input('file.file');
+        if (!$file) {
+            $this->ajaxReturn(500, '请选择文件');
+        }
+        $filemanager = new \app\common\lib\FileManager(['filter'=>0]);
+        $result = $filemanager->upload($file);
+        if (false !== $result) {
+            $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());
         }

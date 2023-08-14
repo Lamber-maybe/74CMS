@@ -376,6 +376,12 @@ class Member extends \app\common\model\BaseModel
                     'cs_id'
                 ] = $this->distributionCustomerService();
                 $insert_data_company['platform'] = config('platform');
+                $insert_data_company['is_display'] = config(
+                    'global_config.display_new_com'
+                );
+                $insert_data_company['audit'] = config(
+                    'global_config.audit_new_com'
+                );
 
                 if (
                     false ===

@@ -58,6 +58,7 @@ class Notice extends \app\common\controller\Backend
         $input_data = [
             'title' => input('post.title/s', '', 'trim'),
             'content' => input('post.content/s', '', 'trim'),
+            'attach' => input('post.attach/a', []),
             'is_display' => input('post.is_display/d', 1, 'intval'),
             'link_url' => input('post.link_url/s', '', 'trim'),
             'seo_keywords' => input('post.seo_keywords/s', '', 'trim'),
@@ -70,6 +71,7 @@ class Notice extends \app\common\controller\Backend
         } else {
             $input_data['addtime'] = time();
         }
+        $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
         if (
             false ===
             model('Notice')
@@ -99,6 +101,7 @@ class Notice extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info['content'] = htmlspecialchars_decode($info['content']);
+            $info['attach'] = json_decode($info['attach'],true);
             // $info = $info->toArray();
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
         } else {
@@ -106,6 +109,7 @@ class Notice extends \app\common\controller\Backend
                 'id' => input('post.id/d', 0, 'intval'),
                 'title' => input('post.title/s', '', 'trim'),
                 'content' => input('post.content/s', '', 'trim'),
+                'attach' => input('post.attach/a', []),
                 'is_display' => input('post.is_display/d', 1, 'intval'),
                 'link_url' => input('post.link_url/s', '', 'trim'),
                 'seo_keywords' => input('post.seo_keywords/s', '', 'trim'),
@@ -126,6 +130,7 @@ class Notice extends \app\common\controller\Backend
             } else {
                 $input_data['addtime'] = time();
             }
+            $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
             if (
                 false ===
                 model('Notice')

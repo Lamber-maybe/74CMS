@@ -46,7 +46,7 @@ import api from '@/api'
         submitData: {
           service_type: 'points',
           service_id: '',
-          payment: 'alipay'
+          payment: 'wxpay'
         }
       }
     },

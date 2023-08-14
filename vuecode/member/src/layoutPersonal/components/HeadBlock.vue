@@ -175,6 +175,7 @@ import api from '@/api'
           height: 76px;
 
           img {
+            max-width:170px;
             max-height: 70px;
             position: absolute;
             left: 0;

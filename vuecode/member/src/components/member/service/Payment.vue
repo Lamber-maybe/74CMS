@@ -10,7 +10,7 @@
     name: 'Payment',
     data(){
       return{
-        payment:'alipay'
+        payment:'wxpay'
       }
     },
     created(){

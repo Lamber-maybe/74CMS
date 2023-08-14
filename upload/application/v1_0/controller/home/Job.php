@@ -26,6 +26,7 @@ class Job extends \app\v1_0\controller\common\Base
         $filter_apply = input('get.filter_apply/d', 0, 'intval');
         $nature = input('get.nature/d', 0, 'intval');
         $education = input('get.education/d', 0, 'intval');
+        $trade = input('get.trade/d', 0, 'intval');
         $tag = input('get.tag/s', '', 'trim');
         $settr = input('get.settr/d', 0, 'intval');
         $lat = input('get.lat/f', 0, 'floatval');
@@ -124,6 +125,9 @@ class Job extends \app\v1_0\controller\common\Base
         }
         if ($education > 0) {
             $params['education'] = $education;
+        }
+        if ($trade > 0) {
+            $params['trade'] = $trade;
         }
         if ($tag != '') {
             $tag = str_replace(",","_",$tag);
@@ -445,6 +449,7 @@ class Job extends \app\v1_0\controller\common\Base
                     $tmp_arr['distance'] = '';
                 }
                 $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$tmp_arr['id']]);
+                $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$tmp_arr['company_id']]);
                 $result_data_list[] = $tmp_arr;
             }
         }

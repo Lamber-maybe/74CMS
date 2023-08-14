@@ -430,9 +430,20 @@ class Profile extends \app\v1_0\controller\common\Base
                         ->save($input_data['basic']);
                     $company_id = model('Company')->id;
                 } else {
-                    //修改企业资料，根据配置赋值审核状态
-                    if (config('global_config.audit_edit_com') == 1) {
-                        $input_data['basic']['audit'] = 0;
+                    if($company_profile['district']==0){
+                        //新添加的企业，根据配置赋值审核状态
+                        $input_data['basic']['audit'] = config(
+                            'global_config.audit_new_com'
+                        );
+                        //新添加的企业，根据配置赋值显示状态
+                        $input_data['basic']['is_display'] = config(
+                            'global_config.display_new_com'
+                        );
+                    }else{
+                        //修改企业资料，根据配置赋值审核状态
+                        if (config('global_config.audit_edit_com') == 1) {
+                            $input_data['basic']['audit'] = 0;
+                        }
                     }
                     if($company_profile['companyname']!=''){
                         $input_data['basic']['companyname'] = $company_profile['companyname'];

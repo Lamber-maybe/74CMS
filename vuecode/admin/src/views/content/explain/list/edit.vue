@@ -33,6 +33,20 @@
         <el-form-item label="内容" required prop="content">
           <div id="editor" class="editor" />
         </el-form-item>
+        <el-form-item label="附件" prop="attach">
+          <el-upload
+            class="upload-demo"
+            :action="apiAttachUpload"
+            :headers="headers"
+            :on-remove="handleRemove"
+            :file-list="form.attach"
+            :on-success="handleAttachSuccess"
+            :before-upload="beforeAttachUpload"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传excel,word,ppt文件，且不超过{{ fileupload_size }}kb</div>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="是否显示">
           <el-switch v-model="form.is_display" />
         </el-form-item>
@@ -85,12 +99,16 @@ export default {
       }
     }
     return {
+      headers: { admintoken: getToken() },
+      fileupload_size: '',
+      apiAttachUpload: window.global.RequestBaseUrl + apiArr.uploadAttach,
       infoLoading: true,
       editor: '',
       explainCategory: [],
       form: {
         title: '',
         content: '',
+        attach:[],
         is_display: true,
         link_url: '',
         seo_keywords: '',
@@ -150,10 +168,43 @@ export default {
     this.editor.config.pasteFilterStyle = false
     this.editor.create()
   },
+  computed: {
+    config() {
+      return this.$store.state.config
+    }
+  },
   created() {
+    this.fileupload_size = this.config.fileupload_size
     this.fetchInfo()
   },
   methods: {
+    handleRemove(file, fileList) {
+      let index = this.form.attach.indexOf({name:file.name,url:file.url})
+      this.form.attach.splice(index,1)
+    },
+    handleAttachSuccess(res, file) {
+      if (res.code == 200) {
+        let info = {name:res.data.name,url:res.data.url}
+        this.form.attach.push(info)
+      } else {
+        this.$message.error(res.message)
+        return false
+      }
+    },
+    beforeAttachUpload(file) {
+      const configFileExtArr = 'doc,docx,xls,xlsx,csv,ppt,pptx,pdf'
+      const filename_arr = file.name.split('.')
+      const filetype = filename_arr[filename_arr.length-1]
+      if (!configFileExtArr.includes(filetype)) {
+        this.$message.error('上传文件格式不允许')
+        return false
+      }
+      if (file.size / 1024 > this.fileupload_size) {
+        this.$message.error(`上传文件最大为${this.fileupload_size}kb`)
+        return false
+      }
+      return true
+    },
     fetchInfo() {
       this.infoLoading = true
       const param = { id: this.$route.query.id }

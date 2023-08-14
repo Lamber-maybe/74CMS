@@ -76,6 +76,7 @@ class Article extends \app\common\controller\Backend
             'title' => input('post.title/s', '', 'trim'),
             'cid' => input('post.cid/d', 0, 'intval'),
             'content' => input('post.content/s', '', 'trim'),
+            'attach' => input('post.attach/a', []),
             'thumb' => input('post.thumb/d', 0, 'intval'),
             'is_display' => input('post.is_display/d', 1, 'intval'),
             'link_url' => input('post.link_url/s', '', 'trim'),
@@ -90,6 +91,7 @@ class Article extends \app\common\controller\Backend
         } else {
             $input_data['addtime'] = time();
         }
+        $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
         if (
             false ===
             model('Article')
@@ -118,6 +120,7 @@ class Article extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info['content'] = htmlspecialchars_decode($info['content']);
+            $info['attach'] = json_decode($info['attach'],true);
             $imageUrl = model('Uploadfile')->getFileUrl($info['thumb']);
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,
@@ -129,6 +132,7 @@ class Article extends \app\common\controller\Backend
                 'title' => input('post.title/s', '', 'trim'),
                 'cid' => input('post.cid/d', 0, 'intval'),
                 'content' => input('post.content/s', '', 'trim'),
+                'attach' => input('post.attach/a', []),
                 'thumb' => input('post.thumb/d', 0, 'intval'),
                 'is_display' => input('post.is_display/d', 1, 'intval'),
                 'link_url' => input('post.link_url/s', '', 'trim'),
@@ -151,6 +155,7 @@ class Article extends \app\common\controller\Backend
             } else {
                 $input_data['addtime'] = time();
             }
+            $input_data['attach'] = json_encode($input_data['attach'],JSON_UNESCAPED_UNICODE);
             if (
                 false ===
                 model('Article')

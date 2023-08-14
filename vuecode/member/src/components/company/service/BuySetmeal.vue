@@ -103,12 +103,21 @@ import api from '@/api'
         submitData: {
           service_type: 'setmeal',
           service_id: 0,
-          payment: 'alipay',
+          payment: 'wxpay',
           coupon_id: 0
         },
         setmealDetail:{},
         couponList: [{ id: 0, text: '不使用优惠券', name: '不使用优惠券' }]
       }
+    },
+    watch:{
+        amount:function(newVal){
+            if(newVal==0){
+                this.submitData.payment = 'coupon'
+            }else{
+                this.submitData.payment = 'wxpay'
+            }
+        }
     },
     created(){
       this.fetchSetmeal()

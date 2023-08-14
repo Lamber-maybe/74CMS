@@ -485,6 +485,7 @@ class Company extends \app\index\controller\Base
             $job_data = model('Job')
                 ->where('company_id', 'in', $comid_arr)
                 ->where('is_display', 1)
+                ->where('audit', 1)
                 ->column('id,company_id,jobname', 'id');
             foreach ($job_data as $key => $value) {
                 $job_list[$value['company_id']][] = $value['jobname'];

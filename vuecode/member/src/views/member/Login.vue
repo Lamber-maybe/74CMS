@@ -318,7 +318,7 @@ import Captcha from '@/components/captcha/index'
     .b_group {
       width: 400px; height: 500px; background-color: #fff; position: relative; padding: 0 40px; left: 764px; box-shadow: 0px 0px 6px 5px rgba(0, 0, 0, 0.03);
       .b_sw {
-        position: absolute; left: 13px; top: 13px; width: 38px; height: 38px; cursor: pointer; transform: rotate(-90deg);
+        position: absolute; left: 13px; top: 13px; width: 38px; height: 38px; cursor: pointer;
         background: url("../../assets/images/member/3.png") 0 0 no-repeat;
         &.aco {background: url("../../assets/images/member/9.png") 0 0 no-repeat;}
       }

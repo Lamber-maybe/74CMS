@@ -191,7 +191,7 @@ export default {
       headers: { admintoken: getToken() },
       fileupload_size: '',
       fileupload_ext: '',
-      apiUpload: window.global.RequestBaseUrl + apiArr.upload,
+      apiUpload: window.global.RequestBaseUrl + apiArr.uploadAd,
       adCategory: [],
       inner_options: [],
       form: {

@@ -109,12 +109,21 @@ import api from '@/api'
           deduct_points: 0,
           starttime: '',
           timerange: '',
-          payment: 'alipay',
+          payment: 'wxpay',
           jobid: ''
         },
         mySetmeal:{},
         options_timerange:[]
       }
+    },
+    watch:{
+        amount:function(newVal){
+            if(newVal==0){
+                this.submitData.payment = 'free'
+            }else{
+                this.submitData.payment = 'wxpay'
+            }
+        }
     },
     created(){
       this.options_timerange = []

@@ -95,7 +95,7 @@ import api from '@/api'
           service_type: '',
           service_id: 0,
           deduct_points: 0,
-          payment: 'alipay',
+          payment: 'wxpay',
           tag_text: ''
         },
         custom_tag_text:'',
@@ -107,6 +107,15 @@ import api from '@/api'
       options_tag () {
         return this.$store.state.classifyResumeStrongTag
       }
+    },
+    watch:{
+        amount:function(newVal){
+            if(newVal==0){
+                this.submitData.payment = 'free'
+            }else{
+                this.submitData.payment = 'wxpay'
+            }
+        }
     },
     created(){
       this.fetchData()

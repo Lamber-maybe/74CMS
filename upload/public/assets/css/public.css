@@ -1320,4 +1320,16 @@ cursor: pointer;
 	border: 1px solid #1787fb;
   }
   
-  
+  /*附件*/
+  .attach-list{
+	  margin-top:20px;
+  }
+  .attach-list ul{
+	  list-style-type:none;
+  }
+  .attach-list a{
+	  color:#1e50a2;
+  }
+  .attach-list a:hover{
+	  color:#ba2636;
+  }

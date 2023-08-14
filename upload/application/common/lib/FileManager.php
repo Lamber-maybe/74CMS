@@ -17,6 +17,7 @@ class FileManager
     protected $validate;
     protected $uploadfile_dir;
     protected $uploadfile_path;
+    protected $filter;
     public function __construct($config=[])
     {
         $global_config = config('global_config');
@@ -40,6 +41,7 @@ class FileManager
             ($this->validate['ext'] = $this->fileupload_ext);
         $this->uploadfile_dir = 'files';
         $this->uploadfile_path = SYS_UPLOAD_PATH . $this->uploadfile_dir;
+        $this->filter = isset($global_config['filter']) ? $global_config['filter'] : 1;
     }
     /**
      * 上传文件
@@ -53,7 +55,7 @@ class FileManager
         $info = $file->validate($this->validate)->move($this->uploadfile_path);
         if ($info) {
             $return = [
-                'save_path' => $this->uploadfile_dir . DS . $info->getSaveName()
+                'save_path' => $this->uploadfile_dir . '/' . $info->getSaveName()
             ];
             return $return;
         } else {
@@ -162,18 +164,21 @@ class FileManager
     {
         $info = $file->validate($this->validate)->move($this->uploadfile_path);
         if ($info) {
-            $image = \think\Image::open(
-                $this->uploadfile_path . DS . $info->getSaveName()
-            );
-            // 返回图片的宽度
-            $width = $image->width();
-            // 返回图片的高度
-            $height = $image->height();
-            $image
-                ->thumb($width, $height)
-                ->save($this->uploadfile_path . DS . $info->getSaveName());
+            if($this->filter==1){
+                $image = \think\Image::open(
+                    $this->uploadfile_path . '/' . $info->getSaveName()
+                );
+                // 返回图片的宽度
+                $width = $image->width();
+                // 返回图片的高度
+                $height = $image->height();
+                $image
+                    ->thumb($width, $height)
+                    ->save($this->uploadfile_path . '/' . $info->getSaveName());
+            }
+            
             $return = [
-                'save_path' => $this->uploadfile_dir . DS . $info->getSaveName()
+                'save_path' => $this->uploadfile_dir . '/' . $info->getSaveName()
             ];
             return $return;
         } else {

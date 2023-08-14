@@ -219,7 +219,7 @@
 
 						<ul class="update_list">
 							{#volist name="new_today_list" id="vo"#}
-							<li class="item">
+							<li class="item substring">
 								<a class="companyname substring" title="{#$vo.companyname#}" href="{#:url('index/company/show',['id'=>$vo.id])#}">
 									{#$vo.companyname#}
 								</a>
@@ -230,7 +230,7 @@
 								<div class="setmeal_icon"><img src="{#$vo.setmeal_icon#}" /></div>
 								{#/if#}
 								{#volist name="vo.joblist" id="job"#}
-								<a class="jobname substring" title="{#$job.jobname#}" href="{#:url('index/job/show',['id'=>$job.id])#}">{#$job.jobname#}</a>
+								<a class="jobname" title="{#$job.jobname#}" href="{#:url('index/job/show',['id'=>$job.id])#}">{#$job.jobname#}</a>
 								{#/volist#}
 							</li>
 							{#/volist#}

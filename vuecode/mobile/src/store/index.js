@@ -32,7 +32,7 @@ const store = new Vuex.Store({
     sendEmailTimer: '',
     sendEmailMessage: '',
     minWage: 500,
-    maxWage: 15000,
+    maxWage: 50000,
     minAge: 16,
     maxAge: 65,
     classifyEdu: '',
@@ -359,20 +359,28 @@ const store = new Vuex.Store({
       let maxWage = context.state.maxWage
       let wageArray = []
       let listArray = []
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 36; i++) {
         if (minWage < maxWage) {
           listArray = []
           let listWage = minWage
-          for (let j = 0; j < 50; j++) {
+          for (let j = 0; j < 36; j++) {
             if (listWage <= maxWage) {
               if (listWage !== minWage) {
                 listArray.push(listWage)
               }
-              listWage += 500
+              if (listWage >= 15000) {
+                listWage += 5000
+              } else {
+                listWage += 500
+              }
             }
           }
           wageArray[minWage] = listArray
-          minWage += 500
+          if (minWage >= 15000) {
+            minWage += 5000
+          } else {
+            minWage += 500
+          }
         }
       }
       context.commit('setClassifyWage', wageArray)

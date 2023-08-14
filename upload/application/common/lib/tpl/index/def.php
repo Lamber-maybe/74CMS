@@ -186,9 +186,9 @@ class def
         if(!empty($company_id_arr)){
             $jobAll = model('Job')->whereIn('company_id',$company_id_arr)->where('audit',1)->where('is_display',1)->column('id,jobname,company_id');
             foreach ($jobAll as $key => $value) {
-                if(isset($company_job_arr[$value['company_id']]) && count($company_job_arr[$value['company_id']])>=2){
-                    continue;
-                }
+                // if(isset($company_job_arr[$value['company_id']]) && count($company_job_arr[$value['company_id']])>=2){
+                //     continue;
+                // }
                 $company_job_arr[$value['company_id']][] = $value;
             }
         }
