@@ -192,10 +192,6 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
                 $resume_id,
                 $this->userinfo->uid
             );
-            model('ImToken')->regToken(
-                $this->userinfo->uid,
-                $this->userinfo->utype
-            );
             //提交事务
             \think\Db::commit();
         } catch (\Exception $e) {

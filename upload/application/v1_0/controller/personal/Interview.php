@@ -54,8 +54,8 @@ class Interview extends \app\v1_0\controller\common\Base
                 : '';
             
             $value['overtime'] = $value['interview_time'] > time() ? 0 : 1;
-            $value['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['jobid']]);
-            $value['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['comid']]);
+            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
+            $value['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
 
             $list[$key] = $value;
         }

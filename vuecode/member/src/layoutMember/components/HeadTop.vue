@@ -37,6 +37,7 @@
         }}</router-link>
         登录，<span class="out" @click="handlerLogout">退出</span>
       </div>
+      <div class="im" :class="$store.state.imUnreaded?'point':''" @click="locationTo">职聊</div>
       <el-dropdown class="drop" @command="handleManageClick" v-if="utype != 0">
         <a class="item" href="javascript:;"
           >管理中心<i class="el-icon-arrow-down el-icon--right"></i
@@ -131,6 +132,7 @@
               <router-link to="/personal/recommend" class="g_it"
                 >智能匹配</router-link
               >
+              <a :href="link_url_web.fast_job" class="g_it">快速招聘</a>
               <div class="clear"></div>
             </div>
           </div>
@@ -154,13 +156,17 @@
               <a href="javascript:;" class="g_it" @click="handlerCompanyService"
                 >会员服务</a
               >
+              <a :href="link_url_web.fast_resume" class="g_it">快速求职</a>
               <div class="clear"></div>
             </div>
           </div>
           <div class="dr_g">
             <div class="g_t">信息专栏</div>
             <div class="g_teg">
+              <a :href="link_url_web.jobfairlist" class="g_it">招聘会</a>
               <a :href="link_url_web.jobfairollist" class="g_it">网络招聘会</a>
+              <a :href="link_url_web.campus" class="g_it">校园招聘</a>
+              <a :href="link_url_web.freelance" class="g_it">自由职业</a>
               <a :href="link_url_web.noticelist" class="g_it">网站公告</a>
               <a :href="link_url_web.hrtoollist" class="g_it">HR工具箱</a>
               <a :href="link_url_web.articlelist" class="g_it">职场资讯</a>
@@ -402,7 +408,14 @@ export default {
     },
     handlerCompanyPwd() {
       this.$router.push('/company/account/safety')
-    }
+    },
+    locationTo(){
+      if(this.$store.state.LoginType==1){
+        this.$router.push('/company/im')
+      }else{
+        this.$router.push('/personal/im')
+      }
+    },
   }
 }
 </script>
@@ -467,6 +480,15 @@ export default {
       cursor: pointer;
     }
   }
+  .im {
+    float: left;
+    font-size: 12px;
+    cursor: pointer;
+    margin:0 6px 0 18px;
+    position:relative;
+  }
+  .im.point:after { content: ''; width: 6px; height: 6px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: -6px; top: -2px; z-index: 50 }
+
 
   .drop_over {
     float: left;

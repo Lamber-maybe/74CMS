@@ -66,8 +66,8 @@ class ViewJob extends \app\v1_0\controller\common\Base
                 );
             }
             $tmp_arr['click'] = $value['click'];
-            $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['jobid']]);
-            $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['company_id']]);
+            $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['company_id']]);
             $returnlist[] = $tmp_arr;
         }
 

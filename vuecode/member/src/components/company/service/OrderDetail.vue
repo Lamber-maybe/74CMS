@@ -206,6 +206,9 @@ export default {
         case 'emergency':
           return_str = '急聘职位优先推荐，专属标识'
           break
+        case 'im':
+          return_str = '超值职聊叠加包'
+          break
         case 'resume_package':
           return_str = '超值简历下载叠加包'
           break

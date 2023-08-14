@@ -18,6 +18,7 @@ class Order extends \app\common\model\BaseModel
         'jobstick' => '职位置顶',
         'emergency' => '职位紧急',
         'resume_package' => '简历增值包',
+        'im' => '职聊增值包',
         'refresh_job_package' => '职位智能刷新',
         'single_job_refresh' => '快捷支付-刷新职位',
         'single_resume_down' => '快捷支付-下载简历',
@@ -511,6 +512,9 @@ class Order extends \app\common\model\BaseModel
             case 'resume_package':
                 $service_model = model('CompanyServiceResumePackage');
                 break;
+            case 'im':
+                $service_model = model('CompanyServiceIm');
+                break;
             case 'refresh_job_package':
                 $service_model = model('CompanyServiceRefreshJobPackage');
                 break;
@@ -838,6 +842,22 @@ class Order extends \app\common\model\BaseModel
                     );
             }
             $points_log = '简历包';
+        }
+        //职聊包
+        if (
+            $order['utype'] == 1 &&
+            $order['service_type'] == 'im'
+        ) {
+            $extra = json_decode($order['extra'], true);
+            if ($extra['times'] > 0) {
+                model('MemberSetmeal')
+                    ->where('uid', $order['uid'])
+                    ->setInc(
+                        'im_total',
+                        $extra['times']
+                    );
+            }
+            $points_log = '职聊包';
         }
         //职位智能刷新
         if (

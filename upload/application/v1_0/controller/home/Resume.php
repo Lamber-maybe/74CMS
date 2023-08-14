@@ -616,12 +616,7 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $info['has_fav'] = 0;
         }
-        $imuser_info = model('ImToken')->where('uid',$info['base_info']['uid'])->find();
-        if($imuser_info!==null){
-            $info['base_info']['im_userid'] = $imuser_info['im_userid'];
-        }else{
-            $info['base_info']['im_userid'] = '';
-        }
+        $info['base_info']['im_userid'] = '';
         model('Resume')->addViewLog(
             $info['base_info']['id'],
             $this->userinfo !== null && $this->userinfo->utype == 1

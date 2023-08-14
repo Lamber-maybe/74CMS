@@ -4,9 +4,10 @@
     <company-title v-if="type=='emergency'">职位紧急</company-title>
     <company-title v-if="type=='job_refresh'">智能刷新</company-title>
     <company-title v-if="type=='resume_package'">简历增值包</company-title>
+    <company-title v-if="type=='im'">职聊增值包</company-title>
     <div class="topping_warpper">
     <ul class="topping_con">
-      <li v-if="type != 'resume_package'">
+      <li v-if="type != 'resume_package' && type != 'im'">
         <span class="margin">选择职位</span>
         <el-select v-model="submitData.jobid"  placeholder="请选择职位" class="el_select">
           <el-option

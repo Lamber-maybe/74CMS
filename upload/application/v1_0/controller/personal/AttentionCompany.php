@@ -87,7 +87,7 @@ class AttentionCompany extends \app\v1_0\controller\common\Base
             $tmp_arr['logo_src'] = isset($logo_arr[$value['logo']])
                 ? $logo_arr[$value['logo']]
                 : default_empty('logo');
-            $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['comid']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
 
             $returnlist[] = $tmp_arr;
         }

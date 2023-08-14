@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { mapActions, mapMutations, mapState } from 'vuex'
 import { isWeiXin } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
@@ -80,8 +81,14 @@ export default {
         { name: '找人才', src: `member`, url: '/resumelist', imgName: 'resume' },
         { name: '发布职位', src: `member`, url: '/member/company/index', imgName: 'add_job' },
         { name: '创建简历', src: `member`, url: '/member/personal/index', imgName: 'add_resume' },
+        { name: '招聘会', src: `member`, url: '/jobfairlist', imgName: 'jobfair' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
         { name: '职场资讯', src: `member`, url: '/newslist', imgName: 'news' },
+        { name: '校园招聘', src: `member`, url: '/campus/index', imgName: 'campus' },
+        { name: '自由职业', src: `member`, url: '/freelance/index', imgName: 'freelance' },
+        { name: '同城信息', src: `member`, url: '/cityinfo', imgName: 'cityinfo' },
+        { name: '快速招聘', src: `member`, url: '/fast/joblist', imgName: 'fastjob' },
+        { name: '快速求职', src: `member`, url: '/fast/resumelist', imgName: 'fastresume' },
         { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `member`, url: '/member/login', imgName: 'user' }
       ],
@@ -95,7 +102,13 @@ export default {
         { name: '智能匹配', src: `personal`, url: '/member/personal/recommend', imgName: 'recommend' },
         { name: '会员服务', src: `personal`, url: '/member/personal/service', imgName: 'service' },
         { name: '我的职聊', src: `personal`, url: '/im/imlist', imgName: 'im' },
+        { name: '招聘会', src: `personal`, url: '/jobfairlist', imgName: 'jobfair' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
+        { name: '校园招聘', src: `personal`, url: '/campus/index', imgName: 'campus' },
+        { name: '自由职业', src: `member`, url: '/freelance/index', imgName: 'freelance' },
+        { name: '同城信息', src: `member`, url: '/cityinfo', imgName: 'cityinfo' },
+        { name: '快速招聘', src: `member`, url: '/fast/joblist', imgName: 'fastjob' },
+        { name: '快速求职', src: `member`, url: '/fast/resumelist', imgName: 'fastresume' },
         { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `personal`, url: '/member/login', imgName: 'user' }
       ],
@@ -109,7 +122,13 @@ export default {
         { name: '智能匹配', src: `company`, url: '/member/company/recommend', imgName: 'recommend' },
         { name: '会员服务', src: `company`, url: '/member/company/mysetmeal', imgName: 'setmeal' },
         { name: '我的职聊', src: `company`, url: '/im/imlist', imgName: 'im' },
+        { name: '招聘会', src: `company`, url: '/jobfairlist', imgName: 'jobfair' },
         { name: '网络招聘会', src: `member`, url: '/jobfairol', imgName: 'jobfairol' },
+        { name: '校园招聘', src: `company`, url: '/campus/index', imgName: 'campus' },
+        { name: '自由职业', src: `member`, url: '/freelance/index', imgName: 'freelance' },
+        { name: '同城信息', src: `member`, url: '/cityinfo', imgName: 'cityinfo' },
+        { name: '快速招聘', src: `member`, url: '/fast/joblist', imgName: 'fastjob' },
+        { name: '快速求职', src: `member`, url: '/fast/resumelist', imgName: 'fastresume' },
         { name: '视频招聘', src: `member`, url: '/shortvideo/companylist', imgName: 'shortvideo' },
         { name: '我的', src: `company`, url: '/member/login', imgName: 'user' }
       ],
@@ -129,7 +148,8 @@ export default {
         },
         initialSlide: 0,
         speed: 800
-      }
+      },
+      timer: null
     }
   },
   mounted () {
@@ -170,8 +190,24 @@ export default {
         }
       })
     })
+    // if (this.LoginType != 0) {
+    //   // alert(222)
+    //   // 0 - 表示连接尚未建立，1 - 表示连接已建立，可以进行通信，2 - 表示连接正在进行关闭，3 - 表示连接已经关闭或者连接不能打开
+    //   console.log(this.ws.readyState, 'head')
+    //   if (this.ws.readyState != 1) {
+    //     if (this.imToken == '') {
+    //       // 获取聊天token
+    //       this.getImToken()
+    //     }
+    //   }
+    // }
   },
   computed: {
+    ...mapState({
+      imToken: state => state.imToken,
+      LoginType: state => state.LoginType,
+      ws: state => state.ws
+    }),
     config () {
       return this.$store.state.config
     },
@@ -183,6 +219,20 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setImToken']),
+    ...mapActions(['initWebSocket', 'webSocket_send']),
+    /**
+     * 获取imToken
+     */
+    getImToken () {
+      http.get(api.imToken).then((res) => {
+        this.setImToken(res.data)
+        // 初始化WebSocket
+        // setTimeout(() => {
+        this.initWebSocket(res.data)
+        // }, 500)
+      })
+    },
     group (array, subGroupLength) {
       let index = 0
       let newArray = []

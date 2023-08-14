@@ -40,20 +40,8 @@
           ></el-input>
         </el-form-item>
         <el-form-item
-          label="职位名称"
-          prop="basic.jobname"
-          :rules="[
-            {
-              required: true,
-              message: '请输入职位名称',
-              trigger: 'blur',
-            },
-            {
-              max: 60,
-              message: '长度在 1 到 30 个字符',
-              trigger: 'blur',
-            },
-          ]"
+          label="职位性质"
+          prop="basic.nature"
         >
           <el-radio-group v-model="form.basic.nature">
             <el-radio

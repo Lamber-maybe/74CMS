@@ -449,6 +449,22 @@ CREATE TABLE `qs_company_service_refresh_job_package` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_company_service_refresh_job_package||-_-||
 
+DROP TABLE IF EXISTS `qs_company_service_im`;
+CREATE TABLE `qs_company_service_im` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(30) NOT NULL COMMENT '名称',
+  `recommend` tinyint(1) unsigned NOT NULL COMMENT '推荐1是2否',
+  `times` int(10) unsigned NOT NULL COMMENT '职聊次数',
+  `expense` decimal(10,2) unsigned NOT NULL COMMENT '价格',
+  `enable_points_deduct` tinyint(1) unsigned NOT NULL COMMENT '可积分抵扣0否1可2部',
+  `deduct_max` decimal(10,2) unsigned NOT NULL COMMENT '可部分抵扣最大额',
+  `is_display` tinyint(1) unsigned NOT NULL COMMENT '是否显示1是2否',
+  `sort_id` int(10) unsigned NOT NULL COMMENT '排序',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+||-_-||qs_company_service_im||-_-||
+
+
 DROP TABLE IF EXISTS `qs_company_service_resume_package`;
 CREATE TABLE `qs_company_service_resume_package` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -725,26 +741,24 @@ CREATE TABLE `qs_hrtool_category` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_hrtool_category||-_-||
 
-DROP TABLE IF EXISTS `qs_im_quickmsg`;
-CREATE TABLE `qs_im_quickmsg` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `content` varchar(100) NOT NULL,
-  `utype` tinyint(1) unsigned NOT NULL,
-  `sort_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
+DROP TABLE IF EXISTS `qs_im_forbid`;
+CREATE TABLE `qs_im_forbid` (
+  `uid` int(10) NOT NULL COMMENT 'uid',
+  `addtime` int(10) unsigned NOT NULL COMMENT '最后登录时间',
+  `reason` varchar(30) NOT NULL COMMENT '最后登录ip'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-||-_-||qs_im_quickmsg||-_-||
+||-_-||qs_im_forbid||-_-||
 
-DROP TABLE IF EXISTS `qs_im_token`;
-CREATE TABLE `qs_im_token` (
+DROP TABLE IF EXISTS `qs_im_rule`;
+CREATE TABLE `qs_im_rule` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `uid` int(10) unsigned NOT NULL,
-  `im_userid` varchar(50) NOT NULL,
-  `token` varchar(200) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `index_uid` (`uid`)
+  `name` varchar(30) NOT NULL,
+  `value` varchar(100) NOT NULL,
+  `utype` tinyint(1) unsigned NOT NULL,
+  `note` varchar(30) NOT NULL,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-||-_-||qs_im_token||-_-||
+||-_-||qs_im_rule||-_-||
 
 DROP TABLE IF EXISTS `qs_job`;
 CREATE TABLE `qs_job` (
@@ -1016,6 +1030,7 @@ CREATE TABLE `qs_member` (
   `robot` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `platform` varchar(30) NOT NULL DEFAULT '',
   `nologin_notice_counter` int(10) unsigned NOT NULL DEFAULT '0',
+  `disable_im` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '禁用职聊',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `index_username` (`username`,`utype`),
   UNIQUE KEY `index_mobile` (`mobile`,`utype`)
@@ -1102,6 +1117,8 @@ CREATE TABLE `qs_member_setmeal` (
   `enable_video_interview` tinyint(1) unsigned NOT NULL,
   `enable_poster` tinyint(1) unsigned NOT NULL,
   `show_apply_contact` tinyint(1) unsigned NOT NULL,
+  `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '每天最多可发起聊天次数',
+  `im_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一共可发起聊天次数',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_setmeal_id` (`setmeal_id`)
@@ -1691,6 +1708,8 @@ CREATE TABLE `qs_setmeal` (
   `sort_id` int(10) unsigned NOT NULL DEFAULT '0',
   `is_display` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `is_apply` tinyint(1) unsigned NOT NULL,
+  `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0',
+  `im_total` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_setmeal||-_-||
@@ -2017,7 +2036,6 @@ CREATE TABLE `qs_identity_token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录凭证记录表';
 ||-_-||qs_identity_token||-_-||
 
-||-_-||qs_identity_token||-_-||
 
 
 

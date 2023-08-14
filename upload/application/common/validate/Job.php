@@ -54,6 +54,7 @@ class Job extends BaseValidate
     ];
     protected $message = [
         'jobname.require'  =>  '请填写职位名称',
+        'jobname.max'  =>  '职位名称长度不能超过30',
         'category1.gt' =>  '请选择职位分类',
         'district1.gt' =>  '请选择工作地区',
         'tag.require' =>  '请选择岗位福利',

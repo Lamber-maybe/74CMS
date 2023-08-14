@@ -153,6 +153,10 @@ class Service extends \app\v1_0\controller\common\Base
                 $model = model('CompanyServiceResumePackage');
                 $joblist = [];
                 break;
+            case 'im':
+                $model = model('CompanyServiceIm');
+                $joblist = [];
+                break;
             case 'job_refresh':
                 $model = model('CompanyServiceRefreshJobPackage');
                 $joblist = model('Job')->alias('a')->join(config('database.prefix') . 'refreshjob_queue b', 'a.id=b.jobid', 'LEFT')
@@ -263,6 +267,7 @@ class Service extends \app\v1_0\controller\common\Base
                 'jobstick',
                 'emergency',
                 'resume_package',
+                'im',
                 'refresh_job_package',
             ];
             if (in_array($value, $white_list)) {

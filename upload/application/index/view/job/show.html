@@ -15,6 +15,7 @@
                 </div>
             </div>
             <div class="content1_btn float" v-cloak>
+                <div class="btn" @click="startIm">聊一聊</div>
                 <div v-if="!hasApply" class="btn" @click="doApplyResume">投递简历</div>
                 <div v-if="hasApply" class="btn" style="background:#cecece;">已投递简历</div>
                 <p class="operate">
@@ -222,13 +223,7 @@
                                 <div class="post_box2_btn">
                                     <span class="contact_btn1" v-if="!hasApply" @click="doApplyResume">投递简历</span>
                                     <span class="contact_btn1" v-if="hasApply" style="background:#CECECE;">投递简历</span>
-                                    <el-popover placement="right" width="200" trigger="hover">
-                                        <span>
-                                            <img :src="imQrcode" width="174" height="174" />
-                                            <span style="display:block;width:174px;text-align: center;">请用微信扫一扫</span>
-                                        </span>
-                                        <span class="contact_btn2" slot="reference">在线聊天</span>
-                                    </el-popover>
+                                    <span class="contact_btn2" @click="startIm">在线聊天</span>
                                 </div>
                                 {#else/#}
                                 <div class="code_pro" @mouseenter.stop="onMouseover" @mouseleave.stop="onMouseout">
@@ -481,6 +476,9 @@
     <el-dialog title="验证码" :visible.sync="showPictureCaptcha" @opened="pictureCaptchaOpened" width="350px">
       {#include file="captcha/picture" /#}
     </el-dialog>
+    <el-dialog title="系统提示" :visible.sync="showBindWeixin" @opened="bindWeixinOpened" width="450px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
+       {#include file="public/bindWeixin" /#}
+    </el-dialog>
 </div>
 {#load href="__ROOT__/assets/js/highslide-with-gallery.js" /#}
 <script>
@@ -602,6 +600,9 @@
     var app = new Vue({
         el: '#app',
         data: {
+            bind_timer:'',
+            scanQrcodeImg:'',
+            showBindWeixin:false,
             wx_code_url:'/assets/images/loading.gif',
             codeShow: false,
             hasGetCode:false,
@@ -724,6 +725,82 @@
             }
         },
         methods: {
+            loopCheckBind:function(){
+                var that = this
+                httpget(qscms.apiList.imCheckBind, {})
+                    .then(function(res){
+                        if(res.code==200){
+                            if(res.data==1){
+                                that.showBindWeixin = false
+                                clearInterval(that.bind_timer);
+                                that.$message({ type: 'success', message: '绑定成功' })
+                                setTimeout(function(){
+                                    httpget(qscms.apiList.imGetToken, {})
+                                        .then(function(res){
+                                            qscms.imToken = res.data
+                                            that.startIm()
+                                        }).catch(()=>{})
+                                },2000)
+                            }
+                        }
+                    })
+            },
+            startIm:function(){
+                var that = this
+                if (parseInt(that.utype) === 0) {
+                    // 未登录
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    }).then(function () {
+                        location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                    })
+                } else if (parseInt(that.utype) !== 2) {
+                    that.$confirm('当前操作需要登录求职者账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    }).then(function () {
+                        location.href = qscms.locationList.loginPersonal + '?redirect=' + location.href
+                    })
+                    .catch(function () { })
+                }else{
+                    httppost(qscms.apiList.imStart, {token:qscms.imToken,jobid:id})
+                        .then(function (res) {
+                            if(res.data.next==''){
+                                location.href = qscms.locationList.personalIm + '?chat=' + res.data.chatid
+                                return false;
+                            }
+                            if(res.data.next=='disabled'){
+                                that.$alert(res.message, '系统提示', {
+                                    showCancelButton:false,
+                                    type: 'warning'
+                                });
+                                return false;
+                            }
+                            if(res.data.next=='complete_resume'){
+                                that.$alert(res.message, '系统提示', {
+                                    showCancelButton:false,
+                                    confirmButtonText:'去完善简历',
+                                    type: 'warning',
+                                    dangerouslyUseHTMLString:true,
+                                    callback: () => {
+                                        location.href = qscms.locationList.personalResume
+                                        return false;
+                                    }
+                                });
+                                return false;
+                            }
+                            if(res.data.next=='bind_weixin'){
+                                that.showBindWeixin = true
+                                that.bind_timer = setInterval(that.loopCheckBind, 3000);
+                                return false;
+                            }
+                        })
+                        .catch(function (res) {
+                            that.$message.error(res.message)
+                        })
+                }
+            },
             doApplyResume: function () {
               var that = this
               if (parseInt(this.utype) === 0) {
@@ -884,6 +961,14 @@
                     that.catpchaSrc = res.data.src
                   })
                   .catch(function () { })
+            },
+            bindWeixinOpened:function(){
+                var that = this
+                httpget(qscms.apiList.qrcode, {type:'bind_weixin'})
+                    .then(function (res) {
+                        that.scanQrcodeImg = res.data
+                    })
+                    .catch(function () { })
             },
             pictureCaptchaOpened: function () {
               this.changeImg()

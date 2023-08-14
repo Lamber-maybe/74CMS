@@ -76,7 +76,17 @@ class Setmeal extends \app\common\controller\Backend
                 'intval'
             ),
             'sort_id' => input('post.sort_id/d', 0, 'intval'),
-            'icon' => input('post.icon/d', 0, 'intval')
+            'icon' => input('post.icon/d', 0, 'intval'),
+            'im_max_perday' => input(
+                'post.im_max_perday/d',
+                0,
+                'intval'
+            ),
+            'im_total' => input(
+                'post.im_total/d',
+                0,
+                'intval'
+            )
         ];
         if ($input_data['preferential_open'] == 1) {
             $input_data['preferential_expense_start'] = $input_data[
@@ -196,7 +206,17 @@ class Setmeal extends \app\common\controller\Backend
                     'intval'
                 ),
                 'sort_id' => input('post.sort_id/d', 0, 'intval'),
-                'icon' => input('post.icon/d', 0, 'intval')
+                'icon' => input('post.icon/d', 0, 'intval'),
+                'im_max_perday' => input(
+                    'post.im_max_perday/d',
+                    0,
+                    'intval'
+                ),
+                'im_total' => input(
+                    'post.im_total/d',
+                    0,
+                    'intval'
+                )
             ];
 
             if ($input_data['preferential_open'] == 1) {

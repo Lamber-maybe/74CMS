@@ -28,6 +28,31 @@ function time_format($value){
     }
     return $return;
 }
+
+/**
+ * 时间格式变换im
+ */
+function im_daterange($endtime, $starttime)
+{
+    $value = $endtime - $starttime;
+    //本年度
+    if(date('Y',$endtime)==date('Y',$starttime)){
+        //今天
+        if(date('Y-m-d',$endtime)==date('Y-m-d',$starttime)){
+            $return = date('H:i', $starttime);
+        }else if(strtotime('yesterday')==strtotime(date('Y-m-d',$starttime))){//昨天
+            $return = '昨天';
+        }else if(strtotime(date('Y-m-d',$starttime))<strtotime('-1 month')){//早于一个月
+            $return = intval($value/3600/24/30).'月前';
+        }else{
+            $return = ceil($value/3600/24).'天前';
+        }
+    }else{
+        //上年度
+        $return = date('Y-m-d', $starttime);
+    }
+    return $return;
+}
 /**
  * 时间格式变换
  */

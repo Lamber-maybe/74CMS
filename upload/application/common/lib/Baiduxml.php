@@ -62,7 +62,7 @@ class Baiduxml
         } else if ($value['minage'] > 0 || $value['maxage'] > 0) {
             $xml .= '<age>'.$value['minage'] . '-' . $value['maxage'].'</age>';
         }
-        $xml .= '<description>'.cut_str(strip_tags(htmlspecialchars_decode($value['content'])),100).'</description>';
+        $xml .= '<description>'.cut_str(strip_tags(htmlspecialchars_decode($value['content'],ENT_QUOTES)),100).'</description>';
         $xml .= '<education>'.(isset(model('BaseModel')->map_education[$value['education']])? model('BaseModel')->map_education[$value['education']]:'不限').'</education>';
         $xml .= '<experience>'.(isset(model('BaseModel')->map_experience[$value['experience']])? model('BaseModel')->map_experience[$value['experience']]:'不限').'</experience>';
         $xml .= '<startdate>'.date('Y-m-d',$value['addtime']).'</startdate>';
@@ -189,7 +189,7 @@ class Baiduxml
             } else if ($value['minage'] > 0 || $value['maxage'] > 0) {
                 $xml .= '<age>'.$value['minage'] . '-' . $value['maxage'].'</age>';
             }
-            $xml .= '<description>'.cut_str(strip_tags(htmlspecialchars_decode($value['content'])),100).'</description>';
+            $xml .= '<description>'.cut_str(strip_tags(htmlspecialchars_decode($value['content'],ENT_QUOTES)),100).'</description>';
             $xml .= '<education>'.(isset(model('BaseModel')->map_education[$value['education']])? model('BaseModel')->map_education[$value['education']]:'不限').'</education>';
             $xml .= '<experience>'.(isset(model('BaseModel')->map_experience[$value['experience']])? model('BaseModel')->map_experience[$value['experience']]:'不限').'</experience>';
             $xml .= '<startdate>'.date('Y-m-d',$value['addtime']).'</startdate>';

@@ -12,7 +12,7 @@
               <div>
                   <span class="item_left_btm"><span class="color1">职位数</span> <span class="color2">{{item.jobs_meanwhile}}个</span></span> +
                   <span class="item_left_btm"><span class="color1">简历点</span> <span class="color2">{{item.download_resume_point}}</span></span> +
-                  <span class="item_left_btm"><span class="color1">{{$store.state.config.points_byname}}</span> <span class="color2">{{item.gift_point}}</span></span>
+                  <span class="item_left_btm"><span class="color1">职聊次数</span> <span class="color2">{{item.im_total}}次</span></span>
                 </div>
             </div>
             <div class="item_right" v-if="item.preferential_open==1">
@@ -39,6 +39,7 @@
         <div>
             <div>职位数：<span class="color">{{setmealDetail.jobs_meanwhile}}</span></div>
             <div>简历点：<span class="color">{{setmealDetail.download_resume_point}}</span></div>
+            <div>职聊次数：<span class="color">{{setmealDetail.im_total}}</span></div>
             <div>{{$store.state.config.points_byname}}：<span class="color">{{setmealDetail.gift_point}}</span></div>
             <div>免费刷新：<span class="color">{{setmealDetail.refresh_jobs_free_perday}}次/天</span></div>
             <div>下载上限：<span class="color">{{setmealDetail.download_resume_max_perday}}份/天</span></div>

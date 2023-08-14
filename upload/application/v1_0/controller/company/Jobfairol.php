@@ -36,7 +36,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['endtime'] = $value['endtime'];
             $tmp_arr['audit'] = $value['audit'];
             $tmp_arr['addtime'] = $value['addtime'];
-            $tmp_arr['jobfair_url'] = config('global_config.sitedomain').url('index/jobfairol/show',['id'=>$value['id']]);
+            $tmp_arr['jobfair_url'] = url('index/jobfairol/show',['id'=>$value['id']]);
             $returnlist[] = $tmp_arr;
         }
     	$return['items'] = $returnlist;

@@ -147,21 +147,18 @@ class Base extends \app\common\controller\Base
         } else {
             $next_code = $this->interceptPersonalResume(true, $uid);
         }
-        $userIminfo = model('ImToken')->getUserImInfo($uid,$utype);
         $visitor = new \app\common\lib\Visitor;
         $visitor->setLogin([
             'utype'=>$utype,
             'mobile' => $mobile,
-            'token'=>$user_token,
-            'userIminfo'=>$userIminfo
+            'token'=>$user_token
         ],$this->expire_platform[config('platform')]);
         return [
             'uid' => $uid,
             'token' => $user_token,
             'utype' => $utype,
             'mobile' => $mobile,
-            'next_code' => $next_code,
-            'user_iminfo' => $userIminfo
+            'next_code' => $next_code
         ];
     }
     /**

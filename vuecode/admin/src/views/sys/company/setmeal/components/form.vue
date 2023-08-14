@@ -241,13 +241,71 @@
             <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content">
                 0表示无折扣
-                <br />
+                <br>
                 例：七五折请填写7.5
               </div>
               <i class="el-icon-info" />
             </el-tooltip>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="职聊次数" prop="im_total">
+            <el-input
+              v-model.number="form.im_total"
+              type="number"
+              class="small"
+              min="0"
+              @blur="format_number(0, 'im_total')"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="排序" prop="sort_id" style="display: block">
+            <el-input
+              v-model.number="form.sort_id"
+              type="number"
+              class="mini"
+              min="0"
+              @blur="format_number(0, 'sort_id')"
+            />
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="数字越大越靠前"
+              placement="top-start"
+            >
+              <i class="el-icon-info" />
+            </el-tooltip>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="允许发起聊天数" prop="im_max_perday">
+            <el-input
+              v-model.number="form.im_max_perday"
+              type="number"
+              class="small"
+              min="0"
+              @blur="format_number(0, 'im_max_perday')"
+            >
+              <template slot="append">次 / 天</template>
+            </el-input>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="0表示不允许发起聊天"
+              placement="top-start"
+            >
+              <i class="el-icon-info" />
+            </el-tooltip>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+        <el-col :span="11"> &nbsp; </el-col>
       </el-row>
       <el-row>
         <el-col :span="11">
@@ -271,7 +329,7 @@
               :on-success="handleIconSuccess"
               :before-upload="beforeIconUpload"
             >
-              <img v-if="form.icon" :src="iconUrl" class="icon" />
+              <img v-if="form.icon" :src="iconUrl" class="icon">
               <i v-else class="el-icon-plus icon-uploader-icon" />
             </el-upload>
             <el-tooltip
@@ -285,29 +343,6 @@
             <el-button type="text" @click="delIcon">[删除]</el-button>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="11">
-          <el-form-item label="排序" prop="sort_id" style="display: block">
-            <el-input
-              v-model.number="form.sort_id"
-              type="number"
-              class="mini"
-              min="0"
-              @blur="format_number(0, 'sort_id')"
-            />
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="数字越大越靠前"
-              placement="top-start"
-            >
-              <i class="el-icon-info" />
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
-        <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="11"> &nbsp; </el-col>
       </el-row>
       <el-row>
         <el-col :span="11">
@@ -355,7 +390,9 @@ export default {
         jobs_meanwhile: 0,
         refresh_jobs_free_perday: 0,
         download_resume_point: 0,
+        im_total: 0,
         download_resume_max_perday: 0,
+        im_max_perday: 0,
         enable_video_interview: 1,
         enable_poster: 1,
         recommend: 1,
@@ -450,6 +487,12 @@ export default {
             message: '排序只能填写数字',
             trigger: 'blur'
           }
+        ],
+        im_total: [
+          { required: true, message: '请填写职聊次数', trigger: 'blur' }
+        ],
+        im_max_perday: [
+          { required: true, message: '请填写允许发起聊天数', trigger: 'blur' }
         ]
       }
     }

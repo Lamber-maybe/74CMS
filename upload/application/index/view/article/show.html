@@ -31,7 +31,7 @@
                     {#$info.content#}
                     {#if condition="count($info.attach) gt 0"#}
                     <div style="margin-top:20px;" class="attach-list">
-                        <ul> 
+                        <ul>
                             {#volist name="info.attach" id="vo"#}
                             <li>附件【<a href="{#:url('index/download/index')#}?url={#:urlencode($vo.url)#}&name={#$vo.name#}" target="_blank">{#$i#}：{#$vo.name#}</a>】</li>
                             {#/volist#}
@@ -70,7 +70,7 @@
                         {#volist name="hotArticleList" id="vo"#}
                         <div class="hot_sort_list">
                             <a href="{#$vo.link_url#}" target="_blank">{#$vo.title#}</a>
-                            <span>{#:date('Y-m-d H:i')#}</span>
+                            <span>{#:date('Y-m-d H:i',$vo['addtime'])#}</span>
                         </div>
                         {#/volist#}
 

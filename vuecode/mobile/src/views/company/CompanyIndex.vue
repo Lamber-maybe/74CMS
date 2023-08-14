@@ -198,6 +198,7 @@
         </div>
         <div class="handle_line l2" @click="handlerJump('/im/imList',1)">
           我的职聊
+          <span v-show="imUnreaded" class="point"></span>
         </div>
         <div
           class="handle_line l3"
@@ -249,6 +250,7 @@ import { parseTime } from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Ad from '@/components/Ad'
+import {mapState} from 'vuex'
 export default {
   name: 'CompanyIndex',
   components: {
@@ -294,8 +296,15 @@ export default {
       timer: null,
       ad_dataset_banner: { alias: 'QS_member_company_banner', items: [] },
       empty_info: false,
-      showWeixinQrcode: false
+      showWeixinQrcode: false,
+      chatList: []
     }
+  },
+  computed: {
+    ...mapState({
+      imUnreaded: state => state.imUnreaded,
+      imToken: state => state.imToken
+    })
   },
   mounted () {
     this.timer = setInterval(this.scrollAnimate, 3000)
@@ -306,8 +315,34 @@ export default {
   created () {
     this.fetchData()
     this.fetchAd()
+    if (this.imToken != '') {
+      this.getChatList()
+    }
+  },
+  watch: {
+    imToken (val) {
+      this.getChatList()
+    },
+    chatList: {
+      // 数据变化时执行的逻辑代码
+      handler (val) {
+        this.$store.state.imUnreaded = false
+        val.forEach(item => {
+          if (item.new > 0) {
+            this.$store.state.imUnreaded = true
+          }
+        })
+      },
+      // 开启深度监听
+      deep: true
+    }
   },
   methods: {
+    getChatList () {
+      http.post(api.chatList, {token: this.imToken}).then((res) => {
+        this.chatList = res.data.items
+      })
+    },
     handlerBindWeixin () {
       if (this.companyinfo.bind_weixin === 1) {
         this.$dialog
@@ -339,6 +374,10 @@ export default {
         if (checkAuth === 1 && this.companyinfo.company_audit !== 1 && this.companyinfo.need_audit === 1) {
           handlerHttpError({code: 50004, message: '请先通过企业认证'})
         } else {
+          var pathAry = path.split('/')
+          if (pathAry[1] == 'im') {
+            this.$store.state.imUnreaded = false
+          }
           this.$router.push(path)
         }
       }
@@ -468,6 +507,7 @@ export default {
 
 <style lang="scss" scoped>
 .handle_line {
+  position: relative;
   &.l7 {
     background: #ffffff url("../../assets/images/company_index_l7.png") 20px
     center no-repeat;
@@ -544,6 +584,16 @@ export default {
     bottom: 0;
     left: 52px;
     border-bottom: 1px solid #f3f3f3;
+  }
+  .point{
+    position: absolute;
+    left: 115px;
+    top: 13px;
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
   }
 }
 .box_9 {

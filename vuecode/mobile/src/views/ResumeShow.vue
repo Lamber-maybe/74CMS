@@ -379,10 +379,11 @@
         <div class="box_13">
           <div class="bottom_bar">
             <div class="item_call" @click="doTel">电话</div>
-            <div class="item_chat" @click="doMsg">聊天</div>
+            <div :class="has_fav == 1 ? 'item_collect item_collect_ac':'item_collect'" @click="doFav">{{ has_fav == 1 ? "已收藏" : "收藏" }}</div>
+            <div class="item_chat" @click="doMsg">在线聊</div>
             <div class="item_apply" v-if="show_contact===0" @click="doDownload">下载简历</div>
             <div class="item_apply" v-else @click="doInterview">面试邀请</div>
-            <div class="clear"></div>
+            <!-- <div class="clear"></div> -->
           </div>
         </div>
       </div>
@@ -604,6 +605,22 @@
               @handlePoster="handlePoster"></Share>
     </van-popup>
     <div class="generate_posters" @click="handlePoster">生成<br />海报</div>
+    <!-- 绑定微信开始 -->
+    <van-dialog v-model="bindWeixinShow" title="系统提示" :show-cancel-button="false" :show-confirm-button="true"  @confirm="handleImCheckBind">
+      <div class="bind-weixin-box">
+        <div class="title-1">您当前未绑定微信，绑定后可发起聊天。</div>
+        <div class="img">
+          <img :src="scanQrcodeImg" alt="">
+        </div>
+        <div class="title-2">使用微信扫一扫，按提示快速绑定</div>
+      </div>
+    </van-dialog>
+    <!-- 绑定微信结束 -->
+    <!-- 切换职位开始 -->
+    <van-overlay :show="selectJobShow" z-index="3" :lock-scroll="false">
+      <SelectJob @handleCommunicate="handleCommunicate" @handleCloseSelectJob="handleCloseSelectJob" :chatid="imChatid" :companyId="companyId" :isSelectJob="false"></SelectJob>
+    </van-overlay>
+    <!-- 切花职位结束 -->
   </div>
 </template>
 
@@ -621,6 +638,8 @@ import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import Vue from 'vue'
 import { ImagePreview } from 'vant'
+import SelectJob from '@/views/im/components/SelectJob.vue'
+import {mapMutations} from 'vuex'
 Vue.use(ImagePreview)
 export default {
   name: 'ResumeShow',
@@ -631,7 +650,8 @@ export default {
     AddInvitation,
     Tipoff,
     Share,
-    SharePoster
+    SharePoster,
+    SelectJob
   },
   filters: {
     monthTimeFilter (timestamp) {
@@ -709,7 +729,15 @@ export default {
       finished: false,
       loading: false,
       finished_text: '',
-      videonum: 0
+      videonum: 0,
+      bindWeixinShow: false,
+      jobid: 0,
+      selectJobShow: false,
+      imChatid: '',
+      companyId: '',
+      selectJobObj: {},
+      // 绑定微信二维码
+      scanQrcodeImg: ''
     }
   },
   created () {
@@ -718,11 +746,21 @@ export default {
       !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
     // 请求数据
     this.fetchData()
+    this.getScanQrcodeImg()
     if (this.$store.state.config.shortvideo_enable === '1') {
       this.fetchVideonum()
     }
   },
   methods: {
+    ...mapMutations(['setImShowParams', 'setimChatid']),
+    /**
+   * 绑定微信二维码
+   */
+    getScanQrcodeImg () {
+      http.get(api.get_qrcode, {type: 'bind_weixin'}).then(res => {
+        this.scanQrcodeImg = res.data
+      })
+    },
     callCodePro () {
       location.href = `tel:${this.codePro.x}`
     },
@@ -875,16 +913,114 @@ export default {
             }
           })
           .catch(() => {})
-      } else if (this.base_info.im_userid) {
-        if (this.base_info.audit != 1) {
-          this.$notify('该简历还未审核通过，不能继续此操作')
-          return false
-        }
-        this.$router.push('/im/imshow/' + this.base_info.im_userid)
       } else {
-        this.$notify('暂时无法与当前用户进行职聊')
-        return false
+        // if (this.base_info.audit != 1) {
+        //   this.$notify('该简历还未审核通过，不能继续此操作')
+        //   return false
+        // }
+        http
+          .post(api.company_index, {}).then(res => {
+            var {companyinfo} = res.data
+
+            // if (this.jobid == 0) {
+            this.companyId = companyinfo.id
+            //   this.selectJobShow = true
+            //   return false
+            // }
+            http.post(api.imStart, {token: this.$store.state.imToken, resumeid: this.base_info.id, jobid: this.jobid}).then(res => {
+              // disabled 不能使用功能
+              // bind_weixin绑定微信
+              // complete_resume完善简历
+              // 空字符串 正常使用
+              // choose_job 选择职位
+              // pay 需要购买增值服务，触屏是快捷支付
+              console.log(res)
+              if (parseInt(res.code) == 200) {
+                if (res.data.next == '') {
+                  this.setImShowParams({
+                    jobname: this.selectJobObj.jobname,
+                    name: this.base_info.fullname,
+                    resumeid: this.base_info.id,
+                    jobid: this.jobid,
+                    companyId: companyinfo.id
+                  })
+                  this.setimChatid(res.data.chatid)
+                  this.$router.push({path: '/im/' + res.data.chatid})
+                  return false
+                }
+                if (res.data.next == 'disabled') {
+                  // this.$notify({ type: 'danger', message: res.message })
+                  this.$dialog({
+                    title: '系统提示',
+                    message: res.message,
+                    showConfirmButton: true
+                  }).then(() => {})
+                  return false
+                }
+                if (res.data.next == 'complete_resume') {
+                  this.$dialog.confirm({
+                    title: '系统提示',
+                    message: res.message,
+                    confirmButtonText: '去完善简历',
+                    showCancelButton: true
+                  }).then(() => {
+                    this.$router.push({path: '/member/personal/resume'})
+                  }).catch(() => {})
+                  return false
+                }
+                if (res.data.next == 'bind_weixin') {
+                  this.bindWeixinShow = true
+                }
+                if (res.data.next == 'pay') {
+                  // 快捷支付
+                  this.$dialog.confirm({
+                    title: '系统提示',
+                    message: res.message,
+                    confirmButtonText: '去支付'
+                  })
+                    .then(() => {
+                      this.$router.push({path: '/member/order/add/common?type=service'})
+                    })
+                    .catch(() => {})
+                }
+                if (res.data.next == 'choose_job') {
+                  this.selectJobShow = true
+                }
+              }
+            })
+          })
+        // this.$router.push('/im/' + this.base_info.im_userid)
       }
+      //  else {
+      //   this.$notify('暂时无法与当前用户进行职聊')
+      //   return false
+      // }
+    },
+    /**
+     * 选择沟通职位
+     * @jobItem 当前沟通职位信息
+     */
+    handleCommunicate (jobItem) {
+      this.selectJobShow = false
+      this.jobid = jobItem.id
+      this.selectJobObj = jobItem
+      this.doMsg()
+    },
+    /**
+     * 是否绑定微信公众号
+     */
+    handleImCheckBind () {
+      http.get(api.imCheckBind).then(res => {
+        if (res.data != 0) {
+          location.reload(true)
+        }
+      })
+    },
+    /**
+     * 选择职位弹窗关闭
+     */
+    handleCloseSelectJob () {
+      this.selectJobShow = false
     },
     doInterview () {
       if (this.is_company_login === false) {
@@ -1212,30 +1348,38 @@ export default {
 }
 .my_app {
   padding-bottom: 45px;
+  overflow: hidden;
 }
 .box_13 {
   .bottom_bar {
     .item_apply {
-      float: left;
-      padding: 12px 0;
-      height: 100%;
+      // float: left;
+      height: 43px;
+      line-height: 43px;
       text-align: center;
       background-color: #1787fb;
       color: #ffffff;
-      font-size: 18px;
-      width: 255px;
+      font-size: 15px;
+      width: 123px;
+      margin-right: 15px;
+      border-radius: 5px;
+      flex-shrink: 0;
     }
     .item_chat {
-      float: left;
-      width: 60px;
-      height: 100%;
-      padding: 32px 0 4px;
+      flex-shrink: 0;
+      // float: left;
+      border-radius: 5px;
+      width: 92px;
+      height: 43px;
       text-align: center;
-      font-size: 10px;
-      color: #333333;
-      background: url("../assets/images/chat_ico.svg") center 9px no-repeat;
+      font-size: 15px;
+      color: #FF5D3C;
       background-size: 17px;
       position: relative;
+      border: 1px solid #FF7356;
+      line-height: 41px;
+      margin-right: 12px;
+      background: #FFE9DE;
       &::after {
         position: absolute;
         box-sizing: border-box;
@@ -1248,9 +1392,10 @@ export default {
       }
     }
     .item_call {
-      float: left;
+       flex-shrink: 0;
+      // float: left;
       width: 60px;
-      height: 100%;
+      height: 46px;
       padding: 32px 0 4px;
       text-align: center;
       font-size: 10px;
@@ -1258,15 +1403,21 @@ export default {
       background: url("../assets/images/calling_ico.svg") center 9px no-repeat;
       background-size: 17px;
       position: relative;
-      &::after {
-        position: absolute;
-        box-sizing: border-box;
-        content: " ";
-        pointer-events: none;
-        right: 0;
-        top: 0;
-        left: 0;
-        border-bottom: 0.026667rem solid #f3f3f3;
+    }
+    .item_collect{
+      flex-shrink: 0;
+      width: 60px;
+      height: 46px;
+      padding: 32px 0 4px;
+      text-align: center;
+      font-size: 10px;
+      color: #333333;
+      position: relative;
+      background: url("../assets/images/com_show_col_ico_2.png") center 9px no-repeat;
+      background-size: 17px;
+      &.item_collect_ac{
+        background: url("../assets/images/com_show_col_ico_2_ac.png") center 9px no-repeat;
+        background-size: 17px;
       }
     }
     position: fixed;
@@ -1275,12 +1426,25 @@ export default {
     bottom: 0;
     background-color: #ffffff;
     z-index: 3;
-    height: 50px;
+    height: 63px;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &::after {
+      position: absolute;
+      box-sizing: border-box;
+      content: " ";
+      pointer-events: none;
+      right: 0;
+      top: 0;
+      left: 0;
+      border-bottom: 0.026667rem solid #f3f3f3;
+    }
   }
   position: relative;
   width: 100%;
-  height: 50px;
+  height: 63px;
   background-color: #ffffff;
 }
 .box_12 {
@@ -1503,6 +1667,8 @@ export default {
         line-height: 1.8;
         font-size: 12px;
         color: #666666;
+        word-break: normal;
+        word-wrap: break-word;
       }
       .t3 {
         font-size: 12px;
@@ -1938,4 +2104,29 @@ export default {
 .m-top{margin-top:25px;}
 .m-btm{margin-bottom:20px;}
 .bold{font-weight:bold;}
+  // 绑定微信开始
+.bind-weixin-box{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 10px 0;
+  .title-1{
+    color: #646566;
+    font-size:14px ;
+  }
+  .img{
+    width:111px;
+    height: 111px;
+    margin: 13px auto 10px;
+    img{
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .title-2{
+    color: #999999;
+    font-size:13px ;
+  }
+}
+//绑定微信结束
 </style>

@@ -34,7 +34,7 @@
         <div
           v-for="(item, index) in itemList"
           :key="index"
-          @click="toDetail(item.id)"
+          @click="toDetail(item.jobid)"
         >
           <div class="box_item">
             <div class="tx1">

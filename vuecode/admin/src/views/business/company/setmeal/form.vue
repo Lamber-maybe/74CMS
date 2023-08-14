@@ -97,26 +97,38 @@
       </el-row>
       <el-row>
         <el-col :span="11">
-          <el-form-item label="是否收费">
-            <el-switch v-model="form.is_charge" />
+          <el-form-item label="职聊次数" prop="im_total">
+            <el-input
+              v-model.number="form.im_total"
+              type="number"
+              class="small"
+              min="0"
+              @blur="format_number(0, 'im_total')"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
         <el-col :span="11">
-          <el-form-item label="免费刷新职位" prop="refresh_jobs_free_perday">
+          <el-form-item label="是否收费">
+            <el-switch v-model="form.is_charge" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="允许发起聊天数" prop="im_max_perday">
             <el-input
-              v-model.number="form.refresh_jobs_free_perday"
+              v-model.number="form.im_max_perday"
               type="number"
               class="small"
               min="0"
-              @blur="format_number(0, 'refresh_jobs_free_perday')"
+              @blur="format_number(0, 'im_max_perday')"
             >
               <template slot="append">次 / 天</template>
             </el-input>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
+        <el-col :span="2">&nbsp;</el-col>
         <el-col :span="11">
           <el-form-item label="收费金额" prop="charge_val">
             <el-input
@@ -130,10 +142,22 @@
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="11" />
       </el-row>
       <el-row>
+        <el-col :span="11">
+          <el-form-item label="免费刷新职位" prop="refresh_jobs_free_perday">
+            <el-input
+              v-model.number="form.refresh_jobs_free_perday"
+              type="number"
+              class="small"
+              min="0"
+              @blur="format_number(0, 'refresh_jobs_free_perday')"
+            >
+              <template slot="append">次 / 天</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
         <el-col :span="11">
           <el-form-item label="操作说明" prop="explain">
             <el-input v-model="form.explain" type="textarea" />
@@ -174,7 +198,9 @@ export default {
         show_apply_contact: 1,
         is_charge: true,
         charge_val: '',
-        explain: ''
+        explain: '',
+        im_total: '',
+        im_max_perday: ''
       }
     }
   },

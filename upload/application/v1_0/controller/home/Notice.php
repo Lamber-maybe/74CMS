@@ -39,7 +39,7 @@ class Notice extends \app\v1_0\controller\common\Base
         $info->click++;
         $info->save();
         $info = $info->toArray();
-        $info['content'] = htmlspecialchars_decode($info['content']);
+        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $prev = model('Notice')
             ->where('id', '>', $info['id'])
             ->order('id asc')

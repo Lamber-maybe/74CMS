@@ -4,26 +4,6 @@
       <div slot="header" class="clearfix">
         <span>页面管理</span>
       </div>
-      <el-form
-        ref="form"
-        v-loading="infoLoading"
-        class="common-form"
-        :model="form"
-        label-width="120px"
-        :inline-message="true"
-      >
-        <el-form-item label="路由规则">
-          <el-radio-group v-model="form.route_rule">
-            <el-radio label="def">默认</el-radio>
-            <el-radio label="qishi_6_0_min">骑士6.0极简</el-radio>
-            <el-radio label="qishi_6_0_pathinfo">骑士6.0默认</el-radio>
-            <el-radio label="qishi_3_7">骑士3.7</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="">
-          <el-button type="primary" @click="onSubmit('form')">保存</el-button>
-        </el-form-item>
-      </el-form>
       <el-table
         v-loading="listLoading"
         :data="list"
@@ -56,48 +36,19 @@
 </template>
 
 <script>
-import { setConfig, clearCache } from '@/api/configuration'
 import { pageList } from '@/api/page'
 
 export default {
   data() {
     return {
       list: null,
-      listLoading: true,
-      infoLoading: true,
-      form: {
-        route_rule: 'def'
-      }
+      listLoading: true
     }
   },
   created() {
-    this.fetchInfo()
     this.fetchData()
   },
   methods: {
-    clearCache() {
-      clearCache({}).then(response => {
-        if (response.code == 200) {
-          this.$store.dispatch('config/getConfigInfo')
-        }
-      })
-    },
-    fetchInfo() {
-      this.infoLoading = true
-      const param = {}
-      setConfig(param, 'get')
-        .then(response => {
-          const {
-            route_rule
-          } = { ...response.data }
-          this.form = {
-            route_rule
-          }
-          console.log(this.form)
-          this.infoLoading = false
-        })
-        .catch(() => {})
-    },
     fetchData() {
       this.listLoading = true
       pageList({}).then(response => {
@@ -110,22 +61,6 @@ export default {
         path: '/sys/basic/page/edit',
         query: {
           id: row.id
-        }
-      })
-    },
-    onSubmit(formName) {
-      const insertData = { ...this.form }
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          setConfig(insertData)
-            .then(response => {
-              this.clearCache()
-              this.$message.success(response.message)
-              return true
-            })
-            .catch(() => {})
-        } else {
-          return false
         }
       })
     }

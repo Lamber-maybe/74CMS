@@ -3,33 +3,42 @@
     <div class="box_6">
       <div class="head">选择增值服务</div>
       <div class="tag_wrapper">
-        <div
-          class="tag"
-          :class="{ active: params.type == 'jobstick' }"
-          @click="changeType('jobstick')"
-        >
-          职位置顶
-        </div>
-        <div
-          class="tag"
-          :class="{ active: params.type == 'emergency' }"
-          @click="changeType('emergency')"
-        >
-          紧急招聘
-        </div>
-        <div
-          class="tag"
-          :class="{ active: params.type == 'resume_package' }"
-          @click="changeType('resume_package')"
-        >
-          简历包
-        </div>
-        <div
-          class="tag"
-          :class="{ active: params.type == 'job_refresh' }"
-          @click="changeType('job_refresh')"
-        >
-          智能刷新
+        <div class="tag-scroll">
+          <div
+            class="tag"
+            :class="{ active: params.type == 'jobstick' }"
+            @click="changeType('jobstick')"
+          >
+            职位置顶
+          </div>
+          <div
+            class="tag"
+            :class="{ active: params.type == 'emergency' }"
+            @click="changeType('emergency')"
+          >
+            紧急招聘
+          </div>
+          <div
+            class="tag"
+            :class="{ active: params.type == 'resume_package' }"
+            @click="changeType('resume_package')"
+          >
+            简历包
+          </div>
+          <div
+            class="tag"
+            :class="{ active: params.type == 'job_refresh' }"
+            @click="changeType('job_refresh')"
+          >
+            智能刷新
+          </div>
+          <div
+            class="tag"
+            :class="{ active: params.type == 'im' }"
+            @click="changeType('im')"
+          >
+            职聊增值包
+          </div>
         </div>
       </div>
     </div>
@@ -60,7 +69,7 @@
     </div>
     <div
       class="box_4"
-      v-if="params.type != 'resume_package'"
+      v-if="params.type != 'resume_package' && params.type != 'im' "
       @click="showPicker = true"
     >
       <div class="content">
@@ -267,6 +276,7 @@ export default {
       http
         .get(api.company_servicelist, this.params)
         .then(res => {
+          console.log(res)
           this.active_index = 0
           this.dataset = []
           let list = res.data.items
@@ -609,6 +619,11 @@ export default {
 }
 .box_6 {
   .tag_wrapper {
+      overflow: hidden;
+    .tag-scroll{
+      white-space:nowrap;
+      overflow-y:auto;
+    }
     .tag {
       &.active {
         color: #92672c;

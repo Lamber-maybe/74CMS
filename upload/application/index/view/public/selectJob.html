@@ -1,0 +1,16 @@
+<div class="selectjob maincontent" v-loading="joblist_loading" v-if="joblist_ready">
+    <ul class="listbox" v-if="dataset_joblist.length>0">
+        <li class="li" v-for="(item,index) in dataset_joblist" :key="index">
+            <div class="jobname">{{item.jobname}}</div>
+            <div class="wage">{{item.wage_text}}</div>
+            <div class="info">{{item.district_text}} · {{item.education_text}} · {{item.experience_text}}</div>
+            <div class="btn" @click="selectJob(item)">沟通</div>
+        </li>
+    </ul>
+    <div v-else class="im-select-joblist-empty">
+        <div class="emp_text">目前没有可沟通的职位，请先发布职位或等待职位通过审核</div>
+        <div class="emp_btn">
+            <el-button type="primary" @click="manageJob">职位管理</el-button>
+        </div>
+    </div>
+</div>

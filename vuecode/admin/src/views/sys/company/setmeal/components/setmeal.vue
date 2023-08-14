@@ -130,6 +130,12 @@
         </el-row>
         <el-row>
           <el-col :span="24">
+            职聊次数：
+            <b>{{ detailContent.im_total }}</b>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             赠送积分：
             <b>{{ detailContent.gift_point }}</b>
           </el-col>
@@ -151,6 +157,13 @@
           <el-col :span="24">
             下载简历数上限：
             <b>{{ detailContent.download_resume_max_perday }}</b>
+            &nbsp;份/天
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            发起聊天数上限：
+            <b>{{ detailContent.im_max_perday }}</b>
             &nbsp;份/天
           </el-col>
         </el-row>

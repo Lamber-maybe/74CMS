@@ -37,7 +37,7 @@ class CompanyImg extends \app\common\controller\Backend
             $value['img_src'] = isset($img_src_data[$value['img']])
                 ? $img_src_data[$value['img']]
                 : '';
-            $value['link_url'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['comid']]);
+            $value['link_url'] = url('index/company/show',['id'=>$value['comid']]);
             $list[$key] = $value;
         }
 

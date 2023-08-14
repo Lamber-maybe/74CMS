@@ -17,8 +17,8 @@
             {{ item.title }}
           </div>
           <div class="tx2">
-            <!-- <div class="tip yc">原创</div> -->
-            <div class="tip zz">转载</div>
+            <div class="tip yc" v-if="item.source==0">原创</div>
+            <div class="tip zz" v-else>转载</div>
             <div class="time">{{ item.addtime | timeFilter }}</div>
             <div class="see">{{ item.click }}</div>
             <div class="clear"></div>

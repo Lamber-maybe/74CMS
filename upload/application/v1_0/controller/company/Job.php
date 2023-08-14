@@ -299,6 +299,13 @@ class Job extends \app\v1_0\controller\common\Base
         if ($basic === null) {
             return false;
         }
+        $basic['jobname'] = htmlspecialchars_decode($basic['jobname'],ENT_QUOTES);
+        $basic['address'] = htmlspecialchars_decode($basic['address'],ENT_QUOTES);
+        $basic['content'] = htmlspecialchars_decode($basic['content'],ENT_QUOTES);
+        $basic['department'] = htmlspecialchars_decode($basic['department'],ENT_QUOTES);
+        $basic['custom_field_1'] = htmlspecialchars_decode($basic['custom_field_1'],ENT_QUOTES);
+        $basic['custom_field_2'] = htmlspecialchars_decode($basic['custom_field_2'],ENT_QUOTES);
+        $basic['custom_field_3'] = htmlspecialchars_decode($basic['custom_field_3'],ENT_QUOTES);
 
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
@@ -386,6 +393,9 @@ class Job extends \app\v1_0\controller\common\Base
             ->field('id,jid,uid', true)
             ->where(['jid' => ['eq', $basic['id']]])
             ->find();
+        $contact['contact'] = htmlspecialchars_decode($contact['contact'],ENT_QUOTES);
+        $contact['weixin'] = htmlspecialchars_decode($contact['weixin'],ENT_QUOTES);
+        $contact['telephone'] = htmlspecialchars_decode($contact['telephone'],ENT_QUOTES);
         return [
             'basic' => $basic,
             'contact' => $contact,
@@ -703,6 +713,7 @@ class Job extends \app\v1_0\controller\common\Base
             $service_refresh_jobid_arr = [];
         }
         foreach ($list as $key => $value) {
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
             $value['resume_all'] = isset($apply_total_list[$value['id']])
             ? $apply_total_list[$value['id']]['all']
             : 0;
@@ -732,7 +743,7 @@ class Job extends \app\v1_0\controller\common\Base
                 $value['job_status_cn'] = '发布中';
             }
             $value['refreshtime'] = daterange(time(), $value['refreshtime']);
-            $value['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['id']]);
+            $value['job_link_url_web'] = url('index/job/show',['id'=>$value['id']]);
             $list[$key] = $value;
         }
 

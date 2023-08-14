@@ -87,11 +87,20 @@
             regResumeQuick: '/member/reg/personalQuick',//快速注册简历
             interviewAddPre: '/member/index/interviewAddPre',//面试邀请预加载数据
             company_list_by_trade: '/home/company/listByTrade',// 企业列表
+            imGlobal:'/member/im/imWindowGlobal',//聊天初始化配置读取
+            imGetToken:'/member/im/getToken',//获取聊天token
+            imStart:'/member/im/startConversation',//发起聊天
+            imJoblist:'/member/im/joblist',//获取聊天有效职位列表
+            imChatlist:'/member/im/chatList',//获取会话列表
+            imCheckBind:'/member/im/imCheckBind',//即时通讯检查绑定状态
         },
         isLogin: false,
         loginUtype: 0,
         userToken: '',
         platform: "web",
+        imToken:'',
+        reConnectTime:0,
+        websocketOk:false,
     }
 
     var locationUrl = qscms.sitedir + qscms.memberDirname
@@ -123,6 +132,9 @@
         appeal: locationUrl + "/appeal",
         wxpay: locationUrl + "/wxpay",
         oauthQq: locationUrl + "/oauth/qq/login",
+        personalIm: locationUrl + "/personal/im",
+        companyIm: locationUrl + "/company/im",
+        companyServiceIm: locationUrl + "/company/service/increment/add/im",
     }
     //获取列表中已选择的项目
     qscms.getSelItemArr = function () {
@@ -133,6 +145,7 @@
         });
         return idArr
     }
+    
     var visitor = Cookies.get('qscms_visitor');
     if (visitor !== undefined && visitor !== null) {
         visitor = JSON.parse(visitor)

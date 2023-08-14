@@ -24,6 +24,7 @@
                             @click="handlerMemberCenter">{{loginUsername}}</span> <span>登录，</span><span
                             class="header_color2" @click="handlerLogout">退出</span></span>
                 </span>
+                <span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===true">职聊</span>
                 <el-dropdown class="drop" @command="handleManageClick" v-if="isLogin===true">
                     <a class="right_item header_login" href="javascript:;" @click="handlerMemberCenter">管理中心<i
                             class="el-icon-arrow-down el-icon--right"></i></a>
@@ -58,6 +59,7 @@
                         <el-dropdown-item command="1">招聘注册</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
+                <span class="im" :class="imUnreaded?'point':''" @click="locationTo" v-if="isLogin===false">职聊</span>
                 <el-popover placement="bottom-end" trigger="hover">
                     <span class="top-qrcode-item">
                         <span class="img"><img :src="mobileQrcode" /></span>
@@ -277,6 +279,21 @@
     </div>
 </div>
 <script>
+
+function isJSON(str) {
+    if (typeof str === "string") {
+        try {
+            var obj = JSON.parse(str);
+            if (typeof obj === "object" && obj) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+}
     $(document).ready(function () {
         // 判断浏览器是否支持placeholder属性
         function isSupportPlaceholder() {
@@ -314,6 +331,8 @@
     var app = new Vue({
         el: '#headerContent',
         data: {
+            imUnreaded:false,
+            imToken:'',
             isLogin: false,
             utype: 0,
             memberUrl: '',
@@ -356,6 +375,76 @@
             this.getConfig()
         },
         methods: {
+            imWindowGlobal:function(){
+                var that = this
+                httpget(qscms.apiList.imGlobal, {})
+                .then(function(res){
+                    if(res.code==200){
+                    //检测通过
+                    if(res.data.next==''){
+                        that.initWebSocket()
+                    }
+                    }else{
+                        console.log(res.message)
+                    }
+                })
+                .catch(() => {});
+            },
+            initWebSocket:function() {
+                var that = this
+                httpget(qscms.apiList.imGetToken, {})
+                    .then(function(res){
+                        qscms.imToken = res.data
+                        window.ws = new WebSocket('wss://imserv.v2.74cms.com');
+                        window.ws.onopen = that.websocketonopen;
+                        window.ws.onmessage = that.websocketonmessage;
+                        window.ws.onerror = that.websocketonerror;
+                        window.ws.onclose = that.websocketclose;
+                    }).catch(()=>{})
+            },
+            websocketonopen:function() {
+                var that = this
+                var msgObj = {
+                    controller: "Connect",
+                    action: "index",
+                    args: {
+                        token:qscms.imToken
+                    }
+                };
+                var msgStr = JSON.stringify(msgObj);
+                window.ws.send(msgStr);
+                that.getImUnreaded()
+            },
+            websocketonerror:function() {
+                console.log('client：连接websocket失败，请刷新页面重试')
+            },
+            websocketonmessage:function(e) {
+                var that = this
+                if (isJSON(e.data)) {
+                var data = JSON.parse(e.data);
+                if(data.error===undefined){
+                    that.imUnreaded = true
+                }
+                }else{
+                    console.log('client：'+e.data);
+                }
+            },
+            websocketclose:function() {
+                console.log("client：关闭连接");
+            },
+            getImUnreaded: function (){
+                var that = this
+                httppost(qscms.apiList.imChatlist,{token:qscms.imToken})
+                    .then(function (res) {
+                        for(var i=0;i<res.data.items.length;i++){
+                            if(res.data.items[i].new>0){
+                                that.imUnreaded = true
+                            }
+                        }
+                        
+                    })
+                    .catch(function () { })
+            },
             setSubsite: function (subsiteid) {
                 Cookies.set('qscms_subsiteid', subsiteid)
                 location.reload();
@@ -404,6 +493,7 @@
                         }
                         that.loginUsername = res.data.show_username
                         that.preview_id = res.data.preview_id
+                        that.imWindowGlobal()
                     }
                 }).catch(function () { })
             },
@@ -550,6 +640,13 @@
                     location.href = qscms.locationList.indexPersonal
                 }
             },
+            locationTo: function(){
+                if(this.utype==1){
+                    location.href = qscms.locationList.companyIm
+                }else{
+                    location.href = qscms.locationList.personalIm
+                }
+            }
         }
     })
 

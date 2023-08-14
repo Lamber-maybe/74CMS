@@ -49,11 +49,11 @@ class Tipoff extends \app\common\controller\Backend
         foreach ($list as $key => $value) {
             if($value['type']==1){
                 $value['target'] = $value['jobname'];
-                $value['link'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['target_id']]);
+                $value['link'] = url('index/job/show',['id'=>$value['target_id']]);
                 $value['reason_cn'] = model('Tipoff')->map_type_job[$value['reason']];
             }else{
                 $value['target'] = $value['fullname'];
-                $value['link'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['target_id']]);
+                $value['link'] = url('index/resume/show',['id'=>$value['target_id']]);
                 $value['reason_cn'] = model('Tipoff')->map_type_resume[$value['reason']];
             }
             $list[$key] = $value;

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Head
+      ref="Head"
       :goback_custom="goback_custom"
       :show_right="'false'"
       @gobackCustomMethod="gobackCustomMethod"
@@ -305,6 +306,7 @@ export default {
                 if (response.data.next_code != 200) {
                   handlerHttpError({ code: response.data.next_code, message: '' })
                 } else {
+                  this.$refs.Head.getImToken()
                   this.$emit('afterLogin', this.after_login_data)
                 }
               } else {

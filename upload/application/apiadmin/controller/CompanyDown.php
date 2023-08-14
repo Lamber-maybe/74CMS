@@ -67,10 +67,10 @@ class CompanyDown extends \app\common\controller\Backend
                 $value['enter_job_time'] == 0
                     ? '无经验'
                     : format_date($value['enter_job_time']);
-            $value['company_link'] = config('global_config.sitedomain').url('index/company/show', [
+            $value['company_link'] = url('index/company/show', [
                 'id' => $value['comid']
             ]);
-            $value['resume_link'] = config('global_config.sitedomain').url('index/resume/show', [
+            $value['resume_link'] = url('index/resume/show', [
                 'id' => $value['resume_id']
             ]);
 

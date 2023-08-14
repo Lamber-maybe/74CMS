@@ -448,8 +448,8 @@ class Job extends \app\v1_0\controller\common\Base
                 }else{
                     $tmp_arr['distance'] = '';
                 }
-                $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$tmp_arr['id']]);
-                $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$tmp_arr['company_id']]);
+                $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$tmp_arr['id']]);
+                $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$tmp_arr['company_id']]);
                 $result_data_list[] = $tmp_arr;
             }
         }
@@ -732,12 +732,7 @@ class Job extends \app\v1_0\controller\common\Base
         } else {
             $return['has_fav'] = 0;
         }
-        $imuser_info = model('ImToken')->where('uid', $return['base_info']['uid'])->find();
-        if ($imuser_info !== null) {
-            $return['base_info']['im_userid'] = $imuser_info['im_userid'];
-        } else {
-            $return['base_info']['im_userid'] = '';
-        }
+        $return['base_info']['im_userid'] = '';
         $return['share_url'] = config('global_config.mobile_domain').'job/'.$return['base_info']['id'];
         model('Job')->addViewLog(
             $return['base_info']['id'],
@@ -1399,12 +1394,7 @@ class Job extends \app\v1_0\controller\common\Base
         //企业风采
         $return['img_list'] = model('CompanyImg')->getList($cominfo['id']);
         //即时通讯用户信息
-        $imuser_info = model('ImToken')->where('uid', $jobinfo['uid'])->find();
-        if ($imuser_info !== null) {
-            $return['im_userid'] = $imuser_info['im_userid'];
-        } else {
-            $return['im_userid'] = '';
-        }
+        $return['im_userid'] = '';
         //实地认证
         $report = model('CompanyReport')
             ->where('company_id', $cominfo['id'])

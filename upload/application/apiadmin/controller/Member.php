@@ -90,7 +90,7 @@ class Member extends \app\common\controller\Backend
                 });
         }
         $total = $total->where($where)->count();
-        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform';
+        $field = 'a.uid,a.utype,a.username,a.mobile,a.email,a.reg_time,a.reg_ip,a.reg_address,a.last_login_time,a.last_login_ip,a.last_login_address,a.status,a.avatar,a.robot,a.platform,a.disable_im';
         $list = model('Member')->alias('a');
         if($list_type=='company'){
             $field .= ',b.companyname';
@@ -317,6 +317,25 @@ class Member extends \app\common\controller\Backend
             $this->admininfo
         );
         $this->ajaxReturn(200, '操作成功');
+    }    
+    public function im()
+    {
+        $uid = input('post.uid/d', 0, 'intval');
+        $disable_im = input('post.disable_im/d', 0, 'intval');
+        $reason = input('post.reason/s', '', 'trim');
+        if (!$uid || !in_array($disable_im, [0, 1])) {
+            $this->ajaxReturn(500, '非法请求');
+        }
+        model('Member')->setIm($uid, $disable_im, $reason);
+        model('AdminLog')->record(
+            '变更会员聊天状态为' .
+            ($disable_im == 1 ? '设置禁聊' : '解除禁聊') .
+            '。会员UID【' .
+            $uid .
+            '】',
+            $this->admininfo
+        );
+        $this->ajaxReturn(200, '操作成功');
     }
     public function detail()
     {
@@ -336,14 +355,14 @@ class Member extends \app\common\controller\Backend
             ->find();
         if($resume!==null){
             $resume->complete_percent = model('Resume')->countCompletePercent(0,$uid);
-            $resume->web_link = config('global_config.sitedomain').url('index/resume/show',['id'=>$resume->id]);
+            $resume->web_link = url('index/resume/show',['id'=>$resume->id]);
             $resume->mobile_link = config('global_config.mobile_domain').'resume/'.$resume->id;
         }
         $company = model('Company')
                 ->where('uid', $uid)
                 ->find();
         if($company!==null){
-            $company->web_link = config('global_config.sitedomain').url('index/company/show',['id'=>$company->id]);
+            $company->web_link = url('index/company/show',['id'=>$company->id]);
             $company->mobile_link = config('global_config.mobile_domain').'company/'.$company->id;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -726,8 +745,7 @@ class Member extends \app\common\controller\Backend
             'token' => $user_token,
             'utype' => $userinfo['utype'],
             'mobile' => $userinfo['mobile'],
-            'next_code' => $next_code,
-            'user_iminfo' => model('ImToken')->getUserImInfo($uid,$userinfo['utype'])
+            'next_code' => $next_code
         ];
     }
 }

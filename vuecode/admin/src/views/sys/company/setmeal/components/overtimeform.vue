@@ -50,6 +50,21 @@
           <i class="el-icon-info" />
         </el-tooltip>
       </el-form-item>
+      <el-form-item label="发起聊天数上限" prop="im_max_perday">
+        <el-input
+          v-model.number="form.im_max_perday"
+          type="number"
+          class="small"
+          min="0"
+          @blur="format_number(0, 'im_max_perday')"
+        >
+          <template slot="append">份 / 天</template>
+        </el-input>
+        <el-tooltip class="item" effect="dark" placement="top-start">
+          <div slot="content">0表示不允许</div>
+          <i class="el-icon-info" />
+        </el-tooltip>
+      </el-form-item>
       <el-form-item label="套餐增值包折扣" prop="service_added_discount">
         <el-input
           v-model.number="form.service_added_discount"
@@ -105,6 +120,7 @@ export default {
         jobs_meanwhile: 0,
         refresh_jobs_free_perday: 0,
         download_resume_max_perday: 0,
+        im_max_perday:0,
         enable_video_interview: 1,
         enable_poster: 1,
         show_apply_contact: 1
@@ -127,6 +143,18 @@ export default {
           {
             type: 'number',
             message: '下载简历数上限只能填写数字',
+            trigger: 'blur'
+          }
+        ],
+        im_max_perday: [
+          {
+            required: true,
+            message: '请填写发起聊天数上限',
+            trigger: 'blur'
+          },
+          {
+            type: 'number',
+            message: '发起聊天数上限只能填写数字',
             trigger: 'blur'
           }
         ],
@@ -169,6 +197,7 @@ export default {
             jobs_meanwhile,
             refresh_jobs_free_perday,
             download_resume_max_perday,
+            im_max_perday,
             enable_video_interview,
             enable_poster,
             show_apply_contact
@@ -178,6 +207,7 @@ export default {
             jobs_meanwhile: parseInt(jobs_meanwhile),
             refresh_jobs_free_perday: parseInt(refresh_jobs_free_perday),
             download_resume_max_perday: parseInt(download_resume_max_perday),
+            im_max_perday: parseInt(im_max_perday),
             enable_video_interview: parseInt(enable_video_interview),
             enable_poster: parseInt(enable_poster),
             show_apply_contact: parseInt(show_apply_contact)

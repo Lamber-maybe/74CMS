@@ -69,7 +69,7 @@ class Article extends \app\v1_0\controller\common\Base
                 ? model('Uploadfile')->getFileUrl($info['thumb'])
                 : default_empty('thumb');
         $info['source_text'] = $info['source'] == 1 ? '转载' : '原创';
-        $info['content'] = htmlspecialchars_decode($info['content']);
+        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $prev = model('Article')
             ->where('id', '>', $info['id'])
             ->order('id asc')

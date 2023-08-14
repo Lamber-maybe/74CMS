@@ -1,47 +1,84 @@
 import request from '@/utils/request'
 import apiArr from '@/api'
 
-export function quickmsgList(data) {
+export function imQuickmsgList(params, method = 'post') {
   return request({
-    url: apiArr.quickmsgList,
+    url: apiArr.imQuickmsgList,
     method: 'post',
-    data
+    params
   })
 }
-export function quickmsgAdd(data) {
+export function imQuickmsgAdd(params, method = 'post') {
   return request({
-    url: apiArr.quickmsgAdd,
+    url: apiArr.imQuickmsgAdd,
     method: 'post',
-    data
+    params
   })
 }
-export function quickmsgEdit(params, method = 'post') {
+export function imQuickmsgEdit(params, method = 'post') {
   if (method == 'post') {
     return request({
-      url: apiArr.quickmsgEdit,
+      url: apiArr.imQuickmsgEdit,
       method,
       data: params
     })
   } else {
     return request({
-      url: apiArr.quickmsgEdit,
+      url: apiArr.imQuickmsgEdit,
       method,
       params
     })
   }
 }
-export function quickmsgDelete(data) {
+export function imQuickmsgSaveAll(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.imQuickmsgSaveAll,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.imQuickmsgSaveAll,
+      method,
+      params
+    })
+  }
+}
+export function imQuickmsgDelete(data) {
   return request({
-    url: apiArr.quickmsgDelete,
+    url: apiArr.imQuickmsgDelete,
     method: 'post',
     data
   })
 }
-export function syncImTokenBatch(params) {
-  return request({
-    url: apiArr.syncImTokenBatch,
-    method: 'get',
-    params
-  })
+export function setImRule(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.setImRule,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.setImRule,
+      method,
+      params
+    })
+  }
 }
-
+export function imForbidList(params, method = 'post') {
+  if (method == 'post') {
+    return request({
+      url: apiArr.imForbidList,
+      method,
+      data: params
+    })
+  } else {
+    return request({
+      url: apiArr.imForbidList,
+      method,
+      params
+    })
+  }
+}

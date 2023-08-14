@@ -115,8 +115,8 @@ class JobApply extends \app\v1_0\controller\common\Base
                 $tmp_arr['status_code'] = 'no_look';
                 $tmp_arr['status_text'] = 'HR未查看';
             }
-            $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['jobid']]);
-            $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['comid']]);
+            $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$value['jobid']]);
+            $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$value['comid']]);
 
             $returnlist[] = $tmp_arr;
         }

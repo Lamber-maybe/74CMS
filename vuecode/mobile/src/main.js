@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import router from './router'
 import store from './store'
+import router from './router'
 import App from './App'
 import 'amfe-flexible'
 import './assets/css/base.css'
@@ -60,9 +60,28 @@ import {
   Step,
   Steps,
   Divider,
-  Circle
+  Circle,
+  Tab,
+  Tabs,
+  Swipe,
+  SwipeItem,
+  Image,
+  SwipeCell
 } from 'vant'
 import MetaInfo from 'vue-meta-info'
+var isConsole = false
+// eslint-disable-next-line no-constant-condition
+if (isConsole) {
+  Promise.all([
+    import('vconsole')
+  ]).then(([
+    Vconsole
+  ]) => {
+    // eslint-disable-next-line no-unused-vars
+    let vConsole = new Vconsole()
+  })
+} else {
+}
 Vue.use(MetaInfo)
 store.state.swiperLoaded = false
 let isSpider = new RegExp('^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)').test(navigator.userAgent)
@@ -123,6 +142,12 @@ Vue.use(Step)
 Vue.use(Steps)
 Vue.use(Divider)
 Vue.use(Circle)
+Vue.use(Tab)
+Vue.use(Tabs)
+Vue.use(Swipe)
+Vue.use(SwipeItem)
+Vue.use(Image)
+Vue.use(SwipeCell)
 
 require('es6-promise').polyfill()
 Es6Promise.polyfill()

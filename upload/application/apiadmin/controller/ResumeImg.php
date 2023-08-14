@@ -39,7 +39,7 @@ class ResumeImg extends \app\common\controller\Backend
             $value['img_src'] = isset($img_src_data[$value['img']])
                 ? $img_src_data[$value['img']]
                 : '';
-            $value['link_url'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['rid']]);
+            $value['link_url'] = url('index/resume/show',['id'=>$value['rid']]);
             $list[$key] = $value;
         }
 

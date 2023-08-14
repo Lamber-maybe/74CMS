@@ -7,7 +7,7 @@ class Article extends BaseValidate
 {
     protected $rule =   [
         'cid'  => 'require|gt:0',
-        'title'   => 'require|max:100',
+        'title'   => 'require|max:60',
         'content' => 'require',    
         'thumb' =>  'number',
         'is_display'=>'require|in:0,1',
@@ -17,5 +17,8 @@ class Article extends BaseValidate
         'addtime'=>'require|number',
         'click'=>'number',
         'sort_id'=>'number',
+    ];
+    protected $message = [
+        'title.max' =>  '标题最多60个字'
     ];
 }

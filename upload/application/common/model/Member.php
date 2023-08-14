@@ -76,6 +76,25 @@ class Member extends \app\common\model\BaseModel
         }
         return;
     }
+    public function setIm($uid, $disable_im, $reason)
+    {
+        $model = self::find($uid);
+        $model->disable_im = $disable_im;
+        if ($model->save()) {
+            if(!intval($disable_im)){
+                model('ImForbid')->where(['uid'=>$uid])->delete(); //解除禁聊即删除禁聊记录,
+            }else{
+                $data['uid']=$uid;
+                $data['addtime']=time();
+                $data['reason']=$reason;
+                model('ImForbid')->insert($data);
+            }
+        } else {
+            $this->error = $model->getError();
+            return false;
+        }
+        return;
+    }
     public function makePassword($password, $randstr)
     {
         $encrypt_method =
@@ -101,6 +120,7 @@ class Member extends \app\common\model\BaseModel
             $setmeal_info['refresh_jobs_free_perday'];
         $data['download_resume_max_perday'] =
             $setmeal_info['download_resume_max_perday'];
+        $data['im_max_perday'] = $setmeal_info['im_max_perday'];
         $data['service_added_discount'] =
             $setmeal_info['service_added_discount'];
         $data['enable_video_interview'] =
@@ -116,8 +136,8 @@ class Member extends \app\common\model\BaseModel
             $setmeal_info['days'] == 0
             ? 0
             : strtotime('+' . $setmeal_info['days'] . ' day');
-            $data['download_resume_point'] =
-                $setmeal_info['download_resume_point'];
+            $data['download_resume_point'] = $setmeal_info['download_resume_point'];
+            $data['im_total'] = $setmeal_info['im_total'];
             model('MemberSetmeal')
                 ->allowField(true)
                 ->save($data);
@@ -145,9 +165,11 @@ class Member extends \app\common\model\BaseModel
             if(config('global_config.reopen_setmeal_resource')==1){
                 //叠加
                 $data['download_resume_point'] = $check_setmeal['download_resume_point'] + $setmeal_info['download_resume_point'];
+                $data['im_total'] = $check_setmeal['im_total'] + $setmeal_info['im_total'];
             }else{
                 //不叠加
                 $data['download_resume_point'] = $setmeal_info['download_resume_point'];
+                $data['im_total'] = $setmeal_info['im_total'];
             }
             
             model('MemberSetmeal')
@@ -282,6 +304,8 @@ class Member extends \app\common\model\BaseModel
                 $overtime_config['refresh_jobs_free_perday'];
             $info['download_resume_max_perday'] =
                 $overtime_config['download_resume_max_perday'];
+            $info['im_max_perday'] =
+                $overtime_config['im_max_perday'];
             $info['service_added_discount'] =
                 $overtime_config['service_added_discount'];
             $info['enable_video_interview'] =
@@ -453,7 +477,6 @@ class Member extends \app\common\model\BaseModel
             return false;
         }
 
-        model('ImToken')->regToken($this->uid,1);
 
         if(isset($insert_data_company['cs_id'])){
             $customer_service = model('CustomerService')
@@ -515,7 +538,6 @@ class Member extends \app\common\model\BaseModel
             return false;
         }
         model('Task')->doTask($this->uid, 2, 'reg');
-        model('ImToken')->regToken($this->uid,2);
         model('NotifyRule')->notify($this->uid, 2, 'reg', [
             'sitename' => config('global_config.sitename'),
             'mobile' => config('global_config.contact_tel'),
@@ -596,9 +618,6 @@ class Member extends \app\common\model\BaseModel
             ->where('personal_uid', 'in', $uid)
             ->delete();
         model('Feedback')
-            ->where('uid', 'in', $uid)
-            ->delete();
-        model('ImToken')
             ->where('uid', 'in', $uid)
             ->delete();
         model('JobApply')

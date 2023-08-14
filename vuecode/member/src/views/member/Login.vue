@@ -10,8 +10,8 @@
         <div v-show="!scan">
           <div class="b_title">{{layout.utype_current_text}}登录</div>
           <div class="b_input" v-if="!loginByCode">
-            <el-input v-model="formPwd.username" placeholder="请输入手机号/用户名/邮箱" clearable></el-input>
-            <el-input placeholder="请输入密码" v-model="formPwd.password" show-password></el-input>
+            <el-input v-model="formPwd.username" placeholder="请输入手机号/用户名/邮箱" clearable @keyup.native.enter="handleSubmit"></el-input>
+            <el-input placeholder="请输入密码" v-model="formPwd.password" show-password @keyup.native.enter="handleSubmit"></el-input>
           </div>
           <div class="b_input" v-else>
             <el-input v-model="formCode.mobile" placeholder="请输入手机号" clearable></el-input>

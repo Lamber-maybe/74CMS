@@ -24,11 +24,18 @@
 						</div>
 					</div>
 
+          <div class="right_item">
+            <p>简历剩余点数</p>
+            <div>
+              <span>{{ mySetmeal.download_resume_point }} </span>
+              点
+            </div>
+          </div>
 					<div class="right_item">
-						<p>简历剩余点数</p>
+						<p>职聊剩余次数</p>
 						<div>
-							<span>{{ mySetmeal.download_resume_point }} </span>
-							点
+							<span>{{ mySetmeal.im_total }} </span>
+							次
 						</div>
 					</div>
 
@@ -98,9 +105,11 @@
                         <ul>
                           <li>职位并发数：<span>{{item.jobs_meanwhile}}</span></li>
                           <li>赠送简历点数：<span>{{item.download_resume_point}}</span></li>
+                          <li>职聊次数：<span>{{item.im_total}}</span></li>
                           <li>赠送会员{{$store.state.config.points_byname}}：<span>{{item.gift_point}}</span></li>
                           <li>免费刷新职位：<span>{{item.refresh_jobs_free_perday}}次/天</span></li>
                           <li>下载简历上限：<span>{{item.download_resume_max_perday}}份/天</span></li>
+                          <li>每日职聊上限：<span>{{item.im_max_perday}}次/天</span></li>
                         </ul>
                       </div>
                       <div v-if="item.service_added_discount>0 || item.enable_poster==1 || item.enable_video_interview==1 || item.show_apply_contact==1 || item.note!=''">

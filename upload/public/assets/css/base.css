@@ -119,3 +119,46 @@ u { text-decoration: none; }
 .right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item .img_name { line-height: 1;font-size: 14px;color: #555555; }
 .right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item:first-child, .right_fixed_float .rff_cell.wx .rff_cell_dia .wx_item:nth-of-type(6) { margin-left: 0; }
 .right_fixed_float .rff_cell:hover .rff_cell_dia { display: block; }
+
+
+.selectjob.maincontent {
+	height: 380px;
+	overflow-y: auto;
+}
+
+.selectjob .li {
+	height: 90px;
+	line-height: 26px;
+	position: relative;
+	border-bottom: 1px solid #ededed;
+	margin-bottom: 14px;
+}
+
+.selectjob .jobname {
+	color: #333333;
+	font-size: 14px;
+}
+
+.selectjob .wage {
+	color: #FF5017;
+	font-size: 14px;
+}
+
+.selectjob .info {
+	color: #999999;
+	font-size: 14px;
+}
+
+.selectjob .btn {
+	width: 70px;
+	height: 30px;
+	line-height: 30px;
+	background: #409EFF;
+	border-radius: 15px;
+	position: absolute;
+	color: #FFFFFF;
+	text-align: center;
+	top: 24px;
+	right: 20px;
+	cursor: pointer;
+}

@@ -159,22 +159,12 @@ class ResumeSearchEngine
     public function run()
     {
         if ($this->against) {
-            if ($this->match_mode == 'default') {
-                $fulltext_str =
-                    " MATCH (`intention_jobs`) AGAINST ('" .
-                    $this->against .
-                    "' IN " .
-                    $this->fulltext_mode .
-                    ' MODE)';
-            } else {
-                $fulltext_str =
-                    " MATCH (`intention_jobs`,`fulltext_key`) AGAINST ('" .
-                    $this->against .
-                    "' IN " .
-                    $this->fulltext_mode .
-                    ' MODE)';
-            }
-
+            $fulltext_str =
+                " MATCH (`intention_jobs`,`fulltext_key`) AGAINST ('" .
+                $this->against .
+                "' IN " .
+                $this->fulltext_mode .
+                ' MODE)';
             $this->where .=
                 $this->where == '' ? $fulltext_str : ' AND ' . $fulltext_str;
         }

@@ -79,13 +79,13 @@ class CompanyInterviewVideo extends \app\common\controller\Backend
                 $value['education_'] = '学历未知';
                 $value['experience_'] = '工作经验未知';
             }
-            $value['job_link'] = config('global_config.sitedomain').url('index/job/show', [
+            $value['job_link'] = url('index/job/show', [
                 'id' => $value['jobid']
             ]);
-            $value['company_link'] = config('global_config.sitedomain').url('index/company/show', [
+            $value['company_link'] = url('index/company/show', [
                 'id' => $value['comid']
             ]);
-            $value['resume_link'] = config('global_config.sitedomain').url('index/resume/show', [
+            $value['resume_link'] = url('index/resume/show', [
                 'id' => $value['resume_id']
             ]);
             if ($value['deadline'] < time()) {

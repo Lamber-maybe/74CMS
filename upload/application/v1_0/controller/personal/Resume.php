@@ -52,6 +52,8 @@ class Resume extends \app\v1_0\controller\common\Base
             return false;
         }
         $basic = $basic->toArray();
+        $basic['fullname'] = htmlspecialchars_decode($basic['fullname'],ENT_QUOTES);
+        $basic['specialty'] = htmlspecialchars_decode($basic['specialty'],ENT_QUOTES);
         $basic['blacklist'] = model('Shield')
             ->where('personal_uid', $uid)
             ->column('company_uid');
@@ -211,6 +213,12 @@ class Resume extends \app\v1_0\controller\common\Base
             ->field('rid,uid', true)
             ->where(['rid' => ['eq', $basic['id']]])
             ->select();
+        foreach ($work_list as $key => $value) {
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
+            $value['duty'] = htmlspecialchars_decode($value['duty'],ENT_QUOTES);
+            $work_list[$key] = $value;
+        }
         //教育经历
         $education_list = model('ResumeEducation')
             ->field('rid,uid', true)
@@ -222,6 +230,8 @@ class Resume extends \app\v1_0\controller\common\Base
             )
                 ? model('BaseModel')->map_education[$value['education']]
                 : '';
+            $value['school'] = htmlspecialchars_decode($value['school'],ENT_QUOTES);
+            $value['major'] = htmlspecialchars_decode($value['major'],ENT_QUOTES);
             $education_list[$key] = $value;
         }
         //项目经历
@@ -230,6 +240,12 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->field('rid,uid', true)
                 ->where(['rid' => ['eq', $basic['id']]])
                 ->select();
+            foreach ($project_list as $key => $value) {
+                $value['projectname'] = htmlspecialchars_decode($value['projectname'],ENT_QUOTES);
+                $value['role'] = htmlspecialchars_decode($value['role'],ENT_QUOTES);
+                $value['description'] = htmlspecialchars_decode($value['description'],ENT_QUOTES);
+                $project_list[$key] = $value;
+            }
         } else {
             $project_list = [];
         }
@@ -239,6 +255,11 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->field('rid,uid', true)
                 ->where(['rid' => ['eq', $basic['id']]])
                 ->select();
+            foreach ($training_list as $key => $value) {
+                $value['agency'] = htmlspecialchars_decode($value['agency'],ENT_QUOTES);
+                $value['course'] = htmlspecialchars_decode($value['course'],ENT_QUOTES);
+                $training_list[$key] = $value;
+            }
         } else {
             $training_list = [];
         }
@@ -271,6 +292,10 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->field('rid,uid', true)
                 ->where(['rid' => ['eq', $basic['id']]])
                 ->select();
+            foreach ($certificate_list as $key => $value) {
+                $value['name'] = htmlspecialchars_decode($value['name'],ENT_QUOTES);
+                $certificate_list[$key] = $value;
+            }
         } else {
             $certificate_list = [];
         }
@@ -307,7 +332,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
         
         $info['share_url'] = config('global_config.mobile_domain').'resume/'.$info['basic']['id'];
-        $info['preview_url'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$info['basic']['id']]);
+        $info['preview_url'] = url('index/resume/show',['id'=>$info['basic']['id']]);
         $this->ajaxReturn(200, '获取数据成功', $info);
     }
     /**
@@ -498,10 +523,6 @@ class Resume extends \app\v1_0\controller\common\Base
             if (false === $result) {
                 throw new \Exception(model('ResumeContact')->getError());
             }
-            model('ImToken')->regToken(
-                $this->userinfo->uid,
-                $this->userinfo->utype
-            );
 
             //提交事务
             \think\Db::commit();

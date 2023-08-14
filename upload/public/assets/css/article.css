@@ -109,6 +109,7 @@ button{
 	font-size: 20px;
 	font-weight: bold;
 	cursor: pointer;
+	display: block;
 }
 
 .information_list_con .information_list_text .list_con {

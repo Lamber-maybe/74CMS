@@ -23,6 +23,7 @@ class StatOrder extends \app\common\controller\Backend
         $return['com_service'] = model('Order')
             ->where('service_type', 'in', [
                 'resume_package',
+                'im',
                 'refresh_job_package',
             ])
             ->where('status', 1)
@@ -187,6 +188,18 @@ class StatOrder extends \app\common\controller\Backend
                 : 0,
                 '已取消' => isset($datalist_close['resume_package'])
                 ? $datalist_close['resume_package']
+                : 0,
+            ],
+            [
+                '订单类型' => '职聊增值包',
+                '已完成' => isset($datalist_finish['im'])
+                ? $datalist_finish['im']
+                : 0,
+                '待支付' => isset($datalist_noyet['im'])
+                ? $datalist_noyet['im']
+                : 0,
+                '已取消' => isset($datalist_close['im'])
+                ? $datalist_close['im']
                 : 0,
             ],
             [

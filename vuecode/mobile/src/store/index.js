@@ -4,6 +4,7 @@ import persistedState from 'vuex-persistedstate'
 import axios from 'axios'
 import api from '@/api'
 import VueCookies from 'vue-cookies'
+import router from '@/router'
 Vue.use(Vuex)
 const service = axios.create({
   baseURL: window.global.RequestBaseUrl,
@@ -12,6 +13,21 @@ const service = axios.create({
 })
 const store = new Vuex.Store({
   state: {
+    imToken: '', // 聊天token
+    ws: '', // websock对象
+    imSelfAvatar: '', // 用户头像信息
+    imTargetUserinfo: {}, // 对方用户信息
+    imChatid: '',
+    messagelist: [], // 消息列表
+    imShowParams: {}, // 会话列表跳转 聊天页面所需参数
+    sendScrollState: false, // 区分上下拉加载还是 发送消息设置 滚动条
+    isInBlackObj: {
+      chatid: '',
+      cancel_enable: '2',
+      message: ''
+    }, // 是否在黑名单中
+    IsUpdataChatList: 0, // 不是同一个人聊天则需要更新会话列表
+    imUnreaded: false, // 未读消息状态
     videoShowPlay: false,
     isHeadShow: true, // 是否显示头部
     LoginOrNot: false, // 用户是否登录
@@ -265,6 +281,153 @@ const store = new Vuex.Store({
     // 设置平台
     setPlatform (state, data) {
       state.platform = data
+    },
+    // 设置聊天Token
+    setImToken (state, data) {
+      state.imToken = data
+    },
+    // 设置会话列表跳转会话页面参数
+    setImShowParams (state, data) {
+      state.imShowParams = data
+    },
+    // 设置聊天id
+    setimChatid (state, data) {
+      state.imChatid = data
+    },
+    // 设置用户聊天信息
+    setImSelfAvatar (state, data) {
+      state.imSelfAvatar = data
+    },
+    // 设置对方聊天用户信息
+    setImTargetUserinfo (state, data) {
+      state.imTargetUserinfo = data
+    },
+    // 连接 websock
+    WebSocket_connect (state) {
+      state.ws = new WebSocket('wss://imserv.v2.74cms.com')
+    },
+    // 更新消息列表
+    setChatList (state, data) {
+      function isJSON (str) {
+        if (typeof str == 'string') {
+          try {
+            var obj = JSON.parse(str)
+            if (typeof obj == 'object' && obj) {
+              return true
+            } else {
+              return false
+            }
+          } catch (e) {
+            return false
+          }
+        }
+      }
+      if (isJSON(data.data)) {
+        state.imUnreaded = true
+        // 当消息返回错误信息时
+        if (data.error !== undefined) {
+          this.$message({
+            message: data.error,
+            type: 'error'
+          })
+          return false
+        }
+        let mesData = JSON.parse(data.data)
+        let message = isJSON(mesData.content) ? JSON.parse(mesData.content) : mesData.content
+        // 屏蔽对方 / 被对方屏蔽
+        if (mesData.type == 'isInBlacklist') {
+          if (mesData.cancel_enable == 1) {
+            state.isInBlackObj = {
+              chatid: mesData.chatid,
+              cancel_enable: mesData.cancel_enable,
+              message: mesData.content
+            }
+          } else if (mesData.cancel_enable == 0) {
+            state.isInBlackObj = {
+              chatid: mesData.chatid,
+              cancel_enable: mesData.cancel_enable,
+              message: mesData.content
+            }
+          } else {
+            state.isInBlackObj = {
+              chatid: '',
+              cancel_enable: '2',
+              message: ''
+            }
+          }
+          return false
+        }
+        // id 相同说明是同一个人 则需要处理数据
+        if (state.imChatid == mesData.chatid) {
+          if (mesData.type == 'return_receipt_one') {
+            state.messagelist.forEach((element, index) => {
+              if (element.messageid == message.messageid) {
+                state.messagelist[index].readed = 1
+              }
+            })
+          } else if (mesData.type == 'return_receipt_all') {
+            state.messagelist.forEach((element, index) => {
+              state.messagelist[index].readed = 1
+            })
+          } else {
+            var addObj = {
+              self_side: mesData.self_side,
+              avatar: mesData.self_side == 1 ? state.imSelfAvatar : state.imTargetUserinfo.avatar,
+              type: mesData.type,
+              message: message,
+              addtime: mesData.addtime,
+              readed: 0,
+              messageid: mesData.messageid
+            }
+            if (mesData.replace == 1) {
+              state.messagelist.forEach((item) => {
+                if (item.messageid == mesData.messageid) {
+                  if (isJSON(mesData.content)) {
+                    item.message = JSON.parse(mesData.content)
+                  } else {
+                    item.message = mesData.content
+                  }
+                }
+              })
+            } else {
+              state.messagelist.push(addObj)
+              if (mesData.self_side == 1) {
+              } else {
+                /**
+                 * 发送回执
+                 */
+                if (router.currentRoute.name == 'ImShow') {
+                  var msgObj = {
+                    controller: 'SendReturnReceipt',
+                    action: 'one',
+                    args: {
+                      token: state.imToken,
+                      messageid: mesData.messageid
+                    }
+                  }
+                  var msgStr = JSON.stringify(msgObj)
+                  state.ws.send(msgStr)
+                }
+              }
+            }
+          }
+        } else {
+          // 不是同一个人 添加红点
+          state.IsUpdataChatList += 1
+        }
+      }
+    },
+    // 设置消息列表
+    setMessagelist (state, data) {
+      state.messagelist = data
+    },
+    // 设置滚动的调状态
+    setScrollState (state, data) {
+      state.sendScrollState = data
+    },
+    // 设置聊天过程中被拉入黑名单参数
+    setBlackObj (state, data) {
+      state.isInBlackObj = data
     }
   },
   actions: {
@@ -557,6 +720,51 @@ const store = new Vuex.Store({
     // 更新简历作品
     setResumeImgList (context, value) {
       context.commit('setResumeImgList', value)
+    },
+    initWebSocket ({commit, state}, value) {
+      commit('WebSocket_connect')
+      state.ws.onopen = function () {
+        var msgObj = {
+          controller: 'Connect',
+          action: 'index',
+          args: {
+            token: value
+          }
+        }
+        var msgStr = JSON.stringify(msgObj)
+        state.ws.send(msgStr)
+        console.log('连接成功')
+      }
+      state.ws.onmessage = function (e) {
+        // commit('WEBSOCKET_REIVE', e)
+        console.log(e.data)
+        commit('setChatList', e)
+      }
+      state.ws.onerror = function (error) {
+        console.log('连接失败：', error)
+        store.commit('initWebSocket', state.imToken)
+      }
+      state.ws.onclose = function (e) {
+        console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
+        store.commit('initWebSocket', state.imToken)
+        console.log('连接关闭', e)
+      }
+    },
+    // WebSocket 发送消息
+    webSocket_send ({state}, value) {
+      var msgObj = JSON.stringify(value)
+      if (
+        value.controller == 'SendInvite' ||
+        value.controller == 'SendWechat' ||
+        value.controller == 'SendMobile' ||
+        value.controller == 'SendMap' ||
+        value.controller == 'SendResume' ||
+        value.controller == 'SendJob' ||
+        value.controller == 'SendText' ||
+        value.controller == 'SendImage') {
+        state.sendScrollState = true
+      }
+      state.ws.send(msgObj)
     }
   },
   modules: {},

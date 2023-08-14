@@ -175,6 +175,11 @@
                 >
                   {{ scope.row.status == 1 ? "锁定" : "解锁" }}
                 </el-dropdown-item>
+                <el-dropdown-item
+                  @click.native="funIm(scope.row)"
+                >
+                  {{ scope.row.disable_im == 1 ? "解除禁聊" : "禁聊" }}
+                </el-dropdown-item>
                 <el-dropdown-item @click.native="funDelete(scope.row)">
                   删除
                 </el-dropdown-item>
@@ -241,15 +246,29 @@
     >
       <MemberLog :uid="listUid" @setDialogFormVisible="closeListDialog" />
     </el-dialog>
+    <el-dialog
+      title="将所选用户设置为禁聊"
+      :visible.sync="dialogImFormVisible"
+      width="25%"
+    >
+      <el-form class="common-form" label-width="80px">
+        <el-form-item label="原因">
+          <el-input v-model="setImReason" type="textarea" rows="3" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogImFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="funSetIm"> 确 定 </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
-
 <script>
 import MemberLog from '@/components/MemberLog/Index'
 import { getClassify } from '@/api/classify'
 import diaform from './form.vue'
 import detail from './detail.vue'
-import { memberList, memberLock, memberDelete, management } from '@/api/member'
+import { memberList, memberLock, memberDelete, management, memberIm } from '@/api/member'
 import { parseTime, setMemberLogin } from '@/utils/index'
 
 export default {
@@ -266,15 +285,19 @@ export default {
   props: ['listtype', 'showOptionsUtype'],
   data() {
     return {
+      setImVal: 0,
       platformOptions: [],
       detailInfo: null,
       detailUid: 0,
       dialogWidth: '35%',
       dialogContent: 'form',
       tableIdarr: [],
+      ImUid: '',
       childId: 0,
       dialogTitle: '',
       dialogFormVisible: false,
+      dialogImFormVisible: false,
+      setImReason: '',
       status: '',
       regtime: '',
       sort: '',
@@ -445,6 +468,48 @@ export default {
           })
         })
         .catch(() => { })
+    },
+    funIm(row) {
+      if (row.disable_im == 1){
+        const tips = '确定将该会员解除禁聊吗？'
+        const disable_im = 0
+        this
+          .$confirm(tips, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+          .then(() => {
+            const param = {
+              uid: row.uid,
+              disable_im
+            }
+            memberIm(param).then(response => {
+              this.$message.success(response.message)
+              this.fetchData()
+              return true
+            })
+          })
+          .catch(() => { })
+      } else {
+        this.setImReason = ''
+        this.setImVal = row.audit
+        this.ImUid = row.uid
+        this.dialogImFormVisible = true
+      }
+    },
+    funSetIm() {
+      const param = {
+        uid: this.ImUid,
+        disable_im: 1,
+        reason: this.setImReason
+      }
+      memberIm(param).then(response => {
+        this.$message.success(response.message)
+        this.fetchData()
+        this.dialogImFormVisible = false
+        return true
+      })
     },
     funDelete(row) {
       var that = this

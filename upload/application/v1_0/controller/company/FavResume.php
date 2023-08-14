@@ -162,7 +162,7 @@ class FavResume extends \app\v1_0\controller\common\Base
                 ? $photo_data[$value['photo_img']]
                 : default_empty('photo');
             
-            $value['resume_link_url_web'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['resume_id']]);
+            $value['resume_link_url_web'] = url('index/resume/show',['id'=>$value['resume_id']]);
             $list[$key] = $value;
         }
 

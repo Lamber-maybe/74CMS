@@ -54,7 +54,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['score'] = intval($value['score']);
             $tmp_arr['total_company'] = isset($participate_company[$value['id']])?$participate_company[$value['id']]:0;
             $tmp_arr['total_personal'] = isset($participate_personal[$value['id']])?$participate_personal[$value['id']]:0;
-            $tmp_arr['jobfair_url'] = config('global_config.sitedomain').url('index/jobfairol/show',['id'=>$value['id']]);
+            $tmp_arr['jobfair_url'] = url('index/jobfairol/show',['id'=>$value['id']]);
             $returnlist[] = $tmp_arr;
         }
         $return['items'] = $returnlist;
@@ -90,6 +90,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
                             ->where('a.audit',1)
                             ->count();
         model('JobfairOnline')->where('id',$id)->setInc('click',1);
+        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $return['info'] = $info;
         $this->ajaxReturn(200,'获取数据成功',$return);
     }
@@ -106,9 +107,8 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
         }
         $list = model('JobfairOnlineParticipate')
                 ->alias('a')
-                ->field('a.qrcode,a.stick,b.*,d.qrcode,c.wx_qrcode')
+                ->field('a.qrcode,a.stick,b.*,d.qrcode as wx_qrcode')
                 ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
-                ->join(config('database.prefix') . 'customer_service c', 'b.cs_id=c.id', 'left')
                 ->join(config('database.prefix') . 'jobfair_online d', 'd.id=a.jobfair_id', 'left')
                 ->where('a.jobfair_id',$jobfair_id)
                 ->where('a.utype',1)
@@ -180,7 +180,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['joblist'] = isset($job_list[$value['id']])
                 ? $job_list[$value['id']]
                 : [];
-            $tmp_arr['company_url'] = config('global_config.sitedomain').url('index/company/show',['id'=>$value['id']]);
+            $tmp_arr['company_url'] = url('index/company/show',['id'=>$value['id']]);
 
             $returnlist[] = $tmp_arr;
         }
@@ -278,7 +278,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr = [];
             $tmp_arr['id'] = $value['id'];
             $tmp_arr['jobname'] = $value['jobname'];
-            $tmp_arr['job_url'] = config('global_config.sitedomain').url('index/job/show',['id'=>$value['id']]);
+            $tmp_arr['job_url'] = url('index/job/show',['id'=>$value['id']]);
             if (isset($cominfo_arr[$value['company_id']])) {
                 $tmp_arr['company_id'] = $value['company_id'];
                 $tmp_arr['companyname'] =
@@ -438,7 +438,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             $tmp_arr['stick'] = $val['stick'];
             $tmp_arr['high_quality'] = $val['high_quality'];
             $tmp_arr['fullname'] = $val['fullname'];
-            $tmp_arr['resume_url'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$value['id']]);
+            $tmp_arr['resume_url'] = url('index/resume/show',['id'=>$value['id']]);
             if ($val['display_name'] == 0) {
                 if ($val['sex'] == 1) {
                     $tmp_arr['fullname'] = cut_str(

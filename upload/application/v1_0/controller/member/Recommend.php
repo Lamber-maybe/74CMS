@@ -110,7 +110,7 @@ class Recommend extends \app\v1_0\controller\common\Base
             'refreshtime>' . (time() - 3600 * 24 * 360)
         );
         $return['items'] = $this->get_job_datalist($searchResult['items']);
-        $return['joblist_link_url_web'] = config('global_config.sitedomain').url('index/job/index');
+        $return['joblist_link_url_web'] = url('index/job/index');
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     public function jobTotal()
@@ -355,7 +355,7 @@ class Recommend extends \app\v1_0\controller\common\Base
                     $val['icon'] > 0
                         ? model('Uploadfile')->getFileUrl($val['icon'])
                         : model('Setmeal')->getSysIcon($val['setmeal_id']);
-                $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$tmp_arr['id']]);
+                $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$tmp_arr['id']]);
 
                 $result_data_list[] = $tmp_arr;
             }
@@ -531,7 +531,7 @@ class Recommend extends \app\v1_0\controller\common\Base
                 } else {
                     $tmp_arr['intention_nature'] = '';
                 }
-                $tmp_arr['resume_link_url_web'] = config('global_config.sitedomain').url('index/resume/show',['id'=>$tmp_arr['id']]);
+                $tmp_arr['resume_link_url_web'] = url('index/resume/show',['id'=>$tmp_arr['id']]);
 
                 $result_data_list[] = $tmp_arr;
             }

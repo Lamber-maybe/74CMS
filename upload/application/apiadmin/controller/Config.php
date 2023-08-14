@@ -26,7 +26,7 @@ class Config extends \app\common\controller\Backend
                 if (
                     in_array($key, ['agreement', 'privacy', 'remittance_desc','wechat_welcome_text','statistics'])
                 ) {
-                    $info[$key] = htmlspecialchars_decode($value);
+                    $info[$key] = htmlspecialchars_decode($value,ENT_QUOTES);
                 }
             }
             $this->ajaxReturn(200, '获取数据成功', $info);
@@ -355,23 +355,5 @@ class Config extends \app\common\controller\Backend
             $return[] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', $return);
-    }
-    public function syncImTokenBatch(){
-        $page = input('get.page/d',1,'intval');
-        if($page===1){
-            model('ImToken')->where('id>0')->delete();
-        }
-        $pagesize = input('get.pagesize/d',10,'intval');
-        $list = model('Member')->field('uid,utype')->order('uid asc')->page($page . ',' . $pagesize)->select();
-        if(!$list){
-            $this->ajaxReturn(200,'已完成',['finish'=>1]);
-        }
-        $model = model('ImToken');
-        foreach ($list as $key => $value) {
-            $_model = clone $model;
-            $_model->regToken($value->uid,$value->utype);
-            unset($_model);
-        }
-        $this->ajaxReturn(200,'未完成',['finish'=>0]);
     }
 }

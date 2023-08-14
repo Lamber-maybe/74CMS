@@ -268,7 +268,6 @@ export default {
   },
   created () {
     this.initInfo()
-    console.log(this.fieldStore)
   },
   computed: {
     basic () {

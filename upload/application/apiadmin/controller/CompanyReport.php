@@ -54,7 +54,7 @@ class CompanyReport extends \app\common\controller\Backend
             ->select();
 
         foreach ($list as $key => $value) {
-            $list[$key]['preview_link'] = config('global_config.sitedomain').url('index/company/report',['id'=>$value['company_id']]);
+            $list[$key]['preview_link'] = url('index/company/report',['id'=>$value['company_id']]);
         }
 
         $return['items'] = $list;

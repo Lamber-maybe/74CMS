@@ -37,7 +37,7 @@ class Notice extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             if ($value['link_url'] == '') {
-                $value['link'] = config('global_config.sitedomain').url('index/notice/show', [
+                $value['link'] = url('index/notice/show', [
                     'id' => $value['id']
                 ]);
             } else {
@@ -100,7 +100,7 @@ class Notice extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['content'] = htmlspecialchars_decode($info['content']);
+            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
             $info['attach'] = json_decode($info['attach'],true);
             // $info = $info->toArray();
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);

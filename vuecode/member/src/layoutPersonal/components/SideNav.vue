@@ -20,6 +20,9 @@
       <el-menu-item class="i2" index="/personal/resume">
         <span slot="title">我的简历</span>
       </el-menu-item>
+      <el-menu-item class="i10" :class="$store.state.imUnreaded?'point':''" index="/personal/im">
+        <span slot="title">我的职聊</span>
+      </el-menu-item>
       <el-submenu class="i3" index="/personal/job">
         <template slot="title">
           <span>求职管理</span>
@@ -342,6 +345,18 @@
         background-size: 18px 19px;
       }
     }
+    .i10 {
+      &::after {
+        content: '';
+        position: absolute;
+        left: 40px;
+        top: 20px;
+        width: 20px;
+        height: 19px;
+        background: url("../../assets/images/menu/personal/10.png") 0 0 no-repeat;
+        background-size: 20px 19px;
+      }
+    }
 
     .qr_box {
       width: 100%;
@@ -367,4 +382,6 @@
       }
     }
   }
+    .i10.point span:after { content: ''; width: 10px; height: 10px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: 56px; top: 12px; z-index: 50 }
+
 </style>

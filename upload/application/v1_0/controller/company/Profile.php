@@ -21,6 +21,9 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
+        $return['contact'] = htmlspecialchars_decode($return['contact'],ENT_QUOTES);
+        $return['weixin'] = htmlspecialchars_decode($return['weixin'],ENT_QUOTES);
+        $return['telephone'] = htmlspecialchars_decode($return['telephone'],ENT_QUOTES);
         return $return === null ? [] : $return;
     }
     /**
@@ -36,6 +39,9 @@ class Profile extends \app\v1_0\controller\common\Base
             ->field('id,comid,uid', true)
             ->where($where)
             ->find();
+        $return['address'] = htmlspecialchars_decode($return['address'],ENT_QUOTES);
+        $return['short_desc'] = htmlspecialchars_decode($return['short_desc'],ENT_QUOTES);
+        $return['content'] = htmlspecialchars_decode($return['content'],ENT_QUOTES);
         return $return === null ? [] : $return;
     }
     /**
@@ -107,6 +113,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 'img_list' => [],
             ];
         }
+        $basic['short_name'] = htmlspecialchars_decode($basic['short_name'],ENT_QUOTES);
 
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
@@ -523,10 +530,6 @@ class Profile extends \app\v1_0\controller\common\Base
                     throw new \Exception(model('CompanyInfo')->getError());
                 }
 
-                model('ImToken')->regToken(
-                    $this->userinfo->uid,
-                    $this->userinfo->utype
-                );
 
                 //提交事务
                 \think\Db::commit();

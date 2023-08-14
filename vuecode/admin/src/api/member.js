@@ -51,6 +51,13 @@ export function memberLock(data) {
     data
   })
 }
+export function memberIm(data) {
+  return request({
+    url: apiArr.memberIm,
+    method: 'post',
+    data
+  })
+}
 export function memberDetail(params) {
   return request({
     url: apiArr.memberDetail,

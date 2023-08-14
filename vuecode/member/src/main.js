@@ -21,31 +21,31 @@ Vue.component('personal-title', PersonalPublicTitle)
 Vue.component('menu-nav', MenuNav)
 Vue.component('pagination', Pagination)
 
-router.beforeEach(async (to, from, next) => {
-  // 根据路由改变个人和企业会员中心背景色
-  if (to.path.includes('/personal') || to.path.includes('/member')) {
-    document.querySelector('body').setAttribute('style', 'background-color:#f3f3f3')
-  } else {
-    document.querySelector('body').setAttribute('style', 'background-color:#ffffff')
-  }
-  const hasGetConfig = store.state.config
-  if (!hasGetConfig) {
-    try {
-      await store.dispatch('getConfig')
-    } catch (error) {
-      console.log(error)
-      message.error(error.message || 'Has Error')
-      next(false)
+router.beforeEach(async(to, from, next) => {
+    // 根据路由改变个人和企业会员中心背景色
+    if (to.path.includes('/personal') || to.path.includes('/member')) {
+        document.querySelector('body').setAttribute('style', 'background-color:#f3f3f3')
+    } else {
+        document.querySelector('body').setAttribute('style', 'background-color:#ffffff')
     }
-  }
-  if (to.meta.title) {
-    document.title =
-      to.meta.title + (store.state.config.sitename !== undefined ? ' - ' + store.state.config.sitename : '')
-  }
-  next()
+    const hasGetConfig = store.state.config
+    if (!hasGetConfig) {
+        try {
+            await store.dispatch('getConfig')
+        } catch (error) {
+            console.log(error)
+            message.error(error.message || 'Has Error')
+            next(false)
+        }
+    }
+    if (to.meta.title) {
+        document.title =
+            to.meta.title + (store.state.config.sitename !== undefined ? ' - ' + store.state.config.sitename : '')
+    }
+    next()
 })
 new Vue({
-  router,
-  store,
-  render: (h) => h(App)
+    router,
+    store,
+    render: (h) => h(App)
 }).$mount('#app')

@@ -178,7 +178,7 @@ const toolRouter = {
         path: '/tool/im/basic',
         name: 'imBasic',
         component: () =>
-          import ('@/views/tool/im/basic'),
+          import ('@/views/tool/im/basic/index'),
         meta: {
           title: '基本配置',
           access: 'imBasic'
@@ -188,10 +188,20 @@ const toolRouter = {
         path: '/tool/im/quickmsg',
         name: 'imQuickmsg',
         component: () =>
-          import ('@/views/tool/im/quickmsg'),
+          import ('@/views/tool/im/quickmsg/index'),
         meta: {
-          title: '快捷语设置',
+          title: '自定义常用语',
           access: 'imQuickmsg'
+        }
+      },
+      {
+        path: '/tool/im/forbid',
+        name: 'imForbid',
+        component: () =>
+          import ('@/views/tool/im/forbid'),
+        meta: {
+          title: '已禁聊用户',
+          access: 'imForbid'
         }
       }
       ]

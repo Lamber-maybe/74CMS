@@ -100,6 +100,7 @@ class Resume extends \app\common\controller\Backend
         }
 
         foreach ($list as $key => $value) {
+            $value['fullname'] = htmlspecialchars_decode($value['fullname'],ENT_QUOTES);
             $value['photo_img_src'] = isset($photo_arr[$value['photo_img']])
                 ? $photo_arr[$value['photo_img']]
                 : default_empty('photo');
@@ -123,7 +124,7 @@ class Resume extends \app\common\controller\Backend
             $value['complete_percent'] = isset($complete_list[$value['id']])
                 ? $complete_list[$value['id']]
                 : 0;
-            $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
+            $value['link'] = url('index/resume/show', ['id' => $value['id']]);
             $value['bind_weixin'] = isset($bindarr[$value['uid']])?1:0;
             $value['platform_cn'] = isset(model('BaseModel')->map_platform[$value['platform']])?model('BaseModel')->map_platform[$value['platform']]:'未知平台';
 
@@ -234,6 +235,7 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['fullname'] = htmlspecialchars_decode($info['fullname'],ENT_QUOTES);
 
                 $value['major_'] = isset($category_major_data[$info['major']])
                     ? $category_major_data[$info['major']]
@@ -549,6 +551,7 @@ class Resume extends \app\common\controller\Backend
                 ->where('id', $id)
                 ->field('id,specialty')
                 ->find();
+            $info['specialty'] = htmlspecialchars_decode($info['specialty'],ENT_QUOTES);
 
             $this->ajaxReturn(200, '获取数据成功', ['info' => $info]);
         } else {
@@ -606,6 +609,8 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
+            $value['school'] = htmlspecialchars_decode($value['school'],ENT_QUOTES);
+            $value['major'] = htmlspecialchars_decode($value['major'],ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -625,6 +630,8 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['school'] = htmlspecialchars_decode($info['school'],ENT_QUOTES);
+                $info['major'] = htmlspecialchars_decode($info['major'],ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -738,6 +745,9 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
+            $value['duty'] = htmlspecialchars_decode($value['duty'],ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -757,6 +767,9 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['companyname'] = htmlspecialchars_decode($info['companyname'],ENT_QUOTES);
+                $info['jobname'] = htmlspecialchars_decode($info['jobname'],ENT_QUOTES);
+                $info['duty'] = htmlspecialchars_decode($info['duty'],ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -872,6 +885,8 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
+            $value['agency'] = htmlspecialchars_decode($value['agency'],ENT_QUOTES);
+            $value['course'] = htmlspecialchars_decode($value['course'],ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -891,6 +906,8 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['agency'] = htmlspecialchars_decode($info['agency'],ENT_QUOTES);
+                $info['course'] = htmlspecialchars_decode($info['course'],ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -1003,6 +1020,9 @@ class Resume extends \app\common\controller\Backend
                 ($value['todate'] == 1
                     ? '至今'
                     : date('Y年m月', $value['endtime']));
+            $value['projectname'] = htmlspecialchars_decode($value['projectname'],ENT_QUOTES);
+            $value['role'] = htmlspecialchars_decode($value['role'],ENT_QUOTES);
+            $value['description'] = htmlspecialchars_decode($value['description'],ENT_QUOTES);
             $list[$key] = $value;
         }
         $this->ajaxReturn(200, '获取数据成功', [
@@ -1022,6 +1042,9 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['projectname'] = htmlspecialchars_decode($info['projectname'],ENT_QUOTES);
+                $info['role'] = htmlspecialchars_decode($info['role'],ENT_QUOTES);
+                $info['description'] = htmlspecialchars_decode($info['description'],ENT_QUOTES);
                 $info['starttime'] = date('Y-m', $info['starttime']);
                 $info['endtime'] =
                     $info['todate'] == 1 ? '' : date('Y-m', $info['endtime']);
@@ -1131,6 +1154,7 @@ class Resume extends \app\common\controller\Backend
             ->select();
         foreach ($list as $key => $value) {
             $value['time'] = date('Y年m月', $value['obtaintime']);
+            $value['name'] = htmlspecialchars_decode($value['name'],ENT_QUOTES);
             $list[$key] = $value;
         }
 
@@ -1151,6 +1175,7 @@ class Resume extends \app\common\controller\Backend
                 ->find();
             if ($info !== null) {
                 $info = $info->toArray();
+                $info['name'] = htmlspecialchars_decode($info['name'],ENT_QUOTES);
                 $info['obtaintime'] = date('Y-m', $info['obtaintime']);
             }
 

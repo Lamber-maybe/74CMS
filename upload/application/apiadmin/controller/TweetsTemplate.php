@@ -188,8 +188,8 @@ class TweetsTemplate extends \app\common\controller\Backend
                             }
                         }
 
-                        $item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-                        $item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
+                        $item['joburl'] = url('index/job/show', ['id' => $value['id']]);
+                        $item['companyurl'] = url('index/company/show', ['id' => $value['company_id']]);
                         $list[$key]['joblist'][]=$item;
                     }
                 }
@@ -290,8 +290,8 @@ class TweetsTemplate extends \app\common\controller\Backend
                         $item['telephone'] = !empty($jobcontactdata[$jid]['telephone'])?$jobcontactdata[$jid]['telephone']:$jobcontactdata[$jid]['mobile'];
                     }
                 }
-				$item['joburl'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-				$item['companyurl'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
+				$item['joburl'] = url('index/job/show', ['id' => $value['id']]);
+				$item['companyurl'] = url('index/company/show', ['id' => $value['company_id']]);
 				$list[] = $item;
             }
         }
@@ -402,8 +402,8 @@ class TweetsTemplate extends \app\common\controller\Backend
                 }
             }
 
-            $item['joburl_o'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-            $item['companyurl_o'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['company_id']]);
+            $item['joburl_o'] = url('index/job/show', ['id' => $value['id']]);
+            $item['companyurl_o'] = url('index/company/show', ['id' => $value['company_id']]);
             $return[] = $item;
         }
 		$shortUrl = new \app\common\model\ShortUrl();
@@ -417,8 +417,8 @@ class TweetsTemplate extends \app\common\controller\Backend
 		$item['nowtime'] = date('Y-m-d',time());
 		$item['sitename'] = config('global_config.sitename');
 		$item['sitedir'] = config('global_config.sitedomain');
-		$item['login'] = config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/login';
-		$item['register'] = config('global_config.sitedomain').config('global_config.sitedir').config('global_config.member_dirname').'/reg/personal';
+		$item['login'] = config('global_config.sitedir').config('global_config.member_dirname').'/login';
+		$item['register'] = config('global_config.sitedir').config('global_config.member_dirname').'/reg/personal';
 		$this->ajaxReturn(200, '获取数据成功', $item);
 	}
     protected function _parseConditionOfJob($condition)

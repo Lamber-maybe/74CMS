@@ -41,7 +41,7 @@ class Help extends \app\common\controller\Backend
         
         $category_arr = model('HelpCategory')->column('id,name');
         foreach ($list as $key => $value) {
-            $value['link'] = config('global_config.sitedomain').url('index/help/show', [
+            $value['link'] = url('index/help/show', [
                 'id' => $value['id']
             ]);
             
@@ -96,7 +96,7 @@ class Help extends \app\common\controller\Backend
             if (!$info) {
                 $this->ajaxReturn(500, '数据获取失败');
             }
-            $info['content'] = htmlspecialchars_decode($info['content']);
+            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info
             ]);

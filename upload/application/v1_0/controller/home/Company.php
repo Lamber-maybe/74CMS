@@ -492,7 +492,7 @@ class Company extends \app\v1_0\controller\common\Base
         foreach ($list as $key => $value) {
             $arr['id'] = $key;
             $arr['companyname'] = $value;
-            $arr['web_link'] = config('global_config.sitedomain').url('index/company/show',['id'=>$key]);
+            $arr['web_link'] = url('index/company/show',['id'=>$key]);
             $arr['mobile_link'] = config('global_config.mobile_domain').'company/'.$key;
             $return[] = $arr;
         }

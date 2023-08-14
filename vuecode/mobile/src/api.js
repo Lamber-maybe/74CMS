@@ -438,5 +438,57 @@ export default {
   // 获取视频详情
   shortvideo_detail: '/home/short_video/detail',
   // 获取企业简历视频数
-  shortvideo_total: '/home/short_video/total'
+  shortvideo_total: '/home/short_video/total',
+
+  // 即时通讯
+  // 获取token
+  imToken: '/member/Im/getToken',
+  // 用户列表
+  chatList: '/member/Im/chatList',
+  // 消息列表
+  messageList: '/member/Im/messageList', // api接口文档没有
+  // 即时通讯进入界面时全局检测
+  im_window_global: '/member/im/imWindowGlobal', // api接口文档没有
+  // 发起聊天检测
+  imStart: '/member/im/startConversation', // api接口文档没有
+  // 获取当前用户信息
+  im_userinfo: '/member/Im/userinfo',
+  // 加入黑名单
+  add_blacklist: '/member/im/blacklistAdd',
+  // 检测是否在黑名单中
+  check_blacklist: '/member/im/blacklistCheck',
+  // 删除黑名单
+  del_blacklist: '/member/im/blacklistDel',
+  // 黑名单列表
+  blacklist: '/member/im/blacklist',
+  // 置顶会话
+  chatStick: '/member/im/chatStick',
+  // 获取简历详情
+  im_resumeInfo: '/member/Im/resumeinfo',
+  // 职位列表
+  job_list: '/member/im/joblist',
+  // 切换职位
+  change_job: '/member/im/changejob',
+  // 快捷语/常用语列表
+  phraseList: '/member/im/phraseList',
+  // 删除常用语列表
+  phraseDel: '/member/im/phraseDel',
+  // 编辑常用语
+  phraseEdit: '/member/im/phraseEdit',
+  // 添加常用语
+  phraseAdd: '/member/im/phraseAdd',
+  // 招呼语列表
+  hellomsgList: '/member/im/hellomsgList',
+  // 选择招呼语
+  hellomsgSelect: '/member/im/hellomsgSelect',
+  // 即时通讯获取面试信息
+  im_interview_info: '/member/im/interviewInfo',
+  // 投递简历
+  jobApplyAdd: '/member/index/jobApplyAdd',
+  // 职位详情
+  im_job_detail: '/member/Im/jobinfo',
+  // 常用语拖拽排序
+  phraseSortAll: '/member/im/phraseSortAll',
+  // 是否绑定微信
+  imCheckBind: '/member/im/imCheckBind'
 }

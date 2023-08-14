@@ -174,7 +174,9 @@ class CompanySetmeal extends \app\common\controller\Backend
                 ),
                 'explain' => input('post.explain/s', 'trim', 'trim'),
                 'is_charge' => input('post.is_charge/d', 0, 'intval'),
-                'charge_val' => input('post.charge_val/d', 0, 'floatval')
+                'charge_val' => input('post.charge_val/d', 0, 'floatval'),
+                'im_total' => input('post.im_total/d', 0, 'intval'),
+                'im_max_perday' => input('post.im_max_perday/d', 0, 'intval'),
             ];
             $info = model('MemberSetmeal')->where('uid',$input_data['uid'])->find();
             

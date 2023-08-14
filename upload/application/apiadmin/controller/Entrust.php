@@ -57,7 +57,7 @@ class Entrust extends \app\common\controller\Backend
                     ? '无经验'
                     : format_date($value['enter_job_time']);
             
-            $value['resume_link'] = config('global_config.sitedomain').url('index/resume/show', [
+            $value['resume_link'] = url('index/resume/show', [
                 'id' => $value['resume_id']
             ]);
 
@@ -191,8 +191,8 @@ class Entrust extends \app\common\controller\Backend
                     $val['addtime'],
                     $val['refreshtime']
                 );
-                $tmp_arr['job_link_url_web'] = config('global_config.sitedomain').url('index/job/show',['id'=>$tmp_arr['id']]);
-                $tmp_arr['company_link_url_web'] = config('global_config.sitedomain').url('index/company/show',['id'=>$tmp_arr['company_id']]);
+                $tmp_arr['job_link_url_web'] = url('index/job/show',['id'=>$tmp_arr['id']]);
+                $tmp_arr['company_link_url_web'] = url('index/company/show',['id'=>$tmp_arr['company_id']]);
                 $apply_data = model('JobApply')->where('jobid',$tmp_arr['id'])->where('resume_id',$resumeid)->order('id desc')->find();
                 if($apply_data===null){
                     $tmp_arr['enable'] = 1;

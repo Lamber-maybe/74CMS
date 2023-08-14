@@ -49,7 +49,7 @@ class Article extends \app\index\controller\Base
             $thumb_arr = model('Uploadfile')->getFileUrlBatch($thumb_id_arr);
         }
         foreach ($list as $key => $value) {
-            $list[$key]['content'] = strip_tags(htmlspecialchars_decode($value['content'],1));
+            $list[$key]['content'] = strip_tags(htmlspecialchars_decode($value['content'],ENT_QUOTES));
             $list[$key]['content'] = cut_str($list[$key]['content'],200,0,'...');
             $list[$key]['thumb_src'] = isset($thumb_arr[$value['thumb']]) ? $thumb_arr[$value['thumb']] : default_empty('thumb');
             $list[$key]['link_url'] = $value['link_url']==''?url('index/article/show',['id'=>$value['id']]):$value['link_url'];
@@ -146,6 +146,7 @@ class Article extends \app\index\controller\Base
             return false;
         }
         $info = $info->toArray();
+        $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
         $info['thumb'] =
             $info['thumb'] > 0
                 ? model('Uploadfile')->getFileUrl($info['thumb'])

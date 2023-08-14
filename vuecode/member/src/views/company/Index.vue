@@ -16,9 +16,9 @@
               </div>
               <div class="text_4"  v-if="isTel">
                 <div class="text_4_box" v-if="serviceInfo.tel">联系电话：<span>{{serviceInfo.tel?serviceInfo.tel:'暂无'}}</span></div>
-              </div>  
+              </div>
             </div>
-            
+
 
             <div class="right_box">
               <a class="QQ_btn" @click="wakeupQq(serviceInfo.qq)">QQ联系</a>
@@ -197,6 +197,7 @@
         <Poster
           v-if="showPoster"
           :poster-id="posterId"
+          type="company"
           @closeDialog="showPoster = false"
         />
     </div>
@@ -286,11 +287,11 @@ export default {
           }, 400)
       }
     })
-    // window.onresize =()=>{   
+    // window.onresize =()=>{
     //   return (()=>{
     //     this.screenWidth = document.body.clientWidth
     //   })()
-    // } 
+    // }
   },
   watch: {
   },

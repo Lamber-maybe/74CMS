@@ -180,6 +180,7 @@ class Company extends \app\common\controller\Backend
         $category_data = model('Category')->getCache();
         $category_district_data = model('CategoryDistrict')->getCache();
         foreach ($list as $key => $value) {
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
             $value['setmeal_name'] = $value['setmeal_name']!='' ? $value['setmeal_name'] : '未开通套餐';
             $value['setmeal_overtime'] = ($value['setmeal_deadline']>time() || $value['setmeal_deadline']==0)?0:1;
             $value['setmeal_deadline_text'] = ($value['setmeal_deadline']==0)?'无限期':(date('Y-m-d',$value['setmeal_deadline']).'到期');
@@ -230,7 +231,7 @@ class Company extends \app\common\controller\Backend
             } else {
                 $value['contact_mobile'] = '';
             }
-            $value['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $value['id']]);
+            $value['link'] = url('index/company/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }
 
@@ -309,6 +310,8 @@ class Company extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info = $info->toArray();
+            $info['companyname'] = htmlspecialchars_decode($info['companyname'],ENT_QUOTES);
+            $info['short_name'] = htmlspecialchars_decode($info['short_name'],ENT_QUOTES);
             $logoUrl = model('Uploadfile')->getFileUrl($info['logo']);
             // $info['tag'] = $info['tag']==''?[]:explode(",",$info['tag']);
             $info_contact = model('CompanyContact')
@@ -318,14 +321,20 @@ class Company extends \app\common\controller\Backend
                 $info['contact'] = [];
             } else {
                 $info['contact'] = $info_contact->toArray();
+                $info['contact']['contact'] = htmlspecialchars_decode($info['contact']['contact'],ENT_QUOTES);
+                $info['contact']['weixin'] = htmlspecialchars_decode($info['contact']['weixin'],ENT_QUOTES);
+                $info['contact']['telephone'] = htmlspecialchars_decode($info['contact']['telephone'],ENT_QUOTES);
             }
             $info_info = model('CompanyInfo')
                 ->where('comid', $id)
                 ->find();
             if (empty($info_info)) {
-                $info['contact'] = [];
+                $info['info'] = [];
             } else {
                 $info['info'] = $info_info->toArray();
+                $info['info']['address'] = htmlspecialchars_decode($info['info']['address'],ENT_QUOTES);
+                $info['info']['short_desc'] = htmlspecialchars_decode($info['info']['short_desc'],ENT_QUOTES);
+                $info['info']['content'] = htmlspecialchars_decode($info['info']['content'],ENT_QUOTES);
             }
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,

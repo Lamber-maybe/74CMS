@@ -6,7 +6,7 @@ use \app\common\validate\BaseValidate;
 class Notice extends BaseValidate
 {
     protected $rule =   [
-        'title'   => 'require|max:100',
+        'title'   => 'require|max:60',
         'content' => 'require',    
         'is_display'=>'require|in:0,1',
         'link_url'=>'max:200',
@@ -15,5 +15,8 @@ class Notice extends BaseValidate
         'addtime'=>'require|number',
         'click'=>'number',
         'sort_id'=>'number'
+    ];
+    protected $message = [
+        'title.max' =>  '标题最多60个字'
     ];
 }

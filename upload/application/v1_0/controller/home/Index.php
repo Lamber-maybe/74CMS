@@ -206,7 +206,7 @@ class Index extends \app\v1_0\controller\common\Base
         }else if($alias=='articlelist'){
             $path = 'index/article/index';
         }
-        $this->ajaxReturn(200,'获取数据成功',config('global_config.sitedomain').url($path,$input));
+        $this->ajaxReturn(200,'获取数据成功',url($path,$input));
     }
     public function downloadproxy(){
         $file = SYS_UPLOAD_PATH.'resource/proxy.docx';

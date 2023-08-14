@@ -833,7 +833,7 @@ INSERT INTO `qs_config` VALUES
 (NULL,'account_alisms',0,'{\"signature\":\"\",\"accesskey_id\":\"\",\"accesskey_secret\":\"\"}','阿里云短信配置',1),
 (NULL,'account_alipay',0,'{\"appid\":\"\",\"privatekey\":\"\",\"publickey\":\"\"}\r\n','支付宝配置',1),
 (NULL,'resume_download_points_talent',0,'30','优质简历下载点数',0),
-(NULL,'setmeal_overtime_conf',0,'{\"service_added_discount\":\"0\",\"jobs_meanwhile\":\"2\",\"refresh_jobs_free_perday\":\"2\",\"download_resume_max_perday\":\"0\",\"enable_video_interview\":\"0\",\"enable_poster\":\"0\",\"show_apply_contact\":\"1\"}','套餐过期权限配置',0),
+(NULL,'setmeal_overtime_conf',0,'{\"service_added_discount\":\"0\",\"jobs_meanwhile\":\"2\",\"refresh_jobs_free_perday\":\"2\",\"download_resume_max_perday\":\"0\",\"enable_video_interview\":\"0\",\"enable_poster\":\"0\",\"show_apply_contact\":\"1\",\"im_max_perday\":\"10\"}','套餐过期权限配置',0),
 (NULL,'audit_new_com',0,'0','新注册企业认证状态',0),
 (NULL,'audit_verifycom_addjob',0,'1','已认证企业新发布职位审核状态',0),
 (NULL,'audit_unverifycom_addjob',0,'0','未认证企业新发布职位审核状态',0),
@@ -846,8 +846,6 @@ INSERT INTO `qs_config` VALUES
 (NULL,'personal_reg_mode',1,'2','触屏注册简历方式，1表单式 2交互式',0),
 (NULL,'linksubmit_token',0,'','百度链接提交准入密钥',1),
 (NULL,'route_rule',0,'def','路由规则',0),
-(NULL,'im_server',1,'https://imserv.74cms.com','即时通讯接口地址',0),
-(NULL,'im_websocket',1,'wss://imserv.74cms.com','即时通讯websocket地址',0),
 (NULL,'single_resume_download_open',0,'1','单份简历下载开关',0),
 (NULL,'single_resume_download_expense_conf',0,'[{\"name\":\"刷新时间一天之内\",\"alias\":\"1\",\"value\":\"2\"},{\"name\":\"刷新时间三天之内\",\"alias\":\"3\",\"value\":\"3\"},{\"name\":\"刷新时间五天之内\",\"alias\":\"5\",\"value\":\"4\"},{\"name\":\"刷新时间五天以上\",\"alias\":\"0\",\"value\":\"5\"}]','单份简历下载价格',0),
 (NULL,'single_resume_download_enable_points_deduct',0,'0','单份简历下载允许积分抵扣开关',0),
@@ -942,7 +940,11 @@ INSERT INTO `qs_config` VALUES
 (NULL,'reopen_setmeal_deadline','1','1','重开套餐时间处理 1叠加 0不叠加','0'),
 (NULL,'reopen_setmeal_resource','1','1','重开套餐资源处理 1叠加 0不叠加','0'),
 (NULL,'overtime_setmeal_resource','0','1','套餐到期资源处理 1保留 2清空','0'),
-(NULL,'overtime_setmeal_jobnum','0','1','套餐到期超出职位处理 1保留全部职位 2关闭超出职位','0');
+(NULL,'overtime_setmeal_jobnum','0','1','套餐到期超出职位处理 1保留全部职位 2关闭超出职位','0'),
+(NULL,'im_open','1','1','聊天功能是否开启','0'),
+(NULL,'im_notice_open','1','0','聊天公告是否开启','0'),
+(NULL,'im_notice','1','','聊天公告','0'),
+(NULL,'im_unread','1','0','聊天未读通知开关','0');
 
 
 INSERT INTO `qs_cron` VALUES
@@ -1209,10 +1211,10 @@ INSERT INTO `qs_resume_module` VALUES
 (NUll,'img','照片作品',10,1,1);
 
 INSERT INTO `qs_setmeal` VALUES 
-(1,'免费会员',261,'0.00',0,0,'0.00',0,0,1,0,1,3,50,0.0,0,0,1,'',0,0,0,0),
-(2,'月度会员',0,'500.00',30,1,'300.00',1606060800,1609344000,1500,10,5,5,30,0.0,0,1,0,'',1,0,1,1),
-(3,'季度会员',0,'1200.00',90,0,'0.00',0,0,4000,0,3,10,50,0.0,0,0,1,'',0,0,1,1),
-(4,'年度会员',0,'2500.00',365,0,'0.00',0,0,10000,0,20,20,100,0.0,1,1,1,'赠送广告位',0,0,1,1);
+(1,'免费会员',261,'0.00',0,0,'0.00',0,0,1,0,1,3,50,0.0,0,0,1,'',0,0,0,0,0,0),
+(2,'月度会员',0,'500.00',30,1,'300.00',1606060800,1609344000,1500,10,5,5,30,0.0,0,1,0,'',1,0,1,1,0,0),
+(3,'季度会员',0,'1200.00',90,0,'0.00',0,0,4000,0,3,10,50,0.0,0,0,1,'',0,0,1,1,0,0),
+(4,'年度会员',0,'2500.00',365,0,'0.00',0,0,10000,0,20,20,100,0.0,1,1,1,'赠送广告位',0,0,1,1,0,0);
 
 
 INSERT INTO `qs_sms_tpl` VALUES 
@@ -1413,3 +1415,17 @@ INSERT INTO `qs_poster` VALUES
 (68,21,3,'元宵节（二）',0,1),
 (69,22,3,'中秋节（一）',0,1),
 (70,23,3,'中秋节（二）',0,1);
+
+INSERT INTO `qs_im_rule` VALUES
+(NULL,'bind_weixin','0',2,'是否必需绑定微信'),
+(NULL,'complete_percent','40',2,'完整度要求'),
+(NULL,'audit_status','3',2,'审核状态要求'),
+(NULL,'max_per_day','50',2,'每天最大聊天数'),
+(NULL,'display_status','1',1,'企业显示要求'),
+(NULL,'bind_weixin','0',1,'是否必需绑定微信');
+
+
+INSERT INTO `qs_company_service_im` VALUES
+(NULL,'职聊10次',0,10,28.00,1,0.00,1,0),
+(NULL,'职聊50次',0,50,128.00,2,5.00,1,0),
+(NULL,'职聊100次',1,100,238.00,2,10.00,1,0);

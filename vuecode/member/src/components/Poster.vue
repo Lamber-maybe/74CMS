@@ -86,7 +86,7 @@ export default {
         .catch(() => { })
     },
     downloadIamge() {
-      const locationUrl = window.global.RequestBaseUrl + api.download_poster + '?type=company&id=' + this.posterId + '&index=' + this.currentTplIndex
+      const locationUrl = window.global.RequestBaseUrl + api.download_poster + '?type='+this.type+'&id=' + this.posterId + '&index=' + this.currentTplIndex
       window.location.href = locationUrl
     }
   }

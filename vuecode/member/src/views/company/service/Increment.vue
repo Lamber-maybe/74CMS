@@ -50,6 +50,18 @@
             </div>
           </div>
         </div>
+        <div class="increment_list">
+          <div class="increment_list_top">
+            <img src="../../../assets/images/personal/increment_icon5.png" />
+            <p>职聊增值包</p>
+          </div>
+          <div class="increment_list_bottom">
+            <p>聊天次数不够用？职聊增值包为您提供充足的聊天次数，打包买更划算，指定套餐会员还可畅享专享折扣！</p>
+            <div class="increment_list_btn">
+              <el-button type="primary" @click="$router.push('/company/service/increment/add/im')">立即购买 </el-button>
+            </div>
+          </div>
+        </div>
     </div>
     <p class="alert_text">* 增值优惠折扣以页面显示为准；购买过程中遇到任何问题请联系您的专享客服。</p>
   </el-card>

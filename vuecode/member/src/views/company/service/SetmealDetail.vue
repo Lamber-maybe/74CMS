@@ -23,11 +23,18 @@
 						</div>
 					</div>
 
+          <div class="right_item">
+            <p>简历剩余点数</p>
+            <div>
+              <span>{{ mySetmeal.download_resume_point }} </span>
+              点
+            </div>
+          </div>
 					<div class="right_item">
-						<p>简历剩余点数</p>
+						<p>剩余职聊次数</p>
 						<div>
-							<span>{{ mySetmeal.download_resume_point }} </span>
-							点
+							<span>{{ mySetmeal.im_total }} </span>
+							次
 						</div>
 					</div>
 
@@ -71,12 +78,21 @@
           </div>
           <div class="privilege_list">
             <div class="list_img">
+              <img src="../../../assets/images/privilege_icon_5.png"/>
+            </div>
+            <p>职聊次数上限</p>
+            <span>{{ mySetmeal.im_max_perday }}次/天</span>
+          </div>
+          <div class="privilege_list">
+            <div class="list_img">
               <img src="../../../assets/images/privilege_icon_3.png"/>
             </div>
             <p>增值服务专享折扣</p>
             <span v-if="mySetmeal.service_added_discount > 0">{{ mySetmeal.service_added_discount }} 折</span>
             <span v-else>无折扣</span>
           </div>
+        </div>
+				<div class="privilege_line">
           <div class="privilege_list">
             <div class="list_img">
               <img src="../../../assets/images/privilege_icon_4.png"/>
@@ -84,11 +100,9 @@
             <p>收到的简历免费查看</p>
             <span>{{ mySetmeal.show_apply_contact == 1 ? "支持" : "暂不支持" }}</span>
           </div>
-        </div>
-				<div class="privilege_line">
           <div class="privilege_list">
             <div class="list_img">
-              <img src="../../../assets/images/privilege_icon_5.png"/>
+              <img src="../../../assets/images/privilege_icon_7.png"/>
             </div>
             <p>微海报</p>
             <span>{{ mySetmeal.enable_poster == 1 ? "支持" : "暂不支持" }}</span>
@@ -99,13 +113,6 @@
             </div>
             <p>视频面试</p>
             <span>{{ mySetmeal.enable_video_interview == 1 ? "支持" : "暂不支持" }}</span>
-          </div>
-          <div class="privilege_list">
-            <div class="list_img">
-              <img src="../../../assets/images/privilege_icon_7.png"/>
-            </div>
-            <p>会员专属标识</p>
-            <span>会员标识</span>
           </div>
           <div class="privilege_list">
             <div class="list_img">

@@ -19,23 +19,24 @@ class Config extends \app\v1_0\controller\common\Base
         $list['square_logo'] = isset($img_arr[$list['square_logo']])?$img_arr[$list['square_logo']]:make_file_url('resource/square_logo.png');
         $list['wechat_qrcode'] = isset($img_arr[$list['wechat_qrcode']])?$img_arr[$list['wechat_qrcode']]:make_file_url('resource/weixin_img.jpg');
         $list['link_url_web'] = [
-            'index'=>config('global_config.sitedomain').url('index/index/index'),
-            'joblist'=>config('global_config.sitedomain').url('index/job/index'),
-            'famous_joblist'=>config('global_config.sitedomain').url('index/job/index',['famous'=>1]),
-            'emergency_joblist'=>config('global_config.sitedomain').url('index/job/index',['listtype'=>'emergency']),
-            'companylist'=>config('global_config.sitedomain').url('index/company/index'),
-            'resumelist'=>config('global_config.sitedomain').url('index/resume/index'),
-            'map'=>config('global_config.sitedomain').url('index/map/index'),
-            'articlelist'=>config('global_config.sitedomain').url('index/article/index'),
-            'noticelist'=>config('global_config.sitedomain').url('index/notice/index'),
-            'hrtoollist'=>config('global_config.sitedomain').url('index/hrtool/index'),
-            'helplist'=>config('global_config.sitedomain').url('index/help/show'),
-            'resumelist_search_key'=>config('global_config.sitedomain').url('index/resume/index',['keyword'=>'_key_']),
-            'joblist_search_key'=>config('global_config.sitedomain').url('index/job/index',['keyword'=>'_key_']),
-            'companylist_search_key'=>config('global_config.sitedomain').url('index/company/index',['keyword'=>'_key_']),
-            'resumeshow'=>config('global_config.sitedomain').url('index/resume/show',['id'=>'_id_']),
-            'companyshow'=>config('global_config.sitedomain').url('index/company/show',['id'=>'_id_']),
-            'jobfairollist'=>config('global_config.sitedomain').url('index/jobfairol/index')
+            'index'=>url('index/index/index'),
+            'joblist'=>url('index/job/index'),
+            'famous_joblist'=>url('index/job/index',['famous'=>1]),
+            'emergency_joblist'=>url('index/job/index',['listtype'=>'emergency']),
+            'companylist'=>url('index/company/index'),
+            'resumelist'=>url('index/resume/index'),
+            'map'=>url('index/map/index'),
+            'articlelist'=>url('index/article/index'),
+            'noticelist'=>url('index/notice/index'),
+            'hrtoollist'=>url('index/hrtool/index'),
+            'helplist'=>url('index/help/show'),
+            'resumelist_search_key'=>url('index/resume/index',['keyword'=>'_key_']),
+            'joblist_search_key'=>url('index/job/index',['keyword'=>'_key_']),
+            'companylist_search_key'=>url('index/company/index',['keyword'=>'_key_']),
+            'resumeshow'=>url('index/resume/show',['id'=>'_id_']),
+            'companyshow'=>url('index/company/show',['id'=>'_id_']),
+            'jobshow'=>url('index/job/show',['id'=>'_id_']),
+            'jobfairollist'=>url('index/jobfairol/index')
         ];
         $list['subsite_list'] = [];
         if(config('global_config.subsite_open')==1){
@@ -106,7 +107,7 @@ class Config extends \app\v1_0\controller\common\Base
         $list = model('Config')->getCache();
         foreach ($list as $key => $value) {
             if (in_array($key, ['agreement', 'privacy'])) {
-                $list[$key] = htmlspecialchars_decode($value);
+                $list[$key] = htmlspecialchars_decode($value,ENT_QUOTES);
                 continue;
             }
             unset($list[$key]);
@@ -155,12 +156,12 @@ class Config extends \app\v1_0\controller\common\Base
                     'roomid' => $interview_id,
                     'sig' => $sig,
                     'jobname'=>$interview_info['jobname'],
-                    'joburl'=>config('global_config.sitedomain').url('index/job/show',['id'=>$interview_info['jobid']]),
+                    'joburl'=>url('index/job/show',['id'=>$interview_info['jobid']]),
                     'wage_text'=>$jobinfo===null?'':model('BaseModel')->handle_wage($jobinfo['minwage'],$jobinfo['maxwage'],$jobinfo['negotiable']),
                     'companyname'=>$interview_info['companyname'],
                     'interview_time'=>date('Y-m-d H:i',$interview_info['interview_time']),
                     'fullname'=>$interview_info['fullname'],
-                    'resumeurl'=>config('global_config.sitedomain').url('index/resume/show',['id'=>$interview_info['resume_id']]),
+                    'resumeurl'=>url('index/resume/show',['id'=>$interview_info['resume_id']]),
                     'sex_text'=>$resumeinfo['sex']==1?'男':'女',
                     'age_text'=>date('Y') - intval($resumeinfo['birthday']),
                     'education_text'=>isset(model('BaseModel')->map_education[$resumeinfo['education']]) ? model('BaseModel')->map_education[$resumeinfo['education']] : '',
@@ -221,7 +222,7 @@ class Config extends \app\v1_0\controller\common\Base
 
         //============处理替换自定义标签start=============
         $query = input('get.data/s','','trim');
-        $query = htmlspecialchars_decode($query);
+        $query = htmlspecialchars_decode($query,ENT_QUOTES);
         if($query!="{}"){
             $query = json_decode($query,true);
         }else{
@@ -280,7 +281,7 @@ class Config extends \app\v1_0\controller\common\Base
 
         
         $custom_data = input('get.custom_data/s','','trim');
-        $custom_data = htmlspecialchars_decode($custom_data);
+        $custom_data = htmlspecialchars_decode($custom_data,ENT_QUOTES);
         if($custom_data!="{}"){
             $custom_data = json_decode($custom_data,true);
         }else{

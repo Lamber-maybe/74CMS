@@ -192,12 +192,13 @@
   background: #1787fb;
   font-size: 16px;
   color: #ffffff;
-  padding: 10px 52px;
+  padding: 10px 0;
   border-radius: 5px;
   margin-left: 33px;
   cursor: pointer;
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
+  text-align: center;
 }
 
 .handle_box .btn:hover {
@@ -301,6 +302,7 @@
 
 .contact_btn_box {
   float: left;
+  clear:both;
 }
 
 .contact_btn_box .contact_btn {
@@ -805,3 +807,29 @@
 .code_pro .scan_code .scan_code_show .code .qrcode{width:100%;height:100%;margin:0;background:#FFF;}
 .common_arrow_gray_up{width: 13px;height: 9px;background: url(../images/arrow_ico.png) no-repeat;display: inline-block;transform:rotate(180deg);position:relative;left:34px;}
 .common_arrow_gray_down{background: url(../images/arrow_ico.png) no-repeat;width:13px;height:9px;position:relative;left:46px;display:inline-block;}
+
+.im-select-joblist-empty{
+  height: 380px;
+  width: 528px;
+  float: left;
+  position: relative;
+}
+.im-select-joblist-empty .emp_text {
+  color: #666;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  line-height: 22px;
+  left: 0;
+  top: 80px;
+  font-size: 16px;
+}
+.im-select-joblist-empty .emp_btn{
+  color: #666;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  line-height: 22px;
+  left: 0;
+  top: 140px;
+}

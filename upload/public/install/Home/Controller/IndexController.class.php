@@ -62,8 +62,9 @@ class IndexController extends Controller {
 			'/public/upload/',
 			'/public/baiduxml/',
 			'/public/admin/static/config.js',
-			'/public/member/static/config.js',
-			'/public/m/static/config.js',
+            '/public/adminm/static/config.js',
+			'/public/tpl/member/static/config.js',
+			'/public/tpl/mobile/static/config.js',
     		'/application/database.php',
     		'/application/extra/sys.php',
         ];
@@ -79,13 +80,13 @@ class IndexController extends Controller {
             [
                 'name'=>'操作系统',
                 'current'=>PHP_OS,
-                'require'=>'Windows/Unix',
+                'require'=>'LINUX',
                 'check_pass'=>1
             ],
             [
                 'name'=>'WEB环境',
                 'current'=>$_SERVER['SERVER_SOFTWARE'],
-                'require'=>'nginx/apache/iis',
+                'require'=>'nginx',
                 'check_pass'=>1
             ],
             [
@@ -288,12 +289,12 @@ class IndexController extends Controller {
 			@fclose($fp);
 			
 
-			$mobile_config_js = file_get_contents(MAIN_PROJECT_PATH . 'public/m/static/config.js');
+			$mobile_config_js = file_get_contents(MAIN_PROJECT_PATH . 'public/tpl/mobile/static/config.js');
 			if(!$mobile_config_js){
                 throw new \Exception('打开配置文件失败');
 			}
 			$mobile_config_js = str_replace("{RequestBaseUrl}",$site_domain.$site_dir,$mobile_config_js);
-            $fp = @fopen(MAIN_PROJECT_PATH . 'public/m/static/config.js', 'wb+');
+            $fp = @fopen(MAIN_PROJECT_PATH . 'public/tpl/mobile/static/config.js', 'wb+');
             if (!$fp)
             {
                 throw new \Exception('打开配置文件失败');
@@ -306,12 +307,12 @@ class IndexController extends Controller {
 			
 
 			
-			$member_config_js = file_get_contents(MAIN_PROJECT_PATH . 'public/member/static/config.js');
+			$member_config_js = file_get_contents(MAIN_PROJECT_PATH . 'public/tpl/member/static/config.js');
 			if(!$member_config_js){
                 throw new \Exception('打开配置文件失败');
 			}
 			$member_config_js = str_replace("{RequestBaseUrl}",$site_domain.$site_dir,$member_config_js);
-            $fp = @fopen(MAIN_PROJECT_PATH . 'public/member/static/config.js', 'wb+');
+            $fp = @fopen(MAIN_PROJECT_PATH . 'public/tpl/member/static/config.js', 'wb+');
             if (!$fp)
             {
                 throw new \Exception('打开配置文件失败');

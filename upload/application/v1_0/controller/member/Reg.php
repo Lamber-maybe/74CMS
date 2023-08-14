@@ -349,10 +349,6 @@ class Reg extends \app\v1_0\controller\common\Base
                 $resume_id,
                 $reg_userinfo['uid']
             );
-            model('ImToken')->regToken(
-                $reg_userinfo['uid'],
-                2
-            );
             \think\Db::commit();
         } catch (\Exception $e) {
             \think\Db::rollBack();

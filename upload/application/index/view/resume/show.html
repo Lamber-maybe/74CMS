@@ -102,6 +102,7 @@
                                     <img v-else src="__ROOT__/assets/images/collect_icon_has.png" />
                                     {{hasFav===true?'已收藏':'收藏'}}
                                 </div>
+                                <div class="btn" @click="startIm">聊一聊</div>
                                 <div class="btn" v-if="contactData.show_contact===0" @click="doDownload">下载简历</div>
                                 <div class="btn" v-else @click="doInterview">面试邀请</div>
                             </div>
@@ -473,6 +474,12 @@
             <el-button @click="handlerInviteClose">取 消</el-button>
         </span>
     </el-dialog>
+    <el-dialog title="系统提示" :visible.sync="showBindWeixin" @opened="bindWeixinOpened" width="450px" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
+       {#include file="public/bindWeixin" /#}
+    </el-dialog>
+    <el-dialog title="选择职位" width="576px" :visible.sync="showSelectJob" @opened="joblistOpened" :close-on-click-modal="false">
+      {#include file="public/selectJob" /#}
+    </el-dialog>
 </div>
 <script>
     var id = parseInt("{#$return.base_info.id#}")
@@ -481,6 +488,14 @@
     var app = new Vue({
         el: '#app',
         data: {
+            bind_timer:'',
+            joblist_loading:false,
+            joblist_ready:false,
+            jobid:0,
+            showSelectJob:false,
+            dataset_joblist:[],
+            scanQrcodeImg:'',
+            showBindWeixin:false,
             wx_code_url: '/assets/images/loading.gif',
             codeShow: false,
             hasGetCode: false,
@@ -598,6 +613,113 @@
             }
         },
         methods: {
+            loopCheckBind:function(){
+                var that = this
+                httpget(qscms.apiList.imCheckBind, {})
+                    .then(function(res){
+                        if(res.code==200){
+                            if(res.data==1){
+                                that.showBindWeixin = false
+                                clearInterval(that.bind_timer);
+                                that.$message({ type: 'success', message: '绑定成功' })
+                                setTimeout(function(){
+                                    httpget(qscms.apiList.imGetToken, {})
+                                        .then(function(res){
+                                            qscms.imToken = res.data
+                                            that.startIm()
+                                        }).catch(()=>{})
+                                },2000)
+                            }
+                        }
+                    })
+            },
+            manageJob:function(){
+                location.href = qscms.locationList.companyJoblist
+            },
+            selectJob:function(item){
+                this.showSelectJob = false
+                this.jobid = item.id
+                this.startIm()
+            },
+            joblistOpened:function(){
+                var that = this
+                that.joblist_loading = true
+                httpget(qscms.apiList.imJoblist, {})
+                    .then(res => {
+                        that.dataset_joblist = [...res.data.items]
+                        that.joblist_loading = false
+                        that.joblist_ready = true
+                    })
+                    .catch(() => {})
+            },
+            startIm:function(){
+                var that = this
+                if (parseInt(that.utype) === 0) {
+                    // 未登录
+                    that.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    }).then(function () {
+                        location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                    })
+                } else if (parseInt(that.utype) !== 1) {
+                    that.$confirm('当前操作需要登录企业账号', '提示', {
+                        type: 'warning',
+                        confirmButtonText: '去登录'
+                    }).then(function () {
+                        location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
+                    })
+                    .catch(function () { })
+                }else{
+                    httppost(qscms.apiList.imStart, {token:qscms.imToken,resumeid:id,jobid:that.jobid})
+                        .then(function (res) {
+                            if(res.data.next==''){
+                                location.href = qscms.locationList.companyIm + '?chat=' + res.data.chatid
+                                return false;
+                            }
+                            if(res.data.next=='disabled'){
+                                that.$alert(res.message, '系统提示', {
+                                    showCancelButton:false,
+                                    type: 'warning',
+                                });
+                                return false;
+                            }
+                            if(res.data.next=='bind_weixin'){
+                                that.showBindWeixin = true
+                                that.bind_timer = setInterval(that.loopCheckBind, 3000);
+                                return false;
+                            }
+                            if(res.data.next=='choose_job'){
+                                //选择职位
+                                that.showSelectJob = true
+                                return false;
+                            }
+                            if(res.data.next=='pay'){
+                                that.$confirm(res.message, '系统提示', {
+                                    confirmButtonText:'升级套餐',
+                                    cancelButtonText:'购买增值包',
+                                    type: 'warning'
+                                }).then(() => {
+                                    location.href = qscms.locationList.companyService
+                                }).catch(() => {
+                                    location.href = qscms.locationList.companyServiceIm
+                                });
+                                return false;
+                            }
+                        })
+                        .catch(function (res) {
+                            that.$message.error(res.message)
+                        })
+                }
+            },
+            bindWeixinOpened:function(){
+                var that = this
+                httpget(qscms.apiList.qrcode, {type:'bind_weixin'})
+                    .then(function (res) {
+                        that.scanQrcodeImg = res.data
+                    })
+                    .catch(function () { })
+            },
             onMouseover: function () {
                 this.codeShow = true;
                 if (this.hasGetCode) return;

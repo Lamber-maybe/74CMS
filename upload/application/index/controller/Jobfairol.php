@@ -98,6 +98,7 @@ class Jobfairol extends \app\index\controller\Base{
             $this->ajaxReturn(500,'请选择网络招聘会');
         }
         $info = $info->toArray();
+        $info['content'] = strip_tags(htmlspecialchars_decode($info['content'],ENT_QUOTES));
         $timestamp = time();
         if ($info['starttime'] <= $timestamp && $info['endtime'] > $timestamp) {
             $info['score'] = 2;
@@ -139,9 +140,9 @@ class Jobfairol extends \app\index\controller\Base{
         }
         $list = model('JobfairOnlineParticipate')
             ->alias('a')
-            ->field('a.qrcode,b.*,c.wx_qrcode')
+            ->field('a.qrcode,b.*,d.qrcode as wx_qrcode')
             ->join(config('database.prefix') . 'company b', 'a.uid=b.uid', 'left')
-            ->join(config('database.prefix') . 'customer_service c', 'b.cs_id=c.id', 'left')
+            ->join(config('database.prefix') . 'jobfair_online d', 'd.id=a.jobfair_id', 'left')
             ->where('a.utype',1)
             ->where('a.audit',1)
             ->where('b.district1','gt',0)

@@ -61,7 +61,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $tmp_arr['score'] = $value['score'];
             $tmp_arr['total_company'] = isset($participate_company[$value['id']])?$participate_company[$value['id']]:0;
             $tmp_arr['total_personal'] = isset($participate_personal[$value['id']])?$participate_personal[$value['id']]:0;
-            $tmp_arr['jobfair_link'] = config('global_config.sitedomain').url('index/jobfairol/show', ['id' => $value['id']]);
+            $tmp_arr['jobfair_link'] = url('index/jobfairol/show', ['id' => $value['id']]);
 
             $setmeal_count = model('Setmeal')->count();
             $setmeal_cn = model('Setmeal')->column('id,name');
@@ -144,6 +144,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $info = model('JobfairOnline')->find($id);
             if (!$info) $this->ajaxReturn(500, '数据获取失败');
             $info = $info->toArray();
+            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
             $imgs = $imageUrl = [];
             if($info['thumb']) $imgs[] = $info['thumb'];
             if($info['qrcode']) $imgs[] = $info['qrcode'];
@@ -212,7 +213,7 @@ class Jobfairol extends \app\common\controller\Backend{
                 $val['add_day'] = ceil((time()-$qr['addtime'])/86400);
                 $val['qrcode_url'] = model('Uploadfile')->getFileUrl($qr['id']);
             }
-            $val['link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $val['company_id']]);
+            $val['link'] = url('index/company/show', ['id' => $val['company_id']]);
             $list[$key] = $val;
         }
         $total = model('JobfairOnlineParticipate')->alias('a')
@@ -288,7 +289,7 @@ class Jobfairol extends \app\common\controller\Backend{
             $value['complete'] = isset($complete_list[$value['id']]) ? $complete_list[$value['id']] : 0;
             $value['r_audit'] = $value['audit'];
             $value['photo_url'] = isset($thumb_arr[$value['photo_img']])?$thumb_arr[$value['photo_img']]:default_empty('photo');
-            $value['link'] = config('global_config.sitedomain').url('index/resume/show', ['id' => $value['id']]);
+            $value['link'] = url('index/resume/show', ['id' => $value['id']]);
             $list[$key] = $value;
         }
         $total = model('JobfairOnlineParticipate')->where('jobfair_id',$jobfair_id)->where('utype',2)->count();
@@ -353,7 +354,7 @@ class Jobfairol extends \app\common\controller\Backend{
         }
         $list = model('Company')->field('id,uid,companyname,addtime,refreshtime')->where($where)->limit(30)->select();
         foreach($list as $key=>$val){
-            $list[$key]['company_link'] = config('global_config.sitedomain').url('index/company/show', ['id' => $val['id']]);
+            $list[$key]['company_link'] = url('index/company/show', ['id' => $val['id']]);
         }
         $this->ajaxReturn(200, '获取成功',['items'=>$list]);
     }
@@ -372,7 +373,7 @@ class Jobfairol extends \app\common\controller\Backend{
         }
         $list = model('Resume')->field('id,uid,fullname,addtime,refreshtime')->where($where)->limit(30)->select();
         foreach($list as $key=>$val){
-            $list[$key]['personal_link'] = config('global_config.sitedomain').url('index/personal/show', ['id' => $val['id']]);
+            $list[$key]['personal_link'] = url('index/personal/show', ['id' => $val['id']]);
         }
         $this->ajaxReturn(200, '获取成功',['items'=>$list]);
     }

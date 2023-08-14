@@ -112,8 +112,10 @@ class Job extends \app\common\controller\Backend
                 $value['contact'] = '';
                 $value['mobile'] = '';
             }
-            $value['job_link'] = config('global_config.sitedomain').url('index/job/show', ['id' => $value['id']]);
-            $value['company_link'] = config('global_config.sitedomain').url('index/company/show', [
+            $value['jobname'] = htmlspecialchars_decode($value['jobname'],ENT_QUOTES);
+            $value['companyname'] = htmlspecialchars_decode($value['companyname'],ENT_QUOTES);
+            $value['job_link'] = url('index/job/show', ['id' => $value['id']]);
+            $value['company_link'] = url('index/company/show', [
                 'id' => $value['company_id']
             ]);
             $value['education_text'] = isset(
@@ -152,11 +154,21 @@ class Job extends \app\common\controller\Backend
                 $this->ajaxReturn(500, '数据获取失败');
             }
             $info = $info->toArray();
+            $info['jobname'] = htmlspecialchars_decode($info['jobname'],ENT_QUOTES);
+            $info['address'] = htmlspecialchars_decode($info['address'],ENT_QUOTES);
+            $info['content'] = htmlspecialchars_decode($info['content'],ENT_QUOTES);
+            $info['department'] = htmlspecialchars_decode($info['department'],ENT_QUOTES);
+            $info['custom_field_1'] = htmlspecialchars_decode($info['custom_field_1'],ENT_QUOTES);
+            $info['custom_field_2'] = htmlspecialchars_decode($info['custom_field_2'],ENT_QUOTES);
+            $info['custom_field_3'] = htmlspecialchars_decode($info['custom_field_3'],ENT_QUOTES);
 
             $info_contact = model('JobContact')
                 ->where('jid', $id)
                 ->find();
             $info['contact'] = $info_contact->toArray();
+            $info['contact']['contact'] = htmlspecialchars_decode($info['contact']['contact'],ENT_QUOTES);
+            $info['contact']['weixin'] = htmlspecialchars_decode($info['contact']['weixin'],ENT_QUOTES);
+            $info['contact']['telephone'] = htmlspecialchars_decode($info['contact']['telephone'],ENT_QUOTES);
 
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info

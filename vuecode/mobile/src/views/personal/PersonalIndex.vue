@@ -142,6 +142,7 @@
       </div>
       <div class="handle_line l4" @click="handlerJump('/im/imlist')">
         我的职聊
+        <span v-show="imUnreaded" class="point"></span>
         <div class="right_txt">求职新方式，与企业在线职聊</div>
       </div>
       <router-link class="handle_line l5" to="/member/personal/account">
@@ -201,6 +202,7 @@ import {dateCompare} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Ad from '@/components/Ad'
+import {mapState} from 'vuex'
 export default {
   name: 'PersonalIndex',
   components: {
@@ -217,10 +219,15 @@ export default {
       message_list: [],
       animateUp: false,
       timer: null,
-      ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] }
+      ad_dataset_banner: { alias: 'QS_member_personal_banner', items: [] },
+      chatList: []
     }
   },
   computed: {
+    ...mapState({
+      imUnreaded: state => state.imUnreaded,
+      imToken: state => state.imToken
+    }),
     basic () {
       return this.$store.state.resume.basic
     }
@@ -247,6 +254,22 @@ export default {
           }
         }
       }
+    },
+    imToken (val) {
+      this.getChatList()
+    },
+    chatList: {
+      // 数据变化时执行的逻辑代码
+      handler (val) {
+        this.$store.state.imUnreaded = false
+        val.forEach(item => {
+          if (item.new > 0) {
+            this.$store.state.imUnreaded = true
+          }
+        })
+      },
+      // 开启深度监听
+      deep: true
     }
   },
   mounted () {
@@ -259,12 +282,24 @@ export default {
     this.getMessageList()
     this.initInfo()
     this.fetchAd()
+    if (this.imToken != '') {
+      this.getChatList()
+    }
   },
   methods: {
+    getChatList () {
+      http.post(api.chatList, {token: this.imToken}).then((res) => {
+        this.chatList = res.data.items
+      })
+    },
     handlerJump (path) {
       if (this.empty_resume === true) {
         handlerHttpError({code: 50007, message: '请先添加一份简历'})
       } else {
+        var pathAry = path.split('/')
+        if (pathAry[1] == 'im') {
+          this.$store.state.imUnreaded = false
+        }
         this.$router.push(path)
       }
     },
@@ -515,6 +550,16 @@ export default {
     background: #ffffff url("../../assets/images/personal_index_l6.png") 18px
       center no-repeat;
     background-size: 18.5px 18px;
+  }
+  .point{
+    position: absolute;
+    left: 115px;
+    top: 13px;
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
   }
 }
 .box_7 {

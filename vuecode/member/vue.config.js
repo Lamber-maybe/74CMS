@@ -1,13 +1,14 @@
 'use strict'
 const path = require('path')
-function resolve (dir) {
+
+function resolve(dir) {
     return path.join(__dirname, dir)
 }
 
 const port = process.env.port || process.env.npm_config_port || 8080
 
 module.exports = {
-    publicPath: process.env.BASE_URL,
+    publicPath: process.env.NODE_ENV == 'production' ? '/tpl/member/' : '/',
     outputDir: 'dist',
     assetsDir: 'static',
     lintOnSave: 'default',

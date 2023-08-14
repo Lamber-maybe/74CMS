@@ -358,7 +358,7 @@ class Poster
                 ],
                 'text'=>[
                     [
-                        'text'=>$info['jobname'],
+                        'text'=>cut_str($info['jobname'],10),
                         'fontPath'=>$this->fontPath,
                         'left'=>116,
                         'top'=>1460,
@@ -933,7 +933,12 @@ class Poster
                     $value['negotiable']
                 );
             }
-            $info['jobnum'] = count($job_list);
+            $info['jobnum'] = model('Job')
+                ->field('id,jobname,minwage,maxwage,negotiable')
+                ->where('company_id', 'eq', $info['id'])
+                ->where('is_display', 1)
+                ->where('audit', 1)
+                ->count();
 
             $locationUrl = config('global_config.mobile_domain').'company/'.$info['id'];
             $info['qrcode'] = config('global_config.sitedomain').config('global_config.sitedir').'v1_0/home/qrcode/index?alias=subscribe_company&url='.$locationUrl.'&comid='.$info['id'];

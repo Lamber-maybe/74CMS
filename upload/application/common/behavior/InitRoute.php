@@ -5,12 +5,9 @@ class InitRoute
 {
     public function run(&$params)
     {
-        $instance = new \app\common\lib\Route();
-        $rule = $instance->getRule(config('global_config.route_rule'));
-        if (!empty($rule)) {
-            \think\Route::rule($rule['rule'], '', 'GET', [
-                'ext' => $rule['ext']
-            ]);
-        }
+        $mobile_domain = trim(config('global_config.mobile_domain'),"http://");
+        $mobile_domain = trim($mobile_domain,"https://");
+        $mobile_domain = trim($mobile_domain,"/");
+        \think\Route::domain($mobile_domain,'index/Mobile');
     }
 }

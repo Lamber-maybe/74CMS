@@ -47,6 +47,15 @@
   background-color: #dddddd;
 }
 
+.header_wrapper .im {
+  font-size: 12px;
+  cursor: pointer;
+  margin:0 6px 0 18px;
+  position:relative;
+}
+.header_wrapper .im.point:after { content: ''; width: 6px; height: 6px; border-radius: 50%; background-image: linear-gradient(to bottom, #ff420a, #ff420a); position: absolute; right: -6px; top: -2px; z-index: 50 }
+
+
 .header_wrapper .right_item .member_center {
   cursor: pointer;
 }
