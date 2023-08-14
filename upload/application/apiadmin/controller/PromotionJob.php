@@ -85,11 +85,24 @@ class PromotionJob extends \app\common\controller\Backend
     public function searchCompany()
     {
         $keyword = input('get.keyword/s', '', 'trim');
-        if ($keyword != '') {
-            $list = model('Company')
-                ->where('id', 'eq', $keyword)
-                ->whereOr('companyname', 'like', '%' . $keyword . '%')
-                ->column('id,uid,companyname');
+        if (!empty($keyword)) {
+            // 企业推广时，暂停企业或者职位还在选择列表里 zch 2022.07.06
+            $company_obj = model('Company');
+            $company_obj->where(function ($qr) use($keyword) {
+               $qr->where(['id'=>$keyword,'is_display'=>1]);
+            });
+            $company_obj->whereOr(function ($qr) use($keyword) {
+                $qr->where(['companyname'=>['like', '%' . $keyword . '%'],'is_display'=>1]);
+            });
+            $list = $company_obj->column('id,uid,companyname');
+            foreach($list as $k=>$v)
+            {
+                $job_count = model('jobSearchRtime')->where(['uid'=>$v['uid']])->count();
+                if ($job_count == 0)
+                {
+                    unset($list[$k]);
+                }
+            }
         } else {
             $list = [];
         }

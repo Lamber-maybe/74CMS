@@ -191,7 +191,11 @@ class IndexController extends Controller {
         $cover = I('post.cover/d',1,'intval');
         try{
             //非3306端口安装修改 tapd:197
-            $conn = mysqli_connect($host, $dbuser, $dbpwd, $dbname, $port);
+            /**
+             * [bug]修改不能自动创建数据库的BUG
+             * 旧：$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport);
+             */
+            $conn = mysqli_connect($host, $dbuser, $dbpwd, null, $port);
             if(!$conn){
                 throw new \Exception('连接数据库错误，请核对信息是否正确');
             }
@@ -234,7 +238,11 @@ class IndexController extends Controller {
 			$this->error('您两次输入的密码不一致');
         }
         try{
-            $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport);
+            /**
+             * [bug]修改不能自动创建数据库的BUG
+             * 旧：$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport);
+             */
+            $conn = mysqli_connect($dbhost, $dbuser, $dbpass, null, $dbport);
             if(!$conn){
                 throw new \Exception('连接数据库错误，请核对信息是否正确');
             }

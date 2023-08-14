@@ -1,14 +1,24 @@
 <template>
   <div>
-    <el-dialog title="验证码" :visible.sync="showDialog" :modal="showMadal" width="350px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true">
+    <el-dialog title="输入图中验证码" :visible.sync="showDialog" :modal="showMadal" width="350px" :close-on-press-escape="false" :close-on-click-modal="false" :destroy-on-close="true">
        <el-form  label-width="0px" :inline="true" @submit.native.prevent>
-        <el-form-item label=" ">
-          <el-input ref="ipt" v-model="code" @keydown.native.enter="handlerConfirm"  style="width:120px;"></el-input>
-        </el-form-item>
-        <el-form-item label=" ">
-          <img class="captcha_img" :src="src" @click="changeImg" />
-        </el-form-item>
+
+        <div class="verification_code">
+          <div class="code_text">
+            <p>验证码</p>
+          </div>
+          <div class="code_photo">
+            <el-form-item>
+              <img class="captcha_img" :src="src" @click="changeImg" />
+            </el-form-item>
+          </div>
+        </div>
         <div class="clearfix"></div>
+         <div class="input">
+           <el-form-item label=" ">
+             <el-input ref="ipt" v-model="code" @keydown.native.enter="handlerConfirm" placeholder="请输入图中验证码" class="input_code"></el-input>
+           </el-form-item>
+         </div>
         <el-form-item label=" ">
             <el-button type="primary" @click="handlerConfirm" style="width:280px;">确定</el-button>
         </el-form-item>
@@ -72,10 +82,44 @@ export default {
   }
 }
 </script>
-
+<style lang="scss">
+  .input{
+    display: block;
+    margin-top: -20px;
+    .input_code .el-input__inner{
+      height: 51px;
+      text-align: center;
+      margin-top: -10px;
+    }
+  }
+</style>
 <style lang="scss" scoped>
-.captcha_img{
-  width:130px;
-  height:100%;
+
+.verification_code{
+  width: 281px;
+  border: 1px solid #DCDFE6;
+  height: 51px;
+  margin: 0 11px auto;
+  border-radius: 4px;
+  .code_text{
+    float: left;
+    width: 110px;
+    background: #c7bfbf3d;
+    height: 100%;
+    text-align: center;
+    line-height: 50px;
+  }
+  .code_photo{
+    margin-right: -10px;
+    .captcha_img{
+      width: 168px;
+      height: 49px;
+    }
+    float: right;
+  }
+}
+.input_code{
+  width:281px;
+  height: 51px;
 }
 </style>

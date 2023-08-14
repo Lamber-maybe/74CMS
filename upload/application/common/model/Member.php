@@ -292,11 +292,16 @@ class Member extends \app\common\model\BaseModel
             ->where(['uid' => ['eq', $uid]])
             ->field('id,uid', true)
             ->find();
+
+        //套餐简历包修改 zch
+        $info['setmeal_resume_point'] = $info['download_resume_point'];
         if ($info['deadline'] != 0 && $info['deadline'] < time()) {
             //如果过期，看配置参数中资源是保留还是清空
             if(config('global_config.overtime_setmeal_resource')==0){
                 //清空
-                $info['download_resume_point'] = 0;
+                $info['download_resume_point'] = $info['purchase_resume_point'];//购买套餐赠送简历点
+            }else{
+                $info['download_resume_point'] += $info['purchase_resume_point'];//简历包购买 + 购买套餐赠送简历点
             }
             $overtime_config = config('global_config.setmeal_overtime_conf');
             $info['jobs_meanwhile'] = $overtime_config['jobs_meanwhile'];
@@ -316,6 +321,7 @@ class Member extends \app\common\model\BaseModel
             $info['overtime'] = 1;
         } else {
             $info['overtime'] = 0;
+            $info['download_resume_point'] += $info['purchase_resume_point'];
         }
         $setmeal = model('Setmeal')->where('id',$info['setmeal_id'])->find();
         if($setmeal===null){
@@ -625,6 +631,9 @@ class Member extends \app\common\model\BaseModel
             ->delete();
         model('JobApply')
             ->where('personal_uid', 'in', $uid)
+            ->delete();
+        model('JobfairExhibitors')
+            ->where('uid', 'in', $uid)
             ->delete();
         model('MarketQueue')
             ->where('uid', 'in', $uid)

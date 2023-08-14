@@ -15,7 +15,8 @@
           <el-checkbox class="for_after" v-model="checked"></el-checkbox>
           已阅读并同意 <span @click="showAgreement('agreement')">《用户协议》</span>和 <span @click="showAgreement('privacy')">《隐私政策》</span>
         </div>
-        <el-button class="g_btn" type="primary" @click="handleSubmit">{{`注册${title}会员`}}</el-button>
+<!--        快速多次点击生成多条注册会员信息修改-->
+        <el-button class="g_btn" type="primary" @click="handleSubmit" :disabled="isregister">{{`注册${title}会员`}}</el-button>
         <div class="g_sw_login">已有账号？ <span @click="handlerLogin">立即登录</span></div>
       </div>
       <el-dialog :title="showTextTitle" :visible.sync="showText">
@@ -41,6 +42,7 @@ import Captcha from '@/components/captcha/index'
     },
     data () {
       return {
+        isregister:false,// 快速多次点击生成多条注册会员信息修改
         showTextTitle: '注册协议',
         showTextContent: '',
         showText: false,
@@ -84,40 +86,51 @@ import Captcha from '@/components/captcha/index'
           .catch(() => {})
       },
       handleSubmit () {
+        // 快速多次点击生成多条注册会员信息修改
+        this.isregister = true
         if (!this.checked) {
           this.$message.error('请同意用户协议和隐私政策')
+          this.isregister = false
           return false
         }
         if (this.utype==1 && !this.companyname) {
           this.$message.error('请输入企业名称')
+          this.isregister = false
           return false
         }
         if (this.utype==1 && !this.contact) {
           this.$message.error('请输入联系人')
+          this.isregister = false
           return false
         }
         if (!this.mobile) {
           this.$message.error('请输入手机号')
+          this.isregister = false
           return false
         }
         if (!this.regularMobile.test(this.mobile)) {
           this.$message.error('手机号格式不正确')
+          this.isregister = false
           return false
         }
         if (!this.code) {
           this.$message.error('请输入验证码')
+          this.isregister = false
           return false
         }
         if (!this.password) {
           this.$message.error('请输入密码')
+          this.isregister = false
           return false
         }
         if (!this.repeatPassword) {
           this.$message.error('请再次确认密码')
+          this.isregister = false
           return false
         }
         if (this.password !== this.repeatPassword) {
           this.$message.error('两次输入的密码不一致')
+          this.isregister = false
           return false
         }
         let postData = {
@@ -147,9 +160,11 @@ import Captcha from '@/components/captcha/index'
               })
               if (res.data.next_code != 200) {
                 handlerHttpError({ code: res.data.next_code, message: '' })
+                this.isregister = false
               }
             } else {
               this.$message.error(res.message)
+              this.isregister = false
             }
           })
           .catch(() => {})

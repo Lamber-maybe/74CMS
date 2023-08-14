@@ -70,7 +70,8 @@
         <Payment @choosePayment="choosePayment"></Payment>
       </li>
       <li class="btn">
-        <el-button type="primary" @click="submit">{{ amount == 0 ? "立即兑换" : "立即支付" }}</el-button>
+        <!--同一时间多次点击支付生成多条订单修改 zdq 2022.07.06-->
+        <el-button type="primary" @click="submit" :disabled="ispay">{{ amount == 0 ? "立即兑换" : "立即支付" }}</el-button>
       </li>
     </ul>
   </div>
@@ -108,7 +109,8 @@ import api from '@/api'
           coupon_id: 0
         },
         setmealDetail:{},
-        couponList: [{ id: 0, text: '不使用优惠券', name: '不使用优惠券' }]
+        couponList: [{ id: 0, text: '不使用优惠券', name: '不使用优惠券' }],
+        ispay:false   // 同一时间多次点击支付生成多条订单修改
       }
     },
     watch:{
@@ -190,6 +192,8 @@ import api from '@/api'
         this.submitData.payment = payment
       },
       changeItem(item){
+        // 【bug】后台企业套餐设置显示开关和是否允许申请开关关系
+        this.submitData.is_apply = item.is_apply
         this.submitData.service_id = item.id
         this.old_amount = item.expense
         this.amount = item.expense
@@ -202,12 +206,24 @@ import api from '@/api'
         })
       },
       submit () {
-        this.submitData.return_url =
-          window.location.protocol +
-          '//' +
-          window.location.host +
-          '/'+this.$store.state.config.member_dirname+'/company/service/order'
-        this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData)
+        this.ispay = true   // 同一时间多次点击支付生成多条订单修改
+        // 【bug】后台企业套餐设置显示开关和是否允许申请开关关系
+        if (this.submitData.is_apply === 1){
+          this.submitData.return_url =
+            window.location.protocol +
+            '//' +
+            window.location.host +
+            '/'+this.$store.state.config.member_dirname+'/company/service/order'
+          this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData,()=>{
+            this.ispay = false    // 同一时间多次点击支付生成多条订单修改
+          })
+        }else {
+          this.$message({
+            message: '此套餐暂不允许购买',
+            type: 'error',
+          });
+          this.ispay = false
+        }
       },
     },
   }

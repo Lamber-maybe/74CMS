@@ -25,7 +25,7 @@ class ViewResume extends \app\v1_0\controller\common\Base
             ->field('a.id,a.resume_id,a.addtime,b.fullname,b.display_name,b.high_quality,b.birthday,b.sex,b.education,b.enter_job_time,b.photo_img,b.current')
             ->where($where)
             ->where('b.id','not null')
-            ->order('a.id desc')
+            ->order('a.addtime desc') //【优化】企业会员中心求职管理-浏览记录 排序方式
             ->page($current_page, $pagesize)
             ->select();
         $resumeid_arr = [];

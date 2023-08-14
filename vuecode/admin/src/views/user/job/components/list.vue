@@ -143,6 +143,12 @@
               type="text"
               @click="funCopy(scope.row)"
             >[复制]</el-button>
+
+<!--            新增加职位推广功能，职位推广里面包含海报和复制，职位推广上线时上面的海报和复制按钮需要去掉-->
+<!--            <el-button-->
+<!--              type="text"-->
+<!--              @click="goto('/user/job/list/extension?id=' + scope.row.id)"-->
+<!--            >[职位推广]</el-button>-->
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">

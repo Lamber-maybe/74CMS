@@ -60,9 +60,11 @@
 				</el-table-column>
 				<el-table-column width="248" header-align="center"  label="职位推广">
 					<template slot-scope='scope'>
-						<el-button size="mini" type="danger" :disabled="scope.row.stick==1?true:false" @click="handlerService('jobstick',scope.row.id,scope.row.stick)">职位置顶</el-button>
-						<el-button size="mini" type="primary" :disabled="scope.row.auto_refresh==1?true:false" @click="handlerService('job_refresh',scope.row.id,scope.row.auto_refresh)">智能刷新</el-button>
-						<el-button size="mini" type="primary" :disabled="scope.row.emergency==1?true:false" @click="handlerService('emergency',scope.row.id,scope.row.emergency)">紧急招聘</el-button>
+            <div class="extensionBtns" >
+              <el-button size="mini" type="danger" :disabled="scope.row.stick==1?true:false" @click="handlerService('jobstick',scope.row.id,scope.row.stick)">职位置顶</el-button>
+              <el-button size="mini" type="primary" :disabled="scope.row.auto_refresh==1?true:false" @click="handlerService('job_refresh',scope.row.id,scope.row.auto_refresh)">智能刷新</el-button>
+              <el-button size="mini" type="primary" :disabled="scope.row.emergency==1?true:false" @click="handlerService('emergency',scope.row.id,scope.row.emergency)">紧急招聘</el-button>
+            </div>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -131,7 +133,9 @@
 				</el-table-column>
 				<el-table-column width="252" header-align="center" align="center" label="操作">
 					<template slot-scope='scope'>
-						<el-button size="mini" @click="handlerDisplay(scope.row)">恢复</el-button>
+<!--            【ID1000223】【bug】PC企业会员中心职位管理-已下线职位修改，审核未通过的改为修改跳转修改页面-->
+						<el-button size="mini" v-if="scope.row.audit==2" @click="$router.push('/company/jobedit/' + scope.row.id)">修改</el-button>
+            <el-button size="mini" v-else @click="handlerDisplay(scope.row)">恢复</el-button>
 						<el-button size="mini" @click="handlerDel(scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
@@ -160,6 +164,52 @@
 	<el-dialog :title="'购买'+serviceTitle" :visible.sync="showBuyService" v-if="showBuyService" width="540px">
 		<BuyIncrementDialog ref="buyService" @submitPay="submitPay" :type="serviceType" :job-id="jobId"></BuyIncrementDialog>
 	</el-dialog>
+  <el-dialog
+        :visible.sync="showRefreshJobDirectService"
+        width='480px'
+        height="256"
+        custom-class = 'download'
+        title="刷新职位"
+        center
+        show-cancel-button
+        :confirm-button-text="refreshJobDirectServiceInfo.btnCn"
+        @confirm="handlerRefreshDirectService"
+      >
+        <div class="dialog_tip_wrapper">
+          <div
+            class="tx1"
+            v-if="refreshJobDirectServiceInfo.use_type == 'points'"
+          >
+            今日免费刷新职位次数已用完，本次刷新需要支付
+            <span class="red">{{ refreshJobDirectServiceInfo.need_points }}</span>
+            {{ $store.state.config.points_byname }}。
+          </div>
+          <div class="tx1" v-if="refreshJobDirectServiceInfo.use_type == 'money'">
+            今日免费刷新职位次数已用完，本次刷新需要支付
+            <span class="red">{{
+                refreshJobDirectServiceInfo.need_expense
+              }}</span>
+            元。
+          </div>
+          <div
+            class="tx2"
+            v-if="parseInt(refreshJobDirectServiceInfo.discount) > 0"
+          >
+            购买智能刷新低至<span class="red">{{
+              refreshJobDirectServiceInfo.discount
+            }}</span
+          >折，<span style="cursor: pointer" @click="companyServiceDownloadResume" class="blue">(立即了解)</span>
+          </div>
+          <div class="payment-box tx3" v-if="refreshJobDirectServiceInfo.use_type == 'money'">
+            <div  :class="[payment=='alipay'?'borders':'item']" @click="choosePayment('alipay')"><img class="imgs" src="../../assets/images/payment_icon_4.png"/>支付宝支付<i v-if="payment=='alipay'" class="el-icon-check imgi"></i></div>
+            <div  :class="[payment=='wxpay'?'borders':'item']" @click="choosePayment('wxpay')"><img class="imgs" src="../../assets/images/payment_icon_5.png" />微信支付 <i v-if="payment=='wxpay'" class="el-icon-check imgi"></i></div>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="submit">{{refreshJobDirectServiceInfo.btnCn}}</el-button>
+            <el-button @click="showRefreshJobDirectService = false">取 消</el-button>
+        </div>
+  </el-dialog>
 	</el-card>
 	<Poster
 		v-if="showPoster"
@@ -208,6 +258,9 @@ import Poster from '@/components/Poster'
 				showShare:false,
 				shareQrcode:'',
 				enable_poster:0,
+        showRefreshJobDirectService:false,
+        refreshJobDirectServiceInfo:[],
+        payment:'wxpay'
 			}
 		},
 		watch:{
@@ -326,7 +379,15 @@ import Poster from '@/components/Poster'
 						.post(api.company_job_refresh, { id: item.id })
 						.then(res => {
 							if (res.data.done === 0) {
-								this.$message.error(res.message)
+                this.showRefreshJobDirectService = true
+                this.refreshJobDirectServiceInfo = {
+                  use_type: res.data.use_type,
+                  need_points: res.data.need_points,
+                  need_expense: res.data.need_expense,
+                  discount: res.data.discount,
+                  jobid: item.id,
+                  btnCn: res.data.use_type === 'points' ? '立即兑换' : '立即支付'
+                }
 								return false
 							} else {
 								this.fetchData()
@@ -541,12 +602,67 @@ import Poster from '@/components/Poster'
 					jobarr.push(element.id)
 				});
 				this.$router.push('/company/microposte?jobid='+jobarr.join(','))
-			}
+			},
+      handlerRefreshDirectService () {
+        if (this.refreshJobDirectServiceInfo.use_type === 'points') {
+          this.handlerSubmitRefreshJob('points')
+        } else {
+          this.showPayment = true
+        }
+      },
+      submit(){
+          this.handlerSubmitRefreshJob()
+      },
+      handlerSubmitRefreshJob () {
+        let pay_data = {
+          service_type: 'single_job_refresh',
+          deduct_points:
+            this.refreshJobDirectServiceInfo.use_type === 'points'
+              ? this.refreshJobDirectServiceInfo.need_points
+              : 0,
+          payment:this.payment,
+          jobid: this.refreshJobDirectServiceInfo.jobid,
+          return_url:  window.location.protocol +
+            '//' +
+            window.location.host +
+            '/'+this.$store.state.config.member_dirname+'/company/service/order',
+        }
+        http
+          .post(api.company_pay_direct_service, pay_data)
+          .then(res => {
+            if (res.data.pay_status === 1) {
+              this.$notify({ type: 'success', message: '支付成功' })
+              this.showRefreshJobDirectService = false
+              this.fetchData()
+              this.fetchTotal()
+              this.checkJobNum()
+              return false
+            } else {
+              this.handlerPay(res)
+            }
+          })
+          .catch(() => {})
+      },
+      choosePayment(payment){
+        this.payment = payment
+        this.$emit('choosePayment',this.payment)
+      },
+      handlerPay (res) {
+        if(this.payment == 'wxpay'){
+          window.open(this.$store.state.config.sitedomain+'/member/wxpay?parameter='+res.data.parameter+'&oid='+res.data.order_oid+'&amount='+res.data.order_amount+'&custom_location=0')
+        }else{
+          window.open(res.data.parameter)
+        }
+      },
+      companyServiceDownloadResume(){
+        window.open('/company/service/increment/add/job_refresh')
+      },
 		}
 	}
 </script>
 
 <style scoped lang="scss">
+//企业会员中心-职位管理-生成海报错误修改
   .el-alert {
     padding: 16px;margin-bottom: 20px;
   }
@@ -584,9 +700,12 @@ import Poster from '@/components/Poster'
 		border-radius: 5px;
 		display: inline-block;
 	}
-	.el-button{
-		margin: 0 10px 10px 0;
-	}
+  .extensionBtns{
+    .el-button{
+      margin: 0 10px 10px 0;
+    }
+  }
+
 	.btn_bg{
 		background: #f56c6c;
 		color: #ffffff;
@@ -680,4 +799,80 @@ import Poster from '@/components/Poster'
     color: #b0b0b0;
     font-size:13px ;
   }
+
+.download{
+  font-size: 18px;
+  font-family: Microsoft YaHei;
+  font-weight: 400;
+  color: #373737;
+  border-radius: 6px;
+}
+.tx1{
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 0px;   //企业会员中心-职位管理-生成海报错误修改
+  text-align: center;
+  padding-top: 20px;
+}
+.tx2{
+margin-top: 15px;
+font-weight: 400;
+font-size: 14px;
+text-align: center;
+}
+.red{
+color:red;
+}
+.blue{
+color:#409EFF;
+}
+.borders{
+width: 150px;
+height: 44px;
+margin-right: 20px;
+text-align: center;
+font-size:14px;
+color: #333333;
+cursor: pointer;
+position: relative;
+user-select: none;
+border: 2px solid #f60;
+}
+.payment-box{
+display:flex;
+line-height:42px;
+margin-left: 55px;
+margin-top:30px;
+}
+.payment-box .item{
+width: 150px;
+height: 44px;
+border: 2px solid #e2e2e2;
+margin-right: 20px;
+text-align: center;
+font-size:14px;
+color: #333333;
+cursor: pointer;
+position: relative;
+user-select: none;
+}
+.imgs{
+vertical-align: middle;
+margin-right: 3px;
+}
+.imgi{
+width: 0;
+height: 27px;
+border-left:13px solid  transparent;
+border-right:13px solid  #ff6600;
+border-top:13px solid  transparent;
+border-bottom:13px solid  #ff6600;
+color: #fff2ea;
+position: absolute;
+right: 0;
+bottom: 0;
+text-align: right;
+line-height: 13px;
+padding-right: 1px;
+}
 </style>

@@ -1220,8 +1220,6 @@ class CollectionLogic
             $this->_articleModel->commit();
         } catch (\Exception $e) {
             // 回滚事务
-            echo $e->getMessage();die();
-
             $this->_articleModel->rollback();
             saveLog('保存资讯失败-报错信息：'.json_encode(['Line' => $e->getLine(),'File' => $e->getFile(),'Message' => $e->getMessage()]));
             responseJson(400, '保存资讯失败');

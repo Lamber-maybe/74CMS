@@ -384,6 +384,8 @@ export default {
         this.submitData.starttime == ''
       ) {
         this.$notify('请选择开始刷新时间')
+	// 【BUG】修改支付提示错误后，不能重新调起的BUG wyx 2022.07.07
+        this.submitLock = false
         return false
       }
       if (
@@ -391,6 +393,8 @@ export default {
         this.submitData.timerange == ''
       ) {
         this.$notify('请选择刷新时间间隔')
+	// 【BUG】修改支付提示错误后，不能重新调起的BUG wyx 2022.07.07
+        this.submitLock = false
         return false
       }
       this.submitData.return_url = this.$store.state.config.mobile_domain + 'member/order/list'

@@ -48,7 +48,8 @@
         </el-select>
       </el-form-item>
       <el-form-item label="推广天数" prop="days">
-        <el-input v-model.number="form.days" type="number" />
+        <!--修改推广天数可以为负数问题 zch 2022.07.06-->
+        <el-input v-model.number="form.days" type="number" :min="0"/>
       </el-form-item>
       <el-form-item label="推广方案" prop="type">
         <el-select v-model="form.type" placeholder="请选择">

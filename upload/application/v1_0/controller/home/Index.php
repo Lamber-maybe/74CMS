@@ -116,6 +116,13 @@ class Index extends \app\v1_0\controller\common\Base
         if (empty($famous_enterprises_setmeal)) {
             $this->ajaxReturn(200, '获取数据成功', ['items' => []]);
         }
+        //触屏个性化首页名企栏设置数量不对应 zch 2022.07.06
+        $limit = 9;
+        $famous = model('MobileIndexModule')->where(['alias'=>'famous'])->value('plan_id');
+        if (intval($famous) == 3)
+        {
+            $limit = 6;
+        }
         $subsiteCondition = get_subsite_condition('a');
         $list = model('Company')
             ->alias('a')
@@ -130,7 +137,7 @@ class Index extends \app\v1_0\controller\common\Base
             ->where($subsiteCondition)
             ->field('distinct a.id,a.logo,a.companyname')
             ->order('a.refreshtime desc')
-            ->limit(9)
+            ->limit($limit)
             ->select();
         $job_list = $comid_arr = $logo_id_arr = $logo_arr = [];
         foreach ($list as $key => $value) {

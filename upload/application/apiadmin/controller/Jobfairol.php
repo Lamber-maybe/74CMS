@@ -655,4 +655,9 @@ class Jobfairol extends \app\common\controller\Backend{
         }
         $this->ajaxReturn(200, '已成功添加了'.$counter.'份简历！',0);
     }
+    // 网络招聘会导出
+    public function getJobfairOnAll(){
+        $jobfair = model('JobfairOnline')->field('id,title')->order(['addtime' => 'desc'])->select();
+        $this->ajaxReturn(200, '获取数据成功',['items'=>$jobfair]);
+    }
 }

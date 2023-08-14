@@ -120,3 +120,24 @@ export function personalBatchAdd(params) {
     data: params
   })
 }
+// 网络招聘会信息导出
+export function jobfairOlListAll() {
+  return request({
+    url: apiArr.jobfairOlListAll,
+    method: 'get'
+  })
+}
+export function isExhibitors(params) {
+  return request({
+    url: apiArr.isExhibitors,
+    method: 'get',
+    params
+  })
+}
+export function exportCompanyJobsList(params) {
+  return request({
+    url: apiArr.jobfairOlCompanyJobsList,
+    method: 'get',
+    params
+  })
+}

@@ -757,10 +757,14 @@ export default {
             this.form.citycategory_arr.push(response.data.info.district3)
           }
           const tagIds = this.form.tag.toString()
-          const arrData = tagIds.split(',')
-          for (var i = 0; i < arrData.length; i++) {
-            if (!isNaN(arrData[i])) {
-              arrData[i] = parseInt(arrData[i])
+          // 【bug】职位标签未选择，修改职位时标签为NAN
+          var arrData = []
+          if (tagIds.length !== 0) {
+            arrData = tagIds.split(',')
+            for (var i = 0; i < arrData.length; i++) {
+              if (!isNaN(arrData[i]) && arrData[i] != 0) {
+                arrData[i] = parseInt(arrData[i])
+              }
             }
           }
           if (this.form.minwage) {

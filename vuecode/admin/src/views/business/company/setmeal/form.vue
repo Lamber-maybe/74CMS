@@ -174,6 +174,25 @@
           </el-form-item>
         </el-col>
       </el-row>
+
+      <!--增加简历包下载点数 zch-->
+      <div class="xuxian"></div>
+      <div class="purchase_resume_point">
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="简历包下载点数" prop="purchase_resume_point">
+              <el-input
+                v-model.number="form.purchase_resume_point"
+                class="small"
+                :disabled="true"
+                @blur="format_number(0, 'purchase_resume_point')"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">&nbsp;</el-col>
+        </el-row>
+      </div>
+
     </el-form>
   </div>
 </template>
@@ -192,6 +211,7 @@ export default {
         jobs_meanwhile: 0,
         refresh_jobs_free_perday: 0,
         download_resume_point: 0,
+        purchase_resume_point: 0,
         download_resume_max_perday: 0,
         enable_video_interview: 1,
         enable_poster: 1,
@@ -265,5 +285,16 @@ export default {
 .el-form-item--small .el-form-item__content,
 .el-form-item--small .el-form-item__label {
   width: 100%;
+}
+</style>
+<!--增加简历包下载点数 zch-->
+<style scoped lang="scss">
+.xuxian{
+  width:100%;
+  border-bottom: #a8a2a2 1px dashed;
+  padding-top: 13px;
+}
+.purchase_resume_point{
+  padding-top: 30px;
 }
 </style>

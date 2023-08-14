@@ -291,10 +291,18 @@ import { resumeAdd } from '@/api/resume'
 import apiArr from '@/api'
 import { getToken } from '@/utils/auth'
 var wage_data = []
-for (let i = 1000; i <= 15000; i += 500) {
-  wage_data.push(i)
+// 【ID1000220】【bug】后台添加简历薪资范围不一致
+let current = 0
+let unit1 = 500
+let unit2 = 5000
+for (let i = 0; i < 37; i++) {
+  if (current < 15000){
+    current += unit1
+  } else {
+    current += unit2
+  }
+  wage_data.push(current)
 }
-
 export default {
   filters: {
     defaultFilter(data) {

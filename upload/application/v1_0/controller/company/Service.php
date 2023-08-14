@@ -77,8 +77,8 @@ class Service extends \app\v1_0\controller\common\Base
     public function setmealList()
     {
         $list = model('Setmeal')
-            ->field('is_display,is_apply', true)
-            ->where(['is_display' => 1, 'is_apply' => 1])
+            ->field('is_display', true)
+            ->where(['is_display' => 1]) // 【bug】后台企业套餐设置显示开关和是否允许申请开关关系
             ->order('sort_id desc')
             ->select();
         $timestamp = time();

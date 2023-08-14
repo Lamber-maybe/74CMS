@@ -87,6 +87,48 @@ const applicationRouter = {
             activeMenu: '/jobfairol/list'
           },
           hidden: true
+        },
+        {
+          // 增加网络招聘会数据导出
+          path: '/jobfairol/export/index',
+          name: 'jobfairolExport',
+          redirect: 'noRedirect',
+          component: () => import ('@/views/jobfairol/export/index'),
+          meta: {
+            title: '信息导出',
+            access: 'jobfairExport'
+          },
+          children: [
+            {
+              path: '/jobfairol/export/docx',
+              name: 'jobfairolExportDocx',
+              component: () => import ('@/views/jobfairol/export/docx'),
+              meta: {
+                title: '文档资料',
+                access: 'jobfairolExportDocx'
+              }
+            },
+            {
+              path: '/jobfairol/export/weixin',
+              name: 'jobfairolExportWeixin',
+              component: () => import ('@/views/jobfairol/export/weixin'),
+              meta: {
+                title: '公众号模板',
+                access: 'jobfairolExportWeixin'
+              }
+            },
+            {
+              path: '/jobfairol/export/weixin_preview',
+              name: 'jobfairolExportWeixinPreview',
+              component: () => import ('@/views/jobfairol/export/weixin_preview'),
+              meta: {
+                title: '公众号模板',
+                access: 'jobfairolExportWeixin',
+                activeMenu: '/jobfairol/export/weixin'
+              },
+              hidden: true
+            }
+          ]
         }
       ]
     },

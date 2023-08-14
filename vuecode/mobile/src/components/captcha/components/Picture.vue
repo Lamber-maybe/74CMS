@@ -1,12 +1,19 @@
 <template>
   <div>
-    <van-dialog v-model="showDialog" @confirm="handlerConfirm" @cancel="showDialog=false" :before-close="beforeClose" title="输入验证码" show-cancel-button>
-      <div class="captcha_box">
+    <van-dialog v-model="showDialog" @confirm="handlerConfirm" @cancel="showDialog=false" :before-close="beforeClose" title="输入图中验证码" show-cancel-button>
+<!--      验证码样式修改-->
+      <div>
+        <div class="code">
+          <p>验证码</p>
+        </div>
         <img class="captcha_img" :src="src" @click="changeImg"  ref="seach_input"/>
-        <van-cell-group :border="false">
-          <van-field label-width="120" :border="false" v-model="code" label=" " placeholder="请输入左侧验证码"  @keyup.enter.native="handlerConfirm" />
+      </div>
+
+      <div class="captcha_box">
+        <van-cell-group :border="false" >
+          <van-field label-width="0" :border="false" v-model="code" label=" " placeholder="请输入图中验证码"  @keyup.enter.native="handlerConfirm" />
         </van-cell-group>
-        <div class="little-border">&nbsp;</div>
+<!--        <div class="little-border">&nbsp;</div>-->
       </div>
     </van-dialog>
   </div>
@@ -63,19 +70,31 @@ export default {
   }
 }
 </script>
-
+<!--验证码修改-->
+<style lang="scss">
+.captcha_box {
+  .van-field__control{
+    text-align: center;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .captcha_box{
   position:relative;
-  margin:20px 10px 15px;
+  width: 262px;
+  margin: 20px auto;
+  border: 1px solid #d2cece8c;
+  margin-bottom: 47px;
+  border-radius: 3px;
 }
+
 .captcha_img{
   position:absolute;
   top:0;
   left:10px;
-  width:120px;
-  height:100%;
+  width:155px;
   z-index:1;
+  margin: 76px 0px 0px 125px;
 }
 .little-border{
   position:absolute;
@@ -84,5 +103,13 @@ export default {
   right:20px;
   z-index:10;
   bottom:1px;
+}
+.code{
+   margin: 26px auto 0;
+   border: 1px solid #d2cece8c;
+   padding: 13px 0px 13px 31px;
+   width: 262px;
+  background: #e6eaf099;
+  border-radius: 3px;
 }
 </style>

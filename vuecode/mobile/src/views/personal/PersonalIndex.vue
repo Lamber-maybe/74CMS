@@ -844,6 +844,7 @@ export default {
 .personal_menu{
   background: #fff;
   border-radius: 15px;
+  padding-top: 2px;//触屏会员中心简历样式修改
 }
 .lack_resume{
   background: linear-gradient(to right, #3c5083, #253165);

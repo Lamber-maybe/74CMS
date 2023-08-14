@@ -205,6 +205,17 @@ const userRouter = {
       }
     },
     {
+      path: '/user/job/list/extension',
+      name: 'extension',
+      component: () =>
+        import('@/views/user/job/list/extension'),
+      meta: {
+        title: '职位推广',
+        access: 'jobList'
+      },
+      hidden: true
+    },
+    {
       path: '/user/job/edit',
       name: 'jobEdit',
       component: () =>

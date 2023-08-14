@@ -92,6 +92,7 @@ import { getFieldRule } from '@/api/configuration'
 import { resumeIntentionAddAndEdit } from '@/api/resume'
 
 var wage_data = []
+// 【ID1000220】【bug】后台添加简历薪资范围不一致
 let current = 0
 let unit1 = 500
 let unit2 = 5000
@@ -209,7 +210,20 @@ export default {
               return { value: item.value, label: item.label }
             }
           })
-          this.options_citycategory = [...response.data.citycategory]
+	  // 【ID1000188】【优化】后台修改简历意向地区时，二级分类地区后为空 zdq 2022.07.06
+          var options_citycategory = [...response.data.citycategory]
+          for (let i = 0; i <= options_citycategory.length - 1; i++){
+            if (options_citycategory[i]['children'].length <= 0){
+              delete options_citycategory[i]['children']
+            } else {
+              for (let a = 0; a <= options_citycategory[i]['children'].length - 1; a++){
+                if (options_citycategory[i]['children'][a]['children'].length <= 0){
+                  delete options_citycategory[i]['children'][a]['children']
+                }
+              }
+            }
+          }
+          this.options_citycategory = options_citycategory
           this.options_trade = [...response.data.trade]
           for (let index = 0; index < wage_data.length; index++) {
             const tmp_json = {
@@ -218,7 +232,7 @@ export default {
             }
             this.options_minwage.push(tmp_json)
           }
-          this.options_minwage.pop()
+          // 【ID1000220】【bug】后台添加简历薪资范围不一致
           const param = {
             id: this.itemId
           }

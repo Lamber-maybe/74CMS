@@ -462,6 +462,47 @@
             </div>
         </div>
     </div>
+    <el-dialog
+            :visible.sync="showDirectService"
+            width='445px'
+            height="256"
+            title="下载简历"
+            center
+            custom-class = 'download'
+            modal = true
+            show-cancel-button
+            @confirm="handlerDirectService"
+    >
+        <div class="dialog_tip_wrapper" style="text-align: center;">
+            <div class="tx1" v-if="directServiceInfo.use_type == 'package'" style="line-height: 25px;">
+                很抱歉，您的简历点数不足，暂时无法下载简历<br />建议您升级套餐或购买增值服务。
+            </div>
+            <div class="tx1" v-if="directServiceInfo.use_type == 'points'">
+                你的下载简历点数不足，下载该简历需要支付
+                <span class="red">{{ directServiceInfo.need_points }}</span>
+                {#$global_config.points_byname#}。
+            </div>
+            <div class="tx1" v-if="directServiceInfo.use_type == 'money'">
+                你的下载简历点数不足，下载该简历需要支付
+                <span class="red">{{ directServiceInfo.need_expense }}</span>
+                元。
+            </div>
+            <div class="tx2" v-if="parseInt(directServiceInfo.discount) > 0 && directServiceInfo.use_type != 'package'" style="color:#999999">
+                购买简历包价格低至<span class="red">{{
+            directServiceInfo.discount
+          }}</span
+            >折 <span style="cursor: pointer" @click="companyServiceDownloadResume" class="blue">(立即了解)</span>
+            </div>
+            <div class="payment-box tx3" v-if="directServiceInfo.use_type == 'money'">
+                <div  :class="[payment=='alipay'?'borders':'item']" @click="choosePayment('alipay')"><img class="imgs" src="../../../assets/images/payment_icon_4.png"/>支付宝支付<i v-if="payment=='alipay'" class="el-icon-check imgi"></i></div>
+                <div  :class="[payment=='wxpay'?'borders':'item']" @click="choosePayment('wxpay')"><img class="imgs" src="../../../assets/images/payment_icon_5.png" />微信支付 <i v-if="payment=='wxpay'" class="el-icon-check imgi"></i></div>
+            </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-button style="width: 108px; padding: 10px 20px;" @click="dialogVisible">{{directServiceInfo.cancel}}</el-button>
+            <el-button style="width: 108px; padding: 10px 20px;" type="primary" @click="submit">{{directServiceInfo.btnCn}}</el-button>
+        </div>
+    </el-dialog>
     <el-dialog title="举报简历" :visible.sync="showTipoff" @opened="tipoffOpened" width="30%">
         {#include file="public/tipoff" /#}
     </el-dialog>
@@ -574,7 +615,12 @@
             options_jobs: [],
             from: 'download',
             resume_id: id,
-            btnLoading: false
+            btnLoading: false,
+            directServiceInfo: {},
+            showDirectService: false,
+            query_id: '',
+            payment:'wxpay',
+            isPayment:false
         },
         watch: {
             'form.interview_date': function (value) {
@@ -902,7 +948,26 @@
                             }
                             httppost(qscms.apiList.resumeDownload, params).then(function (res) {
                                 if (res.data.done == 0) {
-                                    that.$message.error(res.message)
+                                    that.showDirectService = true
+                                    var btnCn = ''
+                                    if(res.data.use_type == 'points'){
+                                        btnCn = '立即兑换'
+                                    }
+                                    if(res.data.use_type == 'package'){
+                                        btnCn = '购买增值包'
+                                    }
+                                    if(res.data.use_type == 'money'){
+                                        btnCn = '立即支付'
+                                    }
+                                    that.directServiceInfo = {
+                                        use_type: res.data.use_type,
+                                        need_points: res.data.need_points,
+                                        need_expense: res.data.need_expense,
+                                        discount: res.data.discount,
+                                        btnCn: btnCn,
+                                        cancel:res.data.use_type == 'package' ? '升级套餐': '取 消'
+                                    }
+                                    return false
                                 } else {
                                     that.$message({ type: 'success', message: res.message })
                                     that.getContact()
@@ -980,6 +1045,158 @@
                     }
                 });
             },
+            handlerDirectService () {
+                if (this.directServiceInfo.use_type == 'points') {
+                    this.handlerDirectPay('points')
+                } else {
+                    this.showPayment = true
+                }
+            },
+            dialogVisible(){
+                if(this.directServiceInfo.use_type == 'package' ){
+                    location.href = qscms.locationList.companyService
+                }else{
+                    this.showDirectService = false
+                }
+            },
+            submit(){
+                var use_type = this.directServiceInfo.use_type
+                if(use_type == 'package' ){
+                    location.href = qscms.locationList.companyServiceDownloadResume
+                }else{
+                    if(use_type == 'points'){
+                        let pay_data = {
+                            service_type: 'single_resume_down',
+                            deduct_points:
+                                this.directServiceInfo.use_type == 'points'
+                                    ? this.directServiceInfo.need_points
+                                    : 0,
+                            payment:this.payment,
+                            resumeid: this.resume_id,
+                            return_url: '{#$global_config.mobile_domain#}resume/' + this.resume_id
+                        }
+                        var that = this
+                        httppost(qscms.apiList.company_pay_direct_service,pay_data)
+                            .then(function (res) {
+                                that.$message({
+                                    type: 'success',
+                                    message: res.message
+                                })
+                                that.getContact()
+                                that.showDirectService = false
+                            }).catch(function () {
+
+                        })
+                    }else{
+                        let pay_data = {
+                            service_type: 'single_resume_down',
+                            deduct_points:
+                                this.directServiceInfo.use_type == 'points'
+                                    ? this.directServiceInfo.need_points
+                                    : 0,
+                            payment:this.payment,
+                            resumeid: this.resume_id,
+                            return_url: '{#$global_config.mobile_domain#}resume/' + this.resume_id
+                        }
+                        var that = this
+                        httppost(qscms.apiList.company_pay_direct_service,pay_data)
+                            .then(function (res) {
+                                if(that.payment == 'wxpay'){
+                                    window.open('{#$global_config.sitedomain#}/member/wxpay?parameter='+res.data.parameter+'&oid='+res.data.order_oid+'&amount='+res.data.order_amount+'&custom_location=0')
+                                }else{
+                                    window.open(res.data.parameter)
+                                }
+                                that.showDirectService = false
+                            }).catch(function () {
+
+                        })
+                    }
+                }
+            },
+            companyServiceDownloadResume(){
+                window.open(qscms.locationList.companyServiceDownloadResume)
+            },
+            choosePayment(payment){
+                this.payment = payment
+                this.$emit('choosePayment',this.payment)
+            },
         }
     })
 </script>
+<style lang="scss" scoped>
+    .el-dialog__footer{
+        padding: 10px 20px 35px;
+    }
+    .download{
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #373737;
+        border-radius: 6px;
+    }
+    .tx1{
+        font-weight: 400;
+        line-height: 15px;
+        font-size: 14px;
+    }
+    .tx2{
+        font-weight: 400;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    .red{
+        color:red;
+    }
+    .blue{
+        color:#409EFF;
+    }
+    .borders{
+        width: 150px;
+        height: 44px;
+        margin-right: 20px;
+        text-align: center;
+        font-size:14px;
+        color: #333333;
+        cursor: pointer;
+        position: relative;
+        user-select: none;
+        border: 2px solid #f60;
+    }
+    .payment-box{
+        display:flex;
+        line-height:42px;
+        margin-left: 37px;
+        margin-top:30px;
+    }
+    .payment-box .item{
+        width: 150px;
+        height: 44px;
+        border: 2px solid #e2e2e2;
+        margin-right: 20px;
+        text-align: center;
+        font-size:14px;
+        color: #333333;
+        cursor: pointer;
+        position: relative;
+        user-select: none;
+    }
+    .imgs{
+        vertical-align: middle;
+        margin-right: 3px;
+    }
+    .imgi{
+        width: 0;
+        height: 27px;
+        border-left:13px solid  transparent;
+        border-right:13px solid  #ff6600;
+        border-top:13px solid  transparent;
+        border-bottom:13px solid  #ff6600;
+        color: #fff2ea;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        text-align: right;
+        line-height: 13px;
+        padding-right: 1px;
+    }
+</style>

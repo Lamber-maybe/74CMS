@@ -84,7 +84,7 @@
                   </div>
                   <p class="or_price" v-if="parseInt(item.preferential_open) === 1">原价: ￥{{ item.original_expense }}</p>
                   <div class="btn">
-                    <el-button class="el_button" @click="$router.push('/company/service/setmeal/add?setmeal_id='+item.id)">立即购买</el-button>
+                    <el-button class="el_button" @click="buyNow(item)">立即购买</el-button>
                   </div>
                   <p class="or_pre_date" v-if="parseInt(item.preferential_open) === 1">
                     限时特惠 : {{ item.preferential_expense_start | timeFilterTwo }} 至 {{ item.preferential_expense_end | timeFilterTwo }}
@@ -172,6 +172,18 @@ import api from '@/api'
       console.log(this.$refs)
     },
     methods: {
+
+      // 【bug】后台企业套餐设置显示开关和是否允许申请开关关系
+    buyNow(item) {
+      if (item.is_apply === 1) {
+        this.$router.push('/company/service/setmeal/add?setmeal_id='+item.id)
+      }else {
+          this.$message({
+            message: '此套餐暂不允许购买',
+            type: 'error',
+          });
+      }
+    },
 		fetchSetmealList () {
 			this.setmealList = []
 		http

@@ -349,24 +349,28 @@ class Order extends \app\common\model\BaseModel
                 }
             }
             $service_list['single_resume_down']['deduce_points'] = $need_points;
-
-            $down_resume_expense_config_arr = $global_config['single_resume_download_expense_conf'];
-            $down_resume_expense_config = [];
-            foreach ($down_resume_expense_config_arr as $key => $value) {
-                $down_resume_expense_config[$value['alias']] = $value['value'];
-            }
-            if ($resume_info['refreshtime'] >= strtotime('-1 day')) {
-                //刷新时间1天之内
-                $need_expense = $down_resume_expense_config[1];
-            } elseif ($resume_info['refreshtime'] >= strtotime('-3 day')) {
-                //刷新时间3天之内
-                $need_expense = $down_resume_expense_config[3];
-            } elseif ($resume_info['refreshtime'] >= strtotime('-5 day')) {
-                //刷新时间5天之内
-                $need_expense = $down_resume_expense_config[5];
+	    // 快捷支付 zdq 2022.07.06
+            if ($resume_info['high_quality'] == 1) {
+                $need_expense = $global_config['single_resume_download_expense_talent'];
             } else {
-                //刷新时间5天以上
-                $need_expense = $down_resume_expense_config[0];
+                $down_resume_expense_config_arr = $global_config['single_resume_download_expense_conf'];
+                $down_resume_expense_config = [];
+                foreach ($down_resume_expense_config_arr as $key => $value) {
+                    $down_resume_expense_config[$value['alias']] = $value['value'];
+                }
+                if ($resume_info['refreshtime'] >= strtotime('-1 day')) {
+                    //刷新时间1天之内
+                    $need_expense = $down_resume_expense_config[1];
+                } elseif ($resume_info['refreshtime'] >= strtotime('-3 day')) {
+                    //刷新时间3天之内
+                    $need_expense = $down_resume_expense_config[3];
+                } elseif ($resume_info['refreshtime'] >= strtotime('-5 day')) {
+                    //刷新时间5天之内
+                    $need_expense = $down_resume_expense_config[5];
+                } else {
+                    //刷新时间5天以上
+                    $need_expense = $down_resume_expense_config[0];
+                }
             }
             $service_list['single_resume_down']['service_amount'] = $need_expense;
         }
@@ -837,7 +841,7 @@ class Order extends \app\common\model\BaseModel
                 model('MemberSetmeal')
                     ->where('uid', $order['uid'])
                     ->setInc(
-                        'download_resume_point',
+                        'purchase_resume_point',//简历包增加
                         $extra['download_resume_point']
                     );
             }
@@ -911,6 +915,7 @@ class Order extends \app\common\model\BaseModel
             $refreshParams = [
                 'id'          => $extra['jobid'],
                 'refresh_log' => true,
+                'platform' => $order['add_platform'],
             ];
             model('Job')->refreshJobData($refreshParams);
             $points_log = '刷新职位';

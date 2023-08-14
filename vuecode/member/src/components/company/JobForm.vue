@@ -530,7 +530,8 @@
         </el-form-item>
 
         <div class="btn_wrapper">
-          <el-button type="primary" @click="onSubmit('form')">{{
+<!--          【ID1000214]连续点击多条职位发布修改-->
+          <el-button type="primary" @click="onSubmit('form')" :disabled="ispay">{{
               type == "add" ? "发布职位" : "保存修改"
             }}
           </el-button>
@@ -654,6 +655,7 @@ export default {
       options_maxwage: [],
       options_maxage: [],
       showMap: false,
+      ispay: false,// 【ID1000214]连续点击多条职位发布修改
       field_rule: {
         basic: {
           department: {},
@@ -791,6 +793,7 @@ export default {
       }
     },
     onSubmit(formName) {
+      this.ispay = true;// 【ID1000214]连续点击多条职位发布修改
       this.$refs[formName].validate(valid => {
         if (valid) {
           let submitData = JSON.parse(JSON.stringify(this.form))
@@ -815,6 +818,7 @@ export default {
             contact: submitData.contact
           })
         } else {
+          this.ispay = false;// 【ID1000214]连续点击多条职位发布修改
           return false;
         }
       });

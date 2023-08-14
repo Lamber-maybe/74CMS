@@ -242,7 +242,9 @@ class Index extends \app\v1_0\controller\common\Base
                 $global_config = config('global_config');
                 $resume_info = $download_result['resume_info'];
                 $return_data['done'] = 0;
-                if ($global_config['single_resume_download_enable_points_deduct'] == 1) {
+
+                // 快捷支付 zdq 2022.07.06
+                if ($global_config['single_resume_download_open'] == 1 && $global_config['single_resume_download_enable_points_deduct'] == 1 ) {
                     if ($resume_info['high_quality'] == 1) {
                         $need_points = $global_config['single_resume_download_points_talent'];
                     } else {
@@ -272,24 +274,36 @@ class Index extends \app\v1_0\controller\common\Base
                         $return_data['need_points'] = $need_points;
                     }
                 }
+
+		        // 快捷支付 zdq 2022.07.06
+                if($global_config['single_resume_download_open'] == 0){
+                    $return_data['use_type'] = 'package';
+                    $return_data['need_points'] = 0;
+                }
                 if (!isset($return_data['use_type'])) {
                     $down_resume_expense_config_arr = $global_config['single_resume_download_expense_conf'];
                     $down_resume_expense_config = [];
                     foreach ($down_resume_expense_config_arr as $key => $value) {
                         $down_resume_expense_config[$value['alias']] = $value['value'];
                     }
-                    if ($resume_info['refreshtime'] >= strtotime('-1 day')) {
-                        //刷新时间1天之内
-                        $need_expense = $down_resume_expense_config[1];
-                    } elseif ($resume_info['refreshtime'] >= strtotime('-3 day')) {
-                        //刷新时间3天之内
-                        $need_expense = $down_resume_expense_config[3];
-                    } elseif ($resume_info['refreshtime'] >= strtotime('-5 day')) {
-                        //刷新时间5天之内
-                        $need_expense = $down_resume_expense_config[5];
+
+		            // 快捷支付 zdq 2022.07.06
+                    if ($resume_info['high_quality'] == 1) {
+                        $need_expense = $global_config['single_resume_download_expense_talent'];
                     } else {
-                        //刷新时间5天以上
-                        $need_expense = $down_resume_expense_config[0];
+                        if ($resume_info['refreshtime'] >= strtotime('-1 day')) {
+                            //刷新时间1天之内
+                            $need_expense = $down_resume_expense_config[1];
+                        } elseif ($resume_info['refreshtime'] >= strtotime('-3 day')) {
+                            //刷新时间3天之内
+                            $need_expense = $down_resume_expense_config[3];
+                        } elseif ($resume_info['refreshtime'] >= strtotime('-5 day')) {
+                            //刷新时间5天之内
+                            $need_expense = $down_resume_expense_config[5];
+                        } else {
+                            //刷新时间5天以上
+                            $need_expense = $down_resume_expense_config[0];
+                        }
                     }
                     $return_data['use_type'] = 'money';
                     $return_data['need_expense'] = $need_expense;

@@ -407,12 +407,18 @@
 
     <van-dialog
       v-model="showDirectService"
+      @cancel="cancels"
       title="下载简历"
+      closeOnClickOverlay = "true"
       show-cancel-button
+      :cancel-button-text="directServiceInfo.cancel"
       :confirm-button-text="directServiceInfo.btnCn"
       @confirm="handlerDirectService"
     >
       <div class="dialog_tip_wrapper">
+        <div class="tx1" v-if="directServiceInfo.use_type == 'package'">
+          很抱歉，您的简历点数不足，暂时无法下载简历建议您升级套餐或购买增值服务。
+        </div>
         <div class="tx1" v-if="directServiceInfo.use_type == 'points'">
           你的下载简历点数不足，下载该简历需要支付
           <span class="red">{{ directServiceInfo.need_points }}</span>
@@ -423,7 +429,7 @@
           <span class="red">{{ directServiceInfo.need_expense }}</span>
           元。
         </div>
-        <div class="tx2" v-if="parseInt(directServiceInfo.discount) > 0">
+        <div class="tx2" v-if="parseInt(directServiceInfo.discount) > 0 && directServiceInfo.use_type != 'package'">
           购买简历包价格低至<span class="red">{{
             directServiceInfo.discount
           }}</span
@@ -1090,13 +1096,24 @@ export default {
             this.enableClick = true
             if (res.data.done == 0) {
               this.showDirectService = true
+              var btnCn = ''
+              if(res.data.use_type == 'points'){
+                btnCn = '立即兑换'
+              }
+              if(res.data.use_type == 'package'){
+                btnCn = '购买增值包'
+              }
+              if(res.data.use_type == 'money'){
+                btnCn = '立即支付'
+              }
               this.directServiceInfo = {
                 use_type: res.data.use_type,
                 need_points: res.data.need_points,
                 need_expense: res.data.need_expense,
                 discount: res.data.discount,
                 resume: this.query_id,
-                btnCn: res.data.use_type == 'points' ? '立即兑换' : '立即支付'
+                btnCn: btnCn,
+                cancel:res.data.use_type == 'package' ? '升级套餐' : '取消'
               }
               return false
             } else {
@@ -1189,8 +1206,17 @@ export default {
     handlerDirectService () {
       if (this.directServiceInfo.use_type == 'points') {
         this.handlerDirectPay('points')
+      }else if(this.directServiceInfo.use_type == 'package'){
+        this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
       } else {
         this.showPayment = true
+      }
+    },
+    cancels () {
+      if (this.directServiceInfo.use_type == 'package') {
+        this.$router.push('/member/order/add/common?type=setmeal')
+      } else {
+          this.showDirectService = false
       }
     },
     handlerDirectPay (payment) {

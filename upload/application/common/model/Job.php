@@ -836,7 +836,7 @@ class Job extends \app\common\model\BaseModel
             }
         }
 
-        $platform = config('platform');
+        $platform = config('platform') ? config('platform') : $params['platform'];
         foreach ($jobList as $jobInfo) {
             $jobIdArr[] = $jobInfo['id'];
             $uidArr[]   = $jobInfo['uid'];

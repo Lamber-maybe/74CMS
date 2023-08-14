@@ -1143,6 +1143,7 @@ CREATE TABLE `qs_member_setmeal` (
   `show_apply_contact` tinyint(1) unsigned NOT NULL,
   `im_max_perday` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '每天最多可发起聊天次数',
   `im_total` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一共可发起聊天次数',
+  `purchase_resume_point` int(10) NOT NULL DEFAULT '0' COMMENT '购买增值简历包',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uid` (`uid`),
   KEY `index_setmeal_id` (`setmeal_id`)

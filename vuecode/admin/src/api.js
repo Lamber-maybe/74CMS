@@ -1,4 +1,4 @@
-import {saveJobSeting} from "@/api/datacollection";
+import {saveJobSeting} from '@/api/datacollection'
 
 export default {
   // 首页仪表盘
@@ -276,6 +276,8 @@ export default {
   jobDelete: '/job/delete',
   jobAudit: '/job/setAudit',
   jobRefresh: '/job/refresh',
+  // 职位推广链接
+  jobLink: '/job/jobLink',
 
   // 企业风采
   companyImgList: '/company_img/index',
@@ -676,7 +678,6 @@ export default {
   sceneQrcodeDownload: '/scene_qrcode/download',
   sceneSearchList: '/scene_qrcode/searchList',
 
-
   // 敏感词
   badwordList: '/badword/index',
   badwordAdd: '/badword/add',
@@ -757,14 +758,14 @@ export default {
   posterTplindexList: '/poster/getTplindexList',
 
   // 刷新职位
-  refresh_job:'/company/refreshJob',
-  //在线升级
-  newVersionList:'/upgrade/newVersionList',
-  updateStart:'/upgrade/startup',
-  updateDownload:'/upgrade/download',
-  speedProgress:'/upgrade/speedProgress',
-  upgradeUnzip:'/upgrade/unzip',
-  upgradeUpdate:'/upgrade/update',
+  refresh_job: '/company/refreshJob',
+  // 在线升级
+  newVersionList: '/upgrade/newVersionList',
+  updateStart: '/upgrade/startup',
+  updateDownload: '/upgrade/download',
+  speedProgress: '/upgrade/speedProgress',
+  upgradeUnzip: '/upgrade/unzip',
+  upgradeUpdate: '/upgrade/update',
 
   // 数据采集
   getSeting: '/collection_seting/getSetingInfo',
@@ -774,7 +775,6 @@ export default {
   saveAccountSeting: '/collection_seting/saveAccountSeting',
   saveArticleSeting: '/collection_seting/saveArticleSeting', // 资讯采集
 
-
   // 个人中心
   personalIndex: '/personal/index',
   personalAvatar: '/personal/avatar',
@@ -783,5 +783,8 @@ export default {
   personalBindingCode: '/personal/bindingCode',
   personalBindingMobile: '/personal/bindingMobile',
 
-
+  // 网络招聘会信息导出
+  jobfairOlListAll: '/jobfairOl/getJobfairOnAll',
+  isExhibitors: '/jobfair_ol_export/isExhibitors',
+  jobfairOlCompanyJobsList: '/jobfair_ol_export/exhibitors'
 }

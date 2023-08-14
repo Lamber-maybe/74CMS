@@ -73,7 +73,8 @@
         <Payment @choosePayment="choosePayment"></Payment>
       </li>
       <li class="btn">
-        <el-button type="primary" @click="submit">{{ amount == 0 ? "立即兑换" : "立即支付" }}</el-button>
+        <!--同一时间多次点击支付生成多条订单修改 zch 2022.07.06-->
+        <el-button type="primary" @click="submit" :disabled="ispay">{{ amount == 0 ? "立即兑换" : "立即支付" }}</el-button>
       </li>
     </ul>
   </div>
@@ -114,7 +115,8 @@ import api from '@/api'
           jobid: ''
         },
         mySetmeal:{},
-        options_timerange:[]
+        options_timerange:[],
+        ispay:false   // 同一时间多次点击支付生成多条订单修改
       }
     },
     watch:{
@@ -210,6 +212,8 @@ import api from '@/api'
         this.submitData.service_id = item.id
       },
       submit () {
+        // 同一时间多次点击支付生成多条订单修改
+        this.ispay = true
         this.submitData.deduct_points = this.is_deduct
           ? this.enable_points_deduct_points
           : 0
@@ -222,6 +226,7 @@ import api from '@/api'
           this.submitData.starttime == ''
         ) {
           this.$message.error('请选择开始刷新时间')
+	  this.ispay = false
           return false
         }
         if (
@@ -229,6 +234,7 @@ import api from '@/api'
           this.submitData.timerange == ''
         ) {
           this.$message.error('请选择刷新时间间隔')
+	  this.ispay = false
           return false
         }
         this.submitData.return_url =
@@ -236,7 +242,10 @@ import api from '@/api'
           '//' +
           window.location.host +
           '/'+this.$store.state.config.member_dirname+'/company/service/order'
-        this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData)
+        // 同一时间多次点击支付生成多条订单修改
+        this.$refs.paySubmit.handlerSubmit(api.company_pay,this.submitData,()=>{
+          this.ispay = false
+        })
       },
     },
   }
