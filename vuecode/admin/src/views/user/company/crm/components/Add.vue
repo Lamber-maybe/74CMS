@@ -109,13 +109,14 @@
       </div>
     </el-dialog>
     <!-- 手机号查重 -->
-    <el-dialog :visible.sync="checkContactResultVisbile" width="30%" :before-close="callHandleClose">
+    <el-dialog :visible.sync="checkContactResultVisbile" width="550px" :before-close="callHandleClose">
       <div class="checkResult checkContactResult">
         <div class="checkResultItem">
           <div v-for="(item, index) in contactVisList" :key="index" class="checkResultItemMargin">
             <div v-if="item.type == 1" class="checkTitle">同手机号线索</div>
             <div v-if="item.type == 2" class="checkTitle">同手机号客户</div>
-            <div class="checkName">线索名称：{{ item.name }}（ID：{{ item.id }}）</div>
+            <div class="checkName" v-if="item.type == 1">线索名称：{{ item.name }}（ID：{{ item.id }}）</div>
+            <div class="checkName" v-if="item.type == 2">客户名称：{{ item.name }}（ID：{{ item.id }}）</div>
             <div class="checkPeo">所属销售：{{ item.username || '暂未分配' }}</div>
           </div>
           <div style="text-align: right;"><el-button type="primary" size="small" @click="callHandleClose">确定</el-button></div>

@@ -48,6 +48,13 @@ class Admin extends \app\common\model\BaseModel
             ]
         );
         $admin_token = $JwtAuth->getString();
+        /**
+         * 【ID1000728】
+         * 【优化】修改密码后清空状态需重新登录
+         * cy 2023-10-20
+         */
+        model('AdminIdentityToken')->makeToken($admininfo['id'], $admin_token);
+
         model('AdminLog')->writeLog(
             '登录成功',
             $admininfo,

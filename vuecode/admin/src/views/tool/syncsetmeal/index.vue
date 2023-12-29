@@ -66,8 +66,12 @@
                   收到简历免费查看:
                   <span class="val">不允许</span>
                 </el-checkbox>
-                <el-checkbox v-else-if="detail.resume_view_num === 0" label="show_apply_contact">收到简历免费查看: <span class="val">不限</span></el-checkbox>
-                <el-checkbox v-else label="show_apply_contact">收到简历免费查看: <span class="val" v-html="detail.resume_view_num" /> 份/天</el-checkbox>
+                <el-checkbox v-if="detail.show_apply_contact === 1" label="show_apply_contact">
+                  收到简历免费查看:
+                  <span class="val">允许</span>
+                </el-checkbox>
+<!--                <el-checkbox v-else-if="detail.resume_view_num === 0" label="show_apply_contact">收到简历免费查看: <span class="val">不限</span></el-checkbox>-->
+<!--                <el-checkbox v-else label="show_apply_contact">收到简历免费查看: <span class="val" v-html="detail.resume_view_num" /> 份/天</el-checkbox>-->
               </el-col>
             </el-row>
             <el-row>

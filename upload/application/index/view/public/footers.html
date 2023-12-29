@@ -98,16 +98,82 @@
         </ul>
     </div>
     <div class="footer_text1">
-        <span>{#$global_config.bottom_other#}</span>	<span class="address">联系地址：{#$global_config.contact_address#}</span>
+        <span class="address">联系地址：{#$global_config.contact_address#}</span>
     </div>
     <div class="footer_text2">
-        {#if condition="$global_config.service_license!=''"#}
-        <span><a>《人力资源服务许可证》编号:{#$global_config.service_license#}</a></span>
+        <!-- ICP -->
+        {#if !empty($global_config.icp)#}
+            <span>
+                网站备案：
+                <a target="_blank" href="https://beian.miit.gov.cn/">
+                    {#$global_config.icp#}
+                </a>
+            </span>
         {#/if#}
-        <span><a target="_blank" href="https://beian.miit.gov.cn/">网站备案:{#$global_config.icp#}</a></span>
-        {#if condition="$global_config.network_security!=''"#}
-		<span class="security"><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={#:findNumByStr($global_config.network_security)#}">公网安备:{#$global_config.network_security#}</a></span>     
+        <!-- 公网安备 -->
+        {#if !empty($global_config.network_security)#}
+            <span class="security">
+                公网安备：
+                <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode={#:findNumByStr($global_config.network_security)#}">
+                    {#$global_config.network_security#}
+                </a>
+            </span>
         {#/if#}
+        <!-- 人力服务许可证 -->
+        {#if !empty($global_config.qualification_publicity.service_license) || !empty($global_config.qualification_publicity.service_license_url)#}
+            <span>
+                人力服务许可证：
+                {#if !empty($global_config.qualification_publicity.service_license_url)#}
+                    <a target="_blank" href="{#$global_config.qualification_publicity.service_license_url#}">
+                        {#if !empty($global_config.qualification_publicity.service_license)#}
+                            {#$global_config.qualification_publicity.service_license#}
+                        {#else#}
+                            查看
+                        {#/if#}
+                    </a>
+                {#else#}
+                    {#$global_config.qualification_publicity.service_license#}
+                {#/if#}
+            </span>
+        {#/if#}
+        <!-- 营业执照 -->
+        {#if !empty($global_config.qualification_publicity.business_license) || !empty($global_config.qualification_publicity.business_license_url)#}
+            <span>
+                营业执照：
+                {#if !empty($global_config.qualification_publicity.business_license_url)#}
+                    <a target="_blank" href="{#$global_config.qualification_publicity.business_license_url#}">
+                        {#if !empty($global_config.qualification_publicity.business_license)#}
+                            {#$global_config.qualification_publicity.business_license#}
+                        {#else#}
+                            查看
+                        {#/if#}
+                    </a>
+                {#else#}
+                    {#$global_config.qualification_publicity.business_license#}
+                {#/if#}
+            </span>
+        {#/if#}
+        <!-- ICP许可证 -->
+        {#if !empty($global_config.qualification_publicity.business_licenses) || !empty($global_config.qualification_publicity.business_licenses_url)#}
+            <span>
+                ICP许可证：
+                {#if !empty($global_config.qualification_publicity.business_licenses_url)#}
+                    <a target="_blank" href="{#$global_config.qualification_publicity.business_licenses_url#}">
+                        {#if !empty($global_config.qualification_publicity.business_licenses)#}
+                            {#$global_config.qualification_publicity.business_licenses#}
+                        {#else#}
+                            查看
+                        {#/if#}
+                    </a>
+                {#else#}
+                    {#$global_config.qualification_publicity.business_licenses#}
+                {#/if#}
+            </span>
+        {#/if#}
+    </div>
+    <div class="footer_text3">
+        <span>{#$global_config.bottom_other#}</span>
+        <!-- 第三方统计代码 -->
         {#if condition="$global_config.statistics!=''"#}
         {#:htmlspecialchars_decode($global_config.statistics)#}
         {#/if#}

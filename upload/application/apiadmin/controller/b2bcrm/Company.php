@@ -1435,7 +1435,7 @@ class Company extends Backend
                 $this->updateMember($uid, $post, $info); // 修改密码或手机号
             }
             if (!empty($arr)) {
-                if ($arr['audit'] === 2) {
+                if (isset($arr['audit']) && $arr['audit'] === 2) {
                     /**
                      * 【ID1000725】
                      * 【新增】职位审核，企业营业执照审核的不通过原因选择

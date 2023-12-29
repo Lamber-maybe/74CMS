@@ -34,3 +34,7 @@ public/nginx.htaccess
 /vue/member/public/static/config.js
 /public/tpl/mobile/static/tongji.js
 /public/tpl/mobile/static/config.js
+/vue/mobile/package-lock.json
+/vue/member/package-lock.json
+/vue/adminm/package-lock.json
+/vue/admin/package-lock.json

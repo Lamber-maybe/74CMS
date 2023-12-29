@@ -377,7 +377,7 @@ class Company extends \app\v1_0\controller\common\Base
                 ->select();
         $return['base_info']['jobnum'] = count($job_list);
         $return['share_url'] = $this->sub_site_domain_m.'company/'.$base_info['id'];
-        model('Job')->addViewLog($base_info['id']);
+        model('Company')->addViewLog($base_info['id']);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
     protected function getCompanyImg($company_id)

@@ -24,8 +24,8 @@ class CompanySetmeal extends Backend
         $pagesize = input('get.pagesize/d', 10, 'intval');
         $setmeal = input('get.setmeal/d', 0, 'intval');
         $expire = input('get.expire/d', 0, 'intval');
-        $admin_id = input('get.admin/d',0,'intval');
-        $order = input('get.order/d',0,'intval');
+        $admin_id = input('get.admin/d', 0, 'intval');
+        $order = input('get.order/d', 0, 'intval');
 
         if ($keyword && $key_type) {
             switch ($key_type) {
@@ -66,7 +66,7 @@ class CompanySetmeal extends Backend
         if ($admin_id > 0) {
             $where['a.admin_id'] = $admin_id;
         }
-        switch ($order){
+        switch ($order) {
             case 1: // 开通时间
                 $order = 'opening_time desc, a.id desc';
                 break;
@@ -96,7 +96,7 @@ class CompanySetmeal extends Backend
 
         foreach ($list as $key => $value) {
             if ($value['opening_time'] > 0) {
-                $value['opening_time'] = date('Y-m-d H:i:s',$value['opening_time']);
+                $value['opening_time'] = date('Y-m-d H:i:s', $value['opening_time']);
             }
             if (empty($value['username'])) {
                 $value['username'] = '-';
@@ -205,7 +205,7 @@ class CompanySetmeal extends Backend
                 'charge_val' => input('post.charge_val/d', 0, 'floatval'),
                 'im_total' => input('post.im_total/d', 0, 'intval'),
                 'im_max_perday' => input('post.im_max_perday/d', 0, 'intval'),
-                'resume_view_num' => input('post.resume_view_num/d', 0, 'intval')
+//                'resume_view_num' => input('post.resume_view_num/d', 0, 'intval')
             ];
             $info = $member_setmeal = model('MemberSetmeal')->where('uid', $input_data['uid'])->find();
 
@@ -332,51 +332,58 @@ class CompanySetmeal extends Backend
                         . '；';
                 }
 
-                if (
-                    $input_data['show_apply_contact'] != $info['show_apply_contact']
-                    ||
-                    $input_data['resume_view_num'] != $info['resume_view_num']
-                ) {
+//                if (
+//                    $input_data['show_apply_contact'] != $info['show_apply_contact']
+//                    ||
+//                    $input_data['resume_view_num'] != $info['resume_view_num']
+//                ) {
+//
+//                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+//                        $log_field .= '收到简历免费查看:'
+//                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+//                            . '->'
+//                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']] . '；';
+//
+//                        if (1 === $input_data['show_apply_contact']) {
+//                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
+//                            if (0 === $input_data['resume_view_num']) {
+//                                $resume_view_num = '不限制';
+//                            }
+//                            $log_field .= '收到简历查看上限:不允许->' . $resume_view_num . '；';
+//                        } else {
+//                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+//                            if (0 === $info['resume_view_num']) {
+//                                $resume_view_num_old = '不限制';
+//                            }
+//                            $log_field .= '收到简历查看上限:' . $resume_view_num_old . '->不允许；';
+//                        }
+//
+//                    } else {
+//
+//                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
+//                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
+//                            if (0 === $input_data['resume_view_num']) {
+//                                $resume_view_num_new = '不限制';
+//                            }
+//                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+//                            if (0 === $info['resume_view_num']) {
+//                                $resume_view_num_old = '不限制';
+//                            }
+//                            $log_field .= '收到简历查看上限:'
+//                                . $resume_view_num_old
+//                                . '->'
+//                                . $resume_view_num_new . '；';
+//                        }
+//
+//                    }
+//
+//                }
 
-                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
-                        $log_field .= '收到简历免费查看:'
-                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
-                            . '->'
-                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']] . '；';
-
-                        if (1 === $input_data['show_apply_contact']) {
-                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
-                            if (0 === $input_data['resume_view_num']) {
-                                $resume_view_num = '不限制';
-                            }
-                            $log_field .= '收到简历查看上限:不允许->' . $resume_view_num . '；';
-                        } else {
-                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
-                            if (0 === $info['resume_view_num']) {
-                                $resume_view_num_old = '不限制';
-                            }
-                            $log_field .= '收到简历查看上限:' . $resume_view_num_old . '->不允许；';
-                        }
-
-                    } else {
-
-                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
-                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
-                            if (0 === $input_data['resume_view_num']) {
-                                $resume_view_num_new = '不限制';
-                            }
-                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
-                            if (0 === $info['resume_view_num']) {
-                                $resume_view_num_old = '不限制';
-                            }
-                            $log_field .= '收到简历查看上限:'
-                                . $resume_view_num_old
-                                . '->'
-                                . $resume_view_num_new . '；';
-                        }
-
-                    }
-
+                if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+                    $log_field .= '收到简历免费查看:'
+                        . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+                        . '->'
+                        . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']] . '；';
                 }
 
                 if ($input_data['download_resume_max_perday'] != $member_setmeal['download_resume_max_perday']) {
@@ -556,16 +563,18 @@ class CompanySetmeal extends Backend
         $return['total_page'] = ceil($total / $pagesize);
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
-    public function setOpeningTime(){
-        $uid = input('get.uid/d',0,'intval');
-        $member_setmeal = model('MemberSetmeal')->where('uid',$uid)->find();
 
-        if ($member_setmeal === null){
+    public function setOpeningTime()
+    {
+        $uid = input('get.uid/d', 0, 'intval');
+        $member_setmeal = model('MemberSetmeal')->where('uid', $uid)->find();
+
+        if ($member_setmeal === null) {
             $this->ajaxReturn(500, '企业uid参数错误');
         }
-        $addtime = model('MemberSetmealLog')->where('uid',$uid)->order('addtime','desc')->value('addtime');
+        $addtime = model('MemberSetmealLog')->where('uid', $uid)->order('addtime', 'desc')->value('addtime');
         if (!empty($addtime)) {
-            $set_opening_time = model('MemberSetmeal')->save(['opening_time'=>$addtime],['uid'=>$uid]);
+            $set_opening_time = model('MemberSetmeal')->save(['opening_time' => $addtime], ['uid' => $uid]);
             if ($set_opening_time === 0) {
                 $this->ajaxReturn(500, '修改失败');
             }

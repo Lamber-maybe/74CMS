@@ -325,6 +325,7 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
 
         $category_district_data = model('CategoryDistrict')->getCache();
         $category = model('Category')->getCache();
+        $categoryJobData = model('CategoryJob')->getCache();
         $returnlist = [];
         foreach ($list as $key => $value) {
             $tmp_arr = [];
@@ -398,12 +399,12 @@ class Jobfairol extends \app\v1_0\controller\common\Base{
             } else {
                 $tmp_arr['district_text'] = '';
             }
-            if ($value['category1'])
+            if ($value['category'])
             {
                 $tmp_arr['category'] = isset(
-                    $category['QS_trade'][$value['category1']]
+                    $categoryJobData[$value['category']]
                 )
-                    ? $category['QS_trade'][$value['category1']]
+                    ? $categoryJobData[$value['category']]
                     : '';
             }else {
                 $tmp_arr['category'] = '';

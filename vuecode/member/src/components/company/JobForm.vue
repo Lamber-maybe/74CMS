@@ -50,8 +50,7 @@
               v-for="item in columnsNature"
               :key="item.id"
             >{{ item.text }}
-            </el-radio
-            >
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -154,8 +153,7 @@
             class="checkbox_mg"
             v-model="form.basic.negotiable"
           >面议
-          </el-checkbox
-          >
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           label="工作地区"
@@ -227,8 +225,7 @@
               @click="form.basic.content = item.content"
               size="medium"
             >{{ item.title }}
-            </el-tag
-            >
+            </el-tag>
           </div>
         </el-form-item>
       </el-card>
@@ -334,10 +331,9 @@
               :value="item.id"
             ></el-option>
           </el-select>
-          <el-checkbox class="checkbox_mg" v-model="form.basic.age_na"
-          >不限
-          </el-checkbox
-          >
+          <el-checkbox class="checkbox_mg" v-model="form.basic.age_na">
+            不限
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           prop="basic.custom_field_1"
@@ -401,10 +397,7 @@
       <el-card>
         <div class="form_title">联系方式</div>
         <el-form-item label="联系方式">
-          <el-select
-            class="name_width"
-            v-model="form.contact.use_company_contact"
-          >
+          <el-select class="name_width" v-model="form.contact.use_company_contact">
             <el-option label="使用企业资料联系方式" :value="1"></el-option>
             <el-option label="使用其他联系方式" :value="0"></el-option>
           </el-select>
@@ -454,8 +447,7 @@
               v-model="secrecyHidden"
               class="checkbox_mg"
             >不对外显示仅接收通知
-            </el-checkbox
-            >
+            </el-checkbox>
           </el-form-item>
           <el-form-item
             prop="contact.telephone"
@@ -494,15 +486,13 @@
               v-model="form.contact.weixin"
               placeholder="请填写微信号"
               @input="hanlderWeixin"
-            ></el-input
-            >
+            ></el-input>
             <el-checkbox
               @change="handlerSync"
               v-model="weixin_sync_mobile"
               class="checkbox_mg"
             >同手机号
-            </el-checkbox
-            >
+            </el-checkbox>
           </el-form-item>
           <el-form-item
             label="联系邮箱"
@@ -544,10 +534,9 @@
         </div>
 
         <el-form-item>
-          <el-checkbox v-model="contactHidden"
-          >联系方式保密（不想受到骚扰）
-          </el-checkbox
-          >
+          <el-checkbox v-model="contactHidden">
+            联系方式保密（不想受到骚扰）
+          </el-checkbox>
         </el-form-item>
 
         <el-form-item label="接收通知">
@@ -568,7 +557,7 @@
         </div>
 
         <div class="btn_wrapper">
-<!--          【ID1000214]连续点击多条职位发布修改-->
+          <!--          【ID1000214]连续点击多条职位发布修改-->
           <el-button type="primary" @click="onSubmit('form')" :loading="ispay">{{
               type == "add" ? "发布职位" : "保存修改"
             }}
@@ -595,9 +584,9 @@
       ></Mapset>
       <div class="preserveBtn">
         <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handlerCloseMap(true)">保 存</el-button>
-        <el-button @click="handlerCloseMap">取 消</el-button>
-      </span>
+          <el-button type="primary" @click="handlerCloseMap(true)">保 存</el-button>
+          <el-button @click="handlerCloseMap">取 消</el-button>
+        </span>
       </div>
     </el-dialog>
   </div>
@@ -639,16 +628,19 @@ export default {
     http
       .post(api.member_account, {})
       .then(res => {
-        if ( parseInt(res.data.bind_weixin) === 1){
+        if (parseInt(res.data.bind_weixin) === 1) {
           this.bind_weixin = false
-        }else {
+        } else {
           this.bind_weixin = true
-          http.get(api.get_qrcode,{type:'bind_weixin'}).then(res=>{
+          http.get(api.get_qrcode, {
+            type: 'bind_weixin'
+          }).then(res => {
             this.scanQrcodeImg = res.data
           })
         }
       })
-      .catch(() => {})
+      .catch(() => {
+      })
     if (this.type === 'add') {
       http
         .get(api.company_index)
@@ -656,7 +648,17 @@ export default {
           this.form.basic.tag = res.data.companyinfo.tag
           this.form.basic.citycategory_arr = res.data.companyinfo.citycategory_arr
         })
-        .catch(() => { })
+        .catch(() => {
+        })
+      // 【ID1000778】
+      // 【优化】发布职位时，工作地区默认拉取企业地址信息，减化填写复杂程度
+      http
+        .get(api.company_profile)
+        .then(res => {
+          this.form.basic.address = res.data.info.address ? res.data.info.address : ''
+        })
+        .catch(() => {
+        })
     }
   },
   computed: {
@@ -670,11 +672,17 @@ export default {
       return this.$store.state.classifyJobCategory
     },
     columnsEducation() {
-      let arr = [{id: 0, text: '不限'}]
+      let arr = [{
+        id: 0,
+        text: '不限'
+      }]
       return arr.concat(this.$store.state.classifyEdu)
     },
     columnsExperience() {
-      let arr = [{id: 0, text: '不限'}]
+      let arr = [{
+        id: 0,
+        text: '不限'
+      }]
       return arr.concat(this.$store.state.classifyExperience)
     },
     columnsTag() {
@@ -720,7 +728,7 @@ export default {
       options_maxwage: [],
       options_maxage: [],
       showMap: false,
-      ispay: false,// 【ID1000214]连续点击多条职位发布修改
+      ispay: false, // 【ID1000214]连续点击多条职位发布修改
       field_rule: {
         basic: {
           department: {},
@@ -867,7 +875,7 @@ export default {
       }
     },
     onSubmit(formName) {
-      this.ispay = true;// 【ID1000214]连续点击多条职位发布修改
+      this.ispay = true; // 【ID1000214]连续点击多条职位发布修改
       this.$refs[formName].validate(valid => {
         if (valid) {
           let submitData = JSON.parse(JSON.stringify(this.form))
@@ -893,7 +901,7 @@ export default {
             contact: submitData.contact
           })
         } else {
-          this.ispay = false;// 【ID1000214]连续点击多条职位发布修改
+          this.ispay = false; // 【ID1000214]连续点击多条职位发布修改
           return false;
         }
       });
@@ -916,7 +924,7 @@ export default {
         this.form.contact.weixin = this.form.contact.mobile
       }
     },
-    handlerSecrecyHidden () {
+    handlerSecrecyHidden() {
       if (this.secrecyHidden === true) {
         this.form.contact.is_secrecy = 0
       } else {
@@ -943,14 +951,16 @@ export default {
       let length = e.length
       let pid = e[length - 1]
       http
-        .get(api.categoryjob_template_list, {pid})
+        .get(api.categoryjob_template_list, {
+          pid
+        })
         .then(res => {
           this.tpllist = res.data
         })
         .catch(() => {
         })
     },
-    handlerNeedNotice () {
+    handlerNeedNotice() {
       if (this.smsNotice === true) {
         this.form.basic.need_notice = 1
       } else {

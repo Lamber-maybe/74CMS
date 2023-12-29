@@ -277,17 +277,26 @@ class Entrust extends \app\common\controller\Backend
                 ],
                 $resume_info['id']
             );
-            //微信通知
+            /**
+             * 区分微信新旧版本模板
+             * cy 2023-10-17
+             */
+            $wechatTplType = config('global_config.wechat_tpl_type');
+            $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+            $wechatTplAlias = 'job_apply';
+            if ($wechatTplType == 2) {
+                $wechatTplAlias = 'job_apply_notify';
+            }
+            $wechatTplData = [
+                $resume_info['fullname'],
+                $job_info['jobname']
+            ];
+            // 微信通知
             model('WechatNotifyRule')->notify(
                 $company_info['uid'],
                 1,
-                'job_apply',
-                [
-                    $resume_info['fullname'].'刚刚投递了您的职位。',
-                    $resume_info['fullname'],
-                    $job_info['jobname'],
-                    '点击立即查看简历详情'
-                ],
+                $wechatTplAlias,
+                $wechatTplData,
                 'resume/'.$resume_info['id']
             );
         }

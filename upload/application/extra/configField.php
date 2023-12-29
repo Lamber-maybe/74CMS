@@ -1126,11 +1126,11 @@ return [
                     1 => '允许'
                 ]
             ],
-            'resume_view_num' => [
-                'name' => '收到简历查看上限',
-                'unit' => '份/天',
-                'map' => []
-            ],
+//            'resume_view_num' => [
+//                'name' => '收到简历查看上限',
+//                'unit' => '份/天',
+//                'map' => []
+//            ],
         ],
         'association' => '',
         'map' => [],

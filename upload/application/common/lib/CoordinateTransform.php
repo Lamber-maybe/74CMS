@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\lib;
 
 class CoordinateTransform
@@ -8,54 +9,58 @@ class CoordinateTransform
     const ee = 0.00669342162296594323;
 
     /**
-     * 度分秒转十进制度
-     * @param $deg
-     * @return bool|float|int|mixed|string
+     * 天地图 转换为 百度
+     * WGS84 转换为 BD-09
+     * @param $lng float|string
+     * @param $lat float|string
+     * @return array
      */
-    public static function degreeMinuteSecondToDecimal($deg)
+    public function wgs84ToBd09($lng, $lat)
     {
-        $_oldCon = $deg;
-        $deg = rtrim(str_replace(['‘’', '’‘', '’', '°', '′', '″', '＇', '“', '”'], '.', $deg), '.');
-        $pointCount = substr_count($deg, '.');
-        if ($pointCount == 1) { // 形如: 111.23412 需要生成第二个点
-            if ($_oldCon == $deg) return $deg;
-            [$str1, $str2] = explode('.', $deg);
-            if (strlen($str2) > 2) {
-                $str2 = substr($str2, 0, 2).'.'.substr($str2, 2);
-                $deg = $str1.'.'.$str2;
-            }
-        } else if ($pointCount == 2) {
-            $deg .= '.0';
-        }
-
-        try {
-            // 形如: 111.23.412 或 111.23.41.2
-            [$deg1, $deg2, $deg3] = explode('.', $deg, 3);
-
-            $deg = $deg1 + $deg2/60 + $deg3/3600;
-            return $deg;
-
-        } catch (\Exception $e) {
-            return false;
-        }
+        // 先将WGS84转为高德腾讯，再转为BD09
+        $tempGeom = $this->wgs84ToGcj02($lng, $lat);
+        // GCJ-02 转 BD09
+        return $this->gcj02ToBd09($tempGeom[0], $tempGeom[1]);
     }
 
     /**
-     * 百度坐标系 (BD-09) 与 火星坐标系 (GCJ-02)的转换
-     * 即 百度 转 谷歌、高德
-     * @param $bdLon float|string
-     * @param $bdLat float|string
+     * 百度 转换为 天地图
+     * BD-09 转换为 WGS84
+     * @param $lng float|string
+     * @param $lat float|string
      * @return array
      */
-    public static function bd09ToGcj02($bdLon, $bdLat)
+    public function bd09ToWgs84($lng, $lat)
     {
-        $x = $bdLon - 0.0065;
-        $y = $bdLat - 0.006;
-        $z = sqrt($x * $x + $y * $y) - 0.00002 * sin($y * self::PI);
-        $theta = atan2($y, $x) - 0.000003 * cos($x * self::PI);
-        $gg_lng = $z * cos($theta);
-        $gg_lat = $z * sin($theta);
-        return [$gg_lng, $gg_lat];
+        // 先将BD09转为高德腾讯，再转为WGS84
+        $tempGeom = $this->bd09ToGcj02($lng, $lat);
+        // GCJ-02 转 WGS84
+        return $this->gcj02ToWgs84($tempGeom[0], $tempGeom[1]);
+    }
+
+    /**
+     * WGS84转GCj02
+     * @param $lng float|string
+     * @param $lat float|string
+     * @return array
+     */
+    public function wgs84ToGcj02($lng, $lat)
+    {
+        if ($this->outOfChina($lng, $lat)) {
+            return [$lng, $lat];
+        } else {
+            $dlat = $this->transformLat($lng - 105.0, $lat - 35.0);
+            $dlng = $this->transformLng($lng - 105.0, $lat - 35.0);
+            $radlat = $lat / 180.0 * self::PI;
+            $magic = sin($radlat);
+            $magic = 1 - self::ee * $magic * $magic;
+            $sqrtmagic = sqrt($magic);
+            $dlat = ($dlat * 180.0) / ((self::a * (1 - self::ee)) / ($magic * $sqrtmagic) * self::PI);
+            $dlng = ($dlng * 180.0) / (self::a / $sqrtmagic * cos($radlat) * self::PI);
+            $mglat = $lat + $dlat;
+            $mglng = $lng + $dlng;
+            return [$mglng, $mglat];
+        }
     }
 
     /**
@@ -65,34 +70,33 @@ class CoordinateTransform
      * @param $lat float|string
      * @return array
      */
-    public static function gcj02ToBd09($lng, $lat)
+    public function gcj02ToBd09($lng, $lat)
     {
-        $z = sqrt($lng * $lng + $lat * $lat) + 0.00002 * sin($lat * self::PI);
-        $theta = atan2($lat, $lng) + 0.000003 * cos($lng * self::PI);
+        $x_PI = 3.14159265358979324 * 3000.0 / 180.0;
+        $z = sqrt($lng * $lng + $lat * $lat) + 0.00002 * sin($lat * $x_PI);
+        $theta = atan2($lat, $lng) + 0.000003 * cos($lng * $x_PI);
         $bd_lng = $z * cos($theta) + 0.0065;
-        $bdLat = $z * sin($theta) + 0.006;
-        return [$bd_lng, $bdLat];
+        $bd_lat = $z * sin($theta) + 0.006;
+        return [$bd_lng, $bd_lat];
     }
 
     /**
-     * WGS84转GCj02
+     * 百度坐标系 (BD-09) 与 火星坐标系 (GCJ-02)的转换
+     * 即 百度 转 谷歌、高德
      * @param $lng float|string
      * @param $lat float|string
      * @return array
      */
-    public static function wgs84ToGcj02($lng, $lat)
+    public function bd09ToGcj02($lng, $lat)
     {
-        $dlat = self::transformlat($lng - 105.0, $lat - 35.0);
-        $dlng = self::transformlng($lng - 105.0, $lat - 35.0);
-        $radlat = $lat / 180.0 * self::PI;
-        $magic = sin($radlat);
-        $magic = 1 - self::ee * $magic * $magic;
-        $sqrtmagic = sqrt($magic);
-        $dlat = ($dlat * 180.0) / ((self::a * (1 - self::ee)) / ($magic * $sqrtmagic) * self::PI);
-        $dlng = ($dlng * 180.0) / (self::a / $sqrtmagic * cos($radlat) * self::PI);
-        $mglat = $lat + $dlat;
-        $mglng = $lng + $dlng;
-        return [$mglng, $mglat];
+        $x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+        $x = $lng - 0.0065;
+        $y = $lat - 0.006;
+        $z = sqrt($x * $x + $y * $y) - 0.00002 * sin($y * $x_pi);
+        $theta = atan2($y, $x) - 0.000003 * cos($x * $x_pi);
+        $gg_lng = $z * cos($theta);
+        $gg_lat = $z * sin($theta);
+        return [$gg_lng, $gg_lat];
     }
 
     /**
@@ -101,61 +105,43 @@ class CoordinateTransform
      * @param $lat float|string
      * @return array
      */
-    public static function gcj02ToWgs84($lng, $lat)
+    public function gcj02ToWgs84($lng, $lat)
     {
-        $dlat = self::transformlat($lng - 105.0, $lat - 35.0);
-        $dlng = self::transformlng($lng - 105.0, $lat - 35.0);
-        $radlat = $lat / 180.0 * self::PI;
-        $magic = sin($radlat);
-        $magic = 1 - self::ee * $magic * $magic;
-        $sqrtmagic = sqrt($magic);
-        $dlat = ($dlat * 180.0) / ((self::a * (1 - self::ee)) / ($magic * $sqrtmagic) * self::PI);
-        $dlng = ($dlng * 180.0) / (self::a / $sqrtmagic * cos($radlat) * self::PI);
-        $mglat = $lat + $dlat;
-        $mglng = $lng + $dlng;
-        return [$mglat, $mglng];
+        if ($this->outOfChina($lng, $lat)) {
+            return [$lng, $lat];
+        } else {
+            $dlat = $this->transformLat($lng - 105.0, $lat - 35.0);
+            $dlng = $this->transformLng($lng - 105.0, $lat - 35.0);
+            $radlat = $lat / 180.0 * self::PI;
+            $magic = sin($radlat);
+            $magic = 1 - self::ee * $magic * $magic;
+            $sqrtmagic = sqrt($magic);
+            $dlat = ($dlat * 180.0) / ((self::a * (1 - self::ee)) / ($magic * $sqrtmagic) * self::PI);
+            $dlng = ($dlng * 180.0) / (self::a / $sqrtmagic * cos($radlat) * self::PI);
+            $mglat = $lat + $dlat;
+            $mglng = $lng + $dlng;
+            return [$lng * 2 - $mglng, $lat * 2 - $mglat];
+        }
     }
 
     /**
-     * WGS84 转换为 BD-09
+     * 判断是否在国内，不在国内则不做偏移
      * @param $lng float|string
      * @param $lat float|string
-     * @return array
+     * @return bool
      */
-    public static function wgs84ToBd09($lng, $lat)
+    private function outOfChina($lng, $lat)
     {
-        //第一次转换
-        $dlat = self::transformlat($lng - 105.0, $lat - 35.0);
-        $dlng = self::transformlng($lng - 105.0, $lat - 35.0);
-        $radlat = $lat / 180.0 * self::PI;
-        $magic = sin($radlat);
-        $magic = 1 - self::ee * $magic * $magic;
-        $sqrtmagic = sqrt($magic);
-        $dlat = ($dlat * 180.0) / ((self::a * (1 - self::ee)) / ($magic * $sqrtmagic) * self::PI);
-        $dlng = ($dlng * 180.0) / (self::a / $sqrtmagic * cos($radlat) * self::PI);
-        $mglat = $lat + $dlat;
-        $mglng = $lng + $dlng;
-
-        $x_PI = 3.14159265358979324 * 3000.0 / 180.0;
-
-        //第二次转换
-        $z = sqrt($mglng * $mglng + $mglat * $mglat) + 0.00002 * sin($mglat * $x_PI);
-        $theta = atan2($mglat, $mglng) + 0.000003 * cos($mglng * $x_PI);
-        $bd_lng = $z * cos($theta) + 0.0065;
-        $bdLat = $z * sin($theta) + 0.006;
-        return [$bd_lng, $bdLat];
+        return ($lng < 72.004 || $lng > 137.8347) || (($lat < 0.8293 || $lat > 55.8271) || false);
     }
 
-    private static function transformlat($lng, $lat)
-    {
-        $ret = -100.0 + 2.0 * $lng + 3.0 * $lat + 0.2 * $lat * $lat + 0.1 * $lng * $lat + 0.2 * sqrt(abs($lng));
-        $ret += (20.0 * sin(6.0 * $lng * self::PI) + 20.0 * sin(2.0 * $lng * self::PI)) * 2.0 / 3.0;
-        $ret += (20.0 * sin($lat * self::PI) + 40.0 * sin($lat / 3.0 * self::PI)) * 2.0 / 3.0;
-        $ret += (160.0 * sin($lat / 12.0 * self::PI) + 320 * sin($lat * self::PI / 30.0)) * 2.0 / 3.0;
-        return $ret;
-    }
-
-    private static function transformlng($lng, $lat)
+    /**
+     * 转换经度
+     * @param $lng float|string
+     * @param $lat float|string
+     * @return float|string
+     */
+    private function transformLng($lng, $lat)
     {
         $ret = 300.0 + $lng + 2.0 * $lat + 0.1 * $lng * $lng + 0.1 * $lng * $lat + 0.1 * sqrt(abs($lng));
         $ret += (20.0 * sin(6.0 * $lng * self::PI) + 20.0 * sin(2.0 * $lng * self::PI)) * 2.0 / 3.0;
@@ -165,14 +151,18 @@ class CoordinateTransform
     }
 
     /**
-     * 百度坐标系(BD-09)转WGS坐标
-     *
-     * @param float $lng 百度坐标纬度
-     * @param float $lat 百度坐标经度
-     * @return array WGS84坐标数组
+     * 转换纬度
+     * @param $lng float|string
+     * @param $lat float|string
+     * @return float|string
      */
-    public static function bd09ToWgs84 ($lng, $lat) {
-        $gcj = self::bd09ToGcj02($lng, $lat);
-        return self::gcj02ToWgs84($gcj[0], $gcj[1]);
+    private function transformLat($lng, $lat)
+    {
+        $ret = -100.0 + 2.0 * $lng + 3.0 * $lat + 0.2 * $lat * $lat + 0.1 * $lng * $lat + 0.2 * sqrt(abs($lng));
+        $ret += (20.0 * sin(6.0 * $lng * self::PI) + 20.0 * sin(2.0 * $lng * self::PI)) * 2.0 / 3.0;
+        $ret += (20.0 * sin($lat * self::PI) + 40.0 * sin($lat / 3.0 * self::PI)) * 2.0 / 3.0;
+        $ret += (160.0 * sin($lat / 12.0 * self::PI) + 320 * sin($lat * self::PI / 30.0)) * 2.0 / 3.0;
+        return $ret;
     }
+
 }

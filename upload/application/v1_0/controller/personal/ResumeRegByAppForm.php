@@ -341,6 +341,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid, '注册 - 保存简历教育经历');
         $this->ajaxReturn(200, '保存成功');
     }
@@ -488,6 +489,7 @@ class ResumeRegByAppForm extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid, '注册 - 保存简历教育经历、工作经历、自我描述');
         $this->ajaxReturn(200, '保存成功');
     }

@@ -888,8 +888,8 @@
             <img class="loadingIcon" src="../../assets/images/personal/resume/loading.gif" alt="" />
             <div>文件上传中，请稍后</div>
           </div>
-          <el-upload v-else class="avatar-uploader avatar-uploader-file" action="#" :show-file-list="false" :http-request="handlerUploadResume"
-            :before-upload="beforeUploadFile">
+          <el-upload v-else class="avatar-uploader avatar-uploader-file" action="#" :show-file-list="false"
+            :http-request="handlerUploadResume" :before-upload="beforeUploadFile">
             <div class="la_title">上传附件</div>
             <div class="la_des">附件简历支持的格式：txt、html、pdf、doc、docx，文件不超过{{sizeLimit}}M</div>
           </el-upload>
@@ -1109,6 +1109,12 @@
         this.$nextTick(function() {
           this.syncRightMenu()
         })
+      },
+      'basic.fullname': function(newVal) { //简历姓名过滤掉输入的表情包
+        var sanitizedText = newVal.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ''); // 使用正则表达式过滤掉表情包
+        if (sanitizedText !== newVal) {
+          this.basic.fullname = sanitizedText; // 将过滤后的文本重新赋值给组件的输入内容
+        }
       }
     },
     computed: {
@@ -2620,7 +2626,7 @@
         // let fileRaw = file;
         // let fileTypeArr = (fileRaw.type || '').split('/');
         let fileArr = file?.name.split(".");
-        let fileType = fileArr[fileArr.length-1]
+        let fileType = fileArr[fileArr.length - 1]
         let typeArr = ['txt', 'html', 'pdf', 'doc', 'docx'];
         if (-1 === typeArr.indexOf(fileType)) {
           this.$message.error('文件类型不支持');
@@ -3280,21 +3286,25 @@
             top: 7px;
           }
         }
-        .l_add{
-          .loadingImg{
-            .loadingIcon{
+
+        .l_add {
+          .loadingImg {
+            .loadingIcon {
               display: block;
               width: 40px;
               height: 40px;
               margin: 0 auto 5px;
             }
           }
-          &.l_add_file{
+
+          &.l_add_file {
             padding-top: 0;
-            .avatar-uploader-file{
+
+            .avatar-uploader-file {
               width: 100%;
               height: 100%;
-              ::v-deep .el-upload{
+
+              ::v-deep .el-upload {
                 width: 100%;
                 height: 100%;
                 padding-top: 23px;

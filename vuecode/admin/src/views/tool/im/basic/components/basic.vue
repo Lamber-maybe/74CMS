@@ -76,11 +76,11 @@ export default {
       setting_secrecy: false
     }
   },
-  created() {
-    this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
-    this.fetchData()
-  },
   methods: {
+    iniFun(){
+      this.setting_secrecy = window.global.SettingSecrecy ? window.global.SettingSecrecy : false
+      this.fetchData()
+    },
     fetchData() {
       this.infoLoading = true
       const param = {}

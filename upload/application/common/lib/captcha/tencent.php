@@ -2,7 +2,7 @@
 namespace app\common\lib\captcha;
 class tencent
 {
-    protected $verify_url = 'https://ssl.captcha.qq.com/ticket/verify';
+    protected $verify_url = 'https://turing.captcha.qcloud.com/ticket/verify';
     private $Appid;
     private $AppSecretKey;
     private $_error;

@@ -294,14 +294,12 @@ class Company extends \app\common\model\BaseModel
 
         $uid_arr = [];
         $audit_log = [];
-        $company_list = $this->where('id', 'in', $idarr)->column(
-            'id,uid',
-            'id'
-        );
-        foreach ($company_list as $key => $value) {
-            $uid_arr[] = $value;
-            $arr['uid'] = $value;
-            $arr['comid'] = $key;
+        $company_list = $this->field('id,uid,companyname')->where('id', 'in', $idarr)->select();
+        $company_list = collection($company_list)->toArray();
+        foreach ($company_list as $value) {
+            $uid_arr[] = $value['uid'];
+            $arr['uid'] = $value['uid'];
+            $arr['comid'] = $value['id'];
             $arr['audit'] = $audit;
             $arr['reason'] = $reason;
             $arr['addtime'] = $timestamp;
@@ -309,47 +307,80 @@ class Company extends \app\common\model\BaseModel
         }
         model('CompanyAuthLog')->saveAll($audit_log);
 
-        //完成企业认证任务
+        $wechatTplType = config('global_config.wechat_tpl_type');
+        $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+        $notifyTime = date('Y年m月d日 H:i', $timestamp);
+
+        // 审核成功
         if ($audit == 1) {
-            foreach ($uid_arr as $key => $value) {
-                model('Task')->doTask($value, 1, 'auth');
+            // 通知
+            model('NotifyRule')->notify($uid_arr, 1, 'company_auth_success');
+
+            $wechatTplAlias = 'company_auth_success';
+            $wechatTplData = [
+                '企业认证资料通过审核',
+                $notifyTime
+            ];
+            foreach ($company_list as $value) {
+                // 完成企业认证任务
+                model('Task')->doTask($value['uid'], 1, 'auth');
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'company_auth_notify';
+                    $wechatTplData = [
+                        $value['companyname'],
+                        '已通过',
+                        $notifyTime
+                    ];
+                }
+                // 微信通知
+                model('WechatNotifyRule')->notify(
+                    $value['uid'],
+                    1,
+                    $wechatTplAlias,
+                    $wechatTplData,
+                    'member/company/index'
+                );
             }
         }
-
-        //通知
-        if ($audit == 1) {
-            model('NotifyRule')->notify($uid_arr, 1, 'company_auth_success');
-            //微信通知
-            model('WechatNotifyRule')->notify(
-                $uid_arr,
-                1,
-                'company_auth_success',
-                [
-                    '您提交的企业认证资料已认证通过。',
-                    '企业认证资料通过审核',
-                    date('Y年m月d日 H:i',$timestamp),
-                    '点击进入会员中心'
-                ],
-                'member/company/index'
-            );
-        }
+        // 未通过
         if ($audit == 2) {
+            // 通知
             model('NotifyRule')->notify($uid_arr, 1, 'company_auth_fail', [
                 'reason' => $reason
             ]);
-            model('WechatNotifyRule')->notify(
-                $uid_arr,
-                1,
-                'company_auth_fail',
-                [
-                    '您提交的企业认证未通过审核。',
-                    '企业认证资料审核不通过',
-                    date('Y年m月d日 H:i',$timestamp),
-                    $reason?$reason:'无',
-                    '请修改后再次发布，点击去修改'
-                ],
-                'member/company/auth'
-            );
+
+            $wechatTplAlias = 'company_auth_fail';
+            $wechatTplData = [
+                '企业认证资料审核不通过',
+                $notifyTime,
+                $reason ? $reason : '无'
+            ];
+            foreach ($company_list as $value) {
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'company_auth_notify';
+                    $wechatTplData = [
+                        $value['companyname'],
+                        '未通过',
+                        $notifyTime
+                    ];
+                }
+                // 微信通知
+                model('WechatNotifyRule')->notify(
+                    $value['uid'],
+                    1,
+                    $wechatTplAlias,
+                    $wechatTplData,
+                    'member/company/auth'
+                );
+            }
         }
         return;
     }

@@ -102,7 +102,7 @@ class Admin extends Backend
             $info = model('Admin')
                 ->alias('a')
                 ->join('admin_role r', 'r.id = a.role_id', 'LEFT')
-                ->field('a.username,a.role_id,a.password,a.pwd_hash,a.status,r.name as role_name')
+                ->field('a.id,a.username,a.role_id,a.password,a.pwd_hash,a.status,r.name as role_name')
                 ->where('a.id', $id)
                 ->find();
             if (!$info) {
@@ -111,6 +111,7 @@ class Admin extends Backend
 
             $log_field = '系统-系统管理员-管理员列表，修改管理员，';
             $is_update = false;
+            $delToken = false;
 
             if ($input_data['role_id'] != $info['role_id']) {
                 $role_name = model('AdminRole')->where('id', $input_data['role_id'])->value('name');
@@ -134,6 +135,14 @@ class Admin extends Backend
                     $info['pwd_hash']
                 );
                 $is_update = true;
+                /**
+                 * 如果不是修改的自己的密码就清除登录信息
+                 * 进行重新登录
+                 * cy 2023-10-20
+                 */
+                if ($info['id'] != $this->admininfo['id']) {
+                    $delToken = true;
+                }
             } else {
                 $input_data['password'] = $info['password'];
             }
@@ -176,6 +185,14 @@ class Admin extends Backend
                     if (false === $log_result) {
                         throw new \Exception(model('AdminLog')->getError());
                     }
+                }
+                /**
+                 * 【ID1000728】
+                 * 【优化】修改密码后清空状态需重新登录
+                 * cy 2023-10-20
+                 */
+                if (true === $delToken) {
+                    model('AdminIdentityToken')->where(['admin_id' => $info['id']])->delete();
                 }
 
                 //提交事务

@@ -260,7 +260,7 @@ export default {
       getAdminCrmData(param).then(response => {
         var that = this
         that
-          .$confirm('当前管理员 ' + username + ' 有 ' + response.data.total_company + ' 线索, ' + response.data.total_clue + ' 客户,锁定后将自动释放且无法登录管理后台,是否继续？', '提示', {
+          .$confirm('当前管理员 ' + username + ' 有 ' + response.data.total_clue + ' 线索, ' + response.data.total_company + ' 客户,锁定后将自动释放且无法登录管理后台,是否继续？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'

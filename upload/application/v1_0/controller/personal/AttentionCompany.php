@@ -134,7 +134,7 @@ class AttentionCompany extends \app\v1_0\controller\common\Base
         }
         $list = model('AttentionCompany')
             ->where([
-                'id' => ['eq', $id],
+                'id' => ['in', $id],
                 'personal_uid' => $this->userinfo->uid
             ])
             ->column('comid');

@@ -116,10 +116,10 @@
                         <div class="hover_title">套餐特权</div>
                         <ul>
                           <li v-if="item.service_added_discount>0">套餐增值包折扣{{item.service_added_discount}}折</li>
-                          <li v-if="item.show_apply_contact==1">
-                            <span v-if="item.show_apply_contact === 0">不允许</span>
-                            <span v-else-if="item.resume_view_num === 0">收到简历免费查看：不限</span>
-                            <span v-else>收到简历免费查看：{{item.resume_view_num}}份/天</span>
+                          <li v-if="item.show_apply_contact===1">
+                            <span>收到简历免费查看：允许</span>
+<!--                            <span v-else-if="item.resume_view_num === 0">收到简历免费查看：不限</span>-->
+<!--                            <span v-else>收到简历免费查看：{{item.resume_view_num}}份/天</span>-->
                           </li>
                         </ul>
                         <div class="hover_otd" v-if="item.note!=''">

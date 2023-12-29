@@ -966,7 +966,8 @@ INSERT INTO `qs_config` VALUES
 (null,'map_type',1,'1','地图类型 1-百度地图 2-天地图',0),
 (null,'tian_map_ak',1,'','天地图ak',0),
 (null,'tian_map_server_ak',0,'','天地图服务端ak',0),
-(null,'subsite_domain',1,'','分站顶级域名',0);
+(null,'subsite_domain',1,'','分站顶级域名',0),
+(NULL, 'wechat_tpl_type', 0, '2', '微信模板类型：1|旧版，2|新版', 0);
 
 INSERT INTO `qs_cron` VALUES
 (NULL, '清除过期服务', 'ServiceClear', -1, -1, -1, '1', 0, 0, 1, 1, 0, 0),
@@ -1240,10 +1241,10 @@ INSERT INTO `qs_resume_module` VALUES
 (NUll,'img','照片作品',10,1,1);
 
 INSERT INTO `qs_setmeal` VALUES
-(1,'免费会员',261,'0.00',0,0,'0.00',0,0,1,0,1,3,50,0.0,0,0,1,'',0,0,0,0,0,0,0),
-(2,'月度会员',0,'500.00',30,1,'300.00',1606060800,1609344000,1500,10,5,5,30,0.0,0,1,0,'',1,0,1,1,0,0,0),
-(3,'季度会员',0,'1200.00',90,0,'0.00',0,0,4000,0,3,10,50,0.0,0,0,1,'',0,0,1,1,0,0,0),
-(4,'年度会员',0,'2500.00',365,0,'0.00',0,0,10000,0,20,20,100,0.0,1,1,1,'赠送广告位',0,0,1,1,0,0,0);
+(1, '免费会员', 0, '0.00', 0, 0, '0.00', 0, 0, 10, 0, 1, 3, 2, 0.0, 0, 1, '', 0, 0, 1, 1, 0, 0, 0),
+(2, '月度会员', 0, '500.00', 30, 1, '300.00', 1661961600, 1693670400, 1500, 10, 5, 5, 50, 0.0, 1, 0, '', 0, 0, 1, 1, 0, 0, 0),
+(3, '季度会员', 0, '1200.00', 90, 0, '0.00', 0, 0, 4000, 0, 10, 10, 50, 7.0, 0, 1, '', 1, 0, 1, 1, 0, 0, 0),
+(4, '年度会员', 0, '2500.00', 365, 0, '0.00', 0, 0, 10000, 0, 20, 20, 100, 7.5, 1, 1, '赠送广告位', 1, 0, 1, 1, 0, 0, 0);
 
 
 INSERT INTO `qs_sms_tpl` VALUES
@@ -1293,19 +1294,31 @@ INSERT INTO `qs_wechat_menu` VALUES
 (15,11,'联系客服','contact','click','','',0);
 
 INSERT INTO `qs_wechat_notify_rule` VALUES
-(NUll,'job_apply',1,'收到简历',1,'收到简历提醒','OPENTM412895123','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','姓名,应聘职位'),
-(NUll,'job_audit_success',1,'职位审核通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间'),
-(NUll,'job_audit_fail',1,'职位审核未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因'),
-(NUll,'company_auth_success',1,'企业认证通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间'),
-(NUll,'company_auth_fail',1,'企业认证未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因'),
-(NUll,'order_pay',1,'订单支付成功',1,'订单支付成功通知','OPENTM417876802','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"keyword5\",\"remark\"]','订单编号,商品信息,已付金额,支付方式,支付时间'),
-(NUll,'interview',2,'面试邀请',1,'面试邀请提醒','OPENTM405565651','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','企业名称,邀请职位,邀请时间'),
-(NUll,'order_pay',2,'订单支付成功',1,'订单支付成功通知','OPENTM417876802','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"keyword5\",\"remark\"]','订单编号,商品信息,已付金额,支付方式,支付时间'),
-(NUll,'resume_audit_success',2,'简历审核通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间'),
-(NUll,'resume_audit_fail',2,'简历审核未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因'),
-(NUll,'cron_subscribe',2,'职位订阅推送',1,'订阅岗位提醒','OPENTM411984651','商业服务 - 中介服务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"remark\"]','招聘单位,招聘岗位,工作地点,薪资待遇'),
-(NUll,'cron_setmeal_overtime',1,'会员到期',1,'会员到期提醒','OPENTM406200321','IT科技 - 互联网|电子商务','','[\"keyword1\",\"keyword2\"]','套餐名称，到期的日期'),
-(NUll,'interview_video',2,'视频面试邀请',1,'面试邀请提醒','OPENTM405565651','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','企业名称,邀请职位,邀请时间');
+(NUll,'job_apply',1,'收到简历',1,'收到简历提醒','OPENTM412895123','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','姓名,应聘职位',1),
+(NUll,'job_audit_success',1,'职位审核通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间',1),
+(NUll,'job_audit_fail',1,'职位审核未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因',1),
+(NUll,'company_auth_success',1,'企业认证通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间',1),
+(NUll,'company_auth_fail',1,'企业认证未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因',1),
+(NUll,'order_pay',1,'订单支付成功',1,'订单支付成功通知','OPENTM417876802','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"keyword5\",\"remark\"]','订单编号,商品信息,已付金额,支付方式,支付时间',1),
+(NUll,'interview',2,'面试邀请',1,'面试邀请提醒','OPENTM405565651','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','企业名称,邀请职位,邀请时间',1),
+(NUll,'order_pay',2,'订单支付成功',1,'订单支付成功通知','OPENTM417876802','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"keyword5\",\"remark\"]','订单编号,商品信息,已付金额,支付方式,支付时间',1),
+(NUll,'resume_audit_success',2,'简历审核通过',1,'审核通过提醒','OPENTM411793302','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"remark\"]','审核状态,审核时间',1),
+(NUll,'resume_audit_fail',2,'简历审核未通过',1,'审核不通过提醒','OPENTM411793308','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','审核状态,审核时间,不通过原因',1),
+(NUll,'cron_subscribe',2,'职位订阅推送',1,'订阅岗位提醒','OPENTM411984651','商业服务 - 中介服务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"keyword4\",\"remark\"]','招聘单位,招聘岗位,工作地点,薪资待遇',1),
+(NUll,'cron_setmeal_overtime',1,'会员到期',1,'会员到期提醒','OPENTM406200321','IT科技 - 互联网|电子商务','','[\"keyword1\",\"keyword2\"]','套餐名称，到期的日期',1),
+(NUll,'interview_video',2,'视频面试邀请',1,'面试邀请提醒','OPENTM405565651','IT科技 - 互联网|电子商务','','[\"first\",\"keyword1\",\"keyword2\",\"keyword3\",\"remark\"]','企业名称,邀请职位,邀请时间',1),
+(NULL, 'job_apply_notify', 1, '收到投递简历通知', 1, '收到投递简历通知', '46731', '生活服务 - 求职/招聘', '', '[\"thing1\",\"thing2\"]', '投递人,投递职位', 2),
+(NULL, 'job_auth_notify', 1, '职位审核通过提醒', 1, '职位审核通过提醒', '49272', '生活服务 - 求职/招聘', '', '[\"thing1\",\"time2\"]', '职位名称,提交时间', 2),
+(NULL, 'job_audit_fail_notify', 1, '职位审核失败通知', 1, '职位审核失败通知', '49762', '生活服务 - 求职/招聘', '', '[\"thing1\",\"time2\"]', '职位名称,提交时间', 2),
+(NULL, 'company_auth_notify', 1, '企业认证审核结果通知', 1, '企业认证审核结果通知', '51164', '商业服务 - 企业管理', '', '[\"thing1\",\"const2\",\"time3\"]', '企业名称,审核结果,审核时间', 2),
+(NULL, 'order_pay_notify', 1, '订单支付成功', 1, '订单支付成功通知', '51466', '生活服务 - 求职/招聘', '', '[\"character_string4\",\"thing1\",\"time3\"]', '订单编号,套餐名称,充值时间', 2),
+(NULL, 'freelance_audit_notify', 1, '自由职业审核通过', 1, '自由职业审核通过', '49272', '生活服务 - 求职/招聘', '', '[\"thing1\",\"time2\"]', '职位名称,提交时间', 2),
+(NULL, 'interview_notify', 2, '面试安排通知', 1, '面试邀请提醒', '46999', '生活服务 - 求职/招聘', '', '[\"thing2\",\"thing1\",\"time3\",\"thing4\",\"thing5\"]', '公司名称,职位名称,面试时间,面试地点,联系人', 2),
+(NULL, 'order_pay_notify', 2, '订单支付成功', 1, '订单支付成功通知', '51466', '生活服务 - 求职/招聘', '', '[\"character_string4\",\"thing1\",\"time3\"]', '订单编号,套餐名称,充值时间', 2),
+(NULL, 'register_audit_notify', 2, '账号注册审核结果通知', 1, '账号注册审核结果通知', '51638', '商业服务 - 企业管理', '', '[\"thing1\",\"const2\"]', '申请人,审核结果', 2),
+(NULL, 'enroll_success_notify', 2, '岗位报名成功通知', 1, '岗位报名成功通知', '47173', '生活服务 - 求职/招聘', '', '[\"thing1\",\"thing2\"]', '专题名称,岗位名称', 2),
+(NULL, 'interview_video_notify', 2, '视频面试邀请', 1, '面试邀请提醒', '46999', '生活服务 - 求职/招聘', '', '[\"thing2\",\"thing1\",\"time3\",\"thing4\",\"thing5\"]', '公司名称,职位名称,面试时间,面试地点,联系人', 2),
+(NULL, 'freelance_audit_notify', 2, '自由职业审核通过', 1, '自由职业审核通过', '51638', '商业服务 - 企业管理', '', '[\"thing1\",\"const2\"]', '申请人,审核结果', 2);
 
 INSERT INTO `qs_wechat_share` VALUES
 (NUll,'index','首页','找工作招人才就上{sitename}','logo','','靠谱好工作就上{sitename}({sitedomain})','[{\"label\":\"网站名称\",\"value\":\"sitename\"},{\"label\":\"网站域名\",\"value\":\"sitedomain\"}]'),
@@ -1474,7 +1487,8 @@ INSERT INTO `qs_im_rule` VALUES
 (NULL,'display_status','1',1,'企业显示要求'),
 (NULL,'bind_weixin','0',1,'是否必需绑定微信'),
 (NULL,'unread_reminder',0,0,'在线聊未读消息短信通知'),
-(NULL,'unread_templateid','',0,'微信模板消息通知ID');
+(NULL,'unread_templateid','',0,'微信模板消息通知ID'),
+(NULL,'unread_templateid_2','',0,'微信(新)模板消息通知ID');
 
 
 INSERT INTO `qs_company_service_im` VALUES

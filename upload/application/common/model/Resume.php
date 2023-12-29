@@ -826,11 +826,12 @@ class Resume extends \app\common\model\BaseModel
         $this->where('id', 'in', $idarr)->setField('audit', $audit);
         $uid_arr = [];
         $audit_log = [];
-        $resume_list = $this->where('id', 'in', $idarr)->column('id,uid', 'id');
-        foreach ($resume_list as $key => $value) {
-            $uid_arr[] = $value;
-            $arr['uid'] = $value;
-            $arr['resumeid'] = $key;
+        $resume_list = $this->field('id,uid,fullname')->where('id', 'in', $idarr)->select();
+        $resume_list = collection($resume_list)->toArray();
+        foreach ($resume_list as $value) {
+            $uid_arr[] = $value['uid'];
+            $arr['uid'] = $value['uid'];
+            $arr['resumeid'] = $value['id'];
             $arr['audit'] = $audit;
             $arr['reason'] = $reason;
             $arr['addtime'] = $timestamp;
@@ -839,41 +840,75 @@ class Resume extends \app\common\model\BaseModel
         model('ResumeAuditLog')->saveAll($audit_log);
         $this->refreshSearchBatch($idarr);
 
+        $wechatTplType = config('global_config.wechat_tpl_type');
+        $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+        $notifyTime = date('Y年m月d日 H:i', $timestamp);
+
         //通知
         if ($audit == 1) {
+            // 通知
             model('NotifyRule')->notify($uid_arr, 2, 'resume_audit_success');
-            //微信通知
-            model('WechatNotifyRule')->notify(
-                $uid_arr,
-                2,
-                'resume_audit_success',
-                [
-                    '您的简历已通过审核。',
-                    '您的简历已通过审核',
-                    date('Y年m月d日 H:i'),
-                    '点击查看查看最新招聘职位'
-                ],
-                'joblist'
-            );
+
+            $wechatTplAlias = 'resume_audit_success';
+            $wechatTplData = [
+                '您的简历已通过审核',
+                $notifyTime
+            ];
+            foreach ($resume_list as $value) {
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'register_audit_notify';
+                    $wechatTplData = [
+                        $value['fullname'],
+                        '已通过'
+                    ];
+                }
+                // 微信通知
+                model('WechatNotifyRule')->notify(
+                    $value['uid'],
+                    2,
+                    $wechatTplAlias,
+                    $wechatTplData,
+                    'joblist'
+                );
+            }
         }
         if ($audit == 2) {
+            // 通知
             model('NotifyRule')->notify($uid_arr, 2, 'resume_audit_fail', [
                 'reason' => $reason
             ]);
-            //微信通知
-            model('WechatNotifyRule')->notify(
-                $uid_arr,
-                2,
-                'resume_audit_fail',
-                [
-                    '您的简历未通过审核。',
-                    '您的简历未通过审核',
-                    date('Y年m月d日 H:i'),
-                    $reason ? $reason : '无',
-                    '请修改后再次发布，点击去修改'
-                ],
-                'member/personal/resume'
-            );
+
+            $wechatTplAlias = 'resume_audit_fail';
+            $wechatTplData = [
+                '您的简历未通过审核',
+                $notifyTime,
+                $reason ? $reason : '无'
+            ];
+            foreach ($resume_list as $value) {
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'register_audit_notify';
+                    $wechatTplData = [
+                        $value['fullname'],
+                        '未通过'
+                    ];
+                }
+                // 微信通知
+                model('WechatNotifyRule')->notify(
+                    $value['uid'],
+                    2,
+                    $wechatTplAlias,
+                    $wechatTplData,
+                    'member/personal/resume'
+                );
+            }
         }
         return;
     }

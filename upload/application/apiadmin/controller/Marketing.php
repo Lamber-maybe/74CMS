@@ -400,6 +400,14 @@ class Marketing extends Backend
             ci.website as company_website,
             c.tag');
 
+        /**
+         * 【ID1000740】
+         * 【bug】营销工具-社群推文 筛选职位，指定职业，指定企业过滤
+         * 只查询显示状态下的企业
+         * cy 2023-8-2
+         */
+        $model = $model->where('c.is_display', 1);
+
         // 企业性质
         if (isset($condition['nature']) && count($condition['nature']) > 0) {
             $model = $model->where('c.nature', 'in', $condition['nature']);
@@ -662,13 +670,15 @@ class Marketing extends Backend
                 ->whereOr('c.id', 'eq', $keyword)
                 ->whereOr('c.companyname', 'like', '%' . $keyword . '%')
                 ->whereOr('m.mobile', 'like', '%' . $keyword . '%')
-                ->field('c.id as company_id, c.uid as uid, c.companyname as company_name, m.mobile')
+                ->field('c.id as company_id, c.uid as uid, c.companyname as company_name, m.mobile,c.is_display')
                 ->order('refreshtime desc')
                 ->select();
             if (isset($company_list) && !empty($company_list)) {
                 $comid_arr = [];
                 foreach ($company_list as $company) {
-                    $comid_arr[] = $company['company_id'];
+                    if ($company['is_display'] == 1) {
+                        $comid_arr[] = $company['company_id'];
+                    }
                 }
 
                 $job_data = [];

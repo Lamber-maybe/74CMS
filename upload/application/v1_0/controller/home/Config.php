@@ -104,6 +104,31 @@ class Config extends \app\v1_0\controller\common\Base
         $config_payment = config('global_config.account_alipay');
         $list['account_alipay_appid'] = $config_payment['appid'];
         $list['account_zhitoo_resume'] = config('global_config.account_zhitoo_resume');
+        /**
+         * 增加app资质公示字段
+         * cy 2023-7-28
+         */
+        // 电子营业执照
+        if (!isset($list['qualification_publicity']['business_license_url']) || empty($list['qualification_publicity']['business_license_url'])) {
+            $list['qualification_publicity']['business_license_url'] = '';
+            if (!empty($list['qualification_publicity']['business_license_id'])) {
+                $list['qualification_publicity']['business_license_url'] = model('Uploadfile')->getFileUrl($list['qualification_publicity']['business_license_id']);
+            }
+        }
+        // 人力资源服务许可证
+        if (!isset($list['qualification_publicity']['service_license_url']) || empty($list['qualification_publicity']['service_license_url'])) {
+            $list['qualification_publicity']['service_license_url'] = '';
+            if (!empty($list['qualification_publicity']['service_license_id'])) {
+                $list['qualification_publicity']['service_license_url'] = model('Uploadfile')->getFileUrl($list['qualification_publicity']['service_license_id']);
+            }
+        }
+        // 增值电信业务经营许可证
+        if (!isset($list['qualification_publicity']['business_licenses_url']) || empty($list['qualification_publicity']['business_licenses_url'])) {
+            $list['qualification_publicity']['business_licenses_url'] = '';
+            if (!empty($list['qualification_publicity']['business_licenses_id'])) {
+                $list['qualification_publicity']['business_licenses_url'] = model('Uploadfile')->getFileUrl($list['qualification_publicity']['business_licenses_id']);
+            }
+        }
         $this->ajaxReturn(200, '获取数据成功', $list);
     }
     /**

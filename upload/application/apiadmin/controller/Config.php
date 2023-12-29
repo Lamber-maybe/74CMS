@@ -33,13 +33,15 @@ class Config extends \app\common\controller\Backend
             }
 
             /**
-             * 【新增】
-             * app资质公示增加字段
-             * zch - 2022.09.14
+             * 增加app资质公示字段
+             * cy 2023-7-28
              */
-            $info['business_license_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_license_id']); //电子营业执照
-            $info['service_license_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['service_license_id']); // 人力资源服务许可证
-            $info['business_licenses_url'] = model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_licenses_id']); // 增值电信业务经营许可证
+            // 电子营业执照
+            $info['qualification_publicity']['business_license_url'] = isset($info['qualification_publicity']['business_license_id']) && !empty($info['qualification_publicity']['business_license_id']) ? model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_license_id']) : '';
+            // 人力资源服务许可证
+            $info['qualification_publicity']['service_license_url'] = isset($info['qualification_publicity']['service_license_id']) && !empty($info['qualification_publicity']['service_license_id']) ? model('Uploadfile')->getFileUrl($info['qualification_publicity']['service_license_id']) : '';
+            // 增值电信业务经营许可证
+            $info['qualification_publicity']['business_licenses_url'] = isset($info['qualification_publicity']['business_licenses_id']) && !empty($info['qualification_publicity']['business_licenses_id']) ? model('Uploadfile')->getFileUrl($info['qualification_publicity']['business_licenses_id']) : '';
             if (isset($info['map_lng']) && isset($info['map_lat']))
             {
                 $coordinate = model('Config')->bd09ToWgs84($info['map_lng'],$info['map_lat']);
@@ -84,6 +86,19 @@ class Config extends \app\common\controller\Backend
                     $inputdata['captcha_picture_rule']['codeSet'] = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 }
             }
+            // 电子营业执照
+            if (isset($inputdata['qualification_publicity']['business_license_id']) && !empty($inputdata['qualification_publicity']['business_license_id'])) {
+                $inputdata['qualification_publicity']['business_license_url'] = model('Uploadfile')->getFileUrl($inputdata['qualification_publicity']['business_license_id']);
+            }
+            // 人力资源服务许可证
+            if (isset($inputdata['qualification_publicity']['service_license_id']) && !empty($inputdata['qualification_publicity']['service_license_id'])) {
+                $inputdata['qualification_publicity']['service_license_url'] = model('Uploadfile')->getFileUrl($inputdata['qualification_publicity']['service_license_id']);
+            }
+            // 增值电信业务经营许可证
+            if (isset($inputdata['qualification_publicity']['business_licenses_id']) && !empty($inputdata['qualification_publicity']['business_licenses_id'])) {
+                $inputdata['qualification_publicity']['business_licenses_url'] = model('Uploadfile')->getFileUrl($inputdata['qualification_publicity']['business_licenses_id']);
+            }
+
             try {
                 // 开启事务
                 Db::startTrans();
@@ -683,6 +698,9 @@ class Config extends \app\common\controller\Backend
             $sqldata[] = $arr;
             $utype = $configlist[$value['id']]['utype'];
         }
+        if (empty($sqldata)) {
+            $this->ajaxReturn(500, '模板数据不存在');
+        }
 
         try {
             Db::startTrans();
@@ -692,7 +710,7 @@ class Config extends \app\common\controller\Backend
                 ->isUpdate()
                 ->saveAll($sqldata);
             if ($save_result === false) {
-                throw new Exception(model('WechatNotifyRule')->getError());
+                throw new \Exception(model('WechatNotifyRule')->getError());
             }
 
             switch ($utype) {
@@ -721,7 +739,7 @@ class Config extends \app\common\controller\Backend
                 3
             );
             if (false === $log_result) {
-                throw new Exception(model('AdminLog')->getError());
+                throw new \Exception(model('AdminLog')->getError());
             }
 
             Db::commit();
@@ -738,10 +756,76 @@ class Config extends \app\common\controller\Backend
         $utype = input('get.utype/d', 1, 'intval');
         $return = [];
         $list = model('WechatNotifyRule')->getCache();
-        $list = $list[$utype];
-        foreach ($list as $key => $value) {
-            $return[] = $value;
+        if (isset($list[$utype]) && !empty($list[$utype])) {
+            $list = $list[$utype];
+            foreach ($list as $value) {
+                $return[] = $value;
+            }
         }
         $this->ajaxReturn(200, '获取数据成功', $return);
     }
+
+    /**
+     * 切换微信模板类型
+     * @access public
+     * @author edc
+     */
+    public function switchWechatTplType()
+    {
+        $wechatTplType = input('post.wechat_tpl_type/d', 1, 'intval');
+        if (!in_array($wechatTplType, [1, 2])) {
+            $this->ajaxReturn(500, '参数有误');
+        }
+        $wechatTplTypeData = [
+            1 => '历史模板',
+            2 => '类目模板'
+        ];
+
+        $configWhere = [
+            'name' => 'wechat_tpl_type'
+        ];
+        $configModel = model('config');
+        $configId = $configModel->where($configWhere)->value('id');
+        if (empty($configId)) {
+            $this->ajaxReturn(500, '未找到对应参数');
+        }
+
+        // 开启事务
+        $configModel->startTrans();
+        try {
+            // 修改模板类型
+            $configData = [
+                'id' => $configId,
+                'value' => $wechatTplType
+            ];
+            $result = $configModel->isUpdate()->save($configData);
+            if (false === $result) {
+                throw new \Exception('修改模板类型失败-请求SQL为：' . $configModel->getLastSql());
+            }
+
+            // 记录日志
+            $log_result = model('AdminLog')->writeLog(
+                '系统-微信平台配置-模板消息通知，选择模板:' . $wechatTplTypeData[$wechatTplType] . '。',
+                $this->admininfo,
+                0,
+                3
+            );
+            if (false === $log_result) {
+                throw new \Exception(model('AdminLog')->getError());
+            }
+
+            // 清除微信模板规则缓存
+            cache('cache_wechat_notify_rule', null);
+
+            // 提交事务
+            $configModel->commit();
+        } catch (\Throwable $e) {
+            // 回滚事务
+            $configModel->rollback();
+            saveLog('切换失败-报错信息：' . json_encode(['Line' => $e->getLine(), 'File' => $e->getFile(), 'Message' => $e->getMessage()]));
+            $this->ajaxReturn(500, '切换失败');
+        }
+        $this->ajaxReturn(200, '切换成功');
+    }
+
 }

@@ -15,6 +15,31 @@ class Base extends \app\common\controller\Base
         $global_config['square_logo'] = isset($img_arr[$global_config['square_logo']])?$img_arr[$global_config['square_logo']]:make_file_url('resource/square_logo.png');
         $global_config['wechat_qrcode'] = isset($img_arr[$global_config['wechat_qrcode']])?$img_arr[$global_config['wechat_qrcode']]:make_file_url('resource/weixin_img.jpg');
         $global_config['guide_qrcode'] = isset($img_arr[$global_config['guide_qrcode']])?$img_arr[$global_config['guide_qrcode']]:'';
+        /**
+         * 增加app资质公示字段
+         * cy 2023-7-28
+         */
+        // 电子营业执照
+        if (!isset($global_config['qualification_publicity']['business_license_url']) || empty($global_config['qualification_publicity']['business_license_url'])) {
+            $global_config['qualification_publicity']['business_license_url'] = '';
+            if (!empty($global_config['qualification_publicity']['business_license_id'])) {
+                $global_config['qualification_publicity']['business_license_url'] = model('Uploadfile')->getFileUrl($global_config['qualification_publicity']['business_license_id']);
+            }
+        }
+        // 人力资源服务许可证
+        if (!isset($global_config['qualification_publicity']['service_license_url']) || empty($global_config['qualification_publicity']['service_license_url'])) {
+            $global_config['qualification_publicity']['service_license_url'] = '';
+            if (!empty($global_config['qualification_publicity']['service_license_id'])) {
+                $global_config['qualification_publicity']['service_license_url'] = model('Uploadfile')->getFileUrl($global_config['qualification_publicity']['service_license_id']);
+            }
+        }
+        // 增值电信业务经营许可证
+        if (!isset($global_config['qualification_publicity']['business_licenses_url']) || empty($global_config['qualification_publicity']['business_licenses_url'])) {
+            $global_config['qualification_publicity']['business_licenses_url'] = '';
+            if (!empty($global_config['qualification_publicity']['business_licenses_id'])) {
+                $global_config['qualification_publicity']['business_licenses_url'] = model('Uploadfile')->getFileUrl($global_config['qualification_publicity']['business_licenses_id']);
+            }
+        }
         $this->assign('global_config',$global_config);
         $this->initPageHeader($global_config);
         $this->initVisitor();

@@ -279,7 +279,7 @@ export default {
     },
     getDataList(){
       this.loading = true
-      recycleBinList({ 'pagesize': 10, 'page': this.currentPage, 'keyword': this.keyword }).then(response => {
+      recycleBinList({ 'pagesize': this.pagesize, 'page': this.currentPage, 'keyword': this.keyword }).then(response => {
         if (response.data.length <= 0){
           this.tableData = []
           this.currentPage = 1

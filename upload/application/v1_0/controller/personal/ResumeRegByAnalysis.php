@@ -175,7 +175,7 @@ class ResumeRegByAnalysis extends Base
             // DB-3.求职意向
             if (isset($input_data['intention_list']) && !empty($input_data['intention_list'])) {
                 if (count($input_data['intention_list']) >= 3) {
-                    $this->ajaxReturn(500, '简历求职意向最多应设置三条');
+                    $this->ajaxReturn(500, '求职意向最多可填写三条');
                 }
                 $intention_data = [];
                 foreach ($input_data['intention_list'] as $intention) {

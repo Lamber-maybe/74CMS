@@ -11,6 +11,22 @@ class ImRule extends \app\common\controller\Backend
         if (request()->isGet()) {
             $utype = input('get.utype');
             $info = model('ImRule')->where(array('utype' => $utype))->column('name,value');
+            if ($utype == 0) {
+                /**
+                 * 兼容微信新老模板
+                 * cy 2023-10-20
+                 */
+                $wechatTplType = config('global_config.wechat_tpl_type');
+                $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+                $info['wechat_tpl_name'] = '服务请求处理提醒';
+                $info['wechat_tpl_number'] = 'OPENTM406200321';
+                if ($wechatTplType == 2) {
+                    $info['wechat_tpl_name'] = '工单待处理通知';
+                    $info['wechat_tpl_number'] = '43176';
+                    $info['unread_templateid'] = $info['unread_templateid_2'];
+                }
+                unset($info['unread_templateid_2']);
+            }
             $this->ajaxReturn(200, '获取数据成功', $info);
         } else {
             $inputdata = input('post.');
@@ -18,6 +34,20 @@ class ImRule extends \app\common\controller\Backend
 
             try {
                 $ruleNames = array_keys($inputdata);
+                if ($uType == 0 && in_array('unread_templateid', $ruleNames)) {
+                    /**
+                     * 兼容微信新老模板
+                     * cy 2023-10-20
+                     */
+                    $wechatTplType = config('global_config.wechat_tpl_type');
+                    $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+                    if ($wechatTplType == 2) {
+                        $inputdata['unread_templateid_2'] = $inputdata['unread_templateid'];
+                        unset($inputdata['unread_templateid']);
+                        $ruleNames[] = 'unread_templateid_2';
+                    }
+                }
+
                 $configList = model('ImRule')
                     ->whereIn('name', $ruleNames)
                     ->where('utype', $uType)
@@ -121,6 +151,9 @@ class ImRule extends \app\common\controller\Backend
 
                             case 'unread_templateid':
                                 $log_field .= '微信模板消息通知ID:' . $config['value'] . '->' . $config_value . '；';
+                                break;
+                            case 'unread_templateid_2':
+                                $log_field .= '微信(新)模板消息通知ID:' . $config['value'] . '->' . $config_value . '；';
                                 break;
 
                             default:

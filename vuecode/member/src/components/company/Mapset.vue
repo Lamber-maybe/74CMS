@@ -5,15 +5,15 @@
         <div class="autocomplete-d1">
           搜索位置:
         </div>
-      <el-autocomplete
+        <el-autocomplete
           prefix-icon="el-icon-search"
-        v-model="mapLocation.address"
-        :fetch-suggestions="querySearch"
-        placeholder="搜索地点、位置"
-        style="width: 100%"
-        :trigger-on-focus="false"
-        @select="handleSelect"
-      />
+          v-model="mapLocation.address"
+          :fetch-suggestions="querySearch"
+          placeholder="搜索地点、位置"
+          style="width: 100%"
+          :trigger-on-focus="false"
+          @select="handleSelect"
+        />
       </div>
       <baidu-map
         v-if="config.map_type == 1"
@@ -51,15 +51,15 @@
         <TianGeolocation position="BOTTOM_RIGHT"></TianGeolocation>
       </TianMap>
       <div class="location">
-      <el-form ref="form" :model="form" label-width="80px">
+        <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="详细地址:">
-          <el-input v-model="form.location"></el-input>
+            <el-input v-model="form.location"></el-input>
             <div class="location-prompt">
               <i class="el-icon-info"></i>
               请在地址后补足您的详细地址,如A座1603
             </div>
-        </el-form-item>
-      </el-form>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </div>
@@ -67,16 +67,16 @@
 
 <script>
 let markerStyle = {
-  color : '#e9e9e9',
-  fontSize : '14px',
-  height : '30px',
-  lineHeight : '30px',
+  color: '#e9e9e9',
+  fontSize: '14px',
+  height: '30px',
+  lineHeight: '30px',
   fontFamily: '微软雅黑',
-  backgroundColor:'#000',
-  opacity:'0.75',
-  border:0,
-  padding:'0 10px',
-  borderRadius:'30px',
+  backgroundColor: '#000',
+  opacity: '0.75',
+  border: 0,
+  padding: '0 10px',
+  borderRadius: '30px',
 }
 import BmGeolocation from 'vue-baidu-map/components/controls/Geolocation.vue'; //定位
 import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
@@ -87,7 +87,9 @@ import TianNavigation from '@/components/map/TianMap/Navigation'
 import TianGeolocation from '@/components/map/TianMap/Geolocation'
 import TianMarker from '@/components/map/TianMap/Marker'
 
-import {mapState} from 'vuex'
+import {
+  mapState
+} from 'vuex'
 
 export default {
   name: 'Mapset',
@@ -102,14 +104,22 @@ export default {
     TianGeolocation,
     TianMarker
   },
-  data () {
+  data() {
     return {
-      keyword:'',
-      center: { lng: 0, lat: 0 },
+      keyword: '',
+      center: {
+        lng: 0,
+        lat: 0
+      },
       zoom: 12,
       BMap: {},
       map: {},
-      mapData: { lat: '', lng: '', zoom: 0, address: '' },
+      mapData: {
+        lat: '',
+        lng: '',
+        zoom: 0,
+        address: ''
+      },
       form: {
         location: '',
       },
@@ -118,37 +128,43 @@ export default {
         coordinate: undefined
       },
 
-      tianCenter:{lng: 0, lat: 0},
-      tianPos:{lng: 0, lat: 0},
-      tianZoom:12,
-      TMap:{},
-      tianMap:{},
-      tianGeocoder:{}
+      tianCenter: {
+        lng: 0,
+        lat: 0
+      },
+      tianPos: {
+        lng: 0,
+        lat: 0
+      },
+      tianZoom: 12,
+      TMap: {},
+      tianMap: {},
+      tianGeocoder: {}
     }
   },
   computed: {
     ...mapState(['config'])
   },
-  created () {
-  },
   methods: {
-
     onSubmit() {
       console.log('submit!');
     },
     handleSelect(item) {
-      if(this.config.map_type == 1){
+      if (this.config.map_type == 1) {
         this.BMapSelectClick(item)
-      } else if(this.config.map_type == 2){
+      } else if (this.config.map_type == 2) {
         this.TianMapSelectClick(item)
       }
     },
-    BMapSelectClick(item){
-      var { point,value } = item
+    BMapSelectClick(item) {
+      var {
+        point,
+        value
+      } = item
       this.mapLocation.coordinate = point
       this.form.location = value
-      this.$store.commit('setBaiduMapFrom',{
-        data:this.form
+      this.$store.commit('setBaiduMapFrom', {
+        data: this.form
       })
       this.map.clearOverlays()
       this.map.addOverlay(new this.BMap.Marker(point))
@@ -156,7 +172,7 @@ export default {
       this.center.lat = point.lat
       this.map.clearOverlays()
       this.mapZoom = 15
-      this.makeMarker(point,value)
+      this.makeMarker(point, value)
     },
 
     makerCenter(point) {
@@ -177,38 +193,44 @@ export default {
 
     querySearch(queryString, cb) {
       // 区分是百度地图还是天地图
-      if(this.config.map_type ==1){
+      if (this.config.map_type == 1) {
         this.BMapSearch(queryString, cb)
-      }else if(this.config.map_type ==2) {
+      } else if (this.config.map_type == 2) {
         this.TianMapSearch(queryString, cb)
       }
     },
-    TianMapSearch(queryString, cb){
-      const {tianMap,TMap} = this
+    TianMapSearch(queryString, cb) {
+      const {
+        tianMap,
+        TMap
+      } = this
       var config = {
-          pageCapacity: 1000,	//每页显示的数量
-          onSearchComplete: function(result){
-            var list =  result.getPois()
-            var s = []
-            if(list.length>0){
-              list.forEach(x => {
-                var item = { value: x.address + x.name, point: x.lonlat }
-                s.push(item)
-                cb(s)
-              });
-            } else {
+        pageCapacity: 10, //每页显示的数量
+        onSearchComplete: function (result) {
+          var list = result.getPois()
+          var s = []
+          if (list.length > 0) {
+            list.forEach(x => {
+              var item = {
+                value: x.address + x.name,
+                point: x.lonlat
+              }
+              s.push(item)
               cb(s)
-            }
-          }	//接收数据的回调函数
+            });
+          } else {
+            cb(s)
+          }
+        } //接收数据的回调函数
       };
-      const LocalSearch = new TMap.LocalSearch(tianMap,config)
+      const LocalSearch = new TMap.LocalSearch(tianMap, config)
       // var bounds = tianMap.getBounds()
-      LocalSearch.search(queryString,1)
+      LocalSearch.search(queryString, 1)
     },
-    BMapSearch(queryString, cb){
+    BMapSearch(queryString, cb) {
       var that = this
       var myGeo = new this.BMap.Geocoder()
-      myGeo.getPoint(queryString, function(point) {
+      myGeo.getPoint(queryString, function (point) {
         if (point) {
           that.mapLocation.coordinate = point
           that.makerCenter(point)
@@ -217,13 +239,16 @@ export default {
         }
       }, this.locationCity)
       var options = {
-        onSearchComplete: function(results) {
+        onSearchComplete: function (results) {
           if (local.getStatus() === 0) {
             // 判断状态是否正确
             var s = []
             for (var i = 0; i < results.getCurrentNumPois(); i++) {
               var x = results.getPoi(i)
-              var item = { value: x.address + x.title, point: x.point }
+              var item = {
+                value: x.address + x.title,
+                point: x.point
+              }
               s.push(item)
               cb(s)
             }
@@ -235,66 +260,79 @@ export default {
       var local = new this.BMap.LocalSearch(this.map, options)
       local.search(queryString)
     },
-    initCB(){
-      if(this.config.map_type == 1){
+    initCB() {
+      if (this.config.map_type == 1) {
         this.center = {
-          lat: (this.mapLat!==undefined && this.mapLat>0)?this.mapLat:parseFloat(this.$store.state.config.map_lat),
-          lng: (this.mapLng!==undefined && this.mapLng>0)?this.mapLng:parseFloat(this.$store.state.config.map_lng)
+          lat: (this.mapLat !== undefined && this.mapLat > 0) ? this.mapLat : parseFloat(this.$store.state.config
+            .map_lat),
+          lng: (this.mapLng !== undefined && this.mapLng > 0) ? this.mapLng : parseFloat(this.$store.state.config
+            .map_lng)
         }
-        this.zoom = (this.zoom!==undefined && this.zoom>0)?this.zoom:parseInt(this.$store.state.config.map_zoom)
+        this.zoom = (this.zoom !== undefined && this.zoom > 0) ? this.zoom : parseInt(this.$store.state.config
+          .map_zoom)
         this.setlocation()
-      }else if(this.config.map_type == 2){
+      } else if (this.config.map_type == 2) {
         this.tianCenter = {
-          lat: (this.mapLat!==undefined && this.mapLat>0)?this.mapLat:parseFloat(this.$store.state.config.map_lat),
-          lng: (this.mapLng!==undefined && this.mapLng>0)?this.mapLng:parseFloat(this.$store.state.config.map_lng)
+          lat: (this.mapLat !== undefined && this.mapLat > 0) ? this.mapLat : parseFloat(this.$store.state.config
+            .map_lat),
+          lng: (this.mapLng !== undefined && this.mapLng > 0) ? this.mapLng : parseFloat(this.$store.state.config
+            .map_lng)
         }
-        this.tianZoom = (this.tianZoom!==undefined && this.tianZoom>0)?this.tianZoom:parseInt(this.$store.state.config.map_zoom)
+        this.tianZoom = (this.tianZoom !== undefined && this.tianZoom > 0) ? this.tianZoom : parseInt(this.$store
+          .state.config.map_zoom)
         this.tianSetlocation()
       }
     },
-    
-    setlocation () {
+
+    setlocation() {
       let that = this
       let BMap = this.BMap
       let map = this.map
-      let point = new BMap.Point(this.center.lng,this.center.lat);
+      let point = new BMap.Point(this.center.lng, this.center.lat);
       map.centerAndZoom(point, this.zoom);
       map.clearOverlays();
-      map.addEventListener('click', function(e) {
+      map.addEventListener('click', function (e) {
         map.clearOverlays();
-        let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36,40));
-        let marker = new BMap.Marker(e.point,{icon:markerIcon});// 创建标注
-        map.addOverlay(marker);             // 将标注添加到地图中
+        let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36, 40));
+        let marker = new BMap.Marker(e.point, {
+          icon: markerIcon
+        }); // 创建标注
+        map.addOverlay(marker); // 将标注添加到地图中
         let geoc = new BMap.Geocoder();
-        geoc.getLocation(e.point, function(rs){
+        geoc.getLocation(e.point, function (rs) {
           var addComp = rs.addressComponents;
           map.clearOverlays();
-          let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber
+          let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp
+            .streetNumber
           that.form.location = addr
-          that.makeMarker(e.point,addr)
-          that.$store.commit('setBaiduMapFrom',{
-            data:that.form
+          that.makeMarker(e.point, addr)
+          that.$store.commit('setBaiduMapFrom', {
+            data: that.form
           })
         });
       });
 
       this.form.location = this.address
 
-      this.$store.commit('setBaiduMapFrom',{
-        data:this.form
+      this.$store.commit('setBaiduMapFrom', {
+        data: this.form
       })
-      this.makeMarker(point,this.address);
+      this.makeMarker(point, this.address);
     },
-    makeMarker(point,address){
+    makeMarker(point, address) {
       address = address ? address : '请在上方搜索或在地图中标记位置'
       let that = this
       let BMap = this.BMap
       let map = this.map
-      let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36,40));
-      let marker = new BMap.Marker(point,{icon:markerIcon});// 创建标注
-      map.addOverlay(marker);             // 将标注添加到地图中
-      marker.enableDragging();           // 可拖拽
-      let label = new BMap.Label(address,{offset:new BMap.Size(40,0)});
+      let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36, 40));
+      let marker = new BMap.Marker(point, {
+        icon: markerIcon
+      }); // 创建标注
+      map.addOverlay(marker); // 将标注添加到地图中
+      marker.enableDragging(); // 可拖拽
+      let label = new BMap.Label(address, {
+        offset: new BMap.Size(40, 0)
+      });
       label.setStyle(markerStyle);
       marker.setLabel(label);
       this.mapData.zoom = map.getZoom()
@@ -302,111 +340,152 @@ export default {
       this.mapData.lng = point.lng
       this.mapData.address = address
       let geoc = new BMap.Geocoder();
-      marker.addEventListener("dragend",function(e){
-        geoc.getLocation(e.point, function(rs){
+      marker.addEventListener("dragend", function (e) {
+        geoc.getLocation(e.point, function (rs) {
           var addComp = rs.addressComponents;
           map.clearOverlays();
-          let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber
+          let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp
+            .streetNumber
           that.form.location = addr
-          that.makeMarker(e.point,addr)
-          that.$store.commit('setBaiduMapFrom',{
-            data:that.form
+          that.makeMarker(e.point, addr)
+          that.$store.commit('setBaiduMapFrom', {
+            data: that.form
           })
         });
       });
     },
-    handler ({ BMap, map }) {
+    handler({BMap, map}) {
       this.BMap = BMap
       this.map = map
       this.setlocation()
     },
-    handlerZoomend (e) {
+    handlerZoomend(e) {
       this.zoom = e.target.getZoom()
     },
     //定位成功回调
-    locationSuccess(point){
+    locationSuccess(point) {
       let that = this
       let BMap = this.BMap
       let map = this.map
       map.clearOverlays();
-      let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36,40));
-      let markers = new BMap.Marker(point.point,{icon:markerIcon});// 创建标注
-      map.addOverlay(markers);             // 将标注添加到地图中
-      markers.enableDragging();           // 可拖拽
+      let markerIcon = new BMap.Icon(require("@/assets/images/marker.png"), new BMap.Size(36, 40));
+      let markers = new BMap.Marker(point.point, {
+        icon: markerIcon
+      }); // 创建标注
+      map.addOverlay(markers); // 将标注添加到地图中
+      markers.enableDragging(); // 可拖拽
       let geoc = new BMap.Geocoder();
-        geoc.getLocation(point.point, function(rs){
-          var addComp = rs.addressComponents;
-          that.form.location = addComp.province + addComp.city + addComp.district+ addComp.street + addComp.streetNumber
-          let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber
-          that.$store.commit('setBaiduMapFrom',{
-            data:that.form
-          })
-          that.makeMarker(point.point,addr)
-        });
+      geoc.getLocation(point.point, function (rs) {
+        var addComp = rs.addressComponents;
+        that.form.location = addComp.province + addComp.city + addComp.district + addComp.street + addComp
+          .streetNumber
+        let addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber
+        that.$store.commit('setBaiduMapFrom', {
+          data: that.form
+        })
+        that.makeMarker(point.point, addr)
+      });
     },
     //定位失败回调
-    locationError(StatusCode){
-      console.log(StatusCode,'StatusCode')
+    locationError(StatusCode) {
+      console.log(StatusCode, 'StatusCode')
     },
     //天地图
-    tianSetlocation(){
-      const {TMap} = this
+    tianSetlocation() {
+      const {
+        TMap
+      } = this
       this.tianGeocoder = new TMap.Geocoder()
-      this.tianPos ={...this.tianCenter}
+      this.tianPos = {
+        ...this.tianCenter
+      }
       this.form.location = this.address
     },
     // marker拖拽结束后
-    handleTianMarkerDragend(e){
-      this.tianGeocoder.getLocation(e.lnglat,(data)=>{
-        const {result:{result:{addressComponent:{city,county,province,address}}}} = data
+    handleTianMarkerDragend(e) {
+      this.tianGeocoder.getLocation(e.lnglat, (data) => {
+        const {
+          result: {
+            result: {
+              addressComponent: {
+                city,
+                county,
+                province,
+                address
+              }
+            }
+          }
+        } = data
         let addr = province + city + county + address
         this.form.location = addr
-        this.$store.commit('setBaiduMapFrom',{
-          data:this.form
+        this.$store.commit('setBaiduMapFrom', {
+          data: this.form
         })
-        this.handelSetTianMapData(e.lnglat,addr)
+        this.handelSetTianMapData(e.lnglat, addr)
       })
     },
     // 天地图初始化完成
-    handleTianReady({TMap,map}){
+    handleTianReady({TMap, map}) {
       this.TMap = TMap
       this.tianMap = map
       this.tianSetlocation()
     },
-    handleTianMapClick(e){
-      this.tianPos ={...e.lnglat}
-      this.tianGeocoder.getLocation(e.lnglat,(data)=>{
-        const {result:{result:{addressComponent:{city,county,province,address}}}} = data
-        let addr = province + city + county + address 
+    handleTianMapClick(e) {
+      this.tianPos = {
+        ...e.lnglat
+      }
+      this.tianGeocoder.getLocation(e.lnglat, (data) => {
+        const {
+          result: {
+            result: {
+              addressComponent: {
+                city,
+                county,
+                province,
+                address
+              }
+            }
+          }
+        } = data
+        let addr = province + city + county + address
         this.form.location = addr
-        this.$store.commit('setBaiduMapFrom',{
-          data:this.form
+        this.$store.commit('setBaiduMapFrom', {
+          data: this.form
         })
-        this.handelSetTianMapData(e.lnglat,addr)
+        this.handelSetTianMapData(e.lnglat, addr)
       })
     },
-    handelSetTianMapData(point,address){
-      const {tianMap} = this
+    handelSetTianMapData(point, address) {
+      const {
+        tianMap
+      } = this
       this.mapData.zoom = tianMap.getZoom()
       this.mapData.lat = point.lat
       this.mapData.lng = point.lng
       this.mapData.address = address
     },
-    TianMapSelectClick(item){
-      var { point,value } = item
-      const pointAry = point.split(' ')
+    TianMapSelectClick(item) {
+      var {
+        point,
+        value
+      } = item
+      const pointAry = point.split(',')
       var lnglat = {
-        lng:pointAry[0],
-        lat:pointAry[1]
+        lng: pointAry[0],
+        lat: pointAry[1]
       }
       this.mapLocation.coordinate = lnglat
       this.form.location = value
-      this.$store.commit('setBaiduMapFrom',{
-        data:this.form
+      this.$store.commit('setBaiduMapFrom', {
+        data: this.form
       })
-      this.tianCenter = {...lnglat}
-      this.tianPos = {...lnglat}
-      this.handelSetTianMapData(lnglat,value)
+      this.tianCenter = {
+        ...lnglat
+      }
+      this.tianPos = {
+        ...lnglat
+      }
+      this.handelSetTianMapData(lnglat, value)
     }
   }
 }
@@ -417,6 +496,7 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .bm-view {
   width: 760px;
   height: 400px;
@@ -432,18 +512,21 @@ export default {
 //   width:52px;
 //   z-index:1;
 // }
-.autocomplete{
+.autocomplete {
   display: flex;
   margin-bottom: 20px;
-  &-d1{
+
+  &-d1 {
     width: 80px;
     line-height: 40px;
   }
 }
-.location{
+
+.location {
   margin-top: 10px;
-  &-prompt{
-    color:#C6C8D0;
+
+  &-prompt {
+    color: #C6C8D0;
   }
 }
 </style>

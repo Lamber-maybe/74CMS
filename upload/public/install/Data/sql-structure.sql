@@ -1942,7 +1942,7 @@ DROP TABLE IF EXISTS `qs_wechat_notify_rule`;
 CREATE TABLE `qs_wechat_notify_rule` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `alias` varchar(30) NOT NULL,
-  `utype` tinyint(1) unsigned NOT NULL,
+  `utype` tinyint(1) unsigned NOT NULL COMMENT '会员类型：1|企业，2|求职者，3|管理员，4|服务号群发',
   `title` varchar(30) NOT NULL,
   `is_open` tinyint(1) NOT NULL,
   `tpl_name` varchar(30) NOT NULL,
@@ -1951,6 +1951,7 @@ CREATE TABLE `qs_wechat_notify_rule` (
   `tpl_id` varchar(50) NOT NULL,
   `tpl_data` varchar(200) NOT NULL,
   `tpl_param` varchar(100) NOT NULL,
+  `tpl_type` tinyint(1) unsigned NOT NULL DEFAULT '2' COMMENT '模板类型：1|旧版，2|新版',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ||-_-||qs_wechat_notify_rule||-_-||
@@ -2942,3 +2943,14 @@ PRIMARY KEY (`id`),
 KEY `idx_type` (`type`) USING BTREE
 ) ENGINE = INNODB CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '审核模板表';
 ||-_-||qs_audit_template||-_-||
+
+
+DROP TABLE IF EXISTS `qs_admin_identity_token`;
+CREATE TABLE `qs_admin_identity_token` (
+`admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
+`token` char(32) NOT NULL DEFAULT '' COMMENT 'token',
+`updatetime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+`expire` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
+KEY `idx_admin_id` (`admin_id`) USING BTREE
+) ENGINE=InnoDB CHARSET=utf8mb4 COMMENT='后台管理员token表';
+||-_-||qs_admin_identity_token||-_-||

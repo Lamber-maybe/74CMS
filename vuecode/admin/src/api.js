@@ -37,8 +37,12 @@ import {
 import {
   companyBackupsList
 } from '@/api/member_cancel_apply'
-import { jobfairOlModifyState } from '@/api/jobfairol'
-import {jobModifyState} from "@/api/job";
+import {
+  jobfairOlModifyState
+} from '@/api/jobfairol'
+import {
+  jobModifyState
+} from "@/api/job";
 
 export default {
   // 首页仪表盘
@@ -81,6 +85,8 @@ export default {
   getNotifyRule: '/config/getNotifyRule',
   // 通知规则
   setNotifyRule: '/config/setNotifyRule',
+  // 切换微信模板类型
+  switchWechatTplType: 'config/switchWechatTplType',
   // 获取微信通知规则
   getWechatNotifyRule: '/config/getWechatNotifyRule',
   // 微信通知规则

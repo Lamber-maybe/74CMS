@@ -145,7 +145,7 @@ class Member extends BaseModel
         $data['enable_video_interview'] =
             $setmeal_info['enable_video_interview'];
         $data['show_apply_contact'] = $setmeal_info['show_apply_contact'];
-        $data['resume_view_num'] = $setmeal_info['resume_view_num'];
+//        $data['resume_view_num'] = $setmeal_info['resume_view_num'];
         $data['expired'] = 0;
         $data['opening_time'] = time();
         $check_setmeal = model('MemberSetmeal')
@@ -352,8 +352,8 @@ class Member extends BaseModel
                 $overtime_config['enable_video_interview'];
             $info['show_apply_contact'] =
                 $overtime_config['show_apply_contact'];
-            $info['resume_view_num'] =
-                (isset($overtime_config['resume_view_num'])) ? $overtime_config['resume_view_num'] : 0;
+//            $info['resume_view_num'] =
+//                (isset($overtime_config['resume_view_num'])) ? $overtime_config['resume_view_num'] : 0;
             $info['overtime'] = 1;
         } else {
             $info['overtime'] = 0;
@@ -366,24 +366,24 @@ class Member extends BaseModel
         /**
          * 今日收到简历免费查看数
          */
-        $todayLook = model('JobApply')
-            ->where('company_uid', $uid)
-            ->where('free_viewing', 1)
-            ->whereTime('free_viewing_time', 'today')
-            ->count();
-        if ($info['show_apply_contact'] == 0) {
-            $info['resume_view_num_today'] = 0;
-        } else {
-            if ($info['resume_view_num'] == 0) {
-                $info['resume_view_num_today'] = -1;
-            } else {
-                if ($todayLook >= $info['resume_view_num']) {
-                    $info['resume_view_num_today'] = 0;
-                } else {
-                    $info['resume_view_num_today'] = $info['resume_view_num'] - $todayLook;
-                }
-            }
-        }
+//        $todayLook = model('JobApply')
+//            ->where('company_uid', $uid)
+//            ->where('free_viewing', 1)
+//            ->whereTime('free_viewing_time', 'today')
+//            ->count();
+//        if ($info['show_apply_contact'] == 0) {
+//            $info['resume_view_num_today'] = 0;
+//        } else {
+//            if ($info['resume_view_num'] == 0) {
+//                $info['resume_view_num_today'] = -1;
+//            } else {
+//                if ($todayLook >= $info['resume_view_num']) {
+//                    $info['resume_view_num_today'] = 0;
+//                } else {
+//                    $info['resume_view_num_today'] = $info['resume_view_num'] - $todayLook;
+//                }
+//            }
+//        }
 
         $setmeal = model('Setmeal')->where('id', $info['setmeal_id'])->find();
         if ($setmeal === null) {

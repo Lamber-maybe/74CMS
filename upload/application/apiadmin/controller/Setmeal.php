@@ -97,11 +97,11 @@ class Setmeal extends Backend
                 0,
                 'intval'
             ),
-            'resume_view_num' => input(
-                'resume_view_num/d',
-                0,
-                'intval'
-            )
+//            'resume_view_num' => input(
+//                'resume_view_num/d',
+//                0,
+//                'intval'
+//            )
         ];
         if ($input_data['preferential_open'] == 1) {
             $preferential_expense_start = $input_data['preferential_expense_start'];
@@ -117,9 +117,9 @@ class Setmeal extends Backend
             $input_data['preferential_expense_end'] = 0;
         }
 
-        if ($input_data['show_apply_contact'] != 1) {
-            $input_data['resume_view_num'] = 0;
-        }
+//        if ($input_data['show_apply_contact'] != 1) {
+//            $input_data['resume_view_num'] = 0;
+//        }
 
         try {
             Db::startTrans();
@@ -163,13 +163,13 @@ class Setmeal extends Backend
                 . '；收到简历免费查看:'
                 . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
 
-            if (1 === $input_data['show_apply_contact']) {
-                $resume_view_num = $input_data['resume_view_num'] . '份/天';
-                if (0 === $input_data['resume_view_num']) {
-                    $resume_view_num = '不限制';
-                }
-                $log_field .= '；收到简历查看上限:' . $resume_view_num;
-            }
+//            if (1 === $input_data['show_apply_contact']) {
+//                $resume_view_num = $input_data['resume_view_num'] . '份/天';
+//                if (0 === $input_data['resume_view_num']) {
+//                    $resume_view_num = '不限制';
+//                }
+//                $log_field .= '；收到简历查看上限:' . $resume_view_num;
+//            }
 
             $log_field .= '；是否推荐:'
                 . model('Setmeal')->map_recommend[$input_data['recommend']]
@@ -302,11 +302,11 @@ class Setmeal extends Backend
                     0,
                     'intval'
                 ),
-                'resume_view_num' => input(
-                    'resume_view_num/d',
-                    0,
-                    'intval'
-                )
+//                'resume_view_num' => input(
+//                    'resume_view_num/d',
+//                    0,
+//                    'intval'
+//                )
             ];
 
             if ($input_data['preferential_open'] == 1) {
@@ -401,51 +401,57 @@ class Setmeal extends Backend
                         . '->'
                         . model('Setmeal')->map_enable_video_interview[$input_data['enable_video_interview']];
                 }
-                if (
-                    $input_data['show_apply_contact'] != $info['show_apply_contact']
-                    ||
-                    $input_data['resume_view_num'] != $info['resume_view_num']
-                ) {
-
-                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
-                        $log_field .= '；收到简历免费查看:'
-                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
-                            . '->'
-                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
-
-                        if (1 === $input_data['show_apply_contact']) {
-                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
-                            if (0 === $input_data['resume_view_num']) {
-                                $resume_view_num = '不限制';
-                            }
-                            $log_field .= '；收到简历查看上限:不允许->' . $resume_view_num;
-                        } else {
-                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
-                            if (0 === $info['resume_view_num']) {
-                                $resume_view_num_old = '不限制';
-                            }
-                            $log_field .= '；收到简历查看上限:' . $resume_view_num_old . '->不允许';
-                        }
-
-                    } else {
-
-                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
-                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
-                            if (0 === $input_data['resume_view_num']) {
-                                $resume_view_num_new = '不限制';
-                            }
-                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
-                            if (0 === $info['resume_view_num']) {
-                                $resume_view_num_old = '不限制';
-                            }
-                            $log_field .= '；收到简历查看上限:'
-                                . $resume_view_num_old
-                                . '->'
-                                . $resume_view_num_new;
-                        }
-
-                    }
-
+//                if (
+//                    $input_data['show_apply_contact'] != $info['show_apply_contact']
+//                    ||
+//                    $input_data['resume_view_num'] != $info['resume_view_num']
+//                ) {
+//
+//                    if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+//                        $log_field .= '；收到简历免费查看:'
+//                            . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+//                            . '->'
+//                            . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
+//
+//                        if (1 === $input_data['show_apply_contact']) {
+//                            $resume_view_num = $input_data['resume_view_num'] . '份/天';
+//                            if (0 === $input_data['resume_view_num']) {
+//                                $resume_view_num = '不限制';
+//                            }
+//                            $log_field .= '；收到简历查看上限:不允许->' . $resume_view_num;
+//                        } else {
+//                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+//                            if (0 === $info['resume_view_num']) {
+//                                $resume_view_num_old = '不限制';
+//                            }
+//                            $log_field .= '；收到简历查看上限:' . $resume_view_num_old . '->不允许';
+//                        }
+//
+//                    } else {
+//
+//                        if ($input_data['resume_view_num'] != $info['resume_view_num']) {
+//                            $resume_view_num_new = $input_data['resume_view_num'] . '份/天';
+//                            if (0 === $input_data['resume_view_num']) {
+//                                $resume_view_num_new = '不限制';
+//                            }
+//                            $resume_view_num_old = $info['resume_view_num'] . '份/天';
+//                            if (0 === $info['resume_view_num']) {
+//                                $resume_view_num_old = '不限制';
+//                            }
+//                            $log_field .= '；收到简历查看上限:'
+//                                . $resume_view_num_old
+//                                . '->'
+//                                . $resume_view_num_new;
+//                        }
+//
+//                    }
+//
+//                }
+                if ($input_data['show_apply_contact'] != $info['show_apply_contact']) {
+                    $log_field .= '；收到简历免费查看:'
+                        . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']]
+                        . '->'
+                        . model('Setmeal')->map_show_apply_contact[$input_data['show_apply_contact']];
                 }
                 if ($input_data['recommend'] != $info['recommend']) {
                     $log_field .= '；是否推荐:'
@@ -570,13 +576,13 @@ class Setmeal extends Backend
                 . model('Setmeal')->map_enable_video_interview[$info['enable_video_interview']]
                 . '；收到简历免费查看:'
                 . model('Setmeal')->map_show_apply_contact[$info['show_apply_contact']];
-            if (1 === $info['show_apply_contact']) {
-                $resume_view_num = $info['resume_view_num'] . '份/天';
-                if (0 === $info['resume_view_num']) {
-                    $resume_view_num = '不限制';
-                }
-                $log_field .= '；收到简历查看上限:' . $resume_view_num;
-            }
+//            if (1 === $info['show_apply_contact']) {
+//                $resume_view_num = $info['resume_view_num'] . '份/天';
+//                if (0 === $info['resume_view_num']) {
+//                    $resume_view_num = '不限制';
+//                }
+//                $log_field .= '；收到简历查看上限:' . $resume_view_num;
+//            }
             $log_field .= '；是否推荐:'
                 . model('Setmeal')->map_recommend[$info['recommend']]
                 . '；允许申请:'

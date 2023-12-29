@@ -135,10 +135,17 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                 : ($input_data['district2'] > 0
                     ? $input_data['district2']
                     : $input_data['district1']);
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         $intention_info = model('ResumeIntention')
             ->where('uid', $this->userinfo->uid)
             ->find();
-
         if ($intention_info !== null) {
             $result = model('ResumeIntention')
                 ->validate('ResumeIntention.reg_from_app_by_interactive')
@@ -147,12 +154,6 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                     'id' => $intention_info['id']
                 ]);
         } else {
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeIntention')
                 ->validate('ResumeIntention.reg_from_app_by_interactive')
@@ -168,7 +169,12 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
-
+        if (config('global_config.audit_edit_resume') == 1) {
+            model('Resume')
+                ->where('uid', $this->userinfo->uid)
+                ->setField('audit', 0);
+        }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历求职意向');
         $this->ajaxReturn(200, '保存成功');
     }
@@ -186,15 +192,26 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                 ? 0
                 : strtotime($input_data['enter_job_time']);
 
+        if (config('global_config.audit_edit_resume') == 1) {
+            $input_data['audit'] = 0;
+        }
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         $result = model('Resume')
             ->allowField(true)
             ->save($input_data, [
                 'uid' => $this->userinfo->uid
             ]);
-
         if (false === $result) {
             $this->ajaxReturn(500, model('Resume')->getError());
         }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历求职状态和开始工作时间');
         $this->ajaxReturn(200, '保存成功');
     }
@@ -245,7 +262,12 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                 );
             }
         }
-        $basic_info = null;
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
 
         $work_info = model('ResumeWork')
             ->where('uid', $this->userinfo->uid)
@@ -260,12 +282,6 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                         'id' => $work_info['id']
                     ]);
             } else {
-                $basic_info = model('Resume')
-                    ->where('uid', $this->userinfo->uid)
-                    ->find();
-                if ($basic_info === null) {
-                    throw new \Exception('请先填写基本资料');
-                }
                 $input_data['work']['rid'] = $basic_info->id;
                 $result = model('ResumeWork')
                     ->validate(true)
@@ -323,6 +339,11 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             \think\Db::rollBack();
             $this->ajaxReturn(500, $e->getMessage());
         }
+        if (config('global_config.audit_edit_resume') == 1) {
+            model('Resume')
+                ->where('uid', $this->userinfo->uid)
+                ->setField('audit', 0);
+        }
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历工作经历+教育经历');
         $this->ajaxReturn(200, '保存成功');
@@ -349,6 +370,13 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             $input_data['endtime'] = strtotime($input_data['endtime']);
         }
 
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         $education_info = model('ResumeEducation')
             ->where('uid', $this->userinfo->uid)
             ->find();
@@ -361,12 +389,6 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
                     'id' => $education_info['id']
                 ]);
         } else {
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeEducation')
                 ->validate(true)
@@ -385,6 +407,12 @@ class ResumeRegByAppInteractive extends \app\v1_0\controller\common\Base
             0,
             $this->userinfo->uid
         );
+        if (config('global_config.audit_edit_resume') == 1) {
+            model('Resume')
+                ->where('uid', $this->userinfo->uid)
+                ->setField('audit', 0);
+        }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'注册 - 保存简历教育经历');
 
         $this->ajaxReturn(200, '保存成功');

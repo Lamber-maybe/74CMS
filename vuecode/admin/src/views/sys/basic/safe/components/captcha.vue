@@ -124,7 +124,6 @@ export default {
         captcha_type: 'picture',
         picture: {
           code_mode: '3',
-          useZh: true,
           useCurve: true,
           useNoise: true,
           length: 0
@@ -167,7 +166,6 @@ export default {
           this.form.captcha_type = captcha_type
           this.form.picture = {
             code_mode: captcha_picture_rule.code_mode == undefined ? '3' : captcha_picture_rule.code_mode,
-            useZh: captcha_picture_rule.useZh == 1,
             useCurve: captcha_picture_rule.useCurve == 1,
             useNoise: captcha_picture_rule.useNoise == 1,
             length: captcha_picture_rule.length
@@ -189,7 +187,6 @@ export default {
         captcha_type: that.form.captcha_type,
         captcha_picture_rule: {
           code_mode: that.form.picture.code_mode,
-          useZh: that.form.picture.useZh == true ? 1 : 0,
           useCurve: that.form.picture.useCurve == true ? 1 : 0,
           useNoise: that.form.picture.useNoise == true ? 1 : 0,
           length: that.form.picture.length

@@ -657,7 +657,7 @@ class Profile extends \app\v1_0\controller\common\Base
                 $img_list = $this->getCompanyImg($this->userinfo->uid);
                 cache('scan_upload_result_company_img_' . $this->userinfo->uid, json_encode($img_list));
             }
-            $this->writeMemberActionLog($this->userinfo->uid,'上传企业风采');
+            $this->writeMemberActionLog($this->userinfo->uid, '上传企业风采');
             $this->ajaxReturn(200, '上传成功', $result);
         } else {
             $this->ajaxReturn(500, $filemanager->getError());

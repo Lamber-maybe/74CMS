@@ -56,6 +56,8 @@ class Login extends \app\common\controller\Backend
     }
     public function logout()
     {
+        // 清除token信息
+        model('AdminIdentityToken')->where(['admin_id' => $this->admininfo['id']])->delete();
         $this->ajaxReturn(200, '退出成功');
     }
     public function userinfo()

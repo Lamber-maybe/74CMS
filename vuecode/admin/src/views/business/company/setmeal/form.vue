@@ -61,25 +61,25 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="11">
-          <el-form-item label="收到简历查看上限" prop="resume_view_num">
-            <el-input
-              v-model.number="form.resume_view_num"
-              type="number"
-              class="small"
-              min="0"
-              :disabled="form.show_apply_contact == 0"
-              @blur="format_number(0, 'resume_view_num')"
-            >
-              <template slot="append">份 / 天</template>
-            </el-input>
-            <el-tooltip class="item" effect="dark" placement="top-start">
-              <div slot="content">0表示不限制</div>
-              <i class="el-icon-info" />
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
+<!--        <el-col :span="2">&nbsp;</el-col>-->
+<!--        <el-col :span="11">-->
+<!--          <el-form-item label="收到简历查看上限" prop="resume_view_num">-->
+<!--            <el-input-->
+<!--              v-model.number="form.resume_view_num"-->
+<!--              type="number"-->
+<!--              class="small"-->
+<!--              min="0"-->
+<!--              :disabled="form.show_apply_contact == 0"-->
+<!--              @blur="format_number(0, 'resume_view_num')"-->
+<!--            >-->
+<!--              <template slot="append">份 / 天</template>-->
+<!--            </el-input>-->
+<!--            <el-tooltip class="item" effect="dark" placement="top-start">-->
+<!--              <div slot="content">0表示不限制</div>-->
+<!--              <i class="el-icon-info" />-->
+<!--            </el-tooltip>-->
+<!--          </el-form-item>-->
+<!--        </el-col>-->
       </el-row>
       <el-row>
         <el-col :span="11">

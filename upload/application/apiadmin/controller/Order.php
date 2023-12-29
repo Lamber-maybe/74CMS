@@ -392,7 +392,7 @@ class Order extends \app\common\controller\Backend
         $where['utype'] = 1;
         if (isset($order_time[0]) && isset($order_time[1]))
         {
-            $where['a.addtime'] = ['between', [strtotime($order_time[0]), strtotime($order_time[1])]];
+            $where['a.addtime'] = ['between', [strtotime($order_time[0]), strtotime($order_time[1]) + 86399]];
         }
         if ($pay_status === 2)
         {

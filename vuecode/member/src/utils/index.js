@@ -332,3 +332,19 @@ export function whetherPopupWeChatQrcodeWindow(val, isRecord = false) {
   }
   return false;
 }
+
+/**
+ * 下载二进制流文件
+ * cy 2023-7-25
+ */
+export function downloadFile(blob, filename = "模板") {
+  let file = new File([blob], filename, blob);
+
+  let aTag = document.createElement("a"); //创建一个a标签
+  aTag.download = file.name;
+  aTag.target = "_blank";
+  let href = URL.createObjectURL(file); //获取url
+  aTag.href = href;
+  aTag.click();
+  URL.revokeObjectURL(href); //释放url
+}

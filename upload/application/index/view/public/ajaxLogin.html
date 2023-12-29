@@ -1,4 +1,4 @@
-<div class="login_wrapper" v-if="loginUtype==0" v-cloak>
+<div class="login_wrapper" :style="!scan?'padding-top:10px;':''" v-if="loginUtype==0" v-cloak>
 	<div class="title login_title_padding" v-show="!scan">
 		{{formUtype==1?'企业登录':'求职者登录'}}
 		<a class="right_text" @click="handlerChangeUtype">{{formUtype==1?'求职者登录':'企业登录'}}&gt;</a>

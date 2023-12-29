@@ -121,5 +121,47 @@ export default {
           reject(err)
         })
     })
+  },
+  /**
+   * 下载方法，用来提交文件
+   * @param {String} type [请求方式]
+   * @param {String} url [请求的url地址]
+   * @param {Object} data [请求时携带的参数]
+   */
+  download (type, url, data) {
+    var newData = {
+      ...data
+    }
+    return new Promise((resolve, reject) => {
+      service({
+        method: type,
+        url: url,
+        [type === 'get' ? 'params' : 'data']: newData,
+        responseType: 'blob',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-token': store.state.userToken,
+          'platform': window.global.Platform
+        }
+      })
+        .then(
+          response => {
+            if (response.data.type == 'text/html' && response.data.code && response.data.code !== 200) {
+              handlerHttpError(response.data)
+              reject(response.data)
+            }
+            resolve(response)
+          },
+          err => {
+            throw err.response.code
+          }
+        )
+        .catch((err) => {
+          if (err.message.includes('timeout')) {
+            message.error('请求超时，请刷新页面再试')
+          }
+          reject(err)
+        })
+    })
   }
 }

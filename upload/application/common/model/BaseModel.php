@@ -184,8 +184,8 @@ class BaseModel extends Model
         if (config('global_config.map_type') == 2){
             $CoordinateTransform = new CoordinateTransform();
             $coordinate = $CoordinateTransform->bd09ToWgs84($lng,$lat);
-            $lng = !empty($coordinate[1]) ? $coordinate[1] : 0;
-            $lat = !empty($coordinate[0]) ? $coordinate[0] : 0;
+            $lng = !empty($coordinate[0]) ? $coordinate[0] : 0;
+            $lat = !empty($coordinate[1]) ? $coordinate[1] : 0;
         }
         return ['lng'=>$lng, 'lat'=>$lat];
     }

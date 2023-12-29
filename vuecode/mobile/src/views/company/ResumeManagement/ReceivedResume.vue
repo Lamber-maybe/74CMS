@@ -87,10 +87,10 @@
               应聘职位：
               <span class="link">{{ item.jobname }}</span>
             </div>
-            <div class="tx3">
-              联系方式：
-              <span>{{ item.resume_contact | contactFilter }}</span>
-            </div>
+<!--            <div class="tx3">-->
+<!--              联系方式：-->
+<!--              <span>{{ item.resume_contact | contactFilter }}</span>-->
+<!--            </div>-->
             <div class="tx4">
               <div class="list_btn" @click.stop="handlerDel(item, index)">
                 删除
@@ -399,71 +399,80 @@ export default {
     },
     handlerLook (item) {
       if (item.is_look === 0 || item.resume_contact === 0) {
-        if (item.resume_contact) {
-          item.is_look = 1
-          http
-            .post(api.company_jobapply_set_looked, {id: item.id})
-            .then((res) => {
-              this.fetchData(true)
-              this.$router.push('/resume/' + item.resume_id)
-            })
-            .catch(() => {
-            })
-          return false
-        }
-        if (this.companySetmeal.resume_view_num_today == -1) {
-          item.is_look = 1
-          http
-            .post(api.company_jobapply_set_looked, {id: item.id})
-            .then((res) => {
-              this.fetchData(true)
-              this.$router.push('/resume/' + item.resume_id)
-            })
-            .catch(() => {
-            })
-        } else if (this.companySetmeal.resume_view_num_today > 0) {
-          this.$dialog
-            .confirm({
-              title: '系统提示',
-              message: '您今天还可免费查看 ' + this.companySetmeal.resume_view_num_today + ' 次收到简历的联系方式，是否立即查看?',
-              confirmButtonText: '立即查看'
-            })
-            .then(() => {
-              item.is_look = 1
-              http
-                .post(api.company_jobapply_set_looked, {id: item.id})
-                .then((res) => {
-                  this.fetchData(true)
-                  this.$router.push('/resume/' + item.resume_id)
-                })
-                .catch(() => {
-                })
-            })
-            .catch(() => {
-              // on cancel
-            })
-        } else {
-          this.$dialog
-            .confirm({
-              title: '系统提示',
-              message: '您今天暂无可用免费查看次数，如需获取联系方式请下载简历后查看。',
-              cancelButtonText: '取消',
-              confirmButtonText: '继续查看'
-            })
-            .then(() => {
-              item.is_look = 1
-              http
-                .post(api.company_jobapply_set_looked, {id: item.id})
-                .then((res) => {
-                  this.fetchData(true)
-                  this.$router.push('/resume/' + item.resume_id)
-                })
-                .catch(() => {
-                })
-            })
-            .catch(() => {
-            })
-        }
+        item.is_look = 1
+        http
+          .post(api.company_jobapply_set_looked, {id: item.id})
+          .then((res) => {
+            this.fetchData(true)
+            this.$router.push('/resume/' + item.resume_id)
+          })
+          .catch(() => {
+          })
+        // if (item.resume_contact) {
+        //   item.is_look = 1
+        //   http
+        //     .post(api.company_jobapply_set_looked, {id: item.id})
+        //     .then((res) => {
+        //       this.fetchData(true)
+        //       this.$router.push('/resume/' + item.resume_id)
+        //     })
+        //     .catch(() => {
+        //     })
+        //   return false
+        // }
+        // if (this.companySetmeal.resume_view_num_today == -1) {
+        //   item.is_look = 1
+        //   http
+        //     .post(api.company_jobapply_set_looked, {id: item.id})
+        //     .then((res) => {
+        //       this.fetchData(true)
+        //       this.$router.push('/resume/' + item.resume_id)
+        //     })
+        //     .catch(() => {
+        //     })
+        // } else if (this.companySetmeal.resume_view_num_today > 0) {
+        //   this.$dialog
+        //     .confirm({
+        //       title: '系统提示',
+        //       message: '您今天还可免费查看 ' + this.companySetmeal.resume_view_num_today + ' 次收到简历的联系方式，是否立即查看?',
+        //       confirmButtonText: '立即查看'
+        //     })
+        //     .then(() => {
+        //       item.is_look = 1
+        //       http
+        //         .post(api.company_jobapply_set_looked, {id: item.id})
+        //         .then((res) => {
+        //           this.fetchData(true)
+        //           this.$router.push('/resume/' + item.resume_id)
+        //         })
+        //         .catch(() => {
+        //         })
+        //     })
+        //     .catch(() => {
+        //       // on cancel
+        //     })
+        // } else {
+        //   this.$dialog
+        //     .confirm({
+        //       title: '系统提示',
+        //       message: '您今天暂无可用免费查看次数，如需获取联系方式请下载简历后查看。',
+        //       cancelButtonText: '取消',
+        //       confirmButtonText: '继续查看'
+        //     })
+        //     .then(() => {
+        //       item.is_look = 1
+        //       http
+        //         .post(api.company_jobapply_set_looked, {id: item.id})
+        //         .then((res) => {
+        //           this.fetchData(true)
+        //           this.$router.push('/resume/' + item.resume_id)
+        //         })
+        //         .catch(() => {
+        //         })
+        //     })
+        //     .catch(() => {
+        //     })
+        // }
       } else {
         this.$router.push('/resume/' + item.resume_id)
       }
@@ -502,7 +511,7 @@ export default {
         })
     },
     // 弹出微信二维码弹框
-    popupWechatQrcodeWindow(val, type) {
+    popupWechatQrcodeWindow (val, type) {
       this.$refs.weChatQrcodeRef.handleOpen(val, type)
     }
   },

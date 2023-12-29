@@ -79,7 +79,7 @@
         :inline-message="false"
       >
         <el-form-item label="姓名" prop="fullname">
-          <el-input v-model="form.fullname" />
+          <el-input v-model="form.fullname" @input="fullnameChange"/>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
           <el-radio-group v-model="form.sex">
@@ -164,7 +164,7 @@
           label="现居住地"
           prop="residence"
         >
-          <el-input v-model="form.residence" />
+          <el-input v-model="form.residence"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.major === true"
@@ -182,72 +182,72 @@
           label="身高"
           prop="height"
         >
-          <el-input v-model.number="form.height" />
+          <el-input v-model.number="form.height"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.householdaddress === true"
           label="籍贯"
           prop="householdaddress"
         >
-          <el-input v-model="form.householdaddress" />
+          <el-input v-model="form.householdaddress"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.idcard === true"
           label="身份证号"
           prop="idcard"
         >
-          <el-input v-model="form.idcard" />
+          <el-input v-model="form.idcard"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.custom_field_1 === true"
           :label="custom_field_1_cn"
           prop="custom_field_1"
         >
-          <el-input v-model="form.custom_field_1" />
+          <el-input v-model="form.custom_field_1"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.custom_field_2 === true"
           :label="custom_field_2_cn"
           prop="custom_field_2"
         >
-          <el-input v-model="form.custom_field_2" />
+          <el-input v-model="form.custom_field_2"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.custom_field_3 === true"
           :label="custom_field_3_cn"
           prop="custom_field_3"
         >
-          <el-input v-model="form.custom_field_3" />
+          <el-input v-model="form.custom_field_3"/>
         </el-form-item>
         <el-form-item label="手机号" prop="contact.mobile">
-          <el-input v-model="form.contact.mobile" />
+          <el-input v-model="form.contact.mobile"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.contact.weixin === true"
           label="微信"
           prop="contact.weixin"
         >
-          <el-input v-model="form.contact.weixin" />
+          <el-input v-model="form.contact.weixin"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.contact.email === true"
           label="邮箱"
           prop="contact.email"
         >
-          <el-input v-model="form.contact.email" />
+          <el-input v-model="form.contact.email"/>
         </el-form-item>
         <el-form-item
           v-if="live_fields.contact.qq === true"
           label="QQ"
           prop="contact.qq"
         >
-          <el-input v-model="form.contact.qq" />
+          <el-input v-model="form.contact.qq"/>
         </el-form-item>
-        <div class="clearfix" />
+        <div class="clearfix"/>
         <el-form-item label="照片" prop="photo_img">
           <div style="position: relative">
             <div v-if="form.photo_img" class="transparent" @click="logoDel">
-              <i class="el-icon-delete" />
+              <i class="el-icon-delete"/>
               删除
             </div>
             <el-upload
@@ -259,15 +259,15 @@
               :before-upload="beforePhotoUpload"
             >
               <img v-if="form.photo_img" :src="photoUrl" class="photo">
-              <i v-else class="el-icon-plus photo-uploader-icon" />
+              <i v-else class="el-icon-plus photo-uploader-icon"/>
             </el-upload>
           </div>
           <span class="smalltip">
-            <i class="el-icon-info" />
+            <i class="el-icon-info"/>
             建议尺寸120*120
           </span>
         </el-form-item>
-        <div class="clearfix" />
+        <div class="clearfix"/>
         <el-form-item label=" ">
           <el-button
             type="primary"
@@ -286,11 +286,20 @@
 </template>
 
 <script>
-import { getClassify } from '@/api/classify'
-import { validMobile, validEmail } from '@/utils/validate'
-import { resumeBasic } from '@/api/resume'
+import {
+  getClassify
+} from '@/api/classify'
+import {
+  validMobile,
+  validEmail
+} from '@/utils/validate'
+import {
+  resumeBasic
+} from '@/api/resume'
 import apiArr from '@/api'
-import { getToken } from '@/utils/auth'
+import {
+  getToken
+} from '@/utils/auth'
 
 export default {
   filters: {
@@ -330,7 +339,9 @@ export default {
       is_edit: false,
       submitLoading: false,
       infoLoading: true,
-      headers: { admintoken: getToken() },
+      headers: {
+        admintoken: getToken()
+      },
       fileupload_size: '',
       fileupload_ext: '',
       apiUpload: window.global.RequestBaseUrl + apiArr.upload,
@@ -387,125 +398,124 @@ export default {
       options_current: [],
       options_marriage: [],
       rules: {
-        fullname: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
+        fullname: [{
+          required: true,
+          message: '请输入姓名',
+          trigger: 'blur'
+        },
           {
             max: 30,
             message: '长度在 1 到 15 个字',
             trigger: 'blur'
           }
         ],
-        sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
-        birthday: [
-          {
-            required: true,
-            message: '请选择出生日期',
-            trigger: 'change'
-          }
-        ],
-        education: [
-          {
-            required: true,
-            message: '请选择最高学历',
-            trigger: 'change'
-          }
-        ],
-        enter_job_time: [
-          { validator: validateEnterjobtime, trigger: 'change' }
-        ],
-        current: [
-          {
-            required: true,
-            message: '请选择求职状态',
-            trigger: 'change'
-          }
-        ],
+        sex: [{
+          required: true,
+          message: '请选择性别',
+          trigger: 'change'
+        }],
+        birthday: [{
+          required: true,
+          message: '请选择出生日期',
+          trigger: 'change'
+        }],
+        education: [{
+          required: true,
+          message: '请选择最高学历',
+          trigger: 'change'
+        }],
+        enter_job_time: [{
+          validator: validateEnterjobtime,
+          trigger: 'change'
+        }],
+        current: [{
+          required: true,
+          message: '请选择求职状态',
+          trigger: 'change'
+        }],
         // photo_img: [{ required: true, message: '请上传照片', trigger: 'blur' }],
-        residence: [
-          {
-            required: true,
-            message: '请填写现居住地',
-            trigger: 'blur'
-          }
-        ],
-        marriage: [
-          {
-            required: true,
-            message: '请选择婚姻状况',
-            trigger: 'change'
-          }
-        ],
-        major_arr: [
-          {
-            required: true,
-            message: '请选择所学专业',
-            trigger: 'change'
-          }
-        ],
-        height: [
-          { required: true, message: '请填写身高', trigger: 'blur' },
+        residence: [{
+          required: true,
+          message: '请填写现居住地',
+          trigger: 'blur'
+        }],
+        marriage: [{
+          required: true,
+          message: '请选择婚姻状况',
+          trigger: 'change'
+        }],
+        major_arr: [{
+          required: true,
+          message: '请选择所学专业',
+          trigger: 'change'
+        }],
+        height: [{
+          required: true,
+          message: '请填写身高',
+          trigger: 'blur'
+        },
           {
             type: 'number',
             message: '身高必须为数字',
             trigger: 'blur'
           }
         ],
-        householdaddress: [
-          { required: true, message: '请填写籍贯', trigger: 'blur' }
-        ],
-        idcard: [
-          {
-            required: true,
-            message: '请填写身份证号',
-            trigger: 'blur'
-          }
-        ],
-        custom_field_1: [
-          {
-            required: true,
-            message: `请填写custom_field_1`,
-            trigger: 'blur'
-          }
-        ],
-        custom_field_2: [
-          {
-            required: true,
-            message: `请填写custom_field_2`,
-            trigger: 'blur'
-          }
-        ],
-        custom_field_3: [
-          {
-            required: true,
-            message: `请填写custom_field_3`,
-            trigger: 'blur'
-          }
-        ],
+        householdaddress: [{
+          required: true,
+          message: '请填写籍贯',
+          trigger: 'blur'
+        }],
+        idcard: [{
+          required: true,
+          message: '请填写身份证号',
+          trigger: 'blur'
+        }],
+        custom_field_1: [{
+          required: true,
+          message: `请填写custom_field_1`,
+          trigger: 'blur'
+        }],
+        custom_field_2: [{
+          required: true,
+          message: `请填写custom_field_2`,
+          trigger: 'blur'
+        }],
+        custom_field_3: [{
+          required: true,
+          message: `请填写custom_field_3`,
+          trigger: 'blur'
+        }],
         contact: {
-          mobile: [
+          mobile: [{
+            required: true,
+            message: '请填写手机号',
+            trigger: 'blur'
+          },
             {
-              required: true,
-              message: '请填写手机号',
-              trigger: 'blur'
-            },
-            { validator: validateContactMobile, trigger: 'blur' }
-          ],
-          email: [
-            {
-              required: true,
-              message: '请填写邮箱',
-              trigger: 'blur'
-            },
-            { validator: validateContactEmail, trigger: 'blur' }
-          ],
-          weixin: [
-            {
-              required: true,
-              message: '请填写微信',
+              validator: validateContactMobile,
               trigger: 'blur'
             }
           ],
-          qq: [{ required: true, message: '请填写QQ', trigger: 'blur' }]
+          email: [{
+            required: true,
+            message: '请填写邮箱',
+            trigger: 'blur'
+          },
+            {
+              validator: validateContactEmail,
+              trigger: 'blur'
+            }
+          ],
+          weixin: [{
+            required: true,
+            message: '请填写微信',
+            trigger: 'blur'
+          }],
+          qq: [{
+            required: true,
+            message: '请填写QQ',
+            trigger: 'blur'
+          }]
         }
       }
     }
@@ -515,7 +525,8 @@ export default {
       return this.$store.state.config
     }
   },
-  mounted() { },
+  mounted() {
+  },
   created() {
     this.getFieldRule(this.field_rule)
     this.fileupload_size = this.config.fileupload_size
@@ -523,13 +534,24 @@ export default {
     this.fetchInfo()
   },
   methods: {
-    logoDel(){
+    fullnameChange() {
+      var newVal = this.form.fullname
+      var sanitizedText = newVal.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ''); // 使用正则表达式过滤掉表情包
+      if (sanitizedText !== newVal) {
+        console.log(sanitizedText, 'sanitizedText')
+        this.form.fullname = sanitizedText; // 将过滤后的文本重新赋值给组件的输入内容
+      }
+    },
+    logoDel() {
       this.photoUrl = ''
       this.form.photo_img = ''
     },
-    getFieldRule(response){
+    getFieldRule(response) {
       console.log(response)
-      const { Resume, ResumeContact } = {
+      const {
+        Resume,
+        ResumeContact
+      } = {
         ...response
       }
       const extra_rule = {
@@ -628,18 +650,18 @@ export default {
       }
     },
     // PC端创建简历日期选择往前推到16岁 zdq
-    birthdayDateRange(){
+    birthdayDateRange() {
       return {
-        disabledDate(time){
+        disabledDate(time) {
           var myDate = new Date()
           return time.getTime() > new Date(new Date(myDate.getFullYear(), 11).getTime() - 16 * 365 * 24 * 3600 * 1000)
         }
       }
     },
     // 【ID1000572】【bug】后台修改简历，基本资料参加工作时间无限制 yx - 2023.03.02
-    enterJobDateRange(){
+    enterJobDateRange() {
       return {
-        disabledDate(time){
+        disabledDate(time) {
           return time.getTime() > new Date().getTime()
         }
       }
@@ -667,11 +689,16 @@ export default {
         return resumeBasic(param, 'get')
       })
         .then(response => {
-          this.form = { ...this.form, ...response.data.info }
+          this.form = {
+            ...this.form,
+            ...response.data.info
+          }
           this.form.height =
             this.form.height != '' ? parseInt(this.form.height) : ''
           if (response.data.info.contact != null) {
-            this.form.contact = { ...response.data.info.contact }
+            this.form.contact = {
+              ...response.data.info.contact
+            }
           }
           this.photoUrl = response.data.photoUrl
           if (this.form.enter_job_time == '') {
@@ -691,14 +718,17 @@ export default {
           this.infoLoading = false
           this.$emit('setLoading', 'resumeBasic')
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
     onSubmit(formName) {
       if (this.submitLoading === true) {
         return false
       }
       this.submitLoading = true
-      const insertData = { ...this.form }
+      const insertData = {
+        ...this.form
+      }
       this.$refs[formName].validate(valid => {
         if (valid) {
           const tmp_major_arr = this.form.major_arr
@@ -768,9 +798,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-.transparent{
-  cursor:pointer;
+.transparent {
+  cursor: pointer;
   z-index: 1;
   font-size: 12px;
   border-radius: 3px;
@@ -785,19 +814,21 @@ export default {
   background: rgba(0, 0, 0, 0.4);
 }
 
-.photo{
+.photo {
   text-align: center;
   display: inline-block;
-  float:right;
+  float: right;
   width: 100px;
-  height:100px;
-  img{
+  height: 100px;
+
+  img {
     width: 100%;
     height: 100%;
     border-radius: 8px;
   }
 }
-.must{
+
+.must {
   display: inline-block;
   width: 38.6px;
   height: 19.3px;
@@ -811,6 +842,7 @@ export default {
   -webkit-transform: scale(.83);
   transform: scale(.83);
 }
+
 .photo-uploader {
   display: inline-block;
   border: 1px dashed #d9d9d9;
@@ -819,14 +851,17 @@ export default {
   width: 122px;
   height: 122px;
 }
+
 .photo-uploader img {
   width: 120px;
   height: 120px;
   border-radius: 6px;
 }
+
 .photo-uploader:hover {
   border-color: #409eff;
 }
+
 .photo-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -835,10 +870,12 @@ export default {
   line-height: 120px;
   text-align: center;
 }
+
 .el-form-item {
   margin-bottom: 28px;
   width: 600px;
 }
+
 .item-row {
   width: 450px;
   color: #666;
@@ -846,6 +883,7 @@ export default {
   margin-bottom: 16px;
   font-size: 14px;
 }
+
 .el-input,
 .el-select,
 .el-cascader,

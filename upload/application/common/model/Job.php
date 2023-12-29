@@ -498,6 +498,9 @@ class Job extends \app\common\model\BaseModel
         model('JobAuditLog')->saveAll($audit_log);
         $this->refreshSearchBatch($idarr);
 
+        $wechatTplType = config('global_config.wechat_tpl_type');
+        $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+        $notifyTime = date('Y年m月d日 H:i', $timestamp);
         //通知
         if ($audit == 1) {
             foreach ($joblist as $key => $value) {
@@ -514,21 +517,31 @@ class Job extends \app\common\model\BaseModel
                         'job_id' => $value['id']
                     ]
                 );
-                //微信通知
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                $wechatTplAlias = 'job_audit_success';
+                $wechatTplData = [
+                    mb_substr($value['jobname'], 0, 16) . '通过审核',
+                    $notifyTime
+                ];
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'job_auth_notify';
+                    $wechatTplData = [
+                        mb_substr($value['jobname'], 0, 16),
+                        $notifyTime
+                    ];
+                }
+                // 微信通知
                 model('WechatNotifyRule')->notify(
                     $value['uid'],
                     1,
-                    'job_audit_success',
-                    [
-                        '您发布的' . $value['jobname'] . '已通过审核',
-                        mb_substr($value['jobname'],0,16) .'通过审核',
-                        date('Y年m月d日 H:i'),
-                        '点击开启招聘加速通道，省心快招人'
-                    ],
+                    $wechatTplAlias,
+                    $wechatTplData,
                     'member/order/add/common?type=service'
                 );
             }
-
         }
         if ($audit == 2) {
             foreach ($joblist as $key => $value) {
@@ -546,18 +559,29 @@ class Job extends \app\common\model\BaseModel
                         'job_id' => $value['id']
                     ]
                 );
-                //微信通知
+                /**
+                 * 区分微信新旧版本模板
+                 * cy 2023-10-17
+                 */
+                $wechatTplAlias = 'job_audit_fail';
+                $wechatTplData = [
+                    mb_substr($value['jobname'], 0, 15) . '审核未通过',
+                    date('Y年m月d日 H:i'),
+                    $reason ? $reason : '无'
+                ];
+                if ($wechatTplType == 2) {
+                    $wechatTplAlias = 'job_audit_fail_notify';
+                    $wechatTplData = [
+                        mb_substr($value['jobname'], 0, 16),
+                        $notifyTime
+                    ];
+                }
+                // 微信通知
                 model('WechatNotifyRule')->notify(
                     $value['uid'],
                     1,
-                    'job_audit_fail',
-                    [
-                        '您发布的' . $value['jobname'] . '未通过审核',
-                        mb_substr($value['jobname'],0,15) .'审核未通过',
-                        date('Y年m月d日 H:i'),
-                        $reason ? $reason : '无',
-                        '请修改后再次发布，点击去修改。'
-                    ],
+                    $wechatTplAlias,
+                    $wechatTplData,
                     'member/company/jobedit/' . $value['id']
                 );
             }

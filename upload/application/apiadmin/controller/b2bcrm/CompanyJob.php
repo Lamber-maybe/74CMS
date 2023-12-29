@@ -80,6 +80,7 @@ class CompanyJob extends Backend
             $job_apply_list = [];
         }
         $category_district_data = model('CategoryDistrict')->getCache();
+        $sitename = config('global_config.sitename');
         foreach ($list as $key => $value) {
             $arr = [];
             $arr['uid'] = $value['uid'];
@@ -126,6 +127,7 @@ class CompanyJob extends Backend
                 $value['maxwage'],
                 $value['negotiable']
             );
+            $arr['sitename'] = $sitename;
             $list[$key] = $arr;
         }
         $return['items'] = $list;

@@ -33,18 +33,20 @@ class Index extends Base
             'is_look_apply' => 0,
             'is_look_interview' => 0
         ];
-        if ($this->visitor['utype'] === 1){
-            $is_look_apply = model('JobApply')
-                ->where('company_uid',$this->visitor['uid'])
-                ->where('is_look',0)
-                ->find();
-            $prompt['is_look_apply'] = !empty($is_look_apply) ? 1 : 0;
-        }else{
-            $is_look_interview = model('CompanyInterview')
-                ->where('personal_uid',$this->visitor['uid'])
-                ->where('is_look',0)
-                ->find();
-            $prompt['is_look_interview'] = !empty($is_look_interview) ? 1 : 0;
+        if (isset($this->visitor) && !empty($this->visitor)) {
+            if ($this->visitor['utype'] === 1){
+                $is_look_apply = model('JobApply')
+                    ->where('company_uid',$this->visitor['uid'])
+                    ->where('is_look',0)
+                    ->find();
+                $prompt['is_look_apply'] = !empty($is_look_apply) ? 1 : 0;
+            }else{
+                $is_look_interview = model('CompanyInterview')
+                    ->where('personal_uid',$this->visitor['uid'])
+                    ->where('is_look',0)
+                    ->find();
+                $prompt['is_look_interview'] = !empty($is_look_interview) ? 1 : 0;
+            }
         }
         $this->assign('prompt',$prompt);
         return $this->fetch('index/' . $index_tpl . '/index');

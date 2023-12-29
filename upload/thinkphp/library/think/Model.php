@@ -1406,7 +1406,7 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
     }
 
     /**
-     * 字段值(延迟)增长
+     * 字段值(延迟)递减
      * @access public
      * @param string  $field    字段名
      * @param integer $step     增长值

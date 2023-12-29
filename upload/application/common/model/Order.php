@@ -975,20 +975,35 @@ class Order extends BaseModel
             $resume = model('Resume')->where('uid', $order['uid'])->field('fullname')->find();
             $name = !empty($resume['fullname']) ? mb_substr($resume['fullname'], 0, 10) : '';
         }
-        //微信通知
+        /**
+         * 区分微信新旧版本模板
+         * cy 2023-10-17
+         */
+        $wechatTplType = config('global_config.wechat_tpl_type');
+        $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+        $wechatTplAlias = 'order_pay';
+        $wechatTplData = [
+            $order['oid'],
+            $name . '-' . $order['service_name'],
+            $order['amount'] . '元',
+            $this->map_payment[$payment],
+            date('Y年m月d日 H:i:s', $time)
+        ];
+        if ($wechatTplType == 2) {
+            $wechatTplAlias = 'order_pay_notify';
+            $wechatTplData = [
+                $order['oid'],
+                $name . '-' . $order['service_name'],
+                date('Y年m月d日 H:i:s', $time)
+            ];
+        }
+
+        // 微信通知
         model('WechatNotifyRule')->notify(
             $order['uid'],
             $order['utype'],
-            'order_pay',
-            [
-                '亲，您的订单已支付成功',
-                $order['oid'],
-                $name . '-' . $order['service_name'],
-                $order['amount'] . '元',
-                $this->map_payment[$payment],
-                date('Y年m月d日 H:i:s', $time),
-                '点击查看订单详情'
-            ],
+            $wechatTplAlias,
+            $wechatTplData,
             'member/order/' . $order->id
         );
         if ($order['service_type'] == 'single_resume_down' || $order['service_type'] == 'single_job_refresh') {

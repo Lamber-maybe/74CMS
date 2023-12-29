@@ -748,7 +748,6 @@ export default {
     },
     onsubmitLogo(){
       html2canvas(document.querySelector("#img"),{width:80,height:80,allowTaint: false,useCORS:true}).then(canvas => {
-        console.log(canvas.toDataURL())
         http
           .post(api.sendCompanyLogo, { imgBase64: canvas.toDataURL() })
           .then(res => {
@@ -827,6 +826,7 @@ export default {
             this.form.basic.logo === 0
           ) {
             this.$message.error("请上传" + this.field_rule.basic.logo.field_cn);
+            this.isSubmit = false
             return false;
           }
           http

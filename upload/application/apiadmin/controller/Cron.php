@@ -360,25 +360,22 @@ class Cron extends \app\common\controller\Backend
     {
         $where = [];
         $cron_id = input('get.cron_id/d', 0, 'intval');
-        $current_page = input('get.page/d', 1, 'intval');
         $pagesize = input('get.pagesize/d', 10, 'intval');
         if ($cron_id > 0) {
             $where['cron_id'] = $cron_id;
         }
 
-        $total = model('CronLog')
-            ->where($where)
-            ->count();
         $list = model('CronLog')
             ->where($where)
             ->order('id desc')
-            ->page($current_page . ',' . $pagesize)
-            ->select();
-        $return['items'] = $list;
-        $return['total'] = $total;
-        $return['current_page'] = $current_page;
-        $return['pagesize'] = $pagesize;
-        $return['total_page'] = ceil($total / $pagesize);
-        $this->ajaxReturn(200, '获取数据成功', $return);
+            ->paginate($pagesize)
+            ->toArrays();
+        if (!empty($list['items'])) {
+            foreach ($list['items'] as &$item) {
+                // 保留小数点后四位，防止超出
+                $item['seconds'] = round($item['seconds'], 4);
+            }
+        }
+        $this->ajaxReturn(200, '获取数据成功', $list);
     }
 }

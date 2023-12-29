@@ -22,7 +22,8 @@
           <div class="up">
             <div class="avatar_box">
               <img :src="base_info.photo_img_src" :alt="base_info.fullname"/>
-              <div class="gender" :class="base_info.sex == 1 ? 'male' : base_info.sex == 2 ? 'female' : ''"></div>
+              <div class="gender"
+                   :class="base_info.sex == 1 ? 'male' : base_info.sex == 2 ? 'female' : ''"></div>
             </div>
             <div class="tx1">
               <div class="name">{{ base_info.fullname }}</div>
@@ -50,19 +51,18 @@
             <div>
               <span>更新：{{ base_info.refreshtime }}</span>
             </div>
-            <div
-              class="right"
-              @click="showDetail = !showDetail"
-            >
+            <div class="right" @click="showDetail = !showDetail">
               更多基本信息
             </div>
           </div>
           <div class="collect" :class="has_fav == 1 ? 'collect_act' : ''" @click="doFav">
-            <!-- {{ has_fav == 1 ? "已收藏" : "收藏" }} --></div>
+            <!-- {{ has_fav == 1 ? "已收藏" : "收藏" }} -->
+          </div>
           <div class="share" @click="doShare"></div>
         </div>
         <div class="box_nav" v-if="$store.state.config.shortvideo_enable === '1'">
-          <div class="item" :class="resumeShow === 'resume' ? 'active' : ''" @click="resumeShow = 'resume'">简历信息
+          <div class="item" :class="resumeShow === 'resume' ? 'active' : ''" @click="resumeShow = 'resume'">
+            简历信息
           </div>
           <div class="item" :class="resumeShow === 'video' ? 'active' : ''" @click="resumeShow = 'video'">
             求职视频
@@ -73,7 +73,8 @@
       <div class="box_resume_some" v-if="resumeShow === 'resume'">
         <div class="content_wrapper">
           <!-- 无效职位标识 -->
-          <img v-if="this.is_invalid!=0" class="invalid_img" src="../../assets/images/resumeshow/invalid_resume.png"/>
+          <img v-if="this.is_invalid!=0" class="invalid_img"
+               src="../../assets/images/resumeshow/invalid_resume.png"/>
           <div class="box_3">
             <div class="box_head">
               <div class="txt"><span class="title">求职意向</span></div>
@@ -182,6 +183,7 @@
             </div>
           </div>
         </div>
+        <!-- 个性标签 -->
         <div class="box_2" v-if="base_info.tag_text_arr != undefined && base_info.tag_text_arr.length > 0">
           <div class="box_head">
             <div class="txt"><span class="title">个性标签</span></div>
@@ -190,15 +192,18 @@
             <div class="item" v-for="(tag, index) in base_info.tag_text_arr" :key="index">{{ tag }}</div>
             <div class="clear"></div>
           </div>
+        </div>
+        <!-- <div class="form_split_10"></div> -->
+        <div class="content_wrapper">
           <!--联系方式-->
           <div class="box_cac">
-            <div class="box_head" style="padding-top: 11.5px;">
+            <div class="box_head">
               <div class="txt"><span class="title">联系方式</span></div>
               <span class="phone_tip" v-if="show_contact == 1 && phone_protect_open && phone_protect_type == 1">
-								请使用
-								<span class="phone" v-text="cur_com_mobile"></span>
-								的手机号拔号
-							</span>
+                请使用
+                <span class="phone" v-text="cur_com_mobile"></span>
+                的手机号拔号
+              </span>
             </div>
 
             <div class="box_content" v-if="show_contact == 1 && !phone_protect_open">
@@ -245,9 +250,6 @@
 							</span>
             </div>
           </div>
-        </div>
-        <!-- <div class="form_split_10"></div> -->
-        <div class="content_wrapper">
           <!--培训经历-->
           <div class="box_8"
                v-if="resume_module.training !== undefined && resume_module.training.is_display == 1 && training_list.length > 0">
@@ -309,9 +311,7 @@
             language_list.length > 0
           "
         ></div> -->
-        <div
-          class="content_wrapper"
-          v-if="
+        <div class="content_wrapper" v-if="
               (resume_module.certificate !== undefined &&
               resume_module.certificate.is_display == 1 &&
               certificate_list.length > 0)
@@ -319,8 +319,7 @@
               (resume_module.language !== undefined &&
               resume_module.language.is_display == 1 &&
               language_list.length > 0)
-					"
-        >
+          ">
           <!--获得证书-->
           <div class="box_10"
                v-if="resume_module.certificate !== undefined && resume_module.certificate.is_display == 1 && certificate_list.length > 0">
@@ -328,7 +327,8 @@
               <div class="txt"><span class="title">获得证书</span></div>
             </div>
             <div class="box_content" style="padding-bottom: 7.5px">
-              <div class="tx1" v-for="(item, index) in certificate_list" :key="index">{{ item.name }}</div>
+              <div class="tx1" v-for="(item, index) in certificate_list" :key="index">{{ item.name }}
+              </div>
               <div class="clear"></div>
               <!-- <div
                 class="tx1"
@@ -386,8 +386,8 @@
             </div> -->
             <div class="box_content">
               <div class="swiper-duo">
-                <div class="swiper-item" v-for="(item, index) in img_list" :key="index"><img :src="item.img_src" alt=""
-                                                                                             @click="previewImg(index)"/>
+                <div class="swiper-item" v-for="(item, index) in img_list" :key="index"><img
+                  :src="item.img_src" alt="" @click="previewImg(index)"/>
                 </div>
               </div>
             </div>
@@ -439,7 +439,8 @@
       </div>
     </van-skeleton>
     <van-popup v-model="showLogin" position="right" :overlay="false" style="width: 100%; height: 100%">
-      <Login :utype="1" :single_login="true" @afterLogin="afterLogin" :after_login_data="after_login_data"></Login>
+      <Login :utype="1" :single_login="true" @afterLogin="afterLogin" :after_login_data="after_login_data">
+      </Login>
     </van-popup>
 
     <van-dialog
@@ -466,11 +467,13 @@
           <span class="red">{{ directServiceInfo.need_expense }}</span>
           元。
         </div>
-        <div class="tx2" v-if="parseInt(directServiceInfo.discount) > 0 && directServiceInfo.use_type != 'package'">
+        <div class="tx2"
+             v-if="parseInt(directServiceInfo.discount) > 0 && directServiceInfo.use_type != 'package'">
           购买简历包价格低至
           <span class="red">{{ directServiceInfo.discount }}</span>
           折，
-          <router-link to="/member/order/add/common?type=service&service_type=resume_package" class="blue">立即了解
+          <router-link to="/member/order/add/common?type=service&service_type=resume_package"
+                       class="blue">立即了解
           </router-link>
         </div>
       </div>
@@ -486,11 +489,16 @@
       @confirm="companyServiceUpgradePackage"
     >
       <div class="dialog_tip_wrapper">
-        <div class="tx1">{{showUpgradePackageMsg}}</div>
+        <div class="tx1">{{ showUpgradePackageMsg }}</div>
       </div>
     </van-dialog>
-    <van-dialog v-model="codePro.show" show-cancel-button :confirm-button-text="codePro.btnCn" @confirm="callCodePro"
-                confirm-button-color="#1989fa">
+    <van-dialog
+      v-model="codePro.show"
+      show-cancel-button
+      :confirm-button-text="codePro.btnCn"
+      @confirm="callCodePro"
+      confirm-button-color="#1989fa"
+    >
       <div class="line18 m-top">拔打号码</div>
       <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
       <div class="line18 font12">
@@ -619,7 +627,10 @@ import VideoList from '../../views/shortvideo/components/VideoListtwo'
 import wxshare from '@/assets/js/share.js'
 import Tipoff from '@/components/Tipoff'
 import AddInvitation from '@/components/AddInvitation'
-import {isWeiXin, parseTime} from '@/utils/index'
+import {
+  isWeiXin,
+  parseTime
+} from '@/utils/index'
 import PopupPayment from '@/components/service/PopupPayment'
 import http from '@/utils/http'
 import api from '@/api'
@@ -627,9 +638,13 @@ import Login from '@/components/Login'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
 import Vue from 'vue'
-import {ImagePreview} from 'vant'
+import {
+  ImagePreview
+} from 'vant'
 import SelectJob from '@/views/im/components/SelectJob.vue'
-import {mapMutations} from 'vuex'
+import {
+  mapMutations
+} from 'vuex'
 import PaySubmit from '@/components/service/PaySubmit'
 import WeChatQrcode from '@/components/WeChatQrcode'
 
@@ -649,11 +664,11 @@ export default {
     WeChatQrcode
   },
   filters: {
-    monthTimeFilter (timestamp) {
+    monthTimeFilter(timestamp) {
       return parseTime(timestamp, '{y}-{m}')
     }
   },
-  data () {
+  data() {
     return {
       resumeShow: 'resume',
       codePro: {
@@ -748,7 +763,7 @@ export default {
       is_invalid: 1
     }
   },
-  created () {
+  created() {
     this.query_id = this.$route.params.id
     this.LoginType = this.$store.state.LoginType
     this.is_company_login = !!(this.$store.state.LoginOrNot === true && this.$store.state.LoginType == 1)
@@ -760,7 +775,7 @@ export default {
     }
   },
   watch: {
-    bindWeixinShow (e) {
+    bindWeixinShow(e) {
       if (e === true) {
         this.getScanQrcodeImg()
       }
@@ -768,23 +783,23 @@ export default {
   },
   methods: {
     ...mapMutations(['setImShowParams', 'setimChatid']),
-    handlerHomePage () {
+    handlerHomePage() {
       this.$router.push('/index')
     },
     /**
      * 绑定微信二维码
      */
-    getScanQrcodeImg () {
+    getScanQrcodeImg() {
       http.get(api.get_qrcode, {
         type: 'bind_weixin'
       }).then(res => {
         this.scanQrcodeImg = res.data
       })
     },
-    callCodePro () {
+    callCodePro() {
       location.href = `tel:${this.codePro.x}`
     },
-    async fetchData (next_method = null) {
+    async fetchData(next_method = null) {
       var request_params
       if (this.params.company_uid == '' || this.params.job_apply_id == '') {
         request_params = {
@@ -874,13 +889,17 @@ export default {
         return item.img_src
       })
     },
-    async doTel () {
+    async doTel() {
       if (this.show_contact == 1) {
         if (this.phone_protect_open) {
           let res = await http.get(api.secret_phone, {
             resume_id: this.query_id
           })
-          const {code, message, data} = res
+          const {
+            code,
+            message,
+            data
+          } = res
           if (code == 200) {
             this.codePro.x = data.x
             this.codePro.timeout = data.timeout
@@ -937,7 +956,7 @@ export default {
         }
       }
     },
-    doMsg () {
+    doMsg() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -959,7 +978,9 @@ export default {
         //   return false
         // }
         http.post(api.company_index, {}).then(res => {
-          var {companyinfo} = res.data
+          var {
+            companyinfo
+          } = res.data
 
           // if (this.jobid == 0) {
           this.companyId = companyinfo.id
@@ -1056,7 +1077,7 @@ export default {
      * 选择沟通职位
      * @jobItem 当前沟通职位信息
      */
-    handleCommunicate (jobItem) {
+    handleCommunicate(jobItem) {
       this.selectJobShow = false
       this.jobid = jobItem.id
       this.selectJobObj = jobItem
@@ -1065,7 +1086,7 @@ export default {
     /**
      * 是否绑定微信公众号
      */
-    handleImCheckBind () {
+    handleImCheckBind() {
       http.get(api.imCheckBind).then(res => {
         if (res.data != 0) {
           location.reload(true)
@@ -1075,10 +1096,10 @@ export default {
     /**
      * 选择职位弹窗关闭
      */
-    handleCloseSelectJob () {
+    handleCloseSelectJob() {
       this.selectJobShow = false
     },
-    doInterview () {
+    doInterview() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -1103,7 +1124,7 @@ export default {
         this.$refs.child.initCB()
       }
     },
-    doDownload () {
+    doDownload() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -1132,7 +1153,7 @@ export default {
         this.downloadResume()
       }
     },
-    downloadResume () {
+    downloadResume() {
       const params = {
         resume_id: this.query_id
       }
@@ -1184,7 +1205,7 @@ export default {
           this.enableClick = true
         })
     },
-    doFav () {
+    doFav() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -1236,15 +1257,15 @@ export default {
           })
       }
     },
-    doShare () {
+    doShare() {
       this.showShare = true
     },
-    cancelShare () {
+    cancelShare() {
       this.showShare = false
       this.showWxLayer = false
       this.showLayer = false
     },
-    handleForward () {
+    handleForward() {
       const agent = navigator.userAgent.toLowerCase()
       if (agent.indexOf('micromessenger') < 0) {
         setTimeout(() => {
@@ -1256,14 +1277,14 @@ export default {
         }, 150)
       }
     },
-    handlePoster () {
+    handlePoster() {
       this.shareid = this.query_id
       this.showPoster = true
     },
-    closePoster () {
+    closePoster() {
       this.showPoster = false
     },
-    afterLogin (data) {
+    afterLogin(data) {
       this.showLogin = false
       this.is_company_login = true
       let method = null
@@ -1272,7 +1293,7 @@ export default {
       }
       this.fetchData(method)
     },
-    handlerDirectService () {
+    handlerDirectService() {
       if (this.directServiceInfo.use_type == 'points') {
         this.handlerDirectPay('points')
       } else if (this.directServiceInfo.use_type == 'package') {
@@ -1281,14 +1302,14 @@ export default {
         this.showPayment = true
       }
     },
-    cancels () {
+    cancels() {
       if (this.directServiceInfo.use_type == 'package') {
         this.$router.push('/member/order/add/common?type=setmeal')
       } else {
         this.showDirectService = false
       }
     },
-    handlerDirectPay (payment) {
+    handlerDirectPay(payment) {
       let pay_data = {
         service_type: 'single_resume_down',
         deduct_points: this.directServiceInfo.use_type == 'points' ? this.directServiceInfo.need_points : 0,
@@ -1323,7 +1344,7 @@ export default {
     //     window.location.href = parameter
     //   }
     // },
-    handlerReport () {
+    handlerReport() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -1349,7 +1370,7 @@ export default {
       }
     },
     // 预览作品
-    previewImg (index) {
+    previewImg(index) {
       ImagePreview({
         images: this.previewImgList,
         showIndex: true,
@@ -1359,7 +1380,7 @@ export default {
         closeable: true
       })
     },
-    fetchVideonum () {
+    fetchVideonum() {
       http.get(api.shortvideo_total, {
         rid: this.query_id
       })
@@ -1369,7 +1390,7 @@ export default {
         .catch(() => {
         })
     },
-    initQuery (query) {
+    initQuery(query) {
       for (const key in this.params) {
         if (query.hasOwnProperty(key)) {
           this.params[key] = query[key]
@@ -1379,14 +1400,14 @@ export default {
       }
       this.fetchData()
     },
-    companyServiceDownloadResume () {
+    companyServiceDownloadResume() {
       this.$router.push('/member/order/add/common?type=service&service_type=resume_package')
     },
-    companyServiceUpgradePackage () {
+    companyServiceUpgradePackage() {
       this.$router.push('/member/order/add/common?type=setmeal')
     },
     // 下载附件简历
-    doEnclosureDowenload () {
+    doEnclosureDowenload() {
       if (this.is_company_login === false) {
         this.$dialog
           .confirm({
@@ -1420,7 +1441,7 @@ export default {
       }
     },
     // 关闭面试邀请弹窗
-    closeInvitePopup(){
+    closeInvitePopup() {
       this.showInvite = false
       /**
        * 【ID1000719】
@@ -1876,6 +1897,7 @@ export default {
 
   .box_content {
     .tx1 {
+
       // &::before {
       //   content: " ";
       //   position: absolute;
@@ -1963,6 +1985,7 @@ export default {
 
   .box_content {
     .tx1 {
+
       // &::before {
       //   content: " ";
       //   position: absolute;
@@ -2049,6 +2072,7 @@ export default {
 
   .box_content {
     .tx1 {
+
       // &::before {
       //   content: " ";
       //   position: absolute;
@@ -2223,8 +2247,8 @@ export default {
 }
 
 .box_cac {
-  padding-right: 16px;
   width: 100%;
+  padding-bottom: 20px;
 
   .phone_tip {
     display: inline-block;

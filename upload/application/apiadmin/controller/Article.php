@@ -148,6 +148,14 @@ class Article extends Backend
             }
             $info['content'] = htmlspecialchars_decode($info['content'], ENT_QUOTES);
             $info['attach'] = json_decode($info['attach'], true);
+            /**
+             * 防止第一次编辑时上传的附件保存不成功
+             * attach数据库中存的空时要把格式改为数组
+             * cy 2023-10-12
+             */
+            if (empty($info['attach'])) {
+                $info['attach'] = [];
+            }
             $imageUrl = model('Uploadfile')->getFileUrl($info['thumb']);
             $this->ajaxReturn(200, '获取数据成功', [
                 'info' => $info,

@@ -74,7 +74,7 @@
         </div>
         <div class="history_list">
           <div v-for="item in record" class="history_item">
-            <div class="user">{{ item.username }}</div>
+            <div class="user">{{ item.usernamelastTwoChars }}</div>
             <div class="info">
               <div class="followup">
                 <div class="text">
@@ -93,7 +93,8 @@
                 </div>
               </div>
               <div class="content">
-                {{ item.result }}
+                <!-- 【优化】跟进结果支持换行显示 -->
+                <pre>{{item.result}}</pre>
                 <!--                <p v-html="item.result ? item.result : item.big_result" />-->
                 <div v-if="item.enclosure != '' && item.enclosure.length > 0">
                   <!--                  <div-->
@@ -353,6 +354,15 @@ export default {
             this.record = res.data.items
             for (var i = 0; i <= this.record.length - 1; i++){
               this.record[i].enclosure = this.record[i].enclosure.split(',')
+              // 【优化】后台线索跟进客户跟进 -- 历史跟进记录头像最多取2个字(倒截两位)
+              let str = this.record[i].username
+              let lastTwoChars;
+              if (/^[\u4e00-\u9fa5]+$/.test(str)) { // 检查字符串是否为汉字
+                lastTwoChars = str.slice(-2); // 截取后两位
+              } else {
+                lastTwoChars = str.length >= 5 ? str.slice(-5) : str; // 非汉字字符串截取后边5位数
+              }
+              this.record[i].usernamelastTwoChars = lastTwoChars
             }
             this.total = res.data.pages.record_num
             this.listParams.total = res.data.pages.record_num

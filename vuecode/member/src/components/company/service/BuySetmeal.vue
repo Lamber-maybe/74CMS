@@ -47,8 +47,9 @@
             <div>使用视频面试：<span class="color">{{setmealDetail.enable_video_interview==1?'允许':'不允许'}}</span></div>
             <div>收到简历查看：
               <span class="color" v-if="setmealDetail.show_apply_contact === 0">不允许</span>
-              <span class="color" v-else-if="setmealDetail.resume_view_num>0">{{setmealDetail.resume_view_num}}份/天</span>
-              <span class="color" v-else>不限</span>
+              <span class="color" v-if="setmealDetail.show_apply_contact === 1">允许</span>
+<!--              <span class="color" v-else-if="setmealDetail.resume_view_num>0">{{setmealDetail.resume_view_num}}份/天</span>-->
+<!--              <span class="color" v-else>不限</span>-->
             </div>
             <div class="dec">其他说明：<span class="color">{{setmealDetail.note==''?'无':setmealDetail.note}}</span></div>
         </div>

@@ -571,7 +571,12 @@ class JobApply extends \app\v1_0\controller\common\Base
 
             if ($info['free_viewing'] != 1) {
                 $memberSetmeal = model('Member')->getMemberSetmeal($this->userinfo->uid);
-                if ($memberSetmeal['resume_view_num_today'] === -1 || $memberSetmeal['resume_view_num_today'] > 0) {
+//                if ($memberSetmeal['resume_view_num_today'] === -1 || $memberSetmeal['resume_view_num_today'] > 0) {
+//                    $updateDate['free_viewing'] = 1;
+//                    $updateDate['free_viewing_time'] = time();
+//                    $is_free_viewing = true;
+//                }
+                if (intval($memberSetmeal['show_apply_contact']) === 1) {
                     $updateDate['free_viewing'] = 1;
                     $updateDate['free_viewing_time'] = time();
                     $is_free_viewing = true;

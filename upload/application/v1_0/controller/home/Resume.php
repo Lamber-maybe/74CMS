@@ -925,7 +925,8 @@ class Resume extends \app\v1_0\controller\common\Base
 
     public function exportPdfByPhp()
     {
-        $id = input('get.id/d', 0, 'intval');
+        $id = input('post.id/d', 0, 'intval');
+        $isExport = input('post.is_export/d', 0, 'intval');
         $info = $this->getDetail($id);
 
         if ($this->userinfo != null && $this->userinfo->uid === $info['base_info']['uid']) {
@@ -1080,6 +1081,7 @@ class Resume extends \app\v1_0\controller\common\Base
         }
 
         if ($show_contact === 0) {
+            $this->ajaxReturn(400, '请先下载简历', null);
             $content .= '<div class="intention_list">
                     <p>
                         <span>
@@ -1348,8 +1350,8 @@ class Resume extends \app\v1_0\controller\common\Base
             chmod($upload_path, 0777);
         }
 
-        $save_anme = $info['base_info']['fullname'] . '的个人简历-' . config('global_config.sitename');
-        $file_name = $upload_path . $save_anme;
+        $filename = md5('qs_resume_' . $id);
+        $filePath = $upload_path . $filename;
 
         $css = file_get_contents(PUBLIC_PATH . 'assets/css/download_resume.css');
         $css = '<style>' . $css . '</style>';
@@ -1360,7 +1362,7 @@ class Resume extends \app\v1_0\controller\common\Base
         $logo_url = !empty($logo) ? model('Uploadfile')->getFileUrl($logo) : '';
 
         $data = [
-            'file_name' => $file_name,
+            'file_name' => $filePath,
             'content' => $content,
             'title_header' => $logo_url,
             'title_footer' => $sitename,
@@ -1369,13 +1371,34 @@ class Resume extends \app\v1_0\controller\common\Base
 
         $api->strToPdf($data);
 
+        // 判断是要导出还是直接返回链接地址
+        if ($isExport == 1) {
+            /**
+             * 【ID1000730】
+             * 【bug】简历详情页-下载简历-pdf文件链接没有任何条件限制
+             * cy 2023-7-26
+             * 直接改为文件流输出下载，不返回文件地址
+             */
+            $filename = $info['base_info']['fullname'] . '的个人简历-' . config('global_config.sitename');
+            $filePath .= '.pdf';
+            $file = fopen($filePath, "rb");
+            Header("Content-type: application/octet-stream");
+            Header("Accept-Ranges: bytes");
+            Header("Accept-Length: " . filesize($filePath));
+            header('Content-Disposition: attachment;filename="' . urlencode($filename) . '.pdf"');
+            header('Access-Control-Expose-Headers:Content-Disposition');
+            echo fread($file, filesize($filePath));
+            fclose($file);
+            // 删除文件
+            @unlink($filePath);
+            exit();
+        }
         $url = config('global_config.sitedomain') .
             config('global_config.sitedir') .
             SYS_UPLOAD_DIR_NAME .
             DS .
             $pdf_path .
-            $save_anme . '.pdf';
-
+            $filename . '.pdf';
         $this->ajaxReturn(200, '获取成功', ['url' => $url]);
     }
 }

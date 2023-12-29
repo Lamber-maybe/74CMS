@@ -87,7 +87,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="con1_login float">
+			<div :class="!scan?'con1_login con1_login_noscan float':'con1_login float'" :style="loginUtype!=0?'padding-top:0;':''">
 				<!--登录  -->
 				{#include file="public/ajaxLogin" /#}
 				<div class="con1_notice">
@@ -602,7 +602,7 @@
 		}
 		var script = document.createElement('script')
 		script.type = 'text/javascript'
-		script.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
+		script.src = 'https://turing.captcha.qcloud.com/TCaptcha.js'
 		document.body.appendChild(script)
 	}
 

@@ -44,6 +44,15 @@ class Backend extends Base
             if (!$adminInfo) {
                 $this->ajaxReturn(50001, '没有找到用户信息');
             }
+            /**
+             * 【ID1000728】
+             * 【优化】修改密码后清空状态需重新登录
+             * cy 2023-10-20
+             */
+            $result = model('AdminIdentityToken')->refreshToken($adminInfo['id']);
+            if (false === $result) {
+                $this->ajaxReturn(50003, '登录信息已失效，请重新登录');
+            }
 
             # 50003后台锁定管理员
             if (isset($adminInfo['status']) && $adminInfo['status'] != 1) {

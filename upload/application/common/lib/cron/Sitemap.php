@@ -6,7 +6,7 @@ use app\common\lib\sitemap\Mysitemap;
 
 class Sitemap
 {
-    private $pagesize = 500;
+    private $pagesize = 10000;
 
     public function execute()
     {
@@ -15,10 +15,14 @@ class Sitemap
         /**
          * 生成企业xml地址
          */
-        $total = model('Company')->order('id desc')->count();
+        $total = model('Company')->count('id');
         $company_page_num = ceil($total / $this->pagesize);
         for ($i = 1; $i <= $company_page_num; $i++) {
             $result = $sitemap->addItem('/sitemap/company_' . $i . '.xml', '0.9', 'always');
+            if ($result === false) {
+                return false;
+            }
+            $result = $sitemap_class->makeJobXml($i, 'company');
             if ($result === false) {
                 return false;
             }
@@ -26,10 +30,14 @@ class Sitemap
         /**
          * 生成职位xml地址
          */
-        $total = model('JobSearchRtime')->count();
+        $total = model('JobSearchRtime')->count('id');
         $job_page_num = ceil($total / $this->pagesize);
         for ($i = 1; $i <= $job_page_num; $i++) {
             $result = $sitemap->addItem('/sitemap/job_' . $i . '.xml', '0.9', 'always');
+            if ($result === false) {
+                return false;
+            }
+            $result = $sitemap_class->makeJobXml($i, 'job');
             if ($result === false) {
                 return false;
             }
@@ -41,23 +49,7 @@ class Sitemap
         if ($result === false) {
             return false;
         }
-        for ($i = 1; $i <= $company_page_num; $i++) {
-            $result = $sitemap_class->makeJobXml($i, 'company');
-            if ($result === false) {
-                return false;
-            }
-        }
-        for ($i = 1; $i <= $job_page_num; $i++) {
-            $result = $sitemap_class->makeJobXml($i, 'job');
-            if ($result === false) {
-                return false;
-            }
-        }
-        $navigation = model('navigation')
-            ->where('is_display', 1)
-            ->where('page', '<>', '')
-            ->count();
-        $sitemap_class->makeJobXml($navigation, 'page');
+        $sitemap_class->makeJobXml(0, 'page');
         $sitemap->endSitemap();
     }
 }

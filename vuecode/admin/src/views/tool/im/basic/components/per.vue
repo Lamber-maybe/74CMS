@@ -59,10 +59,10 @@ export default {
       max_per_day: ''
     }
   },
-  created() {
-    this.fetchData()
-  },
   methods: {
+    iniFun(){
+      this.fetchData()
+    },
     fetchData() {
       this.infoLoading = true
       const param = { utype: 2 }

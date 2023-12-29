@@ -14,11 +14,7 @@
     <Head>职位详情</Head>
     <van-skeleton title avatar :row="10" :loading="mainLoading">
       <div class="box_1">
-        <div
-          class="collect"
-          :class="has_fav == 1 ? 'active_collect' : ''"
-          @click="doFav"
-        >
+        <div class="collect" :class="has_fav == 1 ? 'active_collect' : ''" @click="doFav">
           <div class="ico"></div>
           <!-- <div class="text">{{ has_fav == 1 ? "已收藏" : "收藏" }}</div> -->
         </div>
@@ -32,7 +28,8 @@
         <div class="tx2">
           {{ base_info.wage_text }}
           <span>更新：{{ base_info.refreshtime }}</span>
-		  <img v-if="base_info.job_status!=1" class="invalid_job" src="../../assets/images/jobshow/invalid_job.png" />
+          <img v-if="base_info.job_status!=1" class="invalid_job"
+               src="../../assets/images/jobshow/invalid_job.png"/>
         </div>
         <!-- <div class="tx3">
           {{ base_info.district_text }} · {{ base_info.experience_text }} ·
@@ -57,7 +54,7 @@
       <div class="box_6">
         <div class="put">
           <span class="title">
-          职位要求
+            职位要求
           </span>
         </div>
         <div class="tx3" style="font-size: 14px">
@@ -65,22 +62,15 @@
           {{ base_info.education_text }}
         </div>
       </div>
-      <div
-        class="box_4"
-        v-if="
+      <div class="box_4" v-if="
           field_rule.basic.tag !== undefined &&
           field_rule.basic.tag.is_display == 1 &&
           base_info.tag_text_arr !== undefined &&
           base_info.tag_text_arr.length > 0
-        "
-      >
+        ">
         <div class="put"><span class="title">职位福利</span></div>
         <div class="content">
-          <div
-            class="item"
-            v-for="(tag, index) in base_info.tag_text_arr"
-            :key="index"
-          >
+          <div class="item" v-for="(tag, index) in base_info.tag_text_arr" :key="index">
             {{ tag }}
           </div>
           <div class="clear"></div>
@@ -91,11 +81,9 @@
         <div class="boss_all">
           <p class="boss_tx"></p>
           <div class="boss_detail">
-            <p
-              v-if="
+            <p v-if="
                 contact_info.contact == '' || contact_info.contact == undefined
-              "
-            >
+              ">
               人事经理
             </p>
             <p v-else>{{ contact_info.contact }}</p>
@@ -114,69 +102,51 @@
             性质：
             <span>{{ base_info.nature_text }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.amount_text &&
               field_rule.basic.amount !== undefined &&
               field_rule.basic.amount.is_display == 1
-            "
-          >
+            ">
             人数：
             <span>{{ base_info.amount_text }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.department &&
               field_rule.basic.department !== undefined &&
               field_rule.basic.department.is_display == 1
-            "
-          >
+            ">
             部门：
             <span>{{ base_info.department }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.age_text &&
               field_rule.basic.age !== undefined &&
               field_rule.basic.age.is_display == 1
-            "
-          >
+            ">
             年龄：
             <span>{{ base_info.age_text }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.custom_field_1 &&
               field_rule.basic.custom_field_1 !== undefined &&
               field_rule.basic.custom_field_1.is_display == 1
-            "
-          >
+            ">
             {{ field_rule.basic.custom_field_1.field_cn }}：
             <span>{{ base_info.custom_field_1 }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.custom_field_2 &&
               field_rule.basic.custom_field_2 !== undefined &&
               field_rule.basic.custom_field_2.is_display == 1
-            "
-          >
+            ">
             {{ field_rule.basic.custom_field_2.field_cn }}：
             <span>{{ base_info.custom_field_2 }}</span>
           </div>
-          <div
-            class="b_item"
-            v-if="
+          <div class="b_item" v-if="
               base_info.custom_field_3 &&
               field_rule.basic.custom_field_3 !== undefined &&
               field_rule.basic.custom_field_3.is_display == 1
-            "
-          >
+            ">
             {{ field_rule.basic.custom_field_3.field_cn }}：
             <span>{{ base_info.custom_field_3 }}</span>
           </div>
@@ -194,13 +164,16 @@
         <div class="address">
           {{ base_info.address }}
         </div>
-        <div class="bg" v-if="$store.state.config.is_open_map == 1">
-          <div :class="config.is_open_map == 1 && config.map_type == 2 ?  'box ac':'box'"  @click="locationToBdmap">
+        <div class="bg"
+             v-if="$store.state.config.is_open_map == 1 && base_info.map_lat > 0 && base_info.map_lng > 0">
+          <div :class="config.is_open_map == 1 && config.map_type == 2 ?  'box ac':'box'"
+               @click="locationToBdmap">
             <div class="tx1">{{ com_info.companyname }}</div>
             <div class="tx2">{{ base_info.address }}</div>
           </div>
         </div>
-        <div class="distance" v-if="distance != '' && $store.state.config.is_open_map == 1">距您{{ distance }}</div>
+        <div class="distance" v-if="distance != '' && $store.state.config.is_open_map == 1">距您{{ distance }}
+        </div>
       </div>
       <div class="box_5" style="padding-top: 0">
         <div class="put" style="padding-top:0;"><span class="title">职位动态</span></div>
@@ -219,21 +192,15 @@
       <div class="box_8">
         <div class="put">
           <span class="title">联系方式</span>
-          <span
-            class="phone_tip"
-            v-if="
+          <span class="phone_tip" v-if="
               show_contact == 1 && phone_protect_open && phone_protect_type == 1
-            "
-          >
+            ">
             请使用
             <span class="phone" v-text="cur_user_mobile"></span>
             的手机号拔号
           </span>
         </div>
-        <div
-          class="contact_info"
-          v-if="!phone_protect_open && show_contact == 1"
-        >
+        <div class="contact_info" v-if="!phone_protect_open && show_contact == 1">
           <div class="info_line">
             联系人：
             <span>{{ contact_info.contact }}</span>
@@ -243,101 +210,70 @@
             <span v-if="contact_info.is_secrecy === 1">{{ contact_info.mobile }}</span>
             <span style="color: #1787FB" v-else>企业已隐藏当前手机号</span>
           </div>
-          <div
-            class="info_line"
-            v-if="
+          <div class="info_line" v-if="
               field_rule.contact.telephone !== undefined &&
               field_rule.contact.telephone.is_display == 1 &&
               contact_info.telephone != ''
-            "
-          >
+            ">
             联系固话：
             <span>{{ contact_info.telephone }}</span>
           </div>
-          <div
-            class="info_line"
-            v-if="
+          <div class="info_line" v-if="
               field_rule.contact.weixin !== undefined &&
               field_rule.contact.weixin.is_display == 1 &&
               contact_info.weixin != ''
-            "
-          >
+            ">
             联系微信：
             <span>{{ contact_info.weixin }}</span>
           </div>
-          <div
-            class="info_line"
-            v-if="
+          <div class="info_line" v-if="
               field_rule.contact.email !== undefined &&
               field_rule.contact.email.is_display == 1 &&
               contact_info.email != ''
-            "
-          >
+            ">
             联系邮箱：
             <span>{{ contact_info.email }}</span>
           </div>
-          <div
-            class="info_line"
-            v-if="
+          <div class="info_line" v-if="
               field_rule.contact.qq !== undefined &&
               field_rule.contact.qq.is_display == 1 &&
               contact_info.qq != ''
-            "
-          >
+            ">
             联系QQ：
             <span>{{ contact_info.qq }}</span>
           </div>
         </div>
-        <div
-          class="code_pro_wrap"
-          v-if="show_contact == 1 && phone_protect_open"
-        >
-          <img class="secret" src="../../assets/images/318.jpg" />
+        <div class="code_pro_wrap" v-if="show_contact == 1 && phone_protect_open">
+          <img class="secret" src="../../assets/images/318.jpg"/>
           <div v-if="phone_protect_type == 1" class="pro_tip">
-            1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span
-              v-text="phone_protect_timeout"
-            ></span
-            >秒,过期后需再次点击拔号
+            1.需要使用指定号码拔打,非指定号码无法拔通; 2.隐私号码有效<span v-text="phone_protect_timeout"></span>秒,过期后需再次点击拔号
           </div>
         </div>
-        <div
-          class="contact_login"
-          v-if="show_contact == 0 && show_contact_note == 'need_login'"
-          @click="showLogin = true"
-        >
+        <div class="contact_login" v-if="show_contact == 0 && show_contact_note == 'need_login'"
+             @click="showLogin = true">
           <p>您尚未登录，点击登录后可查看企业联系方式</p>
-          <span class="link"
-            >点击登录
+          <span class="link">
+            点击登录
             <span></span>
           </span>
         </div>
-        <div
-          class="contact_login contact_resume"
-          v-if="show_contact == 0 && show_contact_note == 'need_personal_login'"
-        >
+        <div class="contact_login contact_resume"
+             v-if="show_contact == 0 && show_contact_note == 'need_personal_login'">
           <div class="tx1">职位联系方式</div>
           <div class="tx2">仅对求职者会员开放</div>
         </div>
-        <div
-          class="contact_login contact_resume"
-          v-if="show_contact == 0 && show_contact_note == 'need_resume'"
-          @click="$router.push('/member/personal/index')"
-        >
+        <div class="contact_login contact_resume" v-if="show_contact == 0 && show_contact_note == 'need_resume'"
+             @click="$router.push('/member/personal/index')">
           <div class="tx1">您还没有简历，创建简历后可查看企业联系方式</div>
           <span class="link">创建简历<span></span></span>
         </div>
-        <div
-          class="contact_login contact_resume"
-          v-if="show_contact == 0 && show_contact_note == 'need_apply'"
-          @click="doApply"
-        >
+        <div class="contact_login contact_resume" v-if="show_contact == 0 && show_contact_note == 'need_apply'"
+             @click="doApply">
           <div class="tx1">企业要求投递简历后才可查看联系方式</div>
           <span class="link">投递简历<span></span></span>
         </div>
-        <div
-          class="contact_login contact_delivery"
-          v-if="show_contact == 0 && show_contact_note == 'company_close'"
-        >
+        <div class="contact_login contact_delivery"
+             v-if="show_contact == 0 && show_contact_note == 'company_close'">
           <div class="tx1" v-if="has_apply == 1">企业未开启查看联系方式</div>
           <div class="tx2" v-if="has_apply == 1">
             您已投递简历，请等待企业联系
@@ -345,26 +281,20 @@
           <div class="tx1" v-if="has_apply == 0">
             企业未开启查看联系方式，请直接投递简历
           </div>
-          <span class="link" v-if="has_apply == 0" @click="doApply"
-            >投递简历<span></span></span>
+          <span class="link" v-if="has_apply == 0" @click="doApply">
+            投递简历
+            <span></span>
+          </span>
         </div>
       </div>
       <!-- <div class="form_split_10"></div> -->
       <div class="box_9">
         <div class="put">
           <span class="title">竞争力分析</span>
-          <div
-            class="right_arrow"
-            v-if="is_personal_login === true"
-            @click="openCompetitive"
-          >查看匹配度</div>
+          <div class="right_arrow" v-if="is_personal_login === true" @click="openCompetitive">查看匹配度</div>
         </div>
         <div class="doubt">
-          <div
-            class="content"
-            v-if="is_personal_login === false"
-            @click="showLogin = true"
-          >
+          <div class="content" v-if="is_personal_login === false" @click="showLogin = true">
             <span>登录</span>
             后查看你的匹配度
           </div>
@@ -417,13 +347,13 @@
         <div class="info" @click="$router.push('/company/' + com_info.id)">
           <div class="up">
             <div class="logo_box">
-              <img :src="com_info.logo_src" :alt="com_info.companyname" />
+              <img :src="com_info.logo_src" :alt="com_info.companyname"/>
             </div>
             <div class="tx1">
               <div class="name">{{ com_info.companyname }}</div>
               <div class="auth_ico" v-if="com_info.audit == 1"></div>
               <div class="crw_ico" v-if="com_info.setmeal_icon != ''">
-                <img :src="com_info.setmeal_icon" alt="" />
+                <img :src="com_info.setmeal_icon" alt=""/>
               </div>
               <div class="clear"></div>
             </div>
@@ -454,11 +384,7 @@
       <div class="form_split_10"></div>
       <div class="box_11" v-if="similar != undefined && similar.length > 0">
         <div class="put"><span class="title">相似职位</span></div>
-        <div
-          v-for="(item, index) in similar"
-          :key="index"
-          @click="toDetail(item.id)"
-        >
+        <div v-for="(item, index) in similar" :key="index" @click="toDetail(item.id)">
           <div class="list">
             <div class="tx1">
               <div class="name">{{ item.jobname }}</div>
@@ -472,11 +398,7 @@
             </div>
             <div class="time">{{ item.refreshtime }}</div>
             <div class="tag_wrapper" v-if="item.tag_text_arr">
-              <div
-                class="tag_item"
-                v-for="(tag, ind) in item.tag_text_arr"
-                :key="ind"
-              >
+              <div class="tag_item" v-for="(tag, ind) in item.tag_text_arr" :key="ind">
                 {{ tag }}
               </div>
               <div class="clear"></div>
@@ -485,7 +407,7 @@
               <div class="name">{{ item.companyname }}</div>
               <div class="auth_ico" v-if="item.company_audit == 1"></div>
               <div class="crw_ico" v-if="item.setmeal_icon != ''">
-                <img :src="item.setmeal_icon" alt="" />
+                <img :src="item.setmeal_icon" alt=""/>
               </div>
               <div class="clear"></div>
             </div>
@@ -497,19 +419,12 @@
       <div class="box_12">
         <div class="bottom_bar">
           <div class="item_call" @click="doTel">电话</div>
-          <div
-            :class="
+          <div :class="
               has_fav == 1 ? 'item_collect item_collect_ac' : 'item_collect'
-            "
-            @click="doFav"
-          >
+            " @click="doFav">
             {{ has_fav == 1 ? "已收藏" : "收藏" }}
           </div>
-          <div
-            class="item_apply"
-            :class="has_apply == 1 ? 'item_apply_already' : ''"
-            @click="doApply"
-          >
+          <div class="item_apply" :class="has_apply == 1 ? 'item_apply_already' : ''" @click="doApply">
             {{ has_apply == 1 ? "已投递" : "投递简历" }}
           </div>
           <div class="item_chat" @click="doMsg">在线职聊</div>
@@ -579,7 +494,7 @@
       :type="'job'"
       :infoid="shareid"
     ></SharePoster>
-    <van-overlay z-index="3" :show="showPoster" @click="showPoster = false" />
+    <van-overlay z-index="3" :show="showPoster" @click="showPoster = false"/>
     <van-popup v-model="showShare" position="bottom">
       <Share
         @cancelShare="cancelShare"
@@ -597,13 +512,9 @@
       <div class="line18 m-top">拔打号码</div>
       <div class="line18 color-orange font15 bold" v-text="codePro.x"></div>
       <div class="line18 font12">
-        (电话<span class="color-orange" v-text="codePro.timeout"></span
-        >秒后失效,请尽快拔打)
+        (电话<span class="color-orange" v-text="codePro.timeout"></span>秒后失效,请尽快拔打)
       </div>
-      <div
-        v-if="phone_protect_type == 1"
-        class="m-btm line18 font12 color-gray"
-      >
+      <div v-if="phone_protect_type == 1" class="m-btm line18 font12 color-gray">
         仅支持使用<span v-text="codePro.a"></span>的手机卡拔号
       </div>
     </van-dialog>
@@ -625,10 +536,7 @@
         <img src="../../assets/images/company/qx.png" alt="" />
       </p>
     </div> -->
-    <div
-      class="generate_posters"
-      :class="putAway ? 'generate_posters_all' : ''"
-    >
+    <div class="generate_posters" :class="putAway ? 'generate_posters_all' : ''">
       <p class="poster_item" @click="handlerHomePage" v-if="!putAway">首页</p>
       <p class="poster_item copy_item" @click="handlerCopy" v-if="!putAway">
         复制
@@ -637,10 +545,7 @@
         海报
       </p>
       <p class="poster_item all-item" @click="putAway = !putAway">
-        <span
-          class="all-item-img"
-          :class="putAway ? 'all-item-img-qx' : ''"
-        ></span>
+        <span class="all-item-img" :class="putAway ? 'all-item-img-qx' : ''"></span>
       </p>
     </div>
     <!-- 绑定微信开始 -->
@@ -654,7 +559,7 @@
       <div class="bind-weixin-box">
         <div class="title-1">您当前未绑定微信，绑定后可发起聊天。</div>
         <div class="img">
-          <img :src="scanQrcodeImg" alt="" />
+          <img :src="scanQrcodeImg" alt=""/>
         </div>
         <div class="title-2">使用微信扫一扫，按提示快速绑定</div>
       </div>
@@ -685,7 +590,8 @@
       :closeOnClickOverlay="true"
     >
       <div class="user-login-title">求职者用户登录</div>
-      <input class="user-login-input1" v-model="loginForm.mobile" placeholder="请输入手机号" type="number" maxlength="11"/>
+      <input class="user-login-input1" v-model="loginForm.mobile" placeholder="请输入手机号" type="number"
+             maxlength="11"/>
       <div class="user-login-code">
         <input class="user-login-input2" v-model="loginForm.code" placeholder="请输入验证码"/>
         <button class="log_get_btn" :disabled="is_submit" :style="'color:'+$store.state.sendSmsBtnTextColor"
@@ -711,18 +617,27 @@ import Vue from 'vue'
 import wxshare from '@/assets/js/share.js'
 import Subscribe from '@/components/Subscribe'
 import Tipoff from '@/components/Tipoff'
-import { countDistance } from '@/utils/index'
+import {
+  countDistance,
+  debounce
+} from '@/utils/index'
 import http from '@/utils/http'
 import api from '@/api'
 import Login from '@/components/Login'
 import JobCompetitive from '@/components/JobCompetitive'
 import Share from '@/components/share/Share'
 import SharePoster from '@/components/share/SharePoster'
-import { mapMutations, mapState } from 'vuex'
+import {
+  mapMutations,
+  mapState
+} from 'vuex'
 import TianMap from '@/components/map/TianMap/TianMap'
 import Captcha from '@/components/captcha/index'
-import { handlerHttpError } from '@/utils/error'
+import {
+  handlerHttpError
+} from '@/utils/error'
 import WeChatQrcode from '@/components/WeChatQrcode'
+
 let isSpider = new RegExp(
   '^(Baiduspider|YisouSpider|Sogou|Googlebot|Sosospider|bingbot|360Spider)'
 ).test(navigator.userAgent)
@@ -747,7 +662,7 @@ export default {
   computed: {
     ...mapState(['config'])
   },
-  data () {
+  data() {
     return {
       jobSearchGroupData: [],
       codePro: {
@@ -765,7 +680,10 @@ export default {
       is_personal_login: false,
       showCompetitive: false,
       base_info: {},
-      field_rule: { basic: {}, contact: {} },
+      field_rule: {
+        basic: {},
+        contact: {}
+      },
       show_contact: 0,
       show_contact_note: '',
       contact_info: {},
@@ -804,15 +722,15 @@ export default {
       completeResumeMsg: '',
       needLogin: false,
       loginForm: {
-        mobile:'',
-        code:''
+        mobile: '',
+        code: ''
       },
       regularMobile: /^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|18[0-9]{9}$|17[0-9]{9}$|16[0-9]{9}$|19[0-9]{9}$/,
       sendSmsLimit: false,
       is_submit: false
     }
   },
-  created () {
+  created() {
     this.query_id = this.$route.params.id
     this.isRetrunBtn = this.$route.query.isRetrunBtn
     this.is_personal_login =
@@ -822,35 +740,38 @@ export default {
     this.fetchData()
   },
   watch: {
-    $route (to, from) {
+    $route(to, from) {
       this.query_id = to.params.id
       // 请求数据
       this.fetchData()
       document.body.scrollTop = document.documentElement.scrollTop = 0
     },
-    bindWeixinShow (e) {
+    bindWeixinShow(e) {
       if (e === true) {
         this.getScanQrcodeImg()
       }
     }
   },
-  mounted () {},
+  mounted() {
+  },
   methods: {
     ...mapMutations(['setImShowParams', 'setimChatid']),
     /**
      * 绑定微信二维码
      */
-    getScanQrcodeImg () {
-      http.get(api.get_qrcode, { type: 'bind_weixin' }).then((res) => {
+    getScanQrcodeImg() {
+      http.get(api.get_qrcode, {
+        type: 'bind_weixin'
+      }).then((res) => {
         this.scanQrcodeImg = res.data
       })
     },
 
-    handlerHomePage () {
+    handlerHomePage() {
       this.$router.push('/index')
     },
     // 一键复制
-    async handlerCopy () {
+    async handlerCopy() {
       let that = this
       let copy = () => {
         let copyMessage = `${this.com_info.companyname}
@@ -861,10 +782,16 @@ export default {
 -招聘求职就上${this.$store.state.config.sitename}-`
         this.$copyText(copyMessage).then(
           function (e) {
-            that.$notify({ type: 'success', message: '内容已复制到剪切板！' })
+            that.$notify({
+              type: 'success',
+              message: '内容已复制到剪切板！'
+            })
           },
           function (e) {
-            that.$notify({ type: 'error', message: '抱歉，复制失败！' })
+            that.$notify({
+              type: 'error',
+              message: '抱歉，复制失败！'
+            })
           }
         )
       }
@@ -881,17 +808,19 @@ export default {
         copy()
       }
     },
-    toDetail (id) {
+    toDetail(id) {
       this.$router.push('/job/' + id)
     },
-    handlerTianMap ({TMap}) {
+    handlerTianMap({TMap}) {
       this.TMap = TMap
     },
-    getTianMapPosition (mapLat, mapLng) {
+    getTianMapPosition(mapLat, mapLng) {
       if (!this.TMap || this.TMap.Geolocation === undefined) {
         return
       }
-      const {TMap} = this
+      const {
+        TMap
+      } = this
       const that = this
       var geolocation = new TMap.Geolocation()
       geolocation.getCurrentPosition(function (r) {
@@ -900,9 +829,9 @@ export default {
           that.current_lng = r.lnglat.lng
           if (
             that.current_lat > 0 &&
-              that.current_lng > 0 &&
-              mapLat > 0 &&
-              mapLng > 0
+            that.current_lng > 0 &&
+            mapLat > 0 &&
+            mapLng > 0
           ) {
             that.distance = countDistance(
               that.current_lat,
@@ -912,12 +841,14 @@ export default {
             )
           }
         }
-      }, { enableHighAccuracy: true })
+      }, {
+        enableHighAccuracy: true
+      })
     },
-    handlerMap ({ BMap, map }) {
+    handlerMap({BMap, map}) {
       this.BMap = BMap
     },
-    getPosition (map_lat, map_lng) {
+    getPosition(map_lat, map_lng) {
       if (!this.BMap) {
         return
       }
@@ -943,14 +874,17 @@ export default {
               )
             }
           }
-        },
-        { enableHighAccuracy: true }
+        }, {
+          enableHighAccuracy: true
+        }
       )
     },
-    getCompetitiveness () {
+    getCompetitiveness() {
       if (this.is_personal_login === true) {
         http
-          .get(api.competitiveness, { id: this.query_id })
+          .get(api.competitiveness, {
+            id: this.query_id
+          })
           .then((res) => {
             if (res.data.length == 0) {
               this.match_level = 3
@@ -960,12 +894,13 @@ export default {
               this.competitive_data = res.data
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         this.match_level = 0
       }
     },
-    async fetchData (next_method = null) {
+    async fetchData(next_method = null) {
       const params = {
         id: this.query_id
       }
@@ -986,7 +921,9 @@ export default {
         phone_protect_open,
         phone_protect_timeout,
         phone_protect_type
-      } = { ...res.data }
+      } = {
+        ...res.data
+      }
       this.field_rule = field_rule
       this.base_info = base_info
       this.show_contact = show_contact
@@ -1017,14 +954,20 @@ export default {
         this[next_method]()
       }
     },
-    callCodePro () {
+    callCodePro() {
       location.href = `tel:${this.codePro.x}`
     },
-    async doTel () {
+    async doTel() {
       if (this.show_contact === 1) {
         if (this.phone_protect_open) {
-          let res = await http.get(api.secret_phone, { job_id: this.query_id })
-          const { code, message, data } = res
+          let res = await http.get(api.secret_phone, {
+            job_id: this.query_id
+          })
+          const {
+            code,
+            message,
+            data
+          } = res
           if (code == 200) {
             this.codePro.x = data.x
             this.codePro.timeout = data.timeout
@@ -1059,7 +1002,8 @@ export default {
                 .then(() => {
                   window.location.href = `tel:${this.contact_info.telephone}`
                 })
-                .catch(() => {})
+                .catch(() => {
+                })
               return
             } else {
               this.$notify('企业已关闭手机号显示，请投递简历等待联系')
@@ -1075,7 +1019,8 @@ export default {
             .then(() => {
               window.location.href = `tel:${this.contact_info.mobile}`
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         }
       } else if (this.is_personal_login === false) {
         this.$dialog
@@ -1090,7 +1035,8 @@ export default {
               method: 'doTel'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         if (this.show_contact_note === 'need_resume') {
           this.$notify('您还没有简历，创建简历后可拨打企业电话')
@@ -1105,14 +1051,14 @@ export default {
         }
       }
     },
-    handleImCheckBind () {
+    handleImCheckBind() {
       http.get(api.imCheckBind).then((res) => {
         if (res.data != 0) {
           location.reload(true)
         }
       })
     },
-    doMsg () {
+    doMsg() {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
@@ -1126,7 +1072,8 @@ export default {
               method: 'doMsg'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         // if (this.base_info.audit != 1) {
         //   this.$notify('该简历还未审核通过，不能继续此操作')
@@ -1154,7 +1101,9 @@ export default {
                   companyId: this.com_info.id
                 })
                 this.setimChatid(res.data.chatid)
-                this.$router.push({ path: '/im/' + res.data.chatid })
+                this.$router.push({
+                  path: '/im/' + res.data.chatid
+                })
                 return false
               }
               if (res.data.next == 'disabled') {
@@ -1163,7 +1112,8 @@ export default {
                   title: '系统提示',
                   message: res.message,
                   showConfirmButton: true
-                }).then(() => {})
+                }).then(() => {
+                })
                 return false
               }
               if (res.data.next == 'complete_resume') {
@@ -1175,9 +1125,12 @@ export default {
                     showCancelButton: true
                   })
                   .then(() => {
-                    this.$router.push({ path: '/member/personal/resume' })
+                    this.$router.push({
+                      path: '/member/personal/resume'
+                    })
                   })
-                  .catch(() => {})
+                  .catch(() => {
+                  })
                 return false
               }
               if (res.data.next == 'bind_weixin') {
@@ -1191,7 +1144,7 @@ export default {
       //   return false
       // }
     },
-    doApply () {
+    doApply: debounce(function () {
       /**
        * 【ID1000705】
        * 【优化】未登录情况下，职位详情页点投递简历取消快捷投递
@@ -1203,9 +1156,11 @@ export default {
         this.needLogin = true
       } else if (this.has_apply != 1) {
         let basic = this.$store.state.resume.basic
-        if (basic && basic.complete_percent && basic.complete_percent < this.$store.state.config.apply_job_min_percent) {
+        if (basic && basic.complete_percent && basic.complete_percent < this.$store.state.config
+          .apply_job_min_percent) {
           this.showLowPop = true
-          this.completeResumeMsg = '您的简历完整度不足' + this.$store.state.config.apply_job_min_percent + '%，暂不能投递此职位，建议您完善简历！'
+          this.completeResumeMsg = '您的简历完整度不足' + this.$store.state.config.apply_job_min_percent +
+            '%，暂不能投递此职位，建议您完善简历！'
           return false;
         }
         const params = {
@@ -1214,7 +1169,10 @@ export default {
         http
           .post(api.jobapply, params)
           .then((res) => {
-            this.$notify({type: 'success', message: res.message})
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
             this.fetchData()
             /**
              * 【ID1000719】
@@ -1233,8 +1191,8 @@ export default {
       //     id: this.query_id
       //   }
       // })
-    },
-    doFav () {
+    }, 800),
+    doFav() {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
@@ -1248,7 +1206,8 @@ export default {
               method: 'doFav'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         const params = {
           jobid: this.query_id
@@ -1257,7 +1216,10 @@ export default {
         http
           .post(_api_url, params)
           .then((res) => {
-            this.$notify({ type: 'success', message: res.message })
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
             if (this.has_fav === 0) {
               /**
                * 【ID1000719】
@@ -1268,18 +1230,19 @@ export default {
             }
             this.has_fav = this.has_fav === 1 ? 0 : 1
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       }
     },
-    doShare () {
+    doShare() {
       this.showShare = true
     },
-    cancelShare () {
+    cancelShare() {
       this.showShare = false
       this.showWxLayer = false
       this.showLayer = false
     },
-    handleForward () {
+    handleForward() {
       const agent = navigator.userAgent.toLowerCase()
       if (agent.indexOf('micromessenger') < 0) {
         setTimeout(() => {
@@ -1291,20 +1254,20 @@ export default {
         }, 150)
       }
     },
-    handlePoster () {
+    handlePoster() {
       this.shareid = this.query_id
       this.showPoster = true
     },
-    closePoster () {
+    closePoster() {
       this.showPoster = false
     },
-    openCompetitive () {
+    openCompetitive() {
       this.showCompetitive = true
     },
-    closeCompetitive () {
+    closeCompetitive() {
       this.showCompetitive = false
     },
-    afterLogin (data) {
+    afterLogin(data) {
       this.showLogin = false
       this.is_personal_login = true
       let method = null
@@ -1313,10 +1276,10 @@ export default {
       }
       this.fetchData(method)
     },
-    closeLogin () {
+    closeLogin() {
       this.showLogin = false
     },
-    locationToBdmap () {
+    locationToBdmap() {
       if (this.config.is_open_map == 1 && this.config.map_type == 1) {
         if (!this.base_info.map_lat || !this.base_info.map_lng) {
           return false
@@ -1336,7 +1299,7 @@ export default {
         // this.$notify('暂不支持查看')
       }
     },
-    handlerReport () {
+    handlerReport() {
       if (this.is_personal_login === false) {
         this.$dialog
           .confirm({
@@ -1350,7 +1313,8 @@ export default {
               method: 'handlerReport'
             }
           })
-          .catch(() => {})
+          .catch(() => {
+          })
       } else {
         this.$refs.tipoff.initCB()
         this.showTipoff = true
@@ -1398,7 +1362,7 @@ export default {
           })
       })
     },
-    setSubmitFun () {
+    setSubmitFun() {
       this.is_submit = false
     },
     // 求职者登录
@@ -1439,7 +1403,10 @@ export default {
                   userIminfo: response.data.user_iminfo
                 })
                 if (response.data.next_code != 200) {
-                  handlerHttpError({ code: response.data.next_code, message: '' })
+                  handlerHttpError({
+                    code: response.data.next_code,
+                    message: ''
+                  })
                 } else {
                   // 更新简历基本资料
                   this.updateBasicResume()
@@ -1453,9 +1420,11 @@ export default {
                 this.$notify(response.message)
               }
             })
-            .catch(() => {})
+            .catch(() => {
+            })
         }, setShow)
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     // 更新简历基本资料
     updateBasicResume() {
@@ -1496,6 +1465,7 @@ export default {
   text-align: center;
   padding-top: 7px;
 }
+
 .click_home_page {
   position: fixed;
   z-index: 1;
@@ -1512,11 +1482,12 @@ export default {
   text-align: center;
   padding-top: 7px;
 }
+
 .generate_posters {
   position: fixed;
   z-index: 1;
   right: 15px;
-  bottom: 80px;
+  bottom: 150px; //【ID1000775】【优化】触屏职位详情模板二底部操作遮盖
   background: #e0eeff;
   border-radius: 45px;
   width: 196px;
@@ -1528,6 +1499,7 @@ export default {
   line-height: 58px;
   padding-top: 0;
   padding-left: 10px;
+
   .poster_item {
     z-index: 2;
     width: 25%;
@@ -1542,6 +1514,7 @@ export default {
     overflow: hidden;
     box-sizing: border-box;
     padding-top: 2px;
+
     span {
       display: inline-block;
       width: 100%;
@@ -1550,14 +1523,17 @@ export default {
       color: #595959;
     }
   }
+
   .copy_item {
     background: url(../../assets/images/company/copy_icon.png) 18px 8px no-repeat;
     background-size: 14px;
   }
+
   .hb_item {
     background: url(../../assets/images/company/hb_share.png) 18px 8px no-repeat;
     background-size: 14px;
   }
+
   .all-item {
     position: fixed;
     right: 15px;
@@ -1569,6 +1545,7 @@ export default {
     height: 45px;
     line-height: 45px;
     color: #ffffff;
+
     .all-item-img {
       display: inline-block;
       width: 25px;
@@ -1577,6 +1554,7 @@ export default {
       background-size: 100% 100%;
       margin-top: 8px;
     }
+
     .all-item-img-qx {
       width: 25px;
       height: 25px;
@@ -1586,6 +1564,7 @@ export default {
     }
   }
 }
+
 .generate_posters_all {
   width: 45px;
 }
@@ -1608,9 +1587,11 @@ export default {
       border-radius: 5px;
       flex-shrink: 0;
     }
+
     .item_apply_already {
       background: rgb(206, 206, 206);
     }
+
     .item_chat {
       flex-shrink: 0;
       border-radius: 5px;
@@ -1634,6 +1615,7 @@ export default {
       //   border-bottom: 0.026667rem solid #f3f3f3;
       // }
     }
+
     .item_call {
       flex-shrink: 0;
       // float: left;
@@ -1647,6 +1629,7 @@ export default {
       background-size: 17px;
       position: relative;
     }
+
     .item_collect {
       flex-shrink: 0;
       width: 60px;
@@ -1658,12 +1641,13 @@ export default {
       position: relative;
       background: url("../../assets/images/jobshow/sc.png") center 9px no-repeat;
       background-size: 17px;
+
       &.item_collect_ac {
-        background: url("../../assets/images/company/like_act.png") center 9px
-          no-repeat;
+        background: url("../../assets/images/company/like_act.png") center 9px no-repeat;
         background-size: 17px;
       }
     }
+
     position: fixed;
     left: 0;
     right: 0;
@@ -1681,6 +1665,7 @@ export default {
   height: 63px;
   width: 100%;
   background-color: #ffffff;
+
   &::after {
     position: absolute;
     box-sizing: border-box;
@@ -1694,9 +1679,10 @@ export default {
 }
 
 .box_11 {
-  .put{
-    padding:16.5px 16.5px 1px 16.5px;
+  .put {
+    padding: 16.5px 16.5px 1px 16.5px;
   }
+
   .list {
     .top {
       position: absolute;
@@ -1736,8 +1722,7 @@ export default {
         margin-left: 6px;
         width: 35px;
         height: 19px;
-        background: url("../../assets/images/jobs_list_auth_ico.png") 0 center
-          no-repeat;
+        background: url("../../assets/images/jobs_list_auth_ico.png") 0 center no-repeat;
         background-size: 100% 12px;
       }
 
@@ -1980,6 +1965,7 @@ export default {
       color: #ffffff;
       text-align: center;
       position: relative;
+
       span {
         display: inline-block;
         width: 80%;
@@ -1990,6 +1976,7 @@ export default {
         line-height: 25px;
         font-size: 12px;
       }
+
       .dao_3 {
         width: 0;
         height: 0;
@@ -2162,6 +2149,7 @@ export default {
       color: #ffffff;
       background: url("../../assets/images/jobshow/wdl.png") 0 no-repeat;
       background-size: 100%;
+
       span {
         border-bottom: 1px solid #ffffff;
       }
@@ -2233,6 +2221,7 @@ export default {
       font-size: 13px;
       padding-right: 11px;
       margin-top: 15px;
+
       span {
         display: inline-block;
         width: 10px;
@@ -2442,7 +2431,8 @@ export default {
         transform: rotate(45deg);
         content: " ";
       }
-      &.ac::after{
+
+      &.ac::after {
         display: none;
       }
 
@@ -2474,23 +2464,24 @@ export default {
     }
 
     width: 100%;
-    height:140px;
+    height: 140px;
     background: url("../../assets/images/company/dtbj.png") 0 no-repeat;
     background-size: 100% 140px;
     padding-top: 44px;
   }
+
   .distance {
     padding-left: 15px;
     transform: translate(0, -50%);
     font-size: 12px;
     color: #595959;
-    background: url("../../assets/images/company/address_icon2.png") 0 5px
-      no-repeat;
+    background: url("../../assets/images/company/address_icon2.png") 0 5px no-repeat;
     background-size: 12px;
     height: 25px;
     line-height: 22px;
     margin-top: 26px;
   }
+
   .address {
     // padding-left: 20px;
     line-height: 1.8;
@@ -2513,6 +2504,7 @@ export default {
   font-weight: bold;
   color: #333333;
   position: relative;
+
   .title {
     background: url("../../assets/images/company/border_bg.png") 0 bottom no-repeat;
     background-size: 100% 3px;
@@ -2645,22 +2637,24 @@ export default {
     font-weight: bold;
     color: #ff5d24;
     margin-bottom: 8.5px;
-		position: relative;
-		.invalid_job{
-			display: block;
-			width: 79px;
-			height: 47px;
-			position: absolute;
-			right: 55px;
-			    top: -24px;
-		}
-		span {
-		  font-size: 12px;
-		  color: #999999;
-		  float: right;
-		  font-weight: normal;
-		  padding-top: 7px;
-		}
+    position: relative;
+
+    .invalid_job {
+      display: block;
+      width: 79px;
+      height: 47px;
+      position: absolute;
+      right: 55px;
+      top: -24px;
+    }
+
+    span {
+      font-size: 12px;
+      color: #999999;
+      float: right;
+      font-weight: normal;
+      padding-top: 7px;
+    }
   }
 
   .tx1 {
@@ -2716,12 +2710,14 @@ export default {
     right: 50px;
     z-index: 1;
   }
+
   .active_collect {
     .ico {
       background: url("../../assets/images/company/like_act.png") 0 no-repeat;
       background-size: 16px;
     }
   }
+
   width: 100%;
   background-color: #ffffff;
   position: relative;
@@ -2733,9 +2729,11 @@ export default {
   width: 100%;
   background-color: #ffffff;
   padding: 21.5px 16px;
+
   .boss_all {
     overflow: hidden;
     position: relative;
+
     .boss_tx {
       float: left;
       width: 50px;
@@ -2743,19 +2741,23 @@ export default {
       background: url(../../assets/images/jobshow/boss_tx.png) 0 no-repeat;
       background-size: 100%;
     }
+
     .boss_detail {
       width: 80%;
       padding: 6px 0 0 62px;
+
       p:nth-child(1) {
         color: #282828;
         font-size: 16px;
         font-weight: bold;
       }
+
       p:nth-child(2) {
         color: #808080;
         font-size: 13px;
       }
     }
+
     .boss_talk_icon {
       display: inline-block;
       width: 45px;
@@ -2850,19 +2852,23 @@ export default {
   flex-direction: column;
   text-align: center;
   padding: 10px 0;
+
   .title-1 {
     color: #646566;
     font-size: 14px;
   }
+
   .img {
     width: 111px;
     height: 111px;
     margin: 13px auto 10px;
+
     img {
       width: 100%;
       height: 100%;
     }
   }
+
   .title-2 {
     color: #999999;
     font-size: 13px;
@@ -2879,7 +2885,8 @@ export default {
   margin: 25px auto 25px;
   text-align: center;
   width: 270px;
-  .login-btn{
+
+  .login-btn {
     width: 7.2rem;
     background: #1787fb;
     border: none;
@@ -2889,6 +2896,7 @@ export default {
     font-size: 14px;
   }
 }
+
 .log_get_btn {
   position: absolute;
   right: 0;
@@ -2906,6 +2914,7 @@ export default {
   text-align: center;
   padding: 20px 0;
 }
+
 .user-login-input1 {
   display: block;
   width: 270px;
@@ -2917,6 +2926,7 @@ export default {
   box-sizing: border-box;
   padding: 0 15px;
   font-size: 14px;
+
   &::placeholder {
     color: #ccc;
   }

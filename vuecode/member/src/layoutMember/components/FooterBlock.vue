@@ -9,34 +9,106 @@
         <div class="clear"></div>
       </div>
     </div>
-        <div class="address">联系地址：{{config.contact_address}} <a target="_blank" href="https://beian.miit.gov.cn/">网站备案：{{config.icp}}</a></div>
-        <div class="copyright">{{config.bottom_other}}</div>
+    <div class="address">
+      联系地址：{{ config.contact_address }}
+    </div>
+    <div class="qualification">
+      <!-- ICP -->
+      <span class="qualification_span1" v-if="config.icp">
+        网站备案：
+        <a target="_blank" href="https://beian.miit.gov.cn/">
+          {{ config.icp }}
+        </a>
+      </span>
+      <!-- 公网安备 -->
+      <span class="qualification_span1" v-if="config.network_security">
+        公网安备：
+        <a target="_blank"
+           :href="`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=`+findNumByStr(config.network_security)">
+          {{ config.network_security }}
+        </a>
+      </span>
+      <!-- 人力服务许可证 -->
+      <span class="qualification_span1"
+            v-if="config.qualification_publicity.service_license || config.qualification_publicity.service_license_url">
+        人力服务许可证：
+        <span v-if="config.qualification_publicity.service_license_url">
+          <a target="_blank" :href="config.qualification_publicity.service_license_url">
+            {{ config.qualification_publicity.service_license ? config.qualification_publicity.service_license : '查看' }}
+          </a>
+        </span>
+        <span v-else>
+          {{ config.qualification_publicity.service_license ? config.qualification_publicity.service_license : '查看' }}
+        </span>
+      </span>
+      <!-- 营业执照 -->
+      <span class="qualification_span1"
+            v-if="config.qualification_publicity.business_license || config.qualification_publicity.business_license_url">
+        营业执照：
+        <span v-if="config.qualification_publicity.business_license_url">
+          <a target="_blank" :href="config.qualification_publicity.business_license_url">
+            {{ config.qualification_publicity.business_license ? config.qualification_publicity.business_license : '查看' }}
+          </a>
+        </span>
+        <span v-else>
+          {{ config.qualification_publicity.business_license ? config.qualification_publicity.business_license : '查看' }}
+        </span>
+      </span>
+      <!-- ICP许可证 -->
+      <span class="qualification_span1"
+            v-if="config.qualification_publicity.business_licenses || config.qualification_publicity.business_licenses_url">
+        ICP许可证：
+        <span v-if="config.qualification_publicity.business_licenses_url">
+          <a target="_blank" :href="config.qualification_publicity.business_licenses_url">
+            {{ config.qualification_publicity.business_licenses ? config.qualification_publicity.business_licenses : '查看' }}
+          </a>
+        </span>
+        <span v-else>
+          {{ config.qualification_publicity.business_licenses ? config.qualification_publicity.business_licenses : '查看' }}
+        </span>
+      </span>
+    </div>
+    <div class="copyright">
+      {{ config.bottom_other }}
+    </div>
   </section>
 </template>
 
 <script>
-  export default {
-    name: 'FooterBlock',
-    data(){
-        return {
-            link_url_web:{}
-        }
-    },
-    computed:{
-      config(){
-        return this.$store.state.config
-      }
-    },
-    mounted(){
-        this.link_url_web = this.$store.state.config.link_url_web
+export default {
+  name: 'FooterBlock',
+  data() {
+    return {
+      link_url_web: {},
+      routePath: '',
+      config: {}
+    }
+  },
+  created() {
+    this.routePath = this.$route.path
+    this.config = this.$store.state.config
+  },
+  watch: {
+    $route(to) {
+      this.routePath = to.path
+    }
+  },
+  mounted() {
+    this.link_url_web = this.$store.state.config.link_url_web
+  },
+  methods: {
+    // 提取字符串中的数字
+    findNumByStr(str) {
+      return str ? str.match(/\d+/g)[0] : ''
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
 .my_footer_mgt{
   margin-top: 15px;
-} 
+}
   .my_footer {
     width: 100%;
     background-color: #fff;
@@ -83,6 +155,16 @@
       text-align: center;
       font-size: 12px;
       margin-bottom: 10px;
+    }
+
+    .qualification {
+      text-align: center;
+      font-size: 12px;
+      margin-bottom: 10px;
+
+      .qualification_span1 {
+        margin-right: 15px;
+      }
     }
 
     .copyright {

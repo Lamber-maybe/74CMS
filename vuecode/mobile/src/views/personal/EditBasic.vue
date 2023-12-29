@@ -8,7 +8,7 @@
           :alt="basic.fullname"
           :class="basic.photo_img_src ? 'avatar has' : 'avatar'"
         />
-        <van-uploader :after-read="uploadAvatar" />
+        <van-uploader :after-read="uploadAvatar"/>
       </div>
     </div>
     <div class="box_2">头像，一份好工作的开始</div>
@@ -229,10 +229,19 @@
         保存
       </van-button>
     </div>
-    <van-dialog v-model="showMobilePop" title="更换手机号" show-cancel-button :before-close="beforeClose" @confirm="$refs.update_phone_number.handleSubmit()">
-      <UpdatePhoneNumber ref="update_phone_number" :show_mobile="contact.mobile" @closePopup="closeMobilePop"></UpdatePhoneNumber>
+    <van-dialog
+      v-model="showMobilePop"
+      title="更换手机号"
+      show-cancel-button
+      :before-close="beforeClose"
+      @confirm="$refs.update_phone_number.handleSubmit()"
+    >
+      <UpdatePhoneNumber ref="update_phone_number" :show_mobile="contact.mobile" @closePopup="closeMobilePop">
+      </UpdatePhoneNumber>
     </van-dialog>
-    <van-overlay :show="uploading"><van-loading type="spinner" size="24px">正在上传...</van-loading></van-overlay>
+    <van-overlay :show="uploading">
+      <van-loading type="spinner" size="24px">正在上传...</van-loading>
+    </van-overlay>
   </div>
 </template>
 
@@ -240,12 +249,13 @@
 import UpdatePhoneNumber from '@/components/UpdatePhoneNumber'
 import http from '@/utils/http'
 import api from '@/api'
+
 export default {
   name: 'EditBasic',
   components: {
     UpdatePhoneNumber
   },
-  data () {
+  data() {
     return {
       uploading: false,
       enable_close_mobile: true,
@@ -299,7 +309,7 @@ export default {
       }
     }
   },
-  created () {
+  created() {
     this.$store.dispatch('getClassify', 'education').then(() => {
       // 恢复最高学历
       this.educationDefaultIndex = this.columnsEdu.findIndex(
@@ -354,50 +364,56 @@ export default {
       this.$nextTick(function () {
         this.wxSyncPhone = this.contact.mobile === this.contact.weixin
       })
+    },
+    'basic.fullname': function (newVal) { //简历姓名过滤掉输入的表情包
+      // var sanitizedText = newVal.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, ''); // 将UTF-16编码的表情包过滤掉
+      var sanitizedText = newVal.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ''); // 将UTF-16编码的表情包过滤掉
+      if (sanitizedText !== newVal) {
+        this.basic.fullname = sanitizedText; // 将过滤后的文本重新赋值给组件的输入内容
+      }
     }
   },
   computed: {
-    columnsEdu () {
+    columnsEdu() {
       return this.$store.state.classifyEdu
     },
-    columnsMarriage () {
+    columnsMarriage() {
       return this.$store.state.classifyMarriage
     },
-    columnsMajor () {
-      return [
-        {
-          values: Object.keys(this.$store.state.classifyMajor),
-          defaultIndex: this.majorDefaultIndex1
-        },
+    columnsMajor() {
+      return [{
+        values: Object.keys(this.$store.state.classifyMajor),
+        defaultIndex: this.majorDefaultIndex1
+      },
         {
           values: this.$store.state.classifyMajor[this.majorStart],
           defaultIndex: this.majorDefaultIndex2
         }
       ]
     },
-    basicStore () {
+    basicStore() {
       return this.$store.state.resume.basic
     },
-    contactStore () {
+    contactStore() {
       return this.$store.state.resume.contact
     },
-    fieldStore () {
+    fieldStore() {
       return this.$store.state.resume.field_rule
     },
-    showMoreBtn () {
+    showMoreBtn() {
       return this.$store.state.resume.field_rule.basic.major.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.height.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.householdaddress.is_display == 1 ||
-                         this.$store.state.resume.field_rule.contact.email.is_display == 1 ||
-                         this.$store.state.resume.field_rule.contact.qq.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.custom_field_1.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.custom_field_2.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.custom_field_3.is_display == 1 ||
-                         this.$store.state.resume.field_rule.basic.idcard.is_display == 1
+        this.$store.state.resume.field_rule.basic.height.is_display == 1 ||
+        this.$store.state.resume.field_rule.basic.householdaddress.is_display == 1 ||
+        this.$store.state.resume.field_rule.contact.email.is_display == 1 ||
+        this.$store.state.resume.field_rule.contact.qq.is_display == 1 ||
+        this.$store.state.resume.field_rule.basic.custom_field_1.is_display == 1 ||
+        this.$store.state.resume.field_rule.basic.custom_field_2.is_display == 1 ||
+        this.$store.state.resume.field_rule.basic.custom_field_3.is_display == 1 ||
+        this.$store.state.resume.field_rule.basic.idcard.is_display == 1
     }
   },
   methods: {
-    beforeClose (action, done) {
+    beforeClose(action, done) {
       if (action === 'cancel') {
         this.enable_close_mobile = true
       }
@@ -407,11 +423,11 @@ export default {
         done(false)
       }
     },
-    displayMobilePop () {
+    displayMobilePop() {
       this.showMobilePop = true
       this.enable_close_mobile = false
     },
-    closeMobilePop (mobile) {
+    closeMobilePop(mobile) {
       this.contact.mobile = mobile
       if (this.wxSyncPhone === true) {
         this.contact.weixin = mobile
@@ -419,17 +435,17 @@ export default {
       this.showMobilePop = false
     },
     // 同手机号
-    syncWxPhone (checked) {
+    syncWxPhone(checked) {
       if (checked) {
         this.contact.weixin = this.contact.mobile
       }
     },
     // 头部返回
-    goBack () {
+    goBack() {
       window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
     },
     // 初始化接口返回数据
-    initData () {
+    initData() {
       // 初始化接口返回数据
       let interfaceBasic = this.basicStore
       let interfaceContact = this.contactStore
@@ -471,7 +487,7 @@ export default {
       this.basic.custom_field_3 = interfaceBasic.custom_field_3
     },
     // 设置日期插件默认值
-    initDate () {
+    initDate() {
       let nowDate = new Date()
       let nowYear = nowDate.getFullYear()
       let minYear = nowYear - 59
@@ -483,42 +499,42 @@ export default {
       this.maxBirthdayDate = new Date(minBirthdayYear, 11)
     },
     // 选择出生日期
-    onConfirmBirthday (value) {
+    onConfirmBirthday(value) {
       this.basic.birthday = this.dateFormat(value)
       this.showPickerBirthday = !this.showPickerBirthday
     },
     // 选择开始工作时间
-    onConfirmEnterJob (value) {
+    onConfirmEnterJob(value) {
       this.basic.enter_job_time = this.dateFormat(value)
       this.basic.enter_job_time_name = this.dateFormat(value)
       this.isNoJobTime = false
       this.showPickerEnterJob = !this.showPickerEnterJob
     },
     // 选择无工作经验
-    handleNoJobTime () {
+    handleNoJobTime() {
       this.basic.enter_job_time = ''
       this.basic.enter_job_time_name = '无工作经验'
       this.isNoJobTime = true
       this.showPickerEnterJob = !this.showPickerEnterJob
     },
     // 选择最高学历
-    onConfirmEducation (value) {
+    onConfirmEducation(value) {
       this.basic.education = value.id
       this.basic.educationName = value.text
       this.showPickerEdu = !this.showPickerEdu
     },
     // 选择婚姻状况
-    onConfirmMarriage (value) {
+    onConfirmMarriage(value) {
       this.basic.marriage = value.id
       this.basic.marriageName = value.text
       this.showPickerMarriage = !this.showPickerMarriage
     },
     // 选择所学专业
-    onChangeMajor (picker, values) {
+    onChangeMajor(picker, values) {
       picker.setColumnValues(1, this.$store.state.classifyMajor[values[0]])
     },
     // 选择所学专业
-    onConfirmMajor (values, index) {
+    onConfirmMajor(values, index) {
       let majorCategory = this.$store.state.classifyMajorOriginal
       this.basic.major1 = majorCategory[index[0]].value
       this.basic.major2 = majorCategory[index[0]].children[index[1]].value
@@ -526,7 +542,7 @@ export default {
       this.showPickerMajor = !this.showPickerMajor
     },
     // 保存
-    handleSubmit () {
+    handleSubmit() {
       if (this.fieldStore.basic.photo_img.is_display == 1 && this.fieldStore.basic.photo_img.is_require == 1) {
         if (!this.basic.photo_img) {
           this.$notify('请上传头像')
@@ -660,8 +676,13 @@ export default {
         })
         .then(res => {
           if (parseInt(res.code) === 200) {
-            this.$notify({ type: 'success', message: res.message })
-            this.$router.push({ path: '/member/personal/resume' })
+            this.$notify({
+              type: 'success',
+              message: res.message
+            })
+            this.$router.push({
+              path: '/member/personal/resume'
+            })
           } else {
             this.$notify(res.message)
           }
@@ -671,7 +692,7 @@ export default {
         })
     },
     // 上传头像
-    uploadAvatar (file) {
+    uploadAvatar(file) {
       let fileRaw = file.file
       let filetypeArr = (fileRaw.type || '').split('/')
       let filetype = filetypeArr[1]
@@ -688,7 +709,9 @@ export default {
       }
       this.uploading = true
       http
-        .postFormData(api.uploadFile, { file: file.file })
+        .postFormData(api.uploadFile, {
+          file: file.file
+        })
         .then(res => {
           this.uploading = false
           this.basic.photo_img_src = res.data.file_url
@@ -700,13 +723,13 @@ export default {
         })
     },
     // 格式化日期
-    dateFormat (time) {
+    dateFormat(time) {
       let year = time.getFullYear()
       let month = time.getMonth() + 1
       return `${year}-${month}`
     }
   },
-  mounted () {
+  mounted() {
     // 改变上传头像样式
     document
       .querySelector('.van-uploader__wrapper')
@@ -726,15 +749,18 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .van-uploader__wrapper {
   width: 100%;
   height: 100%;
+
   .van-uploader__upload {
     width: 100%;
     height: 100%;
     margin: 0;
   }
 }
+
 .box_5 {
   .item {
     &:not(:last-child)::after {
@@ -745,20 +771,24 @@ export default {
       border-right: 1px solid #e2e2e2;
       content: ' ';
     }
+
     .tx2 {
       padding: 7.5px 0 17.5px;
       font-size: 14px;
       color: #333333;
     }
+
     .tx1 {
       padding-top: 17.5px;
       font-size: 12px;
       color: #666666;
     }
+
     flex: 1;
     text-align: center;
     position: relative;
   }
+
   &::after {
     position: absolute;
     left: 0;
@@ -770,22 +800,26 @@ export default {
     transform: scaleY(0.5);
     border-bottom: 1px solid #ebebeb;
   }
+
   width: 100%;
   display: flex;
   background-color: #ffffff;
   position: relative;
 }
+
 .box_4 {
   font-size: 12px;
   color: #999999;
   padding: 12.5px 16px;
   background-color: #f3f3f3;
 }
+
 .box_3 {
   width: 100%;
   text-align: center;
   padding: 10px 0;
   background-color: #ffffff;
+
   .txt {
     font-size: 13px;
     line-height: 22px;
@@ -794,6 +828,7 @@ export default {
     margin: 0 auto;
     padding-right: 23px;
     position: relative;
+
     &::before {
       content: '';
       width: 11px;
@@ -804,6 +839,7 @@ export default {
       right: 0;
       top: 5px;
     }
+
     &::after {
       position: absolute;
       right: 3.45px;
@@ -815,6 +851,7 @@ export default {
       transform: rotate(45deg);
       content: '';
     }
+
     &.up {
       &::after {
         position: absolute;
@@ -832,6 +869,7 @@ export default {
     }
   }
 }
+
 .box_2 {
   width: 100%;
   background-color: #ffffff;
@@ -840,6 +878,7 @@ export default {
   font-size: 12px;
   color: #666666;
 }
+
 .box_1 {
   .avatar_box {
     position: absolute;
@@ -852,6 +891,7 @@ export default {
     border: 1px solid #ffffff;
     background-color: #f7f7f7;
     overflow: hidden;
+
     .avatar {
       position: absolute;
       left: 0;
@@ -860,15 +900,18 @@ export default {
       height: 100%;
       border: 0;
       border-radius: 100%;
+
       &.has {
         z-index: 1;
       }
     }
   }
+
   position: relative;
   width: 100%;
   height: 120px;
   background-color: #2e95fa;
+
   .box_head {
     width: 100%;
     height: 52px;
@@ -879,6 +922,7 @@ export default {
     font-weight: bolder;
     position: relative;
     background-color: #2e95fa;
+
     .head_back {
       position: absolute;
       left: 0;
@@ -890,6 +934,7 @@ export default {
     }
   }
 }
+
 .edit_phone {
   position: absolute;
   right: 0;
@@ -900,8 +945,13 @@ export default {
   height: 50px;
   line-height: 50px;
 }
+
 .sync_phone {
-  .van-checkbox { line-height: 50px; height: 50px; }
+  .van-checkbox {
+    line-height: 50px;
+    height: 50px;
+  }
+
   position: absolute;
   right: 0;
   top: -50px;
@@ -911,14 +961,17 @@ export default {
   height: 50px;
   line-height: 50px;
 }
-.van-overlay{
-  text-align:center;
-  z-index:2;
+
+.van-overlay {
+  text-align: center;
+  z-index: 2;
 }
-.van-loading{
-  top:36%;
+
+.van-loading {
+  top: 36%;
 }
-.van-loading__text{
-  color:#c3c3c3;
+
+.van-loading__text {
+  color: #c3c3c3;
 }
 </style>

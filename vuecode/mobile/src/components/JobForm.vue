@@ -2,10 +2,7 @@
   <div id="app">
     <div class="box_1" v-if="type == 'add'">
       您还可发布 {{ enable_addjob_num }} 条职位，升级套餐畅享更多会员权益
-      <div
-        class="right_txt"
-        @click="$router.push('/member/order/add/common?type=setmeal')"
-      >
+      <div class="right_txt" @click="$router.push('/member/order/add/common?type=setmeal')">
         去了解
       </div>
     </div>
@@ -169,25 +166,31 @@
         class="reset_after no_border"
       />
       <div class="box_4">
-         <textarea
-           v-model="basic.content"
-           rows="5"
-           style="background-color:#f9f9f9;"
-           placeholder="请输入详细的职位描述">
-        </textarea>
-        <van-tag type="primary" class="tpl_tag" size="medium" v-for="(item, index) in tpllist" :key="index" @click="basic.content = item.content">{{ item.title }}</van-tag>
+        <textarea
+          v-model="basic.content"
+          rows="5"
+          style="background-color:#f9f9f9;"
+          placeholder="请输入详细的职位描述"
+        ></textarea>
+        <van-tag
+          type="primary"
+          class="tpl_tag"
+          size="medium"
+          v-for="(item, index) in tpllist"
+          :key="index"
+          @click="basic.content = item.content"
+        >
+          {{ item.title }}
+        </van-tag>
       </div>
-      <div
-        class="form_split_title"
-        v-if="
+      <div class="form_split_title" v-if="
           field_rule.basic.tag.is_display == 1 ||
             field_rule.basic.department.is_display == 1 ||
             field_rule.basic.age.is_display == 1 ||
             field_rule.basic.custom_field_1.is_display == 1 ||
             field_rule.basic.custom_field_2.is_display == 1 ||
             field_rule.basic.custom_field_3.is_display == 1
-        "
-      >
+        ">
         其他信息
       </div>
       <van-field
@@ -543,6 +546,7 @@ import DistrictFilter from '@/components/DistrictFilter'
 import JobTag from '@/components/CompanyTag'
 import http from '@/utils/http'
 import api from '@/api'
+
 export default {
   name: 'JobForm',
   props: ['enable_addjob_num', 'type'],
@@ -552,7 +556,7 @@ export default {
     DistrictFilter,
     Mapset
   },
-  data () {
+  data() {
     return {
       jobNature: [], // 职位
       showPickerNature: false,
@@ -636,8 +640,8 @@ export default {
       wage_text: '请选择',
       contact_source_text: '使用企业资料联系方式',
       columnsContactSource: [
-        { id: 1, name: '使用企业资料联系方式' },
-        { id: 0, name: '使用其他联系方式' }
+        {id: 1, name: '使用企业资料联系方式'},
+        {id: 0, name: '使用其他联系方式'}
       ],
       contactHidden: false,
       weixin_sync_mobile: false,
@@ -656,7 +660,7 @@ export default {
       smsNotice: true
     }
   },
-  created () {
+  created() {
     this.$store.dispatch('getClassify', 'jobcategory')
     this.$store.dispatch('getClassify', 'education')
     this.$store.dispatch('getClassify', 'citycategory')
@@ -666,18 +670,24 @@ export default {
     this.$store.dispatch('getClassifyAge')
     this.companyDetail()
   },
-  mounted () {
+  mounted() {
     this.columnsNature()
     this.restoreJobCategory()
   },
   computed: {
-    columnsEducation () {
-      let arr = [{id: '0', text: '学历不限'}]
+    columnsEducation() {
+      let arr = [{
+        id: '0',
+        text: '学历不限'
+      }]
       arr = arr.concat(this.$store.state.classifyEdu)
       return arr
     },
-    columnsExperience () {
-      let arr = [{id: '0', text: '经验不限'}]
+    columnsExperience() {
+      let arr = [{
+        id: '0',
+        text: '经验不限'
+      }]
       arr = arr.concat(this.$store.state.classifyExperience)
       return arr
     },
@@ -688,24 +698,22 @@ export default {
     //   })
     //   return arr
     // },
-    columnsWage () {
-      return [
-        {
-          values: Object.keys(this.$store.state.classifyWage),
-          defaultIndex: this.wageDefaultIndex1
-        },
+    columnsWage() {
+      return [{
+        values: Object.keys(this.$store.state.classifyWage),
+        defaultIndex: this.wageDefaultIndex1
+      },
         {
           values: this.$store.state.classifyWage[this.wageStart],
           defaultIndex: this.wageDefaultIndex2
         }
       ]
     },
-    columnsAge () {
-      return [
-        {
-          values: Object.keys(this.$store.state.classifyAge),
-          defaultIndex: this.ageDefaultIndex1
-        },
+    columnsAge() {
+      return [{
+        values: Object.keys(this.$store.state.classifyAge),
+        defaultIndex: this.ageDefaultIndex1
+      },
         {
           values: this.$store.state.classifyAge[this.ageStart],
           defaultIndex: this.ageDefaultIndex2
@@ -714,14 +722,17 @@ export default {
     }
   },
   methods: {
-    columnsNature () {
+    columnsNature() {
       this.$store.dispatch('getClassify', 'jobNature').then(res => {
         this.$store.state.classifyJobNature.forEach(element => {
-          this.jobNature.push({id: element.id, name: element.text})
+          this.jobNature.push({
+            id: element.id,
+            name: element.text
+          })
         })
       })
     },
-    companyDetail () {
+    companyDetail() {
       if (this.type === 'add') {
         http
           .get(api.company_index)
@@ -733,13 +744,21 @@ export default {
             this.basic.tag = res.data.companyinfo.tag
             this.tag_text = res.data.companyinfo.tag_text
           })
-          .catch(() => { })
+          .catch(() => {
+          })
+        http
+          .get(api.company_profile)
+          .then(res => {
+            this.basic.address = res.data.info.address ? res.data.info.address : ''
+          })
+          .catch(() => {
+          })
       }
     },
-    validatorContactLen (val) {
+    validatorContactLen(val) {
       return val.length <= 6
     },
-    restoreCondition (data) {
+    restoreCondition(data) {
       let restoreBasic = data.basic
       let restoreContact = data.contact
       // 恢复职位类别汉字
@@ -800,7 +819,7 @@ export default {
       this.smsNotice = parseInt(restoreBasic.need_notice) === 1
     },
     // 恢复职位分类
-    restoreJobCategory () {
+    restoreJobCategory() {
       if (this.basic.category1) {
         // 恢复选中项对应的汉字
         let storeCategory = this.$store.state.classifyJobCategory
@@ -833,45 +852,49 @@ export default {
         this.basic.categoryName = selectText[selectText.length - 1]
       }
     },
-    doSelectCategory (data) {
+    doSelectCategory(data) {
       this.basic.category1 = data[0]
       this.basic.category2 = data[1]
       this.basic.category3 = data[2]
       this.basic.categoryName = data[3]
       this.showPickerJobCategory = !this.showPickerJobCategory
-      let pid = this.basic.category3 != 0 ? this.basic.category3 : (this.basic.category2 != 0 ? this.basic.category2 : (this.basic.category1 != 0 ? this.basic.category1 : 0))
+      let pid = this.basic.category3 != 0 ? this.basic.category3 : (this.basic.category2 != 0 ? this.basic
+        .category2 : (this.basic.category1 != 0 ? this.basic.category1 : 0))
       http
-        .get(api.categoryjob_template_list, { pid })
+        .get(api.categoryjob_template_list, {
+          pid
+        })
         .then(res => {
           this.tpllist = res.data
         })
-        .catch(() => { })
+        .catch(() => {
+        })
     },
-    doSelectDistrict (data) {
+    doSelectDistrict(data) {
       this.basic.district1 = data[0]
       this.basic.district2 = data[1]
       this.basic.district3 = data[2]
       this.district_text = data[3]
       this.showPickerDistrict = !this.showPickerDistrict
     },
-    handleCategoryOverlay () {
+    handleCategoryOverlay() {
       this.$refs.dropCategory.$children[0].handleSecondOverlay()
     },
-    handleDistrictOverlay () {
+    handleDistrictOverlay() {
       this.$refs.dropDistrict.$children[0].handleCityOverlay()
     },
     // 职位分类筛选打开之后给筛选组件赋值
-    openedCategory () {
+    openedCategory() {
       this.$refs.dropCategory.$children[0].initData()
       this.dynamicAssignFun(this.$refs.dropCategory)
     },
     // 地区筛选打开之后给筛选组件赋值
-    openedDistrict () {
+    openedDistrict() {
       this.$refs.dropDistrict.$children[0].initData()
       this.dynamicAssignFun(this.$refs.dropDistrict)
     },
     // 动态赋值筛选组件公用方法
-    dynamicAssignFun (obj) {
+    dynamicAssignFun(obj) {
       let popHeight = obj.$el.clientHeight
       if (obj.$children[0]) {
         obj.$children[0].layHeight = popHeight
@@ -881,48 +904,48 @@ export default {
         )
       }
     },
-    hanlderMobile (val) {
+    hanlderMobile(val) {
       if (this.weixin_sync_mobile === true) {
         this.contact.weixin = val
       }
     },
-    hanlderWeixin () {
+    hanlderWeixin() {
       if (this.contact.weixin !== this.contact.mobile) {
         this.weixin_sync_mobile = false
       } else {
         this.weixin_sync_mobile = true
       }
     },
-    handlerSync () {
+    handlerSync() {
       if (this.weixin_sync_mobile === true) {
         this.contact.weixin = this.contact.mobile
       }
     },
-    handlerSecrecyHidden () {
+    handlerSecrecyHidden() {
       if (this.secrecyHidden === true) {
         this.contact.is_secrecy = 0
       } else {
         this.contact.is_secrecy = 1
       }
     },
-    onConfirmExperience (value) {
+    onConfirmExperience(value) {
       this.basic.experience = value.id
       this.experience_text = value.text
       this.showPickerExperience = !this.showPickerExperience
     },
-    onConfirmEducation (value) {
+    onConfirmEducation(value) {
       this.basic.education = value.id
       this.education_text = value.text
       this.showPickerEducation = !this.showPickerEducation
     },
-    onConfirmAge (values) {
+    onConfirmAge(values) {
       this.basic.age_na = 0
       this.basic.minage = parseInt(values[0])
       this.basic.maxage = parseInt(values[1])
       this.age_text = `${parseInt(values[0])}-${parseInt(values[1])}岁`
       this.showPickerAge = !this.showPickerAge
     },
-    onConfirmWage (values) {
+    onConfirmWage(values) {
       this.basic.negotiable = 0
       this.basic.minwage = parseInt(values[0])
       this.basic.maxwage = parseInt(values[1])
@@ -930,24 +953,24 @@ export default {
       this.showPickerWage = !this.showPickerWage
     },
     // 薪资级联
-    onChangeWage (picker, values) {
+    onChangeWage(picker, values) {
       picker.setColumnValues(1, this.$store.state.classifyWage[values[0]])
     },
-    onConfirmContactSource (value) {
+    onConfirmContactSource(value) {
       this.contact.use_company_contact = value.id
       this.contact_source_text = value.name
       this.showPickerContactSource = !this.showPickerContactSource
     },
-    onConfirmNature (value) {
+    onConfirmNature(value) {
       this.basic.nature = value.id
       this.nature_text = value.name
       this.showPickerNature = !this.showPickerNature
     },
-    handlerShowTag () {
+    handlerShowTag() {
       this.showTag = true
       this.$refs.jobTag.initCB()
     },
-    handlerCloseTag (tagInfo) {
+    handlerCloseTag(tagInfo) {
       this.showTag = false
       if (tagInfo === undefined) {
         return false
@@ -956,14 +979,14 @@ export default {
       this.tag_text =
         tagInfo.tagTextArr.length > 0 ? tagInfo.tagTextArr.join(',') : ''
     },
-    handlerNegotiable () {
+    handlerNegotiable() {
       this.basic.negotiable = 1
       this.basic.minwage = 0
       this.basic.maxwage = 0
       this.wage_text = '面议'
       this.showPickerWage = !this.showPickerWage
     },
-    handlerAgeNa () {
+    handlerAgeNa() {
       this.basic.age_na = 1
       this.basic.minage = 0
       this.basic.maxage = 0
@@ -971,10 +994,10 @@ export default {
       this.showPickerAge = !this.showPickerAge
     },
     // 年龄级联
-    onChangeAge (picker, values) {
+    onChangeAge(picker, values) {
       picker.setColumnValues(1, this.$store.state.classifyAge[values[0]])
     },
-    onSubmit (values) {
+    onSubmit(values) {
       this.is_submit = true
       if (this.wage_text === '请选择') {
         this.$notify('请选择薪资待遇')
@@ -990,7 +1013,7 @@ export default {
       })
       this.is_submit = false
     },
-    handlerCloseMap (mapInfo) {
+    handlerCloseMap(mapInfo) {
       this.showMap = false
       if (mapInfo === undefined) {
         return false
@@ -1000,12 +1023,13 @@ export default {
       this.basic.map_zoom = mapInfo.zoom
       this.basic.address = mapInfo.address
     },
-    handlerShowMap () {
+    handlerShowMap() {
       // this.$refs.mapset.initCB()
+      this.companyDetail()
       this.showMap = true
       // this.$router.push('/member/company/mapset')
     },
-    resetSubmit () {
+    resetSubmit() {
       this.is_submit = false
     }
   }
@@ -1023,15 +1047,18 @@ export default {
     resize: none;
     padding: 8px 15px;
     line-height: 1.8;
+
     &::placeholder {
       color: #c9c9c9;
     }
   }
+
   width: 100%;
   background-color: #ffffff;
   position: relative;
   padding: 0 20px 20px 20px;
 }
+
 .box_3 {
   .tag {
     position: absolute;
@@ -1040,14 +1067,15 @@ export default {
     padding: 15px 18px 15px 0;
     font-size: 14px;
     color: #666666;
-    background: url("../assets/images/location_ico_blue.svg") right center
-      no-repeat;
+    background: url("../assets/images/location_ico_blue.svg") right center no-repeat;
     background-size: 14px;
   }
+
   .text {
     &::placeholder {
       color: #c9c9c9;
     }
+
     font-size: 14px;
     border: 0;
     width: 180px;
@@ -1057,6 +1085,7 @@ export default {
     top: 5px;
     color: #333333;
   }
+
   &::after {
     position: absolute;
     left: 0;
@@ -1068,12 +1097,14 @@ export default {
     transform: scaleY(0.5);
     border-bottom: 1px solid #ebebeb;
   }
+
   width: 100%;
   height: 50px;
   background-color: #ffffff;
   position: relative;
   padding: 0 68px 0 0;
 }
+
 .box_2 {
   .item {
     &:not(:last-child)::after {
@@ -1084,20 +1115,24 @@ export default {
       border-right: 1px solid #e2e2e2;
       content: " ";
     }
+
     .tx2 {
       padding: 5px 0 17.5px;
       font-size: 14px;
       color: #333333;
     }
+
     .tx1 {
       padding-top: 17.5px;
       font-size: 12px;
       color: #666666;
     }
+
     flex: 1;
     text-align: center;
     position: relative;
   }
+
   &::after {
     position: absolute;
     left: 0;
@@ -1115,6 +1150,7 @@ export default {
   background-color: #ffffff;
   position: relative;
 }
+
 .sync_phone {
   position: absolute;
   right: 12px;
@@ -1124,20 +1160,22 @@ export default {
   padding: 15px 0;
   line-height: 24px;
 }
+
 .self_switch {
   position: absolute;
   right: 15px;
   top: -35px;
 }
+
 .box_1 {
   width: 100%;
   font-size: 12px;
   color: #ff6600;
   position: relative;
   padding: 10.5px 0 10.5px 33px;
-  background: #fffbeb url("../assets/images/remind_ico.svg") 13px center
-    no-repeat;
+  background: #fffbeb url("../assets/images/remind_ico.svg") 13px center no-repeat;
   background-size: 15px;
+
   .right_txt {
     position: absolute;
     right: 0;
@@ -1147,7 +1185,8 @@ export default {
     padding: 10.5px 17px;
   }
 }
-.tpl_tag{
-  margin-right:10px;
+
+.tpl_tag {
+  margin-right: 10px;
 }
 </style>

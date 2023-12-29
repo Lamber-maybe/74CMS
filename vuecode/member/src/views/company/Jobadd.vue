@@ -127,6 +127,7 @@ export default{
               })
             return false
           } else {
+            this.fetchData()//重新请求field_ruld  【修复bug】发布完职位后再发一条，其他信息丢失，演示站有问题，比邻正常
             this.showResult = !this.showResult
           }
         })

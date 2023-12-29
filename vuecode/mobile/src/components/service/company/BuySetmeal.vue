@@ -96,8 +96,9 @@
               >允许使用视频面试</span
             >
             <span v-if="setmealDetail.show_apply_contact == 1">
-              <span class="tq" v-if="setmealDetail.resume_view_num === 0">收到简历免费查看：不限</span>
-              <span class="tq" v-else>收到简历免费查看：{{ setmealDetail.resume_view_num }}份/天</span>
+              <span>收到简历免费查看：允许</span>
+<!--              <span class="tq" v-if="setmealDetail.resume_view_num === 0">收到简历免费查看：不限</span>-->
+<!--              <span class="tq" v-else>收到简历免费查看：{{ setmealDetail.resume_view_num }}份/天</span>-->
             </span>
           </div>
           <div class="tx2" v-if="setmealDetail.note" style="padding-top:0">

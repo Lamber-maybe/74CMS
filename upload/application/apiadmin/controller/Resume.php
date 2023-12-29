@@ -510,6 +510,17 @@ class Resume extends \app\common\controller\Backend
                     ->allowField(true)
                     ->save($input_data, ['id' => $id]);
             } else {
+                /**
+                 * ID1000310】
+                 * 【bug】简历求职意向最多应设置三条
+                 * cy 2023-7-26
+                 */
+                $intention_count = model('ResumeIntention')
+                    ->where(['rid' => $basic['id']])
+                    ->count();
+                if ($intention_count >= 3) {
+                    $this->ajaxReturn(500, '求职意向最多可填写三条');
+                }
                 unset($input_data['id']);
                 $input_data['uid'] = $basic['uid'];
 

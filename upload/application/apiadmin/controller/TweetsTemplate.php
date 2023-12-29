@@ -181,11 +181,13 @@ class TweetsTemplate extends \app\common\controller\Backend
             $datalist = model('Company')
                 ->where('id', 'eq', $keyword)
                 ->whereOr('companyname', 'like', '%' . $keyword . '%')
-                ->field('id,companyname')
+                ->field('id,companyname,is_display')
                 ->select();
             $comid_arr = [];
             foreach ($datalist as $key => $value) {
-                $comid_arr[] = $value['id'];
+                if ($value['is_display'] == 1) {
+                    $comid_arr[] = $value['id'];
+                }
             }
             $jobdata = [];
             $jobid_arr = [];
@@ -296,9 +298,21 @@ class TweetsTemplate extends \app\common\controller\Backend
         $keyword = input('get.keyword/s', '', 'trim');
         $list = [];
         if ($keyword != '') {
-            $datalist = model('Job')
-                ->where('id', 'eq', $keyword)
-                ->whereOr('jobname', 'like', '%' . $keyword . '%')
+            /**
+             * 【ID1000740】
+             * 【bug】营销工具-社群推文 筛选职位，指定职业，指定企业过滤
+             * 以 JobSearchRtime 为主表进行查询
+             * cy 2023-8-2
+             */
+            $datalist = model('JobSearchRtime')
+                ->alias('a')
+                ->join('job b', 'a.id=b.id', 'LEFT')
+                ->field('b.*')
+                ->where('b.audit', 1)
+                ->where('b.is_display', 1)
+                ->where(function ($query) use ($keyword) {
+                    $query->where('b.id', 'eq', $keyword)->whereOr('b.jobname', 'like', '%' . $keyword . '%');
+                })
                 ->select();
             $comid_arr = $jid_arr = [];
             foreach ($datalist as $k => $val) {

@@ -6,7 +6,7 @@
 				切换城市分站，让我们为您提供更准确的信息
 			</div>
 			<div class="qr_code">
-				<img class="img" src="__ROOT__/assets/images/subsite/qrcode.png">
+				<img class="img" :src="guideQrcode">
 				<div class="qr_text">微信扫一扫，发现好工作</div>
 			</div>
 		</div>
@@ -15,7 +15,8 @@
 		<div class="line1">
 			<div class="line11">
 				<span>当前城市：</span>
-				<a class="site_link active_item" href="{#:url('index/index/index')#}">{#$subsite.sitename|default="总站"#}</a>
+				<a class="site_link active_item"
+					href="{#:url('index/index/index')#}">{#$subsite.sitename|default="总站"#}</a>
 				<div class="item {#if condition="$subsiteid==0"#}displayNone{#/if#}"
 					@click.stop="setSubsite(0,sitedomain)">点击进入：<span
 						class="{#if condition="$subsiteid!=0"#}active_item{#/if#}">[总站]</span></div>
@@ -58,12 +59,20 @@
 			subsite_domain: '',
 			siteName: '',
 			sitedomain: '',
-			loading: false
+			loading: false,
+			guideQrcode: ''
 		},
 		created: function() {
 			this.subsite_open = "{#$global_config.subsite_open#}"
 			this.subsite_domain = "{#$global_config.subsite_domain#}"
 			this.sitedomain = "{#$global_config.sitedomain#}"
+			var guide_qrcode = "{#$global_config.guide_qrcode#}"
+			if (guide_qrcode == '') {
+				this.guideQrcode = qscms.apiUrl + qscms.apiList.qrcode +
+					"?type=normal&url={#$global_config.mobile_domain#}"
+			} else {
+				this.guideQrcode = guide_qrcode
+			}
 			this.getConfig()
 		},
 		methods: {
@@ -75,7 +84,9 @@
 						that.subsite_list = res.data.subsite_list_initial
 						that.loading = false
 					})
-					.catch(function() {that.loading = false})
+					.catch(function() {
+						that.loading = false
+					})
 			},
 			setSubsite: function(subsiteid, url = '') {
 				if (this.subsite_open === 1 && this.subsite_domain != '') {
@@ -145,8 +156,11 @@
 
 	.top_box .absolute_box .qr_code .img {
 		display: block;
-		width: 172px;
-		height: 131px;
+		width: 90px;
+		height: 90px;
+		margin: 20px auto 15px;
+		border-radius: 5px;
+		box-shadow: 6px 6px rgba(255, 255, 255, 0.2);
 	}
 
 	.top_box .absolute_box .qr_code .qr_text {
@@ -243,10 +257,12 @@
 		margin-right: 20px;
 		cursor: pointer;
 	}
-	.site-list .site-item .site-content .site-con-item:hover{
+
+	.site-list .site-item .site-content .site-con-item:hover {
 		color: #1787FB;
 	}
-	.site-list .site-item .site-content .site-con-item-act{
+
+	.site-list .site-item .site-content .site-con-item-act {
 		color: #1787FB;
 	}
 </style>

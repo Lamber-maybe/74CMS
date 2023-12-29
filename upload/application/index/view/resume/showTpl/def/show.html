@@ -417,11 +417,11 @@
                         <span class="right_border"></span>
                     </div>
                     <div class="resume_box clearfix">
-                        <div @click="handlerDownPdf">
+                        <div @click="handlerDownPdf(0)">
                             <img src="__ROOT__/assets/images/resume_icon1.png">
                             <p>打印简历</p>
                         </div>
-                        <div @click="handlerDownPdf">
+                        <div @click="handlerDownPdf(1)">
                             <img src="__ROOT__/assets/images/resume_icon2.png">
                             <p>导出简历</p>
                         </div>
@@ -1110,7 +1110,7 @@
                     this.showInvite = true
                 }
             },
-            handlerDownPdf: function () {
+            handlerDownPdf: function (isExport) {
                 var that = this
                 if (that.utype === 0) {
                     location.href = qscms.locationList.loginCompany + '?redirect=' + location.href
@@ -1139,7 +1139,25 @@
                         return false
                     }
                 }
-                window.open(qscms.sitedir + qscms.memberDirname + "/resume_save/" + id)
+                /**
+                 * 【ID1000730】
+                 * 【bug】简历详情页-下载简历-pdf文件链接没有任何条件限制
+                 * cy 2023-7-26
+                 */
+                if (isExport == 1) {
+                    window.open(qscms.sitedir + qscms.memberDirname + "/resume_save/" + id)
+                } else {
+                    httppost(qscms.apiList.exportPdfByPhp, {
+                        id: id
+                    }).then(function (res) {
+                        // 打开页面并自动调用打印功能
+                        var newWindow = window.open(res.data.url);
+                        newWindow.onload = function () {
+                            newWindow.print();
+                        };
+                    }).catch(function () {
+                    })
+                }
             },
             doTipoff: function () {
                 if (this.utype != 1) {

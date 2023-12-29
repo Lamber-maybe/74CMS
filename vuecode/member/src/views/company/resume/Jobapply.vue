@@ -136,17 +136,18 @@
           <p class="time">{{ scope.row.addtime | timeFilter }}</p>
         </template>
       </el-table-column>
-      <el-table-column
-        header-align="center"
-        align="center"
-        width="200px"
-        label="联系方式"
-      >
-        <template slot-scope="scope">
-          <a class="contact" @click="handlerLook(scope.row)" v-if="scope.row.resume_contact == 0">获取联系方式</a>
-          <p class="time" v-if="scope.row.resume_contact != 0">{{ scope.row.resume_contact }}</p>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--        header-align="center"-->
+<!--        align="center"-->
+<!--        width="200px"-->
+<!--        label="联系方式"-->
+<!--      >-->
+<!--        <template slot-scope="scope">-->
+<!--          <a class="contact" @click="handlerLook(scope.row)" v-if="scope.row.resume_contact == 0">获取联系方式</a>-->
+<!--          <p class="time" v-if="scope.row.resume_contact != 0">{{ scope.row.resume_contact }}</p>-->
+<!--          <p class="time">{{ scope.row.resume_contact ? scope.row.resume_contact : '暂未获取联系方式' }}</p>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column header-align="center" align="center" label="操作状态">
         <template slot-scope="scope">
           <div
@@ -466,7 +467,6 @@ export default {
     },
     handlerLook(item) {
       if (item.is_look === 0 || item.resume_contact === 0) {
-        if (item.resume_contact) {
           item.is_look = 1
           http
             .post(api.company_jobapply_set_looked, {id: item.id})
@@ -476,74 +476,84 @@ export default {
             })
             .catch(() => {
             })
-          return false
-        }
-        if (this.companySetmeal.resume_view_num_today == -1) {
-          item.is_look = 1
-          http
-            .post(api.company_jobapply_set_looked, {id: item.id})
-            .then(() => {
-              window.open(item.resume_link_url_web)
-              this.fetchData(true)
-            })
-            .catch(() => {
-            })
-        } else if (this.companySetmeal.resume_view_num_today > 0) {
-          this.$confirm('您今天还可免费查看 ' + this.companySetmeal.resume_view_num_today + ' 次收到简历的联系方式，是否立即查看?',
-            '系统提示',
-            {
-              type: 'warning',
-              confirmButtonText: '立即查看'
-            }
-          )
-            .then(() => {
-              item.is_look = 1
-              http
-                .post(api.company_jobapply_set_looked, {id: item.id})
-                .then(() => {
-                  window.open(item.resume_link_url_web)
-                  this.fetchData(true)
-                })
-                .catch(() => {
-                })
-            })
-            .catch(() => {
-              // on cancel
-            })
-        } else {
-          this.$confirm('您今天暂无可用免费查看次数，如需获取联系方式请下载简历后查看。',
-            '系统提示',
-            {
-              type: 'warning',
-              cancelButtonText: '升级套餐',
-              confirmButtonText: '继续查看',
-              distinguishCancelAndClose: true //区分取消与关闭
-            }
-          )
-            .then(() => {
-              item.is_look = 1
-              http
-                .post(api.company_jobapply_set_looked, {id: item.id})
-                .then(() => {
-                  window.open(item.resume_link_url_web)
-                  this.fetchData(true)
-                })
-                .catch(() => {
-                })
-            })
-            .catch(action => {
-                // on cancel
-                // 判断是 cancel (自定义的取消) 还是 close （关闭弹窗）
-                if (action === 'cancel') {
-                  this.$router.push('/company/service/setmeal')
-                  this.fetchData(true)
-                }
-                if (action === 'close') {
-                  return false
-                }
-              }
-            )
-        }
+        // if (item.resume_contact) {
+        //   item.is_look = 1
+        //   http
+        //     .post(api.company_jobapply_set_looked, {id: item.id})
+        //     .then(() => {
+        //       window.open(item.resume_link_url_web)
+        //       this.fetchData(true)
+        //     })
+        //     .catch(() => {
+        //     })
+        //   return false
+        // }
+        // if (this.companySetmeal.resume_view_num_today == -1) {
+        //   item.is_look = 1
+        //   http
+        //     .post(api.company_jobapply_set_looked, {id: item.id})
+        //     .then(() => {
+        //       window.open(item.resume_link_url_web)
+        //       this.fetchData(true)
+        //     })
+        //     .catch(() => {
+        //     })
+        // } else if (this.companySetmeal.resume_view_num_today > 0) {
+        //   this.$confirm('您今天还可免费查看 ' + this.companySetmeal.resume_view_num_today + ' 次收到简历的联系方式，是否立即查看?',
+        //     '系统提示',
+        //     {
+        //       type: 'warning',
+        //       confirmButtonText: '立即查看'
+        //     }
+        //   )
+        //     .then(() => {
+        //       item.is_look = 1
+        //       http
+        //         .post(api.company_jobapply_set_looked, {id: item.id})
+        //         .then(() => {
+        //           window.open(item.resume_link_url_web)
+        //           this.fetchData(true)
+        //         })
+        //         .catch(() => {
+        //         })
+        //     })
+        //     .catch(() => {
+        //       // on cancel
+        //     })
+        // } else {
+        //   this.$confirm('您今天暂无可用免费查看次数，如需获取联系方式请下载简历后查看。',
+        //     '系统提示',
+        //     {
+        //       type: 'warning',
+        //       cancelButtonText: '升级套餐',
+        //       confirmButtonText: '继续查看',
+        //       distinguishCancelAndClose: true //区分取消与关闭
+        //     }
+        //   )
+        //     .then(() => {
+        //       item.is_look = 1
+        //       http
+        //         .post(api.company_jobapply_set_looked, {id: item.id})
+        //         .then(() => {
+        //           window.open(item.resume_link_url_web)
+        //           this.fetchData(true)
+        //         })
+        //         .catch(() => {
+        //         })
+        //     })
+        //     .catch(action => {
+        //         // on cancel
+        //         // 判断是 cancel (自定义的取消) 还是 close （关闭弹窗）
+        //         if (action === 'cancel') {
+        //           this.$router.push('/company/service/setmeal')
+        //           this.fetchData(true)
+        //         }
+        //         if (action === 'close') {
+        //           return false
+        //         }
+        //       }
+        //     )
+        // }
       } else {
         window.open(item.resume_link_url_web)
       }

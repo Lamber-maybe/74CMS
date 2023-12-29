@@ -573,6 +573,13 @@ class Resume extends \app\v1_0\controller\common\Base
             $input_data['endtime'] = strtotime($input_data['endtime']);
         }
 
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         if ($id > 0) {
             $result = model('ResumeEducation')
                 ->validate(true)
@@ -584,12 +591,6 @@ class Resume extends \app\v1_0\controller\common\Base
             $return_id = $id;
         } else {
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeEducation')
                 ->validate(true)
@@ -605,14 +606,13 @@ class Resume extends \app\v1_0\controller\common\Base
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
         }
         model('Resume')->updateComplete(
             ['education' => 1],
             0,
             $this->userinfo->uid
         );
-
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历教育经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -670,6 +670,12 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $input_data['endtime'] = strtotime($input_data['endtime']);
         }
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
 
         if ($id > 0) {
             $result = model('ResumeWork')
@@ -682,12 +688,6 @@ class Resume extends \app\v1_0\controller\common\Base
             $return_id = $id;
         } else {
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeWork')
                 ->validate(true)
@@ -704,8 +704,8 @@ class Resume extends \app\v1_0\controller\common\Base
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
         }
-        model('Resume')->updateComplete(['work' => 1], 0, $this->userinfo->uid);
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
+        model('Resume')->updateComplete(['work' => 1], 0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历工作经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -843,6 +843,14 @@ class Resume extends \app\v1_0\controller\common\Base
                 : ($input_data['district2'] > 0
                     ? $input_data['district2']
                     : $input_data['district1']);
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         $id = intval($input_data['id']);
         if ($id > 0) {
             if (input('?post.trade')) {
@@ -863,12 +871,6 @@ class Resume extends \app\v1_0\controller\common\Base
                 $input_data['trade'] = 0;
             }
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
 
             /**
              * 【bug】简历求职意向最多应设置三条
@@ -881,7 +883,7 @@ class Resume extends \app\v1_0\controller\common\Base
 
             if ($intention_count >= 3)
             {
-                $this->ajaxReturn(500, '简历求职意向最多应设置三条');
+                $this->ajaxReturn(500, '求职意向最多可填写三条');
             }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeIntention')
@@ -905,7 +907,6 @@ class Resume extends \app\v1_0\controller\common\Base
             $this->userinfo->uid
         );
         model('Resume')->refreshSearch(0, $this->userinfo->uid);
-
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历求职意向');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -975,6 +976,14 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $input_data['endtime'] = strtotime($input_data['endtime']);
         }
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         if ($id > 0) {
             $result = model('ResumeTraining')
                 ->validate(true)
@@ -986,12 +995,6 @@ class Resume extends \app\v1_0\controller\common\Base
             $return_id = $id;
         } else {
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeTraining')
                 ->validate(true)
@@ -1007,13 +1010,13 @@ class Resume extends \app\v1_0\controller\common\Base
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
         }
         model('Resume')->updateComplete(
             ['training' => 1],
             0,
             $this->userinfo->uid
         );
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历培训经历');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -1070,6 +1073,14 @@ class Resume extends \app\v1_0\controller\common\Base
         } else {
             $input_data['endtime'] = strtotime($input_data['endtime']);
         }
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         if ($id > 0) {
             $result = model('ResumeProject')
                 ->validate(true)
@@ -1081,12 +1092,6 @@ class Resume extends \app\v1_0\controller\common\Base
             $return_id = $id;
         } else {
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeProject')
                 ->validate(true)
@@ -1156,6 +1161,14 @@ class Resume extends \app\v1_0\controller\common\Base
 
         $id = intval($input_data['id']);
         $input_data['obtaintime'] = strtotime($input_data['obtaintime']);
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         if ($id > 0) {
             $result = model('ResumeCertificate')
                 ->validate(true)
@@ -1171,12 +1184,6 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(500, '最多可添加6份证书');
             }
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeCertificate')
                 ->validate(true)
@@ -1192,13 +1199,13 @@ class Resume extends \app\v1_0\controller\common\Base
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
         }
         model('Resume')->updateComplete(
             ['certificate' => 1],
             0,
             $this->userinfo->uid
         );
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历证书');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -1244,6 +1251,13 @@ class Resume extends \app\v1_0\controller\common\Base
             'level' => input('post.level/d', 0, 'intval')
         ];
 
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         $id = intval($input_data['id']);
         if ($id > 0) {
             $result = model('ResumeLanguage')
@@ -1260,12 +1274,6 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->ajaxReturn(500, '最多可添加6种语言');
             }
             unset($input_data['id']);
-            $basic_info = model('Resume')
-                ->where('uid', $this->userinfo->uid)
-                ->find();
-            if ($basic_info === null) {
-                $this->ajaxReturn(500, '请先填写基本资料');
-            }
             $input_data['rid'] = $basic_info->id;
             $result = model('ResumeLanguage')
                 ->validate(true)
@@ -1281,13 +1289,13 @@ class Resume extends \app\v1_0\controller\common\Base
             model('Resume')
                 ->where('uid', $this->userinfo->uid)
                 ->setField('audit', 0);
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
         }
         model('Resume')->updateComplete(
             ['language' => 1],
             0,
             $this->userinfo->uid
         );
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历语言能力');
         $this->ajaxReturn(200, '保存成功', ['return_id' => $return_id]);
     }
@@ -1303,10 +1311,14 @@ class Resume extends \app\v1_0\controller\common\Base
         model('ResumeLanguage')
             ->destroy(['id' => ['eq', $id], 'uid' => $this->userinfo->uid]);
         if (config('global_config.audit_edit_resume') == 1) {
-            model('Resume')
+            $basic_info = model('Resume')
                 ->where('uid', $this->userinfo->uid)
-                ->setField('audit', 0);
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
+                ->find();
+            if (!is_null($basic_info) && !empty($basic_info)) {
+                model('Resume')
+                    ->where('uid', $this->userinfo->uid)
+                    ->setField('audit', 0);
+            }
         }
         $language_total = model('ResumeLanguage')
             ->where(['uid' => ['eq', $this->userinfo->uid]])
@@ -1318,6 +1330,7 @@ class Resume extends \app\v1_0\controller\common\Base
                 $this->userinfo->uid
             );
         }
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'删除简历语言能力');
         $this->ajaxReturn(200, '删除成功');
     }
@@ -1337,27 +1350,24 @@ class Resume extends \app\v1_0\controller\common\Base
         if (config('global_config.audit_edit_resume') == 1) {
             $save_data['audit'] = 0;
         }
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
+        }
+
         model('Resume')
             ->allowField(true)
             ->save($save_data, ['uid' => $this->userinfo->uid]);
-
-        /*
-         * 【bug】搜索简历时，按简历标签筛选是无效（修改后未更新索引表）
-         * zch 2022.10.19
-         * */
-        if (config('global_config.audit_edit_resume') == 0) {
-            model('Resume')->refreshSearch(0, $this->userinfo->uid);
-        }else
-        {
-            model('ResumeSearchRtime')->where('uid',$this->userinfo->uid)->delete();
-            model('ResumeSearchKey')->where('uid',$this->userinfo->uid)->delete();
-        }
 
         model('Resume')->updateComplete(
             ['tag' => $tag == '' ? 0 : 1],
             0,
             $this->userinfo->uid
         );
+        model('Resume')->refreshSearch(0, $this->userinfo->uid);
         $this->writeMemberActionLog($this->userinfo->uid,'保存简历标签');
         $this->ajaxReturn(200, '保存成功');
     }
@@ -1370,6 +1380,13 @@ class Resume extends \app\v1_0\controller\common\Base
         $save_data['specialty'] = $specialty;
         if (config('global_config.audit_edit_resume') == 1) {
             $save_data['audit'] = 0;
+        }
+
+        $basic_info = model('Resume')
+            ->where('uid', $this->userinfo->uid)
+            ->find();
+        if (is_null($basic_info) || empty($basic_info)) {
+            $this->ajaxReturn(500, '请先填写基本资料');
         }
         $result = model('Resume')
             ->allowField(true)

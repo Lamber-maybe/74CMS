@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
-    <el-tabs type="border-card">
-      <el-tab-pane label="基本配置" :lazy="true">
-        <toolimbasic />
+    <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane name="toolimbasic" label="基本配置" :lazy="true">
+        <toolimbasic ref="toolimbasic" />
       </el-tab-pane>
-      <el-tab-pane label="个人配置" :lazy="true">
-        <toolimper />
+      <el-tab-pane name="toolimper" label="个人配置" :lazy="true">
+        <toolimper ref="toolimper" />
       </el-tab-pane>
-      <el-tab-pane label="企业配置" :lazy="true">
-        <toolimcom />
+      <el-tab-pane name="toolimcom" label="企业配置" :lazy="true">
+        <toolimcom ref="toolimcom" />
       </el-tab-pane>
-      <el-tab-pane label="未读消息提醒" :lazy="true">
-        <toolimunread />
+      <el-tab-pane name="toolimunread" label="未读消息提醒" :lazy="true">
+        <toolimunread ref="toolimunread" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -28,6 +28,21 @@ export default {
     toolimper,
     toolimcom,
     toolimunread
+  },
+  data(){
+    return {
+      activeName: 'toolimbasic'
+    }
+  },
+  mounted() {
+    this.$refs.toolimbasic.iniFun()
+  },
+  methods:{
+    handleClick(tab, event){
+      this.$nextTick(() => {
+        this.$refs[tab.name].iniFun()
+      });
+    }
   }
 }
 </script>

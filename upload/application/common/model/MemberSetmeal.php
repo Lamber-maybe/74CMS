@@ -61,12 +61,12 @@ class MemberSetmeal extends BaseModel
                     case 'show_apply_contact':
                         $log_field .= '收到简历免费查看:' . ($setmeal[$item] === 1 ? '允许' : '不允许') . '；';
                         break;
-                    case 'resume_view_num':
-                        if (isset($setmeal['show_apply_contact']) && $setmeal['show_apply_contact'] != 1) {
-                            continue;
-                        }
-                        $log_field .= '收到简历查看上限:' . ($setmeal[$item] === 0 ? '不限' : ($setmeal[$item] . '次/天')) . '；';
-                        break;
+//                    case 'resume_view_num':
+//                        if (isset($setmeal['show_apply_contact']) && $setmeal['show_apply_contact'] != 1) {
+//                            continue;
+//                        }
+//                        $log_field .= '收到简历查看上限:' . ($setmeal[$item] === 0 ? '不限' : ($setmeal[$item] . '次/天')) . '；';
+//                        break;
                     case 'service_added_discount':
                         $log_field .= '套餐增值包折扣:' . $setmeal[$item] . '折；';
                         break;

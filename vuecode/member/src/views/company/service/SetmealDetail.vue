@@ -98,9 +98,10 @@
               <img src="../../../assets/images/privilege_icon_4.png"/>
             </div>
             <p>收到的简历免费查看</p>
-            <span v-if="mySetmeal.show_apply_contact === 0">不支持</span>
-            <span v-else-if="mySetmeal.resume_view_num === 0">不限</span>
-            <span v-else>{{ mySetmeal.resume_view_num }}份/天</span>
+            <span v-if="mySetmeal.show_apply_contact === 1">支持</span>
+            <span v-else>不支持</span>
+<!--            <span v-else-if="mySetmeal.resume_view_num === 0">不限</span>-->
+<!--            <span v-else>{{ mySetmeal.resume_view_num }}份/天</span>-->
           </div>
           <div class="privilege_list">
             <div class="list_img">

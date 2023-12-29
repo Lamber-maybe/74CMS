@@ -253,7 +253,7 @@
 <script>
 import http from '@/utils/http'
 import api from '@/api'
-import { parseTime } from '@/utils/index'
+import { parseTime, downloadFile } from '@/utils/index'
 import axios from 'axios'
 export default {
   data() {
@@ -315,19 +315,21 @@ export default {
     },
     handleDown () {
       const params = {
-        id: this.base_info.id
+        id: this.base_info.id,
+        is_export: 1
       }
       http
-        .get(api.exportPdfByPhp, params)
+        .download('post', api.exportPdfByPhp, params)
         .then(response => {
-          if (parseInt(response.code) === 200) {
-            if (response.data.url){
-              this.getFile(response.data.url)
-            } else {
-              this.$message.error('下载失败，请刷新页面重新尝试。')
-            }
-          } else {
-            this.$message.error(response.message)
+          if (response.config.responseType === 'blob') {
+            let res =
+              response.headers['content-disposition'].match(
+                /filename="(\S*)"/
+              )
+            downloadFile(
+              response.data,
+              res && decodeURIComponent(res[1])
+            )
           }
         })
         .catch(() => {})
@@ -370,6 +372,19 @@ export default {
         this.language_list = language_list
         this.certificate_list = certificate_list
         this.logo_resume_id = logo_resume_id
+        /**
+         * 【ID1000730】
+         * 【bug】简历详情页-下载简历-pdf文件链接没有任何条件限制
+         * cy 2023-7-26
+         * 防止通过更改url中id跳转进来
+         */
+        if (show_contact === 0 && logo_resume_id != base_info.id) {
+          let that = this
+          that.$message.error('请先下载简历')
+          setTimeout(function() {
+            window.open(that.$store.state.config.sitedomain + '/resume/' + that.query_id, '_self');
+          }, 1500)
+        }
       })
     }
   },

@@ -303,9 +303,10 @@ class NewDataStatistics extends \app\common\controller\Backend
      */
     protected function getGeneralstatistics()
     {
-        $timestamp_today_start = strtotime(date('Y-m-d H:i', time()) . ' 00:00:00');
-        $timestamp_today_end = strtotime(date('Y-m-d H:i', time()) . ' 23:59:59');
-        $month_start = strtotime(date('Y-m', time()) . '-01 00:00:00');
+        $startTime = strtotime(date('Y-m-d', time()));
+        $timestamp_today_start = $startTime;
+        $timestamp_today_end = $startTime + 86399;
+        $month_start = strtotime(date('Y-m', time()));
         /**
          * 总收入统计
          */
@@ -314,8 +315,7 @@ class NewDataStatistics extends \app\common\controller\Backend
             ->sum('amount');
         $today_revenue = model('Order')
             ->where('status', 1)
-            ->where('paytime', '>', $timestamp_today_start)
-            ->where('paytime', '<=', $timestamp_today_end)
+            ->where('paytime', 'between', [$timestamp_today_start, $timestamp_today_end])
             ->sum('amount');
         $month_revenue = model('Order')
             ->where('status', 1)
@@ -337,8 +337,7 @@ class NewDataStatistics extends \app\common\controller\Backend
             ->count();
         $today_order_num = model('Order')
             ->where('status', 1)
-            ->where('paytime', '>', $timestamp_today_start)
-            ->where('paytime', '<=', $timestamp_today_end)
+            ->where('paytime', 'between', [$timestamp_today_start, $timestamp_today_end])
             ->count();
         $month_order_num = model('Order')
             ->where('status', 1)

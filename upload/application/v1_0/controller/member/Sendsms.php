@@ -75,6 +75,9 @@ class Sendsms extends \app\v1_0\controller\common\Base
     public function login()
     {
         $mobile = input('post.mobile/s', '', 'trim');
+        if (empty($mobile)) {
+            $this->ajaxReturn(500, '请输入手机号');
+        }
         if (!fieldRegex($mobile, 'mobile')) {
             $this->ajaxReturn(500, '手机号格式错误');
         }

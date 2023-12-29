@@ -19,7 +19,7 @@ export default {
       let head = document.getElementsByTagName('head')[0]
       script.type = 'text/javascript'
       script.charset = 'UTF-8'
-      script.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
+      script.src = 'https://turing.captcha.qcloud.com/TCaptcha.js'
       head.appendChild(script)
     }
   },

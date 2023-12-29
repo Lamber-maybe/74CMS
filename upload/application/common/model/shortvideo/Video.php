@@ -237,6 +237,7 @@ class Video extends BaseModel
             $pUids[] = $v['uid'];
             $vids[] = $v['id'];
             if (!$v['logo'] || !$v['avatar']) {
+                $v['sex'] = isset($v['sex']) && !empty($v['sex']) ? $v['sex'] : 1;
                 $v['avatar_src'] = default_empty('photo', $v['sex']);
             }
         }

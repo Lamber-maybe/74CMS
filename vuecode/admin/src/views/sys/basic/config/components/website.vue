@@ -180,6 +180,10 @@
             v-else
             class="el-icon-plus logo-uploader-icon"
           />
+          <div v-if="logoUrl" class="transparent" @click.stop="imageDel('logoUrl', 'form.logo')">
+            <i class="el-icon-delete" />
+            删除
+          </div>
         </el-upload>
         <span class="smalltip">
           <i class="el-icon-info" />
@@ -207,6 +211,10 @@
             v-else
             class="el-icon-plus squarelogo-uploader-icon"
           />
+          <div v-if="squarelogoUrl" class="transparent" @click.stop="imageDel('squarelogoUrl', 'form.square_logo')">
+            <i class="el-icon-delete" />
+            删除
+          </div>
         </el-upload>
         <span class="smalltip">
           <i class="el-icon-info" />
@@ -243,6 +251,10 @@
             v-else
             class="el-icon-plus squarelogo-uploader-icon"
           />
+          <div v-if="business_license_url" class="transparent" @click.stop="imageDel('business_license_url', 'form.qualification_publicity.business_license_id')">
+            <i class="el-icon-delete" />
+            删除
+          </div>
         </el-upload>
       </el-form-item>
       <el-form-item
@@ -275,6 +287,10 @@
             v-else
             class="el-icon-plus squarelogo-uploader-icon"
           />
+          <div v-if="service_license_url" class="transparent" @click.stop="imageDel('service_license_url', 'form.qualification_publicity.service_license_id')">
+            <i class="el-icon-delete" />
+            删除
+          </div>
         </el-upload>
       </el-form-item>
       <el-form-item
@@ -305,6 +321,10 @@
             v-else
             class="el-icon-plus squarelogo-uploader-icon"
           />
+          <div v-if="business_licenses_url" class="transparent" @click.stop="imageDel('business_licenses_url', 'form.qualification_publicity.business_licenses_id')">
+            <i class="el-icon-delete" />
+            删除
+          </div>
         </el-upload>
       </el-form-item>
       <el-form-item label="">
@@ -380,7 +400,6 @@ export default {
       business_license_url: '', // 电子营业执照图片
       service_license_url: '', // 人力资源服务许可证图片
       business_licenses_url: '', // 增值电信业务经营许可证图片
-
       logoUrl: '',
       squarelogoUrl: '',
       rules: {
@@ -465,9 +484,9 @@ export default {
           this.logoUrl = response.data.logoUrl
           this.squarelogoUrl = response.data.squarelogoUrl
           this.infoLoading = false
-          this.business_license_url = response.data.business_license_url
-          this.service_license_url = response.data.service_license_url
-          this.business_licenses_url = response.data.business_licenses_url
+          this.business_license_url = response.data.qualification_publicity.business_license_url
+          this.service_license_url = response.data.qualification_publicity.service_license_url
+          this.business_licenses_url = response.data.qualification_publicity.business_licenses_url
         })
         .catch(() => {})
     },
@@ -539,6 +558,23 @@ export default {
         return false
       }
       return true
+    },
+    /**
+     * 删除图片
+     * @param field
+     * @param fieldId
+     * cy 2023-8-1
+     */
+    imageDel(field, fieldId){
+      var that = this;
+      that[field] = ''
+      // 由于fieldId是多级的，所以需要遍历处理
+      const propertyArr = fieldId.split('.');
+      var lastProperty = propertyArr.pop();
+      for (const property of propertyArr) {
+        that = that[property];
+      }
+      that[lastProperty] = 0
     }
   }
 }
@@ -552,6 +588,7 @@ export default {
   cursor: pointer;
   width: 102px;
   height: 102px;
+  position: relative;
 }
 .squarelogo-uploader img {
   width: 100px;
@@ -576,6 +613,7 @@ export default {
   cursor: pointer;
   width: 172px;
   height: 72px;
+  position: relative;
 }
 .logo-uploader img {
   width: 170px;
@@ -592,5 +630,20 @@ export default {
   height: 70px;
   line-height: 70px;
   text-align: center;
+}
+.transparent{
+  cursor: pointer;
+  z-index: 1;
+  font-size: 12px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  position: absolute;
+  bottom: 0;
+  color: #d5cece;
+  left: 1px;
+  width: 100%;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.4);
 }
 </style>

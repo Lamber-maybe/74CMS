@@ -46,10 +46,10 @@ export default {
       display_status: ''
     }
   },
-  created() {
-    this.fetchData()
-  },
   methods: {
+    iniFun(){
+      this.fetchData()
+    },
     fetchData() {
       this.infoLoading = true
       const param = { utype: 1 }

@@ -515,12 +515,12 @@ class Im extends Base
             $self_avatar = $self_avatar ? $self_avatar : default_empty('logo');
 
             $other_avatar = model('Resume')->where('uid', $target_uid)->field('photo_img,sex')->find();
-            $other_avatar = model('Uploadfile')->getFileUrl($other_avatar['photo_img']);
-            $other_avatar = $other_avatar ? $other_avatar : default_empty('photo', $other_avatar['sex']);
+            $other_avatar_file = model('Uploadfile')->getFileUrl($other_avatar['photo_img']);
+            $other_avatar = $other_avatar_file ? $other_avatar_file : default_empty('photo', $other_avatar['sex']);
         } else {
             $self_avatar = model('Resume')->where('uid', $this->userinfo->uid)->field('photo_img,sex')->find();
-            $self_avatar = model('Uploadfile')->getFileUrl($self_avatar['photo_img']);
-            $self_avatar = $self_avatar ? $self_avatar : default_empty('photo', $self_avatar['sex']);
+            $self_avatar_file = model('Uploadfile')->getFileUrl($self_avatar['photo_img']);
+            $self_avatar = $self_avatar_file ? $self_avatar_file : default_empty('photo', $self_avatar['sex']);
 
             $other_avatar = model('Company')->where('uid', $target_uid)->field('logo')->find();
             $other_avatar = model('Uploadfile')->getFileUrl($other_avatar['logo']);

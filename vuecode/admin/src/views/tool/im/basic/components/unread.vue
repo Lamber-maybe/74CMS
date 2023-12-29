@@ -21,7 +21,7 @@
         <el-input v-model="unread_templateid" />
         <p class="smalltip">
           <i class="el-icon-info" />
-          (微信模板名称：服务请求处理提醒；模板编号：OPENTM406200321)
+          (微信模板名称：{{wechat_tpl_name}}；模板编号：{{wechat_tpl_number}})
         </p>
       </el-form-item>
       <el-form-item label="">
@@ -39,13 +39,15 @@ export default {
     return {
       infoLoading: false,
       unread_reminder: false,
-      unread_templateid: ''
+      unread_templateid: '',
+      wechat_tpl_name: '',
+      wechat_tpl_number: ''
     }
   },
-  created() {
-    this.fetchData()
-  },
   methods: {
+    iniFun(){
+      this.fetchData()
+    },
     fetchData() {
       this.infoLoading = true
       const param = { utype: 0 }
@@ -54,6 +56,8 @@ export default {
           const unread_reminder = responses.data.unread_reminder
           this.unread_reminder = unread_reminder === '1'
           this.unread_templateid = responses.data.unread_templateid
+          this.wechat_tpl_name = responses.data.wechat_tpl_name
+          this.wechat_tpl_number = responses.data.wechat_tpl_number
           this.infoLoading = false
         })
         .catch(() => {})

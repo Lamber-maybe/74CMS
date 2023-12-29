@@ -131,10 +131,8 @@
                                 {#if condition="$return.base_info.address!=''"#}
                                     <span class="post_box1_font">工作地点</span>
                                     {#$return.base_info.address#}
-                                    {#if condition="$global_config.is_open_map eq 1"#}
-                                      {#if condition="$return.base_info.map_lat || $return.base_info.map_lng"#}
+                                    {#if condition="$global_config.is_open_map eq 1 && $return.base_info.map_lat gt 0 && $return.base_info.map_lng gt 0"#}
                                       <span class="post_route" @click="showMap=true">查看上班路线</span>
-                                      {#/if#}
                                     {#/if#}
                                 {#/if#}
                                 </div>
@@ -685,7 +683,7 @@
       }
       var script = document.createElement('script')
       script.type = 'text/javascript'
-      script.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
+      script.src = 'https://turing.captcha.qcloud.com/TCaptcha.js'
       document.body.appendChild(script)
     }
     function loadVaptcha() {

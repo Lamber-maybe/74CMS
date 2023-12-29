@@ -173,18 +173,35 @@ class CompanyInterviewVideo extends \app\common\model\BaseModel
                     $jobinfo['negotiable']
                 )
             ]);
-            //微信通知
+            /**
+             * 区分微信新旧版本模板
+             * cy 2023-10-17
+             */
+            $wechatTplType = config('global_config.wechat_tpl_type');
+            $wechatTplType = !empty($wechatTplType) ? $wechatTplType : 1;
+            $wechatTplAlias = 'interview_video';
+            $wechatTplData = [
+                $company_profile['companyname'],
+                $jobinfo['jobname'],
+                date('Y年m月d日 H:i'). ' 参加视频面试'
+            ];
+            if ($wechatTplType == 2) {
+                // 公司名称,职位名称,面试时间,面试地点,联系人
+                $wechatTplAlias = 'interview_video_notify';
+                $wechatTplData = [
+                    $company_profile['companyname'],
+                    $jobinfo['jobname'],
+                    date('Y年m月d日 H:i'),
+                    '视频面试',
+                    $input_data['contact'] . '(' . $input_data['tel'] . ')'
+                ];
+            }
+            // 微信通知
             model('WechatNotifyRule')->notify(
                 $resumeinfo['uid'],
                 2,
-                'interview_video',
-                [
-                    'Hi，'.$resumeinfo['fullname'].'，你收到一条面试邀请，好机会不要错过哦！',
-                    $company_profile['companyname'],
-                    $jobinfo['jobname'],
-                    date('Y年m月d日 H:i'). ' 参加视频面试',
-                    '点击查看更多面试邀请信息'
-                ],
+                $wechatTplAlias,
+                $wechatTplData,
                 'member/personal/interview_video'
             );
         }

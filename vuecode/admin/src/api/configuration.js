@@ -250,3 +250,10 @@ export function documentCheck(params) {
     data: params
   })
 }
+export function switchWechatTplType(params) {
+  return request({
+    url: apiArr.switchWechatTplType,
+    method: 'post',
+    data: params
+  })
+}
